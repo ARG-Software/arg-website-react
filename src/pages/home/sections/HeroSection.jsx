@@ -107,7 +107,6 @@ export function HeroSection() {
       </div>
       <div className="hero_visual">
         <div
-          data-poster-url="images/metaball-loop-1-poster-00001.jpg"
           data-autoplay="true"
           data-loop="true"
           data-wf-ignore="true"
@@ -119,7 +118,6 @@ export function HeroSection() {
             loop
             muted
             playsInline
-            style={{ backgroundImage: 'url("images/metaball-loop-1-poster-00001.jpg")' }}
             data-wf-ignore="true"
             data-object-fit="cover"
           >

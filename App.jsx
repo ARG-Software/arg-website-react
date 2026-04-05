@@ -2378,8 +2378,8 @@ deferInit(() => {
               <div className="padding-global"></div>
             </div>
             <div className="hero_visual">
-              <div data-poster-url="images/metaball-loop-1-poster-00001.jpg" data-video-urls="images/metaball-loop-1-transcode.mp4,images/metaball-loop-1-transcode.webm" data-autoplay="true" data-loop="true" data-wf-ignore="true" className="hero_bg-video w-background-video w-background-video-atom">
-                <video id="hero-video" autoPlay loop muted playsInline style={{ backgroundImage: 'url("images/metaball-loop-1-poster-00001.jpg")' }} data-wf-ignore="true" data-object-fit="cover">
+              <div data-video-urls="images/metaball-loop-1-transcode.mp4,images/metaball-loop-1-transcode.webm" data-autoplay="true" data-loop="true" data-wf-ignore="true" className="hero_bg-video w-background-video w-background-video-atom">
+                <video id="hero-video" autoPlay loop muted playsInline data-wf-ignore="true" data-object-fit="cover">
                   <source src="images/hero-video-opt.mp4" data-wf-ignore="true" />
 
                 </video>
@@ -2907,14 +2907,13 @@ deferInit(() => {
                 {/* Typeform video section */}
                 <div className="typeform-wrapper-o5kxhiic">
                   <div
-                    data-poster-url="images/6722756494e163093c832895-2f6745c7f9296fdde5324c3539_18458403-hd_1920_1080_24fps-poster-00001.jpg"
                     data-video-urls="images/6722756494e163093c832895-2f6745c7f9296fdde5324c3539_18458403-hd_1920_1080_24fps-transcode.mp4,images/6722756494e163093c832895-2f6745c7f9296fdde5324c3539_18458403-hd_1920_1080_24fps-transcode.webm"
                     data-autoplay="true"
                     data-loop="true"
                     data-wf-ignore="true"
                     className="background-video-2 formtext w-background-video w-background-video-atom"
                   >
-                    <video autoPlay loop muted playsInline style={{ backgroundImage: 'url("images/6722756494e163093c832895-2f6745c7f9296fdde5324c3539_18458403-hd_1920_1080_24fps-poster-00001.jpg")' }} data-wf-ignore="true" data-object-fit="cover">
+                    <video autoPlay loop muted playsInline>
                       <source src="images/cta-video-opt.mp4" data-wf-ignore="true" />
 
                     </video>

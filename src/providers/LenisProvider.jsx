@@ -46,8 +46,6 @@ export function LenisProvider({
           rafIdRef.current = requestAnimationFrame(raf);
         }
         rafIdRef.current = requestAnimationFrame(raf);
-
-        console.log('Lenis initialized via Provider');
       } catch (error) {
         console.error('Failed to initialize Lenis:', error);
       }
@@ -62,7 +60,6 @@ export function LenisProvider({
         rafIdRef.current = null;
       }
       if (lenis) {
-        console.log('Lenis cleanup (app unmount)');
         lenis.destroy();
         setLenis(null);
         instanceRef.current = null;

@@ -5,7 +5,6 @@ function CTAVideo() {
   return (
     <div className="typeform-wrapper-o5kxhiic">
       <div
-        data-poster-url="images/6722756494e163093c832895-2f6745c7f9296fdde5324c3539_18458403-hd_1920_1080_24fps-poster-00001.jpg"
         data-autoplay="true"
         data-loop="true"
         data-wf-ignore="true"
@@ -18,7 +17,6 @@ function CTAVideo() {
           muted
           playsInline
           preload="metadata"
-          poster="images/6722756494e163093c832895-2f6745c7f9296fdde5324c3539_18458403-hd_1920_1080_24fps-poster-00001.jpg"
           data-wf-ignore="true"
           data-object-fit="cover"
         >

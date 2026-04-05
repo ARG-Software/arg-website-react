@@ -213,14 +213,11 @@
       if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
         const analytics = document.createElement('script');
         analytics.async = true;
-        analytics.src = '/g/js?id=G-79TG4N6C2W';
+        analytics.src = 'https://www.googletagmanager.com/gtag/js?id=G-79TG4N6C2W';
         document.head.appendChild(analytics);
 
         gtag('js', new Date());
-        gtag('config', 'G-79TG4N6C2W', {
-          transport_url: location.origin + '/g',
-          first_party_collection: true,
-        });
+        gtag('config', 'G-79TG4N6C2W');
       }
     </script>
   </head>

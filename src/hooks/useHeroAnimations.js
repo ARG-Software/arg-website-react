@@ -8,8 +8,6 @@ import { useEffect } from 'react';
  */
 export function useHeroAnimation() {
   useEffect(() => {
-    console.log('useHeroAnimation hook running (unified)');
-
     const timeouts = [];
     let retryTimeout = null;
 
@@ -28,15 +26,9 @@ export function useHeroAnimation() {
 
       // Determine page type
       if (heroWrap) {
-        console.log('Detected homepage hero');
-        // Hero heading animation is now CSS-driven via .hero-reveal keyframes
-
         const heroLine = heroWrap.querySelector('.line-separate.is--hero');
-        console.log('heroLine found:', !!heroLine);
         if (heroLine) {
-          console.log('heroLine opacity before:', heroLine.style.opacity);
           const timeout = setTimeout(() => {
-            console.log('Animating hero line');
             heroLine.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
             heroLine.style.opacity = '1';
             heroLine.style.transform = 'translate3d(0, 0, 0) scale3d(1, 1, 1)';
@@ -45,7 +37,6 @@ export function useHeroAnimation() {
 
           // Safety net
           const safetyTimeout = setTimeout(() => {
-            console.log('Safety net for hero line');
             if (
               heroLine.style.opacity === '0' ||
               heroLine.style.transform.includes('scale3d(0.1')
@@ -61,11 +52,8 @@ export function useHeroAnimation() {
         const bottomEls = heroWrap.querySelectorAll(
           '.hero_bottom_paragraph, .text-button_list:not(.is-animated), .bottom_buttons-wrapper .text-button_list:not(.is-animated)'
         );
-        console.log('bottomEls found:', bottomEls.length);
         bottomEls.forEach((el, index) => {
-          console.log(`Bottom el ${index}:`, el.className, el.style.transform);
           const timeout = setTimeout(() => {
-            console.log(`Animating bottom el ${index}`);
             el.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
             el.style.transform =
               'translate3d(0, 0%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)';
@@ -74,7 +62,6 @@ export function useHeroAnimation() {
 
           // Safety net: if still hidden after 5 seconds, force visible
           const safetyTimeout = setTimeout(() => {
-            console.log(`Safety net for bottom el ${index}`);
             if (
               el.style.transform.includes('100%') ||
               el.style.transform.includes('translate3d(0, 100%')
@@ -88,7 +75,6 @@ export function useHeroAnimation() {
         });
       } else if (subpageHero) {
         // New unified subpage hero
-        console.log('Detected subpage-hero, running optimized animations');
 
         // Animate heading lines with optimized timing (30% faster)
         document.querySelectorAll('.subpage-hero__heading-line').forEach((el, i) => {
@@ -163,8 +149,6 @@ export function useHeroAnimation() {
         if (isPpPage) prefix = 'pp';
         else if (isAlpPage) prefix = 'alp';
         else if (isApPage) prefix = 'ap';
-
-        console.log(`Detected legacy ${prefix}-hero page, running animations`);
 
         // Animate heading lines
         document.querySelectorAll(`.${prefix}-hero .${prefix}-heading-line`).forEach((el, i) => {
