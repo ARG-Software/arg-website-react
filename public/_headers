@@ -1,0 +1,21 @@
+/*
+  # HSTS — enforce HTTPS (start with 6 months, increase to 2 years after confirming)
+  Strict-Transport-Security: max-age=15768000; includeSubDomains; preload
+
+  # Prevent clickjacking — only allow same-origin framing
+  X-Frame-Options: SAMEORIGIN
+
+  # Cross-Origin Opener Policy — isolate top-level window
+  Cross-Origin-Opener-Policy: same-origin
+
+  # Prevent MIME sniffing
+  X-Content-Type-Options: nosniff
+
+  # Referrer — send origin only to cross-origin requests
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Permissions Policy — disable unused browser features
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.elfsight.com https://*.elfsightcdn.com https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://*.elfsightcdn.com; img-src 'self' data: blob: https://cdn.prod.website-files.com https://*.elfsightcdn.com https://*.linkedin.com https://*.licdn.com https://www.googletagmanager.com; font-src 'self' data: https://*.elfsightcdn.com; connect-src 'self' https://*.elfsight.com https://*.elfsightcdn.com https://*.typeform.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; media-src 'self' blob:; frame-src https://*.typeform.com https://*.elfsight.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'

@@ -1,19 +1,48 @@
-import purgecss from '@fullhuman/postcss-purgecss';
+const purgecss = require('@fullhuman/postcss-purgecss');
+const pxtorem = require('postcss-pxtorem');
 
-export default {
+module.exports = {
   plugins: [
+    pxtorem({
+      rootValue: 16,
+      propList: ['*', '!border*', '!border-radius', '!font-size', '!box-shadow', '!text-shadow', '!transform'],
+      mediaQuery: false,
+      minPixelValue: 0
+    }),
     ...(process.env.NODE_ENV === 'production'
       ? [purgecss({
           content: [
             './index.html',
-            './*.jsx',
-            './*.js',
-            './*.tsx',
-            './*.ts',
+            './src/**/*.{jsx,js,tsx,ts}',
           ],
           safelist: {
             standard: [
-              /^w-/,
+              /^w-hidden$/,
+              /^w-show$/,
+              /^w-tablet$/,
+              /^w-mobile-/,
+              /^w-id$/,
+              /^w-latency$/,
+              /^w-style$/,
+              /^w-y$/,
+              /^w-scrolling$/,
+              /^w-script$/,
+              /^w-action$/,
+              /^w-body$/,
+              /^w-excerpt$/,
+              /^w-image$/,
+              /^w-meta$/,
+              /^w-readtime$/,
+              /^w-tag$/,
+              /^w-title$/,
+              /^w--next$/,
+              /^w--open$/,
+              /^w--current$/,
+              /^w--active$/,
+              /^w--tab-active$/,
+              /^w--vertical$/,
+              /^w--large$/,
+              /^w-icon-/,
               /^is-/,
               /^menu--/,
               /^lenis/,
@@ -57,6 +86,7 @@ export default {
               /typeform/,
               /background-video/,
               /hero_/,
+              /hero-reveal/,
               /infinity_/,
               /about_/,
               /section_/,
