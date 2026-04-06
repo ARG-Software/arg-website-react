@@ -1849,10 +1849,9 @@ input[type='file']:focus-visible {
   gap: 0;
 }
 
-/* .services_list .services_item {
-  padding-top: 2.5rem;
-  padding-bottom: 2.5rem;
-} */
+.services_list {
+  grid-row-gap: 7.5rem !important;
+}
 
 .services_list .services_item:first-child {
   padding-top: 0;
