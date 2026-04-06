@@ -6,22 +6,22 @@ const STATS = [
   {
     value: '1000',
     label: 'Deploys into production, usually not on Friday',
-    imageSrc: 'images/1e53a75-small.webp',
+    imageSrc: '/images/1e53a75-small.webp',
   },
   {
     value: '2000',
     label: 'Finance transactions per second',
-    imageSrc: 'images/219c903-small.webp',
+    imageSrc: '/images/219c903-small.webp',
   },
   {
     value: '25',
     label: 'Years of experience combined',
-    imageSrc: 'images/54cba1f-small.webp',
+    imageSrc: '/images/54cba1f-small.webp',
   },
   {
     value: '6',
     label: 'Impacted countries',
-    imageSrc: 'images/d3a8639-small.webp',
+    imageSrc: '/images/d3a8639-small.webp',
   },
 ];
 
