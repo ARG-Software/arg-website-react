@@ -5,11 +5,11 @@ import { useLenis } from '../../../hooks';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 
 const partnerLogos = [
-  { src: 'images/group-203127-402x.webp', alt: 'Three Sigma', name: 'ThreeSigma' },
-  { src: 'images/group-203134-402x.png', alt: 'Hostelier', small: true, name: 'Hostelier' },
-  { src: 'images/group-203128-402x.png', alt: 'Mb-Netzwerk', medium: true, name: 'mb-netzwerk' },
+  { src: 'images/group-203127-small.webp', alt: 'Three Sigma', name: 'ThreeSigma' },
+  { src: 'images/group-203134-small.webp', alt: 'Hostelier', small: true, name: 'Hostelier' },
+  { src: 'images/group-203128-small.webp', alt: 'Mb-Netzwerk', medium: true, name: 'mb-netzwerk' },
   { src: 'images/group-203133-402x.svg', alt: 'SEFA', name: 'SEFA' },
-  { src: 'images/av-20logo-20medium-402x.png', alt: 'Angry Ventures', name: 'Angry Ventures' },
+  { src: 'images/av-20logo-20medium-402x.webp', alt: 'Angry Ventures', name: 'Angry Ventures' },
   {
     src: 'images/group-123132-402x.svg',
     alt: "People's Clearinghouse",
@@ -17,9 +17,9 @@ const partnerLogos = [
   },
   { src: 'images/group-203112.svg', alt: 'Interledger Foundation', name: 'Interledger Foundation' },
   { src: 'images/group-203159-402x.svg', alt: 'SkyTracks', name: 'SkyTracks' },
-  { src: 'images/group-203132-402x.png', alt: 'North Music Group', name: 'North Music Group' },
+  { src: 'images/group-203132-small.webp', alt: 'North Music Group', name: 'North Music Group' },
   {
-    src: 'images/mojaloop-foundation-orange-402x.png',
+    src: 'images/mojaloop-foundation-orange-small.webp',
     alt: 'Mojaloop Foundation',
     name: 'Mojaloop Foundation',
   },
@@ -90,6 +90,7 @@ export function PartnersMarquee({ className = '' }) {
                     className="partners_logo"
                     width={logo.small ? 100 : logo.medium ? 200 : 200}
                     height="120"
+                    loading="lazy"
                   />
                 </AppLink>
               ))}

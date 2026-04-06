@@ -38,7 +38,9 @@ export function ProjectItem({
           <div className="projects_item_visual">
             <img
               src={imgSrc}
-              loading="eager"
+              srcSet={imgSrcSet}
+              sizes="(max-width: 767px) 100vw, 60vw"
+              loading="lazy"
               data-wf-drag="false"
               alt=""
               className="projects_visual_img"
