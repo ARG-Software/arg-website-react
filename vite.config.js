@@ -8,6 +8,25 @@ export default defineConfig({
   plugins: [
     react(),
     seoPrerender({ apply: 'build' }),
+    // Inject <link rel="preload"> for CSS at the very top of <head> so the
+    // browser starts fetching it before parsing the JSON-LD blocks below it.
+    {
+      name: 'preload-css',
+      apply: 'build',
+      transformIndexHtml: {
+        order: 'post',
+        handler(html, ctx) {
+          if (!ctx.bundle) return;
+          return Object.keys(ctx.bundle)
+            .filter(k => k.endsWith('.css'))
+            .map(file => ({
+              tag: 'link',
+              attrs: { rel: 'preload', href: `/${file}`, as: 'style' },
+              injectTo: 'head-prepend',
+            }));
+        },
+      },
+    },
     // SPA fallback: serve index.html for routes without file extensions
     {
       name: 'spa-fallback',
@@ -40,14 +59,19 @@ export default defineConfig({
   build: {
     minify: 'esbuild',
     cssMinify: true,
-    modulePreload: false,
     esbuild: {
       drop: ['console', 'debugger'],
     },
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+          if (
+            id.includes('node_modules/react-dom') ||
+            id.includes('node_modules/react/') ||
+            id.includes('node_modules/react-router') ||
+            id.includes('node_modules/react-helmet-async') ||
+            id.includes('node_modules/scheduler')
+          ) {
             return 'vendor';
           }
           if (id.includes('node_modules/three')) {

@@ -28,11 +28,23 @@ export function SocialSection({ className = '' }) {
   };
 
   useEffect(() => {
-    if (document.querySelector('script[src*="elfsight"]')) return;
-    const script = document.createElement('script');
-    script.src = 'https://static.elfsight.com/platform/platform.js';
-    script.async = true;
-    document.body.appendChild(script);
+    const container = document.querySelector('.elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b');
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        if (document.querySelector('script[src*="elfsight"]')) return;
+        const script = document.createElement('script');
+        script.src = 'https://static.elfsight.com/platform/platform.js';
+        script.async = true;
+        document.body.appendChild(script);
+      },
+      { rootMargin: '1800px' }
+    );
+    observer.observe(container);
+    return () => observer.disconnect();
   }, []);
 
   // Elfsight feed animations (moved from useScrollAnimations)

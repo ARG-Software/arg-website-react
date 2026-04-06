@@ -61,7 +61,14 @@ export function CounterWidget({
           <p className="text-color-grey z-index-2">{label}</p>
           {imageSrc && (
             <div className="work_image-wrapper">
-              <img src={imageSrc} alt={imageAlt} className="work-image" width="160" height="160" />
+              <img
+                src={imageSrc}
+                alt={imageAlt}
+                className="work-image"
+                width="160"
+                height="160"
+                loading="lazy"
+              />
             </div>
           )}
         </>

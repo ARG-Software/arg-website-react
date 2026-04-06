@@ -17,10 +17,16 @@ export function TransitionProvider({ children }) {
   const [phase, setPhase] = useState('idle'); // idle | covering | revealing
   const pendingToRef = useRef(null);
   const isRunningRef = useRef(false);
+  const isInitialLoadRef = useRef(true);
   const lastPathRef = useRef(location.pathname);
   const hashRef = useRef(location.hash);
   const transitionStartTimeRef = useRef(0);
   const lenis = useLenis();
+  // Stable ref so the route-change effect doesn't re-fire when lenis initialises
+  const lenisRef = useRef(lenis);
+  useEffect(() => {
+    lenisRef.current = lenis;
+  }, [lenis]);
 
   // Keep hashRef updated with current location.hash
   useEffect(() => {
@@ -166,24 +172,35 @@ export function TransitionProvider({ children }) {
     // Fire GA4 page_view for SPA navigation
     trackPageView(location.pathname + location.search + location.hash);
 
-    // Ensure scroll is fully unlocked after the transition completes.
     const unlockScroll = () => {
-      if (lenis) lenis.start();
+      if (lenisRef.current) lenisRef.current.start();
       document.documentElement.classList.remove('lenis-stopped');
     };
+
+    // Scroll to top while the overlay is still covering — user never sees the jump.
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (lenisRef.current) lenisRef.current.scrollTo(0, { immediate: true });
+    };
+
+    // On the very first render there is no navigation — let browser restore position.
+    if (isInitialLoadRef.current) {
+      isInitialLoadRef.current = false;
+      unlockScroll();
+      return;
+    }
 
     // We may arrive here either via go() or via normal <Link>
     // If it wasn't via go(), still animate.
     if (!isRunningRef.current) {
-      // run a full cover→swap→reveal sequence even for default navigation
       isRunningRef.current = true;
-      if (lenis) lenis.stop();
+      if (lenisRef.current) lenisRef.current.stop();
 
       transitionStartTimeRef.current = Date.now();
 
-      // Use setTimeout to avoid synchronous setState in effect
       window.setTimeout(() => {
         setPhase('covering');
+        scrollToTop(); // Scroll while covered — invisible to user
 
         window.setTimeout(() => {
           setPhase('revealing');
@@ -191,8 +208,6 @@ export function TransitionProvider({ children }) {
             setPhase('idle');
             isRunningRef.current = false;
             unlockScroll();
-            // Scroll after transition completes
-            scrollToPage();
           }, PAGE_TRANSITION_DURATION_MS);
         }, PAGE_TRANSITION_DURATION_MS);
       }, 0);
@@ -200,7 +215,8 @@ export function TransitionProvider({ children }) {
       return;
     }
 
-    // go() path: we already covered, now reveal
+    // go() path: overlay already covering — scroll now then reveal
+    scrollToTop();
     window.setTimeout(() => {
       setPhase('revealing');
       window.setTimeout(() => {
@@ -208,11 +224,14 @@ export function TransitionProvider({ children }) {
         isRunningRef.current = false;
         pendingToRef.current = null;
         unlockScroll();
-        // Scroll after transition completes
-        scrollToPage();
       }, PAGE_TRANSITION_DURATION_MS);
     }, 0);
-  }, [location.pathname, location.search, location.hash, lenis, scrollToPage]);
+    // Only pathname changes represent real page transitions.
+    // Hash changes are handled by scrollToHash (pushState) and must NOT
+    // retrigger this effect — otherwise the cover→reveal cycle fires spuriously
+    // ~1–2 s after load when lenis init causes scrollToHash to be recreated.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   // Create a click handler for hash scrolling (e.g., HeroSection, AboutSection)
   const createHashScrollHandler = (hash, options = {}) => {
