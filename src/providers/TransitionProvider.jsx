@@ -226,8 +226,14 @@ export function TransitionProvider({ children }) {
       return;
     }
 
-    // go() path: overlay already covering — scroll now then reveal
-    scrollToTop();
+    // go() path: overlay already covering — scroll to hash or top, then reveal
+    const hash = hashRef.current ? hashRef.current.substring(1) : null;
+    const hashEl = hash ? document.getElementById(hash) : null;
+    if (hashEl) {
+      hashEl.scrollIntoView({ behavior: 'instant' });
+    } else {
+      scrollToTop();
+    }
     window.setTimeout(() => {
       setPhase('revealing');
       window.setTimeout(() => {
