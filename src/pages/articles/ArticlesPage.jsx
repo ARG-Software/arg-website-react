@@ -94,7 +94,8 @@ export default function ArticlesPage() {
                             src={article.image}
                             alt=""
                             className="alp-row-image"
-                            loading="lazy"
+                            loading={i === 0 ? 'eager' : 'lazy'}
+                            fetchpriority={i === 0 ? 'high' : undefined}
                           />
                         )}
                       </div>

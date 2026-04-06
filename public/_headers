@@ -7,15 +7,15 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.elfsight.com https://*.elfsightcdn.com https://unpkg.com https://www.googletagmanager.com https://*.googletagmanager.com; style-src 'self' 'unsafe-inline' https://*.elfsightcdn.com; img-src 'self' data: blob: https://cdn.prod.website-files.com https://*.elfsightcdn.com https://*.linkedin.com https://*.licdn.com https://www.googletagmanager.com https://*.googletagmanager.com https://arg.software; font-src 'self' data: https://*.elfsightcdn.com; connect-src 'self' https://*.elfsight.com https://*.elfsightcdn.com https://*.typeform.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://usebasin.com https://*.usebasin.com https://arg.software; media-src 'self' blob:; frame-src https://*.typeform.com https://*.elfsight.com https://arg.software; frame-ancestors 'self'; base-uri 'self'; form-action 'self'
 
-# HTML pages — no cache (always fresh)
+# HTML pages — revalidate on each request but allow bfcache
 /index.html
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache
 
 /articles
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache
 
 /articles/*
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache
 
 # Hashed JS/CSS assets — immutable cache
 /assets/*
