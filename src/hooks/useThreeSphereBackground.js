@@ -42,7 +42,7 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
       renderer.toneMappingExposure = 1.5;
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.shadowMap.type = THREE.PCFShadowMap;
 
       const pmremGenerator = new THREE.PMREMGenerator(renderer);
       pmremGenerator.compileEquirectangularShader();
@@ -74,7 +74,7 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
       const hemiLight = new THREE.HemisphereLight(0xfff4f8, 0xe0d8e8, 0.9);
       envScene.add(hemiLight);
 
-      const envMap = pmremGenerator.fromScene(envScene, 0.1).texture;
+      const envMap = pmremGenerator.fromScene(envScene, 0.04).texture;
       scene.environment = envMap;
       pmremGenerator.dispose();
 
