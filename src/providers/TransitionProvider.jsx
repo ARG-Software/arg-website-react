@@ -15,6 +15,7 @@ export function TransitionProvider({ children }) {
   const location = useLocation();
 
   const [phase, setPhase] = useState('idle'); // idle | covering | revealing
+  const overlayRef = useRef(null);
   const pendingToRef = useRef(null);
   const isRunningRef = useRef(false);
   const isInitialLoadRef = useRef(true);
@@ -177,7 +178,17 @@ export function TransitionProvider({ children }) {
       document.documentElement.classList.remove('lenis-stopped');
     };
 
-    // Scroll to top while the overlay is still covering — user never sees the jump.
+    // Cover instantly (no CSS fade-in) so scroll jump is never visible,
+    // then restore transition one frame later so the reveal can animate.
+    const coverInstant = () => {
+      if (overlayRef.current) overlayRef.current.style.transition = 'none';
+      setPhase('covering');
+      requestAnimationFrame(() => {
+        if (overlayRef.current) overlayRef.current.style.transition = '';
+      });
+    };
+
+    // Scroll to top while the overlay is covering — user never sees the jump.
     const scrollToTop = () => {
       window.scrollTo({ top: 0, behavior: 'instant' });
       if (lenisRef.current) lenisRef.current.scrollTo(0, { immediate: true });
@@ -199,7 +210,7 @@ export function TransitionProvider({ children }) {
       transitionStartTimeRef.current = Date.now();
 
       window.setTimeout(() => {
-        setPhase('covering');
+        coverInstant();
         scrollToTop(); // Scroll while covered — invisible to user
 
         window.setTimeout(() => {
@@ -252,7 +263,7 @@ export function TransitionProvider({ children }) {
   return (
     <TransitionContext.Provider value={contextValue}>
       {/* overlay lives once here */}
-      <div className={`pt-overlay ${phase}`} aria-hidden="true" />
+      <div ref={overlayRef} className={`pt-overlay ${phase}`} aria-hidden="true" />
       {children}
     </TransitionContext.Provider>
   );

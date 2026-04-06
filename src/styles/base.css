@@ -563,10 +563,9 @@ th {
   z-index: 999999;
 }
 
-/* cover current page — instant, no fade-in, so no scroll-position flash leaks through */
+/* cover current page */
 .pt-overlay.covering {
   opacity: 1;
-  transition: none;
 }
 
 /* reveal next page */
