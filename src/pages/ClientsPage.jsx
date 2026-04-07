@@ -183,7 +183,7 @@ export default function ClientsPage() {
       <SEO
         title="Case Studies & Clients"
         description="Explore how Arg Software delivers impactful solutions across fintech, open payments, and digital platforms. Real projects, real results."
-        path="/clients"
+        path="/clients/"
       />
       <div className="cp-page">
         <Navbar position="fixed" variant="dark" />

@@ -107,7 +107,7 @@ export default function PartnersPage() {
       <SEO
         title="Our Partners"
         description="Meet the companies and organizations Arg Software partners with to deliver exceptional digital solutions across fintech, open payments, and financial inclusion."
-        path="/partners"
+        path="/partners/"
       />
       <div className="page-wrapper w-clearfix pp-page">
         <Navbar position="absolute" isHomePage={true} />

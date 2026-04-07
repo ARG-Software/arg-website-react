@@ -58,7 +58,7 @@ export default function ArticlesPage() {
       <SEO
         title="Articles & Insights"
         description="Technical articles, engineering insights, and best practices from the Arg Software team. Deep dives into architecture, TypeScript, .NET, DevOps, and more."
-        path="/articles"
+        path="/articles/"
       />
 
       <div className="page-wrapper w-clearfix">

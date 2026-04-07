@@ -85,7 +85,7 @@ export default function TeamPage() {
       <SEO
         title="Our Team"
         description="Meet the engineers and founders behind Arg Software. A team of experienced developers passionate about building exceptional software for fintech and SaaS."
-        path="/team"
+        path="/team/"
       />
       <div className="page-wrapper w-clearfix">
         <Navbar position="absolute" isHomePage={true} />
