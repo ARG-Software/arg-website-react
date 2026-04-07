@@ -1,4 +1,5 @@
 ---
+seoTitle: Clinejection: GitHub Supply Chain Attack
 slug: clinejection-github-issue-supply-chain-attack
 tag: Security · AI
 title: "Clinejection: How a Simple GitHub Issue Could Have Hijacked 5 Million Developer Machines"

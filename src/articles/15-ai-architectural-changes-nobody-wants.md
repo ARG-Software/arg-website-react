@@ -1,4 +1,5 @@
 ---
+seoTitle: AI Architectural Changes Nobody Wants
 slug: ai-architectural-changes-nobody-wants
 tag: Architecture · AI
 title: Everyone Wants AI. Nobody Wants the Architectural Changes It Requires.

@@ -1,4 +1,5 @@
 ---
+seoTitle: Running AI Locally: A Complete Guide
 slug: running-ai-locally-complete-guide
 tag: AI · DevOps
 title: Break Free from ChatGPT: Your Complete Guide to Running AI on Your Own Computer

@@ -1,4 +1,5 @@
 ---
+seoTitle: TypeScript 7 Rewritten in Go: What to Do
 slug: typescript-7-rewritten-in-go
 tag: TypeScript · Performance
 title: TypeScript 7.0 Is Being Rewritten in Go. Here's Why You Should Care (and What to Do Today)

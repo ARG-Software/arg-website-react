@@ -1,4 +1,5 @@
 ---
+seoTitle: Circuit Breaker Pattern in ASP.NET Core
 slug: circuit-breaker-pattern-aspnet-core
 tag: .NET · Architecture
 title: Stop Your ASP.NET Core App from Crashing: The Circuit Breaker Pattern Explained

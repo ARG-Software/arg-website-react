@@ -1,4 +1,5 @@
 ---
+seoTitle: Nx + NestJS Monorepo Boilerplate
 slug: nx-nestjs-monorepo-boilerplate
 tag: NestJS · Architecture
 title: Scaling with Confidence: A Practical Nx + NestJS Monorepo Boilerplate

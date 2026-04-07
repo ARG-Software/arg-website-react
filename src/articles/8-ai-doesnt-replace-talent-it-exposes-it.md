@@ -1,4 +1,5 @@
 ---
+seoTitle: AI Does Not Replace Talent, It Exposes It
 slug: ai-doesnt-replace-talent-it-exposes-it
 tag: AI · Culture
 title: The Great Professional Reckoning: AI Doesn't Replace Talent - It Exposes It

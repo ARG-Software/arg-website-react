@@ -1,4 +1,5 @@
 ---
+seoTitle: The Art of Pull Requests
 slug: the-art-of-pull-requests
 tag: Engineering · Culture
 title: The Art of Pull Requests: How to Ship Faster Without Sacrificing Quality

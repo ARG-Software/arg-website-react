@@ -1,4 +1,5 @@
 ---
+seoTitle: Enforce Clean Architecture in TypeScript
 slug: enforce-clean-architecture-typescript
 tag: TypeScript · Architecture
 title: How to Actually Enforce Clean Architecture in TypeScript

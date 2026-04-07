@@ -1,4 +1,5 @@
 ---
+seoTitle: The Word Sabotaging Your Engineering Team
 slug: the-word-sabotaging-your-engineering-team
 tag: Engineering · Culture
 title: The Four-Letter Word That's Sabotaging Your Engineering Team

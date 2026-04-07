@@ -182,7 +182,7 @@ export default function ArticlePage() {
   return (
     <>
       <SEO
-        title={ARTICLE.title}
+        title={ARTICLE.seoTitle}
         description={ARTICLE.excerpt || ARTICLE.subtitle}
         path={`/articles/${ARTICLE.slug}`}
         type="article"

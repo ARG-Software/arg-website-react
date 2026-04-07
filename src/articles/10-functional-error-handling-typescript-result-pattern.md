@@ -1,4 +1,5 @@
 ---
+seoTitle: TypeScript Error Handling: Result Pattern
 slug: functional-error-handling-typescript-result-pattern
 tag: TypeScript · Architecture
 title: Functional Error Handling in TypeScript with the Result Pattern

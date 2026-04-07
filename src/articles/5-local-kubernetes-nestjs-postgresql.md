@@ -1,4 +1,5 @@
 ---
+seoTitle: Local Kubernetes with NestJS & PostgreSQL
 slug: local-kubernetes-nestjs-postgresql
 tag: Kubernetes · DevOps
 title: From Zero to Hero: Mastering Local Kubernetes with NestJS and PostgreSQL in Minutes!

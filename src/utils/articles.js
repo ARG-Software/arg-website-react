@@ -25,6 +25,7 @@ export function extractMetadata(meta, body) {
     slug: meta.slug || '',
     tag: meta.tag || '',
     title: meta.title || '',
+    seoTitle: meta.seoTitle || meta.title || '',
     subtitle: meta.subtitle || '',
     date: meta.date || '',
     readTime: meta.readTime || '',

@@ -1,4 +1,5 @@
 ---
+seoTitle: Debug Microservices with Prometheus & OTel
 slug: debug-microservices-prometheus-opentelemetry
 tag: DevOps · Observability
 title: How We Debug Slow Microservices in Minutes (Not Hours): A Prometheus + OpenTelemetry Guide

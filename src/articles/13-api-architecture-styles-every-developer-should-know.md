@@ -1,4 +1,5 @@
 ---
+seoTitle: API Architecture Styles for Developers
 slug: api-architecture-styles-every-developer-should-know
 tag: Architecture · API
 title: API Architecture Styles Every Developer Should Know

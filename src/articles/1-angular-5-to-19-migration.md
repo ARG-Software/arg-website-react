@@ -1,4 +1,5 @@
 ---
+seoTitle: Angular 5 to 19 Migration Guide
 slug: angular-5-to-19-migration
 tag: Angular · Migration
 title: Upgrading Angular Legacy Project Version 5 to 19

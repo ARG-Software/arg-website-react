@@ -1,4 +1,5 @@
 ---
+seoTitle: DI Anti-Patterns in ASP.NET Core
 slug: dependency-injection-anti-patterns-aspnet-core
 tag: .NET · Architecture
 title: Dependency Injection Anti-Patterns Killing Your ASP.NET Core Apps

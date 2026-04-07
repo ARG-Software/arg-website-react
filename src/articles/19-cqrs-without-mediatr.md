@@ -1,4 +1,5 @@
 ---
+seoTitle: CQRS in .NET Without MediatR
 slug: cqrs-without-mediatr
 tag: .NET · Architecture
 title: .NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think

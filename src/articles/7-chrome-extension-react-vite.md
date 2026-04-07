@@ -1,4 +1,5 @@
 ---
+seoTitle: Build a Chrome Extension with React & Vite
 slug: chrome-extension-react-vite
 tag: React · Chrome Extension
 title: Building a Chrome Extension with React and Vite: A Modern Developer's Guide

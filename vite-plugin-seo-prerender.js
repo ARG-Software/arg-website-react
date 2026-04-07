@@ -238,7 +238,7 @@ export default function seoPrerender() {
         }
 
         const articleUrl = `${SITE_URL}/articles/${meta.slug}`;
-        const title = `${meta.title || meta.slug} | Arg Software`;
+        const title = `${meta.seoTitle || meta.title || meta.slug} | Arg Software`;
         const description = meta.excerpt || meta.subtitle || '';
 
         // Build extra article meta tags

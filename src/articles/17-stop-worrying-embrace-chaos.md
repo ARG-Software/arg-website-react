@@ -1,4 +1,5 @@
 ---
+seoTitle: Stop Worrying, Embrace the Chaos
 slug: stop-worrying-embrace-chaos
 tag: Engineering · Culture
 title: How I Learned to Stop Worrying and Embrace the Chaos (Spoiler: I Didn't)

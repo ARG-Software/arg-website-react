@@ -1,4 +1,5 @@
 ---
+seoTitle: TypeScript DI Without a Framework
 slug: typescript-dependency-injection-without-framework
 tag: TypeScript · Architecture
 title: TypeScript Dependency Injection Without the Framework (And Why You Might Prefer It)
