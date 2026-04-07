@@ -20,6 +20,7 @@ const NAV_LINKS = [
   { href: '/articles/', label: 'Articles' },
   { href: '/partners/', label: 'Partners' },
   { href: '/clients/', label: 'Clients' },
+  { href: '/team/', label: 'Team' },
   { href: '/#contact', label: 'Contact' },
 ];
 
@@ -45,7 +46,7 @@ function injectNoscript(html, noscript) {
 // ── Static pages with their SEO metadata ────────────────────────────────────
 const STATIC_PAGES = [
   {
-    path: '/partners',
+    path: '/partners/',
     title: 'Our Partners | Arg Software',
     h1: 'Our Partners',
     description:
@@ -59,7 +60,7 @@ const STATIC_PAGES = [
     ],
   },
   {
-    path: '/clients',
+    path: '/clients/',
     title: 'Case Studies & Clients | Arg Software',
     h1: 'Case Studies & Clients',
     description:
@@ -74,7 +75,7 @@ const STATIC_PAGES = [
     ],
   },
   {
-    path: '/articles',
+    path: '/articles/',
     title: 'Articles & Insights | Arg Software',
     h1: 'Articles & Insights',
     description:
@@ -87,7 +88,7 @@ const STATIC_PAGES = [
     ],
   },
   {
-    path: '/team',
+    path: '/team/',
     title: 'Our Team | Arg Software',
     h1: 'Our Team',
     description:
@@ -224,6 +225,28 @@ export default function seoPrerender() {
       const baseHtml = fs.readFileSync(indexPath, 'utf-8');
       let generated = 0;
 
+      // ── Read all articles upfront so we can link to them from /articles/ ─
+      const articlesDir = path.resolve('src/articles');
+      if (!fs.existsSync(articlesDir)) {
+        console.warn('[seo-prerender] articles/ directory not found, skipping articles.');
+        return;
+      }
+      const mdFiles = fs.readdirSync(articlesDir).filter((f) => f.endsWith('.md'));
+      const articleMetas = mdFiles
+        .map((file) => {
+          const raw = fs.readFileSync(path.join(articlesDir, file), 'utf-8');
+          const { meta } = parseFrontmatter(raw);
+          const orderMatch = file.match(/^(\d+)-/);
+          return meta.slug ? { ...meta, _order: orderMatch ? parseInt(orderMatch[1], 10) : 0 } : null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => b._order - a._order);
+
+      const articleLinks = articleMetas.map((meta) => ({
+        href: `/articles/${meta.slug}/`,
+        label: meta.seoTitle || meta.title || meta.slug,
+      }));
+
       // ── Homepage: inject H1 + nav into root index.html ──────────────────
       const homepageNoscript = buildNoscript('Building digital solutions that grow with you', {
         description: 'We build secure, scalable digital platforms for fintech, media, and high-growth tech companies. Architecture-first. Production-ready.',
@@ -244,7 +267,9 @@ export default function seoPrerender() {
           url: `${SITE_URL}${page.path}`,
           type: 'website',
         });
-        html = injectNoscript(html, buildNoscript(page.h1, { description: page.description, paragraphs: page.paragraphs || [] }));
+        // For the /articles/ page, inject links to every article so they aren't orphaned
+        const extraLinks = page.path === '/articles/' ? articleLinks : [];
+        html = injectNoscript(html, buildNoscript(page.h1, { description: page.description, paragraphs: page.paragraphs || [], extraLinks }));
 
         const dir = path.join(distDir, page.path);
         fs.mkdirSync(dir, { recursive: true });
@@ -253,19 +278,10 @@ export default function seoPrerender() {
       }
 
       // ── Article pages ───────────────────────────────────────────────────
-      const articlesDir = path.resolve('src/articles');
-      if (!fs.existsSync(articlesDir)) {
-        console.warn('[seo-prerender] articles/ directory not found, skipping articles.');
-        return;
-      }
-
-      const mdFiles = fs.readdirSync(articlesDir).filter((f) => f.endsWith('.md'));
-
-      for (const file of mdFiles) {
+      for (const meta of articleMetas) {
+        const file = mdFiles.find((f) => f.includes(`-${meta.slug}.md`) || f.endsWith(`/${meta.slug}.md`));
         const raw = fs.readFileSync(path.join(articlesDir, file), 'utf-8');
-        const { meta, body } = parseFrontmatter(raw);
-
-        if (!meta.slug) continue;
+        const { body } = parseFrontmatter(raw);
 
         // Extract first image from body
         let image = meta.image || '';
@@ -274,11 +290,10 @@ export default function seoPrerender() {
           if (imgMatch) image = imgMatch[1];
         }
 
-        const articleUrl = `${SITE_URL}/articles/${meta.slug}`;
+        const articleUrl = `${SITE_URL}/articles/${meta.slug}/`;
         const title = `${meta.seoTitle || meta.title || meta.slug} | Arg Software`;
         const description = meta.excerpt || meta.subtitle || '';
 
-        // Build extra article meta tags
         let extra = '';
         if (meta.date) {
           try {
@@ -300,13 +315,11 @@ export default function seoPrerender() {
           extra,
         });
 
-        // Inject H1 + excerpt + subtitle + nav into noscript
-        const articleNoscript = buildNoscript(meta.title || meta.slug, {
+        html = injectNoscript(html, buildNoscript(meta.title || meta.slug, {
           description: meta.excerpt || '',
           subtitle: meta.subtitle || '',
-          extraLinks: [{ href: '/articles', label: 'Articles' }],
-        });
-        html = injectNoscript(html, articleNoscript);
+          extraLinks: [{ href: '/articles/', label: 'Articles' }],
+        }));
 
         const dir = path.join(distDir, 'articles', meta.slug);
         fs.mkdirSync(dir, { recursive: true });
