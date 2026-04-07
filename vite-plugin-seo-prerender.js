@@ -23,11 +23,13 @@ const NAV_LINKS = [
   { href: '/#contact', label: 'Contact' },
 ];
 
-function buildNoscript(h1Text, extraLinks = []) {
+function buildNoscript(h1Text, { extraLinks = [], description = '', subtitle = '' } = {}) {
   const navHtml = NAV_LINKS.map(l => `<a href="${l.href}">${escapeHtml(l.label)}</a>`).join('\n    ');
   const extraHtml = extraLinks.map(l => `<a href="${l.href}">${escapeHtml(l.label)}</a>`).join('\n    ');
+  const descHtml = description ? `\n  <p>${escapeHtml(description)}</p>` : '';
+  const subHtml = subtitle ? `\n  <p>${escapeHtml(subtitle)}</p>` : '';
   return `<noscript>
-  <h1>${escapeHtml(h1Text)}</h1>
+  <h1>${escapeHtml(h1Text)}</h1>${descHtml}${subHtml}
   <nav>
     ${navHtml}
     ${extraHtml}
@@ -196,7 +198,9 @@ export default function seoPrerender() {
       let generated = 0;
 
       // ── Homepage: inject H1 + nav into root index.html ──────────────────
-      const homepageNoscript = buildNoscript('Building digital solutions that grow with you');
+      const homepageNoscript = buildNoscript('Building digital solutions that grow with you', {
+        description: 'We build secure, scalable digital platforms for fintech, media, and high-growth tech companies. Architecture-first. Production-ready. Custom software development, SaaS platforms, backend systems, and cloud infrastructure.',
+      });
       fs.writeFileSync(indexPath, injectNoscript(baseHtml, homepageNoscript));
 
       // ── Static pages ────────────────────────────────────────────────────
@@ -207,7 +211,7 @@ export default function seoPrerender() {
           url: `${SITE_URL}${page.path}`,
           type: 'website',
         });
-        html = injectNoscript(html, buildNoscript(page.h1));
+        html = injectNoscript(html, buildNoscript(page.h1, { description: page.description }));
 
         const dir = path.join(distDir, page.path);
         fs.mkdirSync(dir, { recursive: true });
@@ -263,10 +267,12 @@ export default function seoPrerender() {
           extra,
         });
 
-        // Inject H1 + breadcrumb links + nav into noscript
-        const articleNoscript = buildNoscript(meta.title || meta.slug, [
-          { href: '/articles', label: 'Articles' },
-        ]);
+        // Inject H1 + excerpt + subtitle + nav into noscript
+        const articleNoscript = buildNoscript(meta.title || meta.slug, {
+          description: meta.excerpt || '',
+          subtitle: meta.subtitle || '',
+          extraLinks: [{ href: '/articles', label: 'Articles' }],
+        });
         html = injectNoscript(html, articleNoscript);
 
         const dir = path.join(distDir, 'articles', meta.slug);
