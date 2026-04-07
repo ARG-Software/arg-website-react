@@ -12,6 +12,7 @@ const PartnersPage = lazy(() => import('./pages/PartnersPage.jsx'));
 const ClientsPage = lazy(() => import('./pages/ClientsPage.jsx'));
 const ArticlesPage = lazy(() => import('./pages/articles/ArticlesPage.jsx'));
 const ArticlePage = lazy(() => import('./pages/articles/ArticlePage.jsx'));
+const TeamPage = lazy(() => import('./pages/TeamPage.jsx'));
 
 function ArticlePageWrapper() {
   const { slug } = useParams();
@@ -27,10 +28,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/partners" element={<PartnersPage />} />
+              <Route path="/partners/" element={<PartnersPage />} />
               <Route path="/clients" element={<ClientsPage />} />
+              <Route path="/clients/" element={<ClientsPage />} />
               <Route path="/articles" element={<ArticlesPage />} />
+              <Route path="/articles/" element={<ArticlesPage />} />
               <Route path="/articles/:slug" element={<ArticlePageWrapper />} />
-              {/* <Route path="/team" element={<TeamPage />} /> */}
+              <Route path="/articles/:slug/" element={<ArticlePageWrapper />} />
+              <Route path="/team" element={<TeamPage />} />
+              <Route path="/team/" element={<TeamPage />} />
             </Routes>
           </Suspense>
         </TransitionProvider>
