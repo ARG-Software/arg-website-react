@@ -24,23 +24,24 @@ const NAV_LINKS = [
   { href: '/#contact', label: 'Contact' },
 ];
 
-function buildNoscript(h1Text, { extraLinks = [], description = '', subtitle = '', paragraphs = [] } = {}) {
-  const navHtml = NAV_LINKS.map(l => `<a href="${l.href}">${escapeHtml(l.label)}</a>`).join('\n    ');
-  const extraHtml = extraLinks.map(l => `<a href="${l.href}">${escapeHtml(l.label)}</a>`).join('\n    ');
+function buildCrawlableBlock(h1Text, { extraLinks = [], description = '', subtitle = '', paragraphs = [] } = {}) {
+  const allLinks = [...NAV_LINKS, ...extraLinks];
+  const navHtml = allLinks.map(l => `<a href="${l.href}">${escapeHtml(l.label)}</a>`).join('\n    ');
   const descHtml = description ? `\n  <p>${escapeHtml(description)}</p>` : '';
   const subHtml = subtitle ? `\n  <p>${escapeHtml(subtitle)}</p>` : '';
   const paraHtml = paragraphs.map(p => `\n  <p>${escapeHtml(p)}</p>`).join('');
-  return `<noscript>
+  // Real <a> tags outside noscript and outside #root so Ahrefs counts them in the link graph.
+  // Visually hidden via inline style (not display:none which crawlers may skip).
+  return `<div aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">
   <h1>${escapeHtml(h1Text)}</h1>${descHtml}${subHtml}${paraHtml}
   <nav>
     ${navHtml}
-    ${extraHtml}
   </nav>
-</noscript>`;
+</div>`;
 }
 
-function injectNoscript(html, noscript) {
-  return html.replace('<div id="root"></div>', `<div id="root"></div>\n${noscript}`);
+function injectCrawlableBlock(html, block) {
+  return html.replace('<div id="root"></div>', `<div id="root"></div>\n${block}`);
 }
 
 // ── Static pages with their SEO metadata ────────────────────────────────────
@@ -235,9 +236,9 @@ export default function seoPrerender() {
       const articleMetas = mdFiles
         .map((file) => {
           const raw = fs.readFileSync(path.join(articlesDir, file), 'utf-8');
-          const { meta } = parseFrontmatter(raw);
+          const { meta, body } = parseFrontmatter(raw);
           const orderMatch = file.match(/^(\d+)-/);
-          return meta.slug ? { ...meta, _order: orderMatch ? parseInt(orderMatch[1], 10) : 0 } : null;
+          return meta.slug ? { ...meta, _body: body, _order: orderMatch ? parseInt(orderMatch[1], 10) : 0 } : null;
         })
         .filter(Boolean)
         .sort((a, b) => b._order - a._order);
@@ -248,7 +249,7 @@ export default function seoPrerender() {
       }));
 
       // ── Homepage: inject H1 + nav into root index.html ──────────────────
-      const homepageNoscript = buildNoscript('Building digital solutions that grow with you', {
+      const homepageNoscript = buildCrawlableBlock('Building digital solutions that grow with you', {
         description: 'We build secure, scalable digital platforms for fintech, media, and high-growth tech companies. Architecture-first. Production-ready.',
         paragraphs: [
           'Arg Software is a custom software development company based in Funchal and Porto, Portugal. We design and build scalable backend systems, SaaS platforms, REST APIs, and cloud infrastructure for fintech, music technology, and high-growth tech companies worldwide.',
@@ -257,7 +258,7 @@ export default function seoPrerender() {
           'Arg Software works with startups, scale-ups, and established enterprises. We deliver focused MVPs in 6 to 16 weeks and build long-term partnerships to evolve products alongside your business.',
         ],
       });
-      fs.writeFileSync(indexPath, injectNoscript(baseHtml, homepageNoscript));
+      fs.writeFileSync(indexPath, injectCrawlableBlock(baseHtml, homepageNoscript));
 
       // ── Static pages ────────────────────────────────────────────────────
       for (const page of STATIC_PAGES) {
@@ -269,7 +270,7 @@ export default function seoPrerender() {
         });
         // For the /articles/ page, inject links to every article so they aren't orphaned
         const extraLinks = page.path === '/articles/' ? articleLinks : [];
-        html = injectNoscript(html, buildNoscript(page.h1, { description: page.description, paragraphs: page.paragraphs || [], extraLinks }));
+        html = injectCrawlableBlock(html, buildCrawlableBlock(page.h1, { description: page.description, paragraphs: page.paragraphs || [], extraLinks }));
 
         const dir = path.join(distDir, page.path);
         fs.mkdirSync(dir, { recursive: true });
@@ -279,9 +280,7 @@ export default function seoPrerender() {
 
       // ── Article pages ───────────────────────────────────────────────────
       for (const meta of articleMetas) {
-        const file = mdFiles.find((f) => f.includes(`-${meta.slug}.md`) || f.endsWith(`/${meta.slug}.md`));
-        const raw = fs.readFileSync(path.join(articlesDir, file), 'utf-8');
-        const { body } = parseFrontmatter(raw);
+        const body = meta._body;
 
         // Extract first image from body
         let image = meta.image || '';
@@ -315,7 +314,7 @@ export default function seoPrerender() {
           extra,
         });
 
-        html = injectNoscript(html, buildNoscript(meta.title || meta.slug, {
+        html = injectCrawlableBlock(html, buildCrawlableBlock(meta.title || meta.slug, {
           description: meta.excerpt || '',
           subtitle: meta.subtitle || '',
           extraLinks: [{ href: '/articles/', label: 'Articles' }],
