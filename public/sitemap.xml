@@ -1,154 +1,154 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.arg.software/</loc>
+    <loc>https://arg.software/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/partners</loc>
+    <loc>https://arg.software/partners</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/clients</loc>
+    <loc>https://arg.software/clients</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles</loc>
+    <loc>https://arg.software/articles</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/team</loc>
+    <loc>https://arg.software/team</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- Articles -->
   <url>
-    <loc>https://www.arg.software/articles/enforce-clean-architecture-typescript</loc>
+    <loc>https://arg.software/articles/enforce-clean-architecture-typescript</loc>
     <lastmod>2026-03-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/typescript-dependency-injection-without-framework</loc>
+    <loc>https://arg.software/articles/typescript-dependency-injection-without-framework</loc>
     <lastmod>2026-03-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/cqrs-without-mediatr</loc>
+    <loc>https://arg.software/articles/cqrs-without-mediatr</loc>
     <lastmod>2026-02-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/clinejection-github-issue-supply-chain-attack</loc>
+    <loc>https://arg.software/articles/clinejection-github-issue-supply-chain-attack</loc>
     <lastmod>2026-02-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/stop-worrying-embrace-chaos</loc>
+    <loc>https://arg.software/articles/stop-worrying-embrace-chaos</loc>
     <lastmod>2026-02-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/debug-microservices-prometheus-opentelemetry</loc>
+    <loc>https://arg.software/articles/debug-microservices-prometheus-opentelemetry</loc>
     <lastmod>2026-01-22</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/ai-architectural-changes-nobody-wants</loc>
+    <loc>https://arg.software/articles/ai-architectural-changes-nobody-wants</loc>
     <lastmod>2025-12-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/running-ai-locally-complete-guide</loc>
+    <loc>https://arg.software/articles/running-ai-locally-complete-guide</loc>
     <lastmod>2025-12-04</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/api-architecture-styles-every-developer-should-know</loc>
+    <loc>https://arg.software/articles/api-architecture-styles-every-developer-should-know</loc>
     <lastmod>2025-11-20</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/circuit-breaker-pattern-aspnet-core</loc>
+    <loc>https://arg.software/articles/circuit-breaker-pattern-aspnet-core</loc>
     <lastmod>2025-11-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/the-art-of-pull-requests</loc>
+    <loc>https://arg.software/articles/the-art-of-pull-requests</loc>
     <lastmod>2025-10-23</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/functional-error-handling-typescript-result-pattern</loc>
+    <loc>https://arg.software/articles/functional-error-handling-typescript-result-pattern</loc>
     <lastmod>2025-09-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/dependency-injection-anti-patterns-aspnet-core</loc>
+    <loc>https://arg.software/articles/dependency-injection-anti-patterns-aspnet-core</loc>
     <lastmod>2025-09-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/ai-doesnt-replace-talent-it-exposes-it</loc>
+    <loc>https://arg.software/articles/ai-doesnt-replace-talent-it-exposes-it</loc>
     <lastmod>2025-08-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/chrome-extension-react-vite</loc>
+    <loc>https://arg.software/articles/chrome-extension-react-vite</loc>
     <lastmod>2025-07-31</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/the-word-sabotaging-your-engineering-team</loc>
+    <loc>https://arg.software/articles/the-word-sabotaging-your-engineering-team</loc>
     <lastmod>2025-07-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/local-kubernetes-nestjs-postgresql</loc>
+    <loc>https://arg.software/articles/local-kubernetes-nestjs-postgresql</loc>
     <lastmod>2025-06-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/goodbye-docker-desktop-wsl2</loc>
+    <loc>https://arg.software/articles/goodbye-docker-desktop-wsl2</loc>
     <lastmod>2025-06-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/pragmatic-clean-architecture-aspnet-core</loc>
+    <loc>https://arg.software/articles/pragmatic-clean-architecture-aspnet-core</loc>
     <lastmod>2025-05-22</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/nx-nestjs-monorepo-boilerplate</loc>
+    <loc>https://arg.software/articles/nx-nestjs-monorepo-boilerplate</loc>
     <lastmod>2025-05-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.arg.software/articles/angular-5-to-19-migration</loc>
+    <loc>https://arg.software/articles/angular-5-to-19-migration</loc>
     <lastmod>2025-04-21</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
