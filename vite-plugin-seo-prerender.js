@@ -12,29 +12,60 @@ import path from 'node:path';
 
 const SITE_URL = 'https://arg.software';
 
+// ── Site-wide nav links injected into every noscript block ──────────────────
+const NAV_LINKS = [
+  { href: '/', label: 'Home' },
+  { href: '/#services', label: 'Services' },
+  { href: '/#cases', label: 'Our Work' },
+  { href: '/articles', label: 'Articles' },
+  { href: '/partners', label: 'Partners' },
+  { href: '/clients', label: 'Clients' },
+  { href: '/#contact', label: 'Contact' },
+];
+
+function buildNoscript(h1Text, extraLinks = []) {
+  const navHtml = NAV_LINKS.map(l => `<a href="${l.href}">${escapeHtml(l.label)}</a>`).join('\n    ');
+  const extraHtml = extraLinks.map(l => `<a href="${l.href}">${escapeHtml(l.label)}</a>`).join('\n    ');
+  return `<noscript>
+  <h1>${escapeHtml(h1Text)}</h1>
+  <nav>
+    ${navHtml}
+    ${extraHtml}
+  </nav>
+</noscript>`;
+}
+
+function injectNoscript(html, noscript) {
+  return html.replace('<div id="root"></div>', `<div id="root"></div>\n${noscript}`);
+}
+
 // ── Static pages with their SEO metadata ────────────────────────────────────
 const STATIC_PAGES = [
   {
     path: '/partners',
     title: 'Our Partners | Arg Software',
+    h1: 'Our Partners',
     description:
       'Meet the companies and organizations Arg Software partners with to deliver exceptional digital solutions across fintech, open payments, and financial inclusion.',
   },
   {
     path: '/clients',
     title: 'Case Studies & Clients | Arg Software',
+    h1: 'Case Studies & Clients',
     description:
       'Explore how Arg Software delivers impactful solutions across fintech, open payments, and digital platforms. Real projects, real results.',
   },
   {
     path: '/articles',
     title: 'Articles & Insights | Arg Software',
+    h1: 'Articles & Insights',
     description:
       'Technical articles, engineering insights, and best practices from the Arg Software team. Deep dives into architecture, TypeScript, .NET, DevOps, and more.',
   },
   {
     path: '/team',
     title: 'Our Team | Arg Software',
+    h1: 'Our Team',
     description:
       'Meet the engineers and founders behind Arg Software. A team of experienced developers passionate about building exceptional software for fintech and SaaS.',
   },
@@ -164,14 +195,19 @@ export default function seoPrerender() {
       const baseHtml = fs.readFileSync(indexPath, 'utf-8');
       let generated = 0;
 
+      // ── Homepage: inject H1 + nav into root index.html ──────────────────
+      const homepageNoscript = buildNoscript('Building digital solutions that grow with you');
+      fs.writeFileSync(indexPath, injectNoscript(baseHtml, homepageNoscript));
+
       // ── Static pages ────────────────────────────────────────────────────
       for (const page of STATIC_PAGES) {
-        const html = replaceMetaTags(baseHtml, {
+        let html = replaceMetaTags(baseHtml, {
           title: page.title,
           description: page.description,
           url: `${SITE_URL}${page.path}`,
           type: 'website',
         });
+        html = injectNoscript(html, buildNoscript(page.h1));
 
         const dir = path.join(distDir, page.path);
         fs.mkdirSync(dir, { recursive: true });
@@ -218,7 +254,7 @@ export default function seoPrerender() {
           extra += `\n  <meta property="article:section" content="${escapeHtml(meta.tag)}">`;
         }
 
-        const html = replaceMetaTags(baseHtml, {
+        let html = replaceMetaTags(baseHtml, {
           title,
           description,
           url: articleUrl,
@@ -226,6 +262,12 @@ export default function seoPrerender() {
           type: 'article',
           extra,
         });
+
+        // Inject H1 + breadcrumb links + nav into noscript
+        const articleNoscript = buildNoscript(meta.title || meta.slug, [
+          { href: '/articles', label: 'Articles' },
+        ]);
+        html = injectNoscript(html, articleNoscript);
 
         const dir = path.join(distDir, 'articles', meta.slug);
         fs.mkdirSync(dir, { recursive: true });
