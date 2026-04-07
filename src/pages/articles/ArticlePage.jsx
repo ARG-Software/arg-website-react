@@ -184,7 +184,7 @@ export default function ArticlePage() {
       <SEO
         title={ARTICLE.seoTitle}
         description={ARTICLE.excerpt || ARTICLE.subtitle}
-        path={`/articles/${ARTICLE.slug}`}
+        path={`/articles/${ARTICLE.slug}/`}
         type="article"
         publishedTime={parseDate(ARTICLE.date)}
         author="Arg Software"
@@ -212,7 +212,7 @@ export default function ArticlePage() {
           },
           mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `https://arg.software/articles/${ARTICLE.slug}`,
+            '@id': `https://arg.software/articles/${ARTICLE.slug}/`,
           },
         }}
       />
@@ -227,7 +227,7 @@ export default function ArticlePage() {
             subtitle={ARTICLE.subtitle}
             breadcrumbs={[
               { label: 'Home', path: '/' },
-              { label: 'Articles', path: '/articles' },
+              { label: 'Articles', path: '/articles/' },
               { label: ARTICLE.tag, isTag: true },
             ]}
             size="large"

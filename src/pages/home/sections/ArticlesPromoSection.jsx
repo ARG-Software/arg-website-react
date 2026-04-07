@@ -9,7 +9,7 @@ function displayArticleGridRow(articleRows = [], marginTop = '0') {
       {articleRows.map(article => (
         <AppLink
           key={article.slug}
-          to={`/articles/${article.slug}`}
+          to={`/articles/${article.slug}/`}
           className="articles-promo_card-small"
           onClick={() => trackArticleClick(article.slug, article.title, 'homepage_promo_card')}
         >
@@ -55,7 +55,7 @@ export function ArticlesPromoSection({ articles, className = '' }) {
             </div>
             {/* Hero Article - Full width */}
             <AppLink
-              to={`/articles/${heroArticle.slug}`}
+              to={`/articles/${heroArticle.slug}/`}
               className="articles-promo_hero"
               onClick={() =>
                 trackArticleClick(heroArticle.slug, heroArticle.title, 'homepage_promo_hero')

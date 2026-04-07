@@ -80,7 +80,7 @@ export default function ArticlesPage() {
                   {paginatedArticles.map((article, i) => (
                     <AppLink
                       key={article.slug}
-                      to={`/articles/${article.slug}`}
+                      to={`/articles/${article.slug}/`}
                       className="alp-article-row alp-animate"
                       style={{ transitionDelay: `${i * 0.07}s` }}
                       onClick={() =>
