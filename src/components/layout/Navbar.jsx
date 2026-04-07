@@ -12,8 +12,8 @@ const navLinks = [
   { to: '/#testimonials', label: 'Testimonials' },
   { to: '/#work-with-us', label: 'Working with Us' },
   // { to: '/team', label: 'Team' },
-  { to: '/partners', label: 'Partners' },
-  { to: '/articles', label: 'Articles' },
+  { to: '/partners/', label: 'Partners' },
+  { to: '/articles/', label: 'Articles' },
   { to: '/#social', label: 'Social' },
   { to: '/#contact', label: 'Contact' },
 ];
@@ -193,7 +193,9 @@ export function Navbar({
 
   // Wrapper styles
   const wrapperStyle = {
-    display: showWrapper ? 'flex' : 'none',
+    display: 'flex',
+    visibility: showWrapper ? 'visible' : 'hidden',
+    pointerEvents: showWrapper ? 'auto' : 'none',
     position: 'absolute',
     top: '5rem',
     right: 0,

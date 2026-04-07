@@ -5,11 +5,33 @@ import { useLenis } from '../../../hooks';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 
 const partnerLogos = [
-  { src: '/images/group-203127-small.webp', alt: 'Three Sigma', name: 'ThreeSigma', slug: 'threesigma' },
-  { src: '/images/group-203134-small.webp', alt: 'Hostelier', small: true, name: 'Hostelier', slug: 'hostelier' },
-  { src: '/images/group-203128-small.webp', alt: 'Mb-Netzwerk', medium: true, name: 'mb-netzwerk', slug: 'mb-netzwerk' },
+  {
+    src: '/images/group-203127-small.webp',
+    alt: 'Three Sigma',
+    name: 'ThreeSigma',
+    slug: 'threesigma',
+  },
+  {
+    src: '/images/group-203134-small.webp',
+    alt: 'Hostelier',
+    small: true,
+    name: 'Hostelier',
+    slug: 'hostelier',
+  },
+  {
+    src: '/images/group-203128-small.webp',
+    alt: 'Mb-Netzwerk',
+    medium: true,
+    name: 'mb-netzwerk',
+    slug: 'mb-netzwerk',
+  },
   { src: '/images/group-203133-402x.svg', alt: 'SEFA', name: 'SEFA', slug: 'sefa' },
-  { src: '/images/av-20logo-20medium-402x.webp', alt: 'Angry Ventures', name: 'Angry Ventures', slug: 'angry-ventures' },
+  {
+    src: '/images/av-20logo-20medium-402x.webp',
+    alt: 'Angry Ventures',
+    name: 'Angry Ventures',
+    slug: 'angry-ventures',
+  },
   {
     src: '/images/group-123132-402x.svg',
     alt: "People's Clearinghouse",
@@ -23,7 +45,12 @@ const partnerLogos = [
     slug: 'interledger-foundation',
   },
   { src: '/images/group-203159-402x.svg', alt: 'SkyTracks', name: 'SkyTracks', slug: 'skytracks' },
-  { src: '/images/group-203132-small.webp', alt: 'North Music Group', name: 'North Music Group', slug: 'north-music-group' },
+  {
+    src: '/images/group-203132-small.webp',
+    alt: 'North Music Group',
+    name: 'North Music Group',
+    slug: 'north-music-group',
+  },
   {
     src: '/images/mojaloop-foundation-orange-small.webp',
     alt: 'Mojaloop Foundation',

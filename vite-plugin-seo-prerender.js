@@ -17,19 +17,20 @@ const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/#services', label: 'Services' },
   { href: '/#cases', label: 'Our Work' },
-  { href: '/articles', label: 'Articles' },
-  { href: '/partners', label: 'Partners' },
-  { href: '/clients', label: 'Clients' },
+  { href: '/articles/', label: 'Articles' },
+  { href: '/partners/', label: 'Partners' },
+  { href: '/clients/', label: 'Clients' },
   { href: '/#contact', label: 'Contact' },
 ];
 
-function buildNoscript(h1Text, { extraLinks = [], description = '', subtitle = '' } = {}) {
+function buildNoscript(h1Text, { extraLinks = [], description = '', subtitle = '', paragraphs = [] } = {}) {
   const navHtml = NAV_LINKS.map(l => `<a href="${l.href}">${escapeHtml(l.label)}</a>`).join('\n    ');
   const extraHtml = extraLinks.map(l => `<a href="${l.href}">${escapeHtml(l.label)}</a>`).join('\n    ');
   const descHtml = description ? `\n  <p>${escapeHtml(description)}</p>` : '';
   const subHtml = subtitle ? `\n  <p>${escapeHtml(subtitle)}</p>` : '';
+  const paraHtml = paragraphs.map(p => `\n  <p>${escapeHtml(p)}</p>`).join('');
   return `<noscript>
-  <h1>${escapeHtml(h1Text)}</h1>${descHtml}${subHtml}
+  <h1>${escapeHtml(h1Text)}</h1>${descHtml}${subHtml}${paraHtml}
   <nav>
     ${navHtml}
     ${extraHtml}
@@ -49,6 +50,13 @@ const STATIC_PAGES = [
     h1: 'Our Partners',
     description:
       'Meet the companies and organizations Arg Software partners with to deliver exceptional digital solutions across fintech, open payments, and financial inclusion.',
+    paragraphs: [
+      'Arg Software partners with industry-leading organizations across fintech, open payments, music technology, and digital consultancy.',
+      'Our partners include the Interledger Foundation, a global nonprofit building an open interoperable payment network enabling seamless currency-agnostic transactions for the 1.4 billion people excluded from traditional banking.',
+      'We work with the Mojaloop Foundation, building open-source interoperable payment systems that bring affordable digital financial services to unbanked populations worldwide.',
+      'Our technology partners include ThreeSigma, a research-driven blockchain and decentralised finance advisory firm, and SkyTracks, a cloud-based music production platform enabling real-time collaboration between musicians and audio engineers.',
+      'We also partner with Angry Ventures, a hands-on venture studio that builds and scales digital products, and North Music Group, a music rights management company providing modern tools for catalogue management and royalty tracking.',
+    ],
   },
   {
     path: '/clients',
@@ -56,6 +64,14 @@ const STATIC_PAGES = [
     h1: 'Case Studies & Clients',
     description:
       'Explore how Arg Software delivers impactful solutions across fintech, open payments, and digital platforms. Real projects, real results.',
+    paragraphs: [
+      'Arg Software has delivered production-ready software across fintech, music technology, and digital marketing. Our work spans 6 countries, handling 2000 transactions per second with over 1000 production deploys.',
+      'For Mojaloop, we contributed to the vNext open-source financial hub, enhancing scalability, security, and modularity through microservices architecture and real-time transaction settlement for global digital payments.',
+      'For Dokutar, we migrated a legacy PHP API to TypeScript, delivering a secure GDPR-compliant cloud platform for tax documentation with automated data capture and workflow automation.',
+      'For SkyTracks, we helped build a cloud-based music production studio with real-time collaboration via WebRTC, virtual instruments, and an integrated digital audio workstation accessible from any browser.',
+      'For Vector, we rebuilt a crypto trading platform from scratch, connecting a non-functional UI to a fully operational backend supporting exchange integrations and automated trade signals.',
+      'For Royalty Flush, we partnered with North Music Group to create a music rights management platform with catalog management, automated royalty tracking, and licensing tools.',
+    ],
   },
   {
     path: '/articles',
@@ -63,6 +79,12 @@ const STATIC_PAGES = [
     h1: 'Articles & Insights',
     description:
       'Technical articles, engineering insights, and best practices from the Arg Software team. Deep dives into architecture, TypeScript, .NET, DevOps, and more.',
+    paragraphs: [
+      'The Arg Software blog covers software engineering topics including clean architecture, TypeScript patterns, .NET development, DevOps, Kubernetes, and AI.',
+      'We write practical guides on topics like enforcing clean architecture in TypeScript, CQRS without MediatR in .NET, dependency injection patterns in ASP.NET Core, and functional error handling with the Result pattern.',
+      'Our DevOps articles cover running Docker natively on Windows with WSL2, local Kubernetes clusters with NestJS and PostgreSQL, and debugging microservices with Prometheus and OpenTelemetry.',
+      'We also write about software engineering culture, including the art of pull requests, building scalable monorepos with Nx and NestJS, and the real impact of AI on software development teams.',
+    ],
   },
   {
     path: '/team',
@@ -70,6 +92,11 @@ const STATIC_PAGES = [
     h1: 'Our Team',
     description:
       'Meet the engineers and founders behind Arg Software. A team of experienced developers passionate about building exceptional software for fintech and SaaS.',
+    paragraphs: [
+      'Arg Software was founded by Jose Antunes and Rui Rocha, two software engineers with a combined 25 years of experience delivering production systems for fintech, music technology, and high-growth SaaS companies.',
+      'Our team specializes in backend architecture, custom software development, cloud infrastructure, and scalable platform engineering. We work with TypeScript, .NET, Node.js, React, Angular, PostgreSQL, Kafka, Docker, and Kubernetes.',
+      'Based in Funchal and Porto, Portugal, we work with clients worldwide across Europe, the Americas, and beyond, collaborating remotely with teams across time zones.',
+    ],
   },
 ];
 
@@ -199,7 +226,13 @@ export default function seoPrerender() {
 
       // ── Homepage: inject H1 + nav into root index.html ──────────────────
       const homepageNoscript = buildNoscript('Building digital solutions that grow with you', {
-        description: 'We build secure, scalable digital platforms for fintech, media, and high-growth tech companies. Architecture-first. Production-ready. Custom software development, SaaS platforms, backend systems, and cloud infrastructure.',
+        description: 'We build secure, scalable digital platforms for fintech, media, and high-growth tech companies. Architecture-first. Production-ready.',
+        paragraphs: [
+          'Arg Software is a custom software development company based in Funchal and Porto, Portugal. We design and build scalable backend systems, SaaS platforms, REST APIs, and cloud infrastructure for fintech, music technology, and high-growth tech companies worldwide.',
+          'Our services include custom software development, MVP and prototype delivery, server infrastructure, backend architecture, frontend development, and AI integration. We specialize in TypeScript, .NET, Node.js, React, Angular, PostgreSQL, Kafka, Docker, and Kubernetes.',
+          'We have delivered production systems across 6 countries handling 2000 transactions per second, with over 1000 deploys into production. Our clients include the Interledger Foundation, Mojaloop, SkyTracks, North Music Group, Dokutar, and TvCine.',
+          'Arg Software works with startups, scale-ups, and established enterprises. We deliver focused MVPs in 6 to 16 weeks and build long-term partnerships to evolve products alongside your business.',
+        ],
       });
       fs.writeFileSync(indexPath, injectNoscript(baseHtml, homepageNoscript));
 
@@ -211,7 +244,7 @@ export default function seoPrerender() {
           url: `${SITE_URL}${page.path}`,
           type: 'website',
         });
-        html = injectNoscript(html, buildNoscript(page.h1, { description: page.description }));
+        html = injectNoscript(html, buildNoscript(page.h1, { description: page.description, paragraphs: page.paragraphs || [] }));
 
         const dir = path.join(distDir, page.path);
         fs.mkdirSync(dir, { recursive: true });
