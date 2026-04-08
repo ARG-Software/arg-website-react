@@ -73,7 +73,6 @@ const DISPLAY_FRAG = /* glsl */ `
     float spec = pow(max(0.0, dot(normalize(vec3(normal, 0.8)),
                                   normalize(vec3(0.3, 0.5, 1.0)))), 24.0);
     color += spec * vec3(0.18, 0.12, 0.35) * 0.25;
-    color += height * vec3(0.03, 0.02, 0.06);
 
     gl_FragColor = vec4(color, 1.0);
   }
@@ -217,7 +216,10 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         const cH = canvas.offsetHeight || window.innerHeight;
         const vAspect = videoEl.videoWidth / videoEl.videoHeight;
         const cAspect = cW / cH;
-        let sx = 1, sy = 1, ox = 0, oy = 0;
+        let sx = 1,
+          sy = 1,
+          ox = 0,
+          oy = 0;
         if (cAspect > vAspect) {
           // canvas wider: fit video width, crop video height
           sy = vAspect / cAspect;
@@ -266,7 +268,8 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       const dispCanvas = document.createElement('canvas');
       dispCanvas.width = NM_W;
       dispCanvas.height = NM_H;
-      dispCanvas.style.cssText = 'position:absolute;pointer-events:none;visibility:hidden;width:0;height:0;';
+      dispCanvas.style.cssText =
+        'position:absolute;pointer-events:none;visibility:hidden;width:0;height:0;';
       document.body.appendChild(dispCanvas);
       const dispCtx = dispCanvas.getContext('2d');
 
@@ -395,35 +398,72 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       heroEl.addEventListener('touchmove', handleTouchMove, { passive: true });
 
       // ── Resize ────────────────────────────────────────────────────────────
+      let resizeTimeout = null;
+      let resizeRafId = null;
+
       const handleResize = () => {
         if (!mounted) return;
-        const W2 = canvas.offsetWidth || window.innerWidth;
-        const H2 = canvas.offsetHeight || window.innerHeight;
-        const SW = Math.floor(W2 / 2);
-        const SH = Math.floor(H2 / 2);
 
-        renderer.setSize(W2, H2);
+        // Clear any pending resize operations
+        if (resizeTimeout) {
+          clearTimeout(resizeTimeout);
+          resizeTimeout = null;
+        }
+        if (resizeRafId) {
+          cancelAnimationFrame(resizeRafId);
+          resizeRafId = null;
+        }
 
-        rtA.dispose();
-        rtB.dispose();
-        rtA = new THREE.WebGLRenderTarget(SW, SH, rtOptions);
-        rtB = new THREE.WebGLRenderTarget(SW, SH, rtOptions);
-        readTarget = rtA;
-        writeTarget = rtB;
+        // Debounce resize events
+        resizeTimeout = setTimeout(() => {
+          // Use requestAnimationFrame to ensure layout is recalculated
+          resizeRafId = requestAnimationFrame(() => {
+            if (!mounted) return;
 
-        renderer.setRenderTarget(rtA);
-        renderer.clear();
-        renderer.setRenderTarget(rtB);
-        renderer.clear();
-        renderer.setRenderTarget(null);
+            // Get accurate dimensions using getBoundingClientRect
+            const rect = canvas.getBoundingClientRect();
+            const W2 = Math.max(1, Math.floor(rect.width)) || window.innerWidth;
+            const H2 = Math.max(1, Math.floor(rect.height)) || window.innerHeight;
+            const SW = Math.floor(W2 / 2);
+            const SH = Math.floor(H2 / 2);
 
-        simMaterial.uniforms.u_res.value.set(SW, SH);
-        displayMaterial.uniforms.u_res.value.set(W2, H2);
-        setVideoCover();
-        updateFilterGeometry();
+            // Only resize if dimensions actually changed
+            const currentWidth = renderer.getSize(new THREE.Vector2()).x;
+            const currentHeight = renderer.getSize(new THREE.Vector2()).y;
+
+            if (Math.abs(W2 - currentWidth) > 1 || Math.abs(H2 - currentHeight) > 1) {
+              renderer.setSize(W2, H2);
+
+              rtA.dispose();
+              rtB.dispose();
+              rtA = new THREE.WebGLRenderTarget(SW, SH, rtOptions);
+              rtB = new THREE.WebGLRenderTarget(SW, SH, rtOptions);
+              readTarget = rtA;
+              writeTarget = rtB;
+
+              renderer.setRenderTarget(rtA);
+              renderer.clear();
+              renderer.setRenderTarget(rtB);
+              renderer.clear();
+              renderer.setRenderTarget(null);
+
+              simMaterial.uniforms.u_res.value.set(SW, SH);
+              displayMaterial.uniforms.u_res.value.set(W2, H2);
+              setVideoCover();
+              updateFilterGeometry();
+            }
+          });
+        }, 100); // 100ms debounce
       };
 
       window.addEventListener('resize', handleResize);
+
+      // Also add ResizeObserver for more precise container size tracking
+      let resizeObserver = null;
+      if (typeof ResizeObserver !== 'undefined') {
+        resizeObserver = new ResizeObserver(handleResize);
+        resizeObserver.observe(canvas);
+      }
 
       // ── Visibility pause (no auto-resume — user must move mouse again) ──────
       const handleVisibility = () => {
@@ -459,6 +499,20 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         document.removeEventListener('visibilitychange', handleVisibility);
         canvas.removeEventListener('webglcontextlost', handleContextLost);
         canvas.removeEventListener('webglcontextrestored', handleContextRestored);
+
+        // Clean up resize handlers
+        if (resizeTimeout) {
+          clearTimeout(resizeTimeout);
+          resizeTimeout = null;
+        }
+        if (resizeRafId) {
+          cancelAnimationFrame(resizeRafId);
+          resizeRafId = null;
+        }
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+          resizeObserver = null;
+        }
         styleEl.parentNode?.removeChild(styleEl);
         if (svgEl.parentNode) svgEl.parentNode.removeChild(svgEl);
         if (dispCanvas.parentNode) dispCanvas.parentNode.removeChild(dispCanvas);
