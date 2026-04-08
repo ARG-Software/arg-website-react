@@ -2,9 +2,11 @@ import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { trackMailto } from '../../../hooks/useAnalytics';
 import { usePageTransition } from '../../../hooks/usePageTransition';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
+import { useWaterRipple } from '../../../hooks/useWaterRipple';
 
 export function HeroSection() {
   //useHeroParallax();
+  useWaterRipple('water-ripple-canvas');
   const { createHashScrollHandler } = usePageTransition();
 
   const handleContactClick = createHashScrollHandler('contact', {
@@ -106,6 +108,7 @@ export function HeroSection() {
         <div className="padding-global"></div>
       </div>
       <div className="hero_visual">
+        <canvas id="water-ripple-canvas" />
         <div
           data-autoplay="true"
           data-loop="true"
