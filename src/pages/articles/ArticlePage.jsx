@@ -89,6 +89,12 @@ const renderBlock = (block, i) => {
           ))}
         </ul>
       );
+    case 'image':
+      return (
+        <figure key={i} className="ap-figure ap-animate" style={{ transitionDelay: delay }}>
+          <img src={block.src} alt={block.alt} className="ap-image" loading="lazy" />
+        </figure>
+      );
     default:
       return null;
   }
