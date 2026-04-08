@@ -81,6 +81,7 @@ html.lenis body {
 }
 .ap-breadcrumb li:not(:last-child)::after {
   content: '/';
+  margin-left: 0.75rem;
   color: rgba(255, 255, 255, 0.25);
 }
 .ap-breadcrumb a {
