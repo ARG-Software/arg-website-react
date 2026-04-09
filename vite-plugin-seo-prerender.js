@@ -19,8 +19,8 @@ const NAV_LINKS = [
   { href: '/#cases', label: 'Our Work' },
   { href: '/articles/', label: 'Articles' },
   { href: '/partners/', label: 'Partners' },
-  { href: '/clients/', label: 'Clients' },
-  { href: '/team/', label: 'Team' },
+  // { href: '/clients/', label: 'Clients' },
+  // { href: '/team/', label: 'Team' },
   { href: '/#contact', label: 'Contact' },
 ];
 
@@ -60,21 +60,21 @@ const STATIC_PAGES = [
       'We also partner with Angry Ventures, a hands-on venture studio that builds and scales digital products, and North Music Group, a music rights management company providing modern tools for catalogue management and royalty tracking.',
     ],
   },
-  {
-    path: '/clients/',
-    title: 'Case Studies & Clients | Arg Software',
-    h1: 'Case Studies & Clients',
-    description:
-      'Explore how Arg Software delivers impactful solutions across fintech, open payments, and digital platforms. Real projects, real results.',
-    paragraphs: [
-      'Arg Software has delivered production-ready software across fintech, music technology, and digital marketing. Our work spans 6 countries, handling 2000 transactions per second with over 1000 production deploys.',
-      'For Mojaloop, we contributed to the vNext open-source financial hub, enhancing scalability, security, and modularity through microservices architecture and real-time transaction settlement for global digital payments.',
-      'For Dokutar, we migrated a legacy PHP API to TypeScript, delivering a secure GDPR-compliant cloud platform for tax documentation with automated data capture and workflow automation.',
-      'For SkyTracks, we helped build a cloud-based music production studio with real-time collaboration via WebRTC, virtual instruments, and an integrated digital audio workstation accessible from any browser.',
-      'For Vector, we rebuilt a crypto trading platform from scratch, connecting a non-functional UI to a fully operational backend supporting exchange integrations and automated trade signals.',
-      'For Royalty Flush, we partnered with North Music Group to create a music rights management platform with catalog management, automated royalty tracking, and licensing tools.',
-    ],
-  },
+  // {
+  //   path: '/clients/',
+  //   title: 'Case Studies & Clients | Arg Software',
+  //   h1: 'Case Studies & Clients',
+  //   description:
+  //     'Explore how Arg Software delivers impactful solutions across fintech, open payments, and digital platforms. Real projects, real results.',
+  //   paragraphs: [
+  //     'Arg Software has delivered production-ready software across fintech, music technology, and digital marketing. Our work spans 6 countries, handling 2000 transactions per second with over 1000 production deploys.',
+  //     'For Mojaloop, we contributed to the vNext open-source financial hub, enhancing scalability, security, and modularity through microservices architecture and real-time transaction settlement for global digital payments.',
+  //     'For Dokutar, we migrated a legacy PHP API to TypeScript, delivering a secure GDPR-compliant cloud platform for tax documentation with automated data capture and workflow automation.',
+  //     'For SkyTracks, we helped build a cloud-based music production studio with real-time collaboration via WebRTC, virtual instruments, and an integrated digital audio workstation accessible from any browser.',
+  //     'For Vector, we rebuilt a crypto trading platform from scratch, connecting a non-functional UI to a fully operational backend supporting exchange integrations and automated trade signals.',
+  //     'For Royalty Flush, we partnered with North Music Group to create a music rights management platform with catalog management, automated royalty tracking, and licensing tools.',
+  //   ],
+  // },
   {
     path: '/articles/',
     title: 'Articles & Insights | Arg Software',
@@ -88,18 +88,18 @@ const STATIC_PAGES = [
       'We also write about software engineering culture, including the art of pull requests, building scalable monorepos with Nx and NestJS, and the real impact of AI on software development teams.',
     ],
   },
-  {
-    path: '/team/',
-    title: 'Our Team | Arg Software',
-    h1: 'Our Team',
-    description:
-      'Meet the engineers and founders behind Arg Software. A team of experienced developers passionate about building exceptional software for fintech and SaaS.',
-    paragraphs: [
-      'Arg Software was founded by Jose Antunes and Rui Rocha, two software engineers with a combined 25 years of experience delivering production systems for fintech, music technology, and high-growth SaaS companies.',
-      'Our team specializes in backend architecture, custom software development, cloud infrastructure, and scalable platform engineering. We work with TypeScript, .NET, Node.js, React, Angular, PostgreSQL, Kafka, Docker, and Kubernetes.',
-      'Based in Funchal and Porto, Portugal, we work with clients worldwide across Europe, the Americas, and beyond, collaborating remotely with teams across time zones.',
-    ],
-  },
+  // {
+  //   path: '/team/',
+  //   title: 'Our Team | Arg Software',
+  //   h1: 'Our Team',
+  //   description:
+  //     'Meet the engineers and founders behind Arg Software. A team of experienced developers passionate about building exceptional software for fintech and SaaS.',
+  //   paragraphs: [
+  //     'Arg Software was founded by Jose Antunes and Rui Rocha, two software engineers with a combined 25 years of experience delivering production systems for fintech, music technology, and high-growth SaaS companies.',
+  //     'Our team specializes in backend architecture, custom software development, cloud infrastructure, and scalable platform engineering. We work with TypeScript, .NET, Node.js, React, Angular, PostgreSQL, Kafka, Docker, and Kubernetes.',
+  //     'Based in Funchal and Porto, Portugal, we work with clients worldwide across Europe, the Americas, and beyond, collaborating remotely with teams across time zones.',
+  //   ],
+  // },
 ];
 
 // ── Frontmatter parser (same logic as the runtime one) ──────────────────────

@@ -1,7 +1,18 @@
 # GA4 proxy — serves gtag.js and collection endpoint from own domain
-/g/js    https://www.googletagmanager.com/gtag/js    200
-/g/collect    https://www.google-analytics.com/g/collect    200
 
-# SPA fallback — Netlify serves prerendered index.html files from dist/ first.
-# This catch-all only fires when no static file matches the route.
-/*    /index.html   200
+/g/js https://www.googletagmanager.com/gtag/js 200
+/g/collect https://www.google-analytics.com/g/collect 200
+
+# SPA routes — must be listed before the 404 fallback
+
+/ /index.html 200
+/partners /index.html 200
+
+<!-- /clients       /index.html   200 -->
+
+/articles /index.html 200
+/articles/\* /index.html 200
+
+# Everything else → 404 page with correct HTTP status
+
+/\* /public/404.html 404

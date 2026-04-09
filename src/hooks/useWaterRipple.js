@@ -144,6 +144,9 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         videoTexture.colorSpace = THREE.SRGBColorSpace;
         videoTexture.minFilter = THREE.LinearFilter;
         videoTexture.magFilter = THREE.LinearFilter;
+        // CRITICAL FIX: Disable Y-flipping for consistent texture coordinates
+        // Default is true for WebGL 1.0 compatibility, but causes coordinate mismatch
+        videoTexture.flipY = false;
       }
 
       // Hide the original video element — Three.js renders it now
@@ -153,7 +156,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       // ── Renderer ────────────────────────────────────────────────────────
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
       renderer.setPixelRatio(1);
-      renderer.setSize(W, H);
+      renderer.setSize(W, H, false);
       renderer.autoClear = false;
 
       // ── Render targets ───────────────────────────────────────────────────
@@ -211,15 +214,45 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
 
       // ── Cover UV (simulates object-fit: cover for the video) ─────────────
       const setVideoCover = () => {
-        if (!videoEl || !videoEl.videoWidth) return;
-        const cW = canvas.offsetWidth || window.innerWidth;
-        const cH = canvas.offsetHeight || window.innerHeight;
+        if (!videoEl) return;
+
+        // Wait for video to be ready - critical fix
+        if (!videoEl.videoWidth || !videoEl.videoHeight) {
+          // Video not ready yet, retry in 100ms
+          setTimeout(setVideoCover, 100);
+          return;
+        }
+
+        // Use accurate dimensions - fix for stale values
+        const rect = canvas.getBoundingClientRect();
+        let cW = rect.width;
+        let cH = rect.height;
+
+        // Check for valid canvas dimensions - CRITICAL FIX
+        if (cW <= 0 || cH <= 0) {
+          // Canvas has no valid dimensions, try parent container as fallback
+          const parent = canvas.parentElement;
+          if (parent) {
+            const parentRect = parent.getBoundingClientRect();
+            cW = parentRect.width;
+            cH = parentRect.height;
+          }
+
+          // If still invalid, retry after layout
+          if (cW <= 0 || cH <= 0) {
+            setTimeout(setVideoCover, 100);
+            return;
+          }
+        }
+
         const vAspect = videoEl.videoWidth / videoEl.videoHeight;
         const cAspect = cW / cH;
+
         let sx = 1,
           sy = 1,
           ox = 0,
           oy = 0;
+
         if (cAspect > vAspect) {
           // canvas wider: fit video width, crop video height
           sy = vAspect / cAspect;
@@ -229,8 +262,12 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
           sx = cAspect / vAspect;
           ox = (1 - sx) / 2;
         }
+
         displayMaterial.uniforms.u_coverScale.value.set(sx, sy);
         displayMaterial.uniforms.u_coverOffset.value.set(ox, oy);
+
+        // CRITICAL: Force uniforms update
+        displayMaterial.uniformsNeedUpdate = true;
       };
 
       if (videoEl) {
@@ -414,7 +451,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
           resizeRafId = null;
         }
 
-        // Debounce resize events
+        // Debounce resize events - increased to ensure CSS/media queries are applied
         resizeTimeout = setTimeout(() => {
           // Use requestAnimationFrame to ensure layout is recalculated
           resizeRafId = requestAnimationFrame(() => {
@@ -422,8 +459,14 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
 
             // Get accurate dimensions using getBoundingClientRect
             const rect = canvas.getBoundingClientRect();
-            const W2 = Math.max(1, Math.floor(rect.width)) || window.innerWidth;
-            const H2 = Math.max(1, Math.floor(rect.height)) || window.innerHeight;
+            const W2 = Math.floor(rect.width);
+            const H2 = Math.floor(rect.height);
+
+            // Skip resize if canvas has no valid dimensions - CRITICAL FIX
+            if (W2 <= 0 || H2 <= 0) {
+              return;
+            }
+
             const SW = Math.floor(W2 / 2);
             const SH = Math.floor(H2 / 2);
 
@@ -432,7 +475,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
             const currentHeight = renderer.getSize(new THREE.Vector2()).y;
 
             if (Math.abs(W2 - currentWidth) > 1 || Math.abs(H2 - currentHeight) > 1) {
-              renderer.setSize(W2, H2);
+              renderer.setSize(W2, H2, false);
 
               rtA.dispose();
               rtB.dispose();
@@ -451,9 +494,13 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
               displayMaterial.uniforms.u_res.value.set(W2, H2);
               setVideoCover();
               updateFilterGeometry();
+
+              // Force uniforms update for all materials
+              displayMaterial.uniformsNeedUpdate = true;
+              simMaterial.uniformsNeedUpdate = true;
             }
           });
-        }, 100); // 100ms debounce
+        }, 250); // Increased to 250ms for better CSS/media query handling
       };
 
       window.addEventListener('resize', handleResize);
