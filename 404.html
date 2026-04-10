@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Vivid Star Network</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #f8f9fa; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        canvas { display: block; }
+
+        .top-ui {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            pointer-events: none;
+        }
+
+        .site-logo {
+            width: 35px;
+            height: 35px;
+            background: #FF002B;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(255, 0, 43, 0.3);
+        }
+
+        .title-group { display: flex; flex-direction: column; }
+
+        .site-title {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.4em;
+            color: #9D00FF;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .site-tagline {
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: #1a1a1a;
+            letter-spacing: -0.01em;
+        }
+
+        .footer-ui {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .error-num {
+            display: block;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.4em;
+            color: #9D00FF;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .message {
+            font-size: 1.3rem;
+            font-weight: 300;
+            color: #1a1a1a;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        .cta {
+            display: inline-block;
+            margin-top: 25px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #9D00FF;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            pointer-events: auto;
+            border-bottom: 1px solid rgba(157, 0, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .cta:hover { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+    </style>
+</head>
+<body>
+
+    <div class="top-ui">
+        <div class="site-logo"></div>
+        <div class="title-group">
+            <span class="site-title">Vivid Star Network</span>
+            <div class="site-tagline">Don't get lost, we are here to help you</div>
+        </div>
+    </div>
+
+    <div class="footer-ui">
+        <span class="error-num">System Fragment 404</span>
+        <div class="message">The requested path is lost within the urban grey network.</div>
+        <a href="/" class="cta">Return to Origin</a>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        const CONFIG = {
+            city: {
+                gridSize: 75,
+                spacing: 1.35,
+                buildingColor: 0xffffff,
+                roadWidth: 4,
+                clipHorizon: 12, // Distance from edge where buildings stop
+                maxHeight: 18
+            },
+            traffic: {
+                count: 12,
+                speed: 0.18,
+                carColor: 0x9D00FF,
+                laneOffset: 1.2
+            },
+            logo: {
+                primary: "#FF002B",
+                secondary: "#9D00FF",
+                floatHeight: 16,
+                scale: 2.5
+            },
+            perf: {
+                fpsLimit: 1 / 30, // 30 FPS cap for logic
+                pixelRatioCap: 1.5
+            }
+        };
+
+        let scene, camera, renderer, logoGroup, carSystem1, carSystem2;
+        let lastTime = 0;
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf8f9fa);
+            scene.fog = new THREE.FogExp2(0xf8f9fa, 0.009);
+
+            camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 500);
+            camera.position.set(0, 30, 100);
+            camera.lookAt(0, 8, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, CONFIG.perf.pixelRatioCap));
+            document.body.appendChild(renderer.domElement);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+            const sun = new THREE.DirectionalLight(0xffffff, 0.6);
+            sun.position.set(50, 100, 50);
+            scene.add(sun);
+
+            // Road Logic
+            const roadLen = CONFIG.city.gridSize * CONFIG.city.spacing * 2.5;
+            const road = new THREE.Mesh(
+                new THREE.PlaneGeometry(CONFIG.city.roadWidth, roadLen),
+                new THREE.MeshStandardMaterial({ color: 0xe5e5e5 })
+            );
+            road.rotation.x = -Math.PI / 2;
+            road.position.y = -9.99;
+            scene.add(road);
+
+            // Efficient City
+            const cityMaterial = new THREE.MeshStandardMaterial({ color: CONFIG.city.buildingColor, transparent: true, opacity: 0.9 });
+            const instancedCity = new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1), cityMaterial, Math.pow(CONFIG.city.gridSize*2, 2));
+            const dummy = new THREE.Object3D();
+            let count = 0;
+
+            const gridLimit = CONFIG.city.gridSize * CONFIG.city.spacing;
+            const visibleLimit = gridLimit - CONFIG.city.clipHorizon;
+
+            for (let x = -CONFIG.city.gridSize; x < CONFIG.city.gridSize; x++) {
+                for (let z = -CONFIG.city.gridSize; z < CONFIG.city.gridSize; z++) {
+                    const px = x * CONFIG.city.spacing;
+                    const pz = z * CONFIG.city.spacing;
+
+                    if (Math.abs(px) < CONFIG.city.roadWidth / 1.6) continue;
+                    if (Math.abs(pz) > visibleLimit) continue;
+
+                    const h = Math.random() * Math.random() * CONFIG.city.maxHeight + 1.5;
+                    dummy.position.set(px, (h/2) - 10, pz);
+                    dummy.scale.set(0.6 + Math.random()*0.4, h, 0.6 + Math.random()*0.4);
+                    dummy.updateMatrix();
+                    instancedCity.setMatrixAt(count++, dummy.matrix);
+                }
+            }
+            scene.add(instancedCity);
+
+            // Traffic
+            const carMat = new THREE.MeshStandardMaterial({ color: CONFIG.traffic.carColor, emissive: CONFIG.traffic.carColor, emissiveIntensity: 0.4 });
+            const createLane = (dir) => {
+                const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.2, 0.6), carMat, CONFIG.traffic.count);
+                const data = [];
+                const spacingZ = (visibleLimit * 2) / CONFIG.traffic.count;
+                for(let i=0; i<CONFIG.traffic.count; i++) data.push({ z: (i * spacingZ) - visibleLimit });
+                return { mesh, data, dir };
+            };
+            carSystem1 = createLane(1); carSystem2 = createLane(-1);
+            scene.add(carSystem1.mesh, carSystem2.mesh);
+
+            // Logo
+            logoGroup = new THREE.Group();
+            const c1 = new THREE.Color(CONFIG.logo.primary), c2 = new THREE.Color(CONFIG.logo.secondary);
+            const addPart = (w,h,d,x,y,z,col) => {
+                const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), new THREE.MeshStandardMaterial({
+                    color: col, emissive: col, emissiveIntensity: 0.4, metalness: 0.9, roughness: 0.1, transparent: true, opacity: 0.5,
+                    polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1
+                }));
+                m.position.set(x,y,z); logoGroup.add(m);
+            };
+            addPart(4,2,1.2, 1.5, 3.1, 0.01, c1);
+            addPart(3,2,1.2, -1.0, 1.1, 0.02, c1.clone().lerp(c2, 0.25));
+            addPart(1.5,2.5,1.2, 0.75, 0.2, 0.03, c1.clone().lerp(c2, 0.5));
+            addPart(4.5,2,1.2, 2.25, -1.2, 0.04, c1.clone().lerp(c2, 0.75));
+            addPart(1.5,2,1.2, 3.75, -3.2, 0.05, c2);
+
+            logoGroup.position.set(0, CONFIG.logo.floatHeight, 20);
+            logoGroup.scale.set(CONFIG.logo.scale, CONFIG.logo.scale, CONFIG.logo.scale);
+            logoGroup.rotation.x = -0.1;
+            scene.add(logoGroup);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function updateTraffic(sys, lx, limit) {
+            const d = new THREE.Object3D();
+            sys.data.forEach((car, i) => {
+                car.z += CONFIG.traffic.speed * sys.dir;
+                if (car.z > limit) car.z = -limit; else if (car.z < -limit) car.z = limit;
+                d.position.set(lx, -9.8, car.z);
+                d.updateMatrix();
+                sys.mesh.setMatrixAt(i, d.matrix);
+            });
+            sys.mesh.instanceMatrix.needsUpdate = true;
+        }
+
+        function animate(now) {
+            requestAnimationFrame(animate);
+            const delta = (now - lastTime) / 1000;
+            if (delta < CONFIG.perf.fpsLimit) return;
+            lastTime = now;
+
+            if (!document.hidden) {
+                const limit = (CONFIG.city.gridSize * CONFIG.city.spacing) - CONFIG.city.clipHorizon;
+                updateTraffic(carSystem1, -CONFIG.traffic.laneOffset, limit);
+                updateTraffic(carSystem2, CONFIG.traffic.laneOffset, limit);
+                logoGroup.position.y = CONFIG.logo.floatHeight + Math.sin(now * 0.0015) * 0.4;
+            }
+            renderer.render(scene, camera);
+        }
+
+        init();
+        animate(0);
+    </script>
+</body>
+</html>
