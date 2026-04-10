@@ -9,14 +9,14 @@ import { CookieConsent } from './components/index.js';
 import './styles/base.css';
 
 const PartnersPage = lazy(() => import('./pages/PartnersPage.jsx'));
-// const ClientsPage = lazy(() => import('./pages/ClientsPage.jsx'));
-const ArticlesPage = lazy(() => import('./pages/articles/ArticlesPage.jsx'));
-const ArticlePage = lazy(() => import('./pages/articles/ArticlePage.jsx'));
+const ProjectsPage = lazy(() => import('./pages/ProjectsPage.jsx'));
+const BlogPage = lazy(() => import('./pages/blog/BlogPage.jsx'));
+const BlogPostPage = lazy(() => import('./pages/blog/BlogPostPage.jsx'));
 // const TeamPage = lazy(() => import('./pages/TeamPage.jsx'));
-
-function ArticlePageWrapper() {
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'));
+function BlogPostPageWrapper() {
   const { slug } = useParams();
-  return <ArticlePage slug={slug} />;
+  return <BlogPostPage slug={slug} />;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -29,14 +29,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="/" element={<HomePage />} />
               <Route path="/partners" element={<PartnersPage />} />
               <Route path="/partners/" element={<PartnersPage />} />
-              {/* <Route path="/clients" element={<ClientsPage />} />
-              <Route path="/clients/" element={<ClientsPage />} /> */}
-              <Route path="/articles" element={<ArticlesPage />} />
-              <Route path="/articles/" element={<ArticlesPage />} />
-              <Route path="/articles/:slug" element={<ArticlePageWrapper />} />
-              <Route path="/articles/:slug/" element={<ArticlePageWrapper />} />
+              <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/projects/" element={<ProjectsPage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/" element={<BlogPage />} />
+              <Route path="/blog/:slug" element={<BlogPostPageWrapper />} />
+              <Route path="/blog/:slug/" element={<BlogPostPageWrapper />} />
               {/* <Route path="/team" element={<TeamPage />} />
               <Route path="/team/" element={<TeamPage />} /> */}
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
         </TransitionProvider>

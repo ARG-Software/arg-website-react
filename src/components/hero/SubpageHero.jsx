@@ -2,7 +2,7 @@ import { useHeroAnimation } from '../../hooks/useHeroAnimations';
 import { Breadcrumb } from '../navigation/Breadcrumb';
 
 /**
- * Unified subpage hero component for all subpages (Team, Partners, Articles, Article, Clients)
+ * Unified subpage hero component for all subpages (Team, Partners, Blog, Blog Post, Projects)
  * @param {Object} props
  * @param {string|string[]} props.title - Page title (string or array for multi-line titles)
  * @param {string} [props.subtitle] - Optional subtitle

@@ -14,10 +14,10 @@ export {
   trackCTA,
   trackOutbound,
   trackSocial,
-  trackShare,
+  trackBlogPostShare,
   trackMailto,
   trackProjectOpen,
   trackFAQOpen,
-  trackArticleClick,
+  trackBlogPostClick,
   trackConsent,
 } from './useAnalytics';

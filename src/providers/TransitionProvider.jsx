@@ -91,11 +91,11 @@ export function TransitionProvider({ children }) {
         if (previousPath === '/partners' && currentPath === '/' && !hashRef.current) {
           targetElement = document.getElementById('partners-marquee');
         } else if (
-          (previousPath === '/articles' || previousPath.startsWith('/articles/')) &&
+          (previousPath === '/blog' || previousPath.startsWith('/blog/')) &&
           currentPath === '/' &&
           !hashRef.current
         ) {
-          targetElement = document.getElementById('articles-promo');
+          targetElement = document.getElementById('blog-promo');
         }
 
         // If target element found, scroll to it

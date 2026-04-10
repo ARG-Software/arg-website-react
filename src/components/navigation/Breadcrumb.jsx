@@ -9,14 +9,14 @@ export function Breadcrumb({ items = [] }) {
   if (!items.length) return null;
 
   return (
-    <nav className="ap-hero-meta ap-hero-fade" aria-label="Breadcrumb">
-      <ol className="ap-breadcrumb">
+    <nav className="bp-hero-meta bp-hero-fade" aria-label="Breadcrumb">
+      <ol className="bp-breadcrumb">
         {items.map((item, index) => {
           const isTag = item.isTag || false;
 
           if (isTag) {
             return (
-              <li key={index} className="ap-tag">
+              <li key={index} className="bp-tag">
                 {item.label}
               </li>
             );

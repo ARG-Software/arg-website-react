@@ -100,12 +100,12 @@ const NORMAL_FRAG = /* glsl */ `
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const MOUSE_STRENGTH = 0.5;
-const MOUSE_RADIUS = 0.08;
-const REFRACTION_SCALE = 0.1;
+const MOUSE_STRENGTH = 0.35;
+const MOUSE_RADIUS = 0.06;
+const REFRACTION_SCALE = 0.07;
 // #0c002e → vec3(0.047, 0.0, 0.18)
 const BASE_COLOR = [0.047, 0.0, 0.18];
-const VIDEO_OPACITY = 0.11;
+const VIDEO_OPACITY = 0.09;
 // Normal map resolution for text displacement (kept small to minimise readPixels cost)
 const NM_W = 64;
 const NM_H = 36;
@@ -335,7 +335,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       const feDisp = document.createElementNS(svgNS, 'feDisplacementMap');
       feDisp.setAttribute('in', 'SourceGraphic');
       feDisp.setAttribute('in2', 'wmap');
-      feDisp.setAttribute('scale', '8');
+      feDisp.setAttribute('scale', '6');
       feDisp.setAttribute('xChannelSelector', 'R');
       feDisp.setAttribute('yChannelSelector', 'G');
       filterEl.appendChild(feImage);

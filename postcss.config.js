@@ -77,7 +77,7 @@ module.exports = {
               /service_/,
               /testemonials/,
               /footer_/,
-              /articles-promo/,
+               /blog-promo/,
               /social-section/,
               /blog-component/,
               /swiper_blog/,

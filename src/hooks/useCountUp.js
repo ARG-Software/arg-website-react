@@ -49,7 +49,7 @@ export function createCountUpObserver(selector, duration = 2000, threshold = 0.5
 }
 
 export function useCountUp(
-  selector = '.count-up, .cp-count',
+  selector = '.count-up, .prp-count',
   { duration = 2000, threshold = 0.5 } = {}
 ) {
   useEffect(() => {

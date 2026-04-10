@@ -38,23 +38,23 @@ export const ANIMATION_PRESETS = {
     rootMargin: DEFAULT_ROOT_MARGIN,
   },
 
-  // Fade up single element (projects, articles promo)
+  // Fade up single element (projects, blog promo)
   'fade-up': {
     selectors: [
       '.projects_item_wrap',
-      '.articles-promo_header',
-      '.articles-promo_hero',
-      '.articles-promo_cards-grid',
-      '.articles-promo_footer',
-      '.section_articles-promo .social-section_header',
+      '.blog-promo_header',
+      '.blog-promo_hero',
+      '.blog-promo_cards-grid',
+      '.blog-promo_footer',
+      '.section_blog-promo .social-section_header',
     ],
     initialTransform: {
       '.projects_item_wrap': 'translate3d(0, 3rem, 0)',
-      '.articles-promo_header': 'translate3d(0, 2.5rem, 0)',
-      '.articles-promo_hero': 'translate3d(0, 2.5rem, 0)',
-      '.articles-promo_cards-grid': 'translate3d(0, 3rem, 0)',
-      '.articles-promo_footer': 'translate3d(0, 2rem, 0)',
-      '.section_articles-promo .social-section_header': 'translate3d(0, 2.5rem, 0)',
+      '.blog-promo_header': 'translate3d(0, 2.5rem, 0)',
+      '.blog-promo_hero': 'translate3d(0, 2.5rem, 0)',
+      '.blog-promo_cards-grid': 'translate3d(0, 3rem, 0)',
+      '.blog-promo_footer': 'translate3d(0, 2rem, 0)',
+      '.section_blog-promo .social-section_header': 'translate3d(0, 2.5rem, 0)',
     },
     initialOpacity: '0',
     transition:
@@ -118,10 +118,10 @@ export const ANIMATION_PRESETS = {
   'class-toggle': {
     selectors: [
       '.pp-animate',
-      '.ap-animate',
-      '.alp-animate',
-      '.cp-reveal',
-      '.cp-animate',
+      '.bp-animate',
+      '.blp-animate',
+      '.prp-reveal',
+      '.prp-animate',
       '.pp-reveal',
       '.reveal',
     ],
@@ -129,14 +129,14 @@ export const ANIMATION_PRESETS = {
     rootMargin: DEFAULT_ROOT_MARGIN,
     classMap: {
       'pp-animate': 'pp-visible',
-      'ap-animate': 'ap-visible',
-      'alp-animate': 'alp-visible',
-      'cp-reveal': 'cp-visible',
-      'cp-animate': 'cp-visible',
+      'bp-animate': 'bp-visible',
+      'blp-animate': 'blp-visible',
+      'prp-reveal': 'prp-visible',
+      'prp-animate': 'prp-visible',
       'pp-reveal': 'is-revealed',
       reveal: 'is-revealed',
     },
-    // For cp-reveal/cp-animate, also apply inline styles (handled in unifiedReveals)
+    // For prp-reveal/prp-animate, also apply inline styles (handled in unifiedReveals)
   },
 
   // General elements with data-w-id

@@ -13,7 +13,7 @@ const navLinks = [
   { to: '/#work-with-us', label: 'Working with Us' },
   // { to: '/team', label: 'Team' },
   { to: '/partners/', label: 'Partners' },
-  { to: '/articles/', label: 'Articles' },
+  { to: '/blog/', label: 'Blog' },
   { to: '/#social', label: 'Social' },
   { to: '/#contact', label: 'Contact' },
 ];
@@ -40,7 +40,7 @@ export function Navbar({
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const hero = document.querySelector(
-        '.hero_wrap, .subpage-hero, .pp-hero, .alp-hero, .ap-hero, .cp-hero'
+        '.hero_wrap, .subpage-hero, .pp-hero, .blp-hero, .bp-hero, .prp-hero'
       );
 
       let scrolled = false;

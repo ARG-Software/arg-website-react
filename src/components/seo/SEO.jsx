@@ -13,12 +13,13 @@ import {
  * @param {object}  props
  * @param {string}  [props.title]         – Page title (will be appended with " | Arg Software" unless noSuffix)
  * @param {string}  [props.description]   – Page meta description
- * @param {string}  [props.path]          – Path portion of the URL, e.g. "/articles"
+ * @param {string}  [props.path]          – Path portion of the URL, e.g. "/blog"
  * @param {string}  [props.image]         – Absolute or relative URL for the OG image
  * @param {string}  [props.type]          – OG type (default "website", use "article" for blog posts)
  * @param {boolean} [props.noSuffix]      – If true, don't append " | Arg Software" to the title
- * @param {string}  [props.publishedTime] – ISO 8601 date for articles
- * @param {string}  [props.author]        – Author name for articles
+ * @param {boolean} [props.noIndex]       – If true, adds robots meta tag with "noindex, follow"
+ * @param {string}  [props.publishedTime] – ISO 8601 date for blog posts
+ * @param {string}  [props.author]        – Author name for blog posts
  * @param {string}  [props.section]       – Article section/category
  * @param {object}  [props.jsonLd]        – JSON-LD structured data object
  */
@@ -29,6 +30,7 @@ export function SEO({
   image,
   type = 'website',
   noSuffix = false,
+  noIndex = false,
   publishedTime,
   author,
   section,
@@ -51,6 +53,7 @@ export function SEO({
       {/* Primary */}
       <title>{pageTitle}</title>
       <meta name="description" content={pageDescription} />
+      {noIndex && <meta name="robots" content="noindex, follow" />}
       <link rel="canonical" href={canonicalUrl} />
 
       {/* Open Graph */}

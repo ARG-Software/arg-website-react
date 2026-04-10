@@ -35,9 +35,9 @@ export function trackSocial(platform, location) {
   trackEvent('social_click', { platform, link_location: location });
 }
 
-/** Article share clicks. */
-export function trackShare(platform, articleSlug) {
-  trackEvent('article_share', { platform, article_slug: articleSlug });
+/** Blog post share clicks. */
+export function trackBlogPostShare(platform, blogPostSlug) {
+  trackEvent('blog_post_share', { platform, blog_post_slug: blogPostSlug });
 }
 
 /** Mailto link clicks. */
@@ -55,11 +55,11 @@ export function trackFAQOpen(questionText) {
   trackEvent('faq_open', { question: questionText });
 }
 
-/** Article click (from homepage promo or articles list). */
-export function trackArticleClick(slug, title, location) {
-  trackEvent('article_click', {
-    article_slug: slug,
-    article_title: title,
+/** Blog post click (from homepage promo or blog list). */
+export function trackBlogPostClick(slug, title, location) {
+  trackEvent('blog_post_click', {
+    blog_post_slug: slug,
+    blog_post_title: title,
     link_location: location,
   });
 }

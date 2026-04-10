@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { loadArticles } from '../../utils/articles';
+import { loadBlogPosts } from '../../utils/blog';
 import { useScrollAnimations, useHeroAnimation } from '../../hooks';
 import { SEO, Navbar, Footer, EmailCapture } from '../../components';
-import { HOMEPAGE_ARTICLES_COUNT } from '../../constants';
+import { HOMEPAGE_BLOG_POSTS_COUNT } from '../../constants';
 import { HeroSection } from './sections/HeroSection';
 import { AboutSection } from './sections/AboutSection';
 import { InfinityMarquee } from './sections/InfinityMarquee';
@@ -12,13 +12,13 @@ import { TestimonialsSection } from './sections/TestimonialsSection';
 import { PartnersMarquee } from './sections/PartnersMarquee';
 import { TeamSection } from './sections/TeamSection';
 import { WorkStatsSection } from './sections/WorkStatsSection';
-import { ArticlesPromoSection } from './sections/ArticlesPromoSection';
+import { BlogPromoSection } from './sections/BlogPromoSection';
 import { SocialSection } from './sections/SocialSection';
 import { FAQSection } from './sections/FAQSection';
 import { ContactSection } from './sections/ContactSection';
 
 export default function HomePage() {
-  const [articles] = useState(() => loadArticles().slice(0, HOMEPAGE_ARTICLES_COUNT));
+  const [blogPosts] = useState(() => loadBlogPosts().slice(0, HOMEPAGE_BLOG_POSTS_COUNT));
 
   useHeroAnimation(); // Hero section animations
 
@@ -39,7 +39,7 @@ export default function HomePage() {
           <TestimonialsSection />
           <WorkStatsSection />
           <TeamSection />
-          <ArticlesPromoSection articles={articles} />
+          <BlogPromoSection blogPosts={blogPosts} />
           <SocialSection />
           <FAQSection />
           <ContactSection />

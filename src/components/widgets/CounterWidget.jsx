@@ -29,7 +29,7 @@ export function CounterWidget({
   return (
     <div
       className={`
-        ${isCompact ? 'cp-stat-item' : 'work-item'}
+        ${isCompact ? 'prp-stat-item' : 'work-item'}
         ${className}
       `.trim()}
       {...props}
@@ -39,13 +39,13 @@ export function CounterWidget({
       {isCompact ? (
         // Compact layout (StatsGrid)
         <>
-          <div className="cp-stat-num">
-            <span className="cp-count" {...countUpProps}>
+          <div className="prp-stat-num">
+            <span className="prp-count" {...countUpProps}>
               0
             </span>
             +
           </div>
-          <div className="cp-stat-label">{label}</div>
+          <div className="prp-stat-label">{label}</div>
         </>
       ) : (
         // Expanded layout (WorkStatsSection)

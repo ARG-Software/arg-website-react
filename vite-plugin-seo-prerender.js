@@ -17,9 +17,9 @@ const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/#services', label: 'Services' },
   { href: '/#cases', label: 'Our Work' },
-  { href: '/articles/', label: 'Articles' },
+  { href: '/blog/', label: 'Blog' },
   { href: '/partners/', label: 'Partners' },
-  // { href: '/clients/', label: 'Clients' },
+  { href: '/projects/', label: 'Projects' },
   // { href: '/team/', label: 'Team' },
   { href: '/#contact', label: 'Contact' },
 ];
@@ -60,31 +60,31 @@ const STATIC_PAGES = [
       'We also partner with Angry Ventures, a hands-on venture studio that builds and scales digital products, and North Music Group, a music rights management company providing modern tools for catalogue management and royalty tracking.',
     ],
   },
-  // {
-  //   path: '/clients/',
-  //   title: 'Case Studies & Clients | Arg Software',
-  //   h1: 'Case Studies & Clients',
-  //   description:
-  //     'Explore how Arg Software delivers impactful solutions across fintech, open payments, and digital platforms. Real projects, real results.',
-  //   paragraphs: [
-  //     'Arg Software has delivered production-ready software across fintech, music technology, and digital marketing. Our work spans 6 countries, handling 2000 transactions per second with over 1000 production deploys.',
-  //     'For Mojaloop, we contributed to the vNext open-source financial hub, enhancing scalability, security, and modularity through microservices architecture and real-time transaction settlement for global digital payments.',
-  //     'For Dokutar, we migrated a legacy PHP API to TypeScript, delivering a secure GDPR-compliant cloud platform for tax documentation with automated data capture and workflow automation.',
-  //     'For SkyTracks, we helped build a cloud-based music production studio with real-time collaboration via WebRTC, virtual instruments, and an integrated digital audio workstation accessible from any browser.',
-  //     'For Vector, we rebuilt a crypto trading platform from scratch, connecting a non-functional UI to a fully operational backend supporting exchange integrations and automated trade signals.',
-  //     'For Royalty Flush, we partnered with North Music Group to create a music rights management platform with catalog management, automated royalty tracking, and licensing tools.',
-  //   ],
-  // },
   {
-    path: '/articles/',
-    title: 'Articles & Insights | Arg Software',
-    h1: 'Articles & Insights',
+    path: '/projects/',
+    title: 'Case Studies & Projects | Arg Software',
+    h1: 'Case Studies & Projects',
+    description:
+      'Explore how Arg Software delivers impactful solutions across fintech, open payments, and digital platforms. Real projects, real results.',
+    paragraphs: [
+      'Arg Software has delivered production-ready software across fintech, music technology, and digital marketing. Our work spans 6 countries, handling 2000 transactions per second with over 1000 production deploys.',
+      'For Mojaloop, we contributed to the vNext open-source financial hub, enhancing scalability, security, and modularity through microservices architecture and real-time transaction settlement for global digital payments.',
+      'For Dokutar, we migrated a legacy PHP API to TypeScript, delivering a secure GDPR-compliant cloud platform for tax documentation with automated data capture and workflow automation.',
+      'For SkyTracks, we helped build a cloud-based music production studio with real-time collaboration via WebRTC, virtual instruments, and an integrated digital audio workstation accessible from any browser.',
+      'For Vector, we rebuilt a crypto trading platform from scratch, connecting a non-functional UI to a fully operational backend supporting exchange integrations and automated trade signals.',
+      'For Royalty Flush, we partnered with North Music Group to create a music rights management platform with catalog management, automated royalty tracking, and licensing tools.',
+    ],
+  },
+  {
+    path: '/blog/',
+    title: 'Blog & Insights | Arg Software',
+    h1: 'Blog & Insights',
     description:
       'Technical articles, engineering insights, and best practices from the Arg Software team. Deep dives into architecture, TypeScript, .NET, DevOps, and more.',
     paragraphs: [
       'The Arg Software blog covers software engineering topics including clean architecture, TypeScript patterns, .NET development, DevOps, Kubernetes, and AI.',
       'We write practical guides on topics like enforcing clean architecture in TypeScript, CQRS without MediatR in .NET, dependency injection patterns in ASP.NET Core, and functional error handling with the Result pattern.',
-      'Our DevOps articles cover running Docker natively on Windows with WSL2, local Kubernetes clusters with NestJS and PostgreSQL, and debugging microservices with Prometheus and OpenTelemetry.',
+      'Our DevOps blog posts cover running Docker natively on Windows with WSL2, local Kubernetes clusters with NestJS and PostgreSQL, and debugging microservices with Prometheus and OpenTelemetry.',
       'We also write about software engineering culture, including the art of pull requests, building scalable monorepos with Nx and NestJS, and the real impact of AI on software development teams.',
     ],
   },
@@ -152,54 +152,54 @@ function replaceMetaTags(html, { title, description, url, image, type = 'website
 
   // Replace meta description
   result = result.replace(
-    /<meta name="description" content="[^"]*">/,
-    `<meta name="description" content="${safeDesc}">`,
+    /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/,
+    `<meta name="description" content="${safeDesc}" />`,
   );
 
   // Replace canonical
   result = result.replace(
-    /<link rel="canonical" href="[^"]*">/,
-    `<link rel="canonical" href="${escapeHtml(url)}">`,
+    /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/,
+    `<link rel="canonical" href="${escapeHtml(url)}" />`,
   );
 
   // Replace OG tags
   result = result.replace(
-    /<meta property="og:type" content="[^"]*">/,
-    `<meta property="og:type" content="${type}">`,
+    /<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/,
+    `<meta property="og:type" content="${type}" />`,
   );
   result = result.replace(
-    /<meta property="og:title" content="[^"]*">/,
-    `<meta property="og:title" content="${safeTitle}">`,
+    /<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/,
+    `<meta property="og:title" content="${safeTitle}" />`,
   );
   result = result.replace(
-    /<meta property="og:description" content="[^"]*">/,
-    `<meta property="og:description" content="${safeDesc}">`,
+    /<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/,
+    `<meta property="og:description" content="${safeDesc}" />`,
   );
   result = result.replace(
-    /<meta property="og:url" content="[^"]*">/,
-    `<meta property="og:url" content="${escapeHtml(url)}">`,
+    /<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/,
+    `<meta property="og:url" content="${escapeHtml(url)}" />`,
   );
   result = result.replace(
-    /<meta property="og:image" content="[^"]*">/,
-    `<meta property="og:image" content="${escapeHtml(ogImage)}">`,
+    /<meta\s+property="og:image"\s+content="[^"]*"\s*\/?>/,
+    `<meta property="og:image" content="${escapeHtml(ogImage)}" />`,
   );
   result = result.replace(
-    /<meta property="og:image:secure_url" content="[^"]*">/,
-    `<meta property="og:image:secure_url" content="${escapeHtml(ogImage)}">`,
+    /<meta\s+property="og:image:secure_url"\s+content="[^"]*"\s*\/?>/,
+    `<meta property="og:image:secure_url" content="${escapeHtml(ogImage)}" />`,
   );
 
   // Replace Twitter tags
   result = result.replace(
-    /<meta name="twitter:title" content="[^"]*">/,
-    `<meta name="twitter:title" content="${safeTitle}">`,
+    /<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/,
+    `<meta name="twitter:title" content="${safeTitle}" />`,
   );
   result = result.replace(
-    /<meta name="twitter:description" content="[^"]*">/,
-    `<meta name="twitter:description" content="${safeDesc}">`,
+    /<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/?>/,
+    `<meta name="twitter:description" content="${safeDesc}" />`,
   );
   result = result.replace(
-    /<meta name="twitter:image" content="[^"]*">/,
-    `<meta name="twitter:image" content="${escapeHtml(ogImage)}">`,
+    /<meta\s+name="twitter:image"\s+content="[^"]*"\s*\/?>/,
+    `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />`,
   );
 
   // Insert extra tags (e.g. article:published_time) before </head>
@@ -226,14 +226,14 @@ export default function seoPrerender() {
       const baseHtml = fs.readFileSync(indexPath, 'utf-8');
       let generated = 0;
 
-      // ── Read all articles upfront so we can link to them from /articles/ ─
-      const articlesDir = path.resolve('src/articles');
+      // ── Read all blog posts upfront so we can link to them from /blog/ ─
+      const articlesDir = path.resolve('src/blog');
       if (!fs.existsSync(articlesDir)) {
-        console.warn('[seo-prerender] articles/ directory not found, skipping articles.');
+        console.warn('[seo-prerender] blog/ directory not found, skipping blog posts.');
         return;
       }
       const mdFiles = fs.readdirSync(articlesDir).filter((f) => f.endsWith('.md'));
-      const articleMetas = mdFiles
+      const blogPostMetas = mdFiles
         .map((file) => {
           const raw = fs.readFileSync(path.join(articlesDir, file), 'utf-8');
           const { meta, body } = parseFrontmatter(raw);
@@ -243,8 +243,8 @@ export default function seoPrerender() {
         .filter(Boolean)
         .sort((a, b) => b._order - a._order);
 
-      const articleLinks = articleMetas.map((meta) => ({
-        href: `/articles/${meta.slug}/`,
+      const blogPostLinks = blogPostMetas.map((meta) => ({
+        href: `/blog/${meta.slug}/`,
         label: meta.seoTitle || meta.title || meta.slug,
       }));
 
@@ -268,8 +268,8 @@ export default function seoPrerender() {
           url: `${SITE_URL}${page.path}`,
           type: 'website',
         });
-        // For the /articles/ page, inject links to every article so they aren't orphaned
-        const extraLinks = page.path === '/articles/' ? articleLinks : [];
+        // For the /blog/ page, inject links to every blog post so they aren't orphaned
+        const extraLinks = page.path === '/blog/' ? blogPostLinks : [];
         html = injectCrawlableBlock(html, buildCrawlableBlock(page.h1, { description: page.description, paragraphs: page.paragraphs || [], extraLinks }));
 
         const dir = path.join(distDir, page.path);
@@ -279,7 +279,7 @@ export default function seoPrerender() {
       }
 
       // ── Article pages ───────────────────────────────────────────────────
-      for (const meta of articleMetas) {
+      for (const meta of blogPostMetas) {
         const body = meta._body;
 
         // Extract first image from body
@@ -289,7 +289,7 @@ export default function seoPrerender() {
           if (imgMatch) image = imgMatch[1];
         }
 
-        const articleUrl = `${SITE_URL}/articles/${meta.slug}/`;
+        const articleUrl = `${SITE_URL}/blog/${meta.slug}/`;
         const title = `${meta.seoTitle || meta.title || meta.slug} | Arg Software`;
         const description = meta.excerpt || meta.subtitle || '';
 
@@ -317,14 +317,34 @@ export default function seoPrerender() {
         html = injectCrawlableBlock(html, buildCrawlableBlock(meta.title || meta.slug, {
           description: meta.excerpt || '',
           subtitle: meta.subtitle || '',
-          extraLinks: [{ href: '/articles/', label: 'Articles' }],
+          extraLinks: [{ href: '/blog/', label: 'Blog' }],
         }));
 
-        const dir = path.join(distDir, 'articles', meta.slug);
+        const dir = path.join(distDir, 'blog', meta.slug);
         fs.mkdirSync(dir, { recursive: true });
         fs.writeFileSync(path.join(dir, 'index.html'), html);
         generated++;
       }
+
+      // ── 404 page ──────────────────────────────────────────────────────
+      const notFoundHtml = replaceMetaTags(baseHtml, {
+        title: 'Page Not Found | ARG Software',
+        description: 'The page you\'re looking for doesn\'t exist. Head back to ARG Software\'s homepage.',
+        url: `${SITE_URL}/404`,
+        type: 'website',
+      });
+      // Replace robots meta tag with noindex for 404 page
+      const notFoundHtmlNoIndex = notFoundHtml.replace(
+        /<meta\s+name="robots"\s+content="[^"]*"\s*\/?>/,
+        '<meta name="robots" content="noindex, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />'
+      );
+      const notFoundCrawlable = buildCrawlableBlock('Page not found', {
+        description: 'The page you\'re looking for has moved, been deleted, or never existed. Let\'s get you back on track.',
+        extraLinks: NAV_LINKS,
+      });
+      const finalNotFoundHtml = injectCrawlableBlock(notFoundHtmlNoIndex, notFoundCrawlable);
+      fs.writeFileSync(path.join(distDir, '404.html'), finalNotFoundHtml);
+      generated++;
 
       console.log(`[seo-prerender] Generated ${generated} prerendered HTML files.`);
     },

@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 /**
  * Unified hero animation hook that auto-detects page type:
  * - Homepage: .hero_wrap present
- * - Subpages: .subpage-hero present (replaces .pp-hero, .alp-hero, .ap-hero)
- * - Legacy pages: .pp-hero, .alp-hero, .ap-hero (for backward compatibility during migration)
+ * - Subpages: .subpage-hero present (replaces .pp-hero, .blp-hero, .bp-hero)
+ * - Legacy pages: .pp-hero, .blp-hero, .bp-hero (for backward compatibility during migration)
  */
 export function useHeroAnimation() {
   useEffect(() => {
@@ -15,11 +15,11 @@ export function useHeroAnimation() {
       const heroWrap = document.querySelector('.hero_wrap');
       const subpageHero = document.querySelector('.subpage-hero');
       const isPpPage = document.querySelector('.pp-hero');
-      const isAlpPage = document.querySelector('.alp-hero');
-      const isApPage = document.querySelector('.ap-hero');
+      const isBlpPage = document.querySelector('.blp-hero');
+      const isBpPage = document.querySelector('.bp-hero');
 
       // If no hero container found yet, retry after a short delay
-      if (!heroWrap && !subpageHero && !isPpPage && !isAlpPage && !isApPage) {
+      if (!heroWrap && !subpageHero && !isPpPage && !isBlpPage && !isBpPage) {
         retryTimeout = setTimeout(initializeHeroAnimation, 100);
         return;
       }
@@ -52,7 +52,7 @@ export function useHeroAnimation() {
         const bottomEls = heroWrap.querySelectorAll(
           '.hero_bottom_paragraph, .text-button_list:not(.is-animated), .bottom_buttons-wrapper .text-button_list:not(.is-animated)'
         );
-        bottomEls.forEach((el, index) => {
+        bottomEls.forEach((el, _index) => {
           const timeout = setTimeout(() => {
             el.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
             el.style.transform =
@@ -89,7 +89,7 @@ export function useHeroAnimation() {
         });
 
         // Animate fade elements with optimized timing
-        document.querySelectorAll('.subpage-hero__fade, .ap-hero-fade').forEach((el, i) => {
+        document.querySelectorAll('.subpage-hero__fade, .bp-hero-fade').forEach((el, i) => {
           const timeout = setTimeout(
             () => {
               el.style.transition =
@@ -127,7 +127,7 @@ export function useHeroAnimation() {
             }
           });
 
-          document.querySelectorAll('.subpage-hero__fade, .ap-hero-fade').forEach(el => {
+          document.querySelectorAll('.subpage-hero__fade, .bp-hero-fade').forEach(el => {
             if (el.style.opacity === '0' || el.style.transform.includes('translateY(1rem)')) {
               el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
               el.style.opacity = '1';
@@ -147,8 +147,8 @@ export function useHeroAnimation() {
         // Legacy page detection (for backward compatibility during migration)
         let prefix = '';
         if (isPpPage) prefix = 'pp';
-        else if (isAlpPage) prefix = 'alp';
-        else if (isApPage) prefix = 'ap';
+        else if (isBlpPage) prefix = 'blp';
+        else if (isBpPage) prefix = 'bp';
 
         // Animate heading lines
         document.querySelectorAll(`.${prefix}-hero .${prefix}-heading-line`).forEach((el, i) => {
