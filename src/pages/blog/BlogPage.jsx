@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AppLink from '../../components/links/AppLink';
 import { Navbar, Footer, CTASection, SectionDivider, arrowSvg, SEO } from '../../components';
 import { SubpageHero } from '../../components/hero/SubpageHero';
-import { useScrollAnimations } from '../../hooks';
+import { useScrollAnimations, useBlogSearch } from '../../hooks';
 import { trackBlogPostClick } from '../../hooks/useAnalytics';
 
 import { loadBlogPostsMetadata } from '../../utils/blog';
@@ -25,33 +25,13 @@ const searchSvg = (
   </svg>
 );
 
-function useDebounce(value, delay) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-  return debouncedValue;
-}
-
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function BlogPage() {
   const [blogPosts] = useState(() => loadBlogPostsMetadata());
-  const [searchQuery, setSearchQuery] = useState('');
-  const debouncedQuery = useDebounce(searchQuery, 200);
+  const { searchQuery, setSearchQuery, filteredPosts, debouncedQuery, resultCount } =
+    useBlogSearch(blogPosts);
   const [page, setPage] = useState(1);
-
-  const filteredPosts = useMemo(() => {
-    if (!debouncedQuery.trim()) return blogPosts;
-    const q = debouncedQuery.toLowerCase();
-    return blogPosts.filter(
-      post =>
-        post.title.toLowerCase().includes(q) ||
-        post.tag.toLowerCase().includes(q) ||
-        post.excerpt.toLowerCase().includes(q)
-    );
-  }, [blogPosts, debouncedQuery]);
 
   const totalPages = Math.ceil(filteredPosts.length / BLOG_POSTS_PER_PAGE);
   const startIdx = (page - 1) * BLOG_POSTS_PER_PAGE;
@@ -116,7 +96,7 @@ export default function BlogPage() {
             <div className="blp-inner" ref={listRef}>
               <div className="blp-header-row">
                 <span className="blp-count blp-animate">
-                  {filteredPosts.length} blog post{filteredPosts.length !== 1 ? 's' : ''}
+                  {resultCount} blog post{resultCount !== 1 ? 's' : ''}
                   {debouncedQuery && ` matching "${debouncedQuery}"`}
                 </span>
                 <div className="blp-search blp-animate">

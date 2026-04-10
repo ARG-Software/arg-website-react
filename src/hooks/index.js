@@ -1,6 +1,7 @@
 export { useLenis } from './useLenis';
 export { useCountUp } from './useCountUp';
 export { usePageTransition } from './usePageTransition';
+export { useBlogSearch } from './useBlogSearch';
 
 export { useScrollAnimations } from './useScrollAnimations';
 
