@@ -75,6 +75,60 @@ html.lenis body {
   font-family: Neuemontreal, sans-serif;
 }
 
+.blp-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 5rem;
+  padding-bottom: 0;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.blp-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f5f5f5;
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  flex-shrink: 0;
+}
+
+.blp-search-icon {
+  color: #888;
+  display: flex;
+  align-items: center;
+}
+
+.blp-search-input {
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  font-family: Neuemontreal, sans-serif;
+  color: #333;
+  width: 180px;
+  outline: none;
+}
+
+.blp-search-input::placeholder {
+  color: #999;
+}
+
+@media (max-width: 480px) {
+  .blp-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .blp-search {
+    width: 100%;
+  }
+  .blp-search-input {
+    width: 100%;
+  }
+}
+
 /* Article row */
 .blp-article-row {
   display: grid;
@@ -90,7 +144,7 @@ html.lenis body {
 }
 .blp-article-row:first-of-type {
   border-top: 1px solid #e8e8e8;
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
 }
 .blp-article-row:hover .blp-row-title {
   opacity: 0.6;

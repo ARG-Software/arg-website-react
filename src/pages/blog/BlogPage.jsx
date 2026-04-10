@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import AppLink from '../../components/links/AppLink';
 import { Navbar, Footer, CTASection, SectionDivider, arrowSvg, SEO } from '../../components';
 import { SubpageHero } from '../../components/hero/SubpageHero';
@@ -9,16 +9,61 @@ import { loadBlogPostsMetadata } from '../../utils/blog';
 import { BLOG_POSTS_PER_PAGE } from '../../constants';
 import '../../styles/blog.css';
 
+const searchSvg = (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="11" cy="11" r="8" />
+    <path d="m21 21-4.3-4.3" />
+  </svg>
+);
+
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debouncedValue;
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function BlogPage() {
   const [blogPosts] = useState(() => loadBlogPostsMetadata());
-  const totalPages = Math.ceil(blogPosts.length / BLOG_POSTS_PER_PAGE);
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedQuery = useDebounce(searchQuery, 200);
   const [page, setPage] = useState(1);
+
+  const filteredPosts = useMemo(() => {
+    if (!debouncedQuery.trim()) return blogPosts;
+    const q = debouncedQuery.toLowerCase();
+    return blogPosts.filter(
+      post =>
+        post.title.toLowerCase().includes(q) ||
+        post.tag.toLowerCase().includes(q) ||
+        post.excerpt.toLowerCase().includes(q)
+    );
+  }, [blogPosts, debouncedQuery]);
+
+  const totalPages = Math.ceil(filteredPosts.length / BLOG_POSTS_PER_PAGE);
   const startIdx = (page - 1) * BLOG_POSTS_PER_PAGE;
-  const paginatedPosts = blogPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
+  const paginatedPosts = filteredPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
 
   const listRef = useRef(null);
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPage(1);
+  }, [debouncedQuery]);
 
   // Re-observe new article rows whenever the page changes
   useEffect(() => {
@@ -41,7 +86,7 @@ export default function BlogPage() {
     });
 
     return () => observer.disconnect();
-  }, [page]);
+  }, [page, filteredPosts.length]);
 
   function goToPage(p) {
     setPage(p);
@@ -69,12 +114,30 @@ export default function BlogPage() {
 
           <section id="blog-list" className="blp-section background-color-white">
             <div className="blp-inner" ref={listRef}>
-              <div className="blp-count blp-animate">
-                {blogPosts.length} blog post{blogPosts.length !== 1 ? 's' : ''}
+              <div className="blp-header-row">
+                <span className="blp-count blp-animate">
+                  {filteredPosts.length} blog post{filteredPosts.length !== 1 ? 's' : ''}
+                  {debouncedQuery && ` matching "${debouncedQuery}"`}
+                </span>
+                <div className="blp-search blp-animate">
+                  <span className="blp-search-icon">{searchSvg}</span>
+                  <input
+                    type="text"
+                    className="blp-search-input"
+                    placeholder="Search by title, tag..."
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    aria-label="Search blog posts"
+                  />
+                </div>
               </div>
 
-              {blogPosts.length === 0 ? (
-                <p className="blp-empty blp-animate">No blog posts yet — check back soon.</p>
+              {filteredPosts.length === 0 ? (
+                <p className="blp-empty blp-animate">
+                  {blogPosts.length === 0
+                    ? 'No blog posts yet — check back soon.'
+                    : `No posts found matching "${debouncedQuery}"`}
+                </p>
               ) : (
                 <>
                   {paginatedPosts.map((article, i) => (
