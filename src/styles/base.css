@@ -7377,6 +7377,8 @@ figcaption {
 
 @media screen and (max-width: 767px) {
   .subpage-hero {
+    height: auto;
+    min-height: unset;
     padding-top: var(--navbar-height-mobile);
   }
 
@@ -7396,6 +7398,11 @@ figcaption {
 }
 
 @media screen and (max-width: 480px) {
+  .subpage-hero {
+    height: auto;
+    min-height: unset;
+  }
+
   .subpage-hero__inner {
     padding-left: 1rem;
     padding-right: 1rem;

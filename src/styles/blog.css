@@ -926,6 +926,9 @@ html.lenis body {
   }
 }
 @media screen and (max-width: 767px) {
+  .bp-hero-meta {
+    padding-top: 1.5rem;
+  }
   .bp-body-inner {
     padding-left: 2.25rem;
     padding-right: 2.25rem;
