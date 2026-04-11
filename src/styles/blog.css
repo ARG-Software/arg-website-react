@@ -66,7 +66,6 @@ html.lenis body {
   padding: 0 4.75rem;
 }
 .blp-count {
-  padding-top: 5rem;
   padding-bottom: 0;
   font-size: 0.75rem;
   letter-spacing: 0.3em;
@@ -83,6 +82,14 @@ html.lenis body {
   padding-bottom: 0;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+.blp-count {
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #aaa;
+  font-family: Neuemontreal, sans-serif;
 }
 
 .blp-search {

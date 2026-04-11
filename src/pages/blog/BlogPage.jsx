@@ -136,7 +136,6 @@ export default function BlogPage() {
                             alt=""
                             className="blp-row-image"
                             loading={i === 0 ? 'eager' : 'lazy'}
-                            fetchPriority={i === 0 ? 'high' : undefined}
                           />
                         )}
                       </div>
