@@ -560,6 +560,13 @@ html.lenis body {
   padding: 0.4rem 0.875rem;
   border-radius: 1.5rem;
 }
+.bp-hero-fade {
+  opacity: 0;
+  transform: translateY(1rem);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
 .bp-breadcrumb {
   display: flex;
   align-items: center;
@@ -605,7 +612,7 @@ html.lenis body {
 .bp-body-inner {
   max-width: 90rem;
   margin: 0 auto;
-  padding: 7rem 4.75rem 0;
+  padding: 3rem 4.75rem 0;
   display: grid;
   grid-template-columns: 14rem 1fr 14rem;
   column-gap: 4rem;

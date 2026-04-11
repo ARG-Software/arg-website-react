@@ -7259,7 +7259,7 @@ figcaption {
 .subpage-hero {
   background-color: #0c002e;
   height: 50vh;
-  min-height: 240px;
+  min-height: 15rem;
   position: relative;
   padding-top: var(--navbar-height-desktop);
   display: flex;
@@ -7347,26 +7347,18 @@ figcaption {
 @media screen and (max-width: 991px) {
   .subpage-hero {
     height: 40vh;
-    min-height: 192px;
+    min-height: 12rem;
     padding-top: var(--navbar-height-tablet);
   }
 
   .subpage-hero--large {
     height: 44vh;
-    min-height: 211px;
+    min-height: 13.1875rem;
   }
 
   .subpage-hero--small {
     height: 34vh;
-    min-height: 163px;
-  }
-
-  .subpage-hero--large {
-    height: 55vh;
-  }
-
-  .subpage-hero--small {
-    height: 42vh;
+    min-height: 10.1875rem;
   }
 
   .subpage-hero__inner {
