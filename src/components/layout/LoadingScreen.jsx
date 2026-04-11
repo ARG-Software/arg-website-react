@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import './LoadingScreen.css';
+import '../../styles/loadingscreen.css';
 
 const COLORS = ['#F0060D', '#C924D7', '#7904FD'];
 
