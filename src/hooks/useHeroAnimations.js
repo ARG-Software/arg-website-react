@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
+import { LoadingContext } from '../providers/LoadingProvider.jsx';
 
 /**
  * Unified hero animation hook that auto-detects page type:
@@ -7,7 +8,10 @@ import { useEffect } from 'react';
  * - Legacy pages: .pp-hero, .blp-hero, .bp-hero (for backward compatibility during migration)
  */
 export function useHeroAnimation() {
+  const isLoaded = useContext(LoadingContext);
+
   useEffect(() => {
+    if (!isLoaded) return;
     const timeouts = [];
     let retryTimeout = null;
 
@@ -240,5 +244,5 @@ export function useHeroAnimation() {
       timeouts.forEach(clearTimeout);
       if (retryTimeout) clearTimeout(retryTimeout);
     };
-  }, []);
+  }, [isLoaded]);
 }

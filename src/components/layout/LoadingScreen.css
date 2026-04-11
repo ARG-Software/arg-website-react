@@ -1,0 +1,98 @@
+html.ls-active {
+  overflow: hidden;
+}
+
+.ls-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.ls-bg {
+  position: absolute;
+  inset: 0;
+  background-color: #0c002e;
+  opacity: 0;
+}
+
+/* Pills row — flex container so pills wrap cleanly on small screens */
+.ls-hello-row {
+  position: absolute;
+  top: clamp(1.25rem, 3vh, 2rem);
+  left: clamp(1.25rem, 3vw, 3rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: calc(100vw - clamp(2.5rem, 6vw, 6rem));
+}
+
+.ls-hello {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 1rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Large "Loading" text — responsive font size */
+.ls-label {
+  position: absolute;
+  bottom: clamp(1.25rem, 3vh, 2.5rem);
+  left: clamp(1.25rem, 3vw, 3rem);
+  font-size: clamp(2.5rem, 9vw, 7.5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: lowercase;
+  color: #ffffff;
+}
+
+/* Clip wrapper — overflow:hidden clips letters below the baseline during animation.
+   padding-bottom on the inner span (not here) lets descenders be visible at rest. */
+.ls-letter-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+/* padding-bottom extends the element's own height so:
+   1. The wrap grows to accommodate descenders (no clipping at yPercent:0)
+   2. yPercent:100 still fully hides the letter below the wrap boundary */
+.ls-letter {
+  display: inline-block;
+  will-change: transform;
+  padding-bottom: 0.15em;
+}
+
+/* Counter — matches label size and bottom position */
+.ls-counter {
+  position: absolute;
+  bottom: clamp(1.25rem, 3vh, 2.5rem);
+  right: clamp(1.25rem, 3vw, 3rem);
+  font-size: clamp(2.5rem, 9vw, 7.5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-weight: 400;
+  color: #ffffff;
+  padding-bottom: 0.15em;
+}
+
+.ls-panels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ls-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  will-change: transform;
+}

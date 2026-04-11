@@ -576,30 +576,31 @@ th {
   justify-content: center !important;
 }
 
-/* Page transition overlay */
+/* Page transition overlay — curtain effect */
 .pt-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: #0c002e; /* match your brand */
-  opacity: 0;
-  transition: opacity 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  background: #0c002e;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 380ms cubic-bezier(0.76, 0, 0.24, 1);
   z-index: 999999;
 }
 
-/* cover current page */
+/* cover: curtain drops from top */
 .pt-overlay.covering {
-  opacity: 1;
+  transform: scaleY(1);
 }
 
-/* reveal next page */
+/* reveal: curtain lifts from bottom (origin stays at top, bottom edge rises) */
 .pt-overlay.revealing {
-  opacity: 0;
+  transform: scaleY(0);
 }
 
 /* idle */
 .pt-overlay.idle {
-  opacity: 0;
+  transform: scaleY(0);
 }
 
 /* ============================================
