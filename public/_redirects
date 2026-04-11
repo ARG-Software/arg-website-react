@@ -13,6 +13,12 @@
 /blog /index.html 200
 /blog/\* /index.html 200
 
+# Legacy URL redirects (prevents 404 from old article paths)
+
+/articles/*    /blog/:splat    301
+/clients/*     /partners/:splat   301
+/team/*        /partners/:splat   301
+
 # Everything else → 404 page with correct HTTP status
 
 /\* /404.html 404
