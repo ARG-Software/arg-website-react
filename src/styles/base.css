@@ -1,3 +1,27 @@
+/* Native scrollbar styling */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff #0c002e;
+}
+html::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+html::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 999px;
+  border: 2.5px solid #0c002e;
+}
+html::-webkit-scrollbar-button {
+  display: none;
+}
+html::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 /* PurgeCSS-preserved CSS extracted from webflow-icons font-face rule */
 /* This CSS was previously embedded inline within the font data URL */
 /* Generated on 2026-03-28 */
