@@ -90,11 +90,12 @@ const renderBlock = (block, i) => {
         </ul>
       );
     case 'image':
-      return (
-        <figure key={i} className="bp-figure bp-animate" style={{ transitionDelay: delay }}>
-          <img src={block.src} alt={block.alt} className="bp-image" loading="lazy" />
-        </figure>
-      );
+      // return (
+      //   <figure key={i} className="bp-figure bp-animate" style={{ transitionDelay: delay }}>
+      //     <img src={block.src} alt={block.alt} className="bp-image" loading="lazy" />
+      //   </figure>
+      // );
+      break;
     default:
       return null;
   }
