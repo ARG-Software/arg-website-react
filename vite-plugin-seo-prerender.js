@@ -60,21 +60,21 @@ const STATIC_PAGES = [
       'We also partner with Angry Ventures, a hands-on venture studio that builds and scales digital products, and North Music Group, a music rights management company providing modern tools for catalogue management and royalty tracking.',
     ],
   },
-  {
-    path: '/projects/',
-    title: 'Case Studies & Projects | Arg Software',
-    h1: 'Case Studies & Projects',
-    description:
-      'Explore how Arg Software delivers impactful solutions across fintech, open payments, and digital platforms. Real projects, real results.',
-    paragraphs: [
-      'Arg Software has delivered production-ready software across fintech, music technology, and digital marketing. Our work spans 6 countries, handling 2000 transactions per second with over 1000 production deploys.',
-      'For Mojaloop, we contributed to the vNext open-source financial hub, enhancing scalability, security, and modularity through microservices architecture and real-time transaction settlement for global digital payments.',
-      'For Dokutar, we migrated a legacy PHP API to TypeScript, delivering a secure GDPR-compliant cloud platform for tax documentation with automated data capture and workflow automation.',
-      'For SkyTracks, we helped build a cloud-based music production studio with real-time collaboration via WebRTC, virtual instruments, and an integrated digital audio workstation accessible from any browser.',
-      'For Vector, we rebuilt a crypto trading platform from scratch, connecting a non-functional UI to a fully operational backend supporting exchange integrations and automated trade signals.',
-      'For Royalty Flush, we partnered with North Music Group to create a music rights management platform with catalog management, automated royalty tracking, and licensing tools.',
-    ],
-  },
+  // {
+  //   path: '/projects/',
+  //   title: 'Case Studies & Projects | Arg Software',
+  //   h1: 'Case Studies & Projects',
+  //   description:
+  //     'Explore how Arg Software delivers impactful solutions across fintech, open payments, and digital platforms. Real projects, real results.',
+  //   paragraphs: [
+  //     'Arg Software has delivered production-ready software across fintech, music technology, and digital marketing. Our work spans 6 countries, handling 2000 transactions per second with over 1000 production deploys.',
+  //     'For Mojaloop, we contributed to the vNext open-source financial hub, enhancing scalability, security, and modularity through microservices architecture and real-time transaction settlement for global digital payments.',
+  //     'For Dokutar, we migrated a legacy PHP API to TypeScript, delivering a secure GDPR-compliant cloud platform for tax documentation with automated data capture and workflow automation.',
+  //     'For SkyTracks, we helped build a cloud-based music production studio with real-time collaboration via WebRTC, virtual instruments, and an integrated digital audio workstation accessible from any browser.',
+  //     'For Vector, we rebuilt a crypto trading platform from scratch, connecting a non-functional UI to a fully operational backend supporting exchange integrations and automated trade signals.',
+  //     'For Royalty Flush, we partnered with North Music Group to create a music rights management platform with catalog management, automated royalty tracking, and licensing tools.',
+  //   ],
+  // },
   {
     path: '/blog/',
     title: 'Blog & Insights | Arg Software',
@@ -86,6 +86,18 @@ const STATIC_PAGES = [
       'We write practical guides on topics like enforcing clean architecture in TypeScript, CQRS without MediatR in .NET, dependency injection patterns in ASP.NET Core, and functional error handling with the Result pattern.',
       'Our DevOps blog posts cover running Docker natively on Windows with WSL2, local Kubernetes clusters with NestJS and PostgreSQL, and debugging microservices with Prometheus and OpenTelemetry.',
       'We also write about software engineering culture, including the art of pull requests, building scalable monorepos with Nx and NestJS, and the real impact of AI on software development teams.',
+    ],
+  },
+  {
+    path: '/careers/',
+    title: 'Career & Culture | Arg Software',
+    h1: 'Career & Culture',
+    description:
+      'Join ARG and tackle complex problems in high-concurrency environments. Build systems that handle thousands of transactions per second with total confidence.',
+    paragraphs: [
+      'At ARG, we are architecture-first. Working with us means tackling complex problems in high-concurrency environments, from open-payment protocols to real-time audio synchronization.',
+      'We offer career opportunities in backend engineering, frontend development, DevOps, security, and data engineering.',
+      'We welcome applications from all qualified candidates, including persons with disabilities, as part of our commitment to inclusion and equal opportunity.',
     ],
   },
   // {

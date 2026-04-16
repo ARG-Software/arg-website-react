@@ -93,18 +93,20 @@ export function useHeroAnimation() {
         });
 
         // Animate fade elements with optimized timing
-        document.querySelectorAll('.subpage-hero__fade, .bp-hero-fade').forEach((el, i) => {
-          const timeout = setTimeout(
-            () => {
-              el.style.transition =
-                'opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
-              el.style.opacity = '1';
-              el.style.transform = 'translate3d(0, 0, 0)';
-            },
-            400 + i * 60 // Optimized: was 600 + i * 80
-          );
-          timeouts.push(timeout);
-        });
+        document
+          .querySelectorAll('.subpage-hero__fade, .breadcrumb, .bp-hero-fade')
+          .forEach((el, i) => {
+            const timeout = setTimeout(
+              () => {
+                el.style.transition =
+                  'opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                el.style.opacity = '1';
+                el.style.transform = 'translate3d(0, 0, 0)';
+              },
+              400 + i * 60 // Optimized: was 600 + i * 80
+            );
+            timeouts.push(timeout);
+          });
 
         // Animate team/partners page intro lines (tp-intro-line)
         document.querySelectorAll('.tp-intro-line').forEach((el, i) => {

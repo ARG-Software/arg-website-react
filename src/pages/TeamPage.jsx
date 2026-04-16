@@ -92,12 +92,15 @@ export default function TeamPage() {
 
         <main className="main-wrapper">
           {/* HERO */}
-          <SubpageHero title={["You can't do anything", 'without brains.']} />
+          <SubpageHero
+            title={["You can't do anything", 'without brains.']}
+            subtitle="A collective of passionate engineers and visionaries driving digital transformation"
+          />
 
           {/* FOUNDERS INTRO */}
           <section className="tp-intro-section background-color-white">
             <div
-              className="pp-partners-inner"
+              className="container padding-global"
               style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}
             >
               <div className="tp-intro-center">
@@ -127,8 +130,8 @@ export default function TeamPage() {
           </section>
 
           {/* FOUNDERS SPOTLIGHT */}
-          <section className="tp-founders-section">
-            <div className="tp-founders-inner">
+          <section className="tp-founders-section padding-section-large">
+            <div className="tp-founders-inner container padding-global">
               <div className="tp-founders-grid">
                 {FOUNDERS.map((f, i) => (
                   <div
@@ -201,8 +204,8 @@ export default function TeamPage() {
           </section>
 
           {/* TEAM LIST */}
-          <section className="pp-partners-section background-color-white">
-            <div className="pp-partners-inner">
+          <section className="pp-partners-section background-color-white padding-section-xlarge">
+            <div className="pp-partners-inner container padding-global">
               {TEAM.map((member, i) => (
                 <PartnerRow
                   key={i}

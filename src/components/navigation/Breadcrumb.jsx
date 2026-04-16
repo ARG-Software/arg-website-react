@@ -1,7 +1,7 @@
 import AppLink from '../links/AppLink';
 
 /**
- * Breadcrumb component matching Article page style exactly
+ * Breadcrumb component for subpages
  * @param {Object} props
  * @param {Array} props.items - Array of breadcrumb items: { label: string, path?: string, isTag?: boolean }
  */
@@ -9,14 +9,14 @@ export function Breadcrumb({ items = [] }) {
   if (!items.length) return null;
 
   return (
-    <nav className="bp-hero-meta bp-hero-fade" aria-label="Breadcrumb">
-      <ol className="bp-breadcrumb">
+    <nav className="breadcrumb" aria-label="Breadcrumb">
+      <ol className="breadcrumb">
         {items.map((item, index) => {
           const isTag = item.isTag || false;
 
           if (isTag) {
             return (
-              <li key={index} className="bp-tag">
+              <li key={index} className="tag">
                 {item.label}
               </li>
             );

@@ -90,10 +90,21 @@ export default function BlogPage() {
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">
-          <SubpageHero title={['Blog from', 'the ARG team']} size="small" />
+          <SubpageHero
+            title={['Blog from', 'the ARG team']}
+            subtitle="Technical insights, engineering deep dives, and industry perspectives from our team"
+            size="small"
+            breadcrumbs={[
+              { label: 'Home', path: '/' },
+              { label: 'Blog', path: '/blog/' }
+            ]}
+          />
 
-          <section id="blog-list" className="blp-section background-color-white">
-            <div className="blp-inner" ref={listRef}>
+          <section
+            id="blog-list"
+            className="blp-section background-color-white padding-section-xlarge"
+          >
+            <div className="blp-inner container padding-global" ref={listRef}>
               <div className="blp-header-row">
                 <span className="blp-count blp-animate">
                   {resultCount} blog post{resultCount !== 1 ? 's' : ''}
@@ -138,6 +149,7 @@ export default function BlogPage() {
                             loading={i === 0 ? 'eager' : 'lazy'}
                           />
                         )}
+                        <span className="blp-row-date">{article.date}</span>
                       </div>
                       <div className="blp-row-body">
                         <h2 className="blp-row-title">{article.title}</h2>

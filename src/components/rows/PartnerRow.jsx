@@ -49,16 +49,12 @@ export function PartnerRow({
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-button w-inline-block"
+            className="button-base button-contact"
             onClick={() => trackOutbound(link, name, 'partner_row')}
           >
-            <div className="text-button_list is-dark">
-              <div className="text-button_text">Visit website</div>
-              <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-            </div>
-            <div className="text-button_list is-animated is-dark">
-              <div className="text-button_text">Open site</div>
-              <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+            <div className="button-base_text_wrap">
+              <div className="button-base__button-text">Visit website</div>
+              <div className="button-base__button-text is-animated">Open site {arrowSvg}</div>
             </div>
           </a>
         )}

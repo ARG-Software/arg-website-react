@@ -9,6 +9,7 @@ import { trackBlogPostShare } from '../../hooks/useAnalytics';
 import { loadBlogPostsWithContent } from '../../utils/blog';
 import '../../styles/blog.css';
 
+
 // ─── Load all blog posts with full content ──────────────────────────────────
 
 const BLOG_POSTS = loadBlogPostsWithContent();
@@ -237,12 +238,12 @@ export default function BlogPostPage() {
               { label: 'Blog', path: '/blog/' },
               { label: BLOG_POST.tag, isTag: true },
             ]}
-            size="large"
+            size="small"
           />
 
           {/* BLOG_POST BODY */}
-          <section className="bp-body background-color-white">
-            <div className="bp-body-inner">
+          <section className="bp-body background-color-white padding-section-xlarge">
+            <div className="bp-body-inner container padding-global">
               <aside className="bp-sidebar-left">
                 {sectionLinks.length > 0 && (
                   <>

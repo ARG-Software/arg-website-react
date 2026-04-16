@@ -1,91 +1,6 @@
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-.lenis.lenis-stopped {
-  /* overflow: hidden; — removed: blocks scroll after SPA nav */
-}
-.w-nav-overlay {
-  visibility: hidden;
-}
-
-/* Hero */
-
-.pp-hero-inner {
-  padding-left: 4.75rem;
-  padding-right: 4.75rem;
-  max-width: 90rem;
-  margin: 0 auto;
-  width: 100%;
-}
-.pp-hero-label {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 0.75rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  margin-bottom: 1.75rem;
-  opacity: 0;
-  transform: translateY(1rem);
-  font-family: Neuemontreal, sans-serif;
-}
-.pp-hero h1 {
-  font-size: 4.5rem;
-  font-weight: 400;
-  line-height: 1.05;
-  color: #fff;
-  margin: 0;
-  font-family: Neuemontreal, sans-serif;
-}
-.pp-hero .heading_line {
-  overflow: hidden;
-}
-.pp-heading-line {
-  display: block;
-  transform: translate3d(0, 150%, 0) rotateZ(4deg);
-  font-weight: 400;
-}
-.pp-hero-line {
-  position: absolute;
-  bottom: 0;
-  left: 4.75rem;
-  right: 4.75rem;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-/* Scroll reveal */
-.pp-animate {
-  opacity: 0;
-  transform: translate3d(0, 2rem, 0);
-  transition:
-    opacity 0.8s cubic-bezier(0.215, 0.61, 0.355, 1),
-    transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-.pp-animate.pp-visible {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-.pp-animate.pp-d1 {
-  transition-delay: 0.12s;
-}
-.pp-animate.pp-d2 {
-  transition-delay: 0.24s;
-}
-
 /* Team list section */
 .pp-partners-section {
   background-color: #fff;
-  padding-top: 0;
-  padding-bottom: 10rem;
-}
-.pp-partners-inner {
-  padding-left: 4.75rem;
-  padding-right: 4.75rem;
-  max-width: 90rem;
-  margin: 0 auto;
 }
 
 /* Each member row */
@@ -159,24 +74,10 @@ html.lenis body {
 /* Founders spotlight section */
 .tp-founders-section {
   background-color: #0c002e;
-  padding-top: 7rem;
-  padding-bottom: 7rem;
   position: relative;
 }
-.tp-founders-section::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 4.75rem;
-  right: 4.75rem;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.1);
-}
+
 .tp-founders-inner {
-  padding-left: 4.75rem;
-  padding-right: 4.75rem;
-  max-width: 90rem;
-  margin: 0 auto;
 }
 /* Intro section */
 .tp-intro-section {
@@ -187,7 +88,7 @@ html.lenis body {
   box-sizing: border-box;
   overflow: hidden;
 }
-.tp-intro-section .pp-partners-inner {
+.tp-intro-section .container-large {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -410,32 +311,12 @@ html.lenis body {
 }
 
 @media screen and (max-width: 991px) {
-  .tp-founders-section::after {
-    left: 3rem;
-    right: 3rem;
-  }
-  .tp-founders-inner {
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
-  .tp-founders-section {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-  }
-  .pp-hero-inner {
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
   .pp-hero h1 {
     font-size: 3.25rem;
   }
   .pp-hero-line {
     left: 3rem;
     right: 3rem;
-  }
-  .pp-partners-inner {
-    padding-left: 3rem;
-    padding-right: 3rem;
   }
   .pp-partner-row {
     gap: 3.5rem;
@@ -460,14 +341,7 @@ html.lenis body {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  .tp-founders-inner {
-    padding-left: 2.25rem;
-    padding-right: 2.25rem;
-  }
-  .tp-founders-section::after {
-    left: 2.25rem;
-    right: 2.25rem;
-  }
+
   .tp-founder-photo {
     aspect-ratio: 4 / 3;
   }
@@ -482,10 +356,6 @@ html.lenis body {
     min-height: 50vh;
     padding-bottom: 4rem;
   }
-  .pp-hero-inner {
-    padding-left: 2.25rem;
-    padding-right: 2.25rem;
-  }
   .pp-hero h1 {
     font-size: 2.5rem;
   }
@@ -493,13 +363,7 @@ html.lenis body {
     left: 2.25rem;
     right: 2.25rem;
   }
-  .pp-partners-section {
-    padding-bottom: 6rem;
-  }
-  .pp-partners-inner {
-    padding-left: 2.25rem;
-    padding-right: 2.25rem;
-  }
+
   .pp-partner-row,
   .pp-partner-row.pp-flip {
     flex-direction: column;
@@ -521,22 +385,6 @@ html.lenis body {
   }
 }
 @media screen and (max-width: 479px) {
-  .tp-founders-inner {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  .tp-founders-section::after {
-    left: 1rem;
-    right: 1rem;
-  }
-  .pp-hero-inner {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  .pp-partners-inner {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
   .pp-hero-line {
     left: 1rem;
     right: 1rem;
@@ -551,11 +399,7 @@ html.lenis body {
   .tp-intro-heading {
     font-size: clamp(2rem, 3vw, 3rem);
   }
-  .pp-hero-inner,
-  .pp-partners-inner {
-    padding-left: 5rem;
-    padding-right: 5rem;
-  }
+
   .pp-hero-line {
     left: 5rem;
     right: 5rem;
@@ -570,11 +414,7 @@ html.lenis body {
   .tp-intro-heading {
     font-size: clamp(1.5rem, 2.5vw, 2.5rem);
   }
-  .pp-hero-inner,
-  .pp-partners-inner {
-    padding-left: 3.5rem;
-    padding-right: 3.5rem;
-  }
+
   .pp-hero-line {
     left: 3.5rem;
     right: 3.5rem;

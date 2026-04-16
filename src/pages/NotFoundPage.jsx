@@ -2,6 +2,7 @@ import { Logo, SEO } from '../components';
 import AppLink from '../components/links/AppLink';
 import { useNotFoundPageScene } from '../hooks/useNotFoundPageScene';
 import { trackCTA } from '../hooks/useAnalytics';
+
 import '../styles/404.css';
 
 export default function NotFoundPage() {

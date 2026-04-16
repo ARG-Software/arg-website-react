@@ -13,10 +13,7 @@ import { Breadcrumb } from '../navigation/Breadcrumb';
 export function SubpageHero({ title, subtitle, breadcrumbs, children, size = 'default' }) {
   useHeroAnimation();
 
-  // Convert title to array if it's a string
   const titleLines = Array.isArray(title) ? title : [title];
-
-  // Determine size class
   const sizeClass = `subpage-hero--${size}`;
 
   return (

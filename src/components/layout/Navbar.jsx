@@ -18,11 +18,7 @@ const navLinks = [
   { to: '/#contact', label: 'Contact' },
 ];
 
-export function Navbar({
-  variant: _variant = 'transparent',
-  position: _position = 'absolute',
-  isHomePage: _isHomePage = false,
-}) {
+export function Navbar({ variant: _variant = 'transparent', position: _position = 'absolute' }) {
   const lenis = useLenis();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);

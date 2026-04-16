@@ -223,10 +223,13 @@ export default function ProjectsPage() {
               href="https://zcal.co/argsoftware/project"
               target="_blank"
               rel="noopener noreferrer"
-              className="prp-btn prp-reveal prp-delay-2"
+              className={`button-base button-contact prp-reveal prp-delay-2`}
               onClick={() => trackCTA('book_meeting', 'projects_cta')}
             >
-              Book a Meeting {arrowSvg}
+              <div className="button-base_text_wrap">
+                <div className="button-base__button-text">Book a Meeting</div>
+                <div className="button-base__button-text is-animated">Let's meet {arrowSvg}</div>
+              </div>
             </a>
           </div>
         </section>

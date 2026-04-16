@@ -114,12 +114,15 @@ export default function PartnersPage() {
 
         <main className="main-wrapper">
           {/* HERO */}
-          <SubpageHero title={['They trusted us.', "It's your time now."]} />
+          <SubpageHero
+            title={['They trusted us.', "It's your time now."]}
+            subtitle="Trusted by industry leaders across fintech, blockchain, and digital innovation"
+          />
 
           {/* INTRO */}
           <section className="tp-intro-section background-color-white">
             <div
-              className="pp-partners-inner"
+              className="container padding-global"
               style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}
             >
               <div className="tp-intro-center">
@@ -136,8 +139,8 @@ export default function PartnersPage() {
           </section>
 
           {/* PARTNERS */}
-          <section className="pp-partners-section background-color-white">
-            <div className="pp-partners-inner">
+          <section className="pp-partners-section background-color-white padding-section-xlarge">
+            <div className="pp-partners-inner container padding-global">
               {PARTNERS.map((p, i) => (
                 <PartnerRow
                   key={i}

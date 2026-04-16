@@ -1,0 +1,88 @@
+{
+  "jobs": [
+    {
+      "id": "1",
+      "title": "Senior Backend Engineer",
+      "department": "Engineering",
+      "location": "Riyadh, Saudi Arabia",
+      "type": "Full-time",
+      "description": "Join our engineering team to design and build high-concurrency systems handling thousands of transactions per second. You'll work on open-payment protocols and scalable backend architectures.",
+      "requirements": [
+        "5+ years of backend development experience",
+        "Expert in distributed systems and microservices",
+        "Experience with high-concurrency environments",
+        "Strong knowledge of TypeScript, Node.js, or Go"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Frontend Engineer",
+      "department": "Engineering",
+      "location": "Riyadh, Saudi Arabia",
+      "type": "Full-time",
+      "description": "Build responsive, performant web applications using modern frameworks. You'll collaborate with designers and backend engineers to create seamless user experiences.",
+      "requirements": [
+        "3+ years of frontend development experience",
+        "Expert in React or Vue.js",
+        "Strong CSS and responsive design skills",
+        "Experience with state management libraries"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "DevOps Engineer",
+      "department": "Infrastructure",
+      "location": "Riyadh, Saudi Arabia",
+      "type": "Full-time",
+      "description": "Design and maintain cloud infrastructure, CI/CD pipelines, and monitoring systems. Ensure our systems scale reliably under high load.",
+      "requirements": [
+        "4+ years of DevOps/SRE experience",
+        "Expert in AWS or GCP",
+        "Strong Kubernetes and Docker experience",
+        "Experience with infrastructure as code (Terraform)"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Technical Project Manager",
+      "department": "Product",
+      "location": "Riyadh, Saudi Arabia",
+      "type": "Full-time",
+      "description": "Lead cross-functional teams to deliver complex technical projects. You'll bridge the gap between business requirements and engineering execution.",
+      "requirements": [
+        "5+ years of technical project management",
+        "Experience with Agile/Scrum methodologies",
+        "Strong technical background to understand engineering challenges",
+        "Excellent communication skills"
+      ]
+    },
+    {
+      "id": "5",
+      "title": "Security Engineer",
+      "department": "Security",
+      "location": "Riyadh, Saudi Arabia",
+      "type": "Full-time",
+      "description": "Ensure the security of our systems and data. You'll conduct security audits, implement security controls, and respond to security incidents.",
+      "requirements": [
+        "4+ years of security engineering experience",
+        "Expert in application security and penetration testing",
+        "Experience with security compliance frameworks",
+        "Strong knowledge of cryptography"
+      ]
+    },
+    {
+      "id": "6",
+      "title": "Data Engineer",
+      "department": "Data",
+      "location": "Riyadh, Saudi Arabia",
+      "type": "Full-time",
+      "description": "Build and maintain data pipelines that power our analytics and machine learning initiatives. Work with large-scale data processing frameworks.",
+      "requirements": [
+        "3+ years of data engineering experience",
+        "Expert in SQL and Python",
+        "Experience with data warehousing solutions",
+        "Strong knowledge of ETL/ELT processes"
+      ]
+    }
+  ]
+}
