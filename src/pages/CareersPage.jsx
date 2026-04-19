@@ -165,7 +165,7 @@ export default function CareersPage() {
             ]}
           />
 
-          <section className="cp-values-section padding-section-xlarge">
+          <section className="cp-values-section padding-section-xlarge border-radius-bottom">
             <div className="cp-container container padding-global">
               <div className="cp-section-header">
                 <h2 className="cp-section-title">
@@ -186,7 +186,7 @@ export default function CareersPage() {
             </div>
           </section>
 
-          <section className="cp-whyus-section padding-section-large">
+          <section className="cp-whyus-section padding-section-large border-radius-bottom">
             <div className="cp-container container padding-global">
               <div className="cp-whyus-content" data-animate="fade-up">
                 <h2 className="cp-whyus-title">{WHY_US_CONTENT.title}</h2>
@@ -195,7 +195,7 @@ export default function CareersPage() {
             </div>
           </section>
 
-          <section className="cp-jobs-section padding-section-large">
+          <section className="cp-jobs-section padding-section-large border-radius-bottom">
             <div className="cp-container container padding-global">
               <div className="cp-section-header">
                 <h2 className="cp-section-title">

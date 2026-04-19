@@ -20,8 +20,6 @@
 /* Values Section */
 .cp-values-section {
   background-color: #fff;
-  border-bottom-left-radius: 1.25rem;
-  border-bottom-right-radius: 1.25rem;
 }
 .cp-values-grid {
   display: grid;
@@ -71,8 +69,6 @@
 /* Why Us Section */
 .cp-whyus-section {
   background-color: #0c002e;
-  border-bottom-left-radius: 1.25rem;
-  border-bottom-right-radius: 1.25rem;
 }
 .cp-whyus-content {
   max-width: 56rem;
@@ -98,8 +94,6 @@
 /* Jobs Section */
 .cp-jobs-section {
   background-color: #fff;
-  border-bottom-left-radius: 1.25rem;
-  border-bottom-right-radius: 1.25rem;
 }
 .cp-jobs-list {
   display: flex;

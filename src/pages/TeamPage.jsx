@@ -204,7 +204,7 @@ export default function TeamPage() {
           </section>
 
           {/* TEAM LIST */}
-          <section className="pp-partners-section background-color-white padding-section-xlarge">
+          <section className="pp-partners-section background-color-white padding-section-xlarge border-radius-bottom">
             <div className="pp-partners-inner container padding-global">
               {TEAM.map((member, i) => (
                 <PartnerRow

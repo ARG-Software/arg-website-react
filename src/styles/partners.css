@@ -169,12 +169,10 @@
 /* Partners list */
 .pp-partners-section {
   background-color: #fff;
-  border-bottom-left-radius: 1.25rem;
-  border-bottom-right-radius: 1.25rem;
 }
 
 .pp-partners-inner {
-  display: grid!important;
+  display: grid !important;
 }
 
 /* Each partner row */

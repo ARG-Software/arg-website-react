@@ -31,8 +31,11 @@ export function AboutSection({ className = '' }) {
           </h2>
           <div id="about-content-grid" className="about_content">
             <p className="about_paragraph">
-             ARG builds digital products designed to grow alongside your business. Whether you are a startup finding your footing or an enterprise scaling to new heights, we act as your long-term partner—not just another vendor.
-             We don't just write code; we solve business problems. By combining technical rigour with strategic product thinking, we ensure your software is ready for where you’re going, not just where you are today.
+              ARG builds digital products designed to grow alongside your business. Whether you are
+              a startup finding your footing or an enterprise scaling to new heights, we act as your
+              long-term partner—not just another vendor. We don't just write code; we solve business
+              problems. By combining technical rigour with strategic product thinking, we ensure
+              your software is ready for where you’re going, not just where you are today.
               <p>Solid Architecture, built to scale.</p>
               <p>Clean Code, maintainable and robust.</p>
               <p>True Partnership, we’re with you from the first sprint to the tenth iteration.</p>

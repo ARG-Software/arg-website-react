@@ -244,8 +244,6 @@
   color: #fff;
   position: relative;
   overflow: hidden;
-  border-bottom-left-radius: 1.25rem;
-  border-bottom-right-radius: 1.25rem;
 }
 .prp-cta::before {
   content: '';

@@ -96,7 +96,7 @@ export default function BlogPage() {
             size="small"
             breadcrumbs={[
               { label: 'Home', path: '/' },
-              { label: 'Blog', path: '/blog/' }
+              { label: 'Blog', path: '/blog/' },
             ]}
           />
 

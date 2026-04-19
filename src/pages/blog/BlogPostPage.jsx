@@ -9,7 +9,6 @@ import { trackBlogPostShare } from '../../hooks/useAnalytics';
 import { loadBlogPostsWithContent } from '../../utils/blog';
 import '../../styles/blog.css';
 
-
 // ─── Load all blog posts with full content ──────────────────────────────────
 
 const BLOG_POSTS = loadBlogPostsWithContent();

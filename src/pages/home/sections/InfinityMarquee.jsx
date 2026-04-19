@@ -55,32 +55,23 @@ export function InfinityMarquee({ className = '' }) {
   // capitalize all services
 
   const SERVICES = [
-            'Custom Software',
-            'SaaS Development',
-            'Server Infrastructure',
-            'Prototyping',
-            'AI',
-            'MVP',
-            'Backend Development',
-            'Frontend Development'
-          ].join(' \u2022 ');
-  
+    'Custom Software',
+    'SaaS Development',
+    'Server Infrastructure',
+    'Prototyping',
+    'AI',
+    'MVP',
+    'Backend Development',
+    'Frontend Development',
+  ].join(' \u2022 ');
 
   return (
     <div className={`section_infinity background-color-gray overflow-hidden ${className}`.trim()}>
       <div className="infinity_list">
-        <p className="infinity_text">
-          {' '}
-          {SERVICES}
-          {' '}
-        </p>
+        <p className="infinity_text"> {SERVICES} </p>
       </div>
       <div className="infinity_list">
-        <p className="infinity_text">
-          {' '}
-          {SERVICES}
-         {' '}
-        </p>
+        <p className="infinity_text"> {SERVICES} </p>
       </div>
     </div>
   );

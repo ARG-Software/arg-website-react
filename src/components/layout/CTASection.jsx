@@ -40,7 +40,7 @@ export function CTASection({
   const innerContent = (
     <div className="container-large">
       <div className="padding-bottom padding-80-40"></div>
-      <div className="cta-wrapper">
+      <div className="cta-wrapper border-radius-all">
         <div className="cta-content">
           <div className="heading_wrap">
             {renderTitle ? (

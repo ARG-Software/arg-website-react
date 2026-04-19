@@ -192,7 +192,7 @@ export function WorkStatsSection({ className = '' }) {
   return (
     <section
       id="work-with-us"
-      className={`section_work background-color-white padding-section-large ${className}`.trim()}
+      className={`section_work background-color-white padding-section-large border-radius-top ${className}`.trim()}
     >
       <div className="padding-global">
         <div className="container-medium">

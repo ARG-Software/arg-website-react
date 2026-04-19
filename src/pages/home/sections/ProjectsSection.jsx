@@ -159,7 +159,7 @@ export function ProjectsSection({ className = '' }) {
     <section
       id="cases"
       data-w-id="8e4ba5b9-2e4a-5f51-aae7-91657d6edc11"
-      className={`projects_wrap background-color-white padding-section-xlarge ${className}`.trim()}
+      className={`projects_wrap background-color-white padding-section-xlarge border-radius-bottom ${className}`.trim()}
     >
       <div className="projects_contain container padding-global">
         <div className="projects_heading-wrapper">

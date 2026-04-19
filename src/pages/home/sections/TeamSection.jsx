@@ -35,7 +35,7 @@ export function TeamSection({ className = '' }) {
   return (
     <section
       id="team"
-      className={`section_team background-color-white padding-section-large ${className}`.trim()}
+      className={`section_team background-color-white padding-section-large border-radius-bottom ${className}`.trim()}
     >
       <div className="padding-global">
         <div className="container-medium">

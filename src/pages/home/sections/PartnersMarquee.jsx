@@ -106,7 +106,7 @@ export function PartnersMarquee({ className = '' }) {
   return (
     <section
       id="partners-marquee"
-      className={`partners_wrap background-color-white padding-section-compact ${className}`.trim()}
+      className={`partners_wrap background-color-white padding-section-compact border-radius-top ${className}`.trim()}
     >
       <div className="partners_marquee-outer">
         <div className="partners_marquee-track">

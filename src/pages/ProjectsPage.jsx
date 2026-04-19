@@ -209,7 +209,7 @@ export default function ProjectsPage() {
         ))}
 
         {/* CTA */}
-        <section className="prp-cta">
+        <section className="prp-cta border-radius-bottom">
           <div className="prp-container prp-cta-inner">
             <h2 className="prp-reveal">
               Ready to elevate
