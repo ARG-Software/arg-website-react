@@ -117,10 +117,15 @@ export default function PartnersPage() {
           <SubpageHero
             title={['They trusted us.', "It's your time now."]}
             subtitle="Trusted by industry leaders across fintech, blockchain, and digital innovation"
+            breadcrumbs={[
+              { label: 'Home', path: '/' },
+              { label: 'Partners', path: '/partners/' },
+            ]}
+            size="small"
           />
 
           {/* INTRO */}
-          <section className="tp-intro-section background-color-white">
+          <section className="tp-intro-section background-color-white border-radius-top">
             <div
               className="container padding-global"
               style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}
@@ -139,7 +144,7 @@ export default function PartnersPage() {
           </section>
 
           {/* PARTNERS */}
-          <section className="pp-partners-section background-color-white padding-section-xlarge">
+          <section className="pp-partners-section background-color-white padding-section-xlarge border-radius-bottom">
             <div className="pp-partners-inner container padding-global">
               {PARTNERS.map((p, i) => (
                 <PartnerRow

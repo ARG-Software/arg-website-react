@@ -102,7 +102,7 @@ export default function BlogPage() {
 
           <section
             id="blog-list"
-            className="blp-section background-color-white padding-section-xlarge"
+            className="blp-section background-color-white padding-section-xlarge border-radius-all"
           >
             <div className="blp-inner container padding-global" ref={listRef}>
               <div className="blp-header-row">

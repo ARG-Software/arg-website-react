@@ -63,15 +63,18 @@ export function InfinityMarquee({ className = '' }) {
     'MVP',
     'Backend Development',
     'Frontend Development',
-  ].join(' \u2022 ');
+  ];
+
+  const servicesText = SERVICES.join('   •   ') + '   •   ';
+  // Duplicate the text to create a seamless loop
 
   return (
     <div className={`section_infinity background-color-gray overflow-hidden ${className}`.trim()}>
       <div className="infinity_list">
-        <p className="infinity_text"> {SERVICES} </p>
+        <p className="infinity_text"> {servicesText} </p>
       </div>
       <div className="infinity_list">
-        <p className="infinity_text"> {SERVICES} </p>
+        <p className="infinity_text"> {servicesText} </p>
       </div>
     </div>
   );

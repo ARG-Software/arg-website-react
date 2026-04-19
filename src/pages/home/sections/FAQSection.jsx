@@ -289,12 +289,15 @@ export function FAQSection({ className = '' }) {
   }, []);
 
   return (
-    <section id="faq" className={`section_faq padding-section-medium ${className}`.trim()}>
+    <section
+      id="faq"
+      className={`section_faq padding-section-medium ${className} background-color-white border-radius-all`.trim()}
+    >
       <div className="padding-global">
         <div className="container-large">
           <div className="faq_header">
             <div className="heading_wrap">
-              <h2 style={{ color: '#fff' }}>
+              <h2 style={{ color: '#0000' }}>
                 Common questions,
                 <br />
                 honest answers.

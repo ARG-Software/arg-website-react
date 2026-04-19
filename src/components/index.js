@@ -16,7 +16,7 @@ export { CaseStudyCard } from './cards/CaseStudyCard';
 export { ProjectItem } from './cards/ProjectItem';
 export { CookieConsent } from './overlays/CookieConsent';
 export { EmailCapture } from './overlays/EmailCapture';
-export { Navbar } from './layout/Navbar';
+export { Navbar } from './navigation/Navbar';
 export { Footer } from './layout/Footer';
 export { CTASection } from './layout/CTASection';
 export { SectionDivider } from './layout/SectionDivider';

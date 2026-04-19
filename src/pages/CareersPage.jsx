@@ -152,7 +152,7 @@ export default function CareersPage() {
         description="Join ARG and tackle complex problems in high-concurrency environments. Build systems that handle thousands of transactions per second."
         path="/careers/"
       />
-      <div className="page-wrapper container">
+      <div className="page-wrapper w-clearfix">
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">
@@ -163,10 +163,11 @@ export default function CareersPage() {
               { label: 'Home', path: '/' },
               { label: 'Career & Culture', path: '/careers/' },
             ]}
+            size="small"
           />
 
-          <section className="cp-values-section padding-section-xlarge border-radius-bottom">
-            <div className="cp-container container padding-global">
+          <section className="cp-values-section padding-section-large border-radius-all background-color-white">
+            <div className="container padding-global cp-values-inner">
               <div className="cp-section-header">
                 <h2 className="cp-section-title">
                   <span className="cp-line">Internal Values</span>
@@ -187,7 +188,7 @@ export default function CareersPage() {
           </section>
 
           <section className="cp-whyus-section padding-section-large border-radius-bottom">
-            <div className="cp-container container padding-global">
+            <div className="container padding-global">
               <div className="cp-whyus-content" data-animate="fade-up">
                 <h2 className="cp-whyus-title">{WHY_US_CONTENT.title}</h2>
                 <p className="cp-whyus-desc">{WHY_US_CONTENT.description}</p>
@@ -195,8 +196,8 @@ export default function CareersPage() {
             </div>
           </section>
 
-          <section className="cp-jobs-section padding-section-large border-radius-bottom">
-            <div className="cp-container container padding-global">
+          <section className="cp-jobs-section padding-section-large border-radius-top">
+            <div className="container padding-global cp-jobs-inner">
               <div className="cp-section-header">
                 <h2 className="cp-section-title">
                   <span className="cp-line">Open Positions</span>
@@ -221,8 +222,10 @@ export default function CareersPage() {
             </div>
           </section>
 
-          <section className="cp-contact-section padding-section-large">
-            <div className="cp-container container padding-global">
+          <SectionDivider variant="default" hideOnMobile={false} />
+          <section className="cp-contact-section padding-section-large background-color-white border-radius-bottom">
+            <div className="container padding-global">
+
               <div className="cp-contact-content" data-animate="fade-up">
                 <h2 className="cp-contact-title">Don't see a vacancy that suits you?</h2>
                 <p className="cp-contact-desc">Send us a spontaneous application.</p>
@@ -242,7 +245,7 @@ export default function CareersPage() {
           </section>
 
           <div className="page-cta-wrapper">
-            <SectionDivider variant="light" hideOnMobile={true} />
+
             <CTASection
               title="Ready to build"
               titleHighlight="with us?"

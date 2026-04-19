@@ -290,6 +290,9 @@ html::-webkit-scrollbar-corner {
     border: 4px solid transparent !important;
     border-top-color: #111 !important;
   }
+  .cta-wrapper {
+    border-radius: 1.25rem !important;
+  }
   .typeform-wrapper-o5kxhiic {
     border-radius: 1.25rem !important;
     overflow: hidden !important;
@@ -5359,9 +5362,9 @@ figcaption {
   padding: 0.25rem;
 }
 
-.infinity_list {
+/* .infinity_list {
   color: #0000;
-}
+} */
 .text-block {
   color: #0c002e;
 }
@@ -7093,6 +7096,7 @@ figcaption {
   list-style: none;
   margin: 0;
   padding: 0;
+  margin-bottom: 0.5rem;
 }
 .breadcrumb li {
   display: flex;

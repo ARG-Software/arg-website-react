@@ -1,6 +1,3 @@
-.careers-page {
-  background-color: #fff;
-}
 
 /* Section Header */
 .cp-section-header {
@@ -17,10 +14,11 @@
   letter-spacing: -0.01em;
 }
 
-/* Values Section */
-.cp-values-section {
-  background-color: #fff;
+
+.cp-values-inner{
+  display: block!important;
 }
+
 .cp-values-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -67,9 +65,7 @@
 }
 
 /* Why Us Section */
-.cp-whyus-section {
-  background-color: #0c002e;
-}
+
 .cp-whyus-content {
   max-width: 56rem;
   margin: 0 auto;
@@ -94,6 +90,9 @@
 /* Jobs Section */
 .cp-jobs-section {
   background-color: #fff;
+}
+.cp-jobs-inner {
+  display: block!important;
 }
 .cp-jobs-list {
   display: flex;
@@ -278,9 +277,7 @@
 }
 
 /* Contact Section */
-.cp-contact-section {
-  background: linear-gradient(135deg, #0c002e 0%, #1a0a4a 100%);
-}
+
 .cp-contact-content {
   text-align: center;
   max-width: 40rem;
@@ -291,25 +288,25 @@
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
   font-weight: 400;
   line-height: 1.2;
-  color: #fff;
+  color: #000;
   margin: 0 0 1rem;
 }
 .cp-contact-desc {
   font-size: 1.125rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: #0c002e;
   margin: 0 0 2rem;
 }
 
 /* Button Base Styles for Careers (override for dark bg) */
 .cp-contact-section .button-base {
-  border-color: #fff;
-  color: #fff;
+  border-color: #000;
+  color: #000;
 }
 .cp-contact-section .button-base:hover {
   color: #0c002e;
 }
 .cp-contact-section .button-base__overlap {
-  background-color: #fff;
+  background-color: #000;
 }
 .cp-contact-section .button-base__button-text.is-animated {
   color: #0c002e;

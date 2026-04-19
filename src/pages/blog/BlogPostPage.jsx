@@ -241,7 +241,7 @@ export default function BlogPostPage() {
           />
 
           {/* BLOG_POST BODY */}
-          <section className="bp-body background-color-white padding-section-xlarge">
+          <section className="bp-body background-color-white padding-section-xlarge border-radius-all">
             <div className="bp-body-inner container padding-global">
               <aside className="bp-sidebar-left">
                 {sectionLinks.length > 0 && (
