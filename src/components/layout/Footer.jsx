@@ -5,7 +5,7 @@ export function Footer({ year = 2026 }) {
   return (
     <footer className="footer">
       <div className="container-medium footer-container padding-global">
-        <SectionDivider variant="footer" />
+        <SectionDivider variant="light" />
         <div className="footer_copywrite-content">
           <div className="overflow-hidden">
             <div

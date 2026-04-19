@@ -61,7 +61,7 @@ export function TestimonialsSection({ className = '' }) {
                 {!t.isLast && (
                   <>
                     <div className="padding-bottom padding-80-40"></div>
-                    <SectionDivider variant="testimonials" />
+                    <SectionDivider variant="thin-light" />
                   </>
                 )}
               </div>

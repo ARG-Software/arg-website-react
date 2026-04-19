@@ -222,10 +222,11 @@ export default function CareersPage() {
             </div>
           </section>
 
-          <SectionDivider variant="default" hideOnMobile={false} />
+          <div className="section-divider-wrapper">
+            <SectionDivider variant="default" hideOnMobile={false} />
+          </div>
           <section className="cp-contact-section padding-section-large background-color-white border-radius-bottom">
             <div className="container padding-global">
-
               <div className="cp-contact-content" data-animate="fade-up">
                 <h2 className="cp-contact-title">Don't see a vacancy that suits you?</h2>
                 <p className="cp-contact-desc">Send us a spontaneous application.</p>
@@ -245,7 +246,6 @@ export default function CareersPage() {
           </section>
 
           <div className="page-cta-wrapper">
-
             <CTASection
               title="Ready to build"
               titleHighlight="with us?"

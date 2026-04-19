@@ -34,7 +34,7 @@ export function HeroSection() {
         </div>
         <div className="hero_bottom_wrap">
           <SectionDivider
-            variant="hero"
+            variant="white"
             data-w-id="2e342a7e-467f-011c-2fd9-6d344b25d7f9"
             style={{
               opacity: 0,

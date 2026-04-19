@@ -1,4 +1,3 @@
-
 /* Section Header */
 .cp-section-header {
   text-align: center;
@@ -14,9 +13,8 @@
   letter-spacing: -0.01em;
 }
 
-
-.cp-values-inner{
-  display: block!important;
+.cp-values-inner {
+  display: block !important;
 }
 
 .cp-values-grid {
@@ -92,7 +90,7 @@
   background-color: #fff;
 }
 .cp-jobs-inner {
-  display: block!important;
+  display: block !important;
 }
 .cp-jobs-list {
   display: flex;
@@ -308,11 +306,27 @@
 .cp-contact-section .button-base__overlap {
   background-color: #000;
 }
+.cp-contact-section .button-base_text_wrap {
+  position: relative !important;
+  overflow: hidden !important;
+  height: 1.4em !important;
+}
 .cp-contact-section .button-base__button-text.is-animated {
   color: #0c002e;
+  top: 0 !important;
+  left: 50% !important;
+  transform: translate(-50%, 100%) !important;
+  width: max-content !important;
+  text-align: center !important;
 }
 .cp-contact-section .button-base__button-text.is-animated svg path {
   stroke: #0c002e;
+}
+.cp-contact-section .button-base:hover .button-base__button-text.is-animated {
+  transform: translate(-50%, 0) !important;
+}
+.cp-contact-section .button-base:hover .button-base__button-text:not(.is-animated) {
+  transform: translateY(-100%) !important;
 }
 
 /* Animation */
