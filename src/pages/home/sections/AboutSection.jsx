@@ -25,22 +25,22 @@ export function AboutSection({ className = '' }) {
             <div className="heading_line">
               <div className="heading-style-h2">
                 Custom software, <br />
-                endless potential
+                <span className="text-color-gradiant">endless potential</span>
               </div>
             </div>
           </h2>
           <div id="about-content-grid" className="about_content">
             <p className="about_paragraph">
-              ARG builds digital products that grow with your business. We work alongside startups,
-              scale-ups, and enterprises as a long-term partner, not a one-off vendor. Solid
-              architecture, clean code, and a team that stays in the room from the first sprint to
-              your tenth product iteration. We work combining technical rigour with product thinking
-              to build things that are ready for where you're going, not just where you are.
+             ARG builds digital products designed to grow alongside your business. Whether you are a startup finding your footing or an enterprise scaling to new heights, we act as your long-term partner—not just another vendor.
+             We don't just write code; we solve business problems. By combining technical rigour with strategic product thinking, we ensure your software is ready for where you’re going, not just where you are today.
+              <p>Solid Architecture, built to scale.</p>
+              <p>Clean Code, maintainable and robust.</p>
+              <p>True Partnership, we’re with you from the first sprint to the tenth iteration.</p>
             </p>
             <a
               href="#contact"
               className="text-button w-inline-block"
-              style={{ alignSelf: 'end' }}
+              style={{ alignSelf: 'self-start' }}
               onClick={handleContactClick}
             >
               <div className="text-button_list is-dark">
