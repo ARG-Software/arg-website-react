@@ -30,7 +30,7 @@ export function useHeroAnimation() {
 
       // Determine page type
       if (heroWrap) {
-        const heroLine = heroWrap.querySelector('.line-separate.is--hero');
+        const heroLine = heroWrap.querySelector('#hero-divider');
         if (heroLine) {
           const timeout = setTimeout(() => {
             heroLine.style.transition = 'opacity 0.8s ease, transform 0.8s ease';

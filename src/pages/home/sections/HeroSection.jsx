@@ -5,7 +5,6 @@ import { SectionDivider } from '../../../components/layout/SectionDivider';
 import { useWaterRipple } from '../../../hooks/useWaterRipple';
 
 export function HeroSection() {
-  //useHeroParallax();
   useWaterRipple('water-ripple-canvas');
   const { createHashScrollHandler } = usePageTransition();
 
@@ -35,7 +34,7 @@ export function HeroSection() {
         <div className="hero_bottom_wrap">
           <SectionDivider
             variant="white"
-            data-w-id="2e342a7e-467f-011c-2fd9-6d344b25d7f9"
+            id="hero-divider"
             style={{
               opacity: 0,
               transform:
