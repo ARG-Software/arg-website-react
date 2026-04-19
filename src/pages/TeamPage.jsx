@@ -251,6 +251,7 @@ export default function TeamPage() {
               titleHighlight="with this team?"
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
+              animationClass="pp-animate"
             />
           </div>
         </main>

@@ -175,7 +175,7 @@ export default function CareersPage() {
               </div>
               <div className="cp-values-grid">
                 {INTERNAL_VALUES.map((value, index) => (
-                  <div key={index} className="cp-value-card" data-animate="fade-up">
+                  <div key={index} className="cp-value-card cp-animate" data-animate="fade-up">
                     <div className="cp-value-icon">
                       <img src={value.icon} alt={value.title} />
                     </div>
@@ -189,7 +189,7 @@ export default function CareersPage() {
 
           <section className="cp-whyus-section padding-section-large border-radius-bottom">
             <div className="container padding-global">
-              <div className="cp-whyus-content" data-animate="fade-up">
+              <div className="cp-whyus-content cp-animate" data-animate="fade-up">
                 <h2 className="cp-whyus-title">{WHY_US_CONTENT.title}</h2>
                 <p className="cp-whyus-desc">{WHY_US_CONTENT.description}</p>
               </div>
@@ -227,7 +227,7 @@ export default function CareersPage() {
           </div>
           <section className="cp-contact-section padding-section-large background-color-white border-radius-bottom">
             <div className="container padding-global">
-              <div className="cp-contact-content" data-animate="fade-up">
+              <div className="cp-contact-content cp-animate" data-animate="fade-up">
                 <h2 className="cp-contact-title">Don't see a vacancy that suits you?</h2>
                 <p className="cp-contact-desc">Send us a spontaneous application.</p>
                 <a
