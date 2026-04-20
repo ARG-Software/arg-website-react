@@ -131,12 +131,31 @@ export default function PartnersPage() {
               style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}
             >
               <div className="tp-intro-center">
-                <h2 className="tp-intro-heading">
+                <h2
+                  className="tp-intro-heading"
+                  data-animate-scope
+                  data-animate-default-stagger="160"
+                >
                   <div className="heading_line">
-                    <span className="tp-intro-line text-color-gradiant">We're selective.</span>
+                    <span
+                      className="tp-intro-line text-color-gradiant"
+                      data-animate="slide-up-rotate"
+                      data-animate-distance="110%"
+                      data-animate-rotate="3deg"
+                    >
+                      We're selective.
+                    </span>
                   </div>
                   <div className="heading_line">
-                    <span className="tp-intro-line">So are they.</span>
+                    <span
+                      className="tp-intro-line"
+                      data-animate="slide-up-rotate"
+                      data-animate-distance="110%"
+                      data-animate-rotate="3deg"
+                      data-animate-order="1"
+                    >
+                      So are they.
+                    </span>
                   </div>
                 </h2>
               </div>

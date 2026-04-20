@@ -7,9 +7,6 @@ const teamMembers = [
     name: 'Jose Antunes',
     role: 'CO-FOUNDER - Software developer',
     linkedin: 'https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/',
-    imgId: 'd3f6571f-2a52-032a-a22f-d6dff7799496',
-    nameId: 'a386420a-7b3b-4373-6fbb-83f62a51f900',
-    roleId: '086b6308-ff71-22d6-13a2-67a7344d7305',
     imgSrc:
       'https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9.jpg',
     imgSrcSet:
@@ -20,9 +17,6 @@ const teamMembers = [
     name: 'Rui Rocha',
     role: 'CO-FOUNDER - Software developer',
     linkedin: 'https://www.linkedin.com/in/ruirochawork/',
-    imgId: undefined,
-    nameId: 'a928d8ee-7644-3514-7041-c8a3f97f1125',
-    roleId: 'a928d8ee-7644-3514-7041-c8a3f97f1128',
     imgSrc:
       'https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1).jpg',
     imgSrcSet:
@@ -36,6 +30,7 @@ export function TeamSection({ className = '' }) {
     <section
       id="team"
       className={`section_team background-color-white padding-section-large border-radius-bottom ${className}`.trim()}
+      data-animate-scope
     >
       <div className="padding-global">
         <div className="container-medium">
@@ -51,11 +46,7 @@ export function TeamSection({ className = '' }) {
                   </div>
                 </div>
                 <div className="padding-bottom padding-30-44"></div>
-                <p
-                  data-w-id="1164883d-f971-0a2c-2892-dc069aa3870b"
-                  style={{ opacity: 0 }}
-                  className="text-color-grey"
-                >
+                <p className="text-color-grey" data-animate="fade-up">
                   More than a team — your innovation partners. Meet the passionate experts dedicated
                   to fueling your success.
                 </p>
@@ -64,7 +55,7 @@ export function TeamSection({ className = '' }) {
               <div className="team_items-wrapper">
                 {teamMembers.map((m, i) => (
                   <div key={i} className="team-item">
-                    <div data-w-id={m.imgId} className="team_image-wrapper">
+                    <div className="team_image-wrapper" data-animate="fade-up">
                       <img
                         src={m.imgSrc}
                         srcSet={m.imgSrcSet}
@@ -78,25 +69,11 @@ export function TeamSection({ className = '' }) {
                       <div className="team_image-overlay"></div>
                     </div>
                     <div className="team-item_text">
-                      <h3
-                        data-w-id={m.nameId}
-                        style={{
-                          transform:
-                            'translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-                        }}
-                        className="heading-style-h5"
-                      >
+                      <h3 className="heading-style-h5" data-animate="slide-up">
                         {m.name}
                       </h3>
                       <div className="padding-bottom padding-small"></div>
-                      <div
-                        data-w-id={m.roleId}
-                        style={{
-                          transform:
-                            'translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-                        }}
-                        className="subtitle-team"
-                      >
+                      <div className="subtitle-team" data-animate="slide-up">
                         {m.role}
                       </div>
                       <div className="padding-bottom padding-small"></div>
@@ -106,8 +83,7 @@ export function TeamSection({ className = '' }) {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-button w-inline-block"
-                        data-w-id={`linkedin-${i}`}
-                        style={{ opacity: 0 }}
+                        data-animate="fade-up"
                         onClick={() => trackSocial('linkedin', 'homepage_team')}
                       >
                         <div

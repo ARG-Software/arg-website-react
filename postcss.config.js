@@ -103,7 +103,7 @@ module.exports = {
               /main-wrapper/,
             ],
             greedy: [
-              /data-w-id/,
+              /data-animate/,
               /w-mod/,
               /w-nav/,
               /w-dyn/,

@@ -48,18 +48,24 @@ export function CTASection({
             ) : showSplitTitle ? (
               <>
                 <div className="header-animation hide-tablet">
-                  <h2 className={`heading-style-h1 hide-mobile-portrait ${animationClass}`}>
+                  <h2
+                    className={`heading-style-h1 hide-mobile-portrait ${animationClass}`}
+                    data-animate="fade-up"
+                  >
                     {title}
                   </h2>
                 </div>
                 <div className="header-animation show-tablet">
-                  <h2 className={`heading-style-h1 ${animationClass}`}>{title} with</h2>
+                  <h2 className={`heading-style-h1 ${animationClass}`} data-animate="fade-up">
+                    {title} with
+                  </h2>
                 </div>
                 {showTitleHighlight && (
                   <>
                     <div className="header-animation hide-tablet">
                       <h2
                         className={`heading-style-h1 text-color-gradiant-2 ${animationClass} pp-d1`}
+                        data-animate="fade-up"
                         style={{
                           color: '#000',
                           WebkitTextFillColor: 'transparent',
@@ -75,6 +81,7 @@ export function CTASection({
                     <div className="header-animation show-tablet">
                       <h2
                         className={`heading-style-h1 text-color-gradiant-2 ${animationClass} pp-d1`}
+                        data-animate="fade-up"
                         style={{
                           color: '#000',
                           WebkitTextFillColor: 'transparent',
@@ -92,7 +99,9 @@ export function CTASection({
               </>
             ) : (
               <div className="header-animation">
-                <h2 className={`heading-style-h1 ${animationClass}`}>{title}</h2>
+                <h2 className={`heading-style-h1 ${animationClass}`} data-animate="fade-up">
+                  {title}
+                </h2>
               </div>
             )}
           </div>
@@ -107,6 +116,7 @@ export function CTASection({
             target="_blank"
             rel="noopener noreferrer"
             className={`button-base button-contact w-inline-block ${animationClass} pp-d2`}
+            data-animate="fade-up"
             onClick={handleClick}
           >
             <div className="button-base_text_wrap">

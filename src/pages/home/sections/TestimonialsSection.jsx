@@ -41,20 +41,11 @@ export function TestimonialsSection({ className = '' }) {
               <div key={i} className="testemonials-item">
                 <div className="max-width-testemonials align-center">
                   <div className="overflow-hidden">
-                    <p
-                      data-w-id={i === 0 ? 'c104cc9d-84e0-284d-9f0d-8399721834c5' : undefined}
-                      className="text-size-24-18"
-                    >
-                      {t.quote}
-                    </p>
+                    <p className="text-size-24-18">{t.quote}</p>
                   </div>
                   <div className="padding-bottom padding-40-32"></div>
                   <div className="testemonials-item_name">
-                    <div
-                      data-w-id={t.dotId}
-                      style={{ opacity: 0 }}
-                      className="testemonials-item_dot"
-                    ></div>
+                    <div className="testemonials-item_dot"></div>
                     <div className="text-size-18-15">{t.author}</div>
                   </div>
                 </div>

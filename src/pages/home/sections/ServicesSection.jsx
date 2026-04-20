@@ -57,6 +57,8 @@ export function ServicesSection({ className = '' }) {
       id="services"
       className={`services_wrap background-color-white padding-section-xlarge ${className}`.trim()}
       ref={containerRef}
+      data-animate-scope
+      data-animate-default-stagger="80"
     >
       <div className="services_contain container padding-global">
         <div className="services_grid">
@@ -67,7 +69,7 @@ export function ServicesSection({ className = '' }) {
           </div>
           <div className="services_list">
             {SERVICES.map((service, index) => (
-              <div key={index} className="services_item">
+              <div key={index} className="services_item" data-animate="fade-up">
                 <div className="services_item_number">
                   <div className="service_number_text">{service.number}</div>
                 </div>

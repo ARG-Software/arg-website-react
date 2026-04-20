@@ -104,11 +104,17 @@ export default function TeamPage() {
               style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}
             >
               <div className="tp-intro-center">
-                <h2 className="tp-intro-heading">
+                <h2
+                  className="tp-intro-heading"
+                  data-animate-scope
+                  data-animate-default-stagger="160"
+                >
                   <div className="heading_line">
                     <span
                       className="tp-intro-line text-color-gradiant"
-                      style={{ transform: 'translate3d(0, 120%, 0) rotateZ(3deg)' }}
+                      data-animate="slide-up-rotate"
+                      data-animate-distance="120%"
+                      data-animate-rotate="3deg"
                     >
                       More than a team,
                     </span>
@@ -116,10 +122,10 @@ export default function TeamPage() {
                   <div className="heading_line">
                     <span
                       className="tp-intro-line"
-                      style={{
-                        transform: 'translate3d(0, 120%, 0) rotateZ(3deg)',
-                        transitionDelay: '0.16s',
-                      }}
+                      data-animate="slide-up-rotate"
+                      data-animate-distance="120%"
+                      data-animate-rotate="3deg"
+                      data-animate-order="1"
                     >
                       your innovation partners.
                     </span>
@@ -137,6 +143,7 @@ export default function TeamPage() {
                   <div
                     key={i}
                     className="tp-founder-card pp-animate"
+                    data-animate="fade-up"
                     style={{ transitionDelay: `${i * 0.12}s` }}
                   >
                     <div className="tp-founder-photo">
@@ -219,7 +226,7 @@ export default function TeamPage() {
                 </PartnerRow>
               ))}
 
-              <div className="tp-hiring pp-animate">
+              <div className="tp-hiring pp-animate" data-animate="fade-up">
                 <div className="tp-hiring-left">
                   <div className="tp-hiring-eyebrow">We're growing</div>
                   <p className="tp-hiring-title">

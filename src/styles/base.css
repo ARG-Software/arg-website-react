@@ -910,13 +910,6 @@ input[type='file']:focus-visible {
 }
 
 /* ── Animation Utilities ── */
-.blp-animate {
-  opacity: 0;
-  transform: translate3d(0, 1.5rem, 0);
-  transition:
-    opacity 0.7s cubic-bezier(0.215, 0.61, 0.355, 1),
-    transform 0.7s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
 
 .cta-heading {
   transform: translate3d(0, 100%, 0);
@@ -2283,10 +2276,10 @@ textarea.ec-input {
     padding-left: 1rem;
   }
 
-  /* .padding-global {
+  .padding-global {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
-  } */
+  }
 
   .formtext.form-click {
     padding: 0 0 6.125rem;
@@ -2364,8 +2357,6 @@ textarea.ec-input {
     padding-left: 0;
   }
 
-  .about_contain.container.padding-global {
-  }
 }
 
 @media screen and (min-width: 1447px) {
@@ -2526,9 +2517,6 @@ img {
 }
 .w-clearfix:after {
   clear: both;
-}
-.w-hidden {
-  display: none;
 }
 
 h1,
@@ -3914,8 +3902,7 @@ figcaption {
   text-transform: uppercase;
   font-size: 0.625rem;
 }
-.section_testemonials {
-}
+
 .testemonials-component {
   grid-column-gap: 3rem;
   grid-row-gap: 3rem;
@@ -5171,8 +5158,6 @@ figcaption {
 
 .subpage-hero__heading-line {
   display: inline-block;
-  transform: translate3d(0, 150%, 0) rotateZ(4deg);
-  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .subpage-hero__subtitle {

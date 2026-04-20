@@ -1,4 +1,3 @@
-import { useHeroAnimation } from '../../hooks/useHeroAnimations';
 import { Breadcrumb } from '../navigation/Breadcrumb';
 
 /**
@@ -11,13 +10,15 @@ import { Breadcrumb } from '../navigation/Breadcrumb';
  * @param {string} [props.size] - Hero size: 'default' (50vh), 'large' (56vh), 'small' (42vh)
  */
 export function SubpageHero({ title, subtitle, breadcrumbs, children, size = 'default' }) {
-  useHeroAnimation();
-
   const titleLines = Array.isArray(title) ? title : [title];
   const sizeClass = `subpage-hero--${size}`;
 
   return (
-    <header className={`subpage-hero ${sizeClass}`}>
+    <header
+      className={`subpage-hero ${sizeClass}`}
+      data-animate-scope
+      data-animate-default-stagger="150"
+    >
       <div className="subpage-hero__inner">
         {/* Breadcrumbs */}
         {breadcrumbs && breadcrumbs.length > 0 && <Breadcrumb items={breadcrumbs} />}
@@ -28,11 +29,11 @@ export function SubpageHero({ title, subtitle, breadcrumbs, children, size = 'de
             <div key={index} className="heading_line">
               <span
                 className={`subpage-hero__heading-line ${index === 1 ? 'text-color-gradiant' : ''}`}
-                style={{
-                  transitionDelay: `${0.15 * index}s`,
-                  transform: 'translate3d(0, 150%, 0) rotateZ(4deg)',
-                  textAlign: 'left',
-                }}
+                data-animate="slide-up-rotate"
+                data-animate-trigger="load"
+                data-animate-distance="150%"
+                data-animate-order={`${index}`}
+                style={{ textAlign: 'left' }}
               >
                 {line}
               </span>

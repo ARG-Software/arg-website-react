@@ -32,6 +32,7 @@ export function CounterWidget({
         ${isCompact ? 'prp-stat-item' : 'work-item'}
         ${className}
       `.trim()}
+      data-animate={isExpanded ? 'width-countup' : undefined}
       {...props}
     >
       {showLine && <div className="work-item_line" />}

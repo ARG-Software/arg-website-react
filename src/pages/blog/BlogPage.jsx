@@ -106,11 +106,11 @@ export default function BlogPage() {
           >
             <div className="blp-inner container padding-global" ref={listRef}>
               <div className="blp-header-row">
-                <span className="blp-count blp-animate">
+                <span className="blp-count blp-animate" data-animate="fade-up">
                   {resultCount} blog post{resultCount !== 1 ? 's' : ''}
                   {debouncedQuery && ` matching "${debouncedQuery}"`}
                 </span>
-                <div className="blp-search blp-animate">
+                <div className="blp-search blp-animate" data-animate="fade-up">
                   <span className="blp-search-icon">{searchSvg}</span>
                   <input
                     type="text"
@@ -124,7 +124,7 @@ export default function BlogPage() {
               </div>
 
               {filteredPosts.length === 0 ? (
-                <p className="blp-empty blp-animate">
+                <p className="blp-empty blp-animate" data-animate="fade-up">
                   {blogPosts.length === 0
                     ? 'No blog posts yet — check back soon.'
                     : `No posts found matching "${debouncedQuery}"`}
@@ -136,6 +136,7 @@ export default function BlogPage() {
                       key={article.slug}
                       to={`/blog/${article.slug}/`}
                       className="blp-article-row blp-animate"
+                      data-animate="fade-up"
                       style={{ transitionDelay: `${i * 0.07}s` }}
                       onClick={() => trackBlogPostClick(article.slug, article.title, 'blog_list')}
                     >

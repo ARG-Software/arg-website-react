@@ -329,19 +329,6 @@
   transform: translateY(-100%) !important;
 }
 
-/* Animation */
-.cp-animate {
-  opacity: 0;
-  transform: translate3d(0, 2rem, 0);
-  transition:
-    opacity 0.8s cubic-bezier(0.215, 0.61, 0.355, 1),
-    transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-.cp-animate.cp-visible {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-
 /* Responsive */
 @media screen and (max-width: 991px) {
   .cp-values-grid {

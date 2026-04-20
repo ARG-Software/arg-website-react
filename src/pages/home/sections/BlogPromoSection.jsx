@@ -5,7 +5,7 @@ import { SectionDivider } from '../../../components/layout/SectionDivider';
 
 function displayBlogGridRow(blogRows = [], marginTop = '0') {
   return (
-    <div className="blog-promo_cards-grid" style={{ marginTop }}>
+    <div className="blog-promo_cards-grid" style={{ marginTop }} data-animate="fade-up">
       {blogRows.map(blogPost => (
         <AppLink
           key={blogPost.slug}
@@ -45,11 +45,14 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
           <div className="blog-promo_inner">
             <div className="social-section_header">
               <div>
-                <h2 className="heading-style-h2" style={{ color: '#fff' }}>
+                <h2 className="heading-style-h2" style={{ color: '#fff' }} data-animate="fade">
                   We write about what we build
                 </h2>
               </div>
-              <div className="subtitle_tag-wrapper is--white hide-mobile-landscape">
+              <div
+                className="subtitle_tag-wrapper is--white hide-mobile-landscape"
+                data-animate="fade"
+              >
                 <div>Blog</div>
               </div>
             </div>
@@ -61,7 +64,7 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
                 trackBlogPostClick(heroPost.slug, heroPost.title, 'homepage_promo_hero')
               }
             >
-              <div className="blog-promo_hero-content">
+              <div className="blog-promo_hero-content" data-animate="fade-up">
                 {/* Left: Title (60% on desktop) */}
                 <h3 className="blog-promo_hero-title">{heroPost.title}</h3>
 

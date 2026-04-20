@@ -6,7 +6,6 @@ export { useBlogSearch } from './useBlogSearch';
 export { useScrollAnimations } from './useScrollAnimations';
 
 export { useThreeSphereBackground } from './useThreeSphereBackground';
-export { useHeroAnimation } from './useHeroAnimations';
 
 export { useProjectModalAnimations } from './useProjectModalAnimations';
 export {

@@ -158,21 +158,22 @@ export function ProjectsSection({ className = '' }) {
   return (
     <section
       id="cases"
-      data-w-id="8e4ba5b9-2e4a-5f51-aae7-91657d6edc11"
       className={`projects_wrap background-color-white padding-section-xlarge border-radius-bottom ${className}`.trim()}
     >
       <div className="projects_contain container padding-global">
         <div className="projects_heading-wrapper">
-          <h2 className="projects_heading heading-style-h2">
+          <h2 className="projects_heading heading-style-h2" data-animate="fade">
             They trusted us. It's your time now.
           </h2>
-          <div className="subtitle_tag-wrapper">
+          <div className="subtitle_tag-wrapper" data-animate="fade">
             <div>Our Work</div>
           </div>
         </div>
         <div className="projects_list_wrap w-dyn-list">
           <div role="list" className="projects_list w-dyn-items">
             {PROJECTS.map((project, i) => (
+              // pass all project properties as props to ProjectItem component
+
               <ProjectItem key={i} {...project} />
             ))}
           </div>

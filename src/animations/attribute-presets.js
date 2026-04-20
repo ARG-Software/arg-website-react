@@ -15,6 +15,14 @@ export const ATTRIBUTE_PRESETS = {
     rootMargin: DEFAULT_ROOT_MARGIN,
   },
 
+  // Simple fade (opacity only)
+  fade: {
+    initialOpacity: '0',
+    transition: 'opacity 0.8s cubic-bezier(0.215, 0.61, 0.355, 1)',
+    threshold: DEFAULT_THRESHOLD,
+    rootMargin: DEFAULT_ROOT_MARGIN,
+  },
+
   // Slide up from bottom (100%)
   'slide-up': {
     initialOpacity: '0',
@@ -42,28 +50,28 @@ export const ATTRIBUTE_PRESETS = {
 
   // Class toggle animations (pp-animate, bp-animate, etc.)
   'class-toggle': {
-    threshold: DEFAULT_THRESHOLD,
-    rootMargin: DEFAULT_ROOT_MARGIN,
-    // Class mapping will be derived from element's class list
-  },
-
-  // Footer animation
-  'footer-reveal': {
-    threshold: 0.1,
-    rootMargin: '0px 0px 0px 0px',
+    initialOpacity: '0',
+    initialTransform: 'translate3d(0, 2rem, 0)',
     transition:
       'opacity 0.8s cubic-bezier(0.215, 0.61, 0.355, 1), transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1)',
-    staggerDelay: 150, // ms between children
+    threshold: DEFAULT_THRESHOLD,
+    rootMargin: DEFAULT_ROOT_MARGIN,
   },
 
-  // Social section reveal
-  'social-reveal': {
-    threshold: 0.1,
-    rootMargin: '0px 0px -10% 0px',
-    transition:
-      'opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)',
-    initialOpacity: '0',
-    initialTransform: 'translate3d(0, 1.5rem, 0)',
+  // Slide up with fixed 5deg rotation (distance configurable via data-animate-distance)
+  'slide-up-rotate': {
+    initialTransform: 'translate3d(0, var(--distance, 100%), 0) rotateZ(5deg)',
+    transition: 'transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1)',
+    threshold: DEFAULT_THRESHOLD,
+    rootMargin: DEFAULT_ROOT_MARGIN,
+  },
+
+  // Horizontal scale animation (divider expand)
+  'divider-expander-show': {
+    initialTransform: 'scale3d(0.1, 1, 1)',
+    transition: 'transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1)',
+    threshold: DEFAULT_THRESHOLD,
+    rootMargin: DEFAULT_ROOT_MARGIN,
   },
 };
 

@@ -201,30 +201,16 @@ export function WorkStatsSection({ className = '' }) {
               <div className="subtitle_tag-wrapper hide-mobile-landscape">Working With Us</div>
             </div>
             <div className="work-content">
-              <div data-w-id="b5b23643-ebaf-8715-5680-66b9e17b988d" className="work_header-wrapper">
+              <div className="work_header-wrapper">
                 <div className="overflow-hidden">
                   <div className="heading_wrap">
-                    <h2
-                      style={{
-                        opacity: 0,
-                        transform:
-                          'translate3d(0, 250%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(10deg) skew(0, 0)',
-                      }}
-                      className="work_heading"
-                    >
+                    <h2 data-animate="fade-up" className="work_heading">
                       From Zero to Hero
                     </h2>
                   </div>
                 </div>
                 <div className="padding-bottom padding-30-44"></div>
-                <p
-                  style={{
-                    transform:
-                      'translate3d(0, 2rem, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-                    opacity: 0,
-                  }}
-                  className="work_paragraph"
-                >
+                <p data-animate="fade-up" className="work_paragraph">
                   By trusting us, you (always) end up winning. Even if we meet once in a lifetime,
                   you get a solid, lasting partnership where people come first. <br />
                   And each challenge, too.

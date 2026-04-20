@@ -12,7 +12,6 @@ export { PlaceholderVisual } from './placeholders/PlaceholderVisual';
 export { StatsGrid } from './grids/StatsGrid';
 export { PartnerRow } from './rows/PartnerRow';
 export { TechStack } from './tags/TechStack';
-export { CaseStudyCard } from './cards/CaseStudyCard';
 export { ProjectItem } from './cards/ProjectItem';
 export { CookieConsent } from './overlays/CookieConsent';
 export { EmailCapture } from './overlays/EmailCapture';

@@ -26,13 +26,23 @@ const renderBlock = (block, i) => {
   switch (block.type) {
     case 'lead':
       return (
-        <p key={i} className="bp-lead bp-animate" style={{ transitionDelay: delay }}>
+        <p
+          key={i}
+          className="bp-lead bp-animate"
+          data-animate="fade-up"
+          style={{ transitionDelay: delay }}
+        >
           {block.text}
         </p>
       );
     case 'paragraph':
       return (
-        <p key={i} className="bp-p bp-animate" style={{ transitionDelay: delay }}>
+        <p
+          key={i}
+          className="bp-p bp-animate"
+          data-animate="fade-up"
+          style={{ transitionDelay: delay }}
+        >
           {block.text}
         </p>
       );
@@ -42,6 +52,7 @@ const renderBlock = (block, i) => {
           key={i}
           id={slugify(block.text)}
           className="bp-h2 bp-animate"
+          data-animate="fade-up"
           style={{ transitionDelay: delay }}
         >
           {block.text}
@@ -53,6 +64,7 @@ const renderBlock = (block, i) => {
           key={i}
           id={slugify(block.text)}
           className="bp-h3 bp-animate"
+          data-animate="fade-up"
           style={{ transitionDelay: delay }}
         >
           {block.text}
@@ -60,13 +72,23 @@ const renderBlock = (block, i) => {
       );
     case 'callout':
       return (
-        <blockquote key={i} className="bp-callout bp-animate" style={{ transitionDelay: delay }}>
+        <blockquote
+          key={i}
+          className="bp-callout bp-animate"
+          data-animate="fade-up"
+          style={{ transitionDelay: delay }}
+        >
           {block.text}
         </blockquote>
       );
     case 'code':
       return (
-        <div key={i} className="bp-code-wrap bp-animate" style={{ transitionDelay: delay }}>
+        <div
+          key={i}
+          className="bp-code-wrap bp-animate"
+          data-animate="fade-up"
+          style={{ transitionDelay: delay }}
+        >
           <div className="bp-code-bar">
             <span className="bp-code-lang">{block.lang}</span>
           </div>
@@ -82,6 +104,7 @@ const renderBlock = (block, i) => {
             <li
               key={j}
               className="bp-list-item bp-animate"
+              data-animate="fade-up"
               style={{ transitionDelay: `${j * 0.07}s` }}
             >
               {item.label ? <span className="bp-list-label">{item.label}</span> : null} {item.text}

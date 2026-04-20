@@ -117,7 +117,6 @@
 }
 .tp-intro-line {
   display: block;
-  transform: translate3d(0, 110%, 0) rotateZ(3deg);
 }
 .tp-intro-bottom {
   display: flex;

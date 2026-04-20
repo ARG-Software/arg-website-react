@@ -1,4 +1,4 @@
-import { Navbar, Footer, arrowSvg, StatsGrid, CaseStudyCard, SEO } from '../components';
+import { Navbar, Footer, arrowSvg, StatsGrid, ProjectItem, SEO } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
 import { useScrollAnimations, useCountUp } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
@@ -205,7 +205,19 @@ export default function ProjectsPage() {
 
         {/* CASE STUDIES */}
         {PROJECTS.map((project, i) => (
-          <CaseStudyCard key={i} project={project} index={i} />
+          <ProjectItem
+            key={i}
+            imgSrc={project.img}
+            mockupSrc={project.mockup}
+            title={project.title}
+            subtitle={project.subtitle}
+            problem={project.problem}
+            solutionBold={project.solutionBold}
+            solution={project.solution}
+            liveLink={project.link}
+            logos={project.logos}
+            stack={project.stack}
+          />
         ))}
 
         {/* CTA */}

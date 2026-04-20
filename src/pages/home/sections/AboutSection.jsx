@@ -16,11 +16,7 @@ export function AboutSection({ className = '' }) {
       className={`about_wrap background-color-white padding-section-xlarge ${className}`.trim()}
     >
       <div className="about_contain container padding-global">
-        <div
-          data-w-id="a0f95455-6fe8-8145-bc71-63831cee596b"
-          style={{ opacity: 0 }}
-          className="about_list"
-        >
+        <div data-animate="fade" className="about_list">
           <h2 id="about-heading-grid" className="about_heading">
             <div className="heading_line">
               <div className="heading-style-h2">

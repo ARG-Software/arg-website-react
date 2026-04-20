@@ -15,15 +15,11 @@ export function ProjectItem({
   liveLink,
   logos,
   stack,
+  animation = 'fade-up',
 }) {
   return (
-    <div
-      id="project-item-wrapper-grid"
-      data-w-id="9ae66378-7dfe-90c5-38a0-a96f7867d76c"
-      role="listitem"
-      className="projects_item_wrap w-dyn-item"
-    >
-      <div className="projects_item">
+    <div id="project-item-wrapper-grid" role="listitem" className="projects_item_wrap w-dyn-item">
+      <div className="projects_item" data-animate={animation}>
         <div className="projects_modal-close_btn">
           <div className="projects_modal-close_wrap">{closeSvg}</div>
         </div>

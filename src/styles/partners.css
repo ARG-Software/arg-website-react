@@ -87,7 +87,6 @@
 }
 .pp-heading-line {
   display: block;
-  transform: translate3d(0, 150%, 0) rotateZ(4deg);
   font-weight: 400;
 }
 .pp-hero-line {
@@ -97,25 +96,6 @@
   right: 4.75rem;
   height: 1px;
   background: rgba(255, 255, 255, 0.12);
-}
-
-/* Scroll reveal */
-.pp-animate {
-  opacity: 0;
-  transform: translate3d(0, 2rem, 0);
-  transition:
-    opacity 0.8s cubic-bezier(0.215, 0.61, 0.355, 1),
-    transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-.pp-animate.pp-visible {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-.pp-animate.pp-d1 {
-  transition-delay: 0.12s;
-}
-.pp-animate.pp-d2 {
-  transition-delay: 0.24s;
 }
 
 /* Intro section */
@@ -163,7 +143,6 @@
 }
 .tp-intro-line {
   display: block;
-  transform: translate3d(0, 110%, 0) rotateZ(3deg);
 }
 
 /* Partners list */

@@ -15,19 +15,22 @@ export function HeroSection() {
   });
 
   return (
-    <header data-w-id="03b45077-cd1d-c5f8-448b-54b3be3b8dac" className="hero_wrap">
+    <header
+      className="hero_wrap"
+      data-animate-scope
+      data-animate-trigger="load"
+      data-animate-default-trigger="load"
+      data-animate-default-stagger="800"
+      data-animate-default-preset="fade-up"
+    >
       <div className="hero_contain container padding-global">
-        <div className="hero_list">
+        <div className="hero_list" data-animate="fade-up">
           <h1 className="hero_heading heading-style-h1">
-            <div className="heading_line">
-              <div className="heading_text hero-reveal" style={{ animationDelay: '1.2s' }}>
-                Building digital solutions
-              </div>
+            <div className="heading_line" data-animate-order="4">
+              <div className="heading_text">Building digital solutions</div>
             </div>
-            <div className="heading_line">
-              <div className="text-color-gradiant hero-reveal" style={{ animationDelay: '1.35s' }}>
-                that grow with you
-              </div>
+            <div className="heading_line" data-animate-order="5">
+              <div className="text-color-gradiant">that grow with you</div>
             </div>
           </h1>
         </div>
@@ -35,23 +38,14 @@ export function HeroSection() {
           <SectionDivider
             variant="white"
             id="hero-divider"
-            style={{
-              opacity: 0,
-              transform:
-                'translate3d(0, 0, 0) scale3d(0.1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-            }}
+            data-animate="divider-expander-show"
+            data-animate-order="0"
+            style={{ opacity: 0 }}
           />
           <div className="hero_bottom_list">
             <div className="hero_bottom_info">
               <div className="hero_bottom_content">
-                <p
-                  data-w-id="3a77596f-692e-0850-209d-f23fa68c2ed0"
-                  style={{
-                    transform:
-                      'translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-                  }}
-                  className="hero_bottom_paragraph"
-                >
+                <p className="hero_bottom_paragraph" data-animate="slide-up" data-animate-order="1">
                   Your partner in creating scalable, reliable solutions
                 </p>
               </div>
@@ -62,13 +56,7 @@ export function HeroSection() {
                 className="text-button w-inline-block"
                 onClick={() => trackMailto('share_ideas', 'hero')}
               >
-                <div
-                  style={{
-                    transform:
-                      'translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-                  }}
-                  className="text-button_list"
-                >
+                <div className="text-button_list" data-animate="slide-up" data-animate-order="2">
                   <div className="text-button_text">Share my ideas</div>
                   <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                 </div>
@@ -85,13 +73,7 @@ export function HeroSection() {
                   className="text-button w-inline-block"
                   onClick={handleContactClick}
                 >
-                  <div
-                    style={{
-                      transform:
-                        'translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-                    }}
-                    className="text-button_list"
-                  >
+                  <div className="text-button_list" data-animate="slide-up" data-animate-order="3">
                     <div className="text-button_text">I want a new software</div>
                     <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                   </div>

@@ -252,6 +252,8 @@ export function Navbar({ variant: _variant = 'transparent', position: _position 
   return (
     <div
       className="nav_wrap padding-global w-nav"
+      data-animate-scope
+      data-animate-default-stagger="300"
       data-animation="default"
       data-easing2="ease-in"
       data-easing="ease-in"
@@ -263,7 +265,14 @@ export function Navbar({ variant: _variant = 'transparent', position: _position 
     >
       <div className="nav_contain container" style={{ background: 'transparent' }}>
         <div style={{ opacity: 1 }} className="nav-component">
-          <AppLink to="/" aria-label="Arg Software" className="nav_logo-wrapper w-nav-brand">
+          <AppLink
+            to="/"
+            aria-label="Arg Software"
+            className="nav_logo-wrapper w-nav-brand"
+            data-animate="fade-up"
+            data-animate-trigger="load"
+            data-animate-order="0"
+          >
             <div className="nav_logo_icon">
               <Logo />
             </div>
@@ -320,7 +329,12 @@ export function Navbar({ variant: _variant = 'transparent', position: _position 
             </div>
           </div>
 
-          <div className="nav_buttons-wrapper">
+          <div
+            className="nav_buttons-wrapper"
+            data-animate="fade-up"
+            data-animate-trigger="load"
+            data-animate-order="1"
+          >
             <a
               href="https://zcal.co/argsoftware/project"
               target="_blank"

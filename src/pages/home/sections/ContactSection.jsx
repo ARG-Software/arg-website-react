@@ -25,12 +25,9 @@ function CTAVideo() {
         <div className="formtext form-click">
           <div className="header-animation form">
             <h2
-              data-w-id="4449cd61-6b68-de73-f730-a1b2266f5192"
+              data-animate="slide-up"
               className="heading-style-h1 form-header"
-              style={{
-                transform:
-                  'translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-              }}
+              data-animate-order="0"
             >
               You want real results?
             </h2>
@@ -38,8 +35,8 @@ function CTAVideo() {
           </div>
           <div className="padding-bottom padding-48"></div>
           <a
-            data-w-id="3f303bcf-0478-e5d9-eecb-4de616fd2f42"
-            style={{ opacity: 0 }}
+            data-animate="fade"
+            data-animate-order="1"
             href="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
             target="_blank"
             rel="noopener noreferrer"
@@ -47,18 +44,8 @@ function CTAVideo() {
             onClick={() => trackCTA('typeform', 'homepage_contact')}
           >
             <div className="button-base_text_wrap">
-              <div
-                data-w-id="3f303bcf-0478-e5d9-eecb-4de616fd2f44"
-                className="button-base__button-text"
-              >
-                Let's start
-              </div>
-              <div
-                data-w-id="3f303bcf-0478-e5d9-eecb-4de616fd2f46"
-                className="button-base__button-text is-animated"
-              >
-                2 minutes
-              </div>
+              <div className="button-base__button-text">Let's start</div>
+              <div className="button-base__button-text is-animated">2 minutes</div>
             </div>
           </a>
         </div>
@@ -69,7 +56,12 @@ function CTAVideo() {
 
 export function ContactSection({ className = '' }) {
   return (
-    <section id="contact" className={`section_cta padding-section-medium ${className}`.trim()}>
+    <section
+      id="contact"
+      className={`section_cta padding-section-medium ${className}`.trim()}
+      data-animate-scope
+      data-animate-default-stagger="80"
+    >
       <div className="padding-global is--cta-mobile">
         <div className="container-large">
           {/* Video CTA - Now first */}
@@ -84,37 +76,24 @@ export function ContactSection({ className = '' }) {
               <div className="heading_wrap">
                 <div className="header-animation hide-tablet">
                   <h2
-                    data-w-id="56016045-6d3b-3314-c750-b8757587bc0f"
-                    style={{
-                      transform:
-                        'translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-                    }}
+                    data-animate="slide-up"
                     className="heading-style-h1 hide-mobile-portrait"
+                    data-animate-order="2"
                   >
                     Built for scale
                   </h2>
                 </div>
                 <div className="header-animation show-tablet">
                   <h2
-                    data-w-id="61119dee-a65e-a624-b8fe-664d48050e05"
-                    style={{
-                      transform:
-                        'translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-                    }}
+                    data-animate="slide-up"
                     className="heading-style-h1 hide-mobile-portrait"
+                    data-animate-order="3"
                   >
                     Explore
                   </h2>
                 </div>
                 <div className="header-animation hide-tablet">
-                  <h2
-                    data-w-id="965ad8ce-d1ff-77b6-6ae7-091aab3a6bad"
-                    style={{
-                      transform:
-                        'translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-                    }}
-                    className="heading-style-h1"
-                  >
+                  <h2 data-animate="slide-up" className="heading-style-h1" data-animate-order="4">
                     <span className="text-color-gradiant-2">
                       Shipped to production. Across industries.
                     </span>
@@ -122,21 +101,15 @@ export function ContactSection({ className = '' }) {
                 </div>
                 <div className="header-animation show-mobile-portrait">
                   <h2
-                    data-w-id="56016045-6d3b-3314-c750-b8757587bc15"
-                    style={{
-                      transform:
-                        'translate3d(0, 100%, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)',
-                    }}
+                    data-animate="slide-up"
                     className="heading-style-h1 show-tablet"
+                    data-animate-order="5"
                   >
                     Explore
                   </h2>
                 </div>
                 <div className="header-animation show-tablet">
-                  <h2
-                    data-w-id="56016045-6d3b-3314-c750-b8757587bc1e"
-                    className="heading-style-h1 text-color-gradiant"
-                  >
+                  <h2 className="heading-style-h1 text-color-gradiant">
                     <span className="text-color-gradiant-2">what we've shipped.</span>
                   </h2>
                 </div>

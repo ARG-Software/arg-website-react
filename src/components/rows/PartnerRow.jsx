@@ -20,7 +20,7 @@ export function PartnerRow({
   const animationDelay = `${(index * 0.8) % 4}s`;
   return (
     <div id={slug} className={`pp-partner-row${flip ? ' pp-flip' : ''} ${className}`}>
-      <div className={`pp-partner-visual${animate ? ' pp-animate' : ''}`}>
+      <div className={`pp-partner-visual${animate ? ' pp-animate' : ''}`} data-animate="fade-up">
         {children ? (
           children
         ) : image ? (
@@ -33,7 +33,7 @@ export function PartnerRow({
           />
         ) : null}
       </div>
-      <div className={`pp-partner-body pp-animate pp-d1`}>
+      <div className={`pp-partner-body pp-animate pp-d1`} data-animate="fade-up">
         {tag && (
           <div className="pp-partner-tag">
             <div className="subtitle_tag-wrapper">
