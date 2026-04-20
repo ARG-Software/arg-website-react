@@ -1,4 +1,6 @@
 export { Logo } from './icons/Logo';
+export { Mark } from './icons/Mark';
+export { MarkName } from './icons/MarkName';
 export {
   SocialIcons,
   SocialIconsWithLabel,
@@ -21,4 +23,3 @@ export { CTASection } from './layout/CTASection';
 export { SectionDivider } from './layout/SectionDivider';
 export { LoadingScreen } from './layout/LoadingScreen';
 export { SEO } from './seo/SEO';
-export { useCountUp } from '../hooks';

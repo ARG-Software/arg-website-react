@@ -1,4 +1,4 @@
-import AppLink from '../../../components/links/AppLink';
+import AppLink from '../../../components/navigation/AppLink';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { trackBlogPostClick } from '../../../hooks/useAnalytics';
 import { SectionDivider } from '../../../components/layout/SectionDivider';

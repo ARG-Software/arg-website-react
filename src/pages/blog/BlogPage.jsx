@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import AppLink from '../../components/links/AppLink';
+import AppLink from '../../components/navigation/AppLink';
 import { Navbar, Footer, CTASection, SectionDivider, arrowSvg, SEO } from '../../components';
 import { SubpageHero } from '../../components/hero/SubpageHero';
 import { useScrollAnimations, useBlogSearch } from '../../hooks';

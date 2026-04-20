@@ -8,6 +8,7 @@ import { LenisProvider } from './providers/LenisProvider.jsx';
 import { TransitionProvider } from './providers/TransitionProvider.jsx';
 import { CookieConsent } from './components/index.js';
 import './styles/base.css';
+import './styles/components.css';
 
 const PartnersPage = lazy(() => import('./pages/PartnersPage.jsx'));
 const ProjectsPage = lazy(() => import('./pages/ProjectsPage.jsx'));

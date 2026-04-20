@@ -1,4 +1,4 @@
-import AppLink from '../links/AppLink';
+import AppLink from './AppLink';
 
 /**
  * Breadcrumb component for subpages

@@ -1,5 +1,5 @@
 import { Logo, SEO } from '../components';
-import AppLink from '../components/links/AppLink';
+import AppLink from '../components/navigation/AppLink';
 import { useNotFoundPageScene } from '../hooks/useNotFoundPageScene';
 import { trackCTA } from '../hooks/useAnalytics';
 

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import AppLink from '../../../components/links/AppLink';
+import AppLink from '../../../components/navigation/AppLink';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { useLenis } from '../../../hooks';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
