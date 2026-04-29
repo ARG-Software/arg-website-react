@@ -3,17 +3,21 @@ import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { trackBlogPostClick } from '../../../hooks/useAnalytics';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 
-function getTagColorClass(tag) {
+function getTagColorStyle(tag) {
   let hash = 0;
   for (let i = 0; i < tag.length; i++) {
     hash = tag.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const colors = ['blue', 'green', 'purple', 'red', 'orange', 'teal'];
-  return colors[Math.abs(hash) % colors.length];
+  const hue = Math.abs(hash) % 360;
+  return {
+    background: `hsla(${hue}, 50%, 55%, 0.12)`,
+    color: `hsl(${hue}, 55%, 72%)`,
+    border: `1px solid hsla(${hue}, 50%, 55%, 0.25)`,
+  };
 }
 
 function BlogCard({ blogPost }) {
-  const tagColor = getTagColorClass(blogPost.tag);
+  const tagStyle = getTagColorStyle(blogPost.tag);
   return (
     <AppLink
       to={`/blog/${blogPost.slug}/`}
@@ -25,12 +29,12 @@ function BlogCard({ blogPost }) {
         <p className="blog-promo_card-new-excerpt">{blogPost.excerpt}</p>
       </div>
       <div className="blog-promo_card-new-footer">
-        <div className={`blog-promo_card-new-tag tag-${tagColor}`}>
+        <div className="blog-promo_card-new-tag" style={tagStyle}>
           <span>{blogPost.tag}</span>
         </div>
         <div className="blog-promo_card-new-meta">
           <span className="blog-promo_card-new-date">{blogPost.date}</span>
-          <div className="blog-promo_card-new-arrow w-embed">{arrowSvg}</div>
+          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
         </div>
       </div>
     </AppLink>
@@ -50,6 +54,7 @@ function displayBlogGridRow(blogPosts = []) {
 export function BlogPromoSection({ blogPosts, className = '' }) {
   const heroPost = blogPosts[0];
   const gridPosts = blogPosts.slice(1, 7);
+  const heroTagStyle = getTagColorStyle(heroPost.tag);
 
   return (
     <section
@@ -75,16 +80,19 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
             </div>
             <AppLink
               to={`/blog/${heroPost.slug}/`}
-              className="blog-promo_hero"
+              className="blog-promo_hero blog-promo_card-new"
               onClick={() =>
                 trackBlogPostClick(heroPost.slug, heroPost.title, 'homepage_promo_hero')
               }
             >
               <div className="blog-promo_hero-content" data-animate="fade-up">
-                <h3 className="blog-promo_hero-title">{heroPost.title}</h3>
+                <div className="blog-promo_card-new-header">
+                  <h3 className="blog-promo_hero-title">{heroPost.title}</h3>
+                  <p className="blog-promo_card-new-excerpt">{heroPost.excerpt}</p>
+                </div>
                 <div className="blog-promo_hero-meta">
-                  <div className="subtitle_tag-wrapper is--white">
-                    <div>{heroPost.tag}</div>
+                  <div className="blog-promo_card-new-tag" style={heroTagStyle}>
+                    <span>{heroPost.tag}</span>
                   </div>
                   <div className="blog-promo_hero-meta-bottom">
                     <span className="blog-promo_hero-date">{heroPost.date}</span>
