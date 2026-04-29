@@ -3,36 +3,53 @@ import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { trackBlogPostClick } from '../../../hooks/useAnalytics';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 
-function displayBlogGridRow(blogRows = [], marginTop = '0') {
-  return (
-    <div className="blog-promo_cards-grid" style={{ marginTop }} data-animate="fade-up">
-      {blogRows.map(blogPost => (
-        <AppLink
-          key={blogPost.slug}
-          to={`/blog/${blogPost.slug}/`}
-          className="blog-promo_card-small"
-          onClick={() => trackBlogPostClick(blogPost.slug, blogPost.title, 'homepage_promo_card')}
-        >
-          <h4 className="blog-promo_card-title-small">{blogPost.title}</h4>
-          <div className="subtitle_tag-wrapper is--white" style={{ width: 'fit-content' }}>
-            <div>{blogPost.tag}</div>
-          </div>
+function getTagColorClass(tag) {
+  let hash = 0;
+  for (let i = 0; i < tag.length; i++) {
+    hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const colors = ['blue', 'green', 'purple', 'red', 'orange', 'teal'];
+  return colors[Math.abs(hash) % colors.length];
+}
 
-          <div className="blog-promo_card-meta-bottom">
-            <span className="blog-promo_card-date-small">{blogPost.date}</span>
-            <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-          </div>
-        </AppLink>
+function BlogCard({ blogPost }) {
+  const tagColor = getTagColorClass(blogPost.tag);
+  return (
+    <AppLink
+      to={`/blog/${blogPost.slug}/`}
+      className="blog-promo_card-new"
+      onClick={() => trackBlogPostClick(blogPost.slug, blogPost.title, 'homepage_promo_card')}
+    >
+      <div className="blog-promo_card-new-header">
+        <h4 className="blog-promo_card-new-title">{blogPost.title}</h4>
+        <p className="blog-promo_card-new-excerpt">{blogPost.excerpt}</p>
+      </div>
+      <div className="blog-promo_card-new-footer">
+        <div className={`blog-promo_card-new-tag tag-${tagColor}`}>
+          <span>{blogPost.tag}</span>
+        </div>
+        <div className="blog-promo_card-new-meta">
+          <span className="blog-promo_card-new-date">{blogPost.date}</span>
+          <div className="blog-promo_card-new-arrow w-embed">{arrowSvg}</div>
+        </div>
+      </div>
+    </AppLink>
+  );
+}
+
+function displayBlogGridRow(blogPosts = []) {
+  return (
+    <div className="blog-promo_cards-new" data-animate="fade-up">
+      {blogPosts.map(blogPost => (
+        <BlogCard key={blogPost.slug} blogPost={blogPost} />
       ))}
     </div>
   );
 }
 
 export function BlogPromoSection({ blogPosts, className = '' }) {
-  // Separate first post as hero, next 6 as cards (3 + 3)
   const heroPost = blogPosts[0];
-  const firstRowPosts = blogPosts.slice(1, 4);
-  const secondRowPosts = blogPosts.slice(4, 7);
+  const gridPosts = blogPosts.slice(1, 7);
 
   return (
     <section
@@ -56,7 +73,6 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
                 <div>Blog</div>
               </div>
             </div>
-            {/* Hero Post - Full width */}
             <AppLink
               to={`/blog/${heroPost.slug}/`}
               className="blog-promo_hero"
@@ -65,17 +81,11 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
               }
             >
               <div className="blog-promo_hero-content" data-animate="fade-up">
-                {/* Left: Title (60% on desktop) */}
                 <h3 className="blog-promo_hero-title">{heroPost.title}</h3>
-
-                {/* Right: Metadata (40% on desktop) */}
                 <div className="blog-promo_hero-meta">
-                  {/* Tag pill */}
                   <div className="subtitle_tag-wrapper is--white">
                     <div>{heroPost.tag}</div>
                   </div>
-
-                  {/* Date + Arrow (vertically stacked) */}
                   <div className="blog-promo_hero-meta-bottom">
                     <span className="blog-promo_hero-date">{heroPost.date}</span>
                     <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
@@ -83,8 +93,7 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
                 </div>
               </div>
             </AppLink>
-            {displayBlogGridRow(firstRowPosts)}
-            {displayBlogGridRow(secondRowPosts, '1.5rem')}
+            {displayBlogGridRow(gridPosts)}
 
             <div className="blog-promo_footer">
               <AppLink to="/blog" className="text-button w-inline-block">
