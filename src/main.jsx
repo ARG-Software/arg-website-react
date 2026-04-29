@@ -11,7 +11,7 @@ import './styles/base.css';
 import './styles/components.css';
 
 const PartnersPage = lazy(() => import('./pages/PartnersPage.jsx'));
-// const ProjectsPage = lazy(() => import('./pages/ProjectsPage.jsx'));
+const ProjectsPage = lazy(() => import('./pages/ProjectsPage.jsx'));
 const CareersPage = lazy(() => import('./pages/CareersPage.jsx'));
 const BlogPage = lazy(() => import('./pages/blog/BlogPage.jsx'));
 const BlogPostPage = lazy(() => import('./pages/blog/BlogPostPage.jsx'));
@@ -36,8 +36,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 <Route path="/" element={<HomePage />} />
                 <Route path="/partners" element={<PartnersPage />} />
                 <Route path="/partners/" element={<PartnersPage />} />
-                {/* <Route path="/projects" element={<ProjectsPage />} />
-                <Route path="/projects/" element={<ProjectsPage />} /> */}
+                <Route path="/projects" element={<ProjectsPage />} />
+                <Route path="/projects/" element={<ProjectsPage />} />
                 <Route path="/careers" element={<CareersPage />} />
                 <Route path="/careers/" element={<CareersPage />} />
                 <Route path="/blog" element={<BlogPage />} />

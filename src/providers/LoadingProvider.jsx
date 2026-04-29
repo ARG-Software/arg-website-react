@@ -17,6 +17,17 @@ const initialShouldShow = shouldShowLoading();
 export function LoadingProvider({ children }) {
   const [done, setDone] = useState(!initialShouldShow);
   const [shouldShow] = useState(initialShouldShow);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (!shouldShow) {
+      // Slight delay when skipping loading screen to prevent flash
+      const timer = setTimeout(() => setReady(true), 120);
+      return () => clearTimeout(timer);
+    } else {
+      setReady(true);
+    }
+  }, [shouldShow]);
 
   useEffect(() => {
     if (!shouldShow) return;
@@ -41,7 +52,9 @@ export function LoadingProvider({ children }) {
   return (
     <LoadingContext.Provider value={done}>
       {shouldShow && !done && <LoadingScreen onComplete={handleComplete} />}
-      {children}
+      <div style={{ opacity: ready ? 1 : 0, transition: 'opacity 120ms ease' }}>
+        {children}
+      </div>
     </LoadingContext.Provider>
   );
 }
