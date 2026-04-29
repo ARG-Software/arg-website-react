@@ -156,7 +156,6 @@ export function SocialSection({ className = '' }) {
           </div>
         </div>
       </div>
-      <SectionDivider variant="light" hideOnMobile={true} />
     </section>
   );
 }
