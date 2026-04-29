@@ -297,13 +297,13 @@ export function FAQSection({ className = '' }) {
         <div className="container-large">
           <div className="faq_header">
             <div className="heading_wrap">
-              <h2 style={{ color: '#0000' }}>
+              <h2>
                 Common questions,
                 <br />
                 honest answers.
               </h2>
             </div>
-            <div className="subtitle_tag-wrapper is--white hide-mobile-landscape">
+            <div className="subtitle_tag-wrapper hide-mobile-landscape">
               <div>FAQ</div>
             </div>
           </div>
@@ -322,7 +322,6 @@ export function FAQSection({ className = '' }) {
           </div>
         </div>
       </div>
-      <SectionDivider variant="light" hideOnMobile={true} />
     </section>
   );
 }
