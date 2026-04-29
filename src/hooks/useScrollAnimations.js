@@ -194,6 +194,14 @@ const applyInitialState = (element, preset, presetName) => {
     }
     element.style.setProperty('opacity', '0', 'important');
   }
+
+  if (presetName === 'width-countup') {
+  const line = element.querySelector('.work-item_line');
+  if (line) {
+    line.style.setProperty('width', '0%', 'important');
+  }
+}
+
 };
 
 // Get final transform state based on preset
@@ -261,12 +269,14 @@ const animateElement = (element, preset, presetName, index = 0) => {
     const visibleClass = getVisibleClassForElement(element);
     element.classList.add(visibleClass);
 
+
     // Handle number count-up
     if (presetName === 'width-countup') {
       const line = element.querySelector('.work-item_line');
       if (line) {
         line.style.transition = preset.transition;
-        line.style.width = '100%';
+        line.offsetHeight;
+        line.style.setProperty('width', '100%', 'important');
       }
 
       const numEl = element.querySelector('[fs-numbercount-element="number"]');
@@ -342,8 +352,9 @@ export function useScrollAnimations(config = {}) {
           const preset = ATTRIBUTE_PRESETS[presetName];
           if (preset) {
             const config = getAnimationConfig(element);
-            // Use data-animate-order value for timing (same order = same timing)
-            const orderValue = parseInt(element.getAttribute('data-animate-order')) || 0;
+            // Use data-animate-order if explicitly set, otherwise fall back to scope index
+            const orderAttr = element.getAttribute('data-animate-order');
+            const orderValue = orderAttr !== null ? parseInt(orderAttr) || 0 : _scopeOrderIndex;
             const animationData = { element, preset, presetName, orderIndex: orderValue };
 
             if (config.trigger === 'load') {
@@ -404,9 +415,14 @@ export function useScrollAnimations(config = {}) {
         applyInitialState(element, preset, presetName);
 
         // Force reflow for CSS !important overrides
-        if (presetName === 'overlay-reveal') {
+        if (presetName === 'overlay-reveal' ) {
           element.offsetHeight;
         }
+
+        if (presetName === 'width-countup') {
+          const line = element.querySelector('.work-item_line');
+            if (line) line.offsetHeight;
+          }
 
         observer.observe(element);
       });

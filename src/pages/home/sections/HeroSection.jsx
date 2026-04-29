@@ -19,8 +19,7 @@ export function HeroSection() {
       className="hero_wrap"
       data-animate-scope
       data-animate-trigger="load"
-      data-animate-default-trigger="load"
-      data-animate-default-stagger="800"
+      data-animate-default-stagger="500"
       data-animate-default-preset="fade-up"
     >
       <div className="hero_contain container padding-global">

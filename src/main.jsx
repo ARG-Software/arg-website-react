@@ -11,11 +11,13 @@ import './styles/base.css';
 import './styles/components.css';
 
 const PartnersPage = lazy(() => import('./pages/PartnersPage.jsx'));
-const ProjectsPage = lazy(() => import('./pages/ProjectsPage.jsx'));
+// const ProjectsPage = lazy(() => import('./pages/ProjectsPage.jsx'));
 const CareersPage = lazy(() => import('./pages/CareersPage.jsx'));
 const BlogPage = lazy(() => import('./pages/blog/BlogPage.jsx'));
 const BlogPostPage = lazy(() => import('./pages/blog/BlogPostPage.jsx'));
 // const TeamPage = lazy(() => import('./pages/TeamPage.jsx'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage.jsx'));
+const TermsPage = lazy(() => import('./pages/TermsPage.jsx'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'));
 
 function BlogPostPageWrapper() {
@@ -42,6 +44,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 <Route path="/blog/" element={<BlogPage />} />
                 <Route path="/blog/:slug" element={<BlogPostPageWrapper />} />
                 <Route path="/blog/:slug/" element={<BlogPostPageWrapper />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/privacy/" element={<PrivacyPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/terms/" element={<TermsPage />} />
                 {/* <Route path="/team" element={<TeamPage />} />
                 <Route path="/team/" element={<TeamPage />} /> */}
                 <Route path="*" element={<NotFoundPage />} />

@@ -20,6 +20,7 @@ const NAV_LINKS = [
   { href: '/blog/', label: 'Blog' },
   { href: '/partners/', label: 'Partners' },
   { href: '/projects/', label: 'Projects' },
+  { href: '/careers/', label: 'Careers' },
   // { href: '/team/', label: 'Team' },
   { href: '/#contact', label: 'Contact' },
 ];
@@ -33,7 +34,7 @@ function buildCrawlableBlock(h1Text, { extraLinks = [], description = '', subtit
   // Real <a> tags outside noscript and outside #root so Ahrefs counts them in the link graph.
   // Visually hidden via inline style (not display:none which crawlers may skip).
   return `<div aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">
-  <h1>${escapeHtml(h1Text)}</h1>${descHtml}${subHtml}${paraHtml}
+  <h2>${escapeHtml(h1Text)}</h2>${descHtml}${subHtml}${paraHtml}
   <nav>
     ${navHtml}
   </nav>

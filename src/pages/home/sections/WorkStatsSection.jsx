@@ -193,24 +193,28 @@ export function WorkStatsSection({ className = '' }) {
     <section
       id="work-with-us"
       className={`section_work background-color-white padding-section-large border-radius-top ${className}`.trim()}
+      data-animate-scope
+      data-animate-trigger="scroll"
+      data-animate-default-preset="fade-up"
+      data-animate-default-stagger="200"
     >
       <div className="padding-global">
         <div className="container-medium">
           <div className="work-component">
-            <div id="workstats-subtitle-grid">
+            <div id="workstats-subtitle-grid" data-animate-order="0">
               <div className="subtitle_tag-wrapper hide-mobile-landscape">Working With Us</div>
             </div>
             <div className="work-content">
               <div className="work_header-wrapper">
                 <div className="overflow-hidden">
                   <div className="heading_wrap">
-                    <h2 data-animate="fade-up" className="work_heading">
+                    <h2 data-animate="fade-up" data-animate-order="1" className="work_heading">
                       From Zero to Hero
                     </h2>
                   </div>
                 </div>
                 <div className="padding-bottom padding-30-44"></div>
-                <p data-animate="fade-up" className="work_paragraph">
+                <p className="text-color-grey" data-animate="fade-up" data-animate-order="2">
                   By trusting us, you (always) end up winning. Even if we meet once in a lifetime,
                   you get a solid, lasting partnership where people come first. <br />
                   And each challenge, too.
@@ -234,7 +238,7 @@ export function WorkStatsSection({ className = '' }) {
                 </p>
               </div>
               <div className="padding-bottom padding-80-76"></div>
-              <div className="work_items-wrapper">
+              <div className="work_items-wrapper" data-animate-scope data-animate-trigger="scroll">
                 {STATS.map((stat, index) => (
                   <CounterWidget
                     key={index}
@@ -242,7 +246,7 @@ export function WorkStatsSection({ className = '' }) {
                     label={stat.label}
                     imageSrc={stat.imageSrc}
                     variant="expanded"
-                    showLine={true}
+                    data-animate-order={index}
                   />
                 ))}
               </div>

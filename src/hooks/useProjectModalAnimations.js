@@ -169,6 +169,44 @@ export function useProjectModalAnimations() {
           modal.innerHTML = clickedItem.innerHTML;
           modal.setAttribute('data-lenis-prevent', '');
 
+          // Inject modal images from data attributes (not rendered on page load)
+          const modalImgContainer = modal.querySelector('[data-modal-img]');
+          if (modalImgContainer) {
+            const imgSrc = modalImgContainer.getAttribute('data-modal-img');
+            const imgSrcSet = modalImgContainer.getAttribute('data-modal-img-set');
+            const img = document.createElement('img');
+            img.src = imgSrc;
+            if (imgSrcSet) img.srcSet = imgSrcSet;
+            img.sizes = '(max-width: 767px) 100vw, 60vw';
+            img.alt = '';
+            img.className = 'projects_visual_img';
+            img.width = 1200;
+            img.height = 800;
+            img.setAttribute('data-wf-drag', 'false');
+            modalImgContainer.appendChild(img);
+            modalImgContainer.removeAttribute('data-modal-img');
+            modalImgContainer.removeAttribute('data-modal-img-set');
+          }
+
+          const mockupContainer = modal.querySelector('[data-mockup-src]');
+          if (mockupContainer) {
+            const mockupSrc = mockupContainer.getAttribute('data-mockup-src');
+            const mockupSrcSet = mockupContainer.getAttribute('data-mockup-src-set');
+            const mockupImg = document.createElement('img');
+            mockupImg.loading = 'lazy';
+            mockupImg.src = mockupSrc;
+            if (mockupSrcSet) mockupImg.srcSet = mockupSrcSet;
+            mockupImg.sizes =
+              '(max-width: 479px) 100vw, (max-width: 767px) 275.995361328125px, (max-width: 991px) 36vw, 18vw';
+            mockupImg.alt = '';
+            mockupImg.className = 'projects_item_sec-img';
+            mockupImg.width = 400;
+            mockupImg.height = 800;
+            mockupContainer.appendChild(mockupImg);
+            mockupContainer.removeAttribute('data-mockup-src');
+            mockupContainer.removeAttribute('data-mockup-src-set');
+          }
+
           // Force all images in the modal to load eagerly
           modal.querySelectorAll('img[loading="lazy"]').forEach(img => {
             img.loading = 'eager';

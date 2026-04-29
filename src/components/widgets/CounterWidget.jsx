@@ -35,7 +35,7 @@ export function CounterWidget({
       data-animate={isExpanded ? 'width-countup' : undefined}
       {...props}
     >
-      {showLine && <div className="work-item_line" />}
+      <div className="work-item_line" />
 
       {isCompact ? (
         // Compact layout (StatsGrid)

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useScrollAnimations } from '../hooks';
 import { Navbar, Footer, CTASection, SectionDivider, SEO } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
 import { arrowSvg } from '../components/icons/SocialIcons';
+import JOBS from '../data/jobs.json';
 import '../styles/careers.css';
 
 const VALUE_ICONS = {
@@ -122,24 +123,9 @@ function JobAccordion({ job, isOpen, onToggle }) {
 }
 
 export default function CareersPage() {
-  const [jobs, setJobs] = useState([]);
   const [openJobId, setOpenJobId] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useScrollAnimations();
-
-  useEffect(() => {
-    fetch('/data/jobs.json')
-      .then(res => res.json())
-      .then(data => {
-        setJobs(data.jobs || []);
-        setIsLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to load jobs:', err);
-        setIsLoading(false);
-      });
-  }, []);
 
   const handleJobToggle = jobId => {
     setOpenJobId(openJobId === jobId ? null : jobId);
@@ -203,11 +189,9 @@ export default function CareersPage() {
                   <span className="cp-line">Open Positions</span>
                 </h2>
               </div>
-              {isLoading ? (
-                <div className="cp-jobs-loading">Loading positions...</div>
-              ) : jobs.length > 0 ? (
+              {JOBS.length > 0 ? (
                 <div className="cp-jobs-list">
-                  {jobs.map(job => (
+                  {JOBS.map(job => (
                     <JobAccordion
                       key={job.id}
                       job={job}

@@ -1,6 +1,8 @@
 export { Logo } from './icons/Logo';
 export { Mark } from './icons/Mark';
 export { MarkName } from './icons/MarkName';
+export { MarkNameWhite } from './icons/MarkNameWhite';
+
 export {
   SocialIcons,
   SocialIconsWithLabel,

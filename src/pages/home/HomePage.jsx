@@ -16,11 +16,12 @@ import { BlogPromoSection } from './sections/BlogPromoSection';
 import { SocialSection } from './sections/SocialSection';
 import { FAQSection } from './sections/FAQSection';
 import { ContactSection } from './sections/ContactSection';
+import PROJECTS from '../../data/projects.json';
 
 export default function HomePage() {
   const [blogPosts] = useState(() => loadBlogPosts().slice(0, HOMEPAGE_BLOG_POSTS_COUNT));
 
-  useScrollAnimations(); // Unified scroll-triggered animations for all sections
+  useScrollAnimations();
 
   return (
     <>
@@ -33,7 +34,7 @@ export default function HomePage() {
           <AboutSection />
           <InfinityMarquee />
           <ServicesSection />
-          <ProjectsSection />
+          <ProjectsSection projects={PROJECTS} />
           <TestimonialsSection />
           <WorkStatsSection />
           <TeamSection />

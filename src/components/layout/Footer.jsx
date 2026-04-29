@@ -1,28 +1,122 @@
-import { SocialIcons } from '../icons/SocialIcons';
 import { SectionDivider } from './SectionDivider';
+import { trackSocial } from '../../hooks/useAnalytics';
+import { trackCTA } from '../../hooks/useAnalytics';
+import { MarkNameWhite } from '../icons/MarkNameWhite';
 
-export function Footer({ year = 2026 }) {
+const NAV_LINKS = [
+  { label: 'Blog', path: '/blog' },
+  { label: 'Careers', path: '/careers' },
+  { label: 'Partners', path: '/partners' },
+];
+
+const SERVICE_ITEMS = [
+  'AI & Intelligent Systems',
+  'Architecture Consulting',
+  'Custom Development',
+  'ERP & CRM',
+  'Fintech Solutions',
+  'Scalability',
+];
+
+const SOCIAL_LINKS = [
+  { label: 'GitHub', href: 'https://github.com/ARG-Software', event: 'github' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/arg-software', event: 'linkedin' },
+  { label: 'Medium', href: 'https://medium.com/@arg-software', event: 'medium' },
+];
+
+export function Footer() {
   return (
-    <footer className="footer" data-animate-scope data-animate-default-stagger="50">
-      <div className="container-medium footer-container padding-global">
-        <SectionDivider variant="light" />
-        <div className="footer_copywrite-content">
-          <div className="overflow-hidden">
-            <div data-animate="slide-up" className="hide-mobile-landscape" data-animate-order="0">
-              © Arg {year}. All Rights Reserved
+    <>
+      <SectionDivider variant="light" />
+
+      <footer className="footer-main" data-animate-scope data-animate-default-stagger="50">
+        <div className="container padding-global">
+          <div className="footer-wrapper">
+            {/* Panel 1 — Logo centered */}
+            <div className="footer-left" data-animate="fade-up">
+              <div className="footer-left__logo">
+                <MarkNameWhite />
+              </div>
+              <div className="footer-left__tagline">Architecture-First Software Studio</div>
             </div>
-          </div>
-          <div className="footer_copywrite-buttons">
-            <SocialIcons />
-          </div>
-          <div className="footer_copywrite-text-mobile">
-            <div data-animate="slide-up" className="text-block-2" data-animate-order="1">
-              Arg is based in Funchal and Porto, Portugal
-            </div>
-            <div className="show-mobile-landscape">© Arg {year}. All Rights Reserved</div>
+
+            {/* Panel 2 — Nav / Services / Contact / Social / CTA / Bottom */}
+            <div className="footer-right">
+              {/* 3-column row */}
+              <div className="footer-nav-row" data-animate="fade-up" data-animate-order="1">
+                {/* Navigation */}
+                <div className="footer-nav-col">
+                  <div className="footer-col-title">Navigate</div>
+                  <div className="footer-col-list">
+                    {NAV_LINKS.map(link => (
+                      <a key={link.path} href={link.path} className="footer-col-link">
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Services (text only) */}
+                <div className="footer-nav-col">
+                  <div className="footer-col-title">Expertise</div>
+                  <div className="footer-col-list">
+                    {SERVICE_ITEMS.map(item => (
+                      <span key={item} className="footer-col-text">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Socials */}
+                <div className="footer-nav-col">
+                  <div className="footer-col-title">Socials</div>
+                  <div className="footer-col-list">
+                    {SOCIAL_LINKS.map(link => (
+                  <a
+                    key={link.event}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="footer-socials__link"
+                    onClick={() => trackSocial(link.event, 'footer')}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+                  </div>
+                </div>
+
+                  {/* Contacts */}
+                <div className="footer-nav-col">
+                  <div className="footer-col-title">Contact</div>
+                  <div className="footer-col-list">
+                    <span className="footer-col-text">Porto and Funchal, Portugal</span>
+                    <span className="footer-col-text">
+                      <a href="mailto:info@arg.software">info@arg.software</a>
+                    </span>
+                  </div>
+                </div>
+                </div>
+
+                 <SectionDivider variant="light" />
+
+              {/* Bottom bar */}
+              <div className="footer-bottom">
+                <a href="/privacy" className="footer-bottom__link">
+                  Privacy Policy
+                </a>
+                <a href="/terms" className="footer-bottom__link">
+                  Terms of Service
+                </a>
+                <span className="footer-bottom__copyright">2021-2026 @ Arg Software</span>
+              </div>
+
+              </div>
+
           </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }

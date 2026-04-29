@@ -15,10 +15,15 @@ export function ProjectItem({
   liveLink,
   logos,
   stack,
-  animation = 'fade-up',
+  animation = 'fade-up'
 }) {
   return (
-    <div id="project-item-wrapper-grid" role="listitem" className="projects_item_wrap w-dyn-item">
+    <div
+      id="project-item-wrapper-grid"
+      role="listitem"
+      className="projects_item_wrap w-dyn-item"
+      data-animate={animation}
+    >
       <div className="projects_item" data-animate={animation}>
         <div className="projects_modal-close_btn">
           <div className="projects_modal-close_wrap">{closeSvg}</div>
@@ -31,19 +36,11 @@ export function ProjectItem({
             </div>
             <div className="projects_modal_text">to close</div>
           </div>
-          <div className="projects_item_visual">
-            <img
-              src={imgSrc}
-              srcSet={imgSrcSet}
-              sizes="(max-width: 767px) 100vw, 60vw"
-              loading="lazy"
-              data-wf-drag="false"
-              alt=""
-              className="projects_visual_img"
-              width="1200"
-              height="800"
-            />
-          </div>
+          <div
+            className="projects_item_visual"
+            data-modal-img={imgSrc}
+            data-modal-img-set={imgSrcSet}
+          ></div>
         </div>
         <div className="projects_item_content">
           <div className="projects_item_tag">
@@ -60,18 +57,11 @@ export function ProjectItem({
             View Live Site
           </a>
           <div className="padding-bottom padding-42"></div>
-          <div className="projects_item_visual is-showcase">
-            <img
-              loading="lazy"
-              src={mockupSrc}
-              alt=""
-              sizes="(max-width: 479px) 100vw, (max-width: 767px) 275.995361328125px, (max-width: 991px) 36vw, 18vw"
-              srcSet={mockupSrcSet}
-              className="projects_item_sec-img"
-              width="400"
-              height="800"
-            />
-          </div>
+          <div
+            className="projects_item_visual is-showcase"
+            data-mockup-src={mockupSrc}
+            data-mockup-src-set={mockupSrcSet}
+          ></div>
         </div>
         <div className="projects_item_content is-padding-bottom is-white-bg">
           <div className="projects_item_tag">
@@ -114,7 +104,9 @@ export function ProjectItem({
         <div className="projects_item_cover-img">
           <img
             data-wf-drag="false"
-            loading="lazy"
+            loading='lazy'
+            fetchPriority='auto'
+            decoding="async"
             alt=""
             src={imgSrc}
             sizes="(max-width: 767px) 91vw, (max-width: 991px) 88vw, 24vw"

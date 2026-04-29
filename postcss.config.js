@@ -75,7 +75,7 @@ module.exports = {
               /button-base/,
               /services_/,
               /service_/,
-              /testemonials/,
+              /testimonials/,
               /footer_/,
                /blog-promo/,
               /social-section/,

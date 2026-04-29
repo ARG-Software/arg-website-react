@@ -107,9 +107,13 @@ export function PartnersMarquee({ className = '' }) {
     <section
       id="partners-marquee"
       className={`partners_wrap background-color-white padding-section-compact border-radius-top ${className}`.trim()}
+      data-animate-scope
+      data-animate-trigger="scroll"
+      data-animate-default-stagger="500"
+      data-animate-default-preset="fade"
     >
       <div className="partners_marquee-outer">
-        <div className="partners_marquee-track" data-animate="fade">
+        <div className="partners_marquee-track" data-animate-order="0">
           {[0, 1, 2, 3].map(setIndex => (
             <div key={setIndex} className="partners_marquee-set">
               {partnerLogos.map((logo, i) => (

@@ -38,7 +38,7 @@ export const ATTRIBUTE_PRESETS = {
     threshold: 0.3,
     rootMargin: '0px 0px -10% 0px',
     transition: 'width 1s cubic-bezier(0.16, 1, 0.3, 1)',
-    countUpDuration: 1800, // ms
+    countUpDuration: 2500, // ms
   },
 
   // Overlay height collapse (team images)
@@ -64,6 +64,26 @@ export const ATTRIBUTE_PRESETS = {
     transition: 'transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1)',
     threshold: DEFAULT_THRESHOLD,
     rootMargin: DEFAULT_ROOT_MARGIN,
+  },
+
+  // Slide in from left
+  'slide-in-left': {
+    initialOpacity: '0',
+    initialTransform: 'translate3d(-100%, 0, 0)',
+    transition:
+      'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+    threshold: 0.1,
+    rootMargin: '0px 0px -10% 0px',
+  },
+
+  // Slide in from right
+  'slide-in-right': {
+    initialOpacity: '0',
+    initialTransform: 'translate3d(100%, 0, 0)',
+    transition:
+      'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+    threshold: 0.1,
+    rootMargin: '0px 0px -10% 0px',
   },
 
   // Horizontal scale animation (divider expand)

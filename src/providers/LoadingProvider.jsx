@@ -1,5 +1,6 @@
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { LoadingScreen } from '../components';
+import PROJECTS from '../data/projects.json';
 
 export const LoadingContext = createContext(true);
 
@@ -16,6 +17,21 @@ const initialShouldShow = shouldShowLoading();
 export function LoadingProvider({ children }) {
   const [done, setDone] = useState(!initialShouldShow);
   const [shouldShow] = useState(initialShouldShow);
+
+  useEffect(() => {
+    if (!shouldShow) return;
+
+    PROJECTS.forEach(project => {
+      if (project.imgSrc) {
+        const img = new Image();
+        img.src = project.imgSrc;
+      }
+      if (project.mockupSrc) {
+        const img = new Image();
+        img.src = project.mockupSrc;
+      }
+    });
+  }, [shouldShow]);
 
   const handleComplete = () => {
     sessionStorage.setItem(LOADING_SEEN_KEY, 'true');
