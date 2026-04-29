@@ -261,7 +261,7 @@ const animateElement = (element, preset, presetName, index = 0) => {
       const overlay = element.querySelector('.team_image-overlay');
       if (overlay) {
         overlay.style.transition = preset.transition;
-        overlay.style.height = '0%';
+        overlay.style.setProperty('height', '0%', 'important');
       }
     }
 

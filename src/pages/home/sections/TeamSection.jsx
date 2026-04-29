@@ -31,22 +31,26 @@ export function TeamSection({ className = '' }) {
       id="team"
       className={`section_team background-color-white padding-section-large border-radius-bottom ${className}`.trim()}
       data-animate-scope
+      data-animate-trigger="scroll"
+      data-animate-default-preset="fade"
     >
       <div className="padding-global">
         <div className="container-medium">
           <div className="team-component">
-            <div id="team-subtitle-grid">
+            <div id="team-subtitle-grid" data-animate-order="0">
               <div className="subtitle_tag-wrapper hide-mobile-landscape">Meet Our Team</div>
             </div>
             <div className="team-content">
               <div className="team_header-wrapper">
                 <div className="overflow-hidden">
                   <div className="heading_wrap">
-                    <h2 className="team_heading">You can't do anything without brains</h2>
+                    <h2 className="team_heading"  data-animate-order="1">
+                      You can't do anything without brains
+                    </h2>
                   </div>
                 </div>
                 <div className="padding-bottom padding-30-44"></div>
-                <p className="text-color-grey" data-animate="fade-up">
+                <p className="text-color-grey" data-animate-order="2">
                   More than a team — your innovation partners. Meet the passionate experts dedicated
                   to fueling your success.
                 </p>
@@ -55,7 +59,7 @@ export function TeamSection({ className = '' }) {
               <div className="team_items-wrapper">
                 {teamMembers.map((m, i) => (
                   <div key={i} className="team-item">
-                    <div className="team_image-wrapper" data-animate="fade-up">
+                    <div className="team_image-wrapper" data-animate="overlay-reveal" data-animate-order={i+3}>
                       <img
                         src={m.imgSrc}
                         srcSet={m.imgSrcSet}
@@ -69,11 +73,11 @@ export function TeamSection({ className = '' }) {
                       <div className="team_image-overlay"></div>
                     </div>
                     <div className="team-item_text">
-                      <h3 className="heading-style-h5" data-animate="slide-up">
+                      <h3 className="heading-style-h5" data-animate-order={i+4}>
                         {m.name}
                       </h3>
                       <div className="padding-bottom padding-small"></div>
-                      <div className="subtitle-team" data-animate="slide-up">
+                      <div className="subtitle-team" data-animate-order={i+5}>
                         {m.role}
                       </div>
                       <div className="padding-bottom padding-small"></div>
@@ -83,12 +87,12 @@ export function TeamSection({ className = '' }) {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-button w-inline-block"
-                        data-animate="fade-up"
                         onClick={() => trackSocial('linkedin', 'homepage_team')}
                       >
                         <div
                           className="icon-1x1-small socials-button w-embed"
                           style={{ color: '#000' }}
+                          data-animate-order={i+6}
                         >
                           {linkedinSvg}
                         </div>
