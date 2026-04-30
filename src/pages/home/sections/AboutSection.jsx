@@ -43,7 +43,9 @@ export function AboutSection({ className = '' }) {
               </p>
               <p data-animate-order="3">Solid Architecture, built to scale.</p>
               <p data-animate-order="4">Clean Code, maintainable and robust.</p>
-              <p data-animate-order="5">True Partnership, we’re with you from the first sprint to the tenth iteration.</p>
+              <p data-animate-order="5">
+                True Partnership, we’re with you from the first sprint to the tenth iteration.
+              </p>
             </div>
             <a
               data-animate-order="6"

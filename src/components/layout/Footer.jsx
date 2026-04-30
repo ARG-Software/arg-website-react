@@ -73,21 +73,21 @@ export function Footer() {
                   <div className="footer-col-title">Socials</div>
                   <div className="footer-col-list">
                     {SOCIAL_LINKS.map(link => (
-                  <a
-                    key={link.event}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="footer-socials__link"
-                    onClick={() => trackSocial(link.event, 'footer')}
-                  >
-                    {link.label}
-                  </a>
-                ))}
+                      <a
+                        key={link.event}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="footer-socials__link"
+                        onClick={() => trackSocial(link.event, 'footer')}
+                      >
+                        {link.label}
+                      </a>
+                    ))}
                   </div>
                 </div>
 
-                  {/* Contacts */}
+                {/* Contacts */}
                 <div className="footer-nav-col">
                   <div className="footer-col-title">Contact</div>
                   <div className="footer-col-list">
@@ -97,9 +97,9 @@ export function Footer() {
                     </span>
                   </div>
                 </div>
-                </div>
+              </div>
 
-                 <SectionDivider variant="light" />
+              <SectionDivider variant="light" />
 
               {/* Bottom bar */}
               <div className="footer-bottom">
@@ -111,9 +111,7 @@ export function Footer() {
                 </a>
                 <span className="footer-bottom__copyright">2021-2026 @ Arg Software</span>
               </div>
-
-              </div>
-
+            </div>
           </div>
         </div>
       </footer>

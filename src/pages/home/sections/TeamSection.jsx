@@ -44,7 +44,7 @@ export function TeamSection({ className = '' }) {
               <div className="team_header-wrapper">
                 <div className="overflow-hidden">
                   <div className="heading_wrap">
-                    <h2 className="team_heading"  data-animate-order="1">
+                    <h2 className="team_heading" data-animate-order="1">
                       You can't do anything without brains
                     </h2>
                   </div>
@@ -59,7 +59,11 @@ export function TeamSection({ className = '' }) {
               <div className="team_items-wrapper">
                 {teamMembers.map((m, i) => (
                   <div key={i} className="team-item">
-                    <div className="team_image-wrapper" data-animate="overlay-reveal" data-animate-order={i+3}>
+                    <div
+                      className="team_image-wrapper"
+                      data-animate="overlay-reveal"
+                      data-animate-order={i + 3}
+                    >
                       <img
                         src={m.imgSrc}
                         srcSet={m.imgSrcSet}
@@ -73,11 +77,11 @@ export function TeamSection({ className = '' }) {
                       <div className="team_image-overlay"></div>
                     </div>
                     <div className="team-item_text">
-                      <h3 className="heading-style-h5" data-animate-order={i+4}>
+                      <h3 className="heading-style-h5" data-animate-order={i + 4}>
                         {m.name}
                       </h3>
                       <div className="padding-bottom padding-small"></div>
-                      <div className="subtitle-team" data-animate-order={i+5}>
+                      <div className="subtitle-team" data-animate-order={i + 5}>
                         {m.role}
                       </div>
                       <div className="padding-bottom padding-small"></div>
@@ -92,7 +96,7 @@ export function TeamSection({ className = '' }) {
                         <div
                           className="icon-1x1-small socials-button w-embed"
                           style={{ color: '#000' }}
-                          data-animate-order={i+6}
+                          data-animate-order={i + 6}
                         >
                           {linkedinSvg}
                         </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useRAF } from './useRAF';
 
 // ── Shaders ───────────────────────────────────────────────────────────────────
 
@@ -113,8 +114,8 @@ const NM_H = 36;
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
 export function useWaterRipple(canvasId = 'water-ripple-canvas') {
-  const animationId = useRef(null);
   const cleanupRef = useRef(null);
+  const renderRef = useRef(null);
 
   useEffect(() => {
     const canvas = document.getElementById(canvasId);
@@ -144,8 +145,6 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         videoTexture.colorSpace = THREE.SRGBColorSpace;
         videoTexture.minFilter = THREE.LinearFilter;
         videoTexture.magFilter = THREE.LinearFilter;
-        // CRITICAL FIX: Disable Y-flipping for consistent texture coordinates
-        // Default is true for WebGL 1.0 compatibility, but causes coordinate mismatch
         videoTexture.flipY = false;
       }
 
@@ -216,21 +215,16 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       const setVideoCover = () => {
         if (!videoEl) return;
 
-        // Wait for video to be ready - critical fix
         if (!videoEl.videoWidth || !videoEl.videoHeight) {
-          // Video not ready yet, retry in 100ms
           setTimeout(setVideoCover, 100);
           return;
         }
 
-        // Use accurate dimensions - fix for stale values
         const rect = canvas.getBoundingClientRect();
         let cW = rect.width;
         let cH = rect.height;
 
-        // Check for valid canvas dimensions - CRITICAL FIX
         if (cW <= 0 || cH <= 0) {
-          // Canvas has no valid dimensions, try parent container as fallback
           const parent = canvas.parentElement;
           if (parent) {
             const parentRect = parent.getBoundingClientRect();
@@ -238,7 +232,6 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
             cH = parentRect.height;
           }
 
-          // If still invalid, retry after layout
           if (cW <= 0 || cH <= 0) {
             setTimeout(setVideoCover, 100);
             return;
@@ -254,19 +247,15 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
           oy = 0;
 
         if (cAspect > vAspect) {
-          // canvas wider: fit video width, crop video height
           sy = vAspect / cAspect;
           oy = (1 - sy) / 2;
         } else {
-          // canvas taller: fit video height, crop video width
           sx = cAspect / vAspect;
           ox = (1 - sx) / 2;
         }
 
         displayMaterial.uniforms.u_coverScale.value.set(sx, sy);
         displayMaterial.uniforms.u_coverOffset.value.set(ox, oy);
-
-        // CRITICAL: Force uniforms update
         displayMaterial.uniformsNeedUpdate = true;
       };
 
@@ -298,7 +287,6 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       const normalScene = new THREE.Scene();
       normalScene.add(new THREE.Mesh(quadGeo, normalMaterial));
 
-      // Pixel buffer + 2D canvas for SVG feImage source
       const nmPixels = new Uint8Array(NM_W * NM_H * 4);
       const nmImageData = new ImageData(NM_W, NM_H);
 
@@ -310,14 +298,12 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       document.body.appendChild(dispCanvas);
       const dispCtx = dispCanvas.getContext('2d');
 
-      // SVG filter applied to hero text content
       const svgNS = 'http://www.w3.org/2000/svg';
       const svgEl = document.createElementNS(svgNS, 'svg');
       svgEl.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;';
       const defs = document.createElementNS(svgNS, 'defs');
       const filterEl = document.createElementNS(svgNS, 'filter');
       filterEl.setAttribute('id', 'water-text-filter');
-      // userSpaceOnUse: all coordinates in the element's own pixel space (0,0 = element top-left)
       filterEl.setAttribute('filterUnits', 'userSpaceOnUse');
       filterEl.setAttribute('primitiveUnits', 'userSpaceOnUse');
       filterEl.setAttribute('x', '-100');
@@ -344,7 +330,6 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       svgEl.appendChild(defs);
       document.body.appendChild(svgEl);
 
-      // Inject a <style> tag so no inline styles are touched on DOM elements
       const styleEl = document.createElement('style');
       styleEl.textContent = '.hero_heading { filter: url(#water-text-filter); }';
       document.head.appendChild(styleEl);
@@ -352,45 +337,40 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       const heroEl = canvas.closest('.hero_wrap') || canvas.parentElement;
       const headingEl = heroEl.querySelector('.hero_heading');
 
-      // Align feImage so displacement canvas maps correctly onto the heading.
-      // filterUnits=userSpaceOnUse means coords are in the heading's own pixel space.
-      // We offset feImage by -headingOffset so the hero canvas origin aligns with (0,0).
       const updateFilterGeometry = () => {
         if (!headingEl) return;
         const heroRect = heroEl.getBoundingClientRect();
         const headRect = headingEl.getBoundingClientRect();
         const relX = headRect.left - heroRect.left;
         const relY = headRect.top - heroRect.top;
-        const W = heroRect.width;
-        const H = heroRect.height;
+        const w = heroRect.width;
+        const h = heroRect.height;
         feImage.setAttribute('x', String(-relX));
         feImage.setAttribute('y', String(-relY));
-        feImage.setAttribute('width', String(W));
-        feImage.setAttribute('height', String(H));
+        feImage.setAttribute('width', String(w));
+        feImage.setAttribute('height', String(h));
         filterEl.setAttribute('x', String(-relX - 30));
         filterEl.setAttribute('y', String(-relY - 30));
-        filterEl.setAttribute('width', String(W + 60));
-        filterEl.setAttribute('height', String(H + 60));
+        filterEl.setAttribute('width', String(w + 60));
+        filterEl.setAttribute('height', String(h + 60));
       };
       updateFilterGeometry();
 
-      // ── Tick loop (only runs while there is active ripple energy) ───────────
-      const tick = () => {
+      // ── Render function (called by RAF coordinator) ───────────────────────
+      renderRef.current = () => {
         if (!mounted) return;
-        animationId.current = requestAnimationFrame(tick);
 
         simMaterial.uniforms.u_prev.value = readTarget.texture;
         renderer.setRenderTarget(writeTarget);
         renderer.render(simScene, orthoCamera);
         simMaterial.uniforms.u_addImpulse.value = 0;
 
-        // Normal-map pass → transfer to displacement canvas for SVG text filter
         normalMaterial.uniforms.u_heightMap.value = writeTarget.texture;
         renderer.setRenderTarget(nmRt);
         renderer.render(normalScene, orthoCamera);
         renderer.readRenderTargetPixels(nmRt, 0, 0, NM_W, NM_H, nmPixels);
         for (let y = 0; y < NM_H; y++) {
-          const srcRow = (NM_H - 1 - y) * NM_W * 4; // flip Y (WebGL origin = bottom-left)
+          const srcRow = (NM_H - 1 - y) * NM_W * 4;
           nmImageData.data.set(nmPixels.subarray(srcRow, srcRow + NM_W * 4), y * NM_W * 4);
         }
         dispCtx.putImageData(nmImageData, 0, 0);
@@ -404,8 +384,6 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         readTarget = writeTarget;
         writeTarget = tmp;
       };
-
-      tick();
 
       // ── Mouse / touch events ─────────────────────────────────────────────
       const handleMouseMove = e => {
@@ -441,7 +419,6 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       const handleResize = () => {
         if (!mounted) return;
 
-        // Clear any pending resize operations
         if (resizeTimeout) {
           clearTimeout(resizeTimeout);
           resizeTimeout = null;
@@ -451,26 +428,19 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
           resizeRafId = null;
         }
 
-        // Debounce resize events - increased to ensure CSS/media queries are applied
         resizeTimeout = setTimeout(() => {
-          // Use requestAnimationFrame to ensure layout is recalculated
           resizeRafId = requestAnimationFrame(() => {
             if (!mounted) return;
 
-            // Get accurate dimensions using getBoundingClientRect
             const rect = canvas.getBoundingClientRect();
             const W2 = Math.floor(rect.width);
             const H2 = Math.floor(rect.height);
 
-            // Skip resize if canvas has no valid dimensions - CRITICAL FIX
-            if (W2 <= 0 || H2 <= 0) {
-              return;
-            }
+            if (W2 <= 0 || H2 <= 0) return;
 
             const SW = Math.floor(W2 / 2);
             const SH = Math.floor(H2 / 2);
 
-            // Only resize if dimensions actually changed
             const currentWidth = renderer.getSize(new THREE.Vector2()).x;
             const currentHeight = renderer.getSize(new THREE.Vector2()).y;
 
@@ -495,40 +465,24 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
               setVideoCover();
               updateFilterGeometry();
 
-              // Force uniforms update for all materials
               displayMaterial.uniformsNeedUpdate = true;
               simMaterial.uniformsNeedUpdate = true;
             }
           });
-        }, 250); // Increased to 250ms for better CSS/media query handling
+        }, 250);
       };
 
       window.addEventListener('resize', handleResize);
 
-      // Also add ResizeObserver for more precise container size tracking
       let resizeObserver = null;
       if (typeof ResizeObserver !== 'undefined') {
         resizeObserver = new ResizeObserver(handleResize);
         resizeObserver.observe(canvas);
       }
 
-      // ── Visibility pause (no auto-resume — user must move mouse again) ──────
-      const handleVisibility = () => {
-        if (document.hidden) {
-          if (animationId.current) cancelAnimationFrame(animationId.current);
-          animationId.current = null;
-        } else if (mounted) {
-          tick();
-        }
-      };
-
-      document.addEventListener('visibilitychange', handleVisibility);
-
       // ── WebGL context loss/restore ────────────────────────────────────────
       const handleContextLost = e => {
         e.preventDefault();
-        if (animationId.current) cancelAnimationFrame(animationId.current);
-        animationId.current = null;
       };
 
       const handleContextRestored = () => {
@@ -543,11 +497,9 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         heroEl.removeEventListener('mousemove', handleMouseMove);
         heroEl.removeEventListener('touchmove', handleTouchMove);
         window.removeEventListener('resize', handleResize);
-        document.removeEventListener('visibilitychange', handleVisibility);
         canvas.removeEventListener('webglcontextlost', handleContextLost);
         canvas.removeEventListener('webglcontextrestored', handleContextRestored);
 
-        // Clean up resize handlers
         if (resizeTimeout) {
           clearTimeout(resizeTimeout);
           resizeTimeout = null;
@@ -592,8 +544,14 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
     return () => {
       mounted = false;
       observer.disconnect();
-      if (animationId.current) cancelAnimationFrame(animationId.current);
       if (cleanupRef.current) cleanupRef.current();
     };
   }, [canvasId]);
+
+  // Subscribe to the RAF coordinator — the render function is called every frame
+  useRAF(() => {
+    if (renderRef.current) {
+      renderRef.current();
+    }
+  }, []);
 }

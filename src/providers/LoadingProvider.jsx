@@ -25,7 +25,8 @@ export function LoadingProvider({ children }) {
       const timer = setTimeout(() => setReady(true), 120);
       return () => clearTimeout(timer);
     } else {
-      setReady(true);
+      const timer = setTimeout(() => setReady(true), 0);
+      return () => clearTimeout(timer);
     }
   }, [shouldShow]);
 
@@ -52,9 +53,7 @@ export function LoadingProvider({ children }) {
   return (
     <LoadingContext.Provider value={done}>
       {shouldShow && !done && <LoadingScreen onComplete={handleComplete} />}
-      <div style={{ opacity: ready ? 1 : 0, transition: 'opacity 120ms ease' }}>
-        {children}
-      </div>
+      <div style={{ opacity: ready ? 1 : 0, transition: 'opacity 120ms ease' }}>{children}</div>
     </LoadingContext.Provider>
   );
 }

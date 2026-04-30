@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
+import { useRAF } from './useRAF';
 
 export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
-  const animationId = useRef(null);
+  const renderRef = useRef(null);
   const cleanupRef = useRef(null);
 
   useEffect(() => {
@@ -16,6 +17,8 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
     let sphere2 = null;
     let materialLarge = null;
     let materialSmall = null;
+    let geo1 = null;
+    let geo2 = null;
 
     const init = async () => {
       if (!mounted) return;
@@ -122,21 +125,22 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
         ior: 1.7,
       });
 
-      // Red-Purple gradient colors (from logo) - blended with original premium palette
       const GRADIENT_COLORS = [
-        new THREE.Color(0xf0060d), // Red
-        new THREE.Color(0xc924d7), // Purple
-        new THREE.Color(0x7904fd), // Blue-purple
+        new THREE.Color(0xf0060d),
+        new THREE.Color(0xc924d7),
+        new THREE.Color(0x7904fd),
       ];
 
       const _cLarge = new THREE.Color();
       const _cSmall = new THREE.Color();
+      const _gradientColor = new THREE.Color();
+      const _white = new THREE.Color(0xffffff);
 
       const RADIUS_LARGE = 1;
       const RADIUS_SMALL = 0.72;
 
-      const geo1 = new THREE.SphereGeometry(RADIUS_LARGE, 160, 160);
-      const geo2 = new THREE.SphereGeometry(RADIUS_SMALL, 160, 160);
+      geo1 = new THREE.SphereGeometry(RADIUS_LARGE, 160, 160);
+      geo2 = new THREE.SphereGeometry(RADIUS_SMALL, 160, 160);
 
       sphere1 = new THREE.Mesh(geo1, materialLarge);
       sphere1.castShadow = true;
@@ -154,11 +158,11 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
       sphere2.rotation.y = -0.7;
 
       const ORBIT_COUNT = 2;
-
       const servicesSection = canvas.closest('.services_wrap') || canvas.closest('.services_grid');
 
-      const updatePositions = () => {
-        if (!mounted) return;
+      // Render function called by RAF coordinator
+      renderRef.current = delta => {
+        if (!mounted || !renderer || !scene || !camera) return;
 
         let progress = 0;
         if (servicesSection) {
@@ -169,29 +173,25 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
           progress = Math.min(Math.max(raw, 0), 1);
         }
 
-        // Animate positions
         const totalAngle = progress * Math.PI * 2 * ORBIT_COUNT;
         const orbitRadius = 1.15;
         const centerY = 0;
-        let x1 = Math.cos(totalAngle + Math.PI) * orbitRadius + 0.2;
-        let z1 = Math.sin(totalAngle + Math.PI) * 0.38;
-        let x2 = Math.cos(totalAngle) * orbitRadius - 0.2;
-        let z2 = Math.sin(totalAngle) * 0.48;
+        const x1 = Math.cos(totalAngle + Math.PI) * orbitRadius + 0.2;
+        const z1 = Math.sin(totalAngle + Math.PI) * 0.38;
+        const x2 = Math.cos(totalAngle) * orbitRadius - 0.2;
+        const z2 = Math.sin(totalAngle) * 0.48;
 
-        // Gradient color animation - based on scroll position
         const colorPhase = progress * 3;
-        let colorIndex = Math.floor(colorPhase) % 3;
-        let colorBlend = colorPhase - Math.floor(colorPhase);
-
+        const colorIndex = Math.floor(colorPhase) % 3;
+        const colorBlend = colorPhase - Math.floor(colorPhase);
         const nextColorIndex = (colorIndex + 1) % 3;
-        const gradientColor = new THREE.Color()
+        _gradientColor
           .copy(GRADIENT_COLORS[colorIndex])
           .lerp(GRADIENT_COLORS[nextColorIndex], colorBlend);
 
-        // Strong gradient effect
         const tintStrength = 0.65;
-        _cLarge.copy(gradientColor).lerp(new THREE.Color(0xffffff), 1 - tintStrength);
-        _cSmall.copy(gradientColor).lerp(new THREE.Color(0xffffff), 1 - tintStrength * 0.9);
+        _cLarge.copy(_gradientColor).lerp(_white, 1 - tintStrength);
+        _cSmall.copy(_gradientColor).lerp(_white, 1 - tintStrength * 0.9);
 
         materialLarge.color.copy(_cLarge);
         materialSmall.color.copy(_cSmall);
@@ -199,31 +199,33 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
         sphere1.position.set(x1, centerY, z1);
         sphere2.position.set(x2, centerY, z2);
 
-        sphere1.rotation.y += 0.0022;
-        sphere2.rotation.y -= 0.0017;
+        const dtFactor = delta / 0.016;
+        sphere1.rotation.y += 0.0022 * dtFactor;
+        sphere2.rotation.y -= 0.0017 * dtFactor;
 
         renderer.render(scene, camera);
-        animationId.current = requestAnimationFrame(updatePositions);
       };
-
-      updatePositions();
 
       const handleResize = () => {
         if (!mounted || !container) return;
-        const width = container.offsetWidth;
-        const height = container.offsetHeight;
-        camera.aspect = width / height;
+        const w = container.offsetWidth;
+        const h = container.offsetHeight;
+        camera.aspect = w / h;
         camera.updateProjectionMatrix();
-        renderer.setSize(width, height);
+        renderer.setSize(w, h);
       };
 
       window.addEventListener('resize', handleResize);
       cleanupRef.current = () => {
         window.removeEventListener('resize', handleResize);
+        if (geo1) geo1.dispose();
+        if (geo2) geo2.dispose();
+        if (materialLarge) materialLarge.dispose();
+        if (materialSmall) materialSmall.dispose();
+        if (renderer) renderer.dispose();
       };
     };
 
-    // Lazy load with IntersectionObserver
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
@@ -241,12 +243,11 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
     return () => {
       mounted = false;
       observer.disconnect();
-      if (animationId.current) {
-        cancelAnimationFrame(animationId.current);
-      }
-      if (cleanupRef.current) {
-        cleanupRef.current();
-      }
+      if (cleanupRef.current) cleanupRef.current();
     };
   }, [canvasId]);
+
+  useRAF((delta, elapsed, transitioning) => {
+    if (renderRef.current) renderRef.current(delta, elapsed, transitioning);
+  }, []);
 }

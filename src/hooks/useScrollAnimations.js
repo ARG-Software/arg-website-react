@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { animateCountUp, getCountUpEnd } from './useCountUp';
 import {
   ATTRIBUTE_PRESETS,
@@ -7,6 +9,8 @@ import {
   MOBILE_BREAKPOINT,
   getVisibleClassForElement,
 } from '../animations/attribute-presets';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Utility functions
 const isMobile = () => window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
@@ -196,12 +200,11 @@ const applyInitialState = (element, preset, presetName) => {
   }
 
   if (presetName === 'width-countup') {
-  const line = element.querySelector('.work-item_line');
-  if (line) {
-    line.style.setProperty('width', '0%', 'important');
+    const line = element.querySelector('.work-item_line, .prp-metric-line');
+    if (line) {
+      line.style.setProperty('width', '0%', 'important');
+    }
   }
-}
-
 };
 
 // Get final transform state based on preset
@@ -269,10 +272,9 @@ const animateElement = (element, preset, presetName, index = 0) => {
     const visibleClass = getVisibleClassForElement(element);
     element.classList.add(visibleClass);
 
-
     // Handle number count-up
     if (presetName === 'width-countup') {
-      const line = element.querySelector('.work-item_line');
+      const line = element.querySelector('.work-item_line, .prp-metric-line');
       if (line) {
         line.style.transition = preset.transition;
         line.offsetHeight;
@@ -415,29 +417,80 @@ export function useScrollAnimations(config = {}) {
         applyInitialState(element, preset, presetName);
 
         // Force reflow for CSS !important overrides
-        if (presetName === 'overlay-reveal' ) {
+        if (presetName === 'overlay-reveal') {
           element.offsetHeight;
         }
 
         if (presetName === 'width-countup') {
-          const line = element.querySelector('.work-item_line');
-            if (line) line.offsetHeight;
-          }
+          const line = element.querySelector('.work-item_line, .prp-metric-line');
+          if (line) line.offsetHeight;
+        }
 
         observer.observe(element);
       });
 
       // Store observer for cleanup
       observerRef.current = observer;
+
+      // GSAP ScrollTrigger animations
+      const gsapTriggers = [];
+
+      document.querySelectorAll('[data-animate="gsap-parallax"]').forEach(element => {
+        const speed = parseFloat(element.getAttribute('data-animate-speed')) || 0.5;
+        const trigger = ScrollTrigger.create({
+          trigger: element,
+          start: 'top 80%',
+          end: 'bottom 20%',
+          scrub: true,
+          invalidateOnRefresh: true,
+          onUpdate: self => {
+            const yPos = (self.progress - 0.5) * speed * 200;
+            gsap.set(element, { y: yPos });
+          },
+        });
+        gsapTriggers.push(trigger);
+      });
+
+      document.querySelectorAll('[data-animate="gsap-scale"]').forEach(element => {
+        const from = parseFloat(element.getAttribute('data-animate-from')) || 1.15;
+        const to = parseFloat(element.getAttribute('data-animate-to')) || 1;
+        gsap.set(element, { scale: from, overflow: 'hidden' });
+        const trigger = ScrollTrigger.create({
+          trigger: element,
+          start: 'top 80%',
+          end: 'center center',
+          scrub: true,
+          invalidateOnRefresh: true,
+          onUpdate: self => {
+            gsap.set(element, { scale: from + (to - from) * self.progress });
+          },
+        });
+        gsapTriggers.push(trigger);
+      });
+
+      // Store GSAP triggers for cleanup
+      if (gsapTriggers.length > 0) {
+        observerRef.current = {
+          disconnect: () => {
+            observer.disconnect();
+            gsapTriggers.forEach(t => t.kill());
+          },
+        };
+      }
     });
 
     // Cleanup
     return () => {
       mountedRef.current = false;
       if (observerRef.current) {
-        observerRef.current.disconnect();
+        if (typeof observerRef.current.disconnect === 'function') {
+          observerRef.current.disconnect();
+        } else {
+          observerRef.current.disconnect();
+        }
         observerRef.current = null;
       }
+      ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, [enabled, mobileBehavior]);
 }

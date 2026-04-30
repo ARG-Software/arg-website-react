@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
+import { useRAF } from './useRAF';
 
 export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
-  const animationId = useRef(null);
+  const renderRef = useRef(null);
   const cleanupRef = useRef(null);
   const lastTimeRef = useRef(0);
+  const configRef = useRef(null);
 
   useEffect(() => {
     const canvas = document.getElementById(canvasId);
@@ -17,6 +19,11 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
     let logoGroup = null;
     let carSystem1 = null;
     let carSystem2 = null;
+    let instancedCity = null;
+    let cityMaterial = null;
+    let carMat = null;
+    let road = null;
+    let sun = null;
 
     const CONFIG = {
       city: {
@@ -45,6 +52,8 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       },
     };
 
+    configRef.current = CONFIG;
+
     const init = async () => {
       if (!mounted) return;
 
@@ -71,12 +80,12 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       renderer.setClearColor(0xf8f9fa);
 
       scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-      const sun = new THREE.DirectionalLight(0xffffff, 0.6);
+      sun = new THREE.DirectionalLight(0xffffff, 0.6);
       sun.position.set(50, 100, 50);
       scene.add(sun);
 
       const roadLen = CONFIG.city.gridSize * CONFIG.city.spacing * 2.5;
-      const road = new THREE.Mesh(
+      road = new THREE.Mesh(
         new THREE.PlaneGeometry(CONFIG.city.roadWidth, roadLen),
         new THREE.MeshStandardMaterial({ color: 0xe5e5e5 })
       );
@@ -84,12 +93,12 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       road.position.y = -9.99;
       scene.add(road);
 
-      const cityMaterial = new THREE.MeshStandardMaterial({
+      cityMaterial = new THREE.MeshStandardMaterial({
         color: CONFIG.city.buildingColor,
         transparent: true,
         opacity: 0.9,
       });
-      const instancedCity = new THREE.InstancedMesh(
+      instancedCity = new THREE.InstancedMesh(
         new THREE.BoxGeometry(1, 1, 1),
         cityMaterial,
         Math.pow(CONFIG.city.gridSize * 2, 2)
@@ -117,7 +126,7 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       }
       scene.add(instancedCity);
 
-      const carMat = new THREE.MeshStandardMaterial({
+      carMat = new THREE.MeshStandardMaterial({
         color: CONFIG.traffic.carColor,
         emissive: CONFIG.traffic.carColor,
         emissiveIntensity: 0.4,
@@ -172,17 +181,36 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       logoGroup.rotation.x = -0.1;
       scene.add(logoGroup);
 
+      const trafficDummy = new THREE.Object3D();
       const updateTraffic = (sys, lx, limit) => {
-        const d = new THREE.Object3D();
         sys.data.forEach((car, i) => {
           car.z += CONFIG.traffic.speed * sys.dir;
           if (car.z > limit) car.z = -limit;
           else if (car.z < -limit) car.z = limit;
-          d.position.set(lx, -9.8, car.z);
-          d.updateMatrix();
-          sys.mesh.setMatrixAt(i, d.matrix);
+          trafficDummy.position.set(lx, -9.8, car.z);
+          trafficDummy.updateMatrix();
+          sys.mesh.setMatrixAt(i, trafficDummy.matrix);
         });
         sys.mesh.instanceMatrix.needsUpdate = true;
+      };
+
+      // Render function called by RAF coordinator
+      renderRef.current = (delta, elapsed, transitioning) => {
+        if (!mounted || !renderer || !scene || !camera) return;
+
+        const now = performance.now();
+        const dt = (now - lastTimeRef.current) / 1000;
+        if (dt < CONFIG.perf.fpsLimit) return;
+        lastTimeRef.current = now;
+
+        if (!document.hidden && logoGroup) {
+          const limit = CONFIG.city.gridSize * CONFIG.city.spacing - CONFIG.city.clipHorizon;
+          updateTraffic(carSystem1, -CONFIG.traffic.laneOffset, limit);
+          updateTraffic(carSystem2, CONFIG.traffic.laneOffset, limit);
+          logoGroup.position.y = CONFIG.logo.floatHeight + Math.sin(now * 0.0015) * 0.4;
+        }
+
+        renderer.render(scene, camera);
       };
 
       const handleResize = () => {
@@ -197,39 +225,35 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       window.addEventListener('resize', handleResize);
       cleanupRef.current = () => {
         window.removeEventListener('resize', handleResize);
-      };
-
-      const animate = now => {
-        if (!mounted) return;
-        animationId.current = requestAnimationFrame(animate);
-        const delta = (now - lastTimeRef.current) / 1000;
-        if (delta < CONFIG.perf.fpsLimit) return;
-        lastTimeRef.current = now;
-
-        if (!document.hidden && logoGroup) {
-          const limit = CONFIG.city.gridSize * CONFIG.city.spacing - CONFIG.city.clipHorizon;
-          updateTraffic(carSystem1, -CONFIG.traffic.laneOffset, limit);
-          updateTraffic(carSystem2, CONFIG.traffic.laneOffset, limit);
-          logoGroup.position.y = CONFIG.logo.floatHeight + Math.sin(now * 0.0015) * 0.4;
+        if (instancedCity) instancedCity.dispose();
+        if (cityMaterial) cityMaterial.dispose();
+        if (carMat) carMat.dispose();
+        if (road) {
+          road.geometry.dispose();
+          road.material.dispose();
         }
-        if (renderer && scene && camera) {
-          renderer.render(scene, camera);
+        if (sun) sun.dispose();
+        if (logoGroup) {
+          logoGroup.children.forEach(child => {
+            child.geometry.dispose();
+            child.material.dispose();
+          });
         }
+        if (carSystem1) carSystem1.mesh.dispose();
+        if (carSystem2) carSystem2.mesh.dispose();
+        if (renderer) renderer.dispose();
       };
-
-      animate(0);
     };
 
     init();
 
     return () => {
       mounted = false;
-      if (animationId.current) {
-        cancelAnimationFrame(animationId.current);
-      }
-      if (cleanupRef.current) {
-        cleanupRef.current();
-      }
+      if (cleanupRef.current) cleanupRef.current();
     };
   }, [canvasId]);
+
+  useRAF((_delta, _elapsed, _transitioning) => {
+    if (renderRef.current) renderRef.current(_delta, _elapsed, _transitioning);
+  }, []);
 }

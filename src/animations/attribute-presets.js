@@ -93,6 +93,67 @@ export const ATTRIBUTE_PRESETS = {
     threshold: DEFAULT_THRESHOLD,
     rootMargin: DEFAULT_ROOT_MARGIN,
   },
+
+  // Project detail: title reveal (slide up with slight overshoot)
+  'title-reveal': {
+    initialOpacity: '0',
+    initialTransform: 'translate3d(0, 40px, 0)',
+    transition:
+      'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+    threshold: 0.1,
+    rootMargin: '0px 0px -10% 0px',
+  },
+
+  // Project detail: slide from left (section labels)
+  'slide-from-left': {
+    initialOpacity: '0',
+    initialTransform: 'translate3d(-30px, 0, 0)',
+    transition:
+      'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+    threshold: 0.1,
+    rootMargin: '0px 0px -10% 0px',
+  },
+
+  // Project detail: solution list items (staggered slide from left)
+  'solution-item': {
+    initialOpacity: '0',
+    initialTransform: 'translate3d(-20px, 0, 0)',
+    transition:
+      'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+    threshold: 0.1,
+    rootMargin: '0px 0px -5% 0px',
+  },
+
+  // Project detail: impact text reveal (large gradient text)
+  'impact-reveal': {
+    initialOpacity: '0',
+    initialTransform: 'translate3d(0, 20px, 0)',
+    transition:
+      'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+    threshold: 0.1,
+    rootMargin: '0px 0px -10% 0px',
+  },
+
+  // Project detail: tag pop-in (scale from 0.8)
+  'tag-pop': {
+    initialOpacity: '0',
+    initialTransform: 'scale(0.8)',
+    transition: 'opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+    threshold: 0.1,
+    rootMargin: '0px 0px -5% 0px',
+  },
+
+  // GSAP parallax (handled in useScrollAnimations)
+  'gsap-parallax': {
+    threshold: 0,
+    rootMargin: '0px',
+  },
+
+  // GSAP scale on scroll (for images)
+  'gsap-scale': {
+    threshold: 0,
+    rootMargin: '0px',
+  },
 };
 
 // Mapping of class suffixes to visible class names

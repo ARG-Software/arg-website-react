@@ -15,7 +15,7 @@ export function ProjectItem({
   liveLink,
   logos,
   stack,
-  animation = 'fade-up'
+  animation = 'fade-up',
 }) {
   return (
     <div
@@ -104,8 +104,8 @@ export function ProjectItem({
         <div className="projects_item_cover-img">
           <img
             data-wf-drag="false"
-            loading='lazy'
-            fetchPriority='auto'
+            loading="lazy"
+            fetchPriority="auto"
             decoding="async"
             alt=""
             src={imgSrc}

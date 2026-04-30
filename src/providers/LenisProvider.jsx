@@ -1,9 +1,11 @@
 import { createContext, useEffect, useRef, useState } from 'react';
+import { useRAF } from '../hooks/useRAF';
 
 export const LenisContext = createContext(null);
 
 /**
- * LenisProvider - Provides Lenis smooth‑scrolling instance via React Context.
+ * LenisProvider - Provides Lenis smooth-scrolling instance via React Context.
+ * Now uses the RAF coordinator instead of its own rAF loop.
  */
 export function LenisProvider({
   children,
@@ -13,7 +15,6 @@ export function LenisProvider({
 }) {
   const [lenis, setLenis] = useState(null);
   const initializedRef = useRef(false);
-  const rafIdRef = useRef(null);
   const instanceRef = useRef(null);
 
   useEffect(() => {
@@ -35,17 +36,8 @@ export function LenisProvider({
         setLenis(instance);
         initializedRef.current = true;
 
-        // Store instance in ref for RAF loop safety
+        // Store instance in ref for safety
         instanceRef.current = instance;
-
-        // RAF loop
-        function raf(time) {
-          // Ensure we're still using the same instance
-          if (instanceRef.current !== instance) return;
-          instance.raf(time);
-          rafIdRef.current = requestAnimationFrame(raf);
-        }
-        rafIdRef.current = requestAnimationFrame(raf);
       } catch (error) {
         console.error('Failed to initialize Lenis:', error);
       }
@@ -55,10 +47,6 @@ export function LenisProvider({
 
     // Cleanup on app unmount
     return () => {
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
       if (lenis) {
         lenis.destroy();
         setLenis(null);
@@ -67,6 +55,13 @@ export function LenisProvider({
       initializedRef.current = false;
     };
   }, [lerp, wheelMultiplier, smoothTouch]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Subscribe to the RAF coordinator for the Lenis rAF loop
+  useRAF(time => {
+    if (instanceRef.current) {
+      instanceRef.current.raf(time);
+    }
+  }, []);
 
   return <LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>;
 }

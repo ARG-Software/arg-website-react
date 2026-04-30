@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 import { LoadingProvider } from './providers/LoadingProvider.jsx';
+import { RAFProvider } from './providers/RAFProvider.jsx';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import HomePage from './pages/home/HomePage.jsx';
@@ -12,6 +13,7 @@ import './styles/components.css';
 
 const PartnersPage = lazy(() => import('./pages/PartnersPage.jsx'));
 const ProjectsPage = lazy(() => import('./pages/ProjectsPage.jsx'));
+const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage.jsx'));
 const CareersPage = lazy(() => import('./pages/CareersPage.jsx'));
 const BlogPage = lazy(() => import('./pages/blog/BlogPage.jsx'));
 const BlogPostPage = lazy(() => import('./pages/blog/BlogPostPage.jsx'));
@@ -29,32 +31,36 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <LoadingProvider>
     <HelmetProvider>
       <BrowserRouter scrollRestoration="manual">
-        <LenisProvider>
-          <TransitionProvider>
-            <Suspense fallback={null}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/partners" element={<PartnersPage />} />
-                <Route path="/partners/" element={<PartnersPage />} />
-                <Route path="/projects" element={<ProjectsPage />} />
-                <Route path="/projects/" element={<ProjectsPage />} />
-                <Route path="/careers" element={<CareersPage />} />
-                <Route path="/careers/" element={<CareersPage />} />
-                <Route path="/blog" element={<BlogPage />} />
-                <Route path="/blog/" element={<BlogPage />} />
-                <Route path="/blog/:slug" element={<BlogPostPageWrapper />} />
-                <Route path="/blog/:slug/" element={<BlogPostPageWrapper />} />
-                <Route path="/privacy" element={<PrivacyPage />} />
-                <Route path="/privacy/" element={<PrivacyPage />} />
-                <Route path="/terms" element={<TermsPage />} />
-                <Route path="/terms/" element={<TermsPage />} />
-                {/* <Route path="/team" element={<TeamPage />} />
+        <RAFProvider>
+          <LenisProvider>
+            <TransitionProvider>
+              <Suspense fallback={null}>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/partners" element={<PartnersPage />} />
+                  <Route path="/partners/" element={<PartnersPage />} />
+                  <Route path="/projects" element={<ProjectsPage />} />
+                  <Route path="/projects/" element={<ProjectsPage />} />
+                  <Route path="/projects/:slug" element={<ProjectDetailPage />} />
+                  <Route path="/projects/:slug/" element={<ProjectDetailPage />} />
+                  <Route path="/careers" element={<CareersPage />} />
+                  <Route path="/careers/" element={<CareersPage />} />
+                  <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/blog/" element={<BlogPage />} />
+                  <Route path="/blog/:slug" element={<BlogPostPageWrapper />} />
+                  <Route path="/blog/:slug/" element={<BlogPostPageWrapper />} />
+                  <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="/privacy/" element={<PrivacyPage />} />
+                  <Route path="/terms" element={<TermsPage />} />
+                  <Route path="/terms/" element={<TermsPage />} />
+                  {/* <Route path="/team" element={<TeamPage />} />
                 <Route path="/team/" element={<TeamPage />} /> */}
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </Suspense>
-          </TransitionProvider>
-        </LenisProvider>
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </Suspense>
+            </TransitionProvider>
+          </LenisProvider>
+        </RAFProvider>
         <CookieConsent />
       </BrowserRouter>
     </HelmetProvider>

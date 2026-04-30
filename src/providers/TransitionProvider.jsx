@@ -264,6 +264,7 @@ export function TransitionProvider({ children }) {
     scrollToHash,
     scrollToPage,
     createHashScrollHandler,
+    transitioning: phase === 'covering' || phase === 'revealing',
   };
 
   return (
