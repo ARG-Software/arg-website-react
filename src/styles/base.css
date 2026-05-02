@@ -111,7 +111,6 @@ html::-webkit-scrollbar-corner {
   grid-row: 2 !important;
 }
 
-/* Project modal logo buttons — desktop defaults */
 .projects_list_logo {
   background: none;
   border: none;
@@ -331,9 +330,21 @@ html::-webkit-scrollbar-corner {
   z-index: 999999;
 }
 
+/* horizontal wipe for project-to-project navigation */
+.pt-overlay--horizontal {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 600ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
 /* cover: curtain drops from top */
 .pt-overlay.covering {
   transform: scaleY(1);
+}
+
+/* horizontal cover: wipe from left */
+.pt-overlay--horizontal.covering {
+  transform: scaleX(1);
 }
 
 /* reveal: curtain lifts from bottom (origin stays at top, bottom edge rises) */
@@ -341,9 +352,18 @@ html::-webkit-scrollbar-corner {
   transform: scaleY(0);
 }
 
+/* horizontal reveal: wipe to right */
+.pt-overlay--horizontal.revealing {
+  transform: scaleX(0);
+}
+
 /* idle */
 .pt-overlay.idle {
   transform: scaleY(0);
+}
+
+.pt-overlay--horizontal.idle {
+  transform: scaleX(0);
 }
 
 /* ============================================
@@ -540,48 +560,7 @@ input[type='file']:focus-visible {
   padding-left: 0rem !important;
 }
 
-.modal_wrap {
-  position: fixed;
-  left: 0%;
-  top: 0%;
-  right: 0%;
-  bottom: 0%;
-  z-index: 999;
-  overflow: auto;
-  padding-top: 5rem;
-}
 
-.modal_wrap.background-color-white {
-  background-color: transparent;
-}
-
-.overlay {
-  position: absolute;
-  left: 0%;
-  top: 0%;
-  right: 0%;
-  bottom: 0%;
-  overflow: auto;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(1.25rem);
-  cursor: pointer;
-}
-
-.modal {
-  position: absolute;
-  overflow: hidden;
-  width: 50%;
-  margin-right: auto;
-  margin-left: auto;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-  background-color: #ededed;
-}
 
 /* ===== WEBFLOW NAVIGATION ===== */
 
@@ -4291,32 +4270,7 @@ figcaption {
   display: flex;
 }
 
-.modal_problem-wrapper {
-  background-color: #fafafa;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding-top: 6.75rem;
-  display: flex;
-}
-.modal-problem_image-wrapper {
-  width: 100%;
-  max-width: 17.5rem;
-}
-.modal_solution-wrapper {
-  background-color: #fff;
-  border-bottom-right-radius: 1.25rem;
-  border-bottom-left-radius: 1.25rem;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding-top: 7.25rem;
-  padding-bottom: 7.25rem;
-  display: flex;
-}
-.modal-solution_logos-wrapper {
-  display: flex;
-}
+
 .projects_list_logo {
   width: 100%;
   max-width: 5rem;
@@ -4374,23 +4328,6 @@ figcaption {
   width: 1.125rem;
   height: 1.5rem;
 }
-.project-modal {
-  z-index: 700;
-  width: 100vw;
-  height: 100vh;
-  padding: 8.75rem 2rem;
-  display: none;
-  position: fixed;
-  inset: 0%;
-  overflow: auto;
-}
-.project_modal-container {
-  z-index: 2;
-  width: 100%;
-  max-width: 72.5rem;
-  position: relative;
-  transform: translateY(100px);
-}
 .projects_item_component {
   border-radius: 1.25rem;
   height: 21.5rem;
@@ -4406,45 +4343,6 @@ figcaption {
   border-top-left-radius: 1.25rem;
   border-top-right-radius: 1.25rem;
   position: relative;
-}
-.project_modal-close-wrapper {
-  text-align: center;
-  cursor: pointer;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  position: absolute;
-  inset: 4rem 0% auto;
-}
-.esc-span {
-  background-color: #b6aeae4d;
-  border-radius: 0.25rem;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-.text-color-lightgrey {
-  color: #aaa;
-}
-.max-width-module {
-  width: 100%;
-  max-width: 41.75rem;
-}
-.module_logo-layout {
-  grid-column-gap: 2.75rem;
-  grid-row-gap: 2.75rem;
-  justify-content: space-around;
-  align-items: center;
-  display: flex;
-}
-.project_modal-overlay {
-  z-index: 1;
-  background-color: #0b002e66;
-  width: 100%;
-  height: auto;
-  display: flex;
-  position: fixed;
-  inset: 0%;
 }
 .nav_logo-embed {
   height: 2rem;
@@ -4580,14 +4478,6 @@ figcaption {
 }
 .swiper-partners_image {
   object-fit: contain;
-}
-.modal1_close-button {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-}
-.project_modal_embed {
-  display: none;
 }
 .test-click-item {
   height: 22rem;
@@ -4836,50 +4726,7 @@ figcaption {
   align-self: baseline !important;
 }
 
-.modal_wrap {
-  z-index: 999;
-  padding-top: 5rem;
-  position: fixed;
-  inset: 0%;
-  overflow: auto;
-}
-.modal_wrap.background-color-white {
-  background-color: #0000;
-}
-.overlay {
-  opacity: 0;
-  -webkit-backdrop-filter: blur(0.75rem);
-  backdrop-filter: blur(0.75rem);
-  background-color: #000000b3;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  inset: 0%;
-  overflow: auto;
-}
-.modal {
-  background-color: #ededed;
-  border-radius: 1rem;
-  width: 60%;
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-  overflow: scroll;
-}
-.modal.background-color-white {
-  z-index: 1;
-  margin-top: 5rem;
-  position: absolute;
-  inset: 0% 0% auto;
-}
-.modal_close {
-  padding: 1rem;
-  position: absolute;
-  inset: 0% 0% auto auto;
-}
-.modal_close_icon {
-  width: 3rem;
-}
+
 .hero_wrap {
   background-color: #0000;
   height: 100vh;
@@ -5258,30 +5105,7 @@ figcaption {
 .team_heading {
   font-weight: 400;
 }
-.projects_modal_indication {
-  grid-column-gap: 0.5rem;
-  grid-row-gap: 0.5rem;
-  opacity: 0;
-  background-color: #ffffffe6;
-  border-radius: 0.1255rem;
-  justify-content: center;
-  align-items: center;
-  padding: 0.25rem 0.5rem;
-  display: flex;
-  position: absolute;
-  inset: 5% auto auto 44%;
-}
-.projects_modal_indication.is-mobile {
-  display: none;
-}
-.projects_modal_text {
-  color: #aaa;
-}
-.projects_modal_text-wrap {
-  background-color: #ededed;
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
-}
+
 .heading {
   font-weight: 400;
 }
@@ -5340,22 +5164,7 @@ figcaption {
 .projects_stack_text.is-medium {
   font-weight: 500;
 }
-.projects_modal-close_btn {
-  z-index: 1;
-  pointer-events: auto;
-  cursor: pointer;
-  margin-top: 0.875rem;
-  margin-right: 0.875rem;
-  position: absolute;
-  inset: 0% 0% auto auto;
-}
-.projects_modal-close_wrap {
-  pointer-events: none;
-  border-radius: 100vw;
-  width: 2.25rem;
-  height: 2.25rem;
-  padding: 0.25rem;
-}
+
 
 /* .infinity_list {
   color: #0000;
@@ -5769,11 +5578,6 @@ figcaption {
     display: inline;
   }
 
-  .project-modal {
-    padding-top: 6rem;
-    padding-bottom: 6rem;
-    display: none;
-  }
   .module_logo-layout {
     flex-wrap: wrap;
   }
@@ -5841,12 +5645,6 @@ figcaption {
   .services_item {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     align-self: auto;
-  }
-  .projects_modal_indication {
-    display: none;
-  }
-  .projects_modal_indication.is-mobile {
-    display: flex;
   }
   .partners_logo_list {
     grid-column-gap: 5rem;
@@ -6305,87 +6103,6 @@ figcaption {
     font-size: 0.875rem;
   }
 
-  .modal_problem-wrapper {
-    padding-top: 5.625rem;
-    padding-left: 5%;
-    padding-right: 5%;
-  }
-  .modal_solution-wrapper {
-    padding-bottom: 5.625rem;
-    padding-left: 5%;
-    padding-right: 5%;
-  }
-  .footer_tab-menu,
-  .form_checkbox-wrapper {
-    flex-wrap: wrap;
-  }
-  .project-modal {
-    padding-left: 5%;
-    padding-right: 5%;
-    display: none;
-  }
-  .projects_item_hero {
-    padding-top: 8.125rem;
-    padding-left: 5%;
-    padding-right: 5%;
-  }
-  .project_modal-close-wrapper {
-    top: 3.125rem;
-  }
-  .projects_logo_image {
-    max-width: 50%;
-  }
-  .button-base,
-  .heading_wrap {
-    align-self: center;
-  }
-  .header-animation.hide-tablet.show-mobile-landscape {
-    display: flex;
-  }
-  .header-animation.show-tablet {
-    flex-flow: column;
-  }
-  .header-animation.special {
-    display: block;
-  }
-  .header-animation.show-tablet-portrait {
-    display: none;
-  }
-  .header-animation.form {
-    padding-top: 0;
-  }
-  .hero_heading.heading-style-h1 {
-    height: auto;
-    margin-top: 0;
-    padding-top: 10vh;
-  }
-  .nav_contain.container {
-    padding-left: 2.25rem;
-    padding-right: 2.25rem;
-  }
-  .hero_contain.container.padding-global {
-    max-height: 95%;
-  }
-  .hero_bottom_info {
-    flex-flow: row;
-    display: flex;
-  }
-  .heading_text {
-    font-size: 2.5rem;
-  }
-  .services_grid {
-    grid-template-columns: 1fr 1fr minmax(0, 1fr) 1fr 1fr 1fr;
-  }
-  .services_item_number {
-    display: block;
-  }
-  .services_item_tag {
-    position: static;
-  }
-  .projects_contain.container.padding-global {
-    padding-top: 3.5rem;
-    padding-bottom: 3.5rem;
-  }
   .partners_logo_wrap {
     max-width: 5.5rem;
   }
@@ -6656,63 +6373,9 @@ figcaption {
   .footer_copywrite-text-mobile {
     align-self: auto;
   }
-  .modal_problem-wrapper {
-    align-items: flex-start;
-    padding-top: 3rem;
-    padding-bottom: 0;
-  }
-  .modal_solution-wrapper {
-    align-items: flex-start;
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
   .arrow_icon-embed.large {
     width: 0.75rem;
     height: 0.75rem;
-  }
-  .project-modal {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    display: none;
-  }
-  .projects_item_hero {
-    padding-top: 1rem;
-  }
-  .button-base {
-    align-self: center;
-    padding: 0.5rem 1.75rem;
-  }
-  .button-base__button-text {
-    font-size: 0.75rem;
-  }
-  .heading_wrap {
-    align-self: center;
-  }
-  /* .heading_wrap.wrap_social {
-    align-self: flex-start;
-  } */
-  .header-animation.show-mobile-portrait {
-    display: block;
-  }
-  .header-animation.show-tablet.hide-mobile-portrait,
-  .header-animation.special.show-tablet {
-    display: none;
-  }
-  .header-animation.show-tablet-portrait {
-    display: flex;
-  }
-  .header-animation.form {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-  .swiper-partners_image {
-    z-index: 1;
-    max-height: 2rem;
-    position: relative;
-  }
-  .modal1_close-button {
-    top: 1rem;
-    right: 1rem;
   }
   .projects_list {
     grid-row-gap: 4.5rem;
@@ -6837,9 +6500,6 @@ figcaption {
   .work_paragraph {
     margin-top: 2rem;
     font-size: 1rem;
-  }
-  .projects_modal_indication {
-    left: 33%;
   }
   .partners_logo_list {
     grid-column-gap: 2rem;

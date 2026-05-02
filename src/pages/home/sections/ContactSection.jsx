@@ -1,58 +1,4 @@
 import { CTASection } from '../../../components/layout/CTASection';
-import { trackCTA } from '../../../hooks/useAnalytics';
-
-function CTAVideo() {
-  return (
-    <div className="typeform-wrapper-o5kxhiic">
-      <div
-        data-autoplay="true"
-        data-loop="true"
-        data-wf-ignore="true"
-        className="background-video-2 formtext w-background-video w-background-video-atom"
-      >
-        <video
-          className="lazy-video"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          data-wf-ignore="true"
-          data-object-fit="cover"
-        >
-          <source src="videos/cta-video-opt.mp4" data-wf-ignore="true" />
-        </video>
-        <div className="formtext form-click">
-          <div className="header-animation form">
-            <h2
-              data-animate="slide-up"
-              className="heading-style-h1 form-header"
-              data-animate-order="0"
-            >
-              You want real results?
-            </h2>
-            <div className="padding-bottom padding-48"></div>
-          </div>
-          <div className="padding-bottom padding-48"></div>
-          <a
-            data-animate="fade"
-            data-animate-order="1"
-            href="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="button-base button-contact w-inline-block"
-            onClick={() => trackCTA('typeform', 'homepage_contact')}
-          >
-            <div className="button-base_text_wrap">
-              <div className="button-base__button-text">Let's start</div>
-              <div className="button-base__button-text is-animated">2 minutes</div>
-            </div>
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function ContactSection({ className = '' }) {
   return (
@@ -64,11 +10,6 @@ export function ContactSection({ className = '' }) {
     >
       <div className="padding-global is--cta-mobile">
         <div className="container-large">
-          {/* Video CTA - Now first */}
-          <CTAVideo />
-          <div className="padding-bottom padding-80-40"></div>
-
-          {/* Portfolio CTA - Now second */}
           <CTASection
             wrapInSection={false}
             includePadding={false}
@@ -120,6 +61,11 @@ export function ContactSection({ className = '' }) {
             buttonLink="/files/portfolio.pdf"
             analyticsEvent="portfolio"
             analyticsLabel="homepage_cta"
+            secondButtonTextNotHover="Let's start"
+            secondButtonTextHover="2 minutes"
+            secondButtonLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
+            secondAnalyticsEvent="typeform"
+            secondAnalyticsLabel="homepage_contact"
           />
         </div>
       </div>

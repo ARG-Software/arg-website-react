@@ -9,19 +9,5 @@ export { useScrollAnimations } from './useScrollAnimations';
 export { useThreeSphereBackground } from './useThreeSphereBackground';
 export { useWaterRipple } from './useWaterRipple';
 export { useNotFoundPageScene } from './useNotFoundPageScene';
+export { useNextProjectSection } from './useNextProjectSection';
 export { useCinematicZoomBlur } from './useCinematicZoomBlur';
-
-export { useProjectModalAnimations } from './useProjectModalAnimations';
-export {
-  trackEvent,
-  trackPageView,
-  trackCTA,
-  trackOutbound,
-  trackSocial,
-  trackBlogPostShare,
-  trackMailto,
-  trackProjectOpen,
-  trackFAQOpen,
-  trackBlogPostClick,
-  trackConsent,
-} from './useAnalytics';

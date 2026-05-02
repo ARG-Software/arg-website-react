@@ -38,9 +38,9 @@ export function useCinematicZoomBlur(canvasId, imageSrc) {
         antialias: true,
         alpha: true,
       });
-      renderer.setSize(width, height);
+      renderer.setSize(width, height, false);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setClearColor(0x0c002e, 1);
+      renderer.setClearColor(0x000000, 0);
 
       const loader = new THREE.TextureLoader();
 
@@ -175,7 +175,7 @@ export function useCinematicZoomBlur(canvasId, imageSrc) {
         if (!mountedRef.current || !renderer) return;
         const w = container.offsetWidth;
         const h = container.offsetHeight;
-        renderer.setSize(w, h);
+        renderer.setSize(w, h, false);
         doResize();
       };
 

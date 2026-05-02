@@ -6,7 +6,8 @@ import { useLenis } from '../../hooks/useLenis';
 import { NAV_SCROLL_THRESHOLD } from '../../constants';
 import { NavMenu } from './NavMenu';
 
-export function Navbar({ variant: _variant = 'transparent', position: _position = 'absolute' }) {
+export function Navbar({ variant = 'transparent', position: _position = 'absolute' }) {
+  const isCompact = variant === 'dark';
   const lenis = useLenis();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
@@ -124,7 +125,9 @@ export function Navbar({ variant: _variant = 'transparent', position: _position 
       ? {}
       : isScrolled
         ? { paddingTop: '0.75rem', paddingBottom: '0.75rem' }
-        : { paddingTop: '2.875rem' }),
+        : isCompact
+          ? { paddingTop: '1.5rem', paddingBottom: '0.75rem' }
+          : { paddingTop: '2.875rem' }),
   };
 
   return (

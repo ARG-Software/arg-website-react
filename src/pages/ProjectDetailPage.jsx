@@ -1,16 +1,16 @@
-import { useContext, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Navbar, Footer, SEO, arrowSvg, CTASection, SectionDivider } from '../components';
-import { useScrollAnimations, useCinematicZoomBlur } from '../hooks';
+import { Navbar, SEO, arrowSvg } from '../components';
+import { useScrollAnimations, useCinematicZoomBlur, useNextProjectSection } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
-import { TransitionContext } from '../providers/TransitionProvider.jsx';
 import PROJECTS from '../data/projects.json';
 import '../styles/projects.css';
 
 export default function ProjectDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { go } = useContext(TransitionContext);
+  const nextSectionRef = useRef(null);
+  const progressRef = useRef(null);
   useScrollAnimations();
 
   const projectIndex = PROJECTS.findIndex(p => p.slug === slug);
@@ -25,6 +25,7 @@ export default function ProjectDetailPage() {
   }, [project, navigate]);
 
   useCinematicZoomBlur('prp-hero-canvas', project?.imgSrc);
+  useNextProjectSection(nextSectionRef, progressRef, nextProject.slug);
 
   if (!project) {
     return null;
@@ -33,7 +34,7 @@ export default function ProjectDetailPage() {
   return (
     <>
       <SEO
-        title={`${project.title} — Case Study`}
+        title={`${project.title} - Case Study`}
         description={project.challenge.slice(0, 160)}
         path={`/projects/${slug}`}
       />
@@ -131,7 +132,7 @@ export default function ProjectDetailPage() {
                   data-animate="fade-up"
                   data-animate-delay="200"
                 >
-                  {project.challenge}
+                  {project.description}
                 </p>
               </div>
             </div>
@@ -210,39 +211,44 @@ export default function ProjectDetailPage() {
         </section>
 
         {/* METRICS — dark */}
-        <section className="prp-metrics padding-section-large">
+        <section className="prp-metrics padding-section-large" id="results">
           <div className="prp-grid-container">
-            <div className="prp-metrics-header">
-              <span className="prp-section-label" data-animate="slide-from-left">
-                Results
-              </span>
-              <h2 className="prp-metrics-title" data-animate="slide-up">
-                By the numbers
-              </h2>
-            </div>
-            <div className="prp-metrics-grid" data-animate-scope data-animate-stagger="150">
-              {project.metrics.map((metric, i) => (
-                <div
-                  key={i}
-                  className="prp-metric-item"
-                  data-animate="width-countup"
-                  data-animate-order={i}
-                >
-                  <div className="prp-metric-line" />
-                  <div className="prp-metric-value">
-                    <span
-                      className="prp-metric-number"
-                      fs-numbercount-element="number"
-                      fs-numbercount-start="0"
-                      fs-numbercount-end={metric.value}
-                    >
-                      0
-                    </span>
-                    {parseFloat(metric.value) % 1 !== 0 ? '' : '+'}
-                  </div>
-                  <p className="prp-metric-label">{metric.label}</p>
-                </div>
-              ))}
+            <div className="prp-metrics-inner">
+              <div className="prp-metrics-left">
+                <span className="prp-section-label" data-animate="slide-from-left">
+                  Results
+                </span>
+                <h2 className="prp-metrics-title" data-animate="slide-up">
+                  By the numbers
+                </h2>
+              </div>
+              <div className="prp-metrics-bars">
+                {(() => {
+                  const maxVal = Math.max(...project.metrics.map(m => parseFloat(m.value)));
+                  return project.metrics.map((metric, i) => (
+                    <div key={i} className="prp-bar-item">
+                      <div className="prp-bar-track">
+                        <div
+                          className="prp-bar-fill"
+                          data-bar-target={parseFloat(metric.value) / maxVal}
+                        />
+                      </div>
+                      <div className="prp-bar-number">
+                        <span
+                          className="prp-metric-number"
+                          fs-numbercount-element="number"
+                          fs-numbercount-start="0"
+                          fs-numbercount-end={metric.value}
+                        >
+                          0
+                        </span>
+                        {parseFloat(metric.value) % 1 !== 0 ? '' : '+'}
+                      </div>
+                      <p className="prp-metric-label">{metric.label}</p>
+                    </div>
+                  ));
+                })()}
+              </div>
             </div>
           </div>
         </section>
@@ -268,48 +274,24 @@ export default function ProjectDetailPage() {
           </div>
         </section>
 
-        {/* NEXT PROJECT */}
-        <section className="prp-next padding-section-large">
-          <div className="prp-grid-container">
-            <span className="prp-next-label" data-animate="fade-up">
-              Next project
-            </span>
-            <a
-              href={`/projects/${nextProject.slug}`}
-              className="prp-next-link"
-              data-animate="fade-up"
-              data-animate-delay="100"
-              onClick={e => {
-                e.preventDefault();
-                go(`/projects/${nextProject.slug}`);
-              }}
-            >
-              <h2 className="prp-next-title">{nextProject.title}</h2>
-              <span className="prp-next-arrow">{arrowSvg}</span>
-            </a>
-            <div className="prp-next-preview">
-              <div className="prp-next-preview-bar">
-                <span className="prp-next-preview-loading">Loading</span>
-                <div className="prp-next-preview-progress" />
-              </div>
-              <div className="prp-next-preview-image">
-                <img src={nextProject.imgSrc} alt={nextProject.title} loading="lazy" />
-              </div>
+        {/* NEXT PROJECT — full viewport pinned */}
+        <section className="prp-next-section" id="next-project" ref={nextSectionRef}>
+          <div className="prp-next-bg">
+            <img src={nextProject.imgSrc} alt={nextProject.title} className="prp-next-bg-img" />
+          </div>
+          <div className="prp-next-content">
+            <span className="prp-next-eyebrow">Next project</span>
+            <h2 className="prp-next-title">{nextProject.title}</h2>
+            <div className="prp-next-hint">
+              <span>Keep scrolling</span>
+              <div className="prp-next-hint-arrow">{arrowSvg}</div>
             </div>
           </div>
         </section>
 
-        {/* CTA */}
-        <div className="page-cta-wrapper">
-          <SectionDivider variant="dark" hideOnMobile={true} />
-          <CTASection
-            title="Ready to elevate"
-            titleHighlight="your digital experience?"
-            animationClass="pp-animate"
-          />
+        <div className="prp-scroll-progress" ref={progressRef}>
+          <div className="prp-scroll-progress-bar" />
         </div>
-
-        <Footer />
       </div>
     </>
   );

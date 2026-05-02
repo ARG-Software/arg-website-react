@@ -1,11 +1,12 @@
 import React from 'react';
-import { arrowSvg, closeSvg } from '../icons/SocialIcons';
+import { arrowSvg } from '../icons/SocialIcons';
 import { trackOutbound } from '../../hooks/useAnalytics';
+import AppLink from '../navigation/AppLink';
 
 export function ProjectItem({
+  slug,
   imgSrc,
   mockupSrc,
-  mockupSrcSet,
   imgSrcSet,
   title,
   subtitle,
@@ -25,17 +26,7 @@ export function ProjectItem({
       data-animate={animation}
     >
       <div className="projects_item" data-animate={animation}>
-        <div className="projects_modal-close_btn">
-          <div className="projects_modal-close_wrap">{closeSvg}</div>
-        </div>
         <div className="projects_item_display">
-          <div className="projects_modal_indication is-mobile">
-            <div className="projects_modal_text">Tap</div>
-            <div className="projects_modal_text-wrap">
-              <div className="projects_modal_text">Here</div>
-            </div>
-            <div className="projects_modal_text">to close</div>
-          </div>
           <div
             className="projects_item_visual"
             data-modal-img={imgSrc}
@@ -57,11 +48,7 @@ export function ProjectItem({
             View Live Site
           </a>
           <div className="padding-bottom padding-42"></div>
-          <div
-            className="projects_item_visual is-showcase"
-            data-mockup-src={mockupSrc}
-            data-mockup-src-set={mockupSrcSet}
-          ></div>
+          <div className="projects_item_visual is-showcase" data-mockup-src={mockupSrc}></div>
         </div>
         <div className="projects_item_content is-padding-bottom is-white-bg">
           <div className="projects_item_tag">
@@ -118,7 +105,7 @@ export function ProjectItem({
         </div>
       </div>
       <div className="projects_item_description">
-        <a aria-label={title} href="#" className="text-button w-inline-block">
+        <AppLink to={`/projects/${slug}`} aria-label={title} className="text-button w-inline-block">
           <div className="text-button_list is-dark">
             <h3 className="heading-style-h3">{title}</h3>
             <div className="arrow_icon-embed large w-embed">{arrowSvg}</div>
@@ -127,7 +114,7 @@ export function ProjectItem({
             <h3 className="heading-style-h3">{title}</h3>
             <div className="arrow_icon-embed large w-embed">{arrowSvg}</div>
           </div>
-        </a>
+        </AppLink>
         <div className="subtitle-projects">{subtitle}</div>
       </div>
     </div>

@@ -15,6 +15,7 @@ export function TransitionProvider({ children }) {
   const location = useLocation();
 
   const [phase, setPhase] = useState('idle'); // idle | covering | revealing
+  const [overlayVariant, setOverlayVariant] = useState('vertical'); // vertical | horizontal
   const overlayRef = useRef(null);
   const pendingToRef = useRef(null);
   const isRunningRef = useRef(false);
@@ -149,6 +150,10 @@ export function TransitionProvider({ children }) {
       isRunningRef.current = true;
       pendingToRef.current = { to, options };
 
+      const isProjectNav =
+        targetPath.startsWith('/projects/') && location.pathname.startsWith('/projects/');
+      setOverlayVariant(isProjectNav ? 'horizontal' : 'vertical');
+
       // stop scroll if you use Lenis
       if (lenis) lenis.stop();
 
@@ -227,13 +232,7 @@ export function TransitionProvider({ children }) {
     }
 
     // go() path: overlay already covering — scroll to hash or top, then reveal
-    const hash = hashRef.current ? hashRef.current.substring(1) : null;
-    const hashEl = hash ? document.getElementById(hash) : null;
-    if (hashEl) {
-      hashEl.scrollIntoView({ behavior: 'instant' });
-    } else {
-      scrollToTop();
-    }
+    scrollToPage();
     window.setTimeout(() => {
       setPhase('revealing');
       window.setTimeout(() => {
@@ -265,12 +264,17 @@ export function TransitionProvider({ children }) {
     scrollToPage,
     createHashScrollHandler,
     transitioning: phase === 'covering' || phase === 'revealing',
+    setOverlayVariant,
   };
 
   return (
     <TransitionContext.Provider value={contextValue}>
       {/* overlay lives once here */}
-      <div ref={overlayRef} className={`pt-overlay ${phase}`} aria-hidden="true" />
+      <div
+        ref={overlayRef}
+        className={`pt-overlay ${phase} pt-overlay--${overlayVariant}`}
+        aria-hidden="true"
+      />
       {children}
     </TransitionContext.Provider>
   );

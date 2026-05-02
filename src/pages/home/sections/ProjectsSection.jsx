@@ -1,8 +1,6 @@
 import { ProjectItem } from '../../../components/cards/ProjectItem';
-import { useProjectModalAnimations } from '../../../hooks';
 
 export function ProjectsSection({ projects, className = '' }) {
-  useProjectModalAnimations();
   return (
     <section
       id="cases"

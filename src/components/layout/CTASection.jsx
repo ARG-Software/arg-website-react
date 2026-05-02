@@ -19,9 +19,21 @@ export function CTASection({
   // Backward compatibility - will be removed later
   buttonText,
   animationClass = '',
+  // Second button (optional)
+  secondButtonTextNotHover,
+  secondButtonTextHover,
+  secondButtonLink,
+  secondAnalyticsEvent,
+  secondAnalyticsLabel,
 }) {
   const handleClick = () => {
     trackCTA(analyticsEvent, analyticsLabel);
+  };
+
+  const handleSecondClick = () => {
+    if (secondAnalyticsEvent) {
+      trackCTA(secondAnalyticsEvent, secondAnalyticsLabel);
+    }
   };
 
   // Handle backward compatibility for buttonText
@@ -111,19 +123,41 @@ export function CTASection({
             </div>
           )}
           <div className="padding-bottom padding-48"></div>
-          <a
-            href={buttonLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`button-base button-contact w-inline-block ${animationClass} pp-d2`}
-            data-animate="fade-up"
-            onClick={handleClick}
+          <div
+            className="cta-buttons"
+            style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}
           >
-            <div className="button-base_text_wrap">
-              <div className="button-base__button-text">{notHoverText}</div>
-              <div className="button-base__button-text is-animated">{hoverText}</div>
-            </div>
-          </a>
+            <a
+              href={buttonLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`button-base button-contact w-inline-block ${animationClass} pp-d2`}
+              data-animate="fade-up"
+              onClick={handleClick}
+            >
+              <div className="button-base_text_wrap">
+                <div className="button-base__button-text">{notHoverText}</div>
+                <div className="button-base__button-text is-animated">{hoverText}</div>
+              </div>
+            </a>
+            {secondButtonLink && (
+              <a
+                href={secondButtonLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`button-base button-contact w-inline-block ${animationClass} pp-d2`}
+                data-animate="fade-up"
+                onClick={handleSecondClick}
+              >
+                <div className="button-base_text_wrap">
+                  <div className="button-base__button-text">{secondButtonTextNotHover}</div>
+                  <div className="button-base__button-text is-animated">
+                    {secondButtonTextHover}
+                  </div>
+                </div>
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>
