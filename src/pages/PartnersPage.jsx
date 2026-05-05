@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useScrollAnimations } from '../hooks';
 import { Navbar, Footer, CTASection, SectionDivider, SEO, Drawer, FilterGrid, Timeline } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
+import { arrowSvg } from '../components/icons/SocialIcons';
 import data from '../data/partners.json';
 import '../styles/partners.css';
 
@@ -117,19 +118,28 @@ export default function PartnersPage() {
               <img src={selectedClient.logo} alt={selectedClient.name} />
             </div>
             <div className="pc-drawer-info">
-              <span className="pc-drawer-industry">{selectedClient.industry}</span>
-              <h3 className="pc-drawer-name">{selectedClient.name}</h3>
+              <div className="pc-drawer-header">
+                <h3 className="pc-drawer-name">{selectedClient.name}</h3>
+                <span className="pc-drawer-industry">{selectedClient.industry}</span>
+              </div>
               <p className="pc-drawer-desc">{selectedClient.description}</p>
-              <a
-                href={selectedClient.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pc-drawer-link"
-              >
-                Visit website
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                </svg>
-              </a>
+              {selectedClient.link && (
+                <a
+                  href={selectedClient.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-button pc-drawer-arrow w-inline-block"
+                >
+                  <div className="text-button_list is-dark">
+                    <div className="text-button_text">Visit website</div>
+                    <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                  </div>
+                  <div className="text-button_list is-animated is-dark">
+                    <div className="text-button_text meet-text">Open site</div>
+                    <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                  </div>
+                </a>
+              )}
             </div>
           </div>
         )}
