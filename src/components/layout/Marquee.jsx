@@ -18,7 +18,7 @@ export function Marquee({
   const rafRef = useRef(null);
   const positionRef = useRef(0);
   const lastTimeRef = useRef(null);
-  const pausedRef = useRef(false);
+  const speedMultiplierRef = useRef(1);
   const observerRef = useRef(null);
 
   const animate = useCallback(() => {
@@ -31,11 +31,9 @@ export function Marquee({
       const delta = timestamp - lastTimeRef.current;
       lastTimeRef.current = timestamp;
 
-      if (!pausedRef.current) {
-        positionRef.current += delta * (speed / 1000);
-        if (positionRef.current >= halfWidth) {
-          positionRef.current -= halfWidth;
-        }
+      positionRef.current += delta * (speed / 1000) * speedMultiplierRef.current;
+      if (positionRef.current >= halfWidth) {
+        positionRef.current -= halfWidth;
       }
 
       track.style.transform = `translateX(${-positionRef.current}px)`;
@@ -50,11 +48,11 @@ export function Marquee({
   }, [speed]);
 
   const handleMouseEnter = useCallback(() => {
-    pausedRef.current = true;
+    speedMultiplierRef.current = 0.2;
   }, []);
 
   const handleMouseLeave = useCallback(() => {
-    pausedRef.current = false;
+    speedMultiplierRef.current = 1;
   }, []);
 
   useEffect(() => {

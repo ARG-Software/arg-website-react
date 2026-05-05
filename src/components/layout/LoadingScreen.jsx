@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import '../../styles/loadingscreen.css';
 
@@ -9,6 +9,14 @@ export function LoadingScreen({ onComplete }) {
   const letterRefs = useRef([]);
   const counterRef = useRef(null);
   const panelsRef = useRef([]);
+  const [dots, setDots] = useState(1);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots(prev => (prev % 3) + 1);
+    }, 300);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.add('ls-active');
@@ -35,7 +43,7 @@ export function LoadingScreen({ onComplete }) {
     const counterObj = { val: 0 };
     masterTl.to(counterObj, {
       val: 100,
-      duration: 2.4,
+      duration: 3,
       ease: 'none',
       onUpdate: () => {
         if (counterRef.current) {
@@ -73,9 +81,16 @@ export function LoadingScreen({ onComplete }) {
   }, [onComplete]);
 
   return (
-    <div className="ls-overlay" aria-hidden="true">
+    <div
+      className="ls-overlay"
+      aria-hidden="true"
+      data-animate-scope
+      data-animate-default-preset="fade-up"
+      data-animate-default-trigger="load"
+      data-animate-default-stagger="200"
+    >
       <div className="ls-bg" ref={bgRef}>
-        <div className="ls-hello-row">
+        <div className="ls-hello-row" data-animate-order="0">
           <span className="ls-hello">Olá</span>
           <span className="ls-hello">Hola</span>
           <span className="ls-hello">Bonjour</span>
@@ -86,15 +101,15 @@ export function LoadingScreen({ onComplete }) {
           <span className="ls-hello">Hallo</span>
         </div>
         <div className="ls-label">
-          {'Loading'.split('').map((char, i) => (
-            <span key={i} className="ls-letter-wrap">
-              <span ref={el => (letterRefs.current[i] = el)} className="ls-letter">
-                {char}
-              </span>
-            </span>
-          ))}
+          <span className="ls-letter-wrap" data-animate-order="1">
+            <span className="ls-letter">scaling</span>
+          </span>
+
+          <span data-animate-order="2" className="ls-dots">
+            {'.'.repeat(dots)}
+          </span>
         </div>
-        <div className="ls-counter" ref={counterRef}>
+        <div className="ls-counter" ref={counterRef} data-animate-order="1">
           0%
         </div>
       </div>

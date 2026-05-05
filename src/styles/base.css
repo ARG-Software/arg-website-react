@@ -885,11 +885,6 @@ input[type='file']:focus-visible {
   width: 100%;
   overflow: hidden;
   padding: 6rem 4.75rem 5rem;
-  clip-path: inset(0 100% 0 0);
-}
-.partners_marquee-outer.is-revealed {
-  clip-path: inset(0 0% 0 0);
-  transition: clip-path 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .partners_marquee-outer::before,
 .partners_marquee-outer::after {
@@ -3734,20 +3729,18 @@ figcaption {
   padding-bottom: 5.625rem;
 }
 .section_infinity.background-color-gray {
-  color: #000;
+  color: #f6f6f7;
   background-color: #f6f6f7;
 }
 .section_infinity.background-color-gray.overflow-hidden {
-  color: #0000;
-  background-color: #0c002e;
+  background-color: #f6f6f7;
   padding-top: 5rem;
   padding-bottom: 5rem;
   display: flex;
 }
 .infinity_text {
-  color: #f6f6f7;
+  color: #0c002e;
   white-space: nowrap;
-  background-color: #0000;
   font-size: 3.4375rem;
 }
 .section_services {

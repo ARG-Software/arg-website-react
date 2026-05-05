@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Navbar, SEO, SectionDivider, arrowSvg } from '../components';
 import { ShuffleText } from '../components/widgets/ShuffleText';
 import { useScrollAnimations, useCinematicZoomBlur, useNextProjectSection } from '../hooks';
@@ -13,6 +14,8 @@ export default function ProjectDetailPage() {
   const navigate = useNavigate();
   const nextSectionRef = useRef(null);
   const progressRef = useRef(null);
+  const canvasRef = useRef(null);
+  const fallbackRef = useRef(null);
   useScrollAnimations();
 
   const projectIndex = PROJECTS.findIndex(p => p.slug === slug);
@@ -26,7 +29,7 @@ export default function ProjectDetailPage() {
     }
   }, [project, navigate]);
 
-  useCinematicZoomBlur('prp-hero-canvas', project?.imgSrc);
+  useCinematicZoomBlur(canvasRef, fallbackRef, project?.imgSrc);
   useNextProjectSection(nextSectionRef, progressRef, nextProject.slug);
 
   // Count-up observer for metric numbers
@@ -60,6 +63,9 @@ export default function ProjectDetailPage() {
 
   return (
     <>
+      <Helmet>
+        <link rel="preload" as="image" href={nextProject.imgSrc} />
+      </Helmet>
       <SEO
         title={`${project.title} - Case Study`}
         description={project.challenge.slice(0, 160)}
@@ -71,8 +77,9 @@ export default function ProjectDetailPage() {
         {/* HERO */}
         <section className="prp-hero">
           <div className="prp-hero-image-wrap">
-            <canvas id="prp-hero-canvas" className="prp-hero-canvas" />
+            <canvas ref={canvasRef} className="prp-hero-canvas" />
             <img
+              ref={fallbackRef}
               src={project.imgSrc}
               srcSet={project.imgSrcSet}
               sizes="100vw"
@@ -291,7 +298,11 @@ export default function ProjectDetailPage() {
         </section>
 
         {/* NEXT PROJECT — full viewport pinned */}
-        <section className="prp-next-section padding-section-large" id="next-project" ref={nextSectionRef}>
+        <section
+          className="prp-next-section padding-section-large"
+          id="next-project"
+          ref={nextSectionRef}
+        >
           <div className="prp-next-bg">
             <img src={nextProject.imgSrc} alt={nextProject.title} className="prp-next-bg-img" />
           </div>

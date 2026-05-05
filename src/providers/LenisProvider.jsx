@@ -1,11 +1,17 @@
 import { createContext, useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useRAF } from '../hooks/useRAF';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const LenisContext = createContext(null);
 
 /**
  * LenisProvider - Provides Lenis smooth-scrolling instance via React Context.
- * Now uses the RAF coordinator instead of its own rAF loop.
+ * Handles its own resize logic: reacts to route changes and body mutations.
+ * Wires Lenis scroll events directly into ScrollTrigger.update.
  */
 export function LenisProvider({
   children,
@@ -14,16 +20,20 @@ export function LenisProvider({
   smoothTouch = false,
 }) {
   const [lenis, setLenis] = useState(null);
-  const initializedRef = useRef(false);
   const instanceRef = useRef(null);
+  const location = useLocation();
 
   useEffect(() => {
-    // Prevent multiple initializations
-    if (initializedRef.current) return;
+    let cancelled = false;
+    let mutationObserver = null;
+    let resizeObserver = null;
+    let resizeTimer = null;
 
     const initLenis = async () => {
       try {
         const Lenis = (await import('lenis')).default;
+        if (cancelled) return;
+
         const instance = new Lenis({
           lerp,
           wheelMultiplier,
@@ -32,12 +42,31 @@ export function LenisProvider({
           smoothTouch,
         });
 
-        // Store in state for React consumers
-        setLenis(instance);
-        initializedRef.current = true;
+        if (cancelled) {
+          instance.destroy();
+          return;
+        }
 
-        // Store instance in ref for safety
         instanceRef.current = instance;
+        setLenis(instance);
+
+        instance.on('scroll', ScrollTrigger.update);
+
+        const resizeAndRefresh = () => {
+          instance.resize();
+          ScrollTrigger.refresh();
+        };
+
+        const debouncedRefresh = () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(resizeAndRefresh, 200);
+        };
+
+        mutationObserver = new MutationObserver(debouncedRefresh);
+        mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+        resizeObserver = new ResizeObserver(debouncedRefresh);
+        resizeObserver.observe(document.body);
       } catch (error) {
         console.error('Failed to initialize Lenis:', error);
       }
@@ -45,18 +74,31 @@ export function LenisProvider({
 
     initLenis();
 
-    // Cleanup on app unmount
     return () => {
-      if (lenis) {
-        lenis.destroy();
-        setLenis(null);
+      cancelled = true;
+      mutationObserver?.disconnect();
+      resizeObserver?.disconnect();
+      clearTimeout(resizeTimer);
+      if (instanceRef.current) {
+        instanceRef.current.destroy();
         instanceRef.current = null;
+        setLenis(null);
       }
-      initializedRef.current = false;
     };
-  }, [lerp, wheelMultiplier, smoothTouch]); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Subscribe to the RAF coordinator for the Lenis rAF loop
+  useEffect(() => {
+    if (!instanceRef.current) return;
+    instanceRef.current.resize();
+    ScrollTrigger.refresh();
+    const delayedTimer = setTimeout(() => {
+      instanceRef.current?.resize();
+      ScrollTrigger.refresh();
+    }, 1200);
+    return () => clearTimeout(delayedTimer);
+  }, [location.pathname]);
+
   useRAF(time => {
     if (instanceRef.current) {
       instanceRef.current.raf(time);

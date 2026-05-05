@@ -2,16 +2,27 @@ import { useEffect, useRef } from 'react';
 import { useRAF } from './useRAF';
 import { gsap } from 'gsap';
 
-export function useCinematicZoomBlur(canvasId, imageSrc) {
+export function useCinematicZoomBlur(canvasRef, fallbackRef, imageSrc) {
   const renderRef = useRef(null);
   const cleanupRef = useRef(null);
   const mountedRef = useRef(false);
+  const visibleRef = useRef(false);
 
   useEffect(() => {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
+    const canvas = canvasRef?.current;
+    const fallback = fallbackRef?.current;
+    if (!canvas || !imageSrc) return;
 
     mountedRef.current = true;
+    visibleRef.current = true;
+
+    const visibilityObserver = new IntersectionObserver(
+      entries => {
+        visibleRef.current = entries[0]?.isIntersecting ?? true;
+      },
+      { threshold: 0 }
+    );
+    visibilityObserver.observe(canvas);
 
     let THREE = null;
     let renderer = null;
@@ -20,12 +31,13 @@ export function useCinematicZoomBlur(canvasId, imageSrc) {
     let mesh = null;
     let material = null;
     let texture = null;
-    let animationId = null;
 
     const init = async () => {
       if (!mountedRef.current) return;
 
       THREE = await import('three');
+      if (!mountedRef.current) return;
+
       const container = canvas.parentElement;
       const width = container.offsetWidth || window.innerWidth;
       const height = container.offsetHeight || window.innerHeight;
@@ -57,6 +69,7 @@ export function useCinematicZoomBlur(canvasId, imageSrc) {
           reject
         );
       });
+      if (!mountedRef.current) return;
 
       const uCenter = { value: new THREE.Vector2(0.5, 0.5) };
       const uStrength = { value: -2 };
@@ -144,10 +157,15 @@ export function useCinematicZoomBlur(canvasId, imageSrc) {
 
       doResize();
 
-      // GSAP entrance animation — cinematic zoom-in reveal
+      renderer.render(scene, camera);
+
+      if (fallback) {
+        gsap.to(fallback, { opacity: 0, duration: 0.5, ease: 'power2.out' });
+      }
+      gsap.to(canvas, { opacity: 1, duration: 0.5, ease: 'power2.out' });
+
       gsap.fromTo(uStrength, { value: -2 }, { value: 0, duration: 2.5, ease: 'power2.out' });
 
-      // Mouse tracking for blur center
       const targetCenter = { x: 0.5, y: 0.5 };
       const currentCenter = { x: 0.5, y: 0.5 };
 
@@ -159,11 +177,9 @@ export function useCinematicZoomBlur(canvasId, imageSrc) {
 
       canvas.addEventListener('mousemove', handleMouseMove);
 
-      // Render function called by RAF coordinator
       renderRef.current = () => {
-        if (!mountedRef.current || !renderer || !scene || !camera) return;
+        if (!mountedRef.current || !visibleRef.current || !renderer || !scene || !camera) return;
 
-        // Lerp center toward mouse position
         currentCenter.x += (targetCenter.x - currentCenter.x) * 0.08;
         currentCenter.y += (targetCenter.y - currentCenter.y) * 0.08;
         uCenter.value.set(currentCenter.x, currentCenter.y);
@@ -182,6 +198,9 @@ export function useCinematicZoomBlur(canvasId, imageSrc) {
       window.addEventListener('resize', handleResize);
 
       cleanupRef.current = () => {
+        visibilityObserver.disconnect();
+        gsap.killTweensOf(canvas);
+        if (fallback) gsap.killTweensOf(fallback);
         canvas.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('resize', handleResize);
         if (geometry) geometry.dispose();
@@ -195,10 +214,9 @@ export function useCinematicZoomBlur(canvasId, imageSrc) {
 
     return () => {
       mountedRef.current = false;
-      if (animationId) cancelAnimationFrame(animationId);
       if (cleanupRef.current) cleanupRef.current();
     };
-  }, [canvasId, imageSrc]);
+  }, [canvasRef, fallbackRef, imageSrc]);
 
   useRAF(() => {
     if (renderRef.current) renderRef.current();

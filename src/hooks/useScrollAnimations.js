@@ -311,6 +311,9 @@ export function useScrollAnimations(config = {}) {
 
     mountedRef.current = true;
 
+    // Declared at effect level so cleanup can kill them
+    let gsapTriggers = [];
+
     // Initialize after DOM is ready
     requestAnimationFrame(() => {
       if (!mountedRef.current) return;
@@ -433,8 +436,6 @@ export function useScrollAnimations(config = {}) {
       observerRef.current = observer;
 
       // GSAP ScrollTrigger animations
-      const gsapTriggers = [];
-
       document.querySelectorAll('[data-animate="gsap-parallax"]').forEach(element => {
         const speed = parseFloat(element.getAttribute('data-animate-speed')) || 0.5;
         const trigger = ScrollTrigger.create({
@@ -485,12 +486,10 @@ export function useScrollAnimations(config = {}) {
       if (observerRef.current) {
         if (typeof observerRef.current.disconnect === 'function') {
           observerRef.current.disconnect();
-        } else {
-          observerRef.current.disconnect();
         }
         observerRef.current = null;
       }
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      gsapTriggers.forEach(t => t.kill());
     };
   }, [enabled, mobileBehavior]);
 }

@@ -9,6 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 export function useNextProjectSection(sectionRef, progressRef, nextSlug) {
   const { go } = useContext(TransitionContext);
   const triggeredRef = useRef(false);
+  const scrollTriggerRef = useRef(null);
 
   useEffect(() => {
     const section = sectionRef?.current;
@@ -21,12 +22,13 @@ export function useNextProjectSection(sectionRef, progressRef, nextSlug) {
     gsap.set(progressBar, { scaleX: 0, transformOrigin: 'left center' });
 
     const ctx = gsap.context(() => {
-      ScrollTrigger.create({
+      scrollTriggerRef.current = ScrollTrigger.create({
         trigger: section,
         start: 'top bottom',
         end: 'bottom bottom',
         scrub: true,
         onToggle: self => {
+          if (triggeredRef.current) return;
           if (self.isActive) {
             gsap.to(progressContainer, {
               yPercent: 0,
@@ -46,16 +48,27 @@ export function useNextProjectSection(sectionRef, progressRef, nextSlug) {
         onUpdate: self => {
           if (triggeredRef.current) return;
           gsap.set(progressBar, { scaleX: self.progress });
-          if (self.progress >= 1) {
+          if (self.progress >= 0.98) {
             triggeredRef.current = true;
-            ScrollTrigger.getAll().forEach(t => t.kill());
-            go(`/projects/${nextSlug}`);
+            scrollTriggerRef.current?.kill();
+            go(`/projects/${nextSlug}`, { scrollMode: 'top' });
           }
+        },
+        onLeave: () => {
+          if (triggeredRef.current) return;
+          triggeredRef.current = true;
+          scrollTriggerRef.current?.kill();
+          go(`/projects/${nextSlug}`, { scrollMode: 'top' });
+        },
+        onLeaveBack: () => {
+          triggeredRef.current = false;
         },
       });
     }, section);
 
     return () => {
+      if (scrollTriggerRef.current) scrollTriggerRef.current.kill();
+      scrollTriggerRef.current = null;
       ctx.revert();
     };
   }, [sectionRef, progressRef, nextSlug, go]);

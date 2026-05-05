@@ -50,13 +50,12 @@ export default function HomePage() {
             className="partners_wrap background-color-white padding-section-compact border-radius-top"
             data-animate-scope
             data-animate-trigger="scroll"
-            data-animate-default-stagger="500"
-            data-animate-default-preset="fade"
+            data-animate-default-stagger="50"
           >
             <Marquee
               items={PARTNERS.clients}
               renderItem={c => (
-                <span className="partners_logo_wrap">
+                <span className="partners_logo_wrap" data-animate="fade">
                   <img
                     src={c.logoSmall}
                     alt={c.name}
@@ -67,7 +66,6 @@ export default function HomePage() {
               )}
               getItemKey={c => c.slug}
               repetitions={4}
-              revealOnScroll
               outerClassName="partners_marquee-outer"
               trackClassName="partners_marquee-track"
               setClassName="partners_marquee-set"

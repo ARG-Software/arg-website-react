@@ -69,6 +69,11 @@ html.ls-active {
   padding-bottom: 0.15em;
 }
 
+.ls-dots {
+  display: inline-block;
+  min-width: 1.2em;
+}
+
 /* Counter — matches label size and bottom position */
 .ls-counter {
   position: absolute;

@@ -237,12 +237,16 @@ export function TransitionProvider({ children }) {
         scrollToTop(); // Scroll while covered — invisible to user
 
         window.setTimeout(() => {
-          setPhase('revealing');
-          window.setTimeout(() => {
-            setPhase('idle');
-            isRunningRef.current = false;
-            unlockScroll();
-          }, duration);
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              setPhase('revealing');
+              window.setTimeout(() => {
+                setPhase('idle');
+                isRunningRef.current = false;
+                unlockScroll();
+              }, duration);
+            });
+          });
         }, duration);
       }, 0);
 
@@ -250,16 +254,24 @@ export function TransitionProvider({ children }) {
     }
 
     // go() path: overlay already covering — scroll to hash or top, then reveal
-    scrollToPage();
+    if (pendingToRef.current?.options?.scrollMode === 'top') {
+      scrollToTop();
+    } else {
+      scrollToPage();
+    }
     const duration = getTransitionDuration(overlayVariant);
     window.setTimeout(() => {
-      setPhase('revealing');
-      window.setTimeout(() => {
-        setPhase('idle');
-        isRunningRef.current = false;
-        pendingToRef.current = null;
-        unlockScroll();
-      }, duration);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setPhase('revealing');
+          window.setTimeout(() => {
+            setPhase('idle');
+            isRunningRef.current = false;
+            pendingToRef.current = null;
+            unlockScroll();
+          }, duration);
+        });
+      });
     }, 0);
     // Only pathname changes represent real page transitions.
     // Hash changes are handled by scrollToHash (pushState) and must NOT
