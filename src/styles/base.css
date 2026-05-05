@@ -1699,7 +1699,7 @@ input[type='file']:focus-visible {
 }
 
 .partners_marquee-set .partners_logo:hover {
-  filter: grayscale(0) opacity(1);
+  filter: grayscale(1) brightness(0.75) opacity(0.5);
 }
 
 /* Reduce gap before "See all partners" */

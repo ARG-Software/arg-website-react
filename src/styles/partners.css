@@ -135,16 +135,12 @@
   width: auto;
   height: auto;
   object-fit: contain;
-  filter: grayscale(1);
-  opacity: 0.65;
-  transition:
-    filter 0.35s ease,
-    opacity 0.35s ease;
+  filter: grayscale(1) opacity(0.65);
+  transition: filter 0.35s ease;
 }
 
 .pc-client-card:hover img {
-  filter: grayscale(0);
-  opacity: 1;
+  filter: grayscale(1) brightness(0.75) opacity(0.65);
 }
 
 /* ── Drawer Overlay ── */
@@ -399,12 +395,12 @@
   height: 2rem;
   width: auto;
   object-fit: contain;
-  opacity: 0.8;
-  transition: opacity 0.25s ease;
+  filter: grayscale(1) opacity(0.6);
+  transition: filter 0.25s ease;
 }
 
 .pt-row-card:hover .pt-row-logo {
-  opacity: 1;
+  filter: grayscale(1) brightness(0.75) opacity(0.6);
 }
 
 /* ── Your Project CTA row ── */
@@ -501,7 +497,12 @@
   height: 1.75rem;
   width: auto;
   object-fit: contain;
-  opacity: 0.8;
+  filter: grayscale(1) opacity(0.6);
+  transition: filter 0.25s ease;
+}
+
+.pt-mobile-card:hover .pt-mobile-logo {
+  filter: grayscale(1) brightness(0.75) opacity(0.6);
 }
 
 .pt-mobile-cta {
