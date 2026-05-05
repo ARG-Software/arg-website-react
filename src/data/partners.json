@@ -1,0 +1,150 @@
+{
+  "pageMeta": {
+    "heroTitle": ["They trusted us.", "It's your time now."],
+    "heroSubtitle": "Trusted by industry leaders across fintech, blockchain, and digital innovation",
+    "sectionHeader": {
+      "title": "Trusted By",
+      "description": "ARG is proud to work with companies that have sustainable impact goals and share our passion for technical excellence and innovation."
+    },
+    "timelineHeading": "Built on lasting partnerships"
+  },
+  "categories": ["All", "Fintech", "Web3", "Music", "Consultancy", "Industry"],
+  "clients": [
+    {
+      "name": "Interledger Foundation",
+      "slug": "interledger-foundation",
+      "logo": "/images/group-203112.svg",
+      "logoSmall": "/images/group-203112.svg",
+      "category": "Fintech",
+      "industry": "Fintech & Open Payments",
+      "description": "A global nonprofit building an open, interoperable payment network through the Interledger Protocol — enabling seamless, currency-agnostic transactions that bring digital financial services to the 1.4 billion people currently excluded from traditional banking.",
+      "link": "https://interledger.org/"
+    },
+    {
+      "name": "People's Clearinghouse",
+      "slug": "people-s-clearinghouse",
+      "logo": "/images/group-123132-402x.svg",
+      "logoSmall": "/images/group-123132-402x.svg",
+      "category": "Fintech",
+      "industry": "Financial Inclusion",
+      "description": "A social sector technology platform servicing community banks and credit unions in rural Mexico. Working with AMUCSS and the Interledger Foundation, it is building cross-border remittance infrastructure to connect 140 community banks to the global payments network — reducing fees and wait times for migrant families.",
+      "link": "https://lacamara.mx/"
+    },
+    {
+      "name": "Mojaloop Foundation",
+      "slug": "mojaloop-foundation",
+      "logo": "/images/mojaloop-foundation-orange-402x.png",
+      "logoSmall": "/images/mojaloop-foundation-orange-small.webp",
+      "category": "Fintech",
+      "industry": "Fintech & Open Source",
+      "description": "An open-source foundation championing inclusive financial infrastructure. Mojaloop builds interoperable payment systems that bring affordable, accessible digital financial services to unbanked populations worldwide.",
+      "link": "https://mojaloop.io/"
+    },
+    {
+      "name": "ThreeSigma",
+      "slug": "threesigma",
+      "logo": "/images/group-203127-402x.webp",
+      "logoSmall": "/images/group-203127-small.webp",
+      "category": "Web3",
+      "industry": "Blockchain & Web3",
+      "description": "A research-driven investment and advisory firm focused on blockchain ecosystems and decentralised finance, supporting crypto-native projects with deep technical and market expertise.",
+      "link": "https://threesigma.xyz/"
+    },
+    {
+      "name": "Angry Ventures",
+      "slug": "angry-ventures",
+      "logo": "/images/av-20logo-20medium-402x.png",
+      "logoSmall": "/images/av-20logo-20medium-402x.webp",
+      "category": "Consultancy",
+      "industry": "Venture Studio",
+      "description": "A hands-on venture studio that conceives, builds, and scales digital products — blending product strategy, design, and engineering to take ideas from zero to market.",
+      "link": "https://angry.ventures/"
+    },
+    {
+      "name": "mb-netzwerk",
+      "slug": "mb-netzwerk",
+      "logo": "/images/group-203128-402x.png",
+      "logoSmall": "/images/group-203128-small.webp",
+      "category": "Consultancy",
+      "industry": "Digital Consultancy",
+      "description": "A German digital consultancy specialising in software solutions for tax documentation and business process automation, with a strong focus on GDPR compliance and enterprise-grade reliability.",
+      "link": "https://www.dokutar.de/"
+    },
+    {
+      "name": "SEFA",
+      "slug": "sefa",
+      "logo": "/images/group-203133-402x.svg",
+      "logoSmall": "/images/group-203133-402x.svg",
+      "category": "Industry",
+      "industry": "Foodservice Industry",
+      "description": "A nationwide network in the foodservice industry that connects supply and equipment dealers with manufacturers, providing collective buying power, marketing support, and training services to strengthen market presence and business operations.",
+      "link": "https://www.sefa.com/"
+    },
+    {
+      "name": "Hostelier",
+      "slug": "hostelier",
+      "logo": "/images/group-203134-402x.png",
+      "logoSmall": "/images/group-203134-small.webp",
+      "category": "Industry",
+      "industry": "Tourism & Hospitality",
+      "description": "A hospitality management platform that helps property owners and tourism businesses streamline their operations — from bookings and scheduling to guest communication and day-to-day management.",
+      "link": "https://hostelier.weebly.com/"
+    },
+    {
+      "name": "SkyTracks",
+      "slug": "skytracks",
+      "logo": "/images/group-203159-402x.svg",
+      "logoSmall": "/images/group-203159-402x.svg",
+      "category": "Music",
+      "industry": "Music Tech",
+      "description": "A cloud-based music production platform enabling real-time collaboration between musicians, producers, and audio engineers — anywhere in the world, with professional-grade tools built directly into the browser.",
+      "link": "https://skytracks.io/"
+    },
+    {
+      "name": "North Music Group",
+      "slug": "north-music-group",
+      "logo": "/images/group-203132-402x.png",
+      "logoSmall": "/images/group-203132-small.webp",
+      "category": "Music",
+      "industry": "Music Rights",
+      "description": "A music rights management company providing modern tools for catalogue management, royalty tracking, and licensing — making music ownership transparent and efficient for artists and publishers alike.",
+      "link": "https://www.northmusicgroup.com/"
+    }
+  ],
+  "timeline": {
+    "yearStart": 2018,
+    "yearEnd": 2025,
+    "rows": [
+      {
+        "duration": "6+",
+        "label": "6+ Years",
+        "startYear": 2019,
+        "slugs": ["interledger-foundation", "mojaloop-foundation"]
+      },
+      {
+        "duration": "4",
+        "label": "4 Years",
+        "startYear": 2021,
+        "slugs": ["threesigma", "angry-ventures"]
+      },
+      {
+        "duration": "3",
+        "label": "3 Years",
+        "startYear": 2022,
+        "slugs": ["people-s-clearinghouse", "mb-netzwerk"]
+      },
+      {
+        "duration": "2",
+        "label": "2 Years",
+        "startYear": 2023,
+        "slugs": ["sefa", "hostelier"]
+      },
+      {
+        "duration": "1",
+        "label": "1 Year",
+        "startYear": 2024,
+        "slugs": ["skytracks", "north-music-group"]
+      }
+    ]
+  }
+}

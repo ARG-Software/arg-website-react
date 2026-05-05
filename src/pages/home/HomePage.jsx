@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { loadBlogPosts } from '../../utils/blog';
 import { useScrollAnimations } from '../../hooks';
-import { SEO, Navbar, Footer, EmailCapture } from '../../components';
+import { SEO, Navbar, Footer, EmailCapture, Marquee, SectionDivider } from '../../components';
+import AppLink from '../../components/navigation/AppLink';
+import { arrowSvg } from '../../components/icons/SocialIcons';
 import { HOMEPAGE_BLOG_POSTS_COUNT } from '../../constants';
 import { HeroSection } from './sections/HeroSection';
 import { AboutSection } from './sections/AboutSection';
-import { InfinityMarquee } from './sections/InfinityMarquee';
 import { ServicesSection } from './sections/ServicesSection';
 import { ProjectsSection } from './sections/ProjectsSection';
 import { TestimonialsSection } from './sections/TestimonialsSection';
-import { PartnersMarquee } from './sections/PartnersMarquee';
 import { TeamSection } from './sections/TeamSection';
 import { WorkStatsSection } from './sections/WorkStatsSection';
 import { BlogPromoSection } from './sections/BlogPromoSection';
@@ -17,6 +17,20 @@ import { SocialSection } from './sections/SocialSection';
 import { FAQSection } from './sections/FAQSection';
 import { ContactSection } from './sections/ContactSection';
 import PROJECTS from '../../data/projects.json';
+import PARTNERS from '../../data/partners.json';
+
+const SERVICES = [
+  'Custom Software',
+  'SaaS Development',
+  'Server Infrastructure',
+  'Prototyping',
+  'AI',
+  'MVP',
+  'Backend Development',
+  'Frontend Development',
+];
+
+const servicesText = SERVICES.join('   •   ') + '   •   ';
 
 export default function HomePage() {
   const [blogPosts] = useState(() => loadBlogPosts().slice(0, HOMEPAGE_BLOG_POSTS_COUNT));
@@ -30,9 +44,70 @@ export default function HomePage() {
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">
           <HeroSection />
-          <PartnersMarquee />
+
+          <section
+            id="partners-marquee"
+            className="partners_wrap background-color-white padding-section-compact border-radius-top"
+            data-animate-scope
+            data-animate-trigger="scroll"
+            data-animate-default-stagger="500"
+            data-animate-default-preset="fade"
+          >
+            <Marquee
+              items={PARTNERS.clients}
+              renderItem={c => (
+                <span className="partners_logo_wrap">
+                  <img
+                    src={c.logoSmall}
+                    alt={c.name}
+                    className="partners_logo"
+                    loading="lazy"
+                  />
+                </span>
+              )}
+              getItemKey={c => c.slug}
+              repetitions={4}
+              revealOnScroll
+              outerClassName="partners_marquee-outer"
+              trackClassName="partners_marquee-track"
+              setClassName="partners_marquee-set"
+            />
+
+            <div
+              className="partners_contain container padding-global"
+              style={{
+                paddingTop: '2rem',
+                paddingBottom: '2.5rem',
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }}
+            >
+              <AppLink to="/partners" className="text-button w-inline-block meet-up-align">
+                <div className="text-button_list is-dark">
+                  <div className="text-button_text">See all partners</div>
+                  <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                </div>
+                <div className="text-button_list is-animated is-dark">
+                  <div className="text-button_text meet-text">Meet them</div>
+                  <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                </div>
+              </AppLink>
+            </div>
+
+            <SectionDivider variant="default" hideOnMobile={false} />
+          </section>
+
           <AboutSection />
-          <InfinityMarquee />
+
+          <div className="section_infinity background-color-gray overflow-hidden">
+            <Marquee
+              repetitions={2}
+              trackClassName="infinity_list"
+            >
+              <p className="infinity_text">{servicesText}</p>
+            </Marquee>
+          </div>
+
           <ServicesSection />
           <ProjectsSection projects={PROJECTS} />
           <TestimonialsSection />

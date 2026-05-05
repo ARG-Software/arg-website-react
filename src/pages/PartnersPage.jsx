@@ -1,106 +1,35 @@
-import { useEffect } from 'react';
-import { useScrollAnimations, usePageTransition } from '../hooks';
-import { Navbar, Footer, CTASection, SectionDivider, PartnerRow, SEO } from '../components';
+import { useState, useCallback } from 'react';
+import { useScrollAnimations } from '../hooks';
+import { Navbar, Footer, CTASection, SectionDivider, SEO, Drawer, FilterGrid, Timeline } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
-import { toSlug } from '../utils/helpers';
+import data from '../data/partners.json';
 import '../styles/partners.css';
 
+const { pageMeta, categories, clients, timeline } = data;
+const clientMap = Object.fromEntries(clients.map(c => [c.slug, c]));
+
 export default function PartnersPage() {
-  const { scrollToHash } = usePageTransition();
-  useScrollAnimations(); // Scroll animations including footer
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [selectedClient, setSelectedClient] = useState(null);
 
-  // Handle hash fragments on page load (e.g., /partners#partner-name)
-  useEffect(() => {
-    if (window.location.hash) {
-      const hash = window.location.hash.substring(1);
-      if (hash) {
-        scrollToHash(hash, { mobileMenuDelay: 0 });
-      }
-    }
-  }, [scrollToHash]);
+  useScrollAnimations();
 
-  const PARTNERS = [
-    {
-      name: 'Interledger Foundation',
-      logo: '/images/group-203112.svg',
-      industry: 'Fintech & Open Payments',
-      description:
-        'A global nonprofit building an open, interoperable payment network through the Interledger Protocol — enabling seamless, currency-agnostic transactions that bring digital financial services to the 1.4 billion people currently excluded from traditional banking.',
-      link: 'https://interledger.org/',
-    },
-    {
-      name: "People's Clearinghouse",
-      logo: '/images/group-123132-402x.svg',
-      industry: 'Financial Inclusion',
-      description:
-        'A social sector technology platform servicing community banks and credit unions in rural Mexico. Working with AMUCSS and the Interledger Foundation, it is building cross-border remittance infrastructure to connect 140 community banks to the global payments network — reducing fees and wait times for migrant families.',
-      link: 'https://lacamara.mx/',
-    },
-    {
-      name: 'ThreeSigma',
-      logo: '/images/group-203127-402x.webp',
-      industry: 'Blockchain & Web3',
-      description:
-        'A research-driven investment and advisory firm focused on blockchain ecosystems and decentralised finance, supporting crypto-native projects with deep technical and market expertise.',
-      link: 'https://threesigma.xyz/',
-    },
-    {
-      name: 'Mojaloop Foundation',
-      logo: '/images/mojaloop-foundation-orange-402x.png',
-      industry: 'Fintech & Open Source',
-      description:
-        'An open-source foundation championing inclusive financial infrastructure. Mojaloop builds interoperable payment systems that bring affordable, accessible digital financial services to unbanked populations worldwide.',
-      link: 'https://mojaloop.io/',
-    },
-    {
-      name: 'Hostelier',
-      logo: '/images/group-203134-402x.png',
-      industry: 'Tourism & Hospitality',
-      description:
-        'A hospitality management platform that helps property owners and tourism businesses streamline their operations — from bookings and scheduling to guest communication and day-to-day management.',
-      link: 'https://hostelier.weebly.com/',
-    },
-    {
-      name: 'mb-netzwerk',
-      logo: '/images/group-203128-402x.png',
-      industry: 'Digital Consultancy',
-      description:
-        'A German digital consultancy specialising in software solutions for tax documentation and business process automation, with a strong focus on GDPR compliance and enterprise-grade reliability.',
-      link: 'https://www.dokutar.de/',
-    },
-    {
-      name: 'SEFA',
-      logo: '/images/group-203133-402x.svg',
-      industry: 'Foodservice Industry',
-      description:
-        'A nationwide network in the foodservice industry that connects supply and equipment dealers with manufacturers, providing collective buying power, marketing support, and training services to strengthen market presence and business operations.',
-      link: 'https://www.sefa.com/',
-    },
-    {
-      name: 'Angry Ventures',
-      logo: '/images/av-20logo-20medium-402x.png',
-      industry: 'Venture Studio',
-      description:
-        'A hands-on venture studio that conceives, builds, and scales digital products — blending product strategy, design, and engineering to take ideas from zero to market.',
-      link: 'https://angry.ventures/',
-    },
-    {
-      name: 'SkyTracks',
-      logo: '/images/group-203159-402x.svg',
-      industry: 'Music Tech',
-      description:
-        'A cloud-based music production platform enabling real-time collaboration between musicians, producers, and audio engineers — anywhere in the world, with professional-grade tools built directly into the browser.',
-      link: 'https://skytracks.io/',
-    },
-    {
-      name: 'North Music Group',
-      logo: '/images/group-203132-402x.png',
-      industry: 'Music Rights',
-      description:
-        'A music rights management company providing modern tools for catalogue management, royalty tracking, and licensing — making music ownership transparent and efficient for artists and publishers alike.',
-      link: 'https://www.northmusicgroup.com/',
-    },
-  ];
+  const handleCategoryChange = useCallback(cat => {
+    setActiveCategory(cat);
+  }, []);
+
+  const handleClientClick = useCallback(client => {
+    setSelectedClient(client);
+  }, []);
+
+  const handleCloseDrawer = useCallback(() => {
+    setSelectedClient(null);
+  }, []);
+
+  const isClientVisible = useCallback(
+    client => activeCategory === 'All' || client.category === activeCategory,
+    [activeCategory],
+  );
 
   return (
     <>
@@ -113,75 +42,60 @@ export default function PartnersPage() {
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">
-          {/* HERO */}
           <SubpageHero
-            title={['They trusted us.', "It's your time now."]}
-            subtitle="Trusted by industry leaders across fintech, blockchain, and digital innovation"
-            breadcrumbs={[
-              { label: 'Home', path: '/' },
-              { label: 'Partners', path: '/partners/' },
-            ]}
+            title={pageMeta.heroTitle}
+            subtitle={pageMeta.heroSubtitle}
             size="small"
           />
 
-          {/* INTRO */}
-          <section className="tp-intro-section background-color-white border-radius-top">
-            <div
-              className="container padding-global"
-              style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}
-            >
-              <div className="tp-intro-center">
-                <h2
-                  className="tp-intro-heading"
-                  data-animate-scope
-                  data-animate-default-stagger="160"
-                >
-                  <div className="heading_line">
-                    <span
-                      className="tp-intro-line text-color-gradiant"
-                      data-animate="slide-up-rotate"
-                      data-animate-distance="110%"
-                      data-animate-rotate="3deg"
-                    >
-                      We're selective.
-                    </span>
+          <section className="pc-clients-section padding-section-large background-color-white border-radius-top">
+            <div className="container padding-global pc-clients-inner">
+              <div className="pc-header">
+                <div className="pc-header-main">
+                  <h2 className="pc-header-title">{pageMeta.sectionHeader.title}</h2>
+                  <div className="pc-filters">
+                    {categories.map(cat => (
+                      <button
+                        key={cat}
+                        className={`pc-filter-btn${activeCategory === cat ? ' is-active' : ''}`}
+                        onClick={() => handleCategoryChange(cat)}
+                      >
+                        {cat}
+                      </button>
+                    ))}
                   </div>
-                  <div className="heading_line">
-                    <span
-                      className="tp-intro-line"
-                      data-animate="slide-up-rotate"
-                      data-animate-distance="110%"
-                      data-animate-rotate="3deg"
-                      data-animate-order="1"
-                    >
-                      So are they.
-                    </span>
-                  </div>
-                </h2>
+                </div>
+                <div className="pc-header-desc">
+                  <p>{pageMeta.sectionHeader.description}</p>
+                </div>
               </div>
+
+              <FilterGrid
+                items={clients}
+                activeCategory={activeCategory}
+                getItemKey={c => c.slug}
+                isItemVisible={isClientVisible}
+                onItemClick={handleClientClick}
+                renderItem={c => (
+                  <img src={c.logoSmall} alt={c.name} loading="lazy" />
+                )}
+              />
             </div>
           </section>
 
-          {/* PARTNERS */}
-          <section className="pp-partners-section background-color-white padding-section-xlarge border-radius-bottom">
-            <div className="pp-partners-inner container padding-global">
-              {PARTNERS.map((p, i) => (
-                <PartnerRow
-                  key={i}
-                  name={p.name}
-                  slug={toSlug(p.name)}
-                  description={p.description}
-                  image={p.logo}
-                  tag={p.industry}
-                  link={p.link}
-                  flip={i % 2 === 1}
-                  index={i}
-                />
-              ))}
-            </div>
-          </section>
+          <div className="section-divider-wrapper">
+            <SectionDivider variant="light" hideOnMobile={false} />
+          </div>
 
-          <div className="page-cta-wrapper">
+          <Timeline
+            heading={pageMeta.timelineHeading}
+            rows={timeline.rows}
+            yearStart={timeline.yearStart}
+            yearEnd={timeline.yearEnd}
+            items={clientMap}
+          />
+
+          <div className="page-cta-wrapper" id="page-cta">
             <SectionDivider variant="light" hideOnMobile={true} />
             <CTASection
               title="Ready to elevate"
@@ -195,6 +109,31 @@ export default function PartnersPage() {
 
         <Footer />
       </div>
+
+      <Drawer isOpen={!!selectedClient} onClose={handleCloseDrawer}>
+        {selectedClient && (
+          <div className="pc-drawer-content">
+            <div className="pc-drawer-logo">
+              <img src={selectedClient.logo} alt={selectedClient.name} />
+            </div>
+            <div className="pc-drawer-info">
+              <span className="pc-drawer-industry">{selectedClient.industry}</span>
+              <h3 className="pc-drawer-name">{selectedClient.name}</h3>
+              <p className="pc-drawer-desc">{selectedClient.description}</p>
+              <a
+                href={selectedClient.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pc-drawer-link"
+              >
+                Visit website
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                </svg>
+              </a>
+            </div>
+          </div>
+        )}
+      </Drawer>
     </>
   );
 }

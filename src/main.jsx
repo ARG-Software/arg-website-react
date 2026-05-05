@@ -27,6 +27,11 @@ function BlogPostPageWrapper() {
   return <BlogPostPage slug={slug} />;
 }
 
+function ProjectDetailPageWrapper() {
+  const { slug } = useParams();
+  return <ProjectDetailPage key={slug} />;
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <LoadingProvider>
     <HelmetProvider>
@@ -41,8 +46,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                   <Route path="/partners/" element={<PartnersPage />} />
                   <Route path="/projects" element={<ProjectsPage />} />
                   <Route path="/projects/" element={<ProjectsPage />} />
-                  <Route path="/projects/:slug" element={<ProjectDetailPage />} />
-                  <Route path="/projects/:slug/" element={<ProjectDetailPage />} />
+                  <Route path="/projects/:slug" element={<ProjectDetailPageWrapper />} />
+                  <Route path="/projects/:slug/" element={<ProjectDetailPageWrapper />} />
                   <Route path="/careers" element={<CareersPage />} />
                   <Route path="/careers/" element={<CareersPage />} />
                   <Route path="/blog" element={<BlogPage />} />

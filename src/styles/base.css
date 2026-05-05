@@ -915,10 +915,6 @@ input[type='file']:focus-visible {
   align-items: center;
   width: max-content;
   min-height: 4rem;
-  animation: partnerScroll 40s linear infinite;
-}
-.partners_marquee-track:hover {
-  animation-play-state: paused;
 }
 
 .partners_marquee-set {
@@ -939,14 +935,7 @@ input[type='file']:focus-visible {
   object-fit: contain;
 }
 
-@keyframes partnerScroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
+
 
 @media screen and (max-width: 767px) {
   .partners_marquee-set {
@@ -4976,7 +4965,7 @@ figcaption {
 }
 
 .subpage-hero--small {
-  height: 42vh;
+  height: 40vh;
 }
 
 .subpage-hero h1 {
@@ -5036,7 +5025,7 @@ figcaption {
   }
 
   .subpage-hero--small {
-    height: 34vh;
+    height: 32vh;
     min-height: 10.1875rem;
   }
 

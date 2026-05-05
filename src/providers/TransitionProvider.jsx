@@ -26,6 +26,11 @@ export function TransitionProvider({ children }) {
   const lenis = useLenis();
   // Stable ref so the route-change effect doesn't re-fire when lenis initialises
   const lenisRef = useRef(lenis);
+
+  const getTransitionDuration = useCallback(
+    variant => (variant === 'horizontal' ? 600 : PAGE_TRANSITION_DURATION_MS),
+    []
+  );
   useEffect(() => {
     lenisRef.current = lenis;
   }, [lenis]);
@@ -48,15 +53,18 @@ export function TransitionProvider({ children }) {
       if (!hash) return false;
 
       const element = document.getElementById(hash);
+      console.log('scrollToHash:', { hash, element });
       if (!element) return false;
 
-      const mobileMenuDelay = options.mobileMenuDelay ?? 400;
+      const mobileMenuDelay = options.mobileMenuDelay ?? 650;
       const duration = options.duration ?? 1.8;
       const offset = options.offset ?? 0;
       const easing = options.easing ?? (progress => 1 - Math.pow(1 - progress, 4)); // ease-out quart
 
       const doScroll = () => {
-        if (lenis) {
+        document.activeElement?.blur();
+
+        if (!lenis) {
           lenis.start();
           lenis.scrollTo(element, { offset, duration, easing });
         } else {
@@ -65,10 +73,12 @@ export function TransitionProvider({ children }) {
       };
 
       setTimeout(doScroll, mobileMenuDelay);
-      window.history.pushState(null, '', `#${hash}`);
+
+      // Keep React Router in sync instead of raw pushState
+      navigate(`#${hash}`, { replace: true });
       return true;
     },
-    [lenis]
+    [lenis, navigate]
   );
 
   // Scroll to appropriate section based on navigation history with retry logic
@@ -152,7 +162,8 @@ export function TransitionProvider({ children }) {
 
       const isProjectNav =
         targetPath.startsWith('/projects/') && location.pathname.startsWith('/projects/');
-      setOverlayVariant(isProjectNav ? 'horizontal' : 'vertical');
+      const variant = isProjectNav ? 'horizontal' : 'vertical';
+      setOverlayVariant(variant);
 
       // stop scroll if you use Lenis
       if (lenis) lenis.stop();
@@ -160,11 +171,12 @@ export function TransitionProvider({ children }) {
       transitionStartTimeRef.current = Date.now();
       setPhase('covering');
 
+      const duration = getTransitionDuration(variant);
       window.setTimeout(() => {
         navigate(to, options);
-      }, PAGE_TRANSITION_DURATION_MS);
+      }, duration);
     },
-    [navigate, location.pathname, scrollToHash, scrollToPage, lenis]
+    [navigate, location.pathname, scrollToHash, scrollToPage, lenis, getTransitionDuration]
   );
 
   // When the route actually changes, reveal
@@ -214,6 +226,12 @@ export function TransitionProvider({ children }) {
 
       transitionStartTimeRef.current = Date.now();
 
+      const isProjectNav =
+        currentPath.startsWith('/projects/') && previousPath.startsWith('/projects/');
+      const variant = isProjectNav ? 'horizontal' : 'vertical';
+      setOverlayVariant(variant);
+      const duration = getTransitionDuration(variant);
+
       window.setTimeout(() => {
         coverInstant();
         scrollToTop(); // Scroll while covered — invisible to user
@@ -224,8 +242,8 @@ export function TransitionProvider({ children }) {
             setPhase('idle');
             isRunningRef.current = false;
             unlockScroll();
-          }, PAGE_TRANSITION_DURATION_MS);
-        }, PAGE_TRANSITION_DURATION_MS);
+          }, duration);
+        }, duration);
       }, 0);
 
       return;
@@ -233,6 +251,7 @@ export function TransitionProvider({ children }) {
 
     // go() path: overlay already covering — scroll to hash or top, then reveal
     scrollToPage();
+    const duration = getTransitionDuration(overlayVariant);
     window.setTimeout(() => {
       setPhase('revealing');
       window.setTimeout(() => {
@@ -240,7 +259,7 @@ export function TransitionProvider({ children }) {
         isRunningRef.current = false;
         pendingToRef.current = null;
         unlockScroll();
-      }, PAGE_TRANSITION_DURATION_MS);
+      }, duration);
     }, 0);
     // Only pathname changes represent real page transitions.
     // Hash changes are handled by scrollToHash (pushState) and must NOT

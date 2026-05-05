@@ -9,32 +9,43 @@ gsap.registerPlugin(ScrollTrigger);
 export function useNextProjectSection(sectionRef, progressRef, nextSlug) {
   const { go } = useContext(TransitionContext);
   const triggeredRef = useRef(false);
-  const scrollProgressRef = useRef(0);
 
   useEffect(() => {
     const section = sectionRef?.current;
-    const progressBar = progressRef?.current;
-    if (!section || !progressBar) return;
+    const progressContainer = progressRef?.current;
+    const progressBar = progressContainer?.querySelector('.prp-scroll-progress-bar');
+    if (!section || !progressContainer || !progressBar) return;
 
     triggeredRef.current = false;
-    scrollProgressRef.current = 0;
+    gsap.set(progressContainer, { yPercent: 100, opacity: 0 });
+    gsap.set(progressBar, { scaleX: 0, transformOrigin: 'left center' });
 
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
         trigger: section,
-        start: 'top top',
+        start: 'top bottom',
         end: 'bottom bottom',
-        scrub: 0.5,
+        scrub: true,
+        onToggle: self => {
+          if (self.isActive) {
+            gsap.to(progressContainer, {
+              yPercent: 0,
+              opacity: 1,
+              duration: 0.3,
+              ease: 'power2.out',
+            });
+          } else {
+            gsap.to(progressContainer, {
+              yPercent: 100,
+              opacity: 0,
+              duration: 0.3,
+              ease: 'power2.in',
+            });
+          }
+        },
         onUpdate: self => {
           if (triggeredRef.current) return;
-          scrollProgressRef.current = self.progress;
-
-          gsap.to(progressBar, {
-            scaleX: self.progress,
-            transformOrigin: 'left center',
-            duration: 0.1,
-          });
-
+          gsap.set(progressBar, { scaleX: self.progress });
           if (self.progress >= 1) {
             triggeredRef.current = true;
             ScrollTrigger.getAll().forEach(t => t.kill());

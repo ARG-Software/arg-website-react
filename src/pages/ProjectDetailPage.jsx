@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Navbar, SEO, arrowSvg } from '../components';
+import { Navbar, SEO, SectionDivider, arrowSvg } from '../components';
+import { ShuffleText } from '../components/widgets/ShuffleText';
 import { useScrollAnimations, useCinematicZoomBlur, useNextProjectSection } from '../hooks';
+import { animateCountUp, getCountUpEnd } from '../hooks/useCountUp';
 import { trackCTA } from '../hooks/useAnalytics';
 import PROJECTS from '../data/projects.json';
 import '../styles/projects.css';
@@ -26,6 +28,31 @@ export default function ProjectDetailPage() {
 
   useCinematicZoomBlur('prp-hero-canvas', project?.imgSrc);
   useNextProjectSection(nextSectionRef, progressRef, nextProject.slug);
+
+  // Count-up observer for metric numbers
+  useEffect(() => {
+    const numbers = document.querySelectorAll('.prp-metric-number');
+    if (!numbers.length) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            const end = getCountUpEnd(el);
+            if (end !== null) {
+              animateCountUp(el, end, 2000);
+            }
+            observer.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    numbers.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, [slug]);
 
   if (!project) {
     return null;
@@ -56,7 +83,7 @@ export default function ProjectDetailPage() {
         </section>
 
         {/* INTRO — white card */}
-        <section className="prp-intro background-color-white border-radius-top border-radius-bottom padding-section-large">
+        <section className="prp-intro padding-section-large">
           <div className="prp-grid-container">
             <div className="prp-intro-grid">
               <div className="prp-intro-sidebar">
@@ -139,7 +166,9 @@ export default function ProjectDetailPage() {
           </div>
         </section>
 
-        {/* CHALLENGE — dark */}
+        <SectionDivider variant="default" />
+
+        {/* CHALLENGE — white */}
         <section className="prp-challenge padding-section-large">
           <div className="prp-grid-container">
             <div className="prp-challenge-grid">
@@ -173,8 +202,10 @@ export default function ProjectDetailPage() {
           </div>
         </section>
 
+        <SectionDivider variant="default" />
+
         {/* SOLUTION — white card */}
-        <section className="prp-solution background-color-white border-radius-top border-radius-bottom padding-section-large">
+        <section className="prp-solution padding-section-large">
           <div className="prp-grid-container">
             <div className="prp-solution-grid">
               <div className="prp-solution-content">
@@ -210,30 +241,33 @@ export default function ProjectDetailPage() {
           </div>
         </section>
 
-        {/* METRICS — dark */}
-        <section className="prp-metrics padding-section-large" id="results">
+        <SectionDivider variant="default" />
+
+        {/* RESULTS — merged metrics + impact */}
+        <section className="prp-results padding-section-large" id="results">
           <div className="prp-grid-container">
-            <div className="prp-metrics-inner">
-              <div className="prp-metrics-left">
+            <div className="prp-results-grid">
+              <div className="prp-results-left">
                 <span className="prp-section-label" data-animate="slide-from-left">
                   Results
                 </span>
-                <h2 className="prp-metrics-title" data-animate="slide-up">
+                <h2 className="prp-results-heading" data-animate="slide-up">
                   By the numbers
                 </h2>
+                <p className="prp-results-text" data-animate="fade-up">
+                  {project.impact}
+                </p>
               </div>
-              <div className="prp-metrics-bars">
-                {(() => {
-                  const maxVal = Math.max(...project.metrics.map(m => parseFloat(m.value)));
-                  return project.metrics.map((metric, i) => (
-                    <div key={i} className="prp-bar-item">
-                      <div className="prp-bar-track">
-                        <div
-                          className="prp-bar-fill"
-                          data-bar-target={parseFloat(metric.value) / maxVal}
-                        />
-                      </div>
-                      <div className="prp-bar-number">
+              <div className="prp-results-right">
+                <div className="prp-results-cards" data-animate-scope data-animate-stagger="150">
+                  {project.metrics.map((metric, i) => (
+                    <div
+                      key={i}
+                      className="prp-metric-card"
+                      data-animate="fade-up"
+                      data-animate-order={i}
+                    >
+                      <div className="prp-metric-card-number">
                         <span
                           className="prp-metric-number"
                           fs-numbercount-element="number"
@@ -244,44 +278,25 @@ export default function ProjectDetailPage() {
                         </span>
                         {parseFloat(metric.value) % 1 !== 0 ? '' : '+'}
                       </div>
-                      <p className="prp-metric-label">{metric.label}</p>
+                      <p className="prp-metric-card-label">
+                        <span className="prp-metric-bullet"></span>
+                        <ShuffleText text={metric.label} tag="span" />
+                      </p>
                     </div>
-                  ));
-                })()}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* IMPACT — dark */}
-        <section className="prp-impact padding-section-large">
-          <div className="prp-grid-container">
-            <div className="prp-impact-grid">
-              <div className="prp-impact-label">
-                <span className="prp-section-label" data-animate="slide-from-left">
-                  Impact
-                </span>
-                <h2 className="prp-impact-heading" data-animate="slide-up">
-                  The result
-                </h2>
-              </div>
-              <div className="prp-impact-content">
-                <p className="prp-impact-text" data-animate="impact-reveal">
-                  {project.impact}
-                </p>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* NEXT PROJECT — full viewport pinned */}
-        <section className="prp-next-section" id="next-project" ref={nextSectionRef}>
+        <section className="prp-next-section padding-section-large" id="next-project" ref={nextSectionRef}>
           <div className="prp-next-bg">
             <img src={nextProject.imgSrc} alt={nextProject.title} className="prp-next-bg-img" />
           </div>
           <div className="prp-next-content">
             <span className="prp-next-eyebrow">Next project</span>
-            <h2 className="prp-next-title">{nextProject.title}</h2>
             <div className="prp-next-hint">
               <span>Keep scrolling</span>
               <div className="prp-next-hint-arrow">{arrowSvg}</div>
