@@ -88,6 +88,7 @@
 /* Jobs Section */
 .cp-jobs-section {
   background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
 }
 .cp-jobs-inner {
   display: block !important;
@@ -157,10 +158,20 @@
   justify-content: center;
 }
 .cp-job-toggle-icon {
-  font-size: 1.5rem;
-  color: #0c002e;
-  font-weight: 300;
-  line-height: 1;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.35);
+  transform: rotate(-45deg);
+  transition:
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.4s ease;
+}
+.cp-job-item.is-open .cp-job-toggle-icon {
+  transform: rotate(45deg);
+  color: #000;
 }
 .cp-job-content {
   display: none;

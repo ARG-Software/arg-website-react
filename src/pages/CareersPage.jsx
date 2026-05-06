@@ -65,7 +65,7 @@ function JobAccordion({ job, isOpen, onToggle }) {
           </div>
         </div>
         <div className="cp-job-toggle">
-          <span className="cp-job-toggle-icon">{isOpen ? '−' : '+'}</span>
+          <div className="cp-job-toggle-icon arrow_icon-embed w-embed">{arrowSvg}</div>
         </div>
       </button>
       <div className="cp-job-content">
@@ -152,6 +152,15 @@ export default function CareersPage() {
             size="small"
           />
 
+          <section className="cp-whyus-section padding-section-large border-radius-bottom">
+            <div className="container padding-global">
+              <div className="cp-whyus-content cp-animate" data-animate="fade-up">
+                <h2 className="cp-whyus-title">{WHY_US_CONTENT.title}</h2>
+                <p className="cp-whyus-desc">{WHY_US_CONTENT.description}</p>
+              </div>
+            </div>
+          </section>
+
           <section className="cp-values-section padding-section-large border-radius-all background-color-white">
             <div className="container padding-global cp-values-inner">
               <div className="cp-section-header">
@@ -169,15 +178,6 @@ export default function CareersPage() {
                     <p className="cp-value-desc">{value.description}</p>
                   </div>
                 ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="cp-whyus-section padding-section-large border-radius-bottom">
-            <div className="container padding-global">
-              <div className="cp-whyus-content cp-animate" data-animate="fade-up">
-                <h2 className="cp-whyus-title">{WHY_US_CONTENT.title}</h2>
-                <p className="cp-whyus-desc">{WHY_US_CONTENT.description}</p>
               </div>
             </div>
           </section>
