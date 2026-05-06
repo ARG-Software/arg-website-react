@@ -1,3 +1,4 @@
+import { trackEvent } from '../../hooks/useAnalytics';
 import { usePageTransition } from '../../hooks/usePageTransition';
 
 export default function AppLink({
@@ -9,6 +10,8 @@ export default function AppLink({
   preventScrollReset,
   relative,
   unstable_viewTransition,
+  trackEvent: trackEventName,
+  trackData,
   ...rest
 }) {
   const { go } = usePageTransition();
@@ -31,6 +34,11 @@ export default function AppLink({
       onClick={event => {
         onClick?.(event);
         if (event.defaultPrevented) return;
+
+        if (trackEventName) {
+          trackEvent(trackEventName, trackData ?? {});
+        }
+
         event.preventDefault();
         go(to, Object.keys(options).length > 0 ? options : undefined);
       }}

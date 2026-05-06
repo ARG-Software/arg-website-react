@@ -11,3 +11,4 @@ export { useWaterRipple } from './useWaterRipple';
 export { useNotFoundPageScene } from './useNotFoundPageScene';
 export { useNextProjectSection } from './useNextProjectSection';
 export { useCinematicZoomBlur } from './useCinematicZoomBlur';
+export { useTimeOnPage } from './useTimeOnPage';

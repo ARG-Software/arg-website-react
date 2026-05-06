@@ -45,9 +45,9 @@ export function trackMailto(subject, location) {
   trackEvent('mailto_click', { subject, link_location: location });
 }
 
-/** Project modal open. */
-export function trackProjectOpen(projectTitle) {
-  trackEvent('project_view', { project_title: projectTitle });
+/** Time on page. */
+export function trackTimeOnPage(pagePath, durationSeconds) {
+  trackEvent('time_on_page', { page_path: pagePath, duration_seconds: durationSeconds });
 }
 
 /** FAQ accordion open. */
