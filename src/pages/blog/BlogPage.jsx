@@ -84,6 +84,8 @@ export default function BlogPage() {
         title="Blog & Insights"
         description="Technical blog posts, engineering insights, and best practices from the Arg Software team. Deep dives into architecture, TypeScript, .NET, DevOps, and more."
         path="/blog/"
+        rss
+        atom
       />
 
       <div className="page-wrapper w-clearfix">

@@ -21,6 +21,8 @@ import {
  * @param {string}  [props.publishedTime] – ISO 8601 date for blog posts
  * @param {string}  [props.author]        – Author name for blog posts
  * @param {string}  [props.section]       – Article section/category
+ * @param {boolean} [props.rss]           – If true, injects <link rel="alternate" type="application/rss+xml">
+ * @param {boolean} [props.atom]          – If true, injects <link rel="alternate" type="application/atom+xml">
  * @param {object}  [props.jsonLd]        – JSON-LD structured data object
  */
 export function SEO({
@@ -34,6 +36,8 @@ export function SEO({
   publishedTime,
   author,
   section,
+  rss = false,
+  atom = false,
   jsonLd,
 }) {
   const pageTitle = title ? (noSuffix ? title : `${title} | Arg Software`) : DEFAULT_TITLE;
@@ -83,6 +87,24 @@ export function SEO({
 
       {/* JSON-LD Structured Data */}
       {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
+
+      {/* Feed auto-discovery */}
+      {rss && (
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="ARG Software - RSS Feed"
+          href={`${SITE_URL}/rss.xml`}
+        />
+      )}
+      {atom && (
+        <link
+          rel="alternate"
+          type="application/atom+xml"
+          title="ARG Software - Atom Feed"
+          href={`${SITE_URL}/atom.xml`}
+        />
+      )}
     </Helmet>
   );
 }

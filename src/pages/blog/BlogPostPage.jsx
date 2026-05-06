@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import hljs from 'highlight.js';
 hljs.registerAliases(['promql'], { languageName: 'sql' });
+import AppLink from '../../components/navigation/AppLink';
 import { Navbar, Footer, CTASection, SectionDivider, arrowSvg, SEO } from '../../components';
 import { SubpageHero } from '../../components/hero/SubpageHero';
 import { useScrollAnimations, usePageTransition } from '../../hooks';
@@ -180,6 +181,16 @@ export default function BlogPostPage() {
     );
   }
 
+  // Related & recent articles for sidebar
+  const relatedPosts = BLOG_POSTS.filter(p => p.slug !== slug && p.tag === BLOG_POST.tag).slice(
+    0,
+    3
+  );
+
+  const recentPosts = BLOG_POSTS.filter(p => p.slug !== slug)
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 3);
+
   const titleWords = BLOG_POST.title.split(' ');
   const titleBreak = Math.floor(titleWords.length * 0.55);
   const titleLine1 = titleWords.slice(0, titleBreak).join(' ');
@@ -205,6 +216,8 @@ export default function BlogPostPage() {
         author="Arg Software"
         section={BLOG_POST.tag}
         image={BLOG_POST.image}
+        rss
+        atom
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'Article',
@@ -335,6 +348,77 @@ export default function BlogPostPage() {
                         <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                       </div>
                     </a>
+                  </div>
+
+                  {/* Related Articles */}
+                  <div className="bp-sidebar-section">
+                    <span className="bp-sidebar-section-label">Related Articles</span>
+                    {relatedPosts.length > 0 ? (
+                      <div className="bp-sidebar-articles">
+                        {relatedPosts.map(post => (
+                          <AppLink
+                            key={post.slug}
+                            to={`/blog/${post.slug}/`}
+                            className="bp-sidebar-article"
+                          >
+                            {post.image && (
+                              <img
+                                src={post.image}
+                                alt=""
+                                className="bp-sidebar-article-thumb"
+                                loading="lazy"
+                              />
+                            )}
+                            <div className="bp-sidebar-article-body">
+                              <span className="bp-sidebar-article-title">{post.title}</span>
+                              <span className="bp-sidebar-article-date">{post.date}</span>
+                            </div>
+                          </AppLink>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="bp-sidebar-empty">No related articles found.</p>
+                    )}
+                  </div>
+
+                  {/* Recent Updates */}
+                  <div className="bp-sidebar-section">
+                    <span className="bp-sidebar-section-label">Recent Updates</span>
+                    <div className="bp-sidebar-articles">
+                      {recentPosts.map(post => (
+                        <AppLink
+                          key={post.slug}
+                          to={`/blog/${post.slug}/`}
+                          className="bp-sidebar-article"
+                        >
+                          {post.image && (
+                            <img
+                              src={post.image}
+                              alt=""
+                              className="bp-sidebar-article-thumb"
+                              loading="lazy"
+                            />
+                          )}
+                          <div className="bp-sidebar-article-body">
+                            <span className="bp-sidebar-article-title">{post.title}</span>
+                            <span className="bp-sidebar-article-date">{post.date}</span>
+                          </div>
+                        </AppLink>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Subscribe */}
+                  <div className="bp-sidebar-section">
+                    <span className="bp-sidebar-section-label">Subscribe</span>
+                    <div className="bp-sidebar-subscribe">
+                      <a href="/rss.xml" className="bp-sidebar-rss">
+                        RSS Feed
+                      </a>
+                      <a href="/atom.xml" className="bp-sidebar-rss">
+                        Atom Feed
+                      </a>
+                    </div>
                   </div>
                 </aside>
               </div>
