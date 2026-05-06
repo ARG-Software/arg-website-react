@@ -2,11 +2,13 @@ import { SectionDivider } from './SectionDivider';
 import { trackSocial } from '../../hooks/useAnalytics';
 import { trackCTA } from '../../hooks/useAnalytics';
 import { MarkNameWhite } from '../icons/MarkNameWhite';
+import AppLink from '../navigation/AppLink';
 
 const NAV_LINKS = [
   { label: 'Blog', path: '/blog' },
   { label: 'Careers', path: '/careers' },
   { label: 'Partners', path: '/partners' },
+  { label: 'Use Cases', path: '/projects' },
 ];
 
 const SERVICE_ITEMS = [
@@ -49,9 +51,15 @@ export function Footer() {
                   <div className="footer-col-title">Navigate</div>
                   <div className="footer-col-list">
                     {NAV_LINKS.map(link => (
-                      <a key={link.path} href={link.path} className="footer-col-link">
+                      <AppLink
+                        key={link.path}
+                        to={link.path}
+                        className="footer-col-link"
+                        trackEvent="footer_nav_click"
+                        trackData={{ label: link.label, path: link.path }}
+                      >
                         {link.label}
-                      </a>
+                      </AppLink>
                     ))}
                   </div>
                 </div>
