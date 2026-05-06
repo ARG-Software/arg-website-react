@@ -209,30 +209,10 @@ export default function CareersPage() {
           <div className="section-divider-wrapper">
             <SectionDivider variant="default" hideOnMobile={false} />
           </div>
-          <section className="cp-contact-section padding-section-large background-color-white border-radius-bottom">
-            <div className="container padding-global">
-              <div className="cp-contact-content cp-animate" data-animate="fade-up">
-                <h2 className="cp-contact-title">Don't see a vacancy that suits you?</h2>
-                <p className="cp-contact-desc">Send us a spontaneous application.</p>
-                <a
-                  href="mailto:hr@arg.software?subject=Spontaneous%20application"
-                  className="button-base button-contact"
-                >
-                  <div className="button-base_text_wrap">
-                    <div className="button-base__button-text">Send Application</div>
-                    <div className="button-base__button-text is-animated">
-                      Contact HR {arrowSvg}
-                    </div>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </section>
-
           <div className="page-cta-wrapper">
             <CTASection
-              title="Ready to build"
-              titleHighlight="with us?"
+              title="Don't find any match,"
+              titleHighlight="contact us"
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="cp-animate"

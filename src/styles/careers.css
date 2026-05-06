@@ -276,46 +276,22 @@
 
 /* Contact Section */
 
-.cp-contact-content {
-  text-align: center;
-  max-width: 40rem;
-  margin: 0 auto;
-}
-.cp-contact-title {
-  font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
-  font-weight: 400;
-  line-height: 1.2;
-  color: #000;
-  margin: 0 0 1rem;
-}
-.cp-contact-desc {
-  font-size: 1.125rem;
-  color: #0c002e;
-  margin: 0 0 2rem;
-}
-
-/* Button Base Styles for Careers (override for dark bg and job form) */
-.cp-contact-section .button-base,
+/* Button Base Styles for Careers (override for job form) */
 .cp-job-form .button-base {
   border-color: #000;
   color: #000;
 }
-.cp-contact-section .button-base:hover,
 .cp-job-form .button-base:hover {
   color: #0c002e;
 }
-.cp-contact-section .button-base__overlap,
 .cp-job-form .button-base__overlap {
   background-color: #000;
 }
-.cp-contact-section .button-base_text_wrap,
 .cp-job-form .button-base_text_wrap {
   position: relative !important;
   overflow: hidden !important;
   height: 1.4em !important;
 }
-.cp-contact-section .button-base__button-text.is-animated,
 .cp-job-form .button-base__button-text.is-animated {
   color: #0c002e;
   top: 0 !important;
@@ -324,15 +300,12 @@
   width: max-content !important;
   text-align: center !important;
 }
-.cp-contact-section .button-base__button-text.is-animated svg path,
 .cp-job-form .button-base__button-text.is-animated svg path {
   stroke: #0c002e;
 }
-.cp-contact-section .button-base:hover .button-base__button-text.is-animated,
 .cp-job-form .button-base:hover .button-base__button-text.is-animated {
   transform: translate(-50%, 0) !important;
 }
-.cp-contact-section .button-base:hover .button-base__button-text:not(.is-animated),
 .cp-job-form .button-base:hover .button-base__button-text:not(.is-animated) {
   transform: translateY(-100%) !important;
 }

@@ -353,8 +353,8 @@ export default function BlogPostPage() {
           <div className="page-cta-wrapper">
             <SectionDivider variant="light" hideOnMobile={true} />
             <CTASection
-              title="Ready to elevate"
-              titleHighlight="your digital experience?"
+              title="Stop searching."
+              titleHighlight="Start building."
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="bp-animate"
