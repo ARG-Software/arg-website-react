@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useState, useCallback, useRef } from 'react
 import { gsap } from 'gsap';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
-import { trackCTA } from '../../hooks/useAnalytics';
+import { trackCTA, trackEvent } from '../../hooks/useAnalytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { arrowSvg } from '../icons/SocialIcons';
 import PROJECTS from '../../data/projects.json';
@@ -44,6 +44,7 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
   // Open: fade backdrop in, slide container from right
   useEffect(() => {
     if (!isOpen) return;
+    trackEvent('nav_menu_open', {});
     gsap.killTweensOf([wrapperRef.current, containerRef.current]);
     gsap.to(wrapperRef.current, { autoAlpha: 1, duration: 0.35, ease: 'power2.out' });
     gsap.to(containerRef.current, { xPercent: 0, duration: 0.65, ease: 'expo.out' });
@@ -52,6 +53,7 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
   // Close: slide container out to right, then fade backdrop out
   useEffect(() => {
     if (!isClosing) return;
+    trackEvent('nav_menu_close', {});
     gsap.killTweensOf([wrapperRef.current, containerRef.current]);
     gsap.to(containerRef.current, { xPercent: 100, duration: 0.5, ease: 'expo.in' });
     gsap.to(wrapperRef.current, { autoAlpha: 0, duration: 0.4, delay: 0.2, ease: 'power2.in' });
@@ -94,7 +96,11 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
   const toggleUseCases = useCallback(e => {
     e.stopPropagation();
     e.preventDefault();
-    setUseCasesOpen(prev => !prev);
+    setUseCasesOpen(prev => {
+      const next = !prev;
+      trackEvent('nav_use_cases_toggle', { action: next ? 'open' : 'close' });
+      return next;
+    });
   }, []);
 
   const latestDate = latestPost

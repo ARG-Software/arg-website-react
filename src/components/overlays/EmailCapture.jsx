@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { closeSvg } from '../icons/SocialIcons';
+import { trackEvent } from '../../hooks/useAnalytics';
 import { SESSION_KEY, ALREADY_SUBSCRIBED_KEY, BASIN_ENDPOINT } from '../../constants';
 
 export function EmailCapture() {
@@ -17,6 +18,7 @@ export function EmailCapture() {
     const show = () => {
       if (triggered) return;
       triggered = true;
+      trackEvent('lead_capture', { action: 'impression' });
       setVisible(true);
     };
 
@@ -44,6 +46,7 @@ export function EmailCapture() {
   }, []);
 
   function dismiss() {
+    trackEvent('lead_capture', { action: 'dismiss' });
     sessionStorage.setItem(SESSION_KEY, '1');
     setVisible(false);
   }
@@ -59,6 +62,7 @@ export function EmailCapture() {
     }
 
     setStatus('loading');
+    trackEvent('lead_capture', { action: 'submit' });
 
     const formData = new FormData();
     formData.append('email', email);
@@ -78,9 +82,11 @@ export function EmailCapture() {
 
       if (response.ok) {
         setStatus('success');
+        trackEvent('lead_capture', { action: 'success' });
         localStorage.setItem(ALREADY_SUBSCRIBED_KEY, '1');
       } else {
         setStatus('error');
+        trackEvent('lead_capture', { action: 'error' });
       }
     } catch {
       setStatus('error');
