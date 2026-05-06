@@ -48,8 +48,8 @@ export default function PartnersPage() {
             size="small"
           />
 
-          <section className="pc-clients-section padding-section-large background-color-white border-radius-top">
-            <div className="container padding-global pc-clients-inner">
+          <section className="pc-clients-section padding-section-large background-color-white  border-radius-top">
+            <div className="container padding-global">
               <div className="pc-header">
                 <div className="pc-header-main">
                   <div className="pc-filters">

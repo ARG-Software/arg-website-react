@@ -74,20 +74,19 @@
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 400;
   line-height: 1.15;
-  color: #fff;
+  color: #000;
   margin: 0 0 2rem;
   letter-spacing: -0.01em;
 }
 .cp-whyus-desc {
   font-size: 1.125rem;
   line-height: 1.8;
-  color: rgba(255, 255, 255, 0.8);
+  color: #000;
   margin: 0;
 }
 
 /* Jobs Section */
 .cp-jobs-section {
-  background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
 }
 .cp-jobs-inner {

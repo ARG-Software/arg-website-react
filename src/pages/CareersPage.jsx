@@ -145,14 +145,10 @@ export default function CareersPage() {
           <SubpageHero
             title={['Take Your Career', 'to New Heights']}
             subtitle="Join us and unlock opportunities for growth, innovation, and success in an inclusive environment that nurtures talent."
-            breadcrumbs={[
-              { label: 'Home', path: '/' },
-              { label: 'Career & Culture', path: '/careers/' },
-            ]}
             size="small"
           />
 
-          <section className="cp-whyus-section padding-section-large border-radius-bottom">
+          <section className="cp-whyus-section padding-section-large border-radius-all background-color-white">
             <div className="container padding-global">
               <div className="cp-whyus-content cp-animate" data-animate="fade-up">
                 <h2 className="cp-whyus-title">{WHY_US_CONTENT.title}</h2>
@@ -161,7 +157,7 @@ export default function CareersPage() {
             </div>
           </section>
 
-          <section className="cp-values-section padding-section-large border-radius-all background-color-white">
+          <section className="cp-values-section padding-section-large">
             <div className="container padding-global cp-values-inner">
               <div className="cp-section-header">
                 <h2 className="cp-section-title">
@@ -182,7 +178,7 @@ export default function CareersPage() {
             </div>
           </section>
 
-          <section className="cp-jobs-section padding-section-large border-radius-top">
+          <section className="cp-jobs-section padding-section-large border-radius-all">
             <div className="container padding-global cp-jobs-inner">
               <div className="cp-section-header">
                 <h2 className="cp-section-title">
