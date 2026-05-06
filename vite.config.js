@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import seoPrerender from './vite-plugin-seo-prerender.js';
 
 
@@ -7,6 +8,18 @@ export default defineConfig({
   assetsInclude: ['**/*.md'],
   plugins: [
     react(),
+    ViteImageOptimizer({
+      png: { quality: 80 },
+      jpeg: { quality: 80 },
+      jpg: { quality: 80 },
+      webp: { quality: 80 },
+      svg: {
+        multipass: true,
+        plugins: [
+          { name: 'preset-default', params: { overrides: { removeViewBox: false } } },
+        ],
+      },
+    }),
     seoPrerender({ apply: 'build' }),
     // Inject <link rel="preload"> for CSS at the very top of <head> so the
     // browser starts fetching it before parsing the JSON-LD blocks below it.
