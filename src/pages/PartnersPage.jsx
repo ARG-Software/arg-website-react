@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import { useScrollAnimations } from '../hooks';
 import { Navbar, Footer, CTASection, SectionDivider, SEO, Drawer, FilterGrid, Timeline } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
-import { arrowSvg } from '../components/icons/SocialIcons';
 import data from '../data/partners.json';
 import '../styles/partners.css';
 
@@ -128,16 +127,13 @@ export default function PartnersPage() {
                   href={selectedClient.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-button pc-drawer-arrow w-inline-block"
+                  className="pc-drawer-link-arrow"
                 >
-                  <div className="text-button_list is-dark">
-                    <div className="text-button_text">Visit website</div>
-                    <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                  </div>
-                  <div className="text-button_list is-animated is-dark">
-                    <div className="text-button_text meet-text">Open site</div>
-                    <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                  </div>
+                  <span>Visit website</span>
+                  <svg width="16" height="16" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.77734 8.5L13.3329 8.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="square" />
+                    <path d="M9.11133 3.83203L13.778 8.4987L9.11133 13.1654" stroke="currentColor" strokeWidth="1.4" strokeLinecap="square" />
+                  </svg>
                 </a>
               )}
             </div>

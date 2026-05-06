@@ -264,8 +264,32 @@
   max-width: 56ch;
 }
 
-.pc-drawer-arrow {
+.pc-drawer-link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #0c002e;
+  text-decoration: none;
   align-self: flex-start;
+  transition: color 0.25s ease;
+}
+
+.pc-drawer-link-arrow svg {
+  width: 1rem;
+  height: 1rem;
+  transform: rotate(-50deg);
+  transition: transform 0.3s ease;
+}
+
+.pc-drawer-link-arrow:hover {
+  color: #474747;
+}
+
+.pc-drawer-link-arrow:hover svg {
+  transform: rotate(-50deg) translateX(2px);
 }
 
 @keyframes pcFadeIn {
@@ -351,8 +375,8 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  padding: 0 1.5rem;
-  height: 3.5rem;
+  padding: 0 1.25rem;
+  height: 3.25rem;
   background: #fff;
   border: none;
   justify-content: space-between;
@@ -367,7 +391,7 @@
 .pt-duration {
   flex-shrink: 0;
   font-family: Neuemontreal, sans-serif;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 400;
   color: #0c002e;
   min-width: 4.5rem;
@@ -376,12 +400,12 @@
 .pt-row-logos {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
 .pt-row-logo {
-  height: 1.5rem;
+  height: 1.25rem;
   width: auto;
   object-fit: contain;
   filter: grayscale(1) opacity(0.65);
@@ -396,12 +420,13 @@
 .pt-row-cta-card {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 0 1.5rem;
-  height: 3.5rem;
+  gap: 1.25rem;
+  padding: 0 1.25rem;
+  height: 3.25rem;
   background: transparent;
   border: 1px dashed rgba(255, 255, 255, 0.25);
   border-radius: 0.5rem;
+  justify-content: flex-start;
   transition:
     background 0.3s ease,
     border-color 0.3s ease;
@@ -414,22 +439,21 @@
 
 .pt-cta-label {
   font-family: Neuemontreal, sans-serif;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.7);
   flex-shrink: 0;
-  min-width: 4.5rem;
 }
 
 .pt-cta-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.75rem;
+  padding: 0.5rem 1.5rem;
   background: #fff;
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 500;
   border: none;
   border-radius: 2rem;
@@ -477,7 +501,7 @@
 }
 
 .pt-mobile-logo {
-  height: 1.5rem;
+  height: 1.25rem;
   width: auto;
   object-fit: contain;
   filter: grayscale(1) opacity(0.65);
