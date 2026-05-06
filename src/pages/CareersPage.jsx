@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useScrollAnimations } from '../hooks';
+import { useScrollAnimations, useTimeOnPage } from '../hooks';
+import { trackEvent } from '../hooks/useAnalytics';
 import { Navbar, Footer, CTASection, SectionDivider, SEO } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
 import { arrowSvg } from '../components/icons/SocialIcons';
@@ -46,6 +47,7 @@ const WHY_US_CONTENT = {
 function JobAccordion({ job, isOpen, onToggle }) {
   const handleApply = e => {
     e.preventDefault();
+    trackEvent('job_apply', { job_title: job.title, department: job.department });
     const subject = encodeURIComponent(`${job.title} - Application`);
     window.location.href = `mailto:hr@arg.software?subject=${subject}`;
   };
@@ -124,10 +126,18 @@ function JobAccordion({ job, isOpen, onToggle }) {
 export default function CareersPage() {
   const [openJobId, setOpenJobId] = useState(null);
 
+  useTimeOnPage('/careers/');
   useScrollAnimations();
 
   const handleJobToggle = jobId => {
-    setOpenJobId(openJobId === jobId ? null : jobId);
+    const isOpening = openJobId !== jobId;
+    setOpenJobId(isOpening ? jobId : null);
+    if (isOpening) {
+      const job = JOBS.find(j => j.id === jobId);
+      if (job) {
+        trackEvent('job_accordion_open', { job_title: job.title, department: job.department });
+      }
+    }
   };
 
   return (

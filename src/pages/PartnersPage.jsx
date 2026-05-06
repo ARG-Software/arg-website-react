@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { useScrollAnimations } from '../hooks';
+import { useScrollAnimations, useTimeOnPage } from '../hooks';
+import { trackEvent } from '../hooks/useAnalytics';
 import {
   Navbar,
   Footer,
@@ -21,14 +22,17 @@ export default function PartnersPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedClient, setSelectedClient] = useState(null);
 
+  useTimeOnPage('/partners/');
   useScrollAnimations();
 
   const handleCategoryChange = useCallback(cat => {
     setActiveCategory(cat);
+    trackEvent('partner_filter_click', { category: cat });
   }, []);
 
   const handleClientClick = useCallback(client => {
     setSelectedClient(client);
+    trackEvent('partner_drawer_open', { client: client.name, category: client.category });
   }, []);
 
   const handleCloseDrawer = useCallback(() => {
@@ -143,6 +147,12 @@ export default function PartnersPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="pc-drawer-link-arrow"
+                  onClick={() =>
+                    trackEvent('partner_outbound_click', {
+                      client: selectedClient.name,
+                      url: selectedClient.link,
+                    })
+                  }
                 >
                   <span>Visit website</span>
                   <svg
