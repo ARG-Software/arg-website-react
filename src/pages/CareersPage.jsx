@@ -3,38 +3,37 @@ import { useScrollAnimations } from '../hooks';
 import { Navbar, Footer, CTASection, SectionDivider, SEO } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
 import { arrowSvg } from '../components/icons/SocialIcons';
+import {
+  excellenceSvg,
+  respectSvg,
+  innovationSvg,
+  diversitySvg,
+} from '../components/icons/ValueIcons';
 import JOBS from '../data/jobs.json';
 import '../styles/careers.css';
-
-const VALUE_ICONS = {
-  excellence: '/images/value-excellence.svg',
-  respect: '/images/value-respect.svg',
-  innovation: '/images/value-innovation.svg',
-  diversity: '/images/value-diversity.svg',
-};
 
 const INTERNAL_VALUES = [
   {
     title: 'Excellence',
     description: 'We choose team members who excel, succeed, and elevate our company standards.',
-    icon: VALUE_ICONS.excellence,
+    icon: excellenceSvg,
   },
   {
     title: 'Respect',
     description:
       'Respecting each other, our clients, our regulations, and deadlines is fundamental at Nesma & Partners.',
-    icon: VALUE_ICONS.respect,
+    icon: respectSvg,
   },
   {
     title: 'Innovation',
     description: 'We are dedicated to fostering creativity and innovation with our employees.',
-    icon: VALUE_ICONS.innovation,
+    icon: innovationSvg,
   },
   {
     title: 'Diversity',
     description:
       'We welcome individuals from all backgrounds, including those with disabilities or special needs.',
-    icon: VALUE_ICONS.diversity,
+    icon: diversitySvg,
   },
 ];
 
@@ -177,7 +176,7 @@ export default function CareersPage() {
                   {INTERNAL_VALUES.map((value, index) => (
                     <div key={index} className="cp-value-card" data-animate-order={index}>
                       <div className="cp-value-icon">
-                        <img src={value.icon} alt={value.title} />
+                        {value.icon}
                       </div>
                       <h3 className="cp-value-title">{value.title}</h3>
                       <p className="cp-value-desc">{value.description}</p>

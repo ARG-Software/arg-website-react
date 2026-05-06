@@ -181,7 +181,12 @@ export default function ProjectDetailPage() {
                 data-animate-from="1.15"
                 data-animate-to="1"
               >
-                <img src={project.mockupSrc} alt={`${project.title} mockup`} loading="lazy" />
+                <img
+                  src={project.mockupSrc}
+                  srcSet={project.mockupSrcSet}
+                  alt={`${project.title} mockup`}
+                  loading="lazy"
+                />
               </div>
               <div className="prp-challenge-content">
                 <span className="prp-section-label" data-animate="slide-from-left">
