@@ -1,3 +1,5 @@
+import { trackCTA } from '../../hooks/useAnalytics';
+
 export function Timeline({
   heading,
   rows,
@@ -7,11 +9,20 @@ export function Timeline({
   ctaText = 'Your Project',
   ctaButtonText = 'Start Now',
   ctaLink = '#page-cta',
+  ctaAnalyticsEvent,
+  ctaAnalyticsLabel,
   animate = true,
   rowPreset = 'fade-up',
   cardPreset = 'fade-up',
   stagger = 150,
 }) {
+  const isExternal = ctaLink.startsWith('http');
+  const ctaAttrs = isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+  const handleCtaClick = () => {
+    if (ctaAnalyticsEvent) {
+      trackCTA(ctaAnalyticsEvent, ctaAnalyticsLabel || 'timeline');
+    }
+  };
   const yearColumns = Array.from({ length: yearEnd - yearStart + 1 }, (_, i) => yearStart + i);
 
   const scopeAttrs = animate
@@ -80,7 +91,7 @@ export function Timeline({
                 {...rowAttrs(rows.length)}
               >
                 <span className="pt-cta-label">{ctaText}</span>
-                <a href={ctaLink} className="pt-cta-btn">
+                <a href={ctaLink} className="pt-cta-btn" {...ctaAttrs} onClick={handleCtaClick}>
                   {ctaButtonText}
                 </a>
               </div>
@@ -106,7 +117,7 @@ export function Timeline({
           })}
           <div className="pt-mobile-cta" {...cardAttrs(rows.length)}>
             <span className="pt-mobile-cta-label">{ctaText}</span>
-            <a href={ctaLink} className="pt-cta-btn">
+            <a href={ctaLink} className="pt-cta-btn" {...ctaAttrs} onClick={handleCtaClick}>
               {ctaButtonText}
             </a>
           </div>

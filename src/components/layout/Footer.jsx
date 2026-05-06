@@ -1,6 +1,5 @@
 import { SectionDivider } from './SectionDivider';
 import { trackSocial } from '../../hooks/useAnalytics';
-import { trackCTA } from '../../hooks/useAnalytics';
 import { MarkNameWhite } from '../icons/MarkNameWhite';
 import AppLink from '../navigation/AppLink';
 

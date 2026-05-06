@@ -106,6 +106,9 @@ export default function PartnersPage() {
               yearStart={timeline.yearStart}
               yearEnd={timeline.yearEnd}
               items={clientMap}
+              ctaLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
+              ctaAnalyticsEvent="typeform"
+              ctaAnalyticsLabel="partners_timeline"
               animate={true}
               rowPreset="slide-from-left"
               cardPreset="fade-up"
