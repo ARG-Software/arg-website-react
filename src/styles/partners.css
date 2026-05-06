@@ -351,20 +351,17 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  padding: 0 1.25rem;
-  height: 3rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0 1.5rem;
+  height: 3.5rem;
+  background: #fff;
+  border: none;
   justify-content: space-between;
   border-radius: 0.5rem;
-  transition:
-    background 0.3s ease,
-    border-color 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 .pt-row-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .pt-duration {
@@ -372,7 +369,7 @@
   font-family: Neuemontreal, sans-serif;
   font-size: 1rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.7);
+  color: #0c002e;
   min-width: 4.5rem;
 }
 
@@ -387,12 +384,12 @@
   height: 1.5rem;
   width: auto;
   object-fit: contain;
-  filter: grayscale(1) opacity(0.5);
+  filter: grayscale(1) opacity(0.65);
   transition: filter 0.25s ease;
 }
 
 .pt-row-card:hover .pt-row-logo {
-  filter: grayscale(1) brightness(0.75) opacity(0.5);
+  filter: grayscale(1) brightness(0.75) opacity(0.65);
 }
 
 /* ── Your Project CTA row ── */
@@ -400,10 +397,10 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  padding: 0 1.25rem;
-  height: 3rem;
+  padding: 0 1.5rem;
+  height: 3.5rem;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.25);
   border-radius: 0.5rem;
   transition:
     background 0.3s ease,
@@ -412,14 +409,14 @@
 
 .pt-row-cta-card:hover {
   background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .pt-cta-label {
   font-family: Neuemontreal, sans-serif;
   font-size: 1rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
   flex-shrink: 0;
   min-width: 4.5rem;
 }
@@ -428,24 +425,21 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.4rem 1.25rem;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.75);
+  padding: 0.625rem 1.75rem;
+  background: #fff;
+  color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   border: none;
   border-radius: 2rem;
   cursor: pointer;
   text-decoration: none;
-  transition:
-    background 0.3s ease,
-    color 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 .pt-cta-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.85);
 }
 
 /* ── Mobile Timeline ── */
@@ -454,9 +448,8 @@
 }
 
 .pt-mobile-card {
-  padding: 1.25rem;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1.25rem 1.5rem;
+  background: #fff;
   border-radius: 0.5rem;
   margin-bottom: 0.5rem;
 }
@@ -465,13 +458,13 @@
   font-family: Neuemontreal, sans-serif;
   font-size: 1.125rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.7);
+  color: #0c002e;
   margin-bottom: 0.15rem;
 }
 
 .pt-mobile-since {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(0, 0, 0, 0.4);
   margin-bottom: 0.75rem;
   display: block;
 }
@@ -487,21 +480,21 @@
   height: 1.5rem;
   width: auto;
   object-fit: contain;
-  filter: grayscale(1) opacity(0.5);
+  filter: grayscale(1) opacity(0.65);
   transition: filter 0.25s ease;
 }
 
 .pt-mobile-card:hover .pt-mobile-logo {
-  filter: grayscale(1) brightness(0.75) opacity(0.5);
+  filter: grayscale(1) brightness(0.75) opacity(0.65);
 }
 
 .pt-mobile-cta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem;
+  padding: 1.25rem 1.5rem;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
   border-radius: 0.5rem;
 }
 
@@ -509,7 +502,7 @@
   font-family: Neuemontreal, sans-serif;
   font-size: 1.125rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* ═══════════════════════════════════════════════════════════

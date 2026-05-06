@@ -30,7 +30,9 @@ export function Timeline({
           <div className="pt-divider" />
           <div className="pt-rows">
             {rows.map((row, i) => {
-              const startCol = row.startYear - yearStart + 1;
+              const minCols = 4;
+              const naturalStart = row.startYear - yearStart + 1;
+              const startCol = Math.min(naturalStart, yearColumns.length + 1 - minCols);
               const partners = row.slugs.map(slug => items[slug]).filter(Boolean);
               return (
                 <div key={i} className="pt-row">
@@ -56,7 +58,14 @@ export function Timeline({
             <div className="pt-row">
               <div
                 className="pt-row-cta-card"
-                style={{ gridColumn: `${yearColumns.length} / -1` }}
+                style={{
+                  gridColumn: `${Math.min(
+                    rows.length > 0
+                      ? rows[rows.length - 1].startYear - yearStart + 1
+                      : yearColumns.length,
+                    yearColumns.length + 1 - 4
+                  )} / -1`,
+                }}
               >
                 <span className="pt-cta-label">{ctaText}</span>
                 <a href={ctaLink} className="pt-cta-btn">
