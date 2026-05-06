@@ -11,10 +11,15 @@ export function ShuffleText({ text, className = '', tag: Tag = 'span', ...props 
     if (isHoveringRef.current || !ref.current) return;
     isHoveringRef.current = true;
 
+    const el = ref.current;
     const original = text;
     const length = original.length;
     let iteration = 0;
     const maxIterations = length * 3;
+
+    // Lock width to prevent container jitter from mixed-width random chars
+    const rect = el.getBoundingClientRect();
+    el.style.width = `${rect.width}px`;
 
     const step = () => {
       iteration++;
@@ -39,6 +44,8 @@ export function ShuffleText({ text, className = '', tag: Tag = 'span', ...props 
         if (ref.current) {
           ref.current.textContent = original;
         }
+        // Release width lock after animation completes
+        el.style.width = '';
         isHoveringRef.current = false;
       }
     };

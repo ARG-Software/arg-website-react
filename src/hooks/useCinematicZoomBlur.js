@@ -16,6 +16,13 @@ export function useCinematicZoomBlur(canvasRef, fallbackRef, imageSrc) {
     mountedRef.current = true;
     visibleRef.current = true;
 
+    // Safety timeout: show fallback if WebGL takes too long
+    const safetyTimeout = window.setTimeout(() => {
+      if (fallback && mountedRef.current) {
+        gsap.to(fallback, { opacity: 1, duration: 0.5, ease: 'power2.out' });
+      }
+    }, 3000);
+
     const visibilityObserver = new IntersectionObserver(
       entries => {
         visibleRef.current = entries[0]?.isIntersecting ?? true;
@@ -159,9 +166,10 @@ export function useCinematicZoomBlur(canvasRef, fallbackRef, imageSrc) {
 
       renderer.render(scene, camera);
 
-      if (fallback) {
-        gsap.to(fallback, { opacity: 0, duration: 0.5, ease: 'power2.out' });
-      }
+      // Clear safety timeout — WebGL loaded successfully
+      window.clearTimeout(safetyTimeout);
+
+      // Fade canvas in, keep fallback hidden
       gsap.to(canvas, { opacity: 1, duration: 0.5, ease: 'power2.out' });
 
       gsap.fromTo(uStrength, { value: -2 }, { value: 0, duration: 2.5, ease: 'power2.out' });
@@ -198,6 +206,7 @@ export function useCinematicZoomBlur(canvasRef, fallbackRef, imageSrc) {
       window.addEventListener('resize', handleResize);
 
       cleanupRef.current = () => {
+        window.clearTimeout(safetyTimeout);
         visibilityObserver.disconnect();
         gsap.killTweensOf(canvas);
         if (fallback) gsap.killTweensOf(fallback);
@@ -210,10 +219,18 @@ export function useCinematicZoomBlur(canvasRef, fallbackRef, imageSrc) {
       };
     };
 
-    init();
+    init().catch(err => {
+      // WebGL failed — show fallback image
+      window.clearTimeout(safetyTimeout);
+      if (fallback && mountedRef.current) {
+        gsap.to(fallback, { opacity: 1, duration: 0.5, ease: 'power2.out' });
+      }
+      console.error('Cinematic zoom-blur failed:', err);
+    });
 
     return () => {
       mountedRef.current = false;
+      window.clearTimeout(safetyTimeout);
       if (cleanupRef.current) cleanupRef.current();
     };
   }, [canvasRef, fallbackRef, imageSrc]);

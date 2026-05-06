@@ -26,23 +26,13 @@ const renderBlock = (block, i) => {
   switch (block.type) {
     case 'lead':
       return (
-        <p
-          key={i}
-          className="bp-lead"
-          data-animate="fade-up"
-          style={{ transitionDelay: delay }}
-        >
+        <p key={i} className="bp-lead" data-animate="fade-up" style={{ transitionDelay: delay }}>
           {block.text}
         </p>
       );
     case 'paragraph':
       return (
-        <p
-          key={i}
-          className="bp-p"
-          data-animate="fade-up"
-          style={{ transitionDelay: delay }}
-        >
+        <p key={i} className="bp-p" data-animate="fade-up" style={{ transitionDelay: delay }}>
           {block.text}
         </p>
       );

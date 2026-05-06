@@ -1,6 +1,15 @@
 import { useState, useCallback } from 'react';
 import { useScrollAnimations } from '../hooks';
-import { Navbar, Footer, CTASection, SectionDivider, SEO, Drawer, FilterGrid, Timeline } from '../components';
+import {
+  Navbar,
+  Footer,
+  CTASection,
+  SectionDivider,
+  SEO,
+  Drawer,
+  FilterGrid,
+  Timeline,
+} from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
 import data from '../data/partners.json';
 import '../styles/partners.css';
@@ -28,9 +37,8 @@ export default function PartnersPage() {
 
   const isClientVisible = useCallback(
     client => activeCategory === 'All' || client.category === activeCategory,
-    [activeCategory],
+    [activeCategory]
   );
-
 
   return (
     <>
@@ -43,10 +51,7 @@ export default function PartnersPage() {
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">
-          <SubpageHero
-            title={["They trusted us.", "It's your time now."]}
-            size="small"
-          />
+          <SubpageHero title={['They trusted us.', "It's your time now."]} size="small" />
 
           <div
             data-animate-scope
@@ -70,7 +75,10 @@ export default function PartnersPage() {
                     </div>
                   </div>
                   <div className="pc-header-desc">
-                    <p>ARG is proud to work with companies that have sustainable impact goals and share our passion for technical excellence and innovation.</p>
+                    <p>
+                      ARG is proud to work with companies that have sustainable impact goals and
+                      share our passion for technical excellence and innovation.
+                    </p>
                   </div>
                 </div>
 
@@ -80,9 +88,10 @@ export default function PartnersPage() {
                   getItemKey={c => c.slug}
                   isItemVisible={isClientVisible}
                   onItemClick={handleClientClick}
-                  renderItem={c => (
-                    <img src={c.logoSmall} alt={c.name} loading="lazy" />
-                  )}
+                  renderItem={c => <img src={c.logoSmall} alt={c.name} loading="lazy" />}
+                  animate={true}
+                  preset="fade-up"
+                  stagger={80}
                 />
               </div>
             </section>
@@ -93,6 +102,10 @@ export default function PartnersPage() {
               yearStart={timeline.yearStart}
               yearEnd={timeline.yearEnd}
               items={clientMap}
+              animate={true}
+              rowPreset="slide-from-left"
+              cardPreset="fade-up"
+              stagger={150}
             />
           </div>
 
@@ -104,6 +117,7 @@ export default function PartnersPage() {
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="pp-animate"
+              buttonLink="https://zcal.co/argsoftware/project"
             />
           </div>
         </main>
@@ -131,9 +145,25 @@ export default function PartnersPage() {
                   className="pc-drawer-link-arrow"
                 >
                   <span>Visit website</span>
-                  <svg width="16" height="16" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1.77734 8.5L13.3329 8.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="square" />
-                    <path d="M9.11133 3.83203L13.778 8.4987L9.11133 13.1654" stroke="currentColor" strokeWidth="1.4" strokeLinecap="square" />
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 17"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M1.77734 8.5L13.3329 8.5"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                      strokeLinecap="square"
+                    />
+                    <path
+                      d="M9.11133 3.83203L13.778 8.4987L9.11133 13.1654"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                      strokeLinecap="square"
+                    />
                   </svg>
                 </a>
               )}

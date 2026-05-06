@@ -56,12 +56,7 @@ export default function HomePage() {
               items={PARTNERS.clients}
               renderItem={c => (
                 <span className="partners_logo_wrap" data-animate="fade">
-                  <img
-                    src={c.logoSmall}
-                    alt={c.name}
-                    className="partners_logo"
-                    loading="lazy"
-                  />
+                  <img src={c.logoSmall} alt={c.name} className="partners_logo" loading="lazy" />
                 </span>
               )}
               getItemKey={c => c.slug}
@@ -98,10 +93,7 @@ export default function HomePage() {
           <AboutSection />
 
           <div className="section_infinity background-color-gray overflow-hidden">
-            <Marquee
-              repetitions={2}
-              trackClassName="infinity_list"
-            >
+            <Marquee repetitions={2} trackClassName="infinity_list">
               <p className="infinity_text">{servicesText}</p>
             </Marquee>
           </div>

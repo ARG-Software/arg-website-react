@@ -65,7 +65,7 @@ export function Marquee({
             observerRef.current?.disconnect();
           }
         },
-        { threshold: 0.1 },
+        { threshold: 0.1 }
       );
       observerRef.current.observe(el);
 

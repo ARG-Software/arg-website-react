@@ -5,10 +5,28 @@ export function FilterGrid({
   isItemVisible,
   onItemClick,
   renderItem,
+  animate = true,
+  preset = 'fade-up',
+  stagger = 100,
 }) {
+  const scopeAttrs = animate
+    ? {
+        'data-animate-scope': true,
+        'data-animate-default-preset': preset,
+        'data-animate-default-stagger': String(stagger),
+      }
+    : {};
+
+  const cardAttrs = i =>
+    animate
+      ? {
+          'data-animate-order': String(i),
+        }
+      : {};
+
   return (
-    <div className="pc-client-grid">
-      {items.map(item => {
+    <div className="pc-client-grid" {...scopeAttrs}>
+      {items.map((item, i) => {
         const key = getItemKey(item);
         const visible = isItemVisible(item, activeCategory);
         return (
@@ -24,6 +42,7 @@ export function FilterGrid({
                 onItemClick(item);
               }
             }}
+            {...cardAttrs(i)}
           >
             {renderItem(item, visible)}
           </div>

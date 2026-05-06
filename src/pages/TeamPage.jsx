@@ -84,17 +84,10 @@ export default function TeamPage() {
                 <div className="tp-intro-center">
                   <h2 className="tp-intro-heading" data-animate="fade-up">
                     <div className="heading_line">
-                      <span
-                        className="tp-intro-line text-color-gradiant"
-                      >
-                        More than a team,
-                      </span>
+                      <span className="tp-intro-line text-color-gradiant">More than a team,</span>
                     </div>
                     <div className="heading_line">
-                      <span
-                        className="tp-intro-line"
-                        data-animate-order="1"
-                      >
+                      <span className="tp-intro-line" data-animate-order="1">
                         your innovation partners.
                       </span>
                     </div>
@@ -210,7 +203,9 @@ export default function TeamPage() {
                     >
                       <div className="button-base_text_wrap">
                         <div className="button-base__button-text">Get in touch</div>
-                        <div className="button-base__button-text is-animated">hello@arg.software</div>
+                        <div className="button-base__button-text is-animated">
+                          hello@arg.software
+                        </div>
                       </div>
                     </a>
                   </div>

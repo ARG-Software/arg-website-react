@@ -19,7 +19,7 @@ export function ProjectsSection({ projects, className = '' }) {
             They trusted us. It's your time now.
           </h2>
           <div className="subtitle_tag-wrapper" data-animate="fade" data-animate-order="1">
-            <div>Our Work</div>
+            <div>Use Cases</div>
           </div>
         </div>
         <div className="projects_list_wrap w-dyn-list">

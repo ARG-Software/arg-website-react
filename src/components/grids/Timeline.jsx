@@ -7,14 +7,38 @@ export function Timeline({
   ctaText = 'Your Project',
   ctaButtonText = 'Start Now',
   ctaLink = '#page-cta',
+  animate = true,
+  rowPreset = 'fade-up',
+  cardPreset = 'fade-up',
+  stagger = 150,
 }) {
-  const yearColumns = Array.from(
-    { length: yearEnd - yearStart + 1 },
-    (_, i) => yearStart + i,
-  );
+  const yearColumns = Array.from({ length: yearEnd - yearStart + 1 }, (_, i) => yearStart + i);
+
+  const scopeAttrs = animate
+    ? {
+        'data-animate-scope': true,
+        'data-animate-default-preset': cardPreset,
+        'data-animate-default-stagger': String(stagger),
+      }
+    : {};
+
+  const rowAttrs = i =>
+    animate
+      ? {
+          'data-animate': rowPreset,
+          'data-animate-order': String(i),
+        }
+      : {};
+
+  const cardAttrs = i =>
+    animate
+      ? {
+          'data-animate-order': String(i),
+        }
+      : {};
 
   return (
-    <section className="pt-timeline-section padding-section-xlarge">
+    <section className="pt-timeline-section padding-section-xlarge" {...scopeAttrs}>
       <div className="container padding-global pt-timeline-inner">
         <h2 className="pt-timeline-heading">{heading}</h2>
 
@@ -37,16 +61,12 @@ export function Timeline({
                   <div
                     className="pt-row-card"
                     style={{ gridColumn: `${startCol} / -1` }}
+                    {...rowAttrs(i)}
                   >
                     <span className="pt-duration">{row.label}</span>
                     <div className="pt-row-logos">
                       {partners.map(p => (
-                        <img
-                          key={p.slug}
-                          src={p.logoSmall}
-                          alt={p.name}
-                          className="pt-row-logo"
-                        />
+                        <img key={p.slug} src={p.logoSmall} alt={p.name} className="pt-row-logo" />
                       ))}
                     </div>
                   </div>
@@ -54,7 +74,11 @@ export function Timeline({
               );
             })}
             <div className="pt-row">
-              <div className="pt-row-cta-card" style={{ gridColumn: '1 / -1' }}>
+              <div
+                className="pt-row-cta-card"
+                style={{ gridColumn: '1 / -1' }}
+                {...rowAttrs(rows.length)}
+              >
                 <span className="pt-cta-label">{ctaText}</span>
                 <a href={ctaLink} className="pt-cta-btn">
                   {ctaButtonText}
@@ -69,23 +93,18 @@ export function Timeline({
           {rows.map((row, i) => {
             const partners = row.slugs.map(slug => items[slug]).filter(Boolean);
             return (
-              <div key={i} className="pt-mobile-card">
+              <div key={i} className="pt-mobile-card" {...cardAttrs(i)}>
                 <div className="pt-mobile-duration">{row.label}</div>
                 <span className="pt-mobile-since">since {row.startYear}</span>
                 <div className="pt-mobile-logos">
                   {partners.map(p => (
-                    <img
-                      key={p.slug}
-                      src={p.logoSmall}
-                      alt={p.name}
-                      className="pt-mobile-logo"
-                    />
+                    <img key={p.slug} src={p.logoSmall} alt={p.name} className="pt-mobile-logo" />
                   ))}
                 </div>
               </div>
             );
           })}
-          <div className="pt-mobile-cta">
+          <div className="pt-mobile-cta" {...cardAttrs(rows.length)}>
             <span className="pt-mobile-cta-label">{ctaText}</span>
             <a href={ctaLink} className="pt-cta-btn">
               {ctaButtonText}

@@ -1,23 +1,37 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useLayoutEffect, useState, useCallback, useRef } from 'react';
 import { gsap } from 'gsap';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
 import { trackCTA } from '../../hooks/useAnalytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { arrowSvg } from '../icons/SocialIcons';
+import PROJECTS from '../../data/projects.json';
 
-const navLinks = [
+const menuItems = [
   { to: '/#about', label: 'About' },
-  { to: '/#services', label: 'Services' },
-  { to: '/#cases', label: 'Our Work' },
-  { to: '/#testimonials', label: 'Testimonials' },
-  { to: '/#work-with-us', label: 'Working with Us' },
-  { to: '/#social', label: 'Social' },
   { to: '/#contact', label: 'Contact' },
+  { to: '/#services', label: 'Services' },
+  { to: '/#social', label: 'Social' },
+  { to: '/#testimonials', label: 'Testimonials' },
+  { to: '/projects/', label: 'Use Cases', isUseCases: true },
+  { to: '/#work-with-us', label: 'Working with Us' },
 ];
+
+const chevronSvg = (
+  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M4 6L8 10L12 6"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 export function NavMenu({ isOpen, isClosing, onClose }) {
   const [latestPost, setLatestPost] = useState(null);
+  const [useCasesOpen, setUseCasesOpen] = useState(false);
   const wrapperRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -42,6 +56,14 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
     gsap.to(containerRef.current, { xPercent: 100, duration: 0.5, ease: 'expo.in' });
     gsap.to(wrapperRef.current, { autoAlpha: 0, duration: 0.4, delay: 0.2, ease: 'power2.in' });
   }, [isClosing]);
+
+  // Reset accordion when menu closes
+  useLayoutEffect(() => {
+    if (!isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUseCasesOpen(false);
+    }
+  }, [isOpen]);
 
   // Load latest blog post when overlay opens
   useEffect(() => {
@@ -68,6 +90,12 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
   }, [isOpen, onClose]);
 
   const handleLinkClick = useCallback(() => onClose(), [onClose]);
+
+  const toggleUseCases = useCallback(e => {
+    e.stopPropagation();
+    e.preventDefault();
+    setUseCasesOpen(prev => !prev);
+  }, []);
 
   const latestDate = latestPost
     ? new Date(latestPost.date).toLocaleDateString('en-US', {
@@ -119,13 +147,50 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
           </div>
 
           <nav className="nav_overlay-nav">
-            {navLinks.map(link => (
-              <div key={link.to} className="nav_overlay-nav-item">
-                <AppLink to={link.to} className="nav_overlay-nav-link" onClick={handleLinkClick}>
-                  {link.label}
-                </AppLink>
-              </div>
-            ))}
+            {menuItems.map(item =>
+              item.isUseCases ? (
+                <div key={item.to} className="nav_overlay-nav-item">
+                  <div className="nav_overlay-usecases-toggle">
+                    <AppLink
+                      to={item.to}
+                      className="nav_overlay-nav-link"
+                      onClick={handleLinkClick}
+                    >
+                      {item.label}
+                    </AppLink>
+                    <button
+                      className={`nav_overlay-usecases-chevron${useCasesOpen ? ' is-open' : ''}`}
+                      onClick={toggleUseCases}
+                      aria-label={useCasesOpen ? 'Collapse use cases' : 'Expand use cases'}
+                      aria-expanded={useCasesOpen}
+                    >
+                      {chevronSvg}
+                    </button>
+                  </div>
+                  <div
+                    className={`nav_overlay-usecases-list${useCasesOpen ? ' is-open' : ''}`}
+                    aria-hidden={!useCasesOpen}
+                  >
+                    {PROJECTS.map(project => (
+                      <AppLink
+                        key={project.slug}
+                        to={`/projects/${project.slug}/`}
+                        className="nav_overlay-usecases-item"
+                        onClick={handleLinkClick}
+                      >
+                        {project.title}
+                      </AppLink>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div key={item.to} className="nav_overlay-nav-item">
+                  <AppLink to={item.to} className="nav_overlay-nav-link" onClick={handleLinkClick}>
+                    {item.label}
+                  </AppLink>
+                </div>
+              )
+            )}
           </nav>
 
           {/* Latest post — visible only on mobile (aside hidden ≤991px) */}

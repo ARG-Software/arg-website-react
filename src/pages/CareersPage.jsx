@@ -144,10 +144,6 @@ export default function CareersPage() {
           <SubpageHero
             title={['Take Your Career', 'to New Heights']}
             subtitle="Join us and unlock opportunities for growth, innovation, and success in an inclusive environment that nurtures talent."
-            breadcrumbs={[
-              { label: 'Home', path: '/' },
-              { label: 'Career & Culture', path: '/careers/' },
-            ]}
             size="small"
           />
 
@@ -175,9 +171,7 @@ export default function CareersPage() {
                 <div className="cp-values-grid">
                   {INTERNAL_VALUES.map((value, index) => (
                     <div key={index} className="cp-value-card" data-animate-order={index}>
-                      <div className="cp-value-icon">
-                        {value.icon}
-                      </div>
+                      <div className="cp-value-icon">{value.icon}</div>
                       <h3 className="cp-value-title">{value.title}</h3>
                       <p className="cp-value-desc">{value.description}</p>
                     </div>
@@ -206,7 +200,9 @@ export default function CareersPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="cp-jobs-empty" data-animate="fade-up">No open positions at the moment.</div>
+                  <div className="cp-jobs-empty" data-animate="fade-up">
+                    No open positions at the moment.
+                  </div>
                 )}
               </div>
             </section>
@@ -222,6 +218,7 @@ export default function CareersPage() {
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="cp-animate"
+              buttonLink="mailto:hr@arg.software?subject=Career%20Inquiry"
             />
           </div>
         </main>

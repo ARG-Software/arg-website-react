@@ -254,10 +254,11 @@ export function TransitionProvider({ children }) {
     }
 
     // go() path: overlay already covering — scroll to hash or top, then reveal
-    if (pendingToRef.current?.options?.scrollMode === 'top') {
-      scrollToTop();
-    } else {
+    const hasHash = pendingToRef.current?.to?.includes('#');
+    if (hasHash) {
       scrollToPage();
+    } else {
+      scrollToTop();
     }
     const duration = getTransitionDuration(overlayVariant);
     window.setTimeout(() => {

@@ -186,6 +186,7 @@ export default function ProjectDetailPage() {
                   srcSet={project.mockupSrcSet}
                   alt={`${project.title} mockup`}
                   loading="lazy"
+                  data-animate="fade-up"
                 />
               </div>
               <div className="prp-challenge-content">
@@ -243,6 +244,7 @@ export default function ProjectDetailPage() {
                   sizes="(max-width: 767px) 100vw, 50vw"
                   alt={project.title}
                   loading="lazy"
+                  data-animate="fade-up"
                 />
               </div>
             </div>
@@ -310,8 +312,8 @@ export default function ProjectDetailPage() {
           <div className="prp-next-content">
             <span className="prp-next-eyebrow">Next project</span>
             <div className="prp-next-hint">
-              <span>Keep scrolling</span>
-              <div className="prp-next-hint-arrow">{arrowSvg}</div>
+              <span>Keep Scrolling for next project</span>
+              <div className="prp-next-hint-arrow prp-next-hint-arrow--down">{arrowSvg}</div>
             </div>
           </div>
         </section>

@@ -5,7 +5,7 @@ export function Drawer({ isOpen, onClose, children }) {
     e => {
       if (e.key === 'Escape') onClose();
     },
-    [onClose],
+    [onClose]
   );
 
   useEffect(() => {
@@ -26,19 +26,10 @@ export function Drawer({ isOpen, onClose, children }) {
   };
 
   return (
-    <div
-      className="pc-drawer-overlay"
-      onClick={handleBackdrop}
-      role="dialog"
-      aria-modal="true"
-    >
+    <div className="pc-drawer-overlay" onClick={handleBackdrop} role="dialog" aria-modal="true">
       <div className="pc-drawer-backdrop" />
       <div className="pc-drawer-panel">
-        <button
-          className="pc-drawer-close"
-          onClick={onClose}
-          aria-label="Close"
-        >
+        <button className="pc-drawer-close" onClick={onClose} aria-label="Close">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
               d="M4 4L12 12M12 4L4 12"

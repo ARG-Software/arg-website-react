@@ -60,10 +60,7 @@ export function CTASection({
             ) : showSplitTitle ? (
               <>
                 <div className="header-animation">
-                  <h2
-                    className={`heading-style-h1 ${animationClass}`}
-                    data-animate="fade-up"
-                  >
+                  <h2 className={`heading-style-h1 ${animationClass}`} data-animate="fade-up">
                     {title}
                   </h2>
                 </div>
@@ -75,8 +72,7 @@ export function CTASection({
                       style={{
                         color: '#000',
                         WebkitTextFillColor: 'transparent',
-                        backgroundImage:
-                          'linear-gradient(to right, #f0060d, #c924d7 49%, #7904fd)',
+                        backgroundImage: 'linear-gradient(to right, #f0060d, #c924d7 49%, #7904fd)',
                         WebkitBackgroundClip: 'text',
                         backgroundClip: 'text',
                       }}

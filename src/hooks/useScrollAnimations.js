@@ -242,7 +242,7 @@ const animateElement = (element, preset, presetName, index = 0) => {
       // Remove !important after transition so CSS hover states can work
       const onTransitionEnd = () => {
         element.style.opacity = '1';
-        element.style.transform = getFinalTransform(presetName);
+        element.style.removeProperty('transform');
         element.style.transition = preset.transition || '';
         element.removeEventListener('transitionend', onTransitionEnd);
       };
@@ -253,7 +253,7 @@ const animateElement = (element, preset, presetName, index = 0) => {
       if (maxDuration > 0) {
         setTimeout(() => {
           element.style.opacity = '1';
-          element.style.transform = getFinalTransform(presetName);
+          element.style.removeProperty('transform');
           element.style.transition = preset.transition || '';
         }, maxDuration);
       }
