@@ -419,7 +419,7 @@
   border-left: 2px solid #c924d7;
 }
 .bp-sidebar-right {
-  grid-column: 4;
+  grid-column: 3;
   position: sticky;
   top: 6rem;
   align-self: start;
@@ -530,7 +530,7 @@
 }
 
 .bp-content {
-  grid-column: 2 span;
+  grid-column: 2;
   min-width: 0;
 }
 
