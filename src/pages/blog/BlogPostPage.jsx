@@ -350,6 +350,43 @@ export default function BlogPostPage() {
                     </a>
                   </div>
 
+                  {/* Subscribe */}
+                  <div className="bp-sidebar-section">
+                    <span className="bp-sidebar-section-label">Subscribe</span>
+                    <div className="bp-share-links">
+                      <a
+                        href="/rss.xml"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-button w-inline-block"
+                      >
+                        <div className="text-button_list is-dark">
+                          <div className="text-button_text">RSS Feed</div>
+                          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                        </div>
+                        <div className="text-button_list is-animated is-dark">
+                          <div className="text-button_text">Subscribe</div>
+                          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                        </div>
+                      </a>
+                      <a
+                        href="/atom.xml"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-button w-inline-block"
+                      >
+                        <div className="text-button_list is-dark">
+                          <div className="text-button_text">Atom Feed</div>
+                          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                        </div>
+                        <div className="text-button_list is-animated is-dark">
+                          <div className="text-button_text">Subscribe</div>
+                          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+
                   {/* Related Articles */}
                   <div className="bp-sidebar-section">
                     <span className="bp-sidebar-section-label">Related Articles</span>
@@ -405,19 +442,6 @@ export default function BlogPostPage() {
                           </div>
                         </AppLink>
                       ))}
-                    </div>
-                  </div>
-
-                  {/* Subscribe */}
-                  <div className="bp-sidebar-section">
-                    <span className="bp-sidebar-section-label">Subscribe</span>
-                    <div className="bp-sidebar-subscribe">
-                      <a href="/rss.xml" className="bp-sidebar-rss">
-                        RSS Feed
-                      </a>
-                      <a href="/atom.xml" className="bp-sidebar-rss">
-                        Atom Feed
-                      </a>
                     </div>
                   </div>
                 </aside>

@@ -513,21 +513,6 @@
   font-family: Neuemontreal, sans-serif;
   margin: 0;
 }
-.bp-sidebar-subscribe {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.bp-sidebar-rss {
-  font-size: 0.8125rem;
-  color: #000;
-  text-decoration: none;
-  font-family: Neuemontreal, sans-serif;
-  transition: opacity 0.2s;
-}
-.bp-sidebar-rss:hover {
-  opacity: 0.6;
-}
 
 .bp-content {
   grid-column: 2;
