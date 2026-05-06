@@ -29,15 +29,15 @@
   text-align: center;
   padding: 2rem 1.5rem;
   border-radius: 1rem;
-  background: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
 }
 .cp-value-card:hover {
   transform: translateY(-0.5rem);
-  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.4);
 }
 .cp-value-icon {
   width: 4rem;
@@ -46,29 +46,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 0.75rem;
   padding: 0.5rem;
-}
-.cp-value-icon img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
 }
 .cp-value-title {
   font-size: 1.25rem;
   font-weight: 400;
-  color: #0c002e;
+  color: #fff;
   margin: 0 0 0.75rem;
   font-family: Neuemontreal, sans-serif;
 }
 .cp-value-desc {
   font-size: 0.9375rem;
   line-height: 1.6;
-  color: #474747;
+  color: rgba(255, 255, 255, 0.8);
   margin: 0;
 }
-
 /* Why Us Section */
 
 .cp-whyus-content {

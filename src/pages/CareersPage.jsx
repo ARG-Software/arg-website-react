@@ -207,8 +207,8 @@ export default function CareersPage() {
           </div>
           <div className="page-cta-wrapper">
             <CTASection
-              title="Don't find any match,"
-              titleHighlight="contact us"
+              title="Didn't find any match,"
+              titleHighlight="reach to us anyway!"
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="cp-animate"
