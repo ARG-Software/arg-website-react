@@ -2,21 +2,13 @@ import { SectionDivider } from './SectionDivider';
 import { trackSocial } from '../../hooks/useAnalytics';
 import { MarkNameWhite } from '../icons/MarkNameWhite';
 import AppLink from '../navigation/AppLink';
+import SERVICES from '../../data/services.json';
 
 const NAV_LINKS = [
   { label: 'Blog', path: '/blog' },
   { label: 'Careers', path: '/careers' },
   { label: 'Partners', path: '/partners' },
   { label: 'Use Cases', path: '/projects' },
-];
-
-const SERVICE_ITEMS = [
-  'AI & Intelligent Systems',
-  'Architecture Consulting',
-  'Custom Development',
-  'ERP & CRM',
-  'Fintech Solutions',
-  'Scalability',
 ];
 
 const SOCIAL_LINKS = [
@@ -67,7 +59,7 @@ export function Footer() {
                 <div className="footer-nav-col">
                   <div className="footer-col-title">Expertise</div>
                   <div className="footer-col-list">
-                    {SERVICE_ITEMS.map(item => (
+                    {SERVICES.expertise.map(item => (
                       <span key={item} className="footer-col-text">
                         {item}
                       </span>

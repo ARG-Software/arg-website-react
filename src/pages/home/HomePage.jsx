@@ -18,19 +18,9 @@ import { FAQSection } from './sections/FAQSection';
 import { ContactSection } from './sections/ContactSection';
 import PROJECTS from '../../data/projects.json';
 import PARTNERS from '../../data/partners.json';
+import SERVICES from '../../data/services.json';
 
-const SERVICES = [
-  'Custom Software',
-  'SaaS Development',
-  'Server Infrastructure',
-  'Prototyping',
-  'AI',
-  'MVP',
-  'Backend Development',
-  'Frontend Development',
-];
-
-const servicesText = SERVICES.join('   •   ') + '   •   ';
+const servicesText = SERVICES.infinityBand.join('   •   ') + '   •   ';
 
 export default function HomePage() {
   const [blogPosts] = useState(() => loadBlogPosts().slice(0, HOMEPAGE_BLOG_POSTS_COUNT));
