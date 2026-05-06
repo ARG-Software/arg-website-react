@@ -21,7 +21,6 @@ const NAV_LINKS = [
   { href: '/partners/', label: 'Partners' },
   { href: '/projects/', label: 'Projects' },
   { href: '/careers/', label: 'Careers' },
-  // { href: '/team/', label: 'Team' },
   { href: '/#contact', label: 'Contact' },
 ];
 
@@ -101,18 +100,6 @@ const STATIC_PAGES = [
       'We welcome applications from all qualified candidates, including persons with disabilities, as part of our commitment to inclusion and equal opportunity.',
     ],
   },
-  // {
-  //   path: '/team/',
-  //   title: 'Our Team | Arg Software',
-  //   h1: 'Our Team',
-  //   description:
-  //     'Meet the engineers and founders behind Arg Software. A team of experienced developers passionate about building exceptional software for fintech and SaaS.',
-  //   paragraphs: [
-  //     'Arg Software was founded by Jose Antunes and Rui Rocha, two software engineers with a combined 25 years of experience delivering production systems for fintech, music technology, and high-growth SaaS companies.',
-  //     'Our team specializes in backend architecture, custom software development, cloud infrastructure, and scalable platform engineering. We work with TypeScript, .NET, Node.js, React, Angular, PostgreSQL, Kafka, Docker, and Kubernetes.',
-  //     'Based in Funchal and Porto, Portugal, we work with clients worldwide across Europe, the Americas, and beyond, collaborating remotely with teams across time zones.',
-  //   ],
-  // },
 ];
 
 // ── Frontmatter parser (same logic as the runtime one) ──────────────────────

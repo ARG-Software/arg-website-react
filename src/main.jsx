@@ -17,7 +17,6 @@ const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage.jsx'));
 const CareersPage = lazy(() => import('./pages/CareersPage.jsx'));
 const BlogPage = lazy(() => import('./pages/blog/BlogPage.jsx'));
 const BlogPostPage = lazy(() => import('./pages/blog/BlogPostPage.jsx'));
-// const TeamPage = lazy(() => import('./pages/TeamPage.jsx'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage.jsx'));
 const TermsPage = lazy(() => import('./pages/TermsPage.jsx'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'));
@@ -58,8 +57,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                   <Route path="/privacy/" element={<PrivacyPage />} />
                   <Route path="/terms" element={<TermsPage />} />
                   <Route path="/terms/" element={<TermsPage />} />
-                  {/* <Route path="/team" element={<TeamPage />} />
-                <Route path="/team/" element={<TeamPage />} /> */}
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </Suspense>
