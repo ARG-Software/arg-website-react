@@ -307,9 +307,9 @@ export function FAQSection({ className = '' }) {
               <div>FAQ</div>
             </div>
           </div>
-          <div className="faq_list">
+          <div className="faq_list" data-animate-scope data-animate-default-preset="fade-up" data-animate-default-stagger="150">
             {faqData.map((item, i) => (
-              <div key={i} className="faq_item">
+              <div key={i} className="faq_item" data-animate-order={i}>
                 <button className="faq_question" aria-expanded="false">
                   <span className="faq_question_text">{item.q}</span>
                   <div className="faq_icon arrow_icon-embed w-embed">{arrowSvg}</div>

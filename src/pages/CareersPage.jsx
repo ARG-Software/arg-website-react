@@ -175,7 +175,7 @@ export default function CareersPage() {
                 </div>
                 <div className="cp-values-grid">
                   {INTERNAL_VALUES.map((value, index) => (
-                    <div key={index} className="cp-value-card">
+                    <div key={index} className="cp-value-card" data-animate-order={index}>
                       <div className="cp-value-icon">
                         <img src={value.icon} alt={value.title} />
                       </div>
@@ -196,17 +196,18 @@ export default function CareersPage() {
                 </div>
                 {JOBS.length > 0 ? (
                   <div className="cp-jobs-list">
-                    {JOBS.map(job => (
-                      <JobAccordion
-                        key={job.id}
-                        job={job}
-                        isOpen={openJobId === job.id}
-                        onToggle={() => handleJobToggle(job.id)}
-                      />
+                    {JOBS.map((job, index) => (
+                      <div key={job.id} data-animate-order={index}>
+                        <JobAccordion
+                          job={job}
+                          isOpen={openJobId === job.id}
+                          onToggle={() => handleJobToggle(job.id)}
+                        />
+                      </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="cp-jobs-empty">No open positions at the moment.</div>
+                  <div className="cp-jobs-empty" data-animate="fade-up">No open positions at the moment.</div>
                 )}
               </div>
             </section>

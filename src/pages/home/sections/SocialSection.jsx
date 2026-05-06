@@ -119,9 +119,9 @@ export function SocialSection({ className = '' }) {
   return (
     <section id="social" className={`section_blog padding-section-medium ${className}`.trim()}>
       <div className="padding-global">
-        <div className="container-large">
+        <div className="container-large" data-animate-scope data-animate-default-preset="fade-up" data-animate-default-stagger="150">
           <div className="blog-component">
-            <div className="social-section_header">
+            <div className="social-section_header" data-animate="fade-up">
               <div>
                 <h2 className="heading-style-h2" style={{ color: '#fff' }}>
                   See what what we are saying outside of our website
@@ -131,7 +131,7 @@ export function SocialSection({ className = '' }) {
                 <div>Social</div>
               </div>
             </div>
-            <div className="swiper_blog-component">
+            <div className="swiper_blog-component" data-animate="fade-up">
               <div className="w-embed w-script">
                 <div className="elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b"></div>
               </div>
