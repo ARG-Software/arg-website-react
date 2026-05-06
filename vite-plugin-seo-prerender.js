@@ -346,7 +346,48 @@ export default function seoPrerender() {
       fs.writeFileSync(path.join(distDir, '404.html'), finalNotFoundHtml);
       generated++;
 
-      console.log(`[seo-prerender] Generated ${generated} prerendered HTML files.`);
+      // ── Sitemap generation ────────────────────────────────────────────
+      const sitemapUrls = [];
+
+      // Static pages
+      sitemapUrls.push({ loc: `${SITE_URL}/`, priority: '1.0', changefreq: 'weekly' });
+      sitemapUrls.push({ loc: `${SITE_URL}/partners/`, priority: '0.8', changefreq: 'monthly' });
+      sitemapUrls.push({ loc: `${SITE_URL}/careers/`, priority: '0.9', changefreq: 'weekly' });
+      sitemapUrls.push({ loc: `${SITE_URL}/blog/`, priority: '0.9', changefreq: 'weekly' });
+
+      // Blog posts
+      for (const meta of blogPostMetas) {
+        const entry = { loc: `${SITE_URL}/blog/${meta.slug}/`, priority: '0.7', changefreq: 'yearly' };
+        if (meta.date) {
+          try {
+            entry.lastmod = new Date(meta.date).toISOString().split('T')[0];
+          } catch {}
+        }
+        sitemapUrls.push(entry);
+      }
+
+      // Project detail pages
+      const projectsPath = path.resolve('src/data/projects.json');
+      if (fs.existsSync(projectsPath)) {
+        const projects = JSON.parse(fs.readFileSync(projectsPath, 'utf-8'));
+        for (const project of projects) {
+          if (project.slug) {
+            sitemapUrls.push({ loc: `${SITE_URL}/projects/${project.slug}/`, priority: '0.7', changefreq: 'monthly' });
+          }
+        }
+      }
+
+      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemapUrls.map(u => `  <url>
+    <loc>${escapeHtml(u.loc)}</loc>${u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : ''}
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+
+      fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml);
+      console.log(`[seo-prerender] Generated ${generated} prerendered HTML files + sitemap.xml (${sitemapUrls.length} URLs).`);
     },
   };
 }
