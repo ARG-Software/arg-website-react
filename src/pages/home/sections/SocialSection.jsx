@@ -136,23 +136,6 @@ export function SocialSection({ className = '' }) {
                 <div className="elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b"></div>
               </div>
             </div>
-            <div className="social-load-more-container">
-              <a
-                href="#"
-                className="text-button w-inline-block"
-                onClick={handleLoadMoreClick}
-                aria-label="Load more social posts"
-              >
-                <div className="text-button_list">
-                  <div className="text-button_text text-no-wrap">Load More</div>
-                  <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                </div>
-                <div className="text-button_list is-animated">
-                  <div className="text-button_text text-no-wrap">See Now</div>
-                  <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                </div>
-              </a>
-            </div>
           </div>
         </div>
       </div>

@@ -1557,26 +1557,6 @@ input[type='file']:focus-visible {
   padding-top: 2.5rem;
 }
 
-/* ── Social feed load more button ── */
-.social-load-more-container {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 2.5rem;
-}
-
-/* Style button text color */
-.social-load-more-container .text-button {
-  color: #fff;
-}
-
-/* Mobile responsive */
-@media screen and (max-width: 767px) {
-  .social-load-more-container {
-    padding-top: 2rem;
-    justify-content: center;
-  }
-}
-
 /* ── Divider spacing (consistent 5rem before dividers) ── */
 .section_blog .container-large,
 .section_faq .container-large,
@@ -1635,18 +1615,6 @@ input[type='file']:focus-visible {
 .section_blog .eapps-instagram-feed-posts-grid-item,
 .section_blog .eapps-social-feed-posts-item {
   margin-bottom: 1.5rem !important;
-}
-
-/* Mobile responsive */
-@media screen and (max-width: 767px) {
-  .social-load-more-container {
-    margin-top: 2rem;
-    padding: 1.5rem 0;
-  }
-
-  .social-load-more-container .text-button_text {
-    font-size: 0.75rem;
-  }
 }
 
 /* ── Animate new items loading in ── */
@@ -4965,7 +4933,7 @@ figcaption {
   font-size: clamp(1.5rem, 3vw, 3rem);
   font-weight: 400;
   letter-spacing: -0.02em;
-  margin-bottom: 1.5rem;
+  margin-top: 2rem;
   font-family: Neuemontreal, sans-serif;
   color: #fff;
 }

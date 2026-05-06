@@ -17,7 +17,6 @@ export function ContactSection({ className = '' }) {
               <div className="heading_wrap">
                 <div className="header-animation hide-tablet">
                   <h2
-                    data-animate="slide-up"
                     className="heading-style-h1 hide-mobile-portrait"
                     data-animate-order="2"
                   >

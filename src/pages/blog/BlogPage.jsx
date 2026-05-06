@@ -91,13 +91,9 @@ export default function BlogPage() {
 
         <main className="main-wrapper">
           <SubpageHero
-            title={['Blog from', 'the ARG team']}
+            title={['The thinking', 'behind the doing.']}
             subtitle="Technical insights, engineering deep dives, and industry perspectives from our team"
             size="small"
-            breadcrumbs={[
-              { label: 'Home', path: '/' },
-              { label: 'Blog', path: '/blog/' },
-            ]}
           />
 
           <section

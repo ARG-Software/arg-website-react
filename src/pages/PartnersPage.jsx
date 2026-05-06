@@ -31,6 +31,7 @@ export default function PartnersPage() {
     [activeCategory],
   );
 
+
   return (
     <>
       <SEO
@@ -43,8 +44,7 @@ export default function PartnersPage() {
 
         <main className="main-wrapper">
           <SubpageHero
-            title={pageMeta.heroTitle}
-            subtitle={pageMeta.heroSubtitle}
+            title={["They trusted us.", "It's your time now."]}
             size="small"
           />
 
@@ -52,7 +52,6 @@ export default function PartnersPage() {
             <div className="container padding-global pc-clients-inner">
               <div className="pc-header">
                 <div className="pc-header-main">
-                  <h2 className="pc-header-title">{pageMeta.sectionHeader.title}</h2>
                   <div className="pc-filters">
                     {categories.map(cat => (
                       <button
@@ -66,7 +65,7 @@ export default function PartnersPage() {
                   </div>
                 </div>
                 <div className="pc-header-desc">
-                  <p>{pageMeta.sectionHeader.description}</p>
+                  <p>ARG is proud to work with companies that have sustainable impact goals and share our passion for technical excellence and innovation.</p>
                 </div>
               </div>
 
@@ -88,7 +87,7 @@ export default function PartnersPage() {
           </div>
 
           <Timeline
-            heading={pageMeta.timelineHeading}
+            heading="Built on lasting partnerships"
             rows={timeline.rows}
             yearStart={timeline.yearStart}
             yearEnd={timeline.yearEnd}
