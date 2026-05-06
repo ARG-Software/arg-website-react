@@ -85,6 +85,8 @@ export default function ProjectDetailPage() {
               sizes="100vw"
               alt={project.title}
               className="prp-hero-image-fallback"
+              width="1920"
+              height="1080"
             />
           </div>
         </section>
@@ -187,6 +189,8 @@ export default function ProjectDetailPage() {
                   alt={`${project.title} mockup`}
                   loading="lazy"
                   data-animate="fade-up"
+                  width="800"
+                  height="600"
                 />
               </div>
               <div className="prp-challenge-content">
@@ -245,6 +249,8 @@ export default function ProjectDetailPage() {
                   alt={project.title}
                   loading="lazy"
                   data-animate="fade-up"
+                  width="1200"
+                  height="675"
                 />
               </div>
             </div>
