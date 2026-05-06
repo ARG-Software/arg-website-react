@@ -178,7 +178,7 @@ export default function CareersPage() {
             </div>
           </section>
 
-          <section className="cp-jobs-section padding-section-large border-radius-all">
+          <section className="cp-jobs-section padding-section-large border-radius-all background-color-white">
             <div className="container padding-global cp-jobs-inner">
               <div className="cp-section-header">
                 <h2 className="cp-section-title">
