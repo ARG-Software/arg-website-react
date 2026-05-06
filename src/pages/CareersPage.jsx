@@ -145,67 +145,72 @@ export default function CareersPage() {
           <SubpageHero
             title={['Take Your Career', 'to New Heights']}
             subtitle="Join us and unlock opportunities for growth, innovation, and success in an inclusive environment that nurtures talent."
+            breadcrumbs={[
+              { label: 'Home', path: '/' },
+              { label: 'Career & Culture', path: '/careers/' },
+            ]}
             size="small"
           />
 
-          <section className="cp-whyus-section padding-section-large border-radius-all background-color-white" data-animate-scope data-animate-default-stagger="150" data-animate-default-preset="fade-up" data-animate-trigger="scroll" >
-            <div className="container padding-global">
-              <div className="cp-whyus-content cp-animate" data-animate="fade-up">
-                <h2 className="cp-whyus-title">
-                  {WHY_US_CONTENT.title}
-                </h2>
-                <p className="cp-whyus-desc">
-                  {WHY_US_CONTENT.description}
-                </p>
+          <div
+            data-animate-scope
+            data-animate-default-preset="fade-up"
+            data-animate-default-stagger="150"
+          >
+            <section className="cp-whyus-section padding-section-large border-radius-all background-color-white">
+              <div className="container padding-global">
+                <div className="cp-whyus-content" data-animate="fade-up">
+                  <h2 className="cp-whyus-title">{WHY_US_CONTENT.title}</h2>
+                  <p className="cp-whyus-desc">{WHY_US_CONTENT.description}</p>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <section className="cp-values-section padding-section-large"  >
-            <div className="container padding-global cp-values-inner">
-              <div className="cp-section-header">
-                <h2 className="cp-section-title">
-                  <span className="cp-line">Internal Values</span>
-                </h2>
-              </div>
-              <div className="cp-values-grid">
-                {INTERNAL_VALUES.map((value, index) => (
-                  <div key={index} className="cp-value-card cp-animate">
-                    <div className="cp-value-icon">
-
-                      <img src={value.icon} alt={value.title} />
+            <section className="cp-values-section padding-section-large">
+              <div className="container padding-global cp-values-inner">
+                <div className="cp-section-header" data-animate="fade-up">
+                  <h2 className="cp-section-title">
+                    <span className="cp-line">Internal Values</span>
+                  </h2>
+                </div>
+                <div className="cp-values-grid">
+                  {INTERNAL_VALUES.map((value, index) => (
+                    <div key={index} className="cp-value-card">
+                      <div className="cp-value-icon">
+                        <img src={value.icon} alt={value.title} />
+                      </div>
+                      <h3 className="cp-value-title">{value.title}</h3>
+                      <p className="cp-value-desc">{value.description}</p>
                     </div>
-                    <h3 className="cp-value-title">{value.title}</h3>
-                    <p className="cp-value-desc">{value.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="cp-jobs-section padding-section-large border-radius-all background-color-white" data-animate-scopedata-animate="fade-up">
-            <div className="container padding-global cp-jobs-inner">
-              <div className="cp-section-header">
-                <h2 className="cp-section-title">
-                  <span className="cp-line">Open Positions</span>
-                </h2>
-              </div>
-              {JOBS.length > 0 ? (
-                <div className="cp-jobs-list">
-                  {JOBS.map(job => (
-                    <JobAccordion
-                      key={job.id}
-                      job={job}
-                      isOpen={openJobId === job.id}
-                      onToggle={() => handleJobToggle(job.id)}
-                    />
                   ))}
                 </div>
-              ) : (
-                <div className="cp-jobs-empty">No open positions at the moment.</div>
-              )}
-            </div>
-          </section>
+              </div>
+            </section>
+
+            <section className="cp-jobs-section padding-section-large border-radius-all background-color-white">
+              <div className="container padding-global cp-jobs-inner">
+                <div className="cp-section-header" data-animate="fade-up">
+                  <h2 className="cp-section-title">
+                    <span className="cp-line">Open Positions</span>
+                  </h2>
+                </div>
+                {JOBS.length > 0 ? (
+                  <div className="cp-jobs-list">
+                    {JOBS.map(job => (
+                      <JobAccordion
+                        key={job.id}
+                        job={job}
+                        isOpen={openJobId === job.id}
+                        onToggle={() => handleJobToggle(job.id)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="cp-jobs-empty">No open positions at the moment.</div>
+                )}
+              </div>
+            </section>
+          </div>
 
           <div className="section-divider-wrapper">
             <SectionDivider variant="default" hideOnMobile={false} />

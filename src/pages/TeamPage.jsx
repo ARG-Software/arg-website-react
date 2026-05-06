@@ -51,33 +51,6 @@ export default function TeamPage() {
       imgSrc: null,
       linkedin: null,
     },
-    // {
-    //   name: 'Miguel Ferreira',
-    //   role: 'Frontend Lead',
-    //   department: 'Engineering',
-    //   description:
-    //     "Miguel owns the frontend layer across ARG's most demanding projects. He specialises in performance-first React architecture and motion design, transforming static designs into fast, accessible, cross-device experiences.",
-    //   imgSrc: null,
-    //   linkedin: null,
-    // },
-    // {
-    //   name: 'Ana Costa',
-    //   role: 'Backend Lead',
-    //   department: 'Engineering',
-    //   description:
-    //     "Ana architects the data and API layers that power ARG's scalable platforms. From distributed systems to real-time event pipelines, she ensures everything runs reliably — at any load, on any given Friday.",
-    //   imgSrc: null,
-    //   linkedin: null,
-    // },
-    // {
-    //   name: 'Diogo Neves',
-    //   role: 'DevOps & Infrastructure Lead',
-    //   department: 'Infrastructure',
-    //   description:
-    //     'Diogo keeps the lights on and the cloud costs down. He designs infrastructure across AWS and Azure, builds CI/CD pipelines, and sets up the monitoring that gives every team the confidence to ship fast without breaking things.',
-    //   imgSrc: null,
-    //   linkedin: null,
-    // },
   ];
 
   return (
@@ -97,159 +70,154 @@ export default function TeamPage() {
             subtitle="A collective of passionate engineers and visionaries driving digital transformation"
           />
 
-          {/* FOUNDERS INTRO */}
-          <section className="tp-intro-section background-color-white">
-            <div
-              className="container padding-global"
-              style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}
-            >
-              <div className="tp-intro-center">
-                <h2
-                  className="tp-intro-heading"
-                  data-animate-scope
-                  data-animate-default-stagger="160"
-                >
-                  <div className="heading_line">
-                    <span
-                      className="tp-intro-line text-color-gradiant"
-                      data-animate="slide-up-rotate"
-                      data-animate-distance="120%"
-                      data-animate-rotate="3deg"
-                    >
-                      More than a team,
-                    </span>
-                  </div>
-                  <div className="heading_line">
-                    <span
-                      className="tp-intro-line"
-                      data-animate="slide-up-rotate"
-                      data-animate-distance="120%"
-                      data-animate-rotate="3deg"
-                      data-animate-order="1"
-                    >
-                      your innovation partners.
-                    </span>
-                  </div>
-                </h2>
-              </div>
-            </div>
-          </section>
-
-          {/* FOUNDERS SPOTLIGHT */}
-          <section className="tp-founders-section padding-section-large">
-            <div className="tp-founders-inner container padding-global">
-              <div className="tp-founders-grid">
-                {FOUNDERS.map((f, i) => (
-                  <div
-                    key={i}
-                    className="tp-founder-card pp-animate"
-                    data-animate="fade-up"
-                    style={{ transitionDelay: `${i * 0.12}s` }}
-                  >
-                    <div className="tp-founder-photo">
-                      <img
-                        src={f.imgSrc}
-                        srcSet={f.imgSrcSet}
-                        sizes="(max-width: 767px) 100vw, 50vw"
-                        loading="lazy"
-                        alt={f.name}
-                      />
+          <div
+            data-animate-scope
+            data-animate-default-preset="fade-up"
+            data-animate-default-stagger="150"
+          >
+            {/* FOUNDERS INTRO */}
+            <section className="tp-intro-section background-color-white">
+              <div
+                className="container padding-global"
+                style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}
+              >
+                <div className="tp-intro-center">
+                  <h2 className="tp-intro-heading" data-animate="fade-up">
+                    <div className="heading_line">
+                      <span
+                        className="tp-intro-line text-color-gradiant"
+                      >
+                        More than a team,
+                      </span>
                     </div>
-                    <div className="tp-founder-body">
-                      <div className="tp-founder-meta">
-                        <h2 className="tp-founder-name">{f.name}</h2>
-                        <div
-                          className="subtitle_tag-wrapper"
-                          style={{
-                            borderColor: 'rgba(255,255,255,0.15)',
-                            color: 'rgba(255,255,255,0.45)',
-                          }}
-                        >
-                          <div>Co-Founder</div>
+                    <div className="heading_line">
+                      <span
+                        className="tp-intro-line"
+                        data-animate-order="1"
+                      >
+                        your innovation partners.
+                      </span>
+                    </div>
+                  </h2>
+                </div>
+              </div>
+            </section>
+
+            {/* FOUNDERS SPOTLIGHT */}
+            <section className="tp-founders-section padding-section-large">
+              <div className="tp-founders-inner container padding-global">
+                <div className="tp-founders-grid">
+                  {FOUNDERS.map((f, i) => (
+                    <div
+                      key={i}
+                      className="tp-founder-card"
+                      style={{ transitionDelay: `${i * 0.12}s` }}
+                    >
+                      <div className="tp-founder-photo">
+                        <img
+                          src={f.imgSrc}
+                          srcSet={f.imgSrcSet}
+                          sizes="(max-width: 767px) 100vw, 50vw"
+                          loading="lazy"
+                          alt={f.name}
+                        />
+                      </div>
+                      <div className="tp-founder-body">
+                        <div className="tp-founder-meta">
+                          <h2 className="tp-founder-name">{f.name}</h2>
+                          <div
+                            className="subtitle_tag-wrapper"
+                            style={{
+                              borderColor: 'rgba(255,255,255,0.15)',
+                              color: 'rgba(255,255,255,0.45)',
+                            }}
+                          >
+                            <div>Co-Founder</div>
+                          </div>
+                        </div>
+                        <p className="tp-founder-role-tag">{f.role}</p>
+                        <div className="tp-founder-divider"></div>
+                        <p className="tp-founder-desc">{f.description}</p>
+                        <div className="tp-founder-actions">
+                          <a
+                            href={f.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-button w-inline-block"
+                            onClick={() => trackSocial('linkedin', 'team_page')}
+                          >
+                            <div className="text-button_list is-dark">
+                              <div
+                                className="text-button_text"
+                                style={{ color: 'rgba(255,255,255,0.5)' }}
+                              >
+                                LinkedIn
+                              </div>
+                              <div
+                                className="arrow_icon-embed w-embed"
+                                style={{ color: 'rgba(255,255,255,0.5)' }}
+                              >
+                                {arrowSvg}
+                              </div>
+                            </div>
+                            <div className="text-button_list is-animated is-dark">
+                              <div className="text-button_text" style={{ color: '#fff' }}>
+                                View profile ↗
+                              </div>
+                              <div className="arrow_icon-embed w-embed" style={{ color: '#fff' }}>
+                                {arrowSvg}
+                              </div>
+                            </div>
+                          </a>
                         </div>
                       </div>
-                      <p className="tp-founder-role-tag">{f.role}</p>
-                      <div className="tp-founder-divider"></div>
-                      <p className="tp-founder-desc">{f.description}</p>
-                      <div className="tp-founder-actions">
-                        <a
-                          href={f.linkedin}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-button w-inline-block"
-                          onClick={() => trackSocial('linkedin', 'team_page')}
-                        >
-                          <div className="text-button_list is-dark">
-                            <div
-                              className="text-button_text"
-                              style={{ color: 'rgba(255,255,255,0.5)' }}
-                            >
-                              LinkedIn
-                            </div>
-                            <div
-                              className="arrow_icon-embed w-embed"
-                              style={{ color: 'rgba(255,255,255,0.5)' }}
-                            >
-                              {arrowSvg}
-                            </div>
-                          </div>
-                          <div className="text-button_list is-animated is-dark">
-                            <div className="text-button_text" style={{ color: '#fff' }}>
-                              View profile ↗
-                            </div>
-                            <div className="arrow_icon-embed w-embed" style={{ color: '#fff' }}>
-                              {arrowSvg}
-                            </div>
-                          </div>
-                        </a>
-                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* TEAM LIST */}
-          <section className="pp-partners-section background-color-white padding-section-xlarge border-radius-bottom">
-            <div className="pp-partners-inner container padding-global">
-              {TEAM.map((member, i) => (
-                <PartnerRow
-                  key={i}
-                  name={member.name}
-                  description={member.description}
-                  tag={member.department}
-                  role={member.role}
-                  flip={i % 2 === 1}
-                >
-                  <PlaceholderVisual name={member.name} />
-                </PartnerRow>
-              ))}
-
-              <div className="tp-hiring pp-animate" data-animate="fade-up">
-                <div className="tp-hiring-left">
-                  <div className="tp-hiring-eyebrow">We're growing</div>
-                  <p className="tp-hiring-title">
-                    Want to join the team?
-                    <br />
-                    <span>We'd love to hear from you.</span>
-                  </p>
+                  ))}
                 </div>
-                <div className="tp-hiring-right">
-                  <a
-                    href="mailto:hello@arg.software?subject=I%20want%20to%20join%20ARG"
-                    className="button-base w-inline-block"
-                    onClick={() => trackMailto('join_team', 'team_page')}
+              </div>
+            </section>
+
+            {/* TEAM LIST */}
+            <section className="pp-partners-section background-color-white padding-section-xlarge border-radius-bottom">
+              <div className="pp-partners-inner container padding-global">
+                {TEAM.map((member, i) => (
+                  <PartnerRow
+                    key={i}
+                    name={member.name}
+                    description={member.description}
+                    tag={member.department}
+                    role={member.role}
+                    flip={i % 2 === 1}
                   >
-                    <div className="button-base_text_wrap">
-                      <div className="button-base__button-text">Get in touch</div>
-                      <div className="button-base__button-text is-animated">hello@arg.software</div>
-                    </div>
-                  </a>
+                    <PlaceholderVisual name={member.name} />
+                  </PartnerRow>
+                ))}
+
+                <div className="tp-hiring">
+                  <div className="tp-hiring-left">
+                    <div className="tp-hiring-eyebrow">We're growing</div>
+                    <p className="tp-hiring-title">
+                      Want to join the team?
+                      <br />
+                      <span>We'd love to hear from you.</span>
+                    </p>
+                  </div>
+                  <div className="tp-hiring-right">
+                    <a
+                      href="mailto:hello@arg.software?subject=I%20want%20to%20join%20ARG"
+                      className="button-base w-inline-block"
+                      onClick={() => trackMailto('join_team', 'team_page')}
+                    >
+                      <div className="button-base_text_wrap">
+                        <div className="button-base__button-text">Get in touch</div>
+                        <div className="button-base__button-text is-animated">hello@arg.software</div>
+                      </div>
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
 
           <div className="page-cta-wrapper">
             <SectionDivider variant="light" hideOnMobile={true} />

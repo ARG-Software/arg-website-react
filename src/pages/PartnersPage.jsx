@@ -48,51 +48,53 @@ export default function PartnersPage() {
             size="small"
           />
 
-          <section className="pc-clients-section padding-section-large background-color-white  border-radius-top">
-            <div className="container padding-global">
-              <div className="pc-header">
-                <div className="pc-header-main">
-                  <div className="pc-filters">
-                    {categories.map(cat => (
-                      <button
-                        key={cat}
-                        className={`pc-filter-btn${activeCategory === cat ? ' is-active' : ''}`}
-                        onClick={() => handleCategoryChange(cat)}
-                      >
-                        {cat}
-                      </button>
-                    ))}
+          <div
+            data-animate-scope
+            data-animate-default-preset="fade-up"
+            data-animate-default-stagger="150"
+          >
+            <section className="pc-clients-section padding-section-large background-color-white border-radius-top">
+              <div className="container padding-global">
+                <div className="pc-header" data-animate="fade-up">
+                  <div className="pc-header-main">
+                    <div className="pc-filters">
+                      {categories.map(cat => (
+                        <button
+                          key={cat}
+                          className={`pc-filter-btn${activeCategory === cat ? ' is-active' : ''}`}
+                          onClick={() => handleCategoryChange(cat)}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="pc-header-desc">
+                    <p>ARG is proud to work with companies that have sustainable impact goals and share our passion for technical excellence and innovation.</p>
                   </div>
                 </div>
-                <div className="pc-header-desc">
-                  <p>ARG is proud to work with companies that have sustainable impact goals and share our passion for technical excellence and innovation.</p>
-                </div>
+
+                <FilterGrid
+                  items={clients}
+                  activeCategory={activeCategory}
+                  getItemKey={c => c.slug}
+                  isItemVisible={isClientVisible}
+                  onItemClick={handleClientClick}
+                  renderItem={c => (
+                    <img src={c.logoSmall} alt={c.name} loading="lazy" />
+                  )}
+                />
               </div>
+            </section>
 
-              <FilterGrid
-                items={clients}
-                activeCategory={activeCategory}
-                getItemKey={c => c.slug}
-                isItemVisible={isClientVisible}
-                onItemClick={handleClientClick}
-                renderItem={c => (
-                  <img src={c.logoSmall} alt={c.name} loading="lazy" />
-                )}
-              />
-            </div>
-          </section>
-
-          <div className="section-divider-wrapper">
-            <SectionDivider variant="light" hideOnMobile={false} />
+            <Timeline
+              heading="Built on lasting partnerships"
+              rows={timeline.rows}
+              yearStart={timeline.yearStart}
+              yearEnd={timeline.yearEnd}
+              items={clientMap}
+            />
           </div>
-
-          <Timeline
-            heading="Built on lasting partnerships"
-            rows={timeline.rows}
-            yearStart={timeline.yearStart}
-            yearEnd={timeline.yearEnd}
-            items={clientMap}
-          />
 
           <div className="page-cta-wrapper" id="page-cta">
             <SectionDivider variant="light" hideOnMobile={true} />

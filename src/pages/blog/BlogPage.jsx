@@ -96,106 +96,111 @@ export default function BlogPage() {
             size="small"
           />
 
-          <section
-            id="blog-list"
-            className="blp-section background-color-white padding-section-xlarge border-radius-all"
+          <div
+            data-animate-scope
+            data-animate-default-preset="fade-up"
+            data-animate-default-stagger="150"
           >
-            <div className="blp-inner container padding-global" ref={listRef}>
-              <div className="blp-header-row">
-                <span className="blp-count blp-animate" data-animate="fade-up">
-                  {resultCount} blog post{resultCount !== 1 ? 's' : ''}
-                  {debouncedQuery && ` matching "${debouncedQuery}"`}
-                </span>
-                <div className="blp-search blp-animate" data-animate="fade-up">
-                  <span className="blp-search-icon">{searchSvg}</span>
-                  <input
-                    type="text"
-                    className="blp-search-input"
-                    placeholder="Search by title, tag..."
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    aria-label="Search blog posts"
-                  />
+            <section
+              id="blog-list"
+              className="blp-section background-color-white padding-section-xlarge border-radius-all"
+            >
+              <div className="blp-inner container padding-global" ref={listRef}>
+                <div className="blp-header-row" data-animate="fade-up">
+                  <span className="blp-count">
+                    {resultCount} blog post{resultCount !== 1 ? 's' : ''}
+                    {debouncedQuery && ` matching "${debouncedQuery}"`}
+                  </span>
+                  <div className="blp-search">
+                    <span className="blp-search-icon">{searchSvg}</span>
+                    <input
+                      type="text"
+                      className="blp-search-input"
+                      placeholder="Search by title, tag..."
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      aria-label="Search blog posts"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {filteredPosts.length === 0 ? (
-                <p className="blp-empty blp-animate" data-animate="fade-up">
-                  {blogPosts.length === 0
-                    ? 'No blog posts yet — check back soon.'
-                    : `No posts found matching "${debouncedQuery}"`}
-                </p>
-              ) : (
-                <>
-                  {paginatedPosts.map((article, i) => (
-                    <AppLink
-                      key={article.slug}
-                      to={`/blog/${article.slug}/`}
-                      className="blp-article-row blp-animate"
-                      data-animate="fade-up"
-                      style={{ transitionDelay: `${i * 0.07}s` }}
-                      onClick={() => trackBlogPostClick(article.slug, article.title, 'blog_list')}
-                    >
-                      <div className="blp-row-meta">
-                        <span className="blp-row-tag">{article.tag}</span>
-                        {article.image && (
-                          <img
-                            src={article.image}
-                            alt=""
-                            className="blp-row-image"
-                            loading={i === 0 ? 'eager' : 'lazy'}
-                          />
-                        )}
-                        <span className="blp-row-date">{article.date}</span>
-                      </div>
-                      <div className="blp-row-body">
-                        <h2 className="blp-row-title">{article.title}</h2>
-                        <p className="blp-row-excerpt">{article.excerpt}</p>
-                      </div>
-                      <div className="blp-row-action">
-                        <span className="blp-row-readtime">{article.readTime}</span>
-                        <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                      </div>
-                    </AppLink>
-                  ))}
-
-                  {totalPages > 1 && (
-                    <nav className="blp-pagination" aria-label="Blog pagination">
-                      <button
-                        className="blp-pagination-arrow"
-                        onClick={() => goToPage(page - 1)}
-                        disabled={page === 1}
-                        aria-label="Previous page"
+                {filteredPosts.length === 0 ? (
+                  <p className="blp-empty">
+                    {blogPosts.length === 0
+                      ? 'No blog posts yet — check back soon.'
+                      : `No posts found matching "${debouncedQuery}"`}
+                  </p>
+                ) : (
+                  <>
+                    {paginatedPosts.map((article, i) => (
+                      <AppLink
+                        key={article.slug}
+                        to={`/blog/${article.slug}/`}
+                        className="blp-article-row blp-animate"
+                        style={{ transitionDelay: `${i * 0.07}s` }}
+                        onClick={() => trackBlogPostClick(article.slug, article.title, 'blog_list')}
                       >
-                        {arrowSvg}
-                      </button>
+                        <div className="blp-row-meta">
+                          <span className="blp-row-tag">{article.tag}</span>
+                          {article.image && (
+                            <img
+                              src={article.image}
+                              alt=""
+                              className="blp-row-image"
+                              loading={i === 0 ? 'eager' : 'lazy'}
+                            />
+                          )}
+                          <span className="blp-row-date">{article.date}</span>
+                        </div>
+                        <div className="blp-row-body">
+                          <h2 className="blp-row-title">{article.title}</h2>
+                          <p className="blp-row-excerpt">{article.excerpt}</p>
+                        </div>
+                        <div className="blp-row-action">
+                          <span className="blp-row-readtime">{article.readTime}</span>
+                          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                        </div>
+                      </AppLink>
+                    ))}
 
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                    {totalPages > 1 && (
+                      <nav className="blp-pagination" aria-label="Blog pagination">
                         <button
-                          key={p}
-                          className={`blp-pagination-num${p === page ? ' is-active' : ''}`}
-                          onClick={() => goToPage(p)}
-                          aria-label={`Page ${p}`}
-                          aria-current={p === page ? 'page' : undefined}
+                          className="blp-pagination-arrow"
+                          onClick={() => goToPage(page - 1)}
+                          disabled={page === 1}
+                          aria-label="Previous page"
                         >
-                          {p}
+                          {arrowSvg}
                         </button>
-                      ))}
 
-                      <button
-                        className="blp-pagination-arrow blp-pagination-arrow--next"
-                        onClick={() => goToPage(page + 1)}
-                        disabled={page === totalPages}
-                        aria-label="Next page"
-                      >
-                        {arrowSvg}
-                      </button>
-                    </nav>
-                  )}
-                </>
-              )}
-            </div>
-          </section>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                          <button
+                            key={p}
+                            className={`blp-pagination-num${p === page ? ' is-active' : ''}`}
+                            onClick={() => goToPage(p)}
+                            aria-label={`Page ${p}`}
+                            aria-current={p === page ? 'page' : undefined}
+                          >
+                            {p}
+                          </button>
+                        ))}
+
+                        <button
+                          className="blp-pagination-arrow blp-pagination-arrow--next"
+                          onClick={() => goToPage(page + 1)}
+                          disabled={page === totalPages}
+                          aria-label="Next page"
+                        >
+                          {arrowSvg}
+                        </button>
+                      </nav>
+                    )}
+                  </>
+                )}
+              </div>
+            </section>
+          </div>
 
           <div className="page-cta-wrapper">
             <SectionDivider variant="light" hideOnMobile={true} />
