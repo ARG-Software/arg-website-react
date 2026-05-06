@@ -1,8 +1,9 @@
 import { Navbar, Footer, CTASection, SEO } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
-import { useScrollAnimations } from '../hooks';
+import { useScrollAnimations, useTimeOnPage } from '../hooks';
 
 export default function PrivacyPage() {
+  useTimeOnPage('/privacy/');
   useScrollAnimations();
 
   return (

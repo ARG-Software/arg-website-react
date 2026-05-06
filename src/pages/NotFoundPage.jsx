@@ -1,11 +1,13 @@
 import { Logo, SEO } from '../components';
 import AppLink from '../components/navigation/AppLink';
 import { useNotFoundPageScene } from '../hooks/useNotFoundPageScene';
+import { useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
 
 import '../styles/404.css';
 
 export default function NotFoundPage() {
+  useTimeOnPage('/404');
   useNotFoundPageScene();
 
   return (
