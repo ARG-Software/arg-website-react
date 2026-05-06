@@ -54,7 +54,7 @@ export default function PartnersPage() {
             data-animate-default-stagger="150"
           >
             <section className="pc-clients-section padding-section-large background-color-white border-radius-top">
-              <div className="container padding-global">
+              <div className="container padding-global pc-clients-inner">
                 <div className="pc-header" data-animate="fade-up">
                   <div className="pc-header-main">
                     <div className="pc-filters">
