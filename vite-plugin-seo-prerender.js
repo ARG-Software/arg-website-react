@@ -326,6 +326,38 @@ export default function seoPrerender() {
         generated++;
       }
 
+      // ── Project detail pages ──────────────────────────────────────────
+      const projectsDataPath = path.resolve('src/data/projects.json');
+      if (fs.existsSync(projectsDataPath)) {
+        const projects = JSON.parse(fs.readFileSync(projectsDataPath, 'utf-8'));
+        for (const project of projects) {
+          if (!project.slug) continue;
+
+          const projectUrl = `${SITE_URL}/projects/${project.slug}/`;
+          const title = `${project.title} - Case Study | Arg Software`;
+          const description = (project.challenge || '').replace(/\n+/g, ' ').slice(0, 160).trim();
+
+          let html = replaceMetaTags(baseHtml, {
+            title,
+            description,
+            url: projectUrl,
+            image: project.imgSrc || '',
+            type: 'website',
+          });
+
+          html = injectCrawlableBlock(html, buildCrawlableBlock(project.title || project.slug, {
+            description,
+            subtitle: project.subtitle || '',
+            extraLinks: [{ href: '/projects/', label: 'Use Cases' }],
+          }));
+
+          const dir = path.join(distDir, 'projects', project.slug);
+          fs.mkdirSync(dir, { recursive: true });
+          fs.writeFileSync(path.join(dir, 'index.html'), html);
+          generated++;
+        }
+      }
+
       // ── 404 page ──────────────────────────────────────────────────────
       const notFoundHtml = replaceMetaTags(baseHtml, {
         title: 'Page Not Found | ARG Software',
