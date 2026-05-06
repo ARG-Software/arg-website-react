@@ -105,7 +105,13 @@ export function ProjectItem({
         </div>
       </div>
       <div className="projects_item_description">
-        <AppLink to={`/projects/${slug}`} aria-label={title} className="text-button w-inline-block">
+        <AppLink
+          to={`/projects/${slug}`}
+          aria-label={title}
+          className="text-button w-inline-block"
+          trackEvent="project_click"
+          trackData={{ project_slug: slug, location: 'projects_section' }}
+        >
           <div className="text-button_list is-dark">
             <h3 className="heading-style-h3">{title}</h3>
             <div className="arrow_icon-embed large w-embed">{arrowSvg}</div>

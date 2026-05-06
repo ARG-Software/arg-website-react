@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useContext } from 'react';
 import { TransitionContext } from '../providers/TransitionProvider';
+import { trackEvent } from './useAnalytics';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -51,6 +52,7 @@ export function useNextProjectSection(sectionRef, progressRef, nextSlug) {
           if (self.progress >= 0.98) {
             triggeredRef.current = true;
             scrollTriggerRef.current?.kill();
+            trackEvent('project_next_auto', { to_project: nextSlug });
             go(`/projects/${nextSlug}`, { scrollMode: 'top' });
           }
         },
@@ -58,6 +60,7 @@ export function useNextProjectSection(sectionRef, progressRef, nextSlug) {
           if (triggeredRef.current) return;
           triggeredRef.current = true;
           scrollTriggerRef.current?.kill();
+          trackEvent('project_next_auto', { to_project: nextSlug });
           go(`/projects/${nextSlug}`, { scrollMode: 'top' });
         },
         onLeaveBack: () => {

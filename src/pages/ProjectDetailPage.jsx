@@ -3,7 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Navbar, SEO, SectionDivider, arrowSvg } from '../components';
 import { ShuffleText } from '../components/widgets/ShuffleText';
-import { useScrollAnimations, useCinematicZoomBlur, useNextProjectSection } from '../hooks';
+import {
+  useScrollAnimations,
+  useCinematicZoomBlur,
+  useNextProjectSection,
+  useTimeOnPage,
+} from '../hooks';
 import { animateCountUp, getCountUpEnd } from '../hooks/useCountUp';
 import { trackCTA } from '../hooks/useAnalytics';
 import PROJECTS from '../data/projects.json';
@@ -22,6 +27,8 @@ export default function ProjectDetailPage() {
   const project = PROJECTS[projectIndex];
   const nextProject = PROJECTS[(projectIndex + 1) % PROJECTS.length];
   const stackItems = project?.stack.split(',').map(s => s.trim()) ?? [];
+
+  useTimeOnPage(`/projects/${slug}/`);
 
   useEffect(() => {
     if (!project) {
