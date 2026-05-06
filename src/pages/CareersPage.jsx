@@ -148,16 +148,20 @@ export default function CareersPage() {
             size="small"
           />
 
-          <section className="cp-whyus-section padding-section-large border-radius-all background-color-white">
+          <section className="cp-whyus-section padding-section-large border-radius-all background-color-white" data-animate-scope data-animate-default-stagger="150" data-animate-default-preset="fade-up" data-animate-trigger="scroll" >
             <div className="container padding-global">
               <div className="cp-whyus-content cp-animate" data-animate="fade-up">
-                <h2 className="cp-whyus-title">{WHY_US_CONTENT.title}</h2>
-                <p className="cp-whyus-desc">{WHY_US_CONTENT.description}</p>
+                <h2 className="cp-whyus-title">
+                  {WHY_US_CONTENT.title}
+                </h2>
+                <p className="cp-whyus-desc">
+                  {WHY_US_CONTENT.description}
+                </p>
               </div>
             </div>
           </section>
 
-          <section className="cp-values-section padding-section-large">
+          <section className="cp-values-section padding-section-large"  >
             <div className="container padding-global cp-values-inner">
               <div className="cp-section-header">
                 <h2 className="cp-section-title">
@@ -166,8 +170,9 @@ export default function CareersPage() {
               </div>
               <div className="cp-values-grid">
                 {INTERNAL_VALUES.map((value, index) => (
-                  <div key={index} className="cp-value-card cp-animate" data-animate="fade-up">
+                  <div key={index} className="cp-value-card cp-animate">
                     <div className="cp-value-icon">
+
                       <img src={value.icon} alt={value.title} />
                     </div>
                     <h3 className="cp-value-title">{value.title}</h3>
@@ -178,7 +183,7 @@ export default function CareersPage() {
             </div>
           </section>
 
-          <section className="cp-jobs-section padding-section-large border-radius-all background-color-white">
+          <section className="cp-jobs-section padding-section-large border-radius-all background-color-white" data-animate-scopedata-animate="fade-up">
             <div className="container padding-global cp-jobs-inner">
               <div className="cp-section-header">
                 <h2 className="cp-section-title">
