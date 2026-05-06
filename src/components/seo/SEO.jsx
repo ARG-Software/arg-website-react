@@ -62,6 +62,7 @@ export function SEO({
 
       {/* Open Graph */}
       <meta property="og:type" content={type} />
+      <meta property="og:locale" content="en_US" />
       <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:title" content={title || DEFAULT_TITLE} />
       <meta property="og:description" content={pageDescription} />
@@ -70,6 +71,7 @@ export function SEO({
       <meta property="og:image:secure_url" content={ogImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={title || DEFAULT_TITLE} />
 
       {/* Twitter / X */}
       <meta name="twitter:card" content="summary_large_image" />

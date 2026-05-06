@@ -100,6 +100,28 @@ const STATIC_PAGES = [
       'We welcome applications from all qualified candidates, including persons with disabilities, as part of our commitment to inclusion and equal opportunity.',
     ],
   },
+  {
+    path: '/privacy/',
+    title: 'Privacy Policy | Arg Software',
+    h1: 'Privacy Policy',
+    description:
+      "ARG Software's privacy policy — how we collect, use, and protect your personal data.",
+    paragraphs: [
+      'This privacy policy explains how ARG Software collects, uses, and protects your personal data when you visit our website or use our services.',
+      'We are committed to ensuring that your privacy is protected and that we comply with applicable data protection regulations including GDPR.',
+    ],
+  },
+  {
+    path: '/terms/',
+    title: 'Terms of Service | Arg Software',
+    h1: 'Terms of Service',
+    description:
+      "ARG Software's terms of service — the conditions governing the use of our website and services.",
+    paragraphs: [
+      'These terms of service outline the rules and regulations for the use of ARG Software\'s website and services.',
+      'By accessing this website, you accept these terms and conditions in full.',
+    ],
+  },
 ];
 
 // ── Frontmatter parser (same logic as the runtime one) ──────────────────────
@@ -386,6 +408,8 @@ export default function seoPrerender() {
       sitemapUrls.push({ loc: `${SITE_URL}/partners/`, priority: '0.8', changefreq: 'monthly' });
       sitemapUrls.push({ loc: `${SITE_URL}/careers/`, priority: '0.9', changefreq: 'weekly' });
       sitemapUrls.push({ loc: `${SITE_URL}/blog/`, priority: '0.9', changefreq: 'weekly' });
+      sitemapUrls.push({ loc: `${SITE_URL}/privacy/`, priority: '0.3', changefreq: 'yearly' });
+      sitemapUrls.push({ loc: `${SITE_URL}/terms/`, priority: '0.3', changefreq: 'yearly' });
 
       // Blog posts
       for (const meta of blogPostMetas) {
