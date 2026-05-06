@@ -17,9 +17,7 @@ export default function TermsPage() {
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">
           <SubpageHero
-            title="Terms of Service"
-            subtitle="Conditions governing the use of our website and services"
-            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Terms of Service' }]}
+            title={["Terms of Service", "Conditions governing the use of our website and services"]}
             size="small"
           />
           <div

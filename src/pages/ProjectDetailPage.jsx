@@ -121,10 +121,6 @@ export default function ProjectDetailPage() {
                     <span className="prp-meta-value">{project.client}</span>
                   </div>
                   <div className="prp-meta-item" data-animate="fade-up" data-animate-order="2">
-                    <span className="prp-meta-label">Timeline</span>
-                    <span className="prp-meta-value">{project.timeline}</span>
-                  </div>
-                  <div className="prp-meta-item" data-animate="fade-up" data-animate-order="3">
                     <span className="prp-meta-label">Services</span>
                     <div className="prp-meta-services">
                       {project.services.map((service, i) => (
@@ -139,7 +135,7 @@ export default function ProjectDetailPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="prp-meta-item" data-animate="fade-up" data-animate-order="4">
+                  <div className="prp-meta-item" data-animate="fade-up" data-animate-order="3">
                     <span className="prp-meta-label">Technology</span>
                     <div className="prp-meta-services">
                       {stackItems.map((tech, i) => (
@@ -147,7 +143,7 @@ export default function ProjectDetailPage() {
                           key={i}
                           className="prp-stack-tag prp-stack-tag--inline"
                           data-animate="tag-pop"
-                          data-animate-order={i + 10}
+                          data-animate-order={i + 4}
                         >
                           {tech}
                         </span>

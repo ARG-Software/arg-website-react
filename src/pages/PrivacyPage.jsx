@@ -17,9 +17,7 @@ export default function PrivacyPage() {
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">
           <SubpageHero
-            title="Privacy Policy"
-            subtitle="How we collect, use, and protect your information"
-            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Privacy Policy' }]}
+            title={["Privacy Policy", "How we collect, use, and protect your personal data"]}
             size="small"
           />
           <div
