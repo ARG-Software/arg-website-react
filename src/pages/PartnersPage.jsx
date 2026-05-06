@@ -14,7 +14,7 @@ import { SubpageHero } from '../components/hero/SubpageHero';
 import data from '../data/partners.json';
 import '../styles/partners.css';
 
-const { pageMeta, categories, clients, timeline } = data;
+const { categories, clients, timeline } = data;
 const clientMap = Object.fromEntries(clients.map(c => [c.slug, c]));
 
 export default function PartnersPage() {
