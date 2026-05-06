@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { trackFAQOpen } from '../../../hooks/useAnalytics';
-import { SectionDivider } from '../../../components/layout/SectionDivider';
 
 const faqData = [
   {

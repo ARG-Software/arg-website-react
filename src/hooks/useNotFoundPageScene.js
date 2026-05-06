@@ -195,7 +195,7 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       };
 
       // Render function called by RAF coordinator
-      renderRef.current = (delta, elapsed, transitioning) => {
+      renderRef.current = (_delta, _elapsed, _transitioning) => {
         if (!mounted || !renderer || !scene || !camera) return;
 
         const now = performance.now();

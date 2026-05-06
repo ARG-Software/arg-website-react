@@ -1,6 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { SectionDivider } from '../../../components/layout/SectionDivider';
-import { arrowSvg } from '../../../components/icons/SocialIcons';
 
 export function SocialSection({ className = '' }) {
   const observersRef = useRef([]);
