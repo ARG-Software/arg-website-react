@@ -5,8 +5,8 @@ hljs.registerAliases(['promql'], { languageName: 'sql' });
 import AppLink from '../../components/navigation/AppLink';
 import { Navbar, Footer, CTASection, SectionDivider, arrowSvg, SEO } from '../../components';
 import { SubpageHero } from '../../components/hero/SubpageHero';
-import { useScrollAnimations, usePageTransition } from '../../hooks';
-import { trackBlogPostShare } from '../../hooks/useAnalytics';
+import { useScrollAnimations, usePageTransition, useTimeOnPage } from '../../hooks';
+import { trackBlogPostShare, trackEvent } from '../../hooks/useAnalytics';
 import { loadBlogPostsWithContent } from '../../utils/blog';
 import '../../styles/blog.css';
 
@@ -159,6 +159,8 @@ export default function BlogPostPage() {
     hljs.highlightAll();
   }, [slug]);
 
+  useTimeOnPage(`/blog/${slug}/`);
+
   if (!BLOG_POST) {
     return (
       <div className="page-wrapper w-clearfix">
@@ -281,6 +283,7 @@ export default function BlogPostPage() {
                           onClick={event => {
                             event.preventDefault();
                             setIsClicking(true);
+                            trackEvent('blog_toc_click', { section: block.text });
                             scrollToHash(slugify(block.text), { mobileMenuDelay: 0 });
                             setActiveSection(slugify(block.text));
                             setTimeout(() => setIsClicking(false), 1000);
@@ -359,6 +362,7 @@ export default function BlogPostPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-button w-inline-block"
+                        onClick={() => trackEvent('blog_subscribe_click', { feed_type: 'rss' })}
                       >
                         <div className="text-button_list is-dark">
                           <div className="text-button_text">RSS Feed</div>
@@ -374,6 +378,7 @@ export default function BlogPostPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-button w-inline-block"
+                        onClick={() => trackEvent('blog_subscribe_click', { feed_type: 'atom' })}
                       >
                         <div className="text-button_list is-dark">
                           <div className="text-button_text">Atom Feed</div>
@@ -397,6 +402,8 @@ export default function BlogPostPage() {
                             key={post.slug}
                             to={`/blog/${post.slug}/`}
                             className="bp-sidebar-article"
+                            trackEvent="blog_related_click"
+                            trackData={{ blog_post_slug: post.slug, source_slug: slug }}
                           >
                             {post.image && (
                               <img
@@ -427,6 +434,8 @@ export default function BlogPostPage() {
                           key={post.slug}
                           to={`/blog/${post.slug}/`}
                           className="bp-sidebar-article"
+                          trackEvent="blog_recent_click"
+                          trackData={{ blog_post_slug: post.slug, source_slug: slug }}
                         >
                           {post.image && (
                             <img

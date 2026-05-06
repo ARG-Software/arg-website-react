@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import AppLink from '../../components/navigation/AppLink';
 import { Navbar, Footer, CTASection, SectionDivider, arrowSvg, SEO } from '../../components';
 import { SubpageHero } from '../../components/hero/SubpageHero';
-import { useScrollAnimations, useBlogSearch } from '../../hooks';
-import { trackBlogPostClick } from '../../hooks/useAnalytics';
+import { useScrollAnimations, useBlogSearch, useTimeOnPage } from '../../hooks';
+import { trackBlogPostClick, trackEvent } from '../../hooks/useAnalytics';
 
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { BLOG_POSTS_PER_PAGE } from '../../constants';
@@ -43,7 +43,10 @@ export default function BlogPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
-  }, [debouncedQuery]);
+    if (debouncedQuery) {
+      trackEvent('blog_search', { query: debouncedQuery, result_count: resultCount });
+    }
+  }, [debouncedQuery, resultCount]);
 
   // Re-observe new article rows whenever the page changes
   useEffect(() => {
@@ -70,12 +73,14 @@ export default function BlogPage() {
 
   function goToPage(p) {
     setPage(p);
+    trackEvent('blog_pagination', { page: p, total_pages: totalPages });
     const blogList = document.getElementById('blog-list');
     if (blogList) {
       blogList.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
+  useTimeOnPage('/blog/');
   useScrollAnimations(); // Scroll animations including footer
 
   return (
