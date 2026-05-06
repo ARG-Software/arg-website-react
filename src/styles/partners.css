@@ -647,10 +647,6 @@
     width: 100%;
   }
 
-  .section_cta .header-animation.hide-tablet {
-    display: none !important;
-  }
-
   .section_cta .header-animation h2 {
     text-align: center !important;
     width: 100%;

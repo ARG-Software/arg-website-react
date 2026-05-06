@@ -13,48 +13,8 @@ export function ContactSection({ className = '' }) {
           <CTASection
             wrapInSection={false}
             includePadding={false}
-            renderTitle={() => (
-              <div className="heading_wrap">
-                <div className="header-animation hide-tablet">
-                  <h2
-                    className="heading-style-h1 hide-mobile-portrait"
-                    data-animate-order="2"
-                  >
-                    Built for scale
-                  </h2>
-                </div>
-                <div className="header-animation show-tablet">
-                  <h2
-                    data-animate="slide-up"
-                    className="heading-style-h1 hide-mobile-portrait"
-                    data-animate-order="3"
-                  >
-                    Explore
-                  </h2>
-                </div>
-                <div className="header-animation hide-tablet">
-                  <h2 data-animate="slide-up" className="heading-style-h1" data-animate-order="4">
-                    <span className="text-color-gradiant-2">
-                      Shipped to production. Across industries.
-                    </span>
-                  </h2>
-                </div>
-                <div className="header-animation show-mobile-portrait">
-                  <h2
-                    data-animate="slide-up"
-                    className="heading-style-h1 show-tablet"
-                    data-animate-order="5"
-                  >
-                    Explore
-                  </h2>
-                </div>
-                <div className="header-animation show-tablet">
-                  <h2 className="heading-style-h1 text-color-gradiant">
-                    <span className="text-color-gradiant-2">what we've shipped.</span>
-                  </h2>
-                </div>
-              </div>
-            )}
+            title="Ready to scale?"
+            titleHighlight="We're listening"
             buttonTextNotHover="Show me more"
             buttonTextHover="View Portfolio"
             buttonLink="/files/portfolio.pdf"

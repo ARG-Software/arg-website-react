@@ -59,54 +59,31 @@ export function CTASection({
               renderTitle()
             ) : showSplitTitle ? (
               <>
-                <div className="header-animation hide-tablet">
+                <div className="header-animation">
                   <h2
-                    className={`heading-style-h1 hide-mobile-portrait ${animationClass}`}
+                    className={`heading-style-h1 ${animationClass}`}
                     data-animate="fade-up"
                   >
                     {title}
                   </h2>
                 </div>
-                <div className="header-animation show-tablet">
-                  <h2 className={`heading-style-h1 ${animationClass}`} data-animate="fade-up">
-                    {title} with
-                  </h2>
-                </div>
                 {showTitleHighlight && (
-                  <>
-                    <div className="header-animation hide-tablet">
-                      <h2
-                        className={`heading-style-h1 text-color-gradiant-2 ${animationClass} pp-d1`}
-                        data-animate="fade-up"
-                        style={{
-                          color: '#000',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundImage:
-                            'linear-gradient(to right, #f0060d, #c924d7 49%, #7904fd)',
-                          WebkitBackgroundClip: 'text',
-                          backgroundClip: 'text',
-                        }}
-                      >
-                        {titleHighlight}
-                      </h2>
-                    </div>
-                    <div className="header-animation show-tablet">
-                      <h2
-                        className={`heading-style-h1 text-color-gradiant-2 ${animationClass} pp-d1`}
-                        data-animate="fade-up"
-                        style={{
-                          color: '#000',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundImage:
-                            'linear-gradient(to right, #f0060d, #c924d7 49%, #7904fd)',
-                          WebkitBackgroundClip: 'text',
-                          backgroundClip: 'text',
-                        }}
-                      >
-                        {titleHighlight}
-                      </h2>
-                    </div>
-                  </>
+                  <div className="header-animation">
+                    <h2
+                      className={`heading-style-h1 text-color-gradiant-2 ${animationClass} pp-d1`}
+                      data-animate="fade-up"
+                      style={{
+                        color: '#000',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundImage:
+                          'linear-gradient(to right, #f0060d, #c924d7 49%, #7904fd)',
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                      }}
+                    >
+                      {titleHighlight}
+                    </h2>
+                  </div>
                 )}
               </>
             ) : (
