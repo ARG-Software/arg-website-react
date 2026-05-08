@@ -33,6 +33,113 @@
     "stack": "Express, MongoDb, Kafka, Angular, Docker, Jest, Node"
   },
   {
+    "slug": "peoples-clearinghouse",
+    "title": "People's Clearinghouse",
+    "subtitle": "Fintech & Financial Inclusion",
+    "client": "AMUCSS / People's Clearinghouse",
+    "timeline": "3 Years",
+    "services": ["Backend", "Payments Architecture", "Interoperability", "Live Demo Support"],
+    "imgSrc": "/images/projects/heroes/peoples-clearinghouse.png",
+    "imgSrcSet": "/images/projects/heroes/peoples-clearinghouse-p-500.png 500w, /images/projects/heroes/peoples-clearinghouse-p-800.png 800w, /images/projects/heroes/peoples-clearinghouse-p-1080.png 1080w, /images/projects/heroes/peoples-clearinghouse-p-1600.png 1600w",
+    "mockupSrc": "/images/projects/mockups/peoples-clearinghouse-slider-01.png",
+    "solutionImageSrc": "/images/projects/mockups/peoples-clearinghouse-solution.png",
+    "mockups": [
+      {
+        "src": "/images/projects/mockups/peoples-clearinghouse-slider-01.png",
+        "alt": "People's Clearinghouse dashboard overview"
+      },
+      {
+        "src": "/images/projects/mockups/peoples-clearinghouse-slider-02.png",
+        "alt": "People's Clearinghouse transaction detail screen"
+      },
+      {
+        "src": "/images/projects/mockups/peoples-clearinghouse-slider-03.png",
+        "alt": "People's Clearinghouse payment flow screen"
+      },
+      {
+        "src": "/images/projects/mockups/peoples-clearinghouse-slider-04.png",
+        "alt": "People's Clearinghouse account management screen"
+      },
+      {
+        "src": "/images/projects/mockups/peoples-clearinghouse-slider-05.png",
+        "alt": "People's Clearinghouse participant configuration screen"
+      },
+      {
+        "src": "/images/projects/mockups/peoples-clearinghouse-slider-06.png",
+        "alt": "People's Clearinghouse settlement screen"
+      },
+      {
+        "src": "/images/projects/mockups/peoples-clearinghouse-slider-07.png",
+        "alt": "People's Clearinghouse transfer review screen"
+      },
+      {
+        "src": "/images/projects/mockups/peoples-clearinghouse-slider-08.png",
+        "alt": "People's Clearinghouse transfer confirmation screen"
+      },
+      {
+        "src": "/images/projects/mockups/peoples-clearinghouse-slider-09.png",
+        "alt": "People's Clearinghouse reporting screen"
+      }
+    ],
+    "liveLink": "https://lacamara.mx/en/",
+    "liveLinkLabel": "View Live Site",
+    "links": [
+      {
+        "href": "https://lacamara.mx/en/",
+        "label": "View Live Site",
+        "trackType": "view_live"
+      },
+      {
+        "href": "https://youtu.be/k7uwlsnZaOg?t=16150",
+        "label": "Watch Summit Demo",
+        "trackType": "watch_demo"
+      }
+    ],
+    "problem": "People's Clearinghouse is building a community-owned payments network that can move from pilots and summit demonstrations into production use with real banks, rural merchants, and social-sector financial institutions.",
+    "solutionBold": "An ongoing Mojaloop vNext-based clearinghouse, mobile app, and merchant payment flow validated through a live Interledger Summit demo and national-scale switching performance tests.",
+    "description": "The People's Clearinghouse extends the Mojaloop vNext work ARG has supported for years into a community-owned payment network for Mexican social finance, with the objective of connecting real banks and community financial institutions. At Interledger Summit 2025 in Mexico City, the client team demoed the platform live on the main stage; after the session, rural merchants used the app with summit attendees for a fictional-money market that exercised the full transfer flow. Behind the scenes, the payment APIs had already been load-tested at 1,000-2,000 requests per second with sub-second transfer processing and zero functional errors in multi-million request runs.",
+    "logos": [
+      { "name": "People's Clearinghouse", "src": "/images/partners/peoples-clearinghouse.svg" },
+      { "name": "Interledger Foundation", "src": "/images/partners/interledger-foundation.svg" },
+      { "name": "Mojaloop Foundation", "src": "/images/partners/mojaloop-foundation.png" }
+    ],
+    "intro": "A community-owned payments ecosystem for Mexico's social financial sector - extending Mojaloop vNext into a bank-ready clearinghouse, mobile app, merchant payment experience, and high-throughput payment API foundation.",
+    "challenge": "The People's Clearinghouse is an ongoing effort to bring community-owned payment infrastructure to real banks and social financial institutions. The Summit demo was one milestone in that path: a chance to show the platform moving value through real product surfaces while the broader objective remains production adoption by banks, community finance networks, and rural merchant ecosystems.\n\nThe underlying platform extended years of work with Mojaloop vNext and community banking rails into a PCH-specific ecosystem. That meant tying together clearinghouse flows, the mobile app, participant systems, QR merchant payments, admin confirmation screens, notifications, and the reliability needed for non-technical users.\n\nThe technical bar was national-scale. Payment API components needed to sustain 1,000-2,000 requests per second, keep lookup and quote workflows in the 200-300 ms range, maintain sub-second ledger transfer processing, and continue scaling linearly as workload increased.\n\nThe demo also had to survive the more revealing test after the presentation. Summit organizers brought merchants from rural communities and asked attendees to install the app and use fictional money to buy coffee, traditional clothing, and other goods that had already been covered by the event. Every purchase still had to travel through the full system.\n\nThe bar was practical: the experience needed to be understandable for first-time users, credible to the client and Summit audience, and reliable enough that roughly 100 live users could transact without transfer failures.",
+    "solution": [
+      "Extended the Mojaloop vNext foundation into PCH-specific switch and participant flows for community banks, savings coops, and regulated payment institutions",
+      "Load-tested payment API components under sustained cluster conditions, processing roughly 1,000-2,000 requests per second while demonstrating linear scalability",
+      "Tuned lookup and quote workflows to average roughly 200-300 ms end to end, with ledger transfer flows averaging around 770 ms",
+      "Validated reliability through multi-million request test runs with zero functional errors across the exercised workflows",
+      "Built and refined mobile app paths for account transfers, QR merchant payments, confirmations, and transaction visibility across the full clearinghouse flow",
+      "Prepared the summit demo environment used by the client team for the main-stage presentation, including live transfer paths and dashboard confirmation screens",
+      "Supported the community showcase after the demo, where rural merchants sold coffee, traditional clothing, and other goods through the app using fictional money",
+      "Hardened the end-to-end request path so first-time summit users could install the app, transact, and see purchases clear without failed transfer requests",
+      "Kept the experience grounded in the client's long-running work with social finance, rural producers, real banks, and the Mojaloop vNext architecture being extended by the project"
+    ],
+    "impact": "At Interledger Summit 2025, People's Clearinghouse became a live public proof point: the client team demoed it on the main stage, rural merchants used it with attendees immediately afterward, and roughly 100 people moved fictional money through the full system without a single transfer request failing. The underlying APIs also proved they could support national-scale transaction switching patterns, sustaining 1,000-2,000 requests per second with sub-second transfer processing and zero functional errors during multi-million request tests.",
+    "metrics": [
+      {
+        "value": "2000",
+        "displayValue": "1,000-2,000",
+        "label": "Requests per second under sustained cluster load"
+      },
+      {
+        "value": "300",
+        "displayValue": "200-300ms",
+        "label": "Average lookup and quote response time"
+      },
+      {
+        "value": "770",
+        "displayValue": "770ms",
+        "label": "Average ledger transfer processing time"
+      },
+      { "value": "0", "suffix": "", "label": "Functional errors in multi-million request tests" },
+      { "value": "100", "suffix": "+", "label": "Summit attendees using the app on site" },
+      { "value": "0", "suffix": "", "label": "Transfer requests failed during the live showcase" }
+    ],
+    "stack": "Mojaloop vNext, Open Payments, Interledger Protocol, Event-Driven Architecture, Domain-Driven Design, Distributed Systems, Payment Switching, Ledger Orchestration, QR Payments, Merchant Payments, Mobile App, Core Banking"
+  },
+  {
     "slug": "dokutar",
     "title": "Dokutar",
     "subtitle": "Digital Marketing",

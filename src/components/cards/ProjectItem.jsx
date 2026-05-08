@@ -14,10 +14,20 @@ export function ProjectItem({
   solutionBold,
   solution,
   liveLink,
+  liveLinkLabel = 'View Live Site',
+  links,
   logos,
   stack,
   animation = 'fade-up',
 }) {
+  const solutionText = Array.isArray(solution) ? solution[0] : solution;
+  const projectLinks =
+    Array.isArray(links) && links.length > 0
+      ? links.filter(link => link.href)
+      : liveLink
+        ? [{ href: liveLink, label: liveLinkLabel }]
+        : [];
+
   return (
     <div
       id="project-item-wrapper-grid"
@@ -40,13 +50,22 @@ export function ProjectItem({
           <div className="padding-bottom padding-30"></div>
           <p className="test_item_paragraph text-align-center">{problem}</p>
           <div className="padding-bottom padding-42"></div>
-          <a
-            href={liveLink}
-            className="test_item_link"
-            onClick={() => trackOutbound(liveLink, title, 'project_modal')}
-          >
-            View Live Site
-          </a>
+          {projectLinks.length > 0 && (
+            <div className="project-item-links">
+              {projectLinks.map(link => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="test_item_link"
+                  onClick={() =>
+                    trackOutbound(link.href, `${title} ${link.label}`, 'project_modal')
+                  }
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          )}
           <div className="padding-bottom padding-42"></div>
           <div className="projects_item_visual is-showcase" data-mockup-src={mockupSrc}></div>
         </div>
@@ -56,7 +75,7 @@ export function ProjectItem({
           </div>
           <div className="padding-bottom padding-30"></div>
           <p className="test_item_paragraph text-align-center is-bold">{solutionBold}</p>
-          <p className="test_item_paragraph text-align-center">{solution}</p>
+          <p className="test_item_paragraph text-align-center">{solutionText}</p>
           <div className="padding-bottom padding-30"></div>
           <div className="projects_item_logo-wrap w-dyn-list">
             <div role="list" className="projects_item_list w-dyn-items">

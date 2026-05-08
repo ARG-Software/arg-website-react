@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Navbar, SEO, SectionDivider, arrowSvg } from '../components';
@@ -27,6 +27,77 @@ export default function ProjectDetailPage() {
   const project = PROJECTS[projectIndex];
   const nextProject = PROJECTS[(projectIndex + 1) % PROJECTS.length];
   const stackItems = project?.stack.split(',').map(s => s.trim()) ?? [];
+  const mockupItems = useMemo(() => {
+    if (!project) return [];
+
+    if (Array.isArray(project.mockups) && project.mockups.length > 0) {
+      return project.mockups
+        .map((mockup, index) => {
+          if (typeof mockup === 'string') {
+            return {
+              src: mockup,
+              alt: `${project.title} mockup ${index + 1}`,
+            };
+          }
+
+          return {
+            src: mockup.src,
+            srcSet: mockup.srcSet,
+            alt: mockup.alt || `${project.title} mockup ${index + 1}`,
+          };
+        })
+        .filter(mockup => mockup.src);
+    }
+
+    if (!project.mockupSrc) return [];
+
+    return [
+      {
+        src: project.mockupSrc,
+        srcSet: project.mockupSrcSet,
+        alt: `${project.title} mockup`,
+      },
+    ];
+  }, [project]);
+  const [mockupSelection, setMockupSelection] = useState({ slug: null, index: 0 });
+  const selectedMockupIndex = mockupSelection.slug === slug ? mockupSelection.index : 0;
+  const activeMockupIndex = Math.min(selectedMockupIndex, Math.max(mockupItems.length - 1, 0));
+  const activeMockup = mockupItems[activeMockupIndex] ?? mockupItems[0];
+  const hasMockupSlider = mockupItems.length > 1;
+  const projectLinks = useMemo(() => {
+    if (!project) return [];
+
+    if (Array.isArray(project.links) && project.links.length > 0) {
+      return project.links.filter(link => link.href);
+    }
+
+    if (!project.liveLink) return [];
+
+    return [
+      {
+        href: project.liveLink,
+        label: project.liveLinkLabel ?? 'View Live Site',
+        trackType: 'view_live',
+      },
+    ];
+  }, [project]);
+
+  const setActiveMockupIndex = nextIndex => {
+    setMockupSelection(current => {
+      const currentIndex = current.slug === slug ? current.index : 0;
+      const index = typeof nextIndex === 'function' ? nextIndex(currentIndex) : nextIndex;
+
+      return { slug, index };
+    });
+  };
+
+  const showPreviousMockup = () => {
+    setActiveMockupIndex(index => (index === 0 ? mockupItems.length - 1 : index - 1));
+  };
+
+  const showNextMockup = () => {
+    setActiveMockupIndex(index => (index + 1) % mockupItems.length);
+  };
 
   useTimeOnPage(`/projects/${slug}/`);
 
@@ -106,19 +177,22 @@ export default function ProjectDetailPage() {
                 <h1 className="prp-intro-title" data-animate="title-reveal">
                   {project.title}
                 </h1>
-                {project.liveLink && (
-                  <a
-                    href={project.liveLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="prp-intro-live-link"
-                    data-animate="fade-up"
-                    data-animate-delay="100"
-                    onClick={() => trackCTA('view_live', `project_${slug}`)}
-                  >
-                    <span>View Live Site</span>
-                    {arrowSvg}
-                  </a>
+                {projectLinks.length > 0 && (
+                  <div className="prp-intro-links" data-animate="fade-up" data-animate-delay="100">
+                    {projectLinks.map(link => (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="prp-intro-live-link"
+                        onClick={() => trackCTA(link.trackType ?? 'view_live', `project_${slug}`)}
+                      >
+                        <span>{link.label}</span>
+                        {arrowSvg}
+                      </a>
+                    ))}
+                  </div>
                 )}
                 <div className="prp-meta-list" data-animate-scope data-animate-stagger="80">
                   <div className="prp-meta-item" data-animate="fade-up" data-animate-order="0">
@@ -166,13 +240,15 @@ export default function ProjectDetailPage() {
                   {project.intro}
                 </h3>
                 <hr className="prp-intro-divider" data-animate="divider-expander-show" />
-                <p
-                  className="prp-intro-description"
-                  data-animate="fade-up"
-                  data-animate-delay="200"
-                >
-                  {project.description}
-                </p>
+                {project.description && (
+                  <p
+                    className="prp-intro-description"
+                    data-animate="fade-up"
+                    data-animate-delay="200"
+                  >
+                    {project.description}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -190,15 +266,75 @@ export default function ProjectDetailPage() {
                 data-animate-from="1.15"
                 data-animate-to="1"
               >
-                <img
-                  src={project.mockupSrc}
-                  srcSet={project.mockupSrcSet}
-                  alt={`${project.title} mockup`}
-                  loading="lazy"
-                  data-animate="fade-up"
-                  width="800"
-                  height="600"
-                />
+                {activeMockup && (
+                  <div
+                    className={`prp-mockup-showcase${
+                      hasMockupSlider
+                        ? ' prp-mockup-showcase--slider'
+                        : ' prp-mockup-showcase--single'
+                    }`}
+                    aria-label={hasMockupSlider ? `${project.title} mockup gallery` : undefined}
+                    aria-roledescription={hasMockupSlider ? 'carousel' : undefined}
+                    role={hasMockupSlider ? 'region' : undefined}
+                    data-animate="fade-up"
+                  >
+                    <div className="prp-mockup-frame" aria-live="polite">
+                      <img
+                        key={activeMockup.src}
+                        src={activeMockup.src}
+                        srcSet={activeMockup.srcSet}
+                        alt={activeMockup.alt}
+                        loading="lazy"
+                        width="800"
+                        height="600"
+                      />
+                    </div>
+                    {hasMockupSlider && (
+                      <div
+                        className="prp-mockup-controls"
+                        role="group"
+                        aria-label={`${project.title} mockups`}
+                      >
+                        <button
+                          type="button"
+                          className="prp-mockup-button prp-mockup-button--prev"
+                          aria-label="Previous mockup"
+                          onClick={showPreviousMockup}
+                        >
+                          {arrowSvg}
+                        </button>
+                        <div className="prp-mockup-track">
+                          <div className="prp-mockup-dots">
+                            {mockupItems.map((mockup, i) => (
+                              <button
+                                key={mockup.src}
+                                type="button"
+                                className={`prp-mockup-dot${
+                                  i === activeMockupIndex ? ' is-active' : ''
+                                }`}
+                                aria-label={`Show mockup ${i + 1}`}
+                                aria-current={i === activeMockupIndex ? 'true' : undefined}
+                                onClick={() => setActiveMockupIndex(i)}
+                              />
+                            ))}
+                          </div>
+                          <span className="prp-mockup-count">
+                            {String(activeMockupIndex + 1).padStart(2, '0')} /{' '}
+                            {String(mockupItems.length).padStart(2, '0')}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="prp-mockup-button prp-mockup-button--next"
+                          aria-label="Next mockup"
+                          onClick={showNextMockup}
+                        >
+                          {arrowSvg}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="prp-challenge-content">
                 <span className="prp-section-label" data-animate="slide-from-left">
@@ -250,8 +386,8 @@ export default function ProjectDetailPage() {
                 data-animate-to="1"
               >
                 <img
-                  src={project.imgSrc}
-                  srcSet={project.imgSrcSet}
+                  src={project.solutionImageSrc ?? project.imgSrc}
+                  srcSet={project.solutionImageSrcSet ?? project.imgSrcSet}
                   sizes="(max-width: 767px) 100vw, 50vw"
                   alt={project.title}
                   loading="lazy"
@@ -291,15 +427,21 @@ export default function ProjectDetailPage() {
                       data-animate-order={i}
                     >
                       <div className="prp-metric-card-number">
-                        <span
-                          className="prp-metric-number"
-                          fs-numbercount-element="number"
-                          fs-numbercount-start="0"
-                          fs-numbercount-end={metric.value}
-                        >
-                          0
-                        </span>
-                        {parseFloat(metric.value) % 1 !== 0 ? '' : '+'}
+                        {metric.displayValue ? (
+                          <span className="prp-metric-number">{metric.displayValue}</span>
+                        ) : (
+                          <>
+                            <span
+                              className="prp-metric-number"
+                              fs-numbercount-element="number"
+                              fs-numbercount-start="0"
+                              fs-numbercount-end={metric.value}
+                            >
+                              0
+                            </span>
+                            {metric.suffix ?? (parseFloat(metric.value) % 1 !== 0 ? '' : '+')}
+                          </>
+                        )}
                       </div>
                       <p className="prp-metric-card-label">
                         <span className="prp-metric-bullet"></span>
