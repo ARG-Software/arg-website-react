@@ -64,7 +64,7 @@ export function TransitionProvider({ children }) {
       const doScroll = () => {
         document.activeElement?.blur();
 
-        if (!lenis) {
+        if (lenis) {
           lenis.start();
           lenis.scrollTo(element, { offset, duration, easing });
         } else {

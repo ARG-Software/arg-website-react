@@ -99,9 +99,9 @@ export function LenisProvider({
     return () => clearTimeout(delayedTimer);
   }, [location.pathname]);
 
-  useRAF(time => {
+  useRAF((_delta, elapsed) => {
     if (instanceRef.current) {
-      instanceRef.current.raf(time);
+      instanceRef.current.raf(elapsed * 1000);
     }
   }, []);
 
