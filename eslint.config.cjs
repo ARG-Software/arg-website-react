@@ -7,7 +7,7 @@ const globals = require('globals');
 module.exports = [
   {
     files: ['**/*.{js,jsx}'],
-    ignores: ['node_modules/**', 'dist/**', '*.config.js', 'vite-plugin-seo-prerender.js'],
+    ignores: ['node_modules/**', 'dist/**', '*.config.*', 'vite-plugin-seo-prerender.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

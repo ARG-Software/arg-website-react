@@ -15,9 +15,7 @@ export default defineConfig({
       webp: { quality: 80 },
       svg: {
         multipass: true,
-        plugins: [
-          { name: 'preset-default', params: { overrides: { removeViewBox: false } } },
-        ],
+        plugins: [{ name: 'preset-default' }],
       },
     }),
     seoPrerender({ apply: 'build' }),
@@ -72,6 +70,7 @@ export default defineConfig({
   build: {
     minify: 'esbuild',
     cssMinify: true,
+    chunkSizeWarningLimit: 750,
     esbuild: {
       drop: ['console', 'debugger'],
     },
@@ -89,6 +88,9 @@ export default defineConfig({
           }
           if (id.includes('node_modules/three')) {
             return 'three';
+          }
+          if (id.includes('node_modules/gsap')) {
+            return 'gsap';
           }
           if (id.includes('node_modules/highlight.js')) {
             return 'hljs';
