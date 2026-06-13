@@ -92,7 +92,7 @@ export default function PartnersPage() {
                   getItemKey={c => c.slug}
                   isItemVisible={isClientVisible}
                   onItemClick={handleClientClick}
-                  renderItem={c => <img src={c.logoSmall} alt={c.name} loading="lazy" />}
+                  renderItem={c => <img src={c.logoSmall || c.logo} alt={c.name} loading="lazy" />}
                   animate={true}
                   preset="fade-up"
                   stagger={80}

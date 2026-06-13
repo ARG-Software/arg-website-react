@@ -46,7 +46,12 @@ export default function HomePage() {
               items={PARTNERS.clients}
               renderItem={c => (
                 <span className="partners_logo_wrap" data-animate="fade">
-                  <img src={c.logoSmall} alt={c.name} className="partners_logo" loading="lazy" />
+                  <img
+                    src={c.logoSmall || c.logo}
+                    alt={c.name}
+                    className="partners_logo"
+                    loading="lazy"
+                  />
                 </span>
               )}
               getItemKey={c => c.slug}

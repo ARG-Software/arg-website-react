@@ -43,44 +43,6 @@
     "imgSrcSet": "/images/projects/heroes/peoples-clearinghouse-p-500.png 500w, /images/projects/heroes/peoples-clearinghouse-p-800.png 800w, /images/projects/heroes/peoples-clearinghouse-p-1080.png 1080w, /images/projects/heroes/peoples-clearinghouse-p-1600.png 1600w",
     "mockupSrc": "/images/projects/mockups/peoples-clearinghouse-slider-01.png",
     "solutionImageSrc": "/images/projects/mockups/peoples-clearinghouse-solution.png",
-    "mockups": [
-      {
-        "src": "/images/projects/mockups/peoples-clearinghouse-slider-01.png",
-        "alt": "People's Clearinghouse dashboard overview"
-      },
-      {
-        "src": "/images/projects/mockups/peoples-clearinghouse-slider-02.png",
-        "alt": "People's Clearinghouse transaction detail screen"
-      },
-      {
-        "src": "/images/projects/mockups/peoples-clearinghouse-slider-03.png",
-        "alt": "People's Clearinghouse payment flow screen"
-      },
-      {
-        "src": "/images/projects/mockups/peoples-clearinghouse-slider-04.png",
-        "alt": "People's Clearinghouse account management screen"
-      },
-      {
-        "src": "/images/projects/mockups/peoples-clearinghouse-slider-05.png",
-        "alt": "People's Clearinghouse participant configuration screen"
-      },
-      {
-        "src": "/images/projects/mockups/peoples-clearinghouse-slider-06.png",
-        "alt": "People's Clearinghouse settlement screen"
-      },
-      {
-        "src": "/images/projects/mockups/peoples-clearinghouse-slider-07.png",
-        "alt": "People's Clearinghouse transfer review screen"
-      },
-      {
-        "src": "/images/projects/mockups/peoples-clearinghouse-slider-08.png",
-        "alt": "People's Clearinghouse transfer confirmation screen"
-      },
-      {
-        "src": "/images/projects/mockups/peoples-clearinghouse-slider-09.png",
-        "alt": "People's Clearinghouse reporting screen"
-      }
-    ],
     "liveLink": "https://lacamara.mx/en/",
     "liveLinkLabel": "View Live Site",
     "links": [

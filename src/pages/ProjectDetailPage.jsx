@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Navbar, SEO, SectionDivider, arrowSvg } from '../components';
@@ -27,43 +27,13 @@ export default function ProjectDetailPage() {
   const project = PROJECTS[projectIndex];
   const nextProject = PROJECTS[(projectIndex + 1) % PROJECTS.length];
   const stackItems = project?.stack.split(',').map(s => s.trim()) ?? [];
-  const mockupItems = useMemo(() => {
-    if (!project) return [];
-
-    if (Array.isArray(project.mockups) && project.mockups.length > 0) {
-      return project.mockups
-        .map((mockup, index) => {
-          if (typeof mockup === 'string') {
-            return {
-              src: mockup,
-              alt: `${project.title} mockup ${index + 1}`,
-            };
-          }
-
-          return {
-            src: mockup.src,
-            srcSet: mockup.srcSet,
-            alt: mockup.alt || `${project.title} mockup ${index + 1}`,
-          };
-        })
-        .filter(mockup => mockup.src);
-    }
-
-    if (!project.mockupSrc) return [];
-
-    return [
-      {
+  const projectMockup = project?.mockupSrc
+    ? {
         src: project.mockupSrc,
         srcSet: project.mockupSrcSet,
         alt: `${project.title} mockup`,
-      },
-    ];
-  }, [project]);
-  const [mockupSelection, setMockupSelection] = useState({ slug: null, index: 0 });
-  const selectedMockupIndex = mockupSelection.slug === slug ? mockupSelection.index : 0;
-  const activeMockupIndex = Math.min(selectedMockupIndex, Math.max(mockupItems.length - 1, 0));
-  const activeMockup = mockupItems[activeMockupIndex] ?? mockupItems[0];
-  const hasMockupSlider = mockupItems.length > 1;
+      }
+    : null;
   const projectLinks = useMemo(() => {
     if (!project) return [];
 
@@ -81,23 +51,6 @@ export default function ProjectDetailPage() {
       },
     ];
   }, [project]);
-
-  const setActiveMockupIndex = nextIndex => {
-    setMockupSelection(current => {
-      const currentIndex = current.slug === slug ? current.index : 0;
-      const index = typeof nextIndex === 'function' ? nextIndex(currentIndex) : nextIndex;
-
-      return { slug, index };
-    });
-  };
-
-  const showPreviousMockup = () => {
-    setActiveMockupIndex(index => (index === 0 ? mockupItems.length - 1 : index - 1));
-  };
-
-  const showNextMockup = () => {
-    setActiveMockupIndex(index => (index + 1) % mockupItems.length);
-  };
 
   useTimeOnPage(`/projects/${slug}/`);
 
@@ -266,73 +219,21 @@ export default function ProjectDetailPage() {
                 data-animate-from="1.15"
                 data-animate-to="1"
               >
-                {activeMockup && (
+                {projectMockup && (
                   <div
-                    className={`prp-mockup-showcase${
-                      hasMockupSlider
-                        ? ' prp-mockup-showcase--slider'
-                        : ' prp-mockup-showcase--single'
-                    }`}
-                    aria-label={hasMockupSlider ? `${project.title} mockup gallery` : undefined}
-                    aria-roledescription={hasMockupSlider ? 'carousel' : undefined}
-                    role={hasMockupSlider ? 'region' : undefined}
+                    className="prp-mockup-showcase prp-mockup-showcase--single"
                     data-animate="fade-up"
                   >
                     <div className="prp-mockup-frame" aria-live="polite">
                       <img
-                        key={activeMockup.src}
-                        src={activeMockup.src}
-                        srcSet={activeMockup.srcSet}
-                        alt={activeMockup.alt}
+                        src={projectMockup.src}
+                        srcSet={projectMockup.srcSet}
+                        alt={projectMockup.alt}
                         loading="lazy"
                         width="800"
                         height="600"
                       />
                     </div>
-                    {hasMockupSlider && (
-                      <div
-                        className="prp-mockup-controls"
-                        role="group"
-                        aria-label={`${project.title} mockups`}
-                      >
-                        <button
-                          type="button"
-                          className="prp-mockup-button prp-mockup-button--prev"
-                          aria-label="Previous mockup"
-                          onClick={showPreviousMockup}
-                        >
-                          {arrowSvg}
-                        </button>
-                        <div className="prp-mockup-track">
-                          <div className="prp-mockup-dots">
-                            {mockupItems.map((mockup, i) => (
-                              <button
-                                key={mockup.src}
-                                type="button"
-                                className={`prp-mockup-dot${
-                                  i === activeMockupIndex ? ' is-active' : ''
-                                }`}
-                                aria-label={`Show mockup ${i + 1}`}
-                                aria-current={i === activeMockupIndex ? 'true' : undefined}
-                                onClick={() => setActiveMockupIndex(i)}
-                              />
-                            ))}
-                          </div>
-                          <span className="prp-mockup-count">
-                            {String(activeMockupIndex + 1).padStart(2, '0')} /{' '}
-                            {String(mockupItems.length).padStart(2, '0')}
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          className="prp-mockup-button prp-mockup-button--next"
-                          aria-label="Next mockup"
-                          onClick={showNextMockup}
-                        >
-                          {arrowSvg}
-                        </button>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>

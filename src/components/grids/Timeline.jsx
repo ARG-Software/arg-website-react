@@ -77,7 +77,12 @@ export function Timeline({
                     <span className="pt-duration">{row.label}</span>
                     <div className="pt-row-logos">
                       {partners.map(p => (
-                        <img key={p.slug} src={p.logoSmall} alt={p.name} className="pt-row-logo" />
+                        <img
+                          key={p.slug}
+                          src={p.logoSmall || p.logo}
+                          alt={p.name}
+                          className="pt-row-logo"
+                        />
                       ))}
                     </div>
                   </div>
@@ -109,7 +114,12 @@ export function Timeline({
                 <span className="pt-mobile-since">since {row.startYear}</span>
                 <div className="pt-mobile-logos">
                   {partners.map(p => (
-                    <img key={p.slug} src={p.logoSmall} alt={p.name} className="pt-mobile-logo" />
+                    <img
+                      key={p.slug}
+                      src={p.logoSmall || p.logo}
+                      alt={p.name}
+                      className="pt-mobile-logo"
+                    />
                   ))}
                 </div>
               </div>

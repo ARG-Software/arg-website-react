@@ -11,10 +11,12 @@
   color: #000;
   margin: 0;
   letter-spacing: -0.01em;
+  text-align: justify!important;
 }
 
 .cp-values-inner {
   display: block !important;
+
 }
 .cp-values-section .cp-section-title {
   color: #fff;
@@ -72,9 +74,7 @@
 /* Why Us Section */
 
 .cp-whyus-content {
-  max-width: 56rem;
   margin: 0 auto;
-  text-align: center;
 }
 .cp-whyus-title {
   font-family: Neuemontreal, sans-serif;

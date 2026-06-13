@@ -1537,6 +1537,11 @@ input[type='file']:focus-visible {
   transform: translateY(-1rem);
 }
 
+.nav_wrap .nav_logo-wrapper.is-visible,
+.nav_wrap .nav_buttons-wrapper.is-visible {
+  transform: translate3d(0, 0, 0);
+}
+
 /* Always show hamburger button on all screen sizes */
 .nav-hamburger,
 .w-nav-button {
