@@ -113,7 +113,7 @@ The `AppLink` component (SPA navigation) supports optional `trackEvent`/`trackDa
 ## Deployment
 
 The `dist/` directory is deployed to Netlify. Netlify redirects handled via `public/_redirects`:
-- `/team` → 301 redirect to `/`
+- `/team` → 301 redirect to `/partners`
 - SPA fallback: all routes without file extensions serve `index.html`
 
 ---

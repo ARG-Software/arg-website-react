@@ -105,17 +105,6 @@ export function TeamSection({ className = '' }) {
                   </div>
                 ))}
               </div>
-              {/* <div className="padding-bottom padding-80-74"></div>
-                <TransitionLink to="/team" className="text-button w-inline-block">
-                  <div className="text-button_list is-dark">
-                    <div className="text-button_text">Meet the full team</div>
-                    <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                  </div>
-                  <div className="text-button_list is-animated is-dark">
-                    <div className="text-button_text">See everyone</div>
-                    <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                  </div>
-                </TransitionLink> */}
             </div>
           </div>
         </div>

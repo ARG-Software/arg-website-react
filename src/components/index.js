@@ -14,7 +14,6 @@ export {
 } from './icons/SocialIcons';
 export { PlaceholderVisual } from './placeholders/PlaceholderVisual';
 export { StatsGrid } from './grids/StatsGrid';
-export { PartnerRow } from './rows/PartnerRow';
 export { TechStack } from './tags/TechStack';
 export { ProjectItem } from './cards/ProjectItem';
 export { JobAccordion } from './acordions/JobAccordion';

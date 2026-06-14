@@ -33,7 +33,7 @@ and comprehensive Google Analytics 4 instrumentation.
 ├── vite-plugin-seo-prerender.js  # Custom build plugin — 36 prerendered pages + sitemap/RSS/Atom
 ├── package.json            # Dependencies & scripts
 ├── public/                 # Static assets served as-is
-│   ├── _redirects          # Netlify redirects (e.g. /team → 301 /)
+│   ├── _redirects          # Netlify redirects (e.g. /team → 301 /partners)
 │   ├── _headers            # Netlify headers
 │   ├── files/              # PDFs (portfolio.pdf)
 │   ├── fonts/              # Neue Montreal WOFF fonts
@@ -53,7 +53,6 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── navigation/     # AppLink, Breadcrumb, Navbar, NavMenu
     │   ├── overlays/       # CookieConsent, Drawer, EmailCapture
     │   ├── placeholders/   # PlaceholderVisual
-    │   ├── rows/           # PartnerRow
     │   ├── seo/            # SEO (react-helmet-async wrapper)
     │   ├── tags/           # TechStack
     │   └── widgets/        # CounterWidget, ShuffleText
@@ -101,8 +100,7 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── ProjectsPage.jsx      # Redirect to first project (not a listing page)
     │   ├── PrivacyPage.jsx
     │   ├── TermsPage.jsx
-    │   ├── NotFoundPage.jsx      # 404 with Three.js animated scene
-    │   └── TeamPage.jsx          # DEPRECATED — 301 redirected via _redirects
+    │   └── NotFoundPage.jsx      # 404 with Three.js animated scene
     ├── providers/
     │   ├── LenisProvider.jsx     # Smooth scroll provider
     │   ├── LoadingProvider.jsx   # Site loading state
@@ -115,7 +113,6 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── projects.css
     │   ├── partners.css
     │   ├── careers.css
-    │   ├── team.css
     │   ├── loadingscreen.css
     │   └── 404.css
     └── utils/
@@ -381,7 +378,6 @@ export default function MyPage() {
 - **Plain `<a>`**: External URLs, mailto links, page anchors (`#section`)
 
 ### Deprecated Code
-- `TeamPage.jsx` — 301 redirected to `/` via `public/_redirects`. Do not add new features.
 - `App.jsx` — Removed; routing is now in `main.jsx` directly.
 
 ---

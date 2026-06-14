@@ -163,7 +163,6 @@ export const CLASS_SUFFIX_MAP = {
   bp: 'bp-visible', // BlogPostPage
   blp: 'blp-visible', // BlogPage
   prp: 'prp-visible', // ProjectsPage
-  tp: 'tp-visible', // TeamPage
   reveal: 'is-revealed', // Generic reveal
 };
 

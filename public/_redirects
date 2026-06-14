@@ -18,6 +18,7 @@
 
 /articles/*    /blog/:splat    301
 /clients/*     /partners/:splat   301
+/team          /partners          301
 /team/*        /partners/:splat   301
 
 # Everything else → 404 page with correct HTTP status
