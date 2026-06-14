@@ -1,6 +1,7 @@
 import { Navbar, Footer, CTASection, SEO } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
+import { trackCTA } from '../hooks/useAnalytics';
 
 export default function PrivacyPage() {
   useTimeOnPage('/privacy/');
@@ -225,6 +226,7 @@ export default function PrivacyPage() {
               buttonTextHover="Let's meet"
               buttonLink="mailto:info@arg.software?subject=Privacy%20Inquiry"
               animationClass="legal-animate"
+              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
           </div>
         </main>

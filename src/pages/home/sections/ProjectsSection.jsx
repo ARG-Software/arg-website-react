@@ -1,4 +1,5 @@
 import { ProjectItem } from '../../../components/cards/ProjectItem';
+import { trackEvent, trackOutbound } from '../../../hooks/useAnalytics';
 
 export function ProjectsSection({ projects, className = '' }) {
   return (
@@ -25,7 +26,17 @@ export function ProjectsSection({ projects, className = '' }) {
         <div className="projects_list_wrap w-dyn-list">
           <div role="list" className="projects_list w-dyn-items">
             {projects.map((project, i) => (
-              <ProjectItem key={i} animation="slide-in-right" {...project} />
+              <ProjectItem
+                key={i}
+                animation="slide-in-right"
+                {...project}
+                onProjectClick={slug =>
+                  trackEvent('project_click', { project_slug: slug, location: 'projects_section' })
+                }
+                onProjectLinkClick={(link, title) =>
+                  trackOutbound(link.href, `${title} ${link.label}`, 'project_modal')
+                }
+              />
             ))}
           </div>
         </div>

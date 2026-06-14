@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackEvent } from '../hooks/useAnalytics';
+import { trackCTA, trackEvent } from '../hooks/useAnalytics';
 import { Navbar, Footer, CTASection, SectionDivider, SEO, JobAccordion } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
 import {
@@ -156,6 +156,7 @@ export default function CareersPage() {
               buttonTextHover="Let's meet"
               animationClass="cp-animate"
               buttonLink="mailto:hr@arg.software?subject=Career%20Inquiry"
+              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
           </div>
         </main>

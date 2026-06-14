@@ -1,5 +1,4 @@
 import React from 'react';
-import { trackCTA } from '../../hooks/useAnalytics';
 
 export function CTASection({
   title = 'Ready to build',
@@ -8,8 +7,7 @@ export function CTASection({
   buttonTextNotHover = 'Book a Meeting',
   buttonTextHover = "Let's meet",
   buttonLink = 'https://zcal.co/argsoftware/project',
-  analyticsEvent = 'book_meeting',
-  analyticsLabel = 'cta_section',
+  onPrimaryClick,
   showSplitTitle = true,
   showTitleHighlight = true,
   wrapInSection = true,
@@ -23,19 +21,8 @@ export function CTASection({
   secondButtonTextNotHover,
   secondButtonTextHover,
   secondButtonLink,
-  secondAnalyticsEvent,
-  secondAnalyticsLabel,
+  onSecondaryClick,
 }) {
-  const handleClick = () => {
-    trackCTA(analyticsEvent, analyticsLabel);
-  };
-
-  const handleSecondClick = () => {
-    if (secondAnalyticsEvent) {
-      trackCTA(secondAnalyticsEvent, secondAnalyticsLabel);
-    }
-  };
-
   // Handle backward compatibility for buttonText
   const notHoverText = buttonText || buttonTextNotHover;
   let hoverText = buttonTextHover;
@@ -106,7 +93,7 @@ export function CTASection({
               rel="noopener noreferrer"
               className={`button-base button-contact w-inline-block ${animationClass} pp-d2`}
               data-animate="fade-up"
-              onClick={handleClick}
+              onClick={onPrimaryClick}
             >
               <div className="button-base_text_wrap">
                 <div className="button-base__button-text">{notHoverText}</div>
@@ -120,7 +107,7 @@ export function CTASection({
                 rel="noopener noreferrer"
                 className={`button-base button-contact w-inline-block ${animationClass} pp-d2`}
                 data-animate="fade-up"
-                onClick={handleSecondClick}
+                onClick={onSecondaryClick}
               >
                 <div className="button-base_text_wrap">
                   <div className="button-base__button-text">{secondButtonTextNotHover}</div>

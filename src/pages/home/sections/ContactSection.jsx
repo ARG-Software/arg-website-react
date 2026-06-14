@@ -1,4 +1,5 @@
 import { CTASection } from '../../../components/layout/CTASection';
+import { trackCTA } from '../../../hooks/useAnalytics';
 
 export function ContactSection({ className = '' }) {
   return (
@@ -18,13 +19,11 @@ export function ContactSection({ className = '' }) {
             buttonTextNotHover="Show me more"
             buttonTextHover="View Portfolio"
             buttonLink="/files/portfolio.pdf"
-            analyticsEvent="portfolio"
-            analyticsLabel="homepage_cta"
+            onPrimaryClick={() => trackCTA('portfolio', 'homepage_cta')}
             secondButtonTextNotHover="Let's start"
             secondButtonTextHover="2 minutes"
             secondButtonLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
-            secondAnalyticsEvent="typeform"
-            secondAnalyticsLabel="homepage_contact"
+            onSecondaryClick={() => trackCTA('typeform', 'homepage_contact')}
           />
         </div>
       </div>

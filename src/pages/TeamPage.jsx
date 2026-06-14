@@ -10,7 +10,7 @@ import {
 } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
 import { useScrollAnimations } from '../hooks';
-import { trackMailto, trackSocial } from '../hooks/useAnalytics';
+import { trackCTA, trackMailto, trackSocial } from '../hooks/useAnalytics';
 import '../styles/team.css';
 
 export default function TeamPage() {
@@ -222,6 +222,7 @@ export default function TeamPage() {
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="pp-animate"
+              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
           </div>
         </main>

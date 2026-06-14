@@ -1,6 +1,7 @@
 import { Navbar, Footer, CTASection, SEO } from '../components';
 import { SubpageHero } from '../components/hero/SubpageHero';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
+import { trackCTA } from '../hooks/useAnalytics';
 
 export default function TermsPage() {
   useTimeOnPage('/terms/');
@@ -209,6 +210,7 @@ export default function TermsPage() {
               buttonTextHover="Let's meet"
               animationClass="legal-animate"
               buttonLink="mailto:info@arg.software?subject=Terms%20Inquiry"
+              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
           </div>
         </main>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { arrowSvg } from '../icons/SocialIcons';
-import { trackOutbound } from '../../hooks/useAnalytics';
 import AppLink from '../navigation/AppLink';
 
 export function ProjectItem({
@@ -19,6 +18,8 @@ export function ProjectItem({
   logos,
   stack,
   animation = 'fade-up',
+  onProjectClick,
+  onProjectLinkClick,
 }) {
   const solutionText = Array.isArray(solution) ? solution[0] : solution;
   const projectLinks =
@@ -57,9 +58,7 @@ export function ProjectItem({
                   key={link.href}
                   href={link.href}
                   className="test_item_link"
-                  onClick={() =>
-                    trackOutbound(link.href, `${title} ${link.label}`, 'project_modal')
-                  }
+                  onClick={() => onProjectLinkClick?.(link, title)}
                 >
                   {link.label}
                 </a>
@@ -128,8 +127,7 @@ export function ProjectItem({
           to={`/projects/${slug}`}
           aria-label={title}
           className="text-button w-inline-block"
-          trackEvent="project_click"
-          trackData={{ project_slug: slug, location: 'projects_section' }}
+          onClick={() => onProjectClick?.(slug)}
         >
           <div className="text-button_list is-dark">
             <h3 className="heading-style-h3">{title}</h3>

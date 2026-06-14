@@ -3,7 +3,7 @@ import AppLink from '../../components/navigation/AppLink';
 import { Navbar, Footer, CTASection, SectionDivider, arrowSvg, SEO } from '../../components';
 import { SubpageHero } from '../../components/hero/SubpageHero';
 import { useScrollAnimations, useBlogSearch, useTimeOnPage } from '../../hooks';
-import { trackBlogPostClick, trackEvent } from '../../hooks/useAnalytics';
+import { trackBlogPostClick, trackCTA, trackEvent } from '../../hooks/useAnalytics';
 
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { BLOG_POSTS_PER_PAGE } from '../../constants';
@@ -217,6 +217,7 @@ export default function BlogPage() {
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="blp-animate"
+              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
           </div>
         </main>

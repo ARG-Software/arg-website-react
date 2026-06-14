@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackEvent } from '../hooks/useAnalytics';
+import { trackCTA, trackEvent } from '../hooks/useAnalytics';
 import {
   Navbar,
   Footer,
@@ -107,8 +107,7 @@ export default function PartnersPage() {
               yearEnd={timeline.yearEnd}
               items={clientMap}
               ctaLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
-              ctaAnalyticsEvent="typeform"
-              ctaAnalyticsLabel="partners_timeline"
+              onCtaClick={() => trackCTA('typeform', 'partners_timeline')}
               animate={true}
               rowPreset="slide-from-left"
               cardPreset="fade-up"
@@ -125,6 +124,7 @@ export default function PartnersPage() {
               buttonTextHover="Let's meet"
               animationClass="pp-animate"
               buttonLink="https://zcal.co/argsoftware/project"
+              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
           </div>
         </main>

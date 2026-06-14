@@ -1,6 +1,5 @@
 import React from 'react';
 import { arrowSvg } from '../icons/SocialIcons';
-import { trackOutbound } from '../../hooks/useAnalytics';
 
 export function PartnerRow({
   name,
@@ -16,6 +15,7 @@ export function PartnerRow({
   className = '',
   children,
   index = 0,
+  onLinkClick,
 }) {
   const animationDelay = `${(index * 0.8) % 4}s`;
   return (
@@ -50,7 +50,7 @@ export function PartnerRow({
             target="_blank"
             rel="noopener noreferrer"
             className="button-base button-contact"
-            onClick={() => trackOutbound(link, name, 'partner_row')}
+            onClick={() => onLinkClick?.(link, name)}
           >
             <div className="button-base_text_wrap">
               <div className="button-base__button-text">Visit website</div>

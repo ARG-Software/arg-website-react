@@ -1,5 +1,4 @@
 import React from 'react';
-import { trackSocial } from '../../hooks/useAnalytics';
 
 const linkedinSvg = (
   <svg
@@ -73,7 +72,7 @@ const closeSvg = (
   </svg>
 );
 
-export function SocialIcons({ size = 'small', showLabel: _showLabel = false }) {
+export function SocialIcons({ size = 'small', showLabel: _showLabel = false, onSocialClick }) {
   const iconClass = size === 'small' ? 'icon-1x1-small socials-button w-embed' : '';
 
   return (
@@ -84,7 +83,7 @@ export function SocialIcons({ size = 'small', showLabel: _showLabel = false }) {
         target="_blank"
         rel="noopener noreferrer"
         className="text-button w-inline-block"
-        onClick={() => trackSocial('linkedin', 'footer')}
+        onClick={() => onSocialClick?.('linkedin')}
       >
         <div className={iconClass}>{linkedinSvg}</div>
       </a>
@@ -94,7 +93,7 @@ export function SocialIcons({ size = 'small', showLabel: _showLabel = false }) {
         target="_blank"
         rel="noopener noreferrer"
         className="text-button w-inline-block"
-        onClick={() => trackSocial('github', 'footer')}
+        onClick={() => onSocialClick?.('github')}
       >
         <div className={iconClass}>{githubSvg}</div>
       </a>
@@ -104,7 +103,7 @@ export function SocialIcons({ size = 'small', showLabel: _showLabel = false }) {
         target="_blank"
         rel="noopener noreferrer"
         className="text-button w-inline-block"
-        onClick={() => trackSocial('medium', 'footer')}
+        onClick={() => onSocialClick?.('medium')}
       >
         <div className={iconClass}>{mediumSvg}</div>
       </a>
@@ -112,10 +111,10 @@ export function SocialIcons({ size = 'small', showLabel: _showLabel = false }) {
   );
 }
 
-export function SocialIconsWithLabel() {
+export function SocialIconsWithLabel({ onSocialClick }) {
   return (
     <div className="footer_copywrite-buttons">
-      <SocialIcons />
+      <SocialIcons onSocialClick={onSocialClick} />
     </div>
   );
 }
