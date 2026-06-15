@@ -43,7 +43,6 @@ import {
 import { useScrollAnimations, usePageTransition, useTimeOnPage } from '../../hooks';
 import { trackBlogPostShare, trackCTA, trackEvent } from '../../hooks/useAnalytics';
 import { loadBlogPostsWithContent } from '../../utils/blog';
-import { truncateText } from '../../utils/helpers';
 import '../../styles/blog.css';
 
 // ─── Load all blog posts with full content ──────────────────────────────────
@@ -57,6 +56,53 @@ const slugify = text =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+
+const splitArticleTitle = title => {
+  const normalizedTitle = title.trim();
+  if (!normalizedTitle) return [''];
+
+  const minIndex = normalizedTitle.length * 0.35;
+  const maxIndex = normalizedTitle.length * 0.7;
+  const targetIndex = normalizedTitle.length * 0.5;
+  const candidates = [];
+
+  for (let index = 0; index < normalizedTitle.length; index += 1) {
+    const character = normalizedTitle[index];
+    const nextCharacter = normalizedTitle[index + 1];
+
+    if ('.:?!'.includes(character) && nextCharacter === ' ') {
+      candidates.push(index + 1);
+    }
+  }
+
+  [' - ', ' — ', ' – '].forEach(separator => {
+    const index = normalizedTitle.indexOf(separator);
+    if (index !== -1) candidates.push(index);
+  });
+
+  const bestPunctuationSplit = candidates
+    .filter(index => index >= minIndex && index <= maxIndex)
+    .sort((indexA, indexB) => Math.abs(indexA - targetIndex) - Math.abs(indexB - targetIndex))[0];
+
+  const splitIndex = bestPunctuationSplit ?? findNearestWordBoundary(normalizedTitle, targetIndex);
+  const firstLine = normalizedTitle.slice(0, splitIndex).trim();
+  const secondLine = normalizedTitle
+    .slice(splitIndex)
+    .replace(/^[-—–]\s*/, '')
+    .trim();
+
+  return secondLine ? [firstLine, secondLine] : [normalizedTitle];
+};
+
+const findNearestWordBoundary = (text, targetIndex) => {
+  const beforeTarget = text.lastIndexOf(' ', targetIndex);
+  const afterTarget = text.indexOf(' ', targetIndex);
+
+  if (beforeTarget === -1) return afterTarget === -1 ? text.length : afterTarget;
+  if (afterTarget === -1) return beforeTarget;
+
+  return targetIndex - beforeTarget <= afterTarget - targetIndex ? beforeTarget : afterTarget;
+};
 
 const renderBlock = (block, i) => {
   switch (block.type) {
@@ -197,14 +243,7 @@ export default function BlogPostPage() {
     3
   );
 
-  const titleWords = BLOG_POST.title.split(' ');
-  const titleBreak = Math.floor(titleWords.length * 0.55);
-  const titleLine1 = titleWords.slice(0, titleBreak).join(' ');
-  const titleLine2 = titleWords.slice(titleBreak).join(' ');
-  const articleIntro = truncateText(
-    BLOG_POST.intro || BLOG_POST.excerpt || BLOG_POST.subtitle,
-    200
-  );
+  const titleLines = splitArticleTitle(BLOG_POST.title);
 
   // Parse date string to ISO format for structured data
   const parseDate = dateStr => {
@@ -261,16 +300,15 @@ export default function BlogPostPage() {
         <main className="main-wrapper">
           {/* HERO */}
           <PageHeader
-            title={[titleLine1, titleLine2]}
+            title={titleLines}
             subtitle={BLOG_POST.subtitle}
             breadcrumbs={[
               { label: 'Home', path: '/' },
               { label: 'Blog', path: '/blog/' },
               { label: BLOG_POST.tag, isTag: true },
             ]}
-            sideLabel="Article intro"
-            sideText={articleIntro}
             size="small"
+            variant="article"
           />
 
           {/* BLOG_POST BODY */}

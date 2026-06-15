@@ -4954,6 +4954,31 @@ figcaption {
   display: inline-block;
 }
 
+.page-header--article.page-header--small {
+  height: auto;
+  min-height: 24rem;
+}
+
+.page-header--article .page-header__inner {
+  padding-bottom: 4rem;
+}
+
+.page-header--article h1 {
+  font-size: clamp(1.75rem, 2.6vw, 2.875rem);
+  line-height: 1.08;
+  max-width: 78rem;
+}
+
+.page-header--article .page-header__heading-line {
+  white-space: normal;
+}
+
+.page-header--article .page-header__subtitle {
+  font-size: clamp(0.9375rem, 1vw, 1.125rem);
+  margin-top: 1.25rem;
+  max-width: 54rem;
+}
+
 .page-header__subtitle {
   font-size: 1.125rem;
   line-height: 1.5;
@@ -5072,6 +5097,10 @@ figcaption {
     font-size: 2rem;
   }
 
+  .page-header--article h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+  }
+
   .page-header__divider {
     margin: 0 3rem;
   }
@@ -5100,6 +5129,10 @@ figcaption {
   .page-header h1 {
     font-size: 1.75rem;
     margin-top: 1.5rem;
+  }
+
+  .page-header--article h1 {
+    font-size: clamp(1.5rem, 6vw, 2rem);
   }
 
   .page-header__subtitle {

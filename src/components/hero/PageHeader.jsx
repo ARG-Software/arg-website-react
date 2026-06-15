@@ -12,6 +12,7 @@ import AppLink from '../navigation/AppLink';
  * @param {string} [props.sideText] - Optional right-column text block
  * @param {React.ReactNode} [props.children] - Optional children for special content (e.g., stats grid for Clients page)
  * @param {string} [props.size] - Header size: 'default' (50vh), 'large' (56vh), 'small' (42vh)
+ * @param {string} [props.variant] - Optional visual variant
  */
 export function PageHeader({
   title,
@@ -22,9 +23,11 @@ export function PageHeader({
   sideText,
   children,
   size = 'default',
+  variant,
 }) {
   const titleLines = Array.isArray(title) ? title : [title];
   const sizeClass = `page-header--${size}`;
+  const variantClass = variant ? ` page-header--${variant}` : '';
   const hasSideContent = sideItems.length > 0 || sideText;
 
   const renderSideItem = (item, index) => {
@@ -56,7 +59,7 @@ export function PageHeader({
 
   return (
     <header
-      className={`page-header ${sizeClass}`}
+      className={`page-header ${sizeClass}${variantClass}`}
       data-animate-scope
       data-animate-default-stagger="150"
     >
