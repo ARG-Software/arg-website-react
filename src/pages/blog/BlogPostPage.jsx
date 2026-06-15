@@ -30,15 +30,14 @@ hljs.registerLanguage('typescript', typescript);
 hljs.registerLanguage('xml', xml);
 hljs.registerLanguage('yaml', yaml);
 hljs.registerAliases(['promql'], { languageName: 'sql' });
-import AppLink from '../../components/navigation/AppLink';
 import {
   Navbar,
   Footer,
   CTASection,
   SectionDivider,
-  arrowSvg,
   SEO,
   PageHeader,
+  BlogArticleSidebar,
 } from '../../components';
 import { useScrollAnimations, usePageTransition, useTimeOnPage } from '../../hooks';
 import { trackBlogPostShare, trackCTA, trackEvent } from '../../hooks/useAnalytics';
@@ -172,13 +171,15 @@ export default function BlogPostPage() {
   const BLOG_POST = BLOG_POSTS.find(blogPost => blogPost.slug === slug) || BLOG_POSTS[0];
   const [activeSection, setActiveSection] = useState('');
   const [isClicking, setIsClicking] = useState(false);
+  const [copyLabel, setCopyLabel] = useState('Copy link');
 
   const sectionLinks = BLOG_POST.content.filter(b => b.type === 'heading');
 
   useEffect(() => {
     const handleScroll = () => {
       if (isClicking) return;
-      const headings = sectionLinks
+      const headings = BLOG_POST.content
+        .filter(b => b.type === 'heading')
         .map(b => document.getElementById(slugify(b.text)))
         .filter(Boolean);
       const scrollPos = window.scrollY + 200;
@@ -195,7 +196,7 @@ export default function BlogPostPage() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [slug, sectionLinks, isClicking]);
+  }, [slug, BLOG_POST.content, isClicking]);
 
   useScrollAnimations(); // Scroll animations including footer
 
@@ -244,6 +245,88 @@ export default function BlogPostPage() {
   );
 
   const titleLines = splitArticleTitle(BLOG_POST.title);
+  const articleUrl = `https://arg.software/blog/${BLOG_POST.slug}/`;
+  const shareUrl = BLOG_POST.mediumUrl || articleUrl;
+
+  const handleTocClick = (event, section, sectionId) => {
+    event.preventDefault();
+    setIsClicking(true);
+    trackEvent('blog_toc_click', { section });
+    scrollToHash(sectionId, { mobileMenuDelay: 0 });
+    setActiveSection(sectionId);
+    setTimeout(() => setIsClicking(false), 1000);
+  };
+
+  const handleCopyLink = async () => {
+    if (!navigator.clipboard?.writeText) {
+      setCopyLabel('Copy unavailable');
+      setTimeout(() => setCopyLabel('Copy link'), 1800);
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(articleUrl);
+      setCopyLabel('Copied');
+      trackBlogPostShare('copy', slug);
+      setTimeout(() => setCopyLabel('Copy link'), 1800);
+    } catch {
+      setCopyLabel('Copy unavailable');
+      setTimeout(() => setCopyLabel('Copy link'), 1800);
+    }
+  };
+
+  const shareItems = [
+    {
+      id: 'bluesky',
+      icon: 'bluesky',
+      label: 'Bluesky',
+      ariaLabel: 'Share on Bluesky',
+      href: `https://bsky.app/intent/compose?text=${encodeURIComponent(`${BLOG_POST.title} ${shareUrl}`)}`,
+      onClick: () => trackBlogPostShare('bluesky', slug),
+    },
+    {
+      id: 'linkedin',
+      icon: 'linkedin',
+      label: 'LinkedIn',
+      ariaLabel: 'Share on LinkedIn',
+      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+      onClick: () => trackBlogPostShare('linkedin', slug),
+    },
+    {
+      id: 'twitter',
+      icon: 'twitter',
+      label: 'X',
+      ariaLabel: 'Share on X',
+      href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(BLOG_POST.title)}&url=${encodeURIComponent(shareUrl)}`,
+      onClick: () => trackBlogPostShare('twitter', slug),
+    },
+    {
+      id: 'copy',
+      icon: 'copy',
+      label: copyLabel,
+      ariaLabel: copyLabel,
+      onClick: handleCopyLink,
+    },
+  ];
+
+  const feedItems = [
+    {
+      id: 'rss',
+      icon: 'rss',
+      label: 'RSS',
+      ariaLabel: 'Subscribe with RSS',
+      href: '/rss.xml',
+      onClick: () => trackEvent('blog_subscribe_click', { feed_type: 'rss' }),
+    },
+    {
+      id: 'atom',
+      icon: 'atom',
+      label: 'Atom',
+      ariaLabel: 'Subscribe with Atom',
+      href: '/atom.xml',
+      onClick: () => trackEvent('blog_subscribe_click', { feed_type: 'atom' }),
+    },
+  ];
 
   // Parse date string to ISO format for structured data
   const parseDate = dateStr => {
@@ -323,156 +406,23 @@ export default function BlogPostPage() {
                   {BLOG_POST.content.map((block, i) => renderBlock(block, i))}
                 </article>
 
-                <aside className="bp-sidebar-right">
-                  {sectionLinks.length > 0 && (
-                    <div className="bp-sidebar-section bp-sidebar-section--toc">
-                      <span className="bp-sidebar-section-label">In this article</span>
-                      <nav className="bp-section-links" aria-label="Article sections">
-                        {sectionLinks.map((block, i) => (
-                          <a
-                            key={i}
-                            href={`#${slugify(block.text)}`}
-                            className={`bp-section-link ${activeSection === slugify(block.text) ? 'is-active' : ''}`}
-                            onClick={event => {
-                              event.preventDefault();
-                              setIsClicking(true);
-                              trackEvent('blog_toc_click', { section: block.text });
-                              scrollToHash(slugify(block.text), { mobileMenuDelay: 0 });
-                              setActiveSection(slugify(block.text));
-                              setTimeout(() => setIsClicking(false), 1000);
-                            }}
-                          >
-                            {block.text}
-                          </a>
-                        ))}
-                      </nav>
-                    </div>
-                  )}
-
-                  <span className="bp-sidebar-share-label">Share</span>
-                  <div className="bp-share-links">
-                    <a
-                      href={`https://bsky.app/intent/compose?text=${encodeURIComponent(BLOG_POST.title + ' ' + BLOG_POST.mediumUrl)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-button w-inline-block"
-                      onClick={() => trackBlogPostShare('bluesky', slug)}
-                    >
-                      <div className="text-button_list is-dark">
-                        <div className="text-button_text">Share on Bluesky</div>
-                        <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                      </div>
-                      <div className="text-button_list is-animated is-dark">
-                        <div className="text-button_text">Post it</div>
-                        <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                      </div>
-                    </a>
-                    <a
-                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(BLOG_POST.mediumUrl)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-button w-inline-block"
-                      onClick={() => trackBlogPostShare('linkedin', slug)}
-                    >
-                      <div className="text-button_list is-dark">
-                        <div className="text-button_text">Share on LinkedIn</div>
-                        <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                      </div>
-                      <div className="text-button_list is-animated is-dark">
-                        <div className="text-button_text">Post it</div>
-                        <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                      </div>
-                    </a>
-                    <a
-                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(BLOG_POST.title)}&url=${encodeURIComponent(BLOG_POST.mediumUrl)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-button w-inline-block"
-                      onClick={() => trackBlogPostShare('twitter', slug)}
-                    >
-                      <div className="text-button_list is-dark">
-                        <div className="text-button_text">Share on X</div>
-                        <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                      </div>
-                      <div className="text-button_list is-animated is-dark">
-                        <div className="text-button_text">Post it</div>
-                        <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                      </div>
-                    </a>
-                  </div>
-
-                  {/* Subscribe */}
-                  <div className="bp-sidebar-section">
-                    <span className="bp-sidebar-section-label">Subscribe</span>
-                    <div className="bp-share-links">
-                      <a
-                        href="/rss.xml"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-button w-inline-block"
-                        onClick={() => trackEvent('blog_subscribe_click', { feed_type: 'rss' })}
-                      >
-                        <div className="text-button_list is-dark">
-                          <div className="text-button_text">RSS Feed</div>
-                          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                        </div>
-                        <div className="text-button_list is-animated is-dark">
-                          <div className="text-button_text">Subscribe</div>
-                          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                        </div>
-                      </a>
-                      <a
-                        href="/atom.xml"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-button w-inline-block"
-                        onClick={() => trackEvent('blog_subscribe_click', { feed_type: 'atom' })}
-                      >
-                        <div className="text-button_list is-dark">
-                          <div className="text-button_text">Atom Feed</div>
-                          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                        </div>
-                        <div className="text-button_list is-animated is-dark">
-                          <div className="text-button_text">Subscribe</div>
-                          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Related Articles */}
-                  <div className="bp-sidebar-section">
-                    <span className="bp-sidebar-section-label">Related Articles</span>
-                    {relatedPosts.length > 0 ? (
-                      <div className="bp-sidebar-articles">
-                        {relatedPosts.map(post => (
-                          <AppLink
-                            key={post.slug}
-                            to={`/blog/${post.slug}/`}
-                            className="bp-sidebar-article"
-                            trackEvent="blog_related_click"
-                            trackData={{ blog_post_slug: post.slug, source_slug: slug }}
-                          >
-                            {post.image && (
-                              <img
-                                src={post.image}
-                                alt=""
-                                className="bp-sidebar-article-thumb"
-                                loading="lazy"
-                              />
-                            )}
-                            <div className="bp-sidebar-article-body">
-                              <span className="bp-sidebar-article-title">{post.title}</span>
-                              <span className="bp-sidebar-article-date">{post.date}</span>
-                            </div>
-                          </AppLink>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="bp-sidebar-empty">No related articles found.</p>
-                    )}
-                  </div>
-                </aside>
+                <BlogArticleSidebar
+                  sectionLinks={sectionLinks}
+                  activeSection={activeSection}
+                  getSectionId={slugify}
+                  onSectionClick={handleTocClick}
+                  shareItems={shareItems}
+                  feedItems={feedItems}
+                  relatedPosts={relatedPosts}
+                  sourceSlug={slug}
+                  cta={{
+                    eyebrow: 'Work with ARG',
+                    title: 'Need a team that keeps architecture clean?',
+                    label: 'Book a Meeting',
+                    href: 'https://zcal.co/argsoftware/project',
+                    onClick: () => trackCTA('book_meeting', 'blog_sidebar'),
+                  }}
+                />
               </div>
             </section>
           </div>

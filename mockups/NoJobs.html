@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ARG · Careers — No roles · Values</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a0532;
+    --paper: #f5f3ef;
+    --paper-2: #ffffff;
+    --line: rgba(10, 5, 50, 0.08);
+    --line-2: rgba(10, 5, 50, 0.18);
+    --muted: #5b596f;
+    --muted-2: #8a89a0;
+    --g1: #ff3855;
+    --g2: #e91e63;
+    --g3: #9c27b0;
+    --gradient: linear-gradient(92deg, var(--g1) 0%, var(--g2) 45%, var(--g3) 100%);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--navy);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============================================================
+     NAV (navy band — matches the rest of the site)
+  ============================================================ */
+  .topbar {
+    background: var(--navy);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .topbar::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(700px 380px at 92% 0%, rgba(156,39,176,0.18), transparent 60%),
+      radial-gradient(500px 300px at 0% 100%, rgba(255,56,85,0.08), transparent 60%);
+    pointer-events: none;
+  }
+  .nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 64px;
+    max-width: 1640px;
+    margin: 0 auto;
+  }
+  .logo {
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.04em;
+    display: inline-flex;
+    align-items: baseline;
+    text-decoration: none;
+    color: #fff;
+  }
+  .logo .g {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .nav-right { display: flex; align-items: center; gap: 22px; }
+  .btn-ghost {
+    border: 1px solid rgba(255,255,255,0.45);
+    color: #fff;
+    background: transparent;
+    border-radius: 999px;
+    padding: 12px 26px;
+    font: 500 14px 'Manrope', sans-serif;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.06); border-color: #fff; }
+  .menu-bars {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px;
+    cursor: pointer;
+  }
+  .menu-bars span { width: 22px; height: 1.5px; background: #fff; }
+
+  /* ============================================================
+     Shared content tokens
+  ============================================================ */
+  .section {
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 120px 64px;
+    position: relative;
+  }
+  .section.on-white { background: #fff; }
+  .section.tinted::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(900px 480px at 95% 5%, rgba(156,39,176,0.05), transparent 60%),
+      radial-gradient(700px 400px at 0% 100%, rgba(255,56,85,0.04), transparent 60%);
+    pointer-events: none;
+  }
+  .section > * { position: relative; }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .eyebrow .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gradient);
+    box-shadow: 0 0 10px rgba(233,30,99,0.45);
+  }
+
+  .h1 {
+    font-size: clamp(48px, 6vw, 84px);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    font-weight: 500;
+    margin: 28px 0 0;
+    text-wrap: balance;
+    color: var(--navy);
+  }
+  .h1 .accent {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Stacked header: eyebrow → H1 → subtitle (left-aligned) */
+  .header-stack {
+    max-width: 880px;
+    margin-bottom: 64px;
+  }
+  .header-stack .sub {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--muted);
+    margin: 28px 0 0;
+    max-width: 64ch;
+    text-wrap: pretty;
+  }
+
+  /* Outlined pill (matches Book a Meeting, inverted for white sections) */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 28px;
+    border: 1px solid var(--navy);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--navy);
+    font: 500 15px 'Manrope', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .2s ease, color .2s ease, transform .2s ease;
+  }
+  .pill:hover { background: var(--navy); color: #fff; transform: translateY(-1px); }
+  .pill .arr { font-size: 16px; line-height: 1; }
+
+  /* Card base */
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 32px;
+    position: relative;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  .card:hover {
+    border-color: var(--line-2);
+    box-shadow: 0 14px 36px -22px rgba(10,5,50,0.22);
+  }
+
+  /* ============================================================
+     SECTION 1 — Careers Empty State · Option B
+     "Talk to a founder"
+  ============================================================ */
+  .founders {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+
+  /* Founder card — monogram disc replaces the photo placeholder */
+  .founder {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .founder .monogram {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    position: relative;
+    display: grid;
+    place-items: center;
+    font-family: 'Manrope', sans-serif;
+    font-size: 38px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--navy);
+    background:
+      radial-gradient(circle at 28% 28%, rgba(255,56,85,0.22), transparent 55%),
+      radial-gradient(circle at 72% 72%, rgba(156,39,176,0.26), transparent 60%),
+      #f4f2f8;
+    overflow: hidden;
+  }
+  /* gradient ring around monogram */
+  .founder .monogram::before {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    padding: 1.5px;
+    background: var(--gradient);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.7;
+  }
+  /* small online/availability dot */
+  .founder .monogram::after {
+    content: "";
+    position: absolute;
+    right: 6px; bottom: 6px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #1ec96b;
+    border: 2.5px solid #fff;
+  }
+  .founder h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  .founder .role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted-2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 6px 0 14px;
+  }
+  .founder p {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0 0 22px;
+  }
+  /* Inline "what to talk to me about" stat strip — replaces the photo's visual weight */
+  .founder .focus {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0 0 22px;
+    padding: 14px 0;
+    border-top: 1px dashed var(--line);
+    border-bottom: 1px dashed var(--line);
+  }
+  .founder .focus .item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .founder .focus .k {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted-2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .founder .focus .v {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: -0.005em;
+  }
+  .founder .links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+    transition: color .15s, border-color .15s;
+  }
+  .chip:hover { color: var(--navy); border-color: var(--navy); }
+
+  .footer-row {
+    margin-top: 44px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .footer-row .or {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--muted-2);
+    text-transform: uppercase;
+  }
+
+  /* ============================================================
+     SECTION 2 — Values · refreshed 4-card grid
+  ============================================================ */
+  .vgrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .vcard {
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 30px;
+    background: #fafafd;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  .vcard:hover {
+    border-color: var(--line-2);
+    box-shadow: 0 14px 32px -22px rgba(10,5,50,0.22);
+    transform: translateY(-2px);
+  }
+  .vcard::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(150deg, rgba(255,56,85,0.35), transparent 35%, transparent 70%, rgba(156,39,176,0.25));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  .vcard .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 0.1em;
+  }
+  .vcard h4 {
+    margin: 18px 0 10px;
+    font-size: 23px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+  .vcard p {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0 0 16px;
+  }
+  .vcard .anti {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted-2);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+  }
+  .vcard .anti b {
+    color: #d92447;
+    font-weight: 600;
+    font-family: inherit;
+  }
+
+  /* divider between sections */
+  .section-divider {
+    height: 1px;
+    background: var(--line);
+    max-width: 1480px;
+    margin: 0 auto;
+  }
+
+  /* ============================================================
+     Responsive
+  ============================================================ */
+  @media (max-width: 1100px) {
+    .nav { padding: 24px 32px; }
+    .section { padding: 88px 32px; }
+    .founders { grid-template-columns: 1fr; }
+    .vgrid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .nav { padding: 20px 22px; }
+    .btn-ghost { padding: 10px 20px; font-size: 13px; }
+    .section { padding: 64px 22px; }
+    .header-stack { margin-bottom: 44px; }
+    .header-stack .sub { font-size: 17px; }
+    .founder { grid-template-columns: 1fr; gap: 20px; }
+    .founder .focus { grid-template-columns: 1fr 1fr; }
+    .vgrid { grid-template-columns: 1fr; }
+    .footer-row { flex-direction: column; align-items: flex-start; gap: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAV
+============================================================ -->
+<header class="topbar">
+  <nav class="nav">
+    <a href="#" class="logo" aria-label="ARG home">ar<span class="g">g</span></a>
+    <div class="nav-right">
+      <button class="btn-ghost">Book a Meeting</button>
+      <span class="menu-bars" role="button" aria-label="Open menu"><span></span><span></span></span>
+    </div>
+  </nav>
+</header>
+
+<!-- ============================================================
+     SECTION 1 — Careers Empty State · Option B
+============================================================ -->
+<section class="section on-white tinted">
+  <div class="header-stack">
+    <span class="eyebrow"><span class="dot"></span>Careers · No open roles right now</span>
+    <h1 class="h1">We're small.<br><span class="accent">Talk to a founder directly.</span></h1>
+    <p class="sub">No recruiter wall, no ATS black hole. If you think you'd fit at ARG, the fastest way in is a five-minute call with one of us. We read every email — and we reply to most of them within 48 hours.</p>
+  </div>
+
+  <div class="founders">
+    <!-- Founder 1 -->
+    <article class="card founder">
+      <div class="monogram" aria-hidden="true">JA</div>
+      <div>
+        <h3>Jose Antunes</h3>
+        <div class="role">Co-founder · Software Engineer</div>
+        <p>Architecture-first, allergic to patchwork. Happiest deep in a backend with Kafka, microservices and a hard SLA. Talk to Jose if you build systems.</p>
+
+        <div class="focus" aria-label="What Jose works on">
+          <div class="item"><span class="k">Talk about</span><span class="v">Backend · Systems · Data</span></div>
+          <div class="item"><span class="k">Reply time</span><span class="v">~ 24 hours</span></div>
+        </div>
+
+        <div class="links">
+          <a class="chip" href="/cdn-cgi/l/email-protection#3a5055495f7a5b485d1449555c4e4d5b485f">✉ <span class="__cf_email__" data-cfemail="e882879b8da8899a8fc69b878e9c9f899a8d">[email&#160;protected]</span></a>
+          <a class="chip" href="#">in / LinkedIn</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Founder 2 -->
+    <article class="card founder">
+      <div class="monogram" aria-hidden="true">RR</div>
+      <div>
+        <h3>Rui Rocha</h3>
+        <div class="role">Co-founder · Software Engineer</div>
+        <p>Product-minded, fast at MVPs, sharp on what a feature is actually for. Talk to Rui if you build with users in front of you — frontend, mobile, AI.</p>
+
+        <div class="focus" aria-label="What Rui works on">
+          <div class="item"><span class="k">Talk about</span><span class="v">Frontend · Mobile · AI</span></div>
+          <div class="item"><span class="k">Reply time</span><span class="v">~ 24 hours</span></div>
+        </div>
+
+        <div class="links">
+          <a class="chip" href="/cdn-cgi/l/email-protection#d7a5a2be97b6a5b0f9a4b8b1a3a0b6a5b2">✉ <span class="__cf_email__" data-cfemail="2250574b624350450c514d445655435047">[email&#160;protected]</span></a>
+          <a class="chip" href="#">in / LinkedIn</a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="footer-row">
+    <span class="or">— or —</span>
+    <a class="pill" href="#contact">Send a general hello <span class="arr">→</span></a>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================================
+     SECTION 2 — Values · refreshed 4-card grid
+============================================================ -->
+<section class="section on-white tinted">
+  <div class="header-stack">
+    <span class="eyebrow"><span class="dot"></span>How we work</span>
+    <h1 class="h1">Four things <span class="accent">we actually mean.</span></h1>
+    <p class="sub">Most companies list values that could belong to a bank. Ours are operational — they decide what we ship, what we refuse, and who fits on the team.</p>
+  </div>
+
+  <div class="vgrid">
+    <article class="vcard">
+      <span class="num">01</span>
+      <h4>Architecture first</h4>
+      <p>The system is designed before it's written. If we can't explain it on a whiteboard, we don't build it yet.</p>
+      <div class="anti"><b>NOT</b> "ship fast, fix later"</div>
+    </article>
+
+    <article class="vcard">
+      <span class="num">02</span>
+      <h4>No patchwork</h4>
+      <p>If a fix needs a workaround, we refactor the abstraction. Band-aids compound; we'd rather pay the cost now.</p>
+      <div class="anti"><b>NOT</b> "good enough for now"</div>
+    </article>
+
+    <article class="vcard">
+      <span class="num">03</span>
+      <h4>Production on a Tuesday</h4>
+      <p>We deploy when we can stay close. We own what we ship — bugs, performance, the 3am page. No throw-it-over-the-wall.</p>
+      <div class="anti"><b>NOT</b> "merge Friday, ghost the weekend"</div>
+    </article>
+
+    <article class="vcard">
+      <span class="num">04</span>
+      <h4>Direct, kind, no politics</h4>
+      <p>Honest in code review, honest in retro. Small team — every personality compounds. We say the thing.</p>
+      <div class="anti"><b>NOT</b> "let's circle back offline"</div>
+    </article>
+  </div>
+</section>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

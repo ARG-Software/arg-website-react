@@ -9,38 +9,57 @@ import {
   SEO,
   JobAccordion,
   PageHeader,
+  CareerValueCard,
+  CareersFounderCard,
 } from '../components';
-import {
-  excellenceSvg,
-  respectSvg,
-  innovationSvg,
-  diversitySvg,
-} from '../components/icons/ValueIcons';
 import JOBS from '../data/jobs.json';
 import '../styles/careers.css';
 
 const INTERNAL_VALUES = [
   {
-    title: 'Excellence',
-    description: 'We choose team members who excel, succeed, and elevate our company standards.',
-    icon: excellenceSvg,
-  },
-  {
-    title: 'Respect',
+    title: 'Architecture first',
     description:
-      'Respecting each other, our clients, our regulations, and deadlines is fundamental at Nesma & Partners.',
-    icon: respectSvg,
+      "The system is designed before it's written. If we can't explain it clearly, we don't build it yet.",
+    antiValue: 'ship fast, fix later',
   },
   {
-    title: 'Innovation',
-    description: 'We are dedicated to fostering creativity and innovation with our employees.',
-    icon: innovationSvg,
-  },
-  {
-    title: 'Diversity',
+    title: 'No patchwork',
     description:
-      'We welcome individuals from all backgrounds, including those with disabilities or special needs.',
-    icon: diversitySvg,
+      "If a fix needs a workaround, we refactor the abstraction. Band-aids compound; we'd rather pay the cost now.",
+    antiValue: 'good enough for now',
+  },
+  {
+    title: 'Production on a Tuesday',
+    description:
+      'We deploy when we can stay close. We own what we ship: bugs, performance, and the unexpected page.',
+    antiValue: 'merge Friday, ghost the weekend',
+  },
+  {
+    title: 'Direct, kind, no politics',
+    description:
+      'Honest in code review, honest in retro. Small team means every personality compounds.',
+    antiValue: "let's circle back offline",
+  },
+];
+
+const FOUNDERS = [
+  {
+    name: 'Jose Antunes',
+    initials: 'JA',
+    role: 'Co-founder - Software Engineer',
+    focus: 'Backend - Systems - Data - AI',
+    replyTime: '~ 36 hours',
+    emailHref: 'mailto:hr@arg.software?subject=Career%20Inquiry%20-%20Jose%20Antunes',
+    linkedin: 'https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/',
+  },
+  {
+    name: 'Rui Rocha',
+    initials: 'RR',
+    role: 'Co-founder - Software Engineer',
+    focus: 'Frontend - Backend - Mobile - AI',
+    replyTime: '~ 36 hours',
+    emailHref: 'mailto:hr@arg.software?subject=Career%20Inquiry%20-%20Rui%20Rocha',
+    linkedin: 'https://www.linkedin.com/in/ruirochawork/',
   },
 ];
 
@@ -73,6 +92,14 @@ export default function CareersPage() {
     window.location.href = `mailto:hr@arg.software?subject=${subject}`;
   };
 
+  const handleFounderEmail = founderName => {
+    trackEvent('career_founder_email_click', { founder_name: founderName });
+  };
+
+  const handleFounderLinkedIn = founderName => {
+    trackEvent('career_founder_linkedin_click', { founder_name: founderName });
+  };
+
   return (
     <>
       <SEO
@@ -83,7 +110,7 @@ export default function CareersPage() {
       <div className="page-wrapper w-clearfix">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper">
+        <main className="main-wrapper background-color-white">
           <PageHeader
             title={['Take Your Career', 'to New Heights']}
             subtitle="Join us and unlock opportunities for growth, innovation, and success in an inclusive environment that nurtures talent."
@@ -114,20 +141,30 @@ export default function CareersPage() {
               </div>
             </section>
 
-            <section id="values" className="cp-values-section padding-section-xlarge ">
+            <section
+              id="values"
+              className="cp-values-section padding-section-xlarge border-radius-all background-color-white"
+            >
               <div className="container padding-global cp-values-inner">
                 <div className="cp-section-header" data-animate="fade-up">
                   <h2 className="cp-section-title">
-                    <span className="cp-line">Internal Values</span>
+                    <span className="cp-line">Four things we actually mean.</span>
                   </h2>
+                  <p className="cp-section-subtitle">
+                    Most companies list values that could belong to anyone. Ours are operational:
+                    they decide what we ship, what we refuse, and who fits on the team.
+                  </p>
                 </div>
                 <div className="cp-values-grid">
                   {INTERNAL_VALUES.map((value, index) => (
-                    <div key={index} className="cp-value-card" data-animate-order={index}>
-                      <div className="cp-value-icon">{value.icon}</div>
-                      <h3 className="cp-value-title">{value.title}</h3>
-                      <p className="cp-value-desc">{value.description}</p>
-                    </div>
+                    <CareerValueCard
+                      key={value.title}
+                      number={String(index + 1).padStart(2, '0')}
+                      title={value.title}
+                      description={value.description}
+                      antiValue={value.antiValue}
+                      animateOrder={index}
+                    />
                   ))}
                 </div>
               </div>
@@ -138,11 +175,13 @@ export default function CareersPage() {
               className="cp-jobs-section padding-section-xlarge border-radius-all background-color-white"
             >
               <div className="container padding-global cp-jobs-inner">
-                <div className="cp-section-header" data-animate="fade-up">
+
+              <div className="cp-section-header" data-animate="fade-up">
                   <h2 className="cp-section-title">
-                    <span className="cp-line">Open Positions</span>
+                    <span className="cp-line">{JOBS.length > 0 ? 'Open Positions' : 'We Are Currently Not Hiring'}</span>
                   </h2>
                 </div>
+
                 {JOBS.length > 0 ? (
                   <div className="cp-jobs-list">
                     {JOBS.map((job, index) => (
@@ -158,7 +197,36 @@ export default function CareersPage() {
                   </div>
                 ) : (
                   <div className="cp-jobs-empty" data-animate="fade-up">
-                    No open positions at the moment.
+                    <div className="cp-jobs-empty-header">
+                      <h3>
+                        Although we are not hiring you can talk to us. <span>Talk to a founder directly.</span>
+                      </h3>
+                      <p>
+                        No recruiter wall, no ATS black hole. If you think you'd fit at ARG, the
+                        fastest way in is a short note to one of us. We read every email and reply
+                        when there is a real fit.
+                      </p>
+                    </div>
+                    <div className="cp-founders-grid">
+                      {FOUNDERS.map((founder, index) => (
+                        <CareersFounderCard
+                          key={founder.name}
+                          founder={founder}
+                          animateOrder={index}
+                          onEmailClick={handleFounderEmail}
+                          onLinkedInClick={handleFounderLinkedIn}
+                        />
+                      ))}
+                    </div>
+                    <div className="cp-jobs-empty-footer">
+                      <span>or</span>
+                      <a
+                        href="mailto:hr@arg.software?subject=Career%20Inquiry"
+                        onClick={() => trackEvent('career_general_email_click')}
+                      >
+                        Send a general hello -&gt;
+                      </a>
+                    </div>
                   </div>
                 )}
               </div>
@@ -168,7 +236,7 @@ export default function CareersPage() {
           <div className="section-divider-wrapper">
             <SectionDivider variant="default" hideOnMobile={false} />
           </div>
-          <div className="page-cta-wrapper" id="contact">
+          <div className="page-cta-wrapper background-color-dark" id="contact" >
             <CTASection
               title="Didn't find any match,"
               titleHighlight="reach to us anyway!"

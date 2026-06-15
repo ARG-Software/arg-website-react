@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ARG · Blog Post</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a0532;
+    --navy-2: #15093f;
+    --paper: #f5f3ef;
+    --paper-2: #ffffff;
+    --line: rgba(10, 5, 50, 0.08);
+    --line-2: rgba(10, 5, 50, 0.16);
+    --line-strong: rgba(10, 5, 50, 0.28);
+    --ink: #0a0532;
+    --ink-2: #2a2547;
+    --muted: #5b596f;
+    --muted-2: #8a89a0;
+    --g1: #ff3855;
+    --g2: #e91e63;
+    --g3: #9c27b0;
+    --gradient: linear-gradient(92deg, var(--g1) 0%, var(--g2) 45%, var(--g3) 100%);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    background: var(--paper-2);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* =========================================================
+     TOPBAR — navy hero band that contains the nav + article head
+  ========================================================= */
+  .topbar {
+    background: var(--navy);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .topbar::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(900px 520px at 88% -10%, rgba(156,39,176,0.22), transparent 60%),
+      radial-gradient(640px 360px at 0% 100%, rgba(255,56,85,0.10), transparent 60%);
+    pointer-events: none;
+  }
+  .topbar > * { position: relative; z-index: 1; }
+
+  /* ---------- NAV ---------- */
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 56px;
+    padding: 26px 56px;
+    max-width: 1640px;
+    margin: 0 auto;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: -0.05em;
+    color: #fff;
+  }
+  .logo .dot {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--gradient);
+    transform: translateY(-1px);
+    box-shadow: 0 0 14px rgba(233,30,99,0.55);
+  }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    margin-left: 8px;
+  }
+  .nav-links a {
+    font: 500 13px 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.72);
+    padding: 8px 0;
+    position: relative;
+    transition: color .15s ease;
+  }
+  .nav-links a:hover { color: #fff; }
+  .nav-links a.current { color: #fff; }
+  .nav-links a.current::after {
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 1.5px;
+    background: var(--gradient);
+    border-radius: 2px;
+  }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .btn-ghost {
+    border: 1px solid rgba(255,255,255,0.45);
+    color: #fff;
+    background: transparent;
+    border-radius: 999px;
+    padding: 12px 24px;
+    font: 500 14px 'Manrope', sans-serif;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: background .15s, border-color .15s;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.08); border-color: #fff; }
+  .btn-ghost .arr {
+    width: 14px; height: 14px;
+    display: inline-block;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M4 12L12 4M12 4H6M12 4V10' stroke='black' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center / contain;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M4 12L12 4M12 4H6M12 4V10' stroke='black' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center / contain;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    max-width: 1640px;
+    margin: 0 auto;
+    padding: 64px 56px 96px;
+  }
+  .crumbs {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font: 500 12px 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 56px;
+  }
+  .crumbs a { color: rgba(255,255,255,0.55); transition: color .15s; }
+  .crumbs a:hover { color: #fff; }
+  .crumbs .sep { color: rgba(255,255,255,0.28); }
+  .crumbs .current { color: #fff; }
+
+  .hero h1 {
+    font-size: clamp(44px, 5.4vw, 76px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    font-weight: 500;
+    margin: 0 0 32px;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+  .hero h1 .accent {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero .dek {
+    font-size: 19px;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.72);
+    margin: 0 0 48px;
+    max-width: 60ch;
+    text-wrap: pretty;
+  }
+
+  /* article meta row — author / date / read time */
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    max-width: 720px;
+  }
+  .meta .author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .meta .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--gradient);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font: 700 13px 'Manrope', sans-serif;
+    color: #fff;
+    letter-spacing: 0;
+  }
+  .meta .author .name { font-size: 14px; font-weight: 600; }
+  .meta .author .role { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+  .meta .dotsep {
+    width: 3px; height: 3px; border-radius: 50%;
+    background: rgba(255,255,255,0.28);
+  }
+  .meta .item {
+    font: 500 13px 'JetBrains Mono', ui-monospace, monospace;
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 0.04em;
+  }
+  .meta .item b {
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* =========================================================
+     ARTICLE BODY
+  ========================================================= */
+  .body-wrap {
+    background: var(--paper-2);
+  }
+  .body {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 96px 56px 120px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 96px;
+    position: relative;
+  }
+  .article {
+    max-width: 68ch;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+  .article > p:first-child::first-letter {
+    /* gentle lead — no aggressive drop cap */
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .article p { margin: 0 0 22px; }
+  .article h2 {
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin: 64px 0 22px;
+    scroll-margin-top: 32px;
+  }
+  .article h2::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 2px;
+    background: var(--gradient);
+    border-radius: 2px;
+    margin-bottom: 18px;
+  }
+  .article h3.sub-h {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 40px 0 14px;
+    scroll-margin-top: 32px;
+  }
+  .article code {
+    font: 500 14px 'JetBrains Mono', ui-monospace, monospace;
+    background: rgba(10,5,50,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--ink);
+  }
+  .article blockquote {
+    margin: 28px 0;
+    padding: 4px 0 4px 24px;
+    border-left: 2px solid var(--ink);
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* =========================================================
+     SIDEBAR
+     The whole sidebar is the scroll container. It's sticky at
+     viewport-height — hover anywhere over it and the wheel scrolls
+     the sidebar, not the article. TOC, Share, Related, and CTA all
+     live here and are freely reachable without scrolling the page.
+  ========================================================= */
+  .side {
+    position: sticky;
+    top: 32px;
+    align-self: start;
+    font-size: 14px;
+    /* Independent scroll surface */
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 8px;
+    /* Hide the native scrollbar; show a thin custom one on hover. */
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color .2s ease;
+  }
+  .side:hover { scrollbar-color: var(--line-strong) transparent; }
+  .side::-webkit-scrollbar { width: 6px; }
+  .side::-webkit-scrollbar-track { background: transparent; }
+  .side::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 6px;
+    transition: background .2s ease;
+  }
+  .side:hover::-webkit-scrollbar-thumb { background: var(--line-strong); }
+
+  /* soft fade hint at top + bottom so the user knows the sidebar scrolls */
+  .side-wrap {
+    position: relative;
+  }
+  .side-wrap::before,
+  .side-wrap::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 8px;
+    height: 32px;
+    pointer-events: none;
+    z-index: 2;
+    transition: opacity .2s ease;
+  }
+  .side-wrap::before {
+    top: 0;
+    background: linear-gradient(180deg, #fff, transparent);
+    opacity: 0;
+  }
+  .side-wrap::after {
+    bottom: 0;
+    background: linear-gradient(0deg, #fff, transparent);
+  }
+  .side-wrap[data-at-top="false"]::before { opacity: 1; }
+  .side-wrap[data-at-bottom="true"]::after { opacity: 0; }
+
+  .side-label {
+    font: 500 11px 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    margin: 0 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .side-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .side-block + .side-block {
+    margin-top: 44px;
+    padding-top: 44px;
+    border-top: 1px solid var(--line);
+  }
+
+  /* TOC: vertical hairline track + gradient indicator that follows the active item.
+     No internal scroll — the whole sidebar scrolls instead. */
+  .toc {
+    position: relative;
+    padding-left: 18px;
+  }
+  .toc::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 6px; bottom: 6px;
+    width: 1.5px;
+    background: var(--line);
+    border-radius: 2px;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+            mask-image: linear-gradient(180deg, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+  }
+  .toc-indicator {
+    position: absolute;
+    left: -0.25px;
+    width: 2px;
+    background: var(--gradient);
+    border-radius: 2px;
+    transition: top .35s cubic-bezier(.2,.7,.2,1), height .35s cubic-bezier(.2,.7,.2,1);
+    box-shadow: 0 0 12px rgba(233,30,99,0.35);
+  }
+  .toc ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+  .toc a {
+    display: block;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--muted);
+    padding: 2px 0;
+    transition: color .15s ease;
+  }
+  .toc a:hover { color: var(--ink); }
+  .toc li.active > a {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .toc li.read > a {
+    color: var(--ink-2);
+  }
+  .toc li.sub > a {
+    padding-left: 14px;
+    font-size: 13px;
+    color: var(--muted-2);
+  }
+  .toc li.sub.active > a { color: var(--ink); }
+
+  /* compact sidebar Share row */
+  .side-share {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* compact sidebar Related list */
+  .side-related {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .side-related a {
+    display: block;
+    padding: 2px 0;
+  }
+  .side-related .t {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35;
+    text-wrap: balance;
+    transition: color .15s ease;
+  }
+  .side-related a:hover .t {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .side-related .m {
+    margin-top: 6px;
+    font: 500 11px 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: 0.06em;
+    color: var(--muted-2);
+    text-transform: uppercase;
+  }
+
+  /* SHARE BUTTON PRIMITIVES — reused by the article-footer and the floating dock */
+  .share-btn {
+    width: 38px; height: 38px;
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink);
+    background: #fff;
+    transition: border-color .15s ease, transform .15s ease, color .15s ease, background .15s ease;
+    cursor: pointer;
+  }
+  .share-btn:hover {
+    border-color: var(--ink);
+    transform: translateY(-1px);
+  }
+  .share-btn svg { width: 16px; height: 16px; }
+  .copy-btn {
+    height: 38px;
+    padding: 0 14px;
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    font: 500 12.5px 'Manrope', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color .15s ease;
+  }
+  .copy-btn:hover { border-color: var(--ink); }
+  .copy-btn svg { width: 14px; height: 14px; }
+
+  /* =========================================================
+     END-OF-ARTICLE FOOTER — share row at the natural decision point
+  ========================================================= */
+  .article-footer {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .article-footer .lead {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .article-footer .lead b { color: var(--ink); font-weight: 600; }
+  .article-footer .share-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+
+
+  /* tiny CTA card at the bottom of the sidebar - bonus, ties brand back in */
+  .cta-card {
+    margin-top: 40px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+    background:
+      linear-gradient(180deg, rgba(255,56,85,0.04), rgba(156,39,176,0.04)),
+      #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-card .eyebrow {
+    font: 500 11px 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    margin: 0 0 10px;
+  }
+  .cta-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--ink);
+    margin: 0 0 16px;
+    letter-spacing: -0.005em;
+  }
+  .cta-card .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    font: 500 13px 'Manrope', sans-serif;
+    color: var(--ink);
+    transition: background .15s ease, color .15s ease;
+  }
+  .cta-card .pill:hover { background: var(--ink); color: #fff; }
+
+
+  @media (max-width: 1100px) {
+    .body { grid-template-columns: 1fr; gap: 48px; }
+    .side {
+      position: static;
+      max-height: none;
+      overflow: visible;
+    }
+    .side-wrap::before, .side-wrap::after { display: none; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== TOPBAR (nav + hero) ========== -->
+<header class="topbar" data-screen-label="Hero">
+  <nav class="nav" aria-label="Primary">
+    <a href="#" class="logo" aria-label="ARG home">arg<span class="dot" aria-hidden="true"></span></a>
+    <div class="nav-links">
+      <a href="#">Services</a>
+      <a href="#">Work</a>
+      <a href="#" class="current">Blog</a>
+      <a href="#">Careers</a>
+      <a href="#">About</a>
+    </div>
+    <div class="nav-right">
+      <a href="#" class="btn-ghost">Book a Meeting <span class="arr" aria-hidden="true"></span></a>
+    </div>
+  </nav>
+
+
+  <div class="hero">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="#">Home</a>
+      <span class="sep">/</span>
+      <a href="#">Blog</a>
+      <span class="sep">/</span>
+      <span class="current">Architecture</span>
+    </nav>
+
+    <h1>How to actually enforce <span class="accent">clean architecture</span> in TypeScript</h1>
+
+    <p class="dek">You wrote the docs. You did the PR reviews. And yet, six months later, controllers are directly importing repositories and nobody noticed.</p>
+
+    <div class="meta">
+      <div class="author">
+        <span class="avatar" aria-hidden="true">MR</span>
+        <div>
+          <div class="name">Mateo Ramírez</div>
+          <div class="role">Staff Engineer, ARG</div>
+        </div>
+      </div>
+      <span class="dotsep" aria-hidden="true"></span>
+      <span class="item"><b>Nov 14, 2025</b></span>
+      <span class="dotsep" aria-hidden="true"></span>
+      <span class="item"><b>8</b> min read</span>
+      <span class="dotsep" aria-hidden="true"></span>
+      <span class="item">Architecture · TypeScript</span>
+    </div>
+
+  </div>
+</header>
+
+<!-- ========== BODY ========== -->
+<div class="body-wrap">
+  <div class="body">
+    <article class="article">
+      <p>You wrote the docs. You did the PR reviews. You explained it in the onboarding. And yet, six months later, a bunch of controllers are directly importing a repository, and nobody noticed.</p>
+
+      <h2 id="s1">The real problem with architecture</h2>
+      <p>Clean Architecture, Hexagonal, Layered — whatever you're following, the rules only exist in two places: your head, and a <code>README</code> nobody reads.</p>
+      <p>The moment a deadline hits, someone takes a shortcut. A controller calls a repository directly. A domain model imports a NestJS decorator. An infrastructure class leaks into your application layer. It's not malicious — it's invisible. Nobody gets a red light. The tests still pass. The app still ships.</p>
+      <p>Six months later, you have a codebase that looks structured but behaves like a mess.</p>
+
+      <h2 id="s2">Architecture tests — rules that enforce themselves</h2>
+      <p>The fix is to stop trusting humans to remember rules, and start writing rules that fail the build. Architecture tests run in your CI pipeline like any other test, but they assert on dependency graphs instead of behavior.</p>
+      <blockquote>"If it can break silently, it will break silently. Move the check from the README to the build."</blockquote>
+      <p>The contract is simple: <code>domain</code> must not import from <code>infrastructure</code>. <code>application</code> must not import from <code>presentation</code>. Anyone who violates the rule sees red before merge, not in production.</p>
+
+      <h3 id="s2a" class="sub-h">Asserting on dependency graphs</h3>
+      <p>Instead of asserting on outputs, you assert on shape. Which modules can import which. Which symbols are allowed to cross a boundary. Once those facts are code, they live where every other invariant lives — in the test suite.</p>
+
+      <h3 id="s2b" class="sub-h">Writing your first contract</h3>
+      <p>Start small. One rule, one layer. Pick the boundary you care about most and make a single test fail when it's crossed. Build from there.</p>
+
+      <h2 id="s3">The silent killer other libraries miss</h2>
+      <p>Most tools check direct imports and stop there. The interesting violations are transitive: a use-case imports a helper that imports an ORM model. On paper the use-case is clean. In practice, your domain layer just got a database dependency.</p>
+
+      <h3 id="s3a" class="sub-h">Transitive imports and ORM leaks</h3>
+      <p>A two-hop import is still an import. The fact that there's an innocent file in the middle doesn't change the dependency.</p>
+
+      <h3 id="s3b" class="sub-h">Walking the full graph</h3>
+      <p>Walk the full graph, not just the first edge. The tools that get this right traverse every reachable module and ask the same question at every hop.</p>
+
+      <h2 id="s4">Why this changes everything</h2>
+      <p>Once architecture is enforced by the build, the conversation shifts. Code review stops being about "did you remember the layering" and starts being about the actual design.</p>
+
+      <h3 id="s4a" class="sub-h">What code review becomes</h3>
+      <p>Reviewers stop being layering police. They get to focus on naming, edge cases, and whether the abstraction is the right one.</p>
+
+      <h3 id="s4b" class="sub-h">Onboarding gets shorter</h3>
+      <p>New engineers don't have to memorize invariants — they just see them fail. The codebase teaches itself.</p>
+
+      <h2 id="s5">Rolling it out without revolt</h2>
+      <p>You don't need a flag day. Start by reporting violations as warnings. Once the team has cleaned up what's there, flip the same rule to error. Same code, harder enforcement.</p>
+
+      <h3 id="s5a" class="sub-h">Start with warnings, end with errors</h3>
+      <p>This pattern works for every kind of architectural rule. Soft launch the constraint, give people time to react, then turn the dial up.</p>
+
+      <h2 id="s6">The takeaway</h2>
+      <p>Architecture isn't a document. It's a constraint. Anything you can't express as a constraint will erode the day someone is in a hurry.</p>
+      <p>Make the rules executable, and the rules will hold.</p>
+
+      <!-- ========== END-OF-ARTICLE FOOTER ========== -->
+      <footer class="article-footer">
+        <p class="lead">Found this useful? <b>Share it</b> with a teammate who's about to add a controller-to-repository import.</p>
+        <div class="share-row">
+          <a href="#" class="share-btn" aria-label="Share on Bluesky" title="Bluesky">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.305.902 1.602.139 1.946 0 3.094 0 3.769c0 .67.371 5.494.612 6.297.804 2.66 3.609 3.557 6.192 3.27.131-.02.265-.038.402-.052-.137.022-.271.041-.402.062-3.786.554-7.146 1.926-2.732 6.851C9.066 24.74 10.927 15.06 11.937 10.05c.005-.024.01-.047.012-.07.001-.023.005-.046.012-.07 0 0 .003-.011.005-.02L12 10.8z"/></svg>
+          </a>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" title="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zM8.339 18.337v-7.272H5.671v7.272h2.668zM7.005 9.737a1.547 1.547 0 1 0 0-3.094 1.547 1.547 0 0 0 0 3.094zM18.336 18.337v-3.985c0-2.31-.5-4.083-3.197-4.083-1.298 0-2.169.712-2.526 1.388h-.036v-1.173h-2.56v7.853h2.667v-3.886c0-1.025.195-2.018 1.467-2.018 1.253 0 1.272 1.173 1.272 2.085v3.819h2.913z"/></svg>
+          </a>
+          <a href="#" class="share-btn" aria-label="Share on X" title="X">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <button class="copy-btn" type="button">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="5" width="9" height="9" rx="1.5"/>
+              <path d="M10 5V3.5a1.5 1.5 0 0 0-1.5-1.5H3.5A1.5 1.5 0 0 0 2 3.5v5A1.5 1.5 0 0 0 3.5 10H5"/>
+            </svg>
+            Copy link
+          </button>
+        </div>
+      </footer>
+    </article>
+
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="side-wrap" id="sideWrap">
+     <div class="side" id="side" aria-label="Article navigation">
+      <div class="side-block">
+        <p class="side-label">In this article</p>
+        <nav class="toc" id="toc">
+          <span class="toc-indicator" id="tocIndicator" aria-hidden="true"></span>
+          <ul>
+            <li class="active" data-target="s1"><a href="#s1">The real problem with architecture</a></li>
+            <li class="sub" data-target="s1a"><a href="#s1a">Why README rules don't survive deadlines</a></li>
+            <li class="sub" data-target="s1b"><a href="#s1b">The shortcut that ships</a></li>
+            <li data-target="s2"><a href="#s2">Architecture tests — rules that enforce themselves</a></li>
+            <li class="sub" data-target="s2a"><a href="#s2a">Asserting on dependency graphs</a></li>
+            <li class="sub" data-target="s2b"><a href="#s2b">Writing your first contract</a></li>
+            <li data-target="s3"><a href="#s3">The silent killer other libraries miss</a></li>
+            <li class="sub" data-target="s3a"><a href="#s3a">Transitive imports and ORM leaks</a></li>
+            <li class="sub" data-target="s3b"><a href="#s3b">Walking the full graph</a></li>
+            <li data-target="s4"><a href="#s4">Why this changes everything</a></li>
+            <li class="sub" data-target="s4a"><a href="#s4a">What code review becomes</a></li>
+            <li class="sub" data-target="s4b"><a href="#s4b">Onboarding gets shorter</a></li>
+            <li data-target="s5"><a href="#s5">Rolling it out without revolt</a></li>
+            <li class="sub" data-target="s5a"><a href="#s5a">Start with warnings, end with errors</a></li>
+            <li data-target="s6"><a href="#s6">The takeaway</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="side-block">
+        <p class="side-label">Share</p>
+        <div class="side-share">
+          <a href="#" class="share-btn" aria-label="Share on Bluesky" title="Bluesky">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.305.902 1.602.139 1.946 0 3.094 0 3.769c0 .67.371 5.494.612 6.297.804 2.66 3.609 3.557 6.192 3.27.131-.02.265-.038.402-.052-.137.022-.271.041-.402.062-3.786.554-7.146 1.926-2.732 6.851C9.066 24.74 10.927 15.06 11.937 10.05c.005-.024.01-.047.012-.07.001-.023.005-.046.012-.07 0 0 .003-.011.005-.02L12 10.8z"/></svg>
+          </a>
+          <a href="#" class="share-btn" aria-label="Share on LinkedIn" title="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zM8.339 18.337v-7.272H5.671v7.272h2.668zM7.005 9.737a1.547 1.547 0 1 0 0-3.094 1.547 1.547 0 0 0 0 3.094zM18.336 18.337v-3.985c0-2.31-.5-4.083-3.197-4.083-1.298 0-2.169.712-2.526 1.388h-.036v-1.173h-2.56v7.853h2.667v-3.886c0-1.025.195-2.018 1.467-2.018 1.253 0 1.272 1.173 1.272 2.085v3.819h2.913z"/></svg>
+          </a>
+          <a href="#" class="share-btn" aria-label="Share on X" title="X">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <button class="copy-btn" type="button">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="5" width="9" height="9" rx="1.5"/>
+              <path d="M10 5V3.5a1.5 1.5 0 0 0-1.5-1.5H3.5A1.5 1.5 0 0 0 2 3.5v5A1.5 1.5 0 0 0 3.5 10H5"/>
+            </svg>
+            Copy link
+          </button>
+        </div>
+      </div>
+
+      <div class="side-block">
+        <p class="side-label">Related</p>
+        <div class="side-related">
+          <a href="#">
+            <div class="t">The five tests we wish every backend repo had on day one</div>
+            <div class="m">Architecture · 11 min</div>
+          </a>
+          <a href="#">
+            <div class="t">Branded types, the ergonomic way</div>
+            <div class="m">TypeScript · 6 min</div>
+          </a>
+          <a href="#">
+            <div class="t">Stop linting style. Lint architecture.</div>
+            <div class="m">DX · 9 min</div>
+          </a>
+        </div>
+      </div>
+
+      <div class="side-block">
+        <div class="cta-card" style="margin-top:0">
+          <p class="eyebrow">Work with ARG</p>
+          <h4>Need a team that actually keeps the architecture clean?</h4>
+          <a href="#" class="pill">Book a Meeting <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+     </div>
+
+    </aside>
+  </div>
+</div>
+
+<script>
+  // TOC active state + indicator. The whole sidebar (#side) is the scroll
+  // container — nothing inside scrolls on its own. The indicator is absolute
+  // inside #toc so it moves with the active <li>.
+  const items = [...document.querySelectorAll('#toc li')];
+  const targets = items.map(li => document.getElementById(li.dataset.target));
+  const indicator = document.getElementById('tocIndicator');
+  const side = document.getElementById('side');
+  const sideWrap = document.getElementById('sideWrap');
+
+  function update() {
+    const y = window.scrollY + window.innerHeight * 0.32;
+    let activeIdx = 0;
+    targets.forEach((t, i) => {
+      if (t && t.offsetTop <= y) activeIdx = i;
+    });
+    items.forEach((li, i) => {
+      li.classList.toggle('active', i === activeIdx);
+      li.classList.toggle('read', i < activeIdx);
+    });
+
+    // Indicator: absolute inside #toc, which lives inside the sidebar scroller.
+    const li = items[activeIdx];
+    indicator.style.top = li.offsetTop + 'px';
+    indicator.style.height = li.offsetHeight + 'px';
+  }
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+
+  // Track sidebar scroll position to show top/bottom fade hints
+  function syncFades() {
+    const atTop = side.scrollTop <= 2;
+    const atBottom = side.scrollTop + side.clientHeight >= side.scrollHeight - 2;
+    sideWrap.dataset.atTop = String(atTop);
+    sideWrap.dataset.atBottom = String(atBottom);
+  }
+  syncFades();
+  side.addEventListener('scroll', syncFades, { passive: true });
+  window.addEventListener('resize', syncFades);
+</script>
+</body>
+</html>

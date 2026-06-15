@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ARG · Why Working with Us — Refactor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a0532;
+    --navy-2: #14093f;
+    --ink: #0a0532;
+    --paper: #f6f4ef;
+    --muted: #5b596f;
+    --muted-2: #8a89a0;
+    --line: rgba(10,5,50,0.10);
+    --line-2: rgba(10,5,50,0.18);
+    --line-d: rgba(255,255,255,0.10);
+    --line-d-2: rgba(255,255,255,0.18);
+    --muted-d: rgba(255,255,255,0.66);
+    --muted-d-2: rgba(255,255,255,0.42);
+    --g1: #ff3855;
+    --g2: #e91e63;
+    --g3: #9c27b0;
+    --gradient: linear-gradient(92deg, var(--g1) 0%, var(--g2) 45%, var(--g3) 100%);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===================== HERO (context) ===================== */
+  .hero {
+    background: var(--navy);
+    color: #fff;
+    padding: 88px 96px 96px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(900px 500px at 92% 0%, rgba(156,39,176,0.20), transparent 60%),
+      radial-gradient(700px 420px at 0% 100%, rgba(255,56,85,0.13), transparent 60%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative;
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 96px;
+    align-items: start;
+  }
+  .hero h1 {
+    margin: 0;
+    font-size: 76px;
+    line-height: 1.02;
+    letter-spacing: -0.028em;
+    font-weight: 500;
+    text-wrap: balance;
+  }
+  .hero h1 .accent {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
+  .hero .sub {
+    margin: 28px 0 0;
+    max-width: 540px;
+    font-size: 18px;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.7);
+  }
+  .toc { display: grid; gap: 0; margin-top: 8px; }
+  .toc a {
+    display: grid;
+    grid-template-columns: 44px 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 22px 0;
+    border-top: 1px solid var(--line-d);
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    letter-spacing: -0.005em;
+    transition: padding .25s ease, color .2s ease;
+  }
+  .toc a:last-child { border-bottom: 1px solid var(--line-d); }
+  .toc a .n {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted-d-2);
+    letter-spacing: 0.1em;
+  }
+  .toc a .count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted-d);
+  }
+  .toc a .arrow { color: var(--muted-d); transition: transform .25s ease, color .2s ease; }
+  .toc a:hover { padding-left: 16px; }
+  .toc a:hover .arrow { transform: translateX(6px); color: #fff; }
+  .toc a.active { color: #fff; }
+  .toc a.active .n { color: transparent; background: var(--gradient); -webkit-background-clip: text; background-clip: text; }
+
+  /* ===================== WHY (refactor · compact) ===================== */
+  .why {
+    position: relative;
+    background: var(--paper);
+    padding: 96px 96px 110px;
+    overflow: hidden;
+  }
+  .why::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(800px 460px at 100% 0%, rgba(156,39,176,0.05), transparent 60%),
+      radial-gradient(700px 420px at 0% 100%, rgba(255,56,85,0.04), transparent 60%);
+    pointer-events: none;
+  }
+  .why-inner {
+    position: relative;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  /* --- Section header --- */
+  .sec-head {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 72px;
+    align-items: end;
+    margin-bottom: 56px;
+  }
+  .eyebrow-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .chapter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .chapter b {
+    color: transparent;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  .rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--line-2), transparent 70%);
+  }
+  .why h2 {
+    margin: 0;
+    font-size: 60px;
+    line-height: 1.0;
+    letter-spacing: -0.028em;
+    font-weight: 500;
+    text-wrap: balance;
+    max-width: 780px;
+  }
+  .why h2 .ink-strike {
+    position: relative;
+    display: inline-block;
+    color: var(--muted-2);
+  }
+  .why h2 .ink-strike::after {
+    content: "";
+    position: absolute;
+    left: -4px; right: -4px;
+    top: 56%;
+    height: 5px;
+    background: var(--gradient);
+    border-radius: 3px;
+    transform: rotate(-1.5deg);
+  }
+  .why h2 .accent {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .head-side {
+    padding-bottom: 10px;
+    border-left: 1px solid var(--line-2);
+    padding-left: 32px;
+  }
+  .head-side .lede {
+    margin: 0 0 18px;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 360px;
+  }
+  .signed {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--muted-2);
+    text-transform: uppercase;
+  }
+
+  /* --- Pillars (compact row) --- */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .pillar {
+    position: relative;
+    background: #fff;
+    padding: 28px 28px 24px;
+    display: flex;
+    flex-direction: column;
+    min-height: 240px;
+    overflow: hidden;
+    transition: background .25s ease;
+  }
+  .pillar:hover { background: #fafafd; }
+  .pillar::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 2px;
+    background: var(--gradient);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .35s ease;
+  }
+  .pillar:hover::after { transform: scaleX(1); }
+
+  .pillar .kpi {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .pillar .kpi .big {
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .pillar .kpi .unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .pillar h3 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+  .pillar h3 em {
+    font-style: normal;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .pillar p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .pillar .idx {
+    position: absolute;
+    top: 22px; right: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted-2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* --- Stack ticker (terminal · compact) --- */
+  .stack {
+    background: var(--navy);
+    color: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+  .stack::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(700px 320px at 100% 0%, rgba(156,39,176,0.22), transparent 60%);
+    pointer-events: none;
+  }
+  .stack-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--line-d);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted-d);
+    letter-spacing: 0.08em;
+  }
+  .dots { display: flex; gap: 6px; }
+  .dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.18); }
+  .dots span:nth-child(1) { background: #ff5f57; }
+  .dots span:nth-child(2) { background: #febc2e; }
+  .dots span:nth-child(3) { background: #28c840; }
+  .stack-head .path { color: rgba(255,255,255,0.5); }
+  .stack-head .meta { color: transparent; background: var(--gradient); -webkit-background-clip: text; background-clip: text; }
+
+  .stack-body {
+    padding: 26px 28px 28px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    align-items: start;
+    position: relative;
+  }
+  .stack-body h4 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  .stack-body h4 em {
+    font-style: normal;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .stack-body .note {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted-d);
+    max-width: 540px;
+  }
+  .lanes {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--line-d);
+    border: 1px solid var(--line-d);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .lane {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 16px 14px;
+    background: rgba(255,255,255,0.02);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .lane .k {
+    color: var(--muted-d-2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 10px;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip {
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line-d);
+    color: #fff;
+    font-size: 11px;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .chip:hover {
+    border-color: var(--line-d-2);
+    background: rgba(255,255,255,0.07);
+  }
+  .chip.hot {
+    border-color: transparent;
+    background:
+      linear-gradient(var(--navy), var(--navy)) padding-box,
+      var(--gradient) border-box;
+    border: 1px solid transparent;
+  }
+
+  /* misc */
+  .section-pin {
+    position: absolute;
+    top: 40px; left: 96px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted-2);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 1100px) {
+    .hero, .why { padding-left: 40px; padding-right: 40px; }
+    .hero-inner, .sec-head { grid-template-columns: 1fr; gap: 56px; }
+    .head-side { border-left: 0; padding-left: 0; }
+    .pillars { grid-template-columns: 1fr; }
+    .why h2 { font-size: 56px; }
+    .hero h1 { font-size: 54px; }
+    .stack-body { grid-template-columns: 1fr; gap: 32px; }
+    .contrast { grid-template-columns: 1fr; }
+    .contrast > div + div { border-left: 0; border-top: 1px solid var(--line); }
+    .section-pin { left: 40px; }
+  }
+
+  /* ===================== INTERACTIVE CONSOLE ===================== */
+  .console-body {
+    padding: 20px 24px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.85);
+    position: relative;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .clog {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.18) transparent;
+  }
+  .clog::-webkit-scrollbar { width: 6px; }
+  .clog::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 3px; }
+
+  .centry { display: flex; flex-direction: column; gap: 8px; }
+  .cprompt {
+    display: flex; align-items: center; gap: 8px;
+    color: rgba(255,255,255,0.55);
+  }
+  .cprompt .ps { color: transparent; background: var(--gradient); -webkit-background-clip: text; background-clip: text; font-weight: 600; }
+  .cprompt .cmd { color: #fff; }
+  .cresponse { padding-left: 18px; color: rgba(255,255,255,0.7); }
+  .cresponse .cap {
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 10px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .cresponse .cap b {
+    color: transparent; background: var(--gradient); -webkit-background-clip: text; background-clip: text;
+    font-weight: 600;
+  }
+  .cchips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .cchips .chip {
+    padding: 5px 9px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line-d);
+    color: #fff;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .cchips .chip.hot {
+    border-color: transparent;
+    background:
+      linear-gradient(var(--navy), var(--navy)) padding-box,
+      var(--gradient) border-box;
+    border: 1px solid transparent;
+  }
+  .chelp {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 6px 24px;
+    padding-left: 18px;
+    color: rgba(255,255,255,0.75);
+  }
+  .chelp span b { color: #fff; font-weight: 500; }
+  .chelp span i { color: rgba(255,255,255,0.45); font-style: normal; margin-left: 6px; }
+
+  .cshortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(255,255,255,0.10);
+  }
+  .cshortcuts .sc {
+    appearance: none;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--line-d);
+    color: rgba(255,255,255,0.85);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  .cshortcuts .sc:hover {
+    border-color: var(--line-d-2);
+    background: rgba(255,255,255,0.07);
+    color: #fff;
+  }
+  .cshortcuts .sc.active {
+    border-color: transparent;
+    background:
+      linear-gradient(var(--navy), var(--navy)) padding-box,
+      var(--gradient) border-box;
+    border: 1px solid transparent;
+    color: #fff;
+  }
+  .cshortcuts .lbl {
+    color: rgba(255,255,255,0.4);
+    font-size: 11px;
+    padding: 6px 4px 6px 0;
+    margin-right: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .cinput-row {
+    display: flex; align-items: center; gap: 10px;
+    padding-top: 4px;
+  }
+  .cinput-row .ps { color: transparent; background: var(--gradient); -webkit-background-clip: text; background-clip: text; font-weight: 600; }
+  .cinput {
+    flex: 1;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 4px 0;
+    caret-color: var(--g2);
+  }
+  .cinput::placeholder { color: rgba(255,255,255,0.3); }
+  .ccursor {
+    width: 8px; height: 14px;
+    background: var(--g2);
+    display: inline-block;
+    animation: blink 1s steps(2, end) infinite;
+    vertical-align: -2px;
+    margin-left: -2px;
+  }
+  .cinput-row:focus-within .ccursor { display: none; }
+  @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<!-- ============================ WHY (refactored) ============================ -->
+<section class="why" id="why" data-screen-label="Careers / Why Working with us">
+  <span class="section-pin">§ 01 · Why working with us</span>
+  <div class="why-inner">
+
+    <!-- header -->
+    <header class="sec-head">
+      <div>
+        <div class="eyebrow-row">
+          <span class="chapter"><b>01</b> Why working with us</span>
+          <span class="rule"></span>
+        </div>
+        <h2>
+          We don't do <span class="ink-strike">patchwork.</span> We design the system <span class="accent">before we write it.</span>
+        </h2>
+      </div>
+      <aside class="head-side">
+        <p class="lede">ARG is a small, opinionated engineering team. We pick the hard problems on purpose — the systems that have to be right the first time — and we go in architecture-first. Here's what that actually buys you.</p>
+        <div class="signed">— Co-founders, Lisbon · est. 2019</div>
+      </aside>
+    </header>
+
+    <!-- pillars -->
+    <div class="pillars">
+      <article class="pillar">
+        <span class="idx">01 · Method</span>
+        <div class="kpi"><span class="big">100%</span><span class="unit">of projects</span></div>
+        <h3>Diagram first. <em>Then code.</em></h3>
+        <p>Every engagement opens with a written technical plan you can argue with. Two days on architecture beats two weeks unpicking a wrong call.</p>
+      </article>
+
+      <article class="pillar">
+        <span class="idx">02 · Domain</span>
+        <div class="kpi"><span class="big">10k</span><span class="unit">tx / sec, live</span></div>
+        <h3>The systems that <em>fall over.</em></h3>
+        <p>Open-payment rails, real-time audio sync, exchange order flow. The work where "it usually works" isn't a passing grade.</p>
+      </article>
+
+      <article class="pillar">
+        <span class="idx">03 · Craft</span>
+        <div class="kpi"><span class="big">0</span><span class="unit">band-aids shipped</span></div>
+        <h3>Gold standard, <em>not the trendy.</em></h3>
+        <p>Battle-tested tools we've used in anger, not the ones with the loudest Twitter. Clean code, easy hand-off when we're done.</p>
+      </article>
+    </div>
+
+    <!-- interactive console -->
+    <div class="stack" aria-label="Interactive stack console">
+      <div class="stack-head">
+        <span class="dots"><span></span><span></span><span></span></span>
+        <span class="path">arg@gold-standard ~ /stack.sh</span>
+        <span class="meta">type a command · or click a shortcut</span>
+      </div>
+      <div class="console-body">
+        <div class="clog" id="clog" aria-live="polite">
+          <!-- entries injected by JS -->
+        </div>
+        <div class="cshortcuts" id="shortcuts">
+          <span class="lbl">try:</span>
+          <button class="sc" data-cmd="/languages">/languages</button>
+          <button class="sc" data-cmd="/databases">/databases</button>
+          <button class="sc" data-cmd="/frontend">/frontend</button>
+          <button class="sc" data-cmd="/infra">/infra</button>
+          <button class="sc" data-cmd="/observe">/observe</button>
+          <button class="sc" data-cmd="/principles">/principles</button>
+          <button class="sc" data-cmd="/all">/all</button>
+          <button class="sc" data-cmd="/clear">/clear</button>
+        </div>
+        <form class="cinput-row" id="cform" autocomplete="off">
+          <span class="ps">arg@gold-standard:~$</span>
+          <input class="cinput" id="cinput" type="text" placeholder="/help" spellcheck="false" autocapitalize="off" autofocus />
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+(() => {
+  const COMMANDS = {
+    '/languages': {
+      cap: 'Production languages we use daily',
+      chips: [['TypeScript', true], ['C# / .NET', true], ['Node', false], ['Python', false]]
+    },
+    '/databases': {
+      cap: 'Data layer · storage, caches & streams',
+      chips: [['Postgres', true], ['Redis', false], ['Kafka', true], ['ClickHouse', false], ['MongoDB', false]]
+    },
+    '/frontend': {
+      cap: 'Frontend · web & realtime UIs',
+      chips: [['React', false], ['Next.js', true], ['Tailwind', false], ['TanStack Query', false]]
+    },
+    '/infra': {
+      cap: 'Infrastructure · ship, run, rollback',
+      chips: [['Docker', false], ['Kubernetes', true], ['Terraform', false], ['GitHub Actions', false], ['AWS', false]]
+    },
+    '/observe': {
+      cap: 'Observability · know before the customer does',
+      chips: [['OpenTelemetry', true], ['Grafana', false], ['Sentry', false], ['Prometheus', false]]
+    },
+    '/principles': {
+      cap: 'How we work, in three lines',
+      chips: [['architecture-first', true], ['no patchwork', true], ['gold standard', true], ['hand-off ready', false]]
+    }
+  };
+  const ORDER = ['/languages', '/databases', '/frontend', '/infra', '/observe', '/principles'];
+
+  const clog = document.getElementById('clog');
+  const cinput = document.getElementById('cinput');
+  const cform = document.getElementById('cform');
+  const shortcuts = document.getElementById('shortcuts');
+
+  let busy = false;
+
+  const el = (tag, cls, html) => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  };
+
+  const scrollEnd = () => { clog.scrollTop = clog.scrollHeight; };
+
+  const promptLine = (cmd = '') => {
+    const row = el('div', 'cprompt');
+    row.innerHTML = `<span class="ps">arg@gold-standard:~$</span><span class="cmd"></span>`;
+    row.querySelector('.cmd').textContent = cmd;
+    return row;
+  };
+
+  const responseChips = (cap, chips) => {
+    const wrap = el('div', 'cresponse');
+    wrap.innerHTML = `<span class="cap"><b>→</b> ${cap}</span>`;
+    const row = el('div', 'cchips');
+    chips.forEach(([name, hot]) => {
+      const c = el('span', 'chip' + (hot ? ' hot' : ''));
+      c.textContent = name;
+      row.appendChild(c);
+    });
+    wrap.appendChild(row);
+    return wrap;
+  };
+
+  const helpBlock = () => {
+    const wrap = el('div', 'cresponse');
+    wrap.innerHTML = `<span class="cap"><b>→</b> available commands</span>`;
+    const grid = el('div', 'chelp');
+    [
+      ['/languages', 'show production languages'],
+      ['/databases', 'storage, caches & streams'],
+      ['/frontend',  'web & realtime UIs'],
+      ['/infra',     'ship, run, rollback'],
+      ['/observe',   'observability tools'],
+      ['/principles','how we work'],
+      ['/all',       'every category at once'],
+      ['/clear',     'reset the console'],
+      ['/help',      'show this list']
+    ].forEach(([k, d]) => {
+      const s = el('span');
+      s.innerHTML = `<b>${k}</b><i>${d}</i>`;
+      grid.appendChild(s);
+    });
+    wrap.appendChild(grid);
+    return wrap;
+  };
+
+  const typeInto = (cmd) => new Promise((resolve) => {
+    let i = 0;
+    cinput.value = '';
+    const tick = () => {
+      if (i >= cmd.length) return resolve();
+      cinput.value += cmd[i++];
+      setTimeout(tick, 28 + Math.random() * 30);
+    };
+    tick();
+  });
+
+  const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+  const renderResponse = (cmd) => {
+    if (cmd === '/help' || cmd === 'help') {
+      clog.appendChild(helpBlock());
+      return;
+    }
+    if (cmd === '/clear' || cmd === 'clear') {
+      clog.innerHTML = '';
+      bootBanner();
+      return;
+    }
+    if (cmd === '/all') {
+      ORDER.forEach(k => {
+        const def = COMMANDS[k];
+        clog.appendChild(responseChips(def.cap, def.chips));
+      });
+      return;
+    }
+    const def = COMMANDS[cmd];
+    if (def) {
+      clog.appendChild(responseChips(def.cap, def.chips));
+    } else {
+      const e = el('div', 'cresponse');
+      e.innerHTML = `<span class="cap" style="color:#ff7a90"><b>!</b> command not found</span><div style="color:rgba(255,255,255,0.55);padding-left:0">try <b style="color:#fff">/help</b> for the list of commands.</div>`;
+      clog.appendChild(e);
+    }
+  };
+
+  const runCommand = async (cmd, opts = {}) => {
+    if (busy) return;
+    busy = true;
+    cinput.placeholder = '';
+    // type into input
+    if (opts.animate !== false) await typeInto(cmd);
+    else cinput.value = cmd;
+    await wait(180);
+    // commit to log
+    clog.appendChild(promptLine(cmd));
+    scrollEnd();
+    await wait(120);
+    renderResponse(cmd);
+    scrollEnd();
+    // reset input
+    cinput.value = '';
+    cinput.placeholder = '/help';
+    // update active shortcut
+    shortcuts.querySelectorAll('.sc').forEach(b => b.classList.toggle('active', b.dataset.cmd === cmd));
+    busy = false;
+  };
+
+  const bootBanner = () => {
+    const head = el('div', 'cresponse');
+    head.innerHTML = `<span class="cap"><b>»</b> arg @ gold-standard — stack browser</span><div style="color:rgba(255,255,255,0.72)">No surprises, no migration roulette. Every tool here is something we've run at scale, on call, with someone's money on the line. Pick a category to see it.</div>`;
+    clog.appendChild(head);
+    clog.appendChild(promptLine('/help'));
+    clog.appendChild(helpBlock());
+    scrollEnd();
+  };
+
+  // wire up
+  shortcuts.addEventListener('click', (e) => {
+    const btn = e.target.closest('.sc');
+    if (!btn) return;
+    runCommand(btn.dataset.cmd);
+    cinput.focus();
+  });
+
+  cform.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = cinput.value.trim();
+    if (!v) return;
+    const norm = v.startsWith('/') ? v : '/' + v;
+    runCommand(norm, { animate: false });
+  });
+
+  document.querySelector('.stack').addEventListener('click', (e) => {
+    if (!e.target.closest('.sc') && !e.target.closest('.cinput')) cinput.focus();
+  });
+
+  bootBanner();
+})();
+</script>
+
+</body>
+</html>
