@@ -1,7 +1,7 @@
 ---
 seoTitle: Local Kubernetes with NestJS & PostgreSQL
 slug: local-kubernetes-nestjs-postgresql
-tag: Kubernetes · DevOps
+tag: DevOps
 title: From Zero to Hero: Mastering Local Kubernetes with NestJS and PostgreSQL in Minutes!
 subtitle: A practical proof of concept for deploying a NestJS logging API with PostgreSQL inside a lightweight Kubernetes cluster using k3d.
 intro: A fast, local Kubernetes walkthrough for running a NestJS API with PostgreSQL on k3d, built to make cloud-native development less intimidating.

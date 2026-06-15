@@ -1,7 +1,7 @@
 ---
 seoTitle: Angular 5 to 19 Migration Guide
 slug: angular-5-to-19-migration
-tag: Angular · Migration
+tag: Refactoring
 title: Upgrading Angular Legacy Project Version 5 to 19
 subtitle: A real-world account of migrating a heavily customized Angular 5 app to Angular 19 — NgRx, Webpack, and all.
 intro: A practical migration story covering how an Angular 5 codebase moved to Angular 19 while preserving business behavior, modernizing tooling, and reducing upgrade risk.

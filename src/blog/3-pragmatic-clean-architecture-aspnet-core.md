@@ -1,7 +1,7 @@
 ---
 seoTitle: Pragmatic Clean Architecture in ASP.NET Core
 slug: pragmatic-clean-architecture-aspnet-core
-tag: .NET · Architecture
+tag: Architecture
 title: Taming the Chaos: A Developer's Guide to Pragmatic Clean Architecture in ASP.NET Core
 subtitle: As applications grow, so does their complexity. Here's how Pragmatic Clean Architecture brings order without overengineering.
 intro: A grounded guide to applying Clean Architecture in ASP.NET Core without ceremony, focused on boundaries that make growing systems easier to change.

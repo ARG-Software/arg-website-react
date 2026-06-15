@@ -1,7 +1,7 @@
 ---
 seoTitle: The Word Sabotaging Your Engineering Team
 slug: the-word-sabotaging-your-engineering-team
-tag: Engineering · Culture
+tag: Culture
 title: The Four-Letter Word That's Sabotaging Your Engineering Team
 subtitle: Why "Just" is more dangerous than you think — and how to replace it with systems thinking.
 intro: A systems-thinking critique of the word 'just' and how it hides complexity, distorts estimates, and quietly damages engineering team communication.

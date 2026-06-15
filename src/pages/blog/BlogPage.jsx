@@ -8,6 +8,7 @@ import {
   arrowSvg,
   SEO,
   PageHeader,
+  TagFilterPills,
 } from '../../components';
 import { useScrollAnimations, useBlogSearch, useTimeOnPage } from '../../hooks';
 import { trackBlogPostClick, trackCTA, trackEvent } from '../../hooks/useAnalytics';
@@ -36,27 +37,46 @@ const searchSvg = (
 
 export default function BlogPage() {
   const [blogPosts] = useState(() => loadBlogPostsMetadata());
-  const { searchQuery, setSearchQuery, filteredPosts, debouncedQuery, resultCount } =
-    useBlogSearch(blogPosts);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const { searchQuery, setSearchQuery, filteredPosts, debouncedQuery, resultCount } = useBlogSearch(
+    blogPosts,
+    { selectedTags }
+  );
   const [page, setPage] = useState(1);
 
   const totalPages = Math.ceil(filteredPosts.length / BLOG_POSTS_PER_PAGE);
   const startIdx = (page - 1) * BLOG_POSTS_PER_PAGE;
   const paginatedPosts = filteredPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
-  const latestPosts = [...blogPosts]
-    .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0))
-    .slice(0, 3);
+  const blogTags = Array.from(
+    new Set(blogPosts.map(article => article.tag).filter(Boolean))
+  ).sort();
 
   const listRef = useRef(null);
 
-  // Reset to page 1 when search changes
+  function toggleTag(tag) {
+    const isSelected = selectedTags.includes(tag);
+
+    setSelectedTags(currentTags =>
+      currentTags.includes(tag)
+        ? currentTags.filter(currentTag => currentTag !== tag)
+        : [...currentTags, tag]
+    );
+    trackEvent(isSelected ? 'blog_tag_filter_remove' : 'blog_tag_filter_add', { tag });
+  }
+
+  function removeTag(tag) {
+    setSelectedTags(currentTags => currentTags.filter(currentTag => currentTag !== tag));
+    trackEvent('blog_tag_filter_remove', { tag });
+  }
+
+  // Reset to page 1 when filters change
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
     if (debouncedQuery) {
       trackEvent('blog_search', { query: debouncedQuery, result_count: resultCount });
     }
-  }, [debouncedQuery, resultCount]);
+  }, [debouncedQuery, resultCount, selectedTags]);
 
   // Re-observe new article rows whenever the page changes
   useEffect(() => {
@@ -111,13 +131,8 @@ export default function BlogPage() {
             title={['The thinking', 'behind the doing.']}
             subtitle="Technical insights, engineering deep dives, and industry perspectives from our team"
             breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Blog' }]}
-            sideLabel="Latest articles"
-            sideItems={latestPosts.map(article => ({
-              label: article.title,
-              to: `/blog/${article.slug}/`,
-              meta: article.readTime,
-              onClick: () => trackBlogPostClick(article.slug, article.title, 'blog_header'),
-            }))}
+            sideLabel="What we write about"
+            sideText="Pragmatic architecture, TypeScript, .NET, DevOps, AI tooling, team practices, and the engineering decisions behind reliable software."
             size="small"
           />
 
@@ -135,6 +150,7 @@ export default function BlogPage() {
                   <span className="blp-count">
                     {resultCount} blog post{resultCount !== 1 ? 's' : ''}
                     {debouncedQuery && ` matching "${debouncedQuery}"`}
+                    {selectedTags.length > 0 && ` in ${selectedTags.join(', ')}`}
                   </span>
                   <div className="blp-search">
                     <span className="blp-search-icon">{searchSvg}</span>
@@ -149,11 +165,19 @@ export default function BlogPage() {
                   </div>
                 </div>
 
+                <TagFilterPills
+                  label="Filter by topic"
+                  tags={blogTags}
+                  selectedTags={selectedTags}
+                  onToggle={toggleTag}
+                  onRemove={removeTag}
+                />
+
                 {filteredPosts.length === 0 ? (
                   <p className="blp-empty">
                     {blogPosts.length === 0
                       ? 'No blog posts yet — check back soon.'
-                      : `No posts found matching "${debouncedQuery}"`}
+                      : 'No posts found for the selected filters.'}
                   </p>
                 ) : (
                   <>

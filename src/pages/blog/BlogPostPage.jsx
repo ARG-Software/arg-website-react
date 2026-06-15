@@ -59,63 +59,40 @@ const slugify = text =>
     .replace(/(^-|-$)/g, '');
 
 const renderBlock = (block, i) => {
-  const delay = `${(i % 5) * 0.05}s`;
   switch (block.type) {
     case 'lead':
       return (
-        <p key={i} className="bp-lead" data-animate="fade-up" style={{ transitionDelay: delay }}>
+        <p key={i} className="bp-lead" data-animate="fade-up">
           {block.text}
         </p>
       );
     case 'paragraph':
       return (
-        <p key={i} className="bp-p" data-animate="fade-up" style={{ transitionDelay: delay }}>
+        <p key={i} className="bp-p" data-animate="fade-up">
           {block.text}
         </p>
       );
     case 'heading':
       return (
-        <h2
-          key={i}
-          id={slugify(block.text)}
-          className="bp-h2"
-          data-animate="fade-up"
-          style={{ transitionDelay: delay }}
-        >
+        <h2 key={i} id={slugify(block.text)} className="bp-h2" data-animate="fade-up">
           {block.text}
         </h2>
       );
     case 'subheading':
       return (
-        <h3
-          key={i}
-          id={slugify(block.text)}
-          className="bp-h3"
-          data-animate="fade-up"
-          style={{ transitionDelay: delay }}
-        >
+        <h3 key={i} id={slugify(block.text)} className="bp-h3" data-animate="fade-up">
           {block.text}
         </h3>
       );
     case 'callout':
       return (
-        <blockquote
-          key={i}
-          className="bp-callout"
-          data-animate="fade-up"
-          style={{ transitionDelay: delay }}
-        >
+        <blockquote key={i} className="bp-callout" data-animate="fade-up">
           {block.text}
         </blockquote>
       );
     case 'code':
       return (
-        <div
-          key={i}
-          className="bp-code-wrap"
-          data-animate="fade-up"
-          style={{ transitionDelay: delay }}
-        >
+        <div key={i} className="bp-code-wrap" data-animate="fade-up">
           <div className="bp-code-bar">
             <span className="bp-code-lang">{block.lang}</span>
           </div>
@@ -128,12 +105,7 @@ const renderBlock = (block, i) => {
       return (
         <ul key={i} className="bp-list">
           {block.items.map((item, j) => (
-            <li
-              key={j}
-              className="bp-list-item"
-              data-animate="fade-up"
-              style={{ transitionDelay: `${j * 0.07}s` }}
-            >
+            <li key={j} className="bp-list-item" data-animate="fade-up">
               {item.label ? <span className="bp-list-label">{item.label}</span> : null} {item.text}
             </li>
           ))}
@@ -225,10 +197,6 @@ export default function BlogPostPage() {
     3
   );
 
-  const recentPosts = BLOG_POSTS.filter(p => p.slug !== slug)
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 3);
-
   const titleWords = BLOG_POST.title.split(' ');
   const titleBreak = Math.floor(titleWords.length * 0.55);
   const titleLine1 = titleWords.slice(0, titleBreak).join(' ');
@@ -309,40 +277,40 @@ export default function BlogPostPage() {
           <div
             data-animate-scope
             data-animate-default-preset="fade-up"
-            data-animate-default-stagger="150"
+            data-animate-default-stagger="0"
           >
             <section className="bp-body background-color-white padding-section-xlarge border-radius-all">
               <div className="bp-body-inner container padding-global">
-                <aside className="bp-sidebar-left">
-                  {sectionLinks.length > 0 && (
-                    <>
-                      <div className="bp-sidebar-left-label">In this article</div>
-                      {sectionLinks.map((block, i) => (
-                        <a
-                          key={i}
-                          href={`#${slugify(block.text)}`}
-                          className={`bp-section-link ${activeSection === slugify(block.text) ? 'is-active' : ''}`}
-                          onClick={event => {
-                            event.preventDefault();
-                            setIsClicking(true);
-                            trackEvent('blog_toc_click', { section: block.text });
-                            scrollToHash(slugify(block.text), { mobileMenuDelay: 0 });
-                            setActiveSection(slugify(block.text));
-                            setTimeout(() => setIsClicking(false), 1000);
-                          }}
-                        >
-                          {block.text}
-                        </a>
-                      ))}
-                    </>
-                  )}
-                </aside>
-
                 <article className="bp-content">
                   {BLOG_POST.content.map((block, i) => renderBlock(block, i))}
                 </article>
 
                 <aside className="bp-sidebar-right">
+                  {sectionLinks.length > 0 && (
+                    <div className="bp-sidebar-section bp-sidebar-section--toc">
+                      <span className="bp-sidebar-section-label">In this article</span>
+                      <nav className="bp-section-links" aria-label="Article sections">
+                        {sectionLinks.map((block, i) => (
+                          <a
+                            key={i}
+                            href={`#${slugify(block.text)}`}
+                            className={`bp-section-link ${activeSection === slugify(block.text) ? 'is-active' : ''}`}
+                            onClick={event => {
+                              event.preventDefault();
+                              setIsClicking(true);
+                              trackEvent('blog_toc_click', { section: block.text });
+                              scrollToHash(slugify(block.text), { mobileMenuDelay: 0 });
+                              setActiveSection(slugify(block.text));
+                              setTimeout(() => setIsClicking(false), 1000);
+                            }}
+                          >
+                            {block.text}
+                          </a>
+                        ))}
+                      </nav>
+                    </div>
+                  )}
+
                   <span className="bp-sidebar-share-label">Share</span>
                   <div className="bp-share-links">
                     <a
@@ -465,35 +433,6 @@ export default function BlogPostPage() {
                     ) : (
                       <p className="bp-sidebar-empty">No related articles found.</p>
                     )}
-                  </div>
-
-                  {/* Recent Updates */}
-                  <div className="bp-sidebar-section">
-                    <span className="bp-sidebar-section-label">Recent Updates</span>
-                    <div className="bp-sidebar-articles">
-                      {recentPosts.map(post => (
-                        <AppLink
-                          key={post.slug}
-                          to={`/blog/${post.slug}/`}
-                          className="bp-sidebar-article"
-                          trackEvent="blog_recent_click"
-                          trackData={{ blog_post_slug: post.slug, source_slug: slug }}
-                        >
-                          {post.image && (
-                            <img
-                              src={post.image}
-                              alt=""
-                              className="bp-sidebar-article-thumb"
-                              loading="lazy"
-                            />
-                          )}
-                          <div className="bp-sidebar-article-body">
-                            <span className="bp-sidebar-article-title">{post.title}</span>
-                            <span className="bp-sidebar-article-date">{post.date}</span>
-                          </div>
-                        </AppLink>
-                      ))}
-                    </div>
                   </div>
                 </aside>
               </div>

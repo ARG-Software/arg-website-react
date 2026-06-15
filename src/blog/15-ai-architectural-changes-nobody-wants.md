@@ -1,7 +1,7 @@
 ---
 seoTitle: AI Architectural Changes Nobody Wants
 slug: ai-architectural-changes-nobody-wants
-tag: Architecture · AI
+tag: AI
 title: Everyone Wants AI. Nobody Wants the Architectural Changes It Requires.
 subtitle: Most AI initiatives quietly stall after the demo. Here's the architectural work that makes AI viable in production — and why teams resist it.
 intro: A sober look at why AI demos stall in production and the architectural changes teams need before intelligent workflows can scale.

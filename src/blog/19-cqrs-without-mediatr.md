@@ -1,7 +1,7 @@
 ---
 seoTitle: CQRS in .NET Without MediatR
 slug: cqrs-without-mediatr
-tag: .NET · Architecture
+tag: Refactoring
 title: .NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think
 subtitle: You've been paying a framework tax for years. Here's how to stop — and build something reliable in an afternoon.
 intro: A practical exit plan for replacing MediatR in .NET CQRS codebases with a simpler implementation that keeps ownership inside the application.

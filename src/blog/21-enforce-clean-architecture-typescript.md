@@ -1,7 +1,7 @@
 ---
 seoTitle: Enforce Clean Architecture in TypeScript
 slug: enforce-clean-architecture-typescript
-tag: TypeScript · Architecture
+tag: Architecture
 title: How to Actually Enforce Clean Architecture in TypeScript
 subtitle: You wrote the docs. You did the PR reviews. And yet, six months later, controllers are directly importing repositories and nobody noticed.
 intro: A practical way to turn Clean Architecture rules from README guidance into executable checks that stop boundary violations automatically.

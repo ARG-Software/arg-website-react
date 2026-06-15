@@ -1,7 +1,7 @@
 ---
 seoTitle: API Architecture Styles for Developers
 slug: api-architecture-styles-every-developer-should-know
-tag: Architecture · API
+tag: Architecture
 title: API Architecture Styles Every Developer Should Know
 subtitle: Choosing the wrong API style can significantly delay your project. Here's your guide to essential API styles and when to use each one.
 intro: A decision guide for REST, GraphQL, gRPC, webhooks, and other API styles so teams choose interfaces that match the problem.

@@ -1,7 +1,7 @@
 ---
 seoTitle: Nx + NestJS Monorepo Boilerplate
 slug: nx-nestjs-monorepo-boilerplate
-tag: NestJS · Architecture
+tag: Architecture
 title: Scaling with Confidence: A Practical Nx + NestJS Monorepo Boilerplate
 subtitle: Managing multiple repositories quickly becomes a headache. Here's how we built a production-ready monorepo with Nx and NestJS.
 intro: A pragmatic look at using Nx and NestJS to keep backend services organized, shared code manageable, and teams confident as applications grow.

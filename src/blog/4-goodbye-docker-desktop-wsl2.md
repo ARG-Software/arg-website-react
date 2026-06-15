@@ -1,7 +1,7 @@
 ---
 seoTitle: Run Docker Natively on Windows with WSL2
 slug: goodbye-docker-desktop-wsl2
-tag: DevOps · Windows
+tag: DevOps
 title: Goodbye Docker Desktop: Run Linux & Docker Natively on Windows with WSL2
 subtitle: How we eliminated Docker Desktop from our Windows machines and got native Linux performance without leaving Windows.
 intro: How a Windows development setup can drop Docker Desktop and still run Linux tooling and containers efficiently through WSL2.

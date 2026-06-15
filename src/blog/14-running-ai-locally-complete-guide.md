@@ -1,7 +1,7 @@
 ---
 seoTitle: Running AI Locally: A Complete Guide
 slug: running-ai-locally-complete-guide
-tag: AI · DevOps
+tag: AI
 title: Break Free from ChatGPT: Your Complete Guide to Running AI on Your Own Computer
 subtitle: Running large language models directly on your own computer isn't just for tech wizards anymore — with the right tools, anyone can have their own private AI assistant.
 intro: A practical guide to running AI locally for privacy, cost control, and experimentation without depending entirely on hosted assistants.

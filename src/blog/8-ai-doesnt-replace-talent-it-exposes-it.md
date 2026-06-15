@@ -1,7 +1,7 @@
 ---
 seoTitle: AI Does Not Replace Talent, It Exposes It
 slug: ai-doesnt-replace-talent-it-exposes-it
-tag: AI · Culture
+tag: AI
 title: The Great Professional Reckoning: AI Doesn't Replace Talent - It Exposes It
 subtitle: Stop debating whether AI will take your job. Start asking what happens when AI strips away all the professional theater and reveals what you actually contribute.
 intro: An argument that AI is exposing the difference between real contribution and professional theater, not simply replacing skilled people.

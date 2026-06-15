@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 
-export function useBlogSearch(posts, { debounceMs = 200 } = {}) {
+export function useBlogSearch(posts, { debounceMs = 200, selectedTags = [] } = {}) {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
@@ -10,15 +10,18 @@ export function useBlogSearch(posts, { debounceMs = 200 } = {}) {
   }, [searchQuery, debounceMs]);
 
   const filteredPosts = useMemo(() => {
-    if (!debouncedQuery.trim()) return posts;
+    const selectedTagSet = new Set(selectedTags);
     const q = debouncedQuery.toLowerCase();
+
     return posts.filter(
       post =>
-        post.title.toLowerCase().includes(q) ||
-        post.tag.toLowerCase().includes(q) ||
-        post.excerpt.toLowerCase().includes(q)
+        (selectedTagSet.size === 0 || selectedTagSet.has(post.tag)) &&
+        (!q.trim() ||
+          post.title.toLowerCase().includes(q) ||
+          post.tag.toLowerCase().includes(q) ||
+          post.excerpt.toLowerCase().includes(q))
     );
-  }, [posts, debouncedQuery]);
+  }, [posts, debouncedQuery, selectedTags]);
 
   const isSearching = debouncedQuery !== '' && debouncedQuery !== searchQuery;
 
