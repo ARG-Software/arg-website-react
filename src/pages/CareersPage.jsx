@@ -11,6 +11,7 @@ import {
   PageHeader,
   CareerValueCard,
   CareersFounderCard,
+  TechStackConsole,
 } from '../components';
 import JOBS from '../data/jobs.json';
 import '../styles/careers.css';
@@ -63,11 +64,32 @@ const FOUNDERS = [
   },
 ];
 
-const WHY_US_CONTENT = {
-  title: 'Why Working with us?',
-  description:
-    "At ARG, we don't do 'patchwork.' We are architecture-first. Working with us means tackling complex problems in high-concurrency environments, from open-payment protocols to real-time audio synchronization. You'll be part of a team that prioritizes clean code, scalability, and the 'Gold Standard' tech stack—giving you the space to build systems that handle thousands of transactions per second with total confidence.",
-};
+const WHY_US_PILLARS = [
+  {
+    index: '01 - Method',
+    metric: '100%',
+    unit: 'of projects',
+    title: 'Diagram first. Then code.',
+    description:
+      'Every engagement opens with a written technical plan you can argue with. Two days on architecture beats two weeks unpicking a wrong call.',
+  },
+  {
+    index: '02 - Domain',
+    metric: '10k',
+    unit: 'tx/sec, live',
+    title: 'The systems that fall over.',
+    description:
+      'Open-payment rails, real-time audio sync, exchange order flow. The work where it usually works is not a passing grade.',
+  },
+  {
+    index: '03 - Craft',
+    metric: '0',
+    unit: 'band-aids shipped',
+    title: 'Gold standard, not trendy.',
+    description:
+      'Battle-tested tools we have used in anger, not the ones with the loudest feed. Clean code, easy hand-off when we are done.',
+  },
+];
 
 export default function CareersPage() {
   const [openJobId, setOpenJobId] = useState(null);
@@ -134,10 +156,43 @@ export default function CareersPage() {
               className="cp-whyus-section padding-section-xlarge border-radius-all background-color-white"
             >
               <div className="container padding-global cp-whyus-inner">
-                <div className="cp-whyus-content" data-animate="fade-up">
-                  <h2 className="cp-whyus-title">{WHY_US_CONTENT.title}</h2>
-                  <p className="cp-whyus-desc">{WHY_US_CONTENT.description}</p>
+                <header className="cp-whyus-header" data-animate="fade-up">
+                  <div>
+                    <h2 className="cp-whyus-title">
+                      We don't do <span className="cp-whyus-strike">patchwork.</span> We design the
+                      system <span>before we write it.</span>
+                    </h2>
+                  </div>
+                  <aside className="cp-whyus-side">
+                    <p>
+                      ARG is a small, opinionated engineering team. We pick the hard problems on
+                      purpose - the systems that have to be right the first time - and we go in
+                      architecture-first.
+                    </p>
+                    <span>Co-founders, Lisbon - est. 2019</span>
+                  </aside>
+                </header>
+
+                <div className="cp-whyus-pillars">
+                  {WHY_US_PILLARS.map((pillar, index) => (
+                    <article
+                      key={pillar.index}
+                      className="cp-whyus-pillar"
+                      data-index={String(index + 1).padStart(2, '0')}
+                      data-animate-order={index}
+                    >
+                      <span className="cp-whyus-pillar-index">{pillar.index}</span>
+                      <div className="cp-whyus-kpi">
+                        <span>{pillar.metric}</span>
+                        <small>{pillar.unit}</small>
+                      </div>
+                      <h3>{pillar.title}</h3>
+                      <p>{pillar.description}</p>
+                    </article>
+                  ))}
                 </div>
+
+                <TechStackConsole className="cp-whyus-console" />
               </div>
             </section>
 
@@ -175,10 +230,11 @@ export default function CareersPage() {
               className="cp-jobs-section padding-section-xlarge border-radius-all background-color-white"
             >
               <div className="container padding-global cp-jobs-inner">
-
-              <div className="cp-section-header" data-animate="fade-up">
+                <div className="cp-section-header" data-animate="fade-up">
                   <h2 className="cp-section-title">
-                    <span className="cp-line">{JOBS.length > 0 ? 'Open Positions' : 'We Are Currently Not Hiring'}</span>
+                    <span className="cp-line">
+                      {JOBS.length > 0 ? 'Open Positions' : 'We Are Currently Not Hiring'}
+                    </span>
                   </h2>
                 </div>
 
@@ -199,7 +255,8 @@ export default function CareersPage() {
                   <div className="cp-jobs-empty" data-animate="fade-up">
                     <div className="cp-jobs-empty-header">
                       <h3>
-                        Although we are not hiring you can talk to us. <span>Talk to a founder directly.</span>
+                        Although we are not hiring you can talk to us.{' '}
+                        <span>Talk to a founder directly.</span>
                       </h3>
                       <p>
                         No recruiter wall, no ATS black hole. If you think you'd fit at ARG, the
@@ -236,7 +293,7 @@ export default function CareersPage() {
           <div className="section-divider-wrapper">
             <SectionDivider variant="default" hideOnMobile={false} />
           </div>
-          <div className="page-cta-wrapper background-color-dark" id="contact" >
+          <div className="page-cta-wrapper" id="contact">
             <CTASection
               title="Didn't find any match,"
               titleHighlight="reach to us anyway!"

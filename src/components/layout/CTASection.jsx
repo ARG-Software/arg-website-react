@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function CTASection({
   title = 'Ready to build',
   titleHighlight = 'with us?',
@@ -14,28 +12,12 @@ export function CTASection({
   includePadding = true,
   id,
   renderTitle,
-  // Backward compatibility - will be removed later
-  buttonText,
   animationClass = '',
-  // Second button (optional)
   secondButtonTextNotHover,
   secondButtonTextHover,
   secondButtonLink,
   onSecondaryClick,
 }) {
-  // Handle backward compatibility for buttonText
-  const notHoverText = buttonText || buttonTextNotHover;
-  let hoverText = buttonTextHover;
-
-  // Map hover text for backward compatibility
-  if (buttonText === 'Book a Meeting') {
-    hoverText = "Let's meet";
-  } else if (buttonText === 'Show me more') {
-    hoverText = 'View Portfolio';
-  } else if (buttonText && !buttonTextHover) {
-    hoverText = 'Get started';
-  }
-
   const innerContent = (
     <div className="container-large">
       <div className="padding-bottom padding-80-40"></div>
@@ -83,10 +65,7 @@ export function CTASection({
             </div>
           )}
           <div className="padding-bottom padding-48"></div>
-          <div
-            className="cta-buttons"
-            style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}
-          >
+          <div className="cta-buttons">
             <a
               href={buttonLink}
               target="_blank"
@@ -96,8 +75,8 @@ export function CTASection({
               onClick={onPrimaryClick}
             >
               <div className="button-base_text_wrap">
-                <div className="button-base__button-text">{notHoverText}</div>
-                <div className="button-base__button-text is-animated">{hoverText}</div>
+                <div className="button-base__button-text">{buttonTextNotHover}</div>
+                <div className="button-base__button-text is-animated">{buttonTextHover}</div>
               </div>
             </a>
             {secondButtonLink && (

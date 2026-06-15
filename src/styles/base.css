@@ -269,9 +269,6 @@ html::-webkit-scrollbar-corner {
     border: 4px solid transparent !important;
     border-top-color: #111 !important;
   }
-  .cta-wrapper {
-    border-radius: 1.25rem !important;
-  }
   .typeform-wrapper-o5kxhiic {
     border-radius: 1.25rem !important;
     overflow: hidden !important;
@@ -4103,8 +4100,11 @@ figcaption {
 .section_cta {
 }
 .cta-wrapper {
-  background-color: #ffffff0d;
-  border: 2px solid #ffffff0d;
+  background:
+    radial-gradient(52rem 28rem at 100% 0%, rgba(121, 4, 253, 0.22), transparent 60%),
+    radial-gradient(38rem 24rem at 0% 100%, rgba(240, 6, 13, 0.12), transparent 62%),
+    #0c002e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: 0;
   padding: 0;
   min-height: 65vh;
@@ -4112,6 +4112,15 @@ figcaption {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+.cta-wrapper::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 34%);
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
 }
 .cta-content {
   text-align: center;
@@ -4120,6 +4129,27 @@ figcaption {
   align-items: center;
   padding: 5rem 7rem;
   display: flex;
+  position: relative;
+  z-index: 1;
+}
+.cta-wrapper .heading-style-h1 {
+  color: #fff;
+}
+.cta-wrapper .cta-subtitle {
+  color: rgba(255, 255, 255, 0.72);
+}
+.cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+.cta-wrapper .button-base {
+  border-color: rgba(255, 255, 255, 0.82);
+  color: #fff;
+}
+.cta-wrapper .button-base:hover {
+  border-color: #fff;
 }
 .footer {
   padding-left: 4.75rem;
@@ -4331,20 +4361,6 @@ figcaption {
   min-width: auto;
   padding-left: 2rem;
   padding-right: 2rem;
-}
-.button-base__overlap {
-  background-color: #fff;
-  width: 0%;
-  line-height: 0;
-  position: absolute;
-  inset: 0%;
-  overflow: hidden;
-}
-.button-base__overlap.overlap--move-from-top {
-  width: 100%;
-  height: 100%;
-  inset: 0% 0% auto;
-  transform: translateY(-100%);
 }
 .button-base__button-text {
   justify-content: center;
@@ -6106,7 +6122,7 @@ figcaption {
 
   .cta-wrapper {
     border-style: none;
-    border-radius: 0;
+    border-radius: 1.25rem;
     padding: 5rem 0 6.125rem;
     min-height: 60vh;
     width: 100%;
@@ -6116,7 +6132,28 @@ figcaption {
   }
   .cta-content {
     text-align: center;
-    align-items: flex-start;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding: 3.5rem 2rem;
+  }
+  .section_cta .heading_wrap {
+    text-align: center !important;
+    align-items: center !important;
+    display: flex !important;
+    flex-direction: column;
+  }
+  .section_cta .header-animation {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100%;
+  }
+  .section_cta .header-animation h2 {
+    text-align: center !important;
+    width: 100%;
+  }
+  .section_cta .cta-content .button-base {
+    align-self: center !important;
   }
   .footer {
     padding-left: 2.2rem;
@@ -6810,53 +6847,6 @@ figcaption {
   .line-separate.is--work {
     margin-top: 11rem;
   }
-}
-
-/* ===== SHARED COMPONENT STYLES ===== */
-
-/* Breadcrumb */
-.breadcrumb-nav {
-  margin-bottom: 1.75rem;
-}
-
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.breadcrumb li {
-  display: flex;
-  align-items: center;
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  color: rgba(255, 255, 255, 0.42);
-  font-family: Neuemontreal, sans-serif;
-  text-transform: uppercase;
-}
-.breadcrumb li:not(:last-child)::after {
-  content: '/';
-  margin-left: 0.75rem;
-  color: rgba(255, 255, 255, 0.25);
-}
-.breadcrumb a {
-  color: rgba(255, 255, 255, 0.42);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-.breadcrumb a:hover {
-  color: #fff;
-}
-.breadcrumb .tag {
-  color: #fff;
-  border: 0;
-  padding: 0;
-  border-radius: 0;
-}
-.breadcrumb .is-current {
-  color: #fff;
 }
 
 /* ===== NEW FOOTER (Zimo two-panel) ===== */

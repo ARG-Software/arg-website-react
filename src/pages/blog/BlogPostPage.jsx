@@ -157,7 +157,12 @@ const renderBlock = (block, i) => {
         </ul>
       );
     case 'image':
-      break;
+      return (
+        <figure key={i} className="bp-figure" data-animate="fade-up">
+          <img src={block.src} alt={block.alt} className="bp-image" loading="lazy" />
+          {block.alt ? <figcaption>{block.alt}</figcaption> : null}
+        </figure>
+      );
     default:
       return null;
   }

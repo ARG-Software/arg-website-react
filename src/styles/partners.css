@@ -633,34 +633,6 @@
     margin-bottom: 2rem;
   }
 
-  /* CTA section tablet overrides (shared with old partners.css) */
-  .section_cta .heading_wrap {
-    text-align: center !important;
-    align-items: center !important;
-    display: flex !important;
-    flex-direction: column;
-  }
-
-  .section_cta .header-animation {
-    display: flex !important;
-    justify-content: center !important;
-    width: 100%;
-  }
-
-  .section_cta .header-animation h2 {
-    text-align: center !important;
-    width: 100%;
-  }
-
-  .section_cta .cta-content {
-    align-items: center !important;
-    display: flex !important;
-    flex-direction: column;
-  }
-
-  .section_cta .cta-content .button-base {
-    align-self: center !important;
-  }
 }
 
 @media screen and (max-width: 479px) {

@@ -120,23 +120,153 @@
 }
 /* Why Us Section */
 
-.cp-whyus-content {
-  margin: 0 auto;
+.cp-whyus-inner {
+  display: block !important;
+}
+.cp-whyus-header {
+  align-items: end;
+  display: grid;
+  gap: clamp(2rem, 6vw, 6rem);
+  grid-template-columns: minmax(0, 1.3fr) minmax(18rem, 0.7fr);
+  margin-bottom: 4rem;
 }
 .cp-whyus-title {
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2.5rem, 5.4vw, 5.5rem);
   font-weight: 400;
-  line-height: 1.15;
-  color: #000;
-  margin: 0 0 2rem;
-  letter-spacing: -0.01em;
-}
-.cp-whyus-desc {
-  font-size: 1.125rem;
-  line-height: 1.8;
-  color: #000;
+  line-height: 1.02;
+  color: #0c002e;
   margin: 0;
+  letter-spacing: -0.035em;
+  max-width: 12ch;
+}
+.cp-whyus-title span:not(.cp-whyus-strike) {
+  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.cp-whyus-strike {
+  color: rgba(12, 0, 46, 0.32);
+  position: relative;
+}
+.cp-whyus-strike::after {
+  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  border-radius: 999px;
+  content: '';
+  height: 0.08em;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 54%;
+}
+.cp-whyus-side {
+  border-left: 1px solid rgba(12, 0, 46, 0.1);
+  padding-left: 2rem;
+}
+.cp-whyus-side p {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  color: #555;
+  font-family: Neuemontreal, sans-serif;
+  margin: 0;
+}
+.cp-whyus-side span {
+  color: #888;
+  display: block;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  margin-top: 1.25rem;
+  text-transform: uppercase;
+}
+.cp-whyus-pillars {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 1.5rem;
+}
+.cp-whyus-pillar {
+  background: #fafafd;
+  border: 1px solid rgba(12, 0, 46, 0.08);
+  border-radius: 1.25rem;
+  color: #0c002e;
+  min-height: 20rem;
+  overflow: hidden;
+  padding: 1.75rem;
+  position: relative;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+.cp-whyus-pillar::after {
+  color: rgba(12, 0, 46, 0.06);
+  content: attr(data-index);
+  font-family: Neuemontreal, sans-serif;
+  font-size: 5rem;
+  line-height: 1;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+}
+.cp-whyus-pillar:hover {
+  border-color: rgba(12, 0, 46, 0.18);
+  box-shadow: 0 1rem 2rem -1.4rem rgba(12, 0, 46, 0.22);
+  transform: translateY(-0.125rem) !important;
+}
+.cp-whyus-pillar-index {
+  color: #888;
+  display: block;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+.cp-whyus-kpi {
+  align-items: end;
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2.25rem;
+}
+.cp-whyus-kpi span {
+  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: Neuemontreal, sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+}
+.cp-whyus-kpi small {
+  color: #888;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  max-width: 5.5rem;
+  text-transform: uppercase;
+}
+.cp-whyus-pillar h3 {
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: -0.018em;
+  line-height: 1.18;
+  margin: 0 0 0.875rem;
+}
+.cp-whyus-pillar p {
+  color: #555;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  margin: 0;
+}
+.cp-whyus-console {
+  margin-top: 1.5rem;
 }
 
 /* Jobs Section */
@@ -330,7 +460,6 @@
   min-height: 100px;
 }
 
-.cp-jobs-loading,
 .cp-jobs-empty {
   color: #0c002e;
   font-size: 1rem;
@@ -517,9 +646,6 @@
 .cp-job-form .button-base:hover {
   color: #0c002e;
 }
-.cp-job-form .button-base__overlap {
-  background-color: #000;
-}
 .cp-job-form .button-base_text_wrap {
   position: relative !important;
   overflow: hidden !important;
@@ -545,6 +671,22 @@
 
 /* Responsive */
 @media screen and (max-width: 991px) {
+  .cp-whyus-header {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+  .cp-whyus-side {
+    border-left: 0;
+    border-top: 1px solid rgba(12, 0, 46, 0.1);
+    padding-left: 0;
+    padding-top: 2rem;
+  }
+  .cp-whyus-title {
+    max-width: 14ch;
+  }
+  .cp-whyus-pillars {
+    grid-template-columns: 1fr;
+  }
   .cp-values-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -556,6 +698,15 @@
   }
 }
 @media screen and (max-width: 767px) {
+  .cp-whyus-header {
+    margin-bottom: 2.75rem;
+  }
+  .cp-whyus-title {
+    font-size: clamp(2.25rem, 11vw, 3.5rem);
+  }
+  .cp-whyus-pillar {
+    min-height: auto;
+  }
   .cp-values-grid {
     grid-template-columns: 1fr;
   }

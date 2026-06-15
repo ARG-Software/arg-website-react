@@ -35,3 +35,4 @@ export { BlogArticleSidebar } from './blog/BlogArticleSidebar';
 export { SocialShareButtons } from './blog/SocialShareButtons';
 export { CareerValueCard } from './careers/CareerValueCard';
 export { CareersFounderCard } from './careers/CareersFounderCard';
+export { TechStackConsole } from './careers/TechStackConsole';
