@@ -47,7 +47,7 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── index.js        # Barrel export for all reusable components
     │   ├── cards/          # ProjectItem
     │   ├── grids/          # FilterGrid, StatsGrid, Timeline
-    │   ├── hero/           # SubpageHero
+    │   ├── hero/           # PageHeader
     │   ├── icons/          # Logo, Mark, MarkName, SocialIcons, ValueIcons
     │   ├── layout/         # CTASection, Footer, LoadingScreen, Marquee, SectionDivider
     │   ├── navigation/     # AppLink, Breadcrumb, Navbar, NavMenu

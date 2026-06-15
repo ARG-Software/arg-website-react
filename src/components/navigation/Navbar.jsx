@@ -24,7 +24,7 @@ export function Navbar({ variant = 'transparent', position: _position = 'absolut
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const hero = document.querySelector(
-        '.hero_wrap, .subpage-hero, .pp-hero, .blp-hero, .bp-hero, .prp-hero'
+        '.hero_wrap, .page-header, .pp-hero, .blp-hero, .bp-hero, .prp-hero'
       );
 
       let scrolled = false;

@@ -44,7 +44,7 @@ npm run preview      # Preview production build
     ├── components/               # Reusable components (barrel export in index.js)
     │   ├── cards/                # ProjectItem
     │   ├── grids/                # FilterGrid, StatsGrid, Timeline
-    │   ├── hero/                 # SubpageHero
+    │   ├── hero/                 # PageHeader
     │   ├── icons/                # Logo, Mark, SocialIcons, ValueIcons
     │   ├── layout/               # CTASection, Footer, LoadingScreen, Marquee, SectionDivider
     │   ├── navigation/           # AppLink, Navbar, NavMenu, Breadcrumb

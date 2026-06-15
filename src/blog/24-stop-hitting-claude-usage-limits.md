@@ -3,6 +3,7 @@ slug: stop-hitting-claude-usage-limits
 tag: Claude · Productivity
 title: Stop Hitting Claude's Usage Limits: How to Hack Your Tokens
 subtitle: Most people blame Claude for having strict limits. We used to be one of them.
+intro: A token-focused guide to using Claude more efficiently by reducing conversation bloat, reusing context, and choosing the right workflow.
 date: March 15, 2026
 readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/stop-hitting-claudes-usage-limits-how-to-hack-your-tokens

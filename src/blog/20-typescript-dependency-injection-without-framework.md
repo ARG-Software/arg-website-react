@@ -4,6 +4,7 @@ slug: typescript-dependency-injection-without-framework
 tag: TypeScript · Architecture
 title: TypeScript Dependency Injection Without the Framework (And Why You Might Prefer It)
 subtitle: You've seen the decorators. You've wrestled with reflect-metadata. What if you didn't need any of it?
+intro: A framework-free TypeScript dependency injection walkthrough that explains the pattern by building it with plain language features.
 date: March 3, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/typescript-dependency-injection-without-the-framework-and-why-you-might-prefer-it-8e78d77b6735

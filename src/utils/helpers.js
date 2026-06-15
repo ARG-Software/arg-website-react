@@ -30,3 +30,11 @@ export function lerp(a, b, t) {
 export function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
+
+export function truncateText(text = '', maxLength = 200) {
+  if (text.length <= maxLength) return text;
+  return `${text
+    .slice(0, maxLength)
+    .trim()
+    .replace(/[.,;:!?-]+$/, '')}...`;
+}

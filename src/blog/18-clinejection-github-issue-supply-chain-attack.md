@@ -4,6 +4,7 @@ slug: clinejection-github-issue-supply-chain-attack
 tag: Security · AI
 title: "Clinejection: How a Simple GitHub Issue Could Have Hijacked 5 Million Developer Machines"
 subtitle: A vulnerability in Cline's AI triage workflow showed how an attacker could compromise an entire production release pipeline without writing a single line of code — just by opening a GitHub issue.
+intro: A supply-chain case study showing how one GitHub issue could manipulate an AI-assisted release workflow and compromise millions of machines.
 date: February 19, 2026
 readTime: 6 min read
 mediumUrl: https://arg-software.medium.com/clinejection-how-a-simple-github-issue-could-have-hijacked-5-million-developer-machines-6dfafd6939b5

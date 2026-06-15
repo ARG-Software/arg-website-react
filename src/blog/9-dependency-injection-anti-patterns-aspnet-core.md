@@ -4,6 +4,7 @@ slug: dependency-injection-anti-patterns-aspnet-core
 tag: .NET · Architecture
 title: Dependency Injection Anti-Patterns Killing Your ASP.NET Core Apps
 subtitle: How seemingly innocent DI mistakes can turn your high-performance application into a memory-leaking nightmare.
+intro: A breakdown of dependency injection mistakes in ASP.NET Core that quietly create leaks, slowdowns, and codebases that become harder to operate.
 date: September 19, 2025
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/dependency-injection-anti-patterns-killing-your-asp-net-core-apps-502f08d85d95

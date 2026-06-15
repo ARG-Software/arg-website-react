@@ -1,5 +1,4 @@
-import { Navbar, Footer, CTASection, SEO } from '../components';
-import { SubpageHero } from '../components/hero/SubpageHero';
+import { Navbar, Footer, CTASection, SEO, PageHeader } from '../components';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
 
@@ -18,8 +17,9 @@ export default function PrivacyPage() {
       <div className="page-wrapper w-clearfix">
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">
-          <SubpageHero
+          <PageHeader
             title={['Privacy Policy', 'How we collect, use, and protect your personal data']}
+            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Privacy' }]}
             size="small"
           />
           <div

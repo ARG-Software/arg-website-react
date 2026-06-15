@@ -1,7 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import AppLink from '../../components/navigation/AppLink';
-import { Navbar, Footer, CTASection, SectionDivider, arrowSvg, SEO } from '../../components';
-import { SubpageHero } from '../../components/hero/SubpageHero';
+import {
+  Navbar,
+  Footer,
+  CTASection,
+  SectionDivider,
+  arrowSvg,
+  SEO,
+  PageHeader,
+} from '../../components';
 import { useScrollAnimations, useBlogSearch, useTimeOnPage } from '../../hooks';
 import { trackBlogPostClick, trackCTA, trackEvent } from '../../hooks/useAnalytics';
 
@@ -36,6 +43,9 @@ export default function BlogPage() {
   const totalPages = Math.ceil(filteredPosts.length / BLOG_POSTS_PER_PAGE);
   const startIdx = (page - 1) * BLOG_POSTS_PER_PAGE;
   const paginatedPosts = filteredPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
+  const latestPosts = [...blogPosts]
+    .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0))
+    .slice(0, 3);
 
   const listRef = useRef(null);
 
@@ -97,9 +107,17 @@ export default function BlogPage() {
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">
-          <SubpageHero
+          <PageHeader
             title={['The thinking', 'behind the doing.']}
             subtitle="Technical insights, engineering deep dives, and industry perspectives from our team"
+            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Blog' }]}
+            sideLabel="Latest articles"
+            sideItems={latestPosts.map(article => ({
+              label: article.title,
+              to: `/blog/${article.slug}/`,
+              meta: article.readTime,
+              onClick: () => trackBlogPostClick(article.slug, article.title, 'blog_header'),
+            }))}
             size="small"
           />
 

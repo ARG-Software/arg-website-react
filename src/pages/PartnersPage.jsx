@@ -10,8 +10,8 @@ import {
   Drawer,
   FilterGrid,
   Timeline,
+  PageHeader,
 } from '../components';
-import { SubpageHero } from '../components/hero/SubpageHero';
 import data from '../data/partners.json';
 import '../styles/partners.css';
 
@@ -55,14 +55,26 @@ export default function PartnersPage() {
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">
-          <SubpageHero title={['They trusted us.', "It's your time now."]} size="small" />
+          <PageHeader
+            title={['They trusted us.', "It's your time now."]}
+            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Partners' }]}
+            sideItems={[
+              { label: 'Partners', href: '#partners', meta: String(clients.length) },
+              { label: 'Built on lasting partnerships', href: '#timeline' },
+              { label: 'Start a project', href: '#page-cta' },
+            ]}
+            size="small"
+          />
 
           <div
             data-animate-scope
             data-animate-default-preset="fade-up"
             data-animate-default-stagger="150"
           >
-            <section className="pc-clients-section padding-section-large background-color-white border-radius-top">
+            <section
+              id="partners"
+              className="pc-clients-section padding-section-large background-color-white border-radius-top"
+            >
               <div className="container padding-global pc-clients-inner">
                 <div className="pc-header" data-animate="fade-up">
                   <div className="pc-header-main">
@@ -100,19 +112,21 @@ export default function PartnersPage() {
               </div>
             </section>
 
-            <Timeline
-              heading="Built on lasting partnerships"
-              rows={timeline.rows}
-              yearStart={timeline.yearStart}
-              yearEnd={timeline.yearEnd}
-              items={clientMap}
-              ctaLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
-              onCtaClick={() => trackCTA('typeform', 'partners_timeline')}
-              animate={true}
-              rowPreset="slide-from-left"
-              cardPreset="fade-up"
-              stagger={150}
-            />
+            <div id="timeline">
+              <Timeline
+                heading="Built on lasting partnerships"
+                rows={timeline.rows}
+                yearStart={timeline.yearStart}
+                yearEnd={timeline.yearEnd}
+                items={clientMap}
+                ctaLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
+                onCtaClick={() => trackCTA('typeform', 'partners_timeline')}
+                animate={true}
+                rowPreset="slide-from-left"
+                cardPreset="fade-up"
+                stagger={150}
+              />
+            </div>
           </div>
 
           <div className="page-cta-wrapper" id="page-cta">

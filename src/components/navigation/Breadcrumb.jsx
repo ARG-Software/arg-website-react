@@ -9,7 +9,7 @@ export function Breadcrumb({ items = [] }) {
   if (!items.length) return null;
 
   return (
-    <nav className="breadcrumb" aria-label="Breadcrumb">
+    <nav className="breadcrumb-nav" aria-label="Breadcrumb">
       <ol className="breadcrumb">
         {items.map((item, index) => {
           const isTag = item.isTag || false;
@@ -31,7 +31,7 @@ export function Breadcrumb({ items = [] }) {
           }
 
           return (
-            <li key={index}>
+            <li key={index} className={index === items.length - 1 ? 'is-current' : undefined}>
               <span>{item.label}</span>
             </li>
           );

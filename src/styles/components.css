@@ -8,6 +8,10 @@
 }
 
 /* Breadcrumb */
+.breadcrumb-nav {
+  margin-bottom: 1.75rem;
+}
+
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -19,10 +23,11 @@
 .breadcrumb li {
   display: flex;
   align-items: center;
-  font-size: 0.8125rem;
-  letter-spacing: 0.02em;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.42);
   font-family: Neuemontreal, sans-serif;
+  text-transform: uppercase;
 }
 .breadcrumb li:not(:last-child)::after {
   content: '/';
@@ -30,18 +35,21 @@
   color: rgba(255, 255, 255, 0.25);
 }
 .breadcrumb a {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.42);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 .breadcrumb a:hover {
-  color: rgba(255, 255, 255, 0.85);
+  color: #fff;
 }
 .breadcrumb .tag {
-  color: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 0.4rem 0.875rem;
-  border-radius: 1.5rem;
+  color: #fff;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+}
+.breadcrumb .is-current {
+  color: #fff;
 }
 
 /* ==========================================================================

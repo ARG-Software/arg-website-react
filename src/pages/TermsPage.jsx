@@ -1,5 +1,4 @@
-import { Navbar, Footer, CTASection, SEO } from '../components';
-import { SubpageHero } from '../components/hero/SubpageHero';
+import { Navbar, Footer, CTASection, SEO, PageHeader } from '../components';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
 
@@ -18,8 +17,9 @@ export default function TermsPage() {
       <div className="page-wrapper w-clearfix">
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">
-          <SubpageHero
+          <PageHeader
             title={['Terms of Service', 'Conditions governing the use of our website and services']}
+            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Terms' }]}
             size="small"
           />
           <div

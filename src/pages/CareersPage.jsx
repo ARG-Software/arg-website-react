@@ -1,8 +1,15 @@
 import { useState } from 'react';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA, trackEvent } from '../hooks/useAnalytics';
-import { Navbar, Footer, CTASection, SectionDivider, SEO, JobAccordion } from '../components';
-import { SubpageHero } from '../components/hero/SubpageHero';
+import {
+  Navbar,
+  Footer,
+  CTASection,
+  SectionDivider,
+  SEO,
+  JobAccordion,
+  PageHeader,
+} from '../components';
 import {
   excellenceSvg,
   respectSvg,
@@ -77,9 +84,16 @@ export default function CareersPage() {
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">
-          <SubpageHero
+          <PageHeader
             title={['Take Your Career', 'to New Heights']}
             subtitle="Join us and unlock opportunities for growth, innovation, and success in an inclusive environment that nurtures talent."
+            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Careers' }]}
+            sideItems={[
+              { label: 'Why Working with us?', href: '#why-us' },
+              { label: 'Internal Values', href: '#values' },
+              { label: 'Open Positions', href: '#open-positions', meta: String(JOBS.length) },
+              { label: 'Contact', href: '#contact' },
+            ]}
             size="small"
           />
 
@@ -88,7 +102,10 @@ export default function CareersPage() {
             data-animate-default-preset="fade-up"
             data-animate-default-stagger="150"
           >
-            <section className="cp-whyus-section padding-section-xlarge border-radius-all background-color-white">
+            <section
+              id="why-us"
+              className="cp-whyus-section padding-section-xlarge border-radius-all background-color-white"
+            >
               <div className="container padding-global cp-whyus-inner">
                 <div className="cp-whyus-content" data-animate="fade-up">
                   <h2 className="cp-whyus-title">{WHY_US_CONTENT.title}</h2>
@@ -97,7 +114,7 @@ export default function CareersPage() {
               </div>
             </section>
 
-            <section className="cp-values-section padding-section-xlarge ">
+            <section id="values" className="cp-values-section padding-section-xlarge ">
               <div className="container padding-global cp-values-inner">
                 <div className="cp-section-header" data-animate="fade-up">
                   <h2 className="cp-section-title">
@@ -116,7 +133,10 @@ export default function CareersPage() {
               </div>
             </section>
 
-            <section className="cp-jobs-section padding-section-xlarge border-radius-all background-color-white">
+            <section
+              id="open-positions"
+              className="cp-jobs-section padding-section-xlarge border-radius-all background-color-white"
+            >
               <div className="container padding-global cp-jobs-inner">
                 <div className="cp-section-header" data-animate="fade-up">
                   <h2 className="cp-section-title">
@@ -148,7 +168,7 @@ export default function CareersPage() {
           <div className="section-divider-wrapper">
             <SectionDivider variant="default" hideOnMobile={false} />
           </div>
-          <div className="page-cta-wrapper">
+          <div className="page-cta-wrapper" id="contact">
             <CTASection
               title="Didn't find any match,"
               titleHighlight="reach to us anyway!"

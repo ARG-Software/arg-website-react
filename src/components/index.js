@@ -29,3 +29,4 @@ export { CTASection } from './layout/CTASection';
 export { SectionDivider } from './layout/SectionDivider';
 export { LoadingScreen } from './layout/LoadingScreen';
 export { SEO } from './seo/SEO';
+export { PageHeader } from './hero/PageHeader';

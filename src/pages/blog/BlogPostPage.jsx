@@ -31,11 +31,19 @@ hljs.registerLanguage('xml', xml);
 hljs.registerLanguage('yaml', yaml);
 hljs.registerAliases(['promql'], { languageName: 'sql' });
 import AppLink from '../../components/navigation/AppLink';
-import { Navbar, Footer, CTASection, SectionDivider, arrowSvg, SEO } from '../../components';
-import { SubpageHero } from '../../components/hero/SubpageHero';
+import {
+  Navbar,
+  Footer,
+  CTASection,
+  SectionDivider,
+  arrowSvg,
+  SEO,
+  PageHeader,
+} from '../../components';
 import { useScrollAnimations, usePageTransition, useTimeOnPage } from '../../hooks';
 import { trackBlogPostShare, trackCTA, trackEvent } from '../../hooks/useAnalytics';
 import { loadBlogPostsWithContent } from '../../utils/blog';
+import { truncateText } from '../../utils/helpers';
 import '../../styles/blog.css';
 
 // ─── Load all blog posts with full content ──────────────────────────────────
@@ -225,6 +233,10 @@ export default function BlogPostPage() {
   const titleBreak = Math.floor(titleWords.length * 0.55);
   const titleLine1 = titleWords.slice(0, titleBreak).join(' ');
   const titleLine2 = titleWords.slice(titleBreak).join(' ');
+  const articleIntro = truncateText(
+    BLOG_POST.intro || BLOG_POST.excerpt || BLOG_POST.subtitle,
+    200
+  );
 
   // Parse date string to ISO format for structured data
   const parseDate = dateStr => {
@@ -280,7 +292,7 @@ export default function BlogPostPage() {
 
         <main className="main-wrapper">
           {/* HERO */}
-          <SubpageHero
+          <PageHeader
             title={[titleLine1, titleLine2]}
             subtitle={BLOG_POST.subtitle}
             breadcrumbs={[
@@ -288,6 +300,8 @@ export default function BlogPostPage() {
               { label: 'Blog', path: '/blog/' },
               { label: BLOG_POST.tag, isTag: true },
             ]}
+            sideLabel="Article intro"
+            sideText={articleIntro}
             size="small"
           />
 
