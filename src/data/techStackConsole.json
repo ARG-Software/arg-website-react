@@ -1,49 +1,37 @@
 {
-  "ariaLabel": "ARG technology stack console",
-  "path": "arg@gold-standard ~ /stack.sh",
-  "meta": "type a command or click a shortcut",
-  "prompt": "arg@gold-standard:~$",
-  "shortcutLabel": "try:",
-  "inputPlaceholder": "/help",
-  "intro": {
-    "caption": "arg @ gold-standard - stack browser",
-    "text": "No surprises, no migration roulette. Every tool here is something we have run at scale, on call, with someone's money on the line."
-  },
+  "ariaLabel": "ARG technology stack shell",
+  "path": "arg@stack ~ /stack.sh",
+  "meta": "interactive stack browser",
+  "prompt": "arg@stack:~$",
+  "inputPlaceholder": "type /help to check the commands",
   "commands": {
     "/languages": {
-      "label": "Production languages we use daily",
-      "items": ["TypeScript", "C# / .NET", "Node", "Python"],
-      "highlighted": ["TypeScript", "C# / .NET"]
+      "description": "shows production languages we use daily",
+      "lines": ["TypeScript", "C# / .NET", "Node", "Python"]
     },
     "/databases": {
-      "label": "Data layer: storage, caches, and streams",
-      "items": ["Postgres", "Redis", "Kafka", "ClickHouse", "MongoDB"],
-      "highlighted": ["Postgres", "Kafka"]
+      "description": "shows storage, cache, and streaming tools",
+      "lines": ["Postgres", "Redis", "Kafka", "ClickHouse", "MongoDB"]
     },
     "/frontend": {
-      "label": "Frontend: web and real-time UIs",
-      "items": ["React", "Next.js", "TanStack Query", "GSAP"],
-      "highlighted": ["React", "Next.js"]
+      "description": "shows web and real-time UI tools",
+      "lines": ["React", "Next.js", "TanStack Query", "GSAP"]
     },
     "/infra": {
-      "label": "Infrastructure: ship, run, rollback",
-      "items": ["Docker", "Kubernetes", "Terraform", "GitHub Actions", "AWS"],
-      "highlighted": ["Kubernetes"]
+      "description": "shows ship, run, and rollback tooling",
+      "lines": ["Docker", "Kubernetes", "Terraform", "GitHub Actions", "AWS"]
     },
     "/observe": {
-      "label": "Observability: know before the customer does",
-      "items": ["OpenTelemetry", "Grafana", "Sentry", "Prometheus"],
-      "highlighted": ["OpenTelemetry"]
+      "description": "shows observability tooling",
+      "lines": ["OpenTelemetry", "Grafana", "Sentry", "Prometheus"]
     },
     "/principles": {
-      "label": "How we work, in four lines",
-      "items": ["architecture-first", "no patchwork", "gold standard", "handoff-ready"],
-      "highlighted": ["architecture-first", "no patchwork", "gold standard"]
+      "description": "shows the operating principles behind the stack",
+      "lines": ["architecture-first", "no patchwork", "gold standard", "handoff-ready"]
     }
   },
   "systemCommands": {
-    "/help": "Show available commands",
-    "/all": "Show every stack category",
-    "/clear": "Reset the console"
+    "/help": "lists available commands",
+    "/clear": "clears the shell output"
   }
 }
