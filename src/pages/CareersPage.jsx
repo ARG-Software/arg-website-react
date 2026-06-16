@@ -142,7 +142,7 @@ export default function CareersPage() {
       <div className="page-wrapper w-clearfix">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper background-color-white">
+        <main className="main-wrapper background-color-dark">
           <PageHeader
             title={['Take Your Career', 'to New Heights']}
             subtitle="Join us and unlock opportunities for growth, innovation, and success in an inclusive environment that nurtures talent."
@@ -163,7 +163,7 @@ export default function CareersPage() {
           >
             <section
               id="why-us"
-              className="cp-whyus-section padding-section-large border-radius-all background-color-white"
+              className="cp-whyus-section padding-section-large border-radius-top background-color-white"
             >
               <div className="container padding-global cp-whyus-inner">
                 <header className="cp-whyus-header" data-animate="fade-up">
@@ -210,15 +210,13 @@ export default function CareersPage() {
 
                 <TechStackConsole className="cp-whyus-console" />
               </div>
-            </section>
-
-            <div className="section-divider-wrapper cp-section-divider">
+              <div className="padding-bottom padding-80-40"></div>
               <SectionDivider variant="default" hideOnMobile={false} />
-            </div>
+            </section>
 
             <section
               id="values"
-              className="cp-values-section padding-section-large border-radius-all background-color-white"
+              className="cp-values-section padding-section-large background-color-white"
             >
               <div className="container padding-global cp-values-inner">
                 <div className="cp-section-header" data-animate="fade-up">
@@ -248,15 +246,13 @@ export default function CareersPage() {
                   ))}
                 </div>
               </div>
-            </section>
-
-            <div className="section-divider-wrapper cp-section-divider">
+              <div className="padding-bottom padding-80-40"></div>
               <SectionDivider variant="default" hideOnMobile={false} />
-            </div>
+            </section>
 
             <section
               id="open-positions"
-              className="cp-jobs-section padding-section-large border-radius-all background-color-white"
+              className="cp-jobs-section padding-section-large border-radius-bottom background-color-white"
             >
               <div className="container padding-global cp-jobs-inner">
                 {JOBS.length > 0 && (
@@ -311,10 +307,7 @@ export default function CareersPage() {
             </section>
           </div>
 
-          <div className="section-divider-wrapper">
-            <SectionDivider variant="default" hideOnMobile={false} />
-          </div>
-          <div className="page-cta-wrapper" id="contact">
+          <section className="page-cta-wrapper background-color-dark" id="contact">
             <CTASection
               title="Didn't find any match,"
               titleHighlight="reach to us anyway!"
@@ -324,7 +317,7 @@ export default function CareersPage() {
               buttonLink="mailto:hr@arg.software?subject=Career%20Inquiry"
               onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
-          </div>
+          </section>
         </main>
 
         <Footer />

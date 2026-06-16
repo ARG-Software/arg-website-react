@@ -73,7 +73,7 @@ export default function PartnersPage() {
           >
             <section
               id="partners"
-              className="pc-clients-section padding-section-large background-color-white border-radius-top"
+              className="pc-clients-section padding-section-large background-color-white border-radius-all"
             >
               <div className="container padding-global pc-clients-inner">
                 <div className="pc-header" data-animate="fade-up">
@@ -129,7 +129,7 @@ export default function PartnersPage() {
             </section>
           </div>
 
-          <div className="page-cta-wrapper" id="page-cta">
+          <section className="page-cta-wrapper" id="page-cta">
             <SectionDivider variant="light" hideOnMobile={true} />
             <CTASection
               title="Ready to elevate"
@@ -140,7 +140,7 @@ export default function PartnersPage() {
               buttonLink="https://zcal.co/argsoftware/project"
               onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
-          </div>
+          </section>
         </main>
 
         <Footer />

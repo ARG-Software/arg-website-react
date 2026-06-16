@@ -3921,30 +3921,6 @@ figcaption {
   margin-bottom: 0;
 }
 
-/* Wrapper for section dividers to respect container padding */
-.section-divider-wrapper {
-  width: 100%;
-  padding-left: var(--padding-global, 2rem);
-  padding-right: var(--padding-global, 2rem);
-}
-.section-divider-wrapper > .line-separate {
-  margin-left: 0;
-  margin-right: 0;
-  max-width: 100%;
-}
-@media screen and (max-width: 991px) {
-  .section-divider-wrapper {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-}
-@media screen and (max-width: 767px) {
-  .section-divider-wrapper {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-
 /* CTA spacing wrapper for page-level CTAs */
 .page-cta-wrapper {
   margin-bottom: 5rem;

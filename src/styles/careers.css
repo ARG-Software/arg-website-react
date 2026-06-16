@@ -30,10 +30,6 @@
   color: #0c002e;
 }
 
-.cp-section-divider {
-  background: #fff;
-}
-
 .cp-values-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -504,9 +500,10 @@
 .cp-jobs-empty-header h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
+  font-size: clamp(2rem, 3vw, 2.75rem);
   font-weight: 400;
-  letter-spacing: -0.03em;
-  line-height: 1.04;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
   margin: 0 0 1.5rem;
 }
 .cp-jobs-empty-header h3 span {

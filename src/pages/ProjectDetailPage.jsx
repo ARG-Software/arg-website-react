@@ -205,9 +205,9 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           </div>
+          <div className="padding-bottom padding-80-40"></div>
+          <SectionDivider variant="default" />
         </section>
-
-        <SectionDivider variant="default" />
 
         {/* CHALLENGE — white */}
         <section className="prp-challenge padding-section-large">
@@ -257,9 +257,9 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           </div>
+          <div className="padding-bottom padding-80-40"></div>
+          <SectionDivider variant="default" />
         </section>
-
-        <SectionDivider variant="default" />
 
         {/* SOLUTION — white card */}
         <section className="prp-solution padding-section-large">
@@ -299,9 +299,9 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           </div>
+          <div className="padding-bottom padding-80-40"></div>
+          <SectionDivider variant="default" />
         </section>
-
-        <SectionDivider variant="default" />
 
         {/* RESULTS — merged metrics + impact */}
         <section className="prp-results padding-section-large" id="results">
