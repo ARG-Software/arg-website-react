@@ -112,7 +112,7 @@ export default function PartnersPage() {
               </div>
             </section>
 
-            <div id="timeline">
+            <section id="timeline" className="pt-timeline-section padding-section-large">
               <Timeline
                 heading="Built on lasting partnerships"
                 rows={timeline.rows}
@@ -126,7 +126,7 @@ export default function PartnersPage() {
                 cardPreset="fade-up"
                 stagger={150}
               />
-            </div>
+            </section>
           </div>
 
           <div className="page-cta-wrapper" id="page-cta">

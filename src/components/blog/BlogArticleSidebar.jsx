@@ -14,6 +14,14 @@ export function BlogArticleSidebar({
 }) {
   return (
     <aside className="bp-sidebar-right" aria-label="Article navigation">
+      <SidebarBlock label="Share">
+        <SocialShareButtons items={shareItems} />
+      </SidebarBlock>
+
+      <SidebarBlock label="Subscribe">
+        <SocialShareButtons items={feedItems} />
+      </SidebarBlock>
+
       {sectionLinks.length > 0 && (
         <SidebarBlock className="bp-sidebar-section--toc" label="In this article">
           <nav className="bp-section-links" aria-label="Article sections">
@@ -34,14 +42,6 @@ export function BlogArticleSidebar({
           </nav>
         </SidebarBlock>
       )}
-
-      <SidebarBlock label="Share">
-        <SocialShareButtons items={shareItems} />
-      </SidebarBlock>
-
-      <SidebarBlock label="Subscribe">
-        <SocialShareButtons items={feedItems} />
-      </SidebarBlock>
 
       <SidebarBlock label="Related">
         {relatedPosts.length > 0 ? (

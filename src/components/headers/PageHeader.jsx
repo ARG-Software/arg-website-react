@@ -112,7 +112,6 @@ export function PageHeader({
           </aside>
         )}
       </div>
-
     </header>
   );
 }

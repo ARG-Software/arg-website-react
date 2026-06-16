@@ -632,8 +632,7 @@
   flex-wrap: wrap;
   gap: 0.625rem;
 }
-.cp-founder-links a,
-.cp-jobs-empty-footer a {
+.cp-founder-links a{
   border: 1px solid rgba(12, 0, 46, 0.16);
   border-radius: 999px;
   color: #0c002e;
@@ -647,23 +646,9 @@
     color 0.2s ease,
     transform 0.2s ease;
 }
-.cp-founder-links a:hover,
-.cp-jobs-empty-footer a:hover {
+.cp-founder-links a:hover {
   border-color: #0c002e;
   transform: translateY(-1px);
-}
-.cp-jobs-empty-footer {
-  align-items: center;
-  display: flex;
-  gap: 1rem;
-  margin-top: 2.75rem;
-}
-.cp-jobs-empty-footer span {
-  color: #aaa;
-  font-family: Neuemontreal, sans-serif;
-  font-size: 0.6875rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
 }
 
 /* Contact Section */

@@ -95,6 +95,12 @@ const TECH_STACK_INTRO = {
   text: 'This console is a quick map of the stack we trust when the system needs to stay observable, scalable, and easy to hand over after the hard part is done.',
 };
 
+const OPEN_JOBS_HEADER = {
+  title: 'Open Positions',
+  subtitle:
+    'When we open a role, it is because there is meaningful work ready for someone to own. No filler positions, no hiring theatre.',
+};
+
 export default function CareersPage() {
   const [openJobId, setOpenJobId] = useState(null);
 
@@ -253,11 +259,14 @@ export default function CareersPage() {
               className="cp-jobs-section padding-section-large border-radius-all background-color-white"
             >
               <div className="container padding-global cp-jobs-inner">
-                <div className="cp-section-header" data-animate="fade-up">
-                  <h2 className="cp-section-title">
-                    <span className="cp-line"></span>
-                  </h2>
-                </div>
+                {JOBS.length > 0 && (
+                  <div className="cp-section-header" data-animate="fade-up">
+                    <h2 className="cp-section-title">
+                      <span className="cp-line">{OPEN_JOBS_HEADER.title}</span>
+                    </h2>
+                    <p className="cp-section-subtitle">{OPEN_JOBS_HEADER.subtitle}</p>
+                  </div>
+                )}
 
                 {JOBS.length > 0 ? (
                   <div className="cp-jobs-list">
@@ -295,15 +304,6 @@ export default function CareersPage() {
                           onLinkedInClick={handleFounderLinkedIn}
                         />
                       ))}
-                    </div>
-                    <div className="cp-jobs-empty-footer">
-                      <span>or</span>
-                      <a
-                        href="mailto:hr@arg.software?subject=Career%20Inquiry"
-                        onClick={() => trackEvent('career_general_email_click')}
-                      >
-                        Send a general hello -&gt;
-                      </a>
                     </div>
                   </div>
                 )}

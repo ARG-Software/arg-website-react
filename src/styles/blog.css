@@ -442,9 +442,11 @@
   box-shadow: 0 0 0.75rem rgba(201, 36, 215, 0.24);
 }
 .bp-sidebar-right {
+  align-self: start;
   grid-column: 2;
   padding-right: 0.5rem;
-  align-self: start;
+  position: sticky;
+  top: 6rem;
 }
 
 /* Sidebar sections: Related, Recent, Subscribe */
@@ -453,9 +455,12 @@
   padding-top: 0;
   border-top: 0;
 }
+.bp-sidebar-section:first-child {
+  margin-top: 0;
+}
 .bp-sidebar-section--toc {
   border-top: 0;
-  margin-top: 0;
+  margin-top: 2.25rem;
   margin-bottom: 2.5rem;
   padding-top: 0;
 }
