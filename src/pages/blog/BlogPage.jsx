@@ -143,15 +143,10 @@ export default function BlogPage() {
           >
             <section
               id="blog-list"
-              className="blp-section background-color-white padding-section-xlarge border-radius-all"
+              className="blp-section background-color-white padding-section-large border-radius-all"
             >
               <div className="blp-inner container padding-global" ref={listRef}>
-                <div className="blp-header-row" data-animate="fade-up">
-                  <span className="blp-count">
-                    {resultCount} blog post{resultCount !== 1 ? 's' : ''}
-                    {debouncedQuery && ` matching "${debouncedQuery}"`}
-                    {selectedTags.length > 0 && ` in ${selectedTags.join(', ')}`}
-                  </span>
+                <div className="blp-filter-bar" data-animate="fade-up">
                   <div className="blp-search">
                     <span className="blp-search-icon">{searchSvg}</span>
                     <input
@@ -163,15 +158,22 @@ export default function BlogPage() {
                       aria-label="Search blog posts"
                     />
                   </div>
-                </div>
 
-                <TagFilterPills
-                  label="Filter by topic"
-                  tags={blogTags}
-                  selectedTags={selectedTags}
-                  onToggle={toggleTag}
-                  onRemove={removeTag}
-                />
+                  <TagFilterPills
+                    className="blp-topic-filter"
+                    placeholder="Filter by topic"
+                    tags={blogTags}
+                    selectedTags={selectedTags}
+                    onToggle={toggleTag}
+                    onRemove={removeTag}
+                  />
+
+                  <span className="blp-count">
+                    {resultCount} blog post{resultCount !== 1 ? 's' : ''}
+                    {debouncedQuery && ` matching "${debouncedQuery}"`}
+                    {selectedTags.length > 0 && ` in ${selectedTags.join(', ')}`}
+                  </span>
+                </div>
 
                 {filteredPosts.length === 0 ? (
                   <p className="blp-empty">

@@ -210,7 +210,7 @@ export default function BlogPostPage() {
     if (window.location.hash) {
       const hash = window.location.hash.substring(1);
       if (hash) {
-        scrollToHash(hash, { mobileMenuDelay: 0 });
+        scrollToHash(hash, { mobileMenuDelay: 0, offset: -120 });
       }
     }
   }, [scrollToHash, slug]); // Re-run when article changes
@@ -257,7 +257,7 @@ export default function BlogPostPage() {
     event.preventDefault();
     setIsClicking(true);
     trackEvent('blog_toc_click', { section });
-    scrollToHash(sectionId, { mobileMenuDelay: 0 });
+    scrollToHash(sectionId, { mobileMenuDelay: 0, offset: -120 });
     setActiveSection(sectionId);
     setTimeout(() => setIsClicking(false), 1000);
   };
@@ -405,7 +405,7 @@ export default function BlogPostPage() {
             data-animate-default-preset="fade-up"
             data-animate-default-stagger="0"
           >
-            <section className="bp-body background-color-white padding-section-xlarge border-radius-all">
+            <section className="bp-body background-color-white padding-section-large border-radius-all">
               <div className="bp-body-inner container padding-global">
                 <article className="bp-content">
                   {BLOG_POST.content.map((block, i) => renderBlock(block, i))}

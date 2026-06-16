@@ -410,9 +410,9 @@
 }
 
 .tag-filter__pill--selected {
-  background: #0c002e;
+  background: #fff;
   border-color: #0c002e;
-  color: #fff;
+  color: #0c002e;
 }
 
 .tag-filter__remove {

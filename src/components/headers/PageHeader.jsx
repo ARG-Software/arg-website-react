@@ -113,7 +113,6 @@ export function PageHeader({
         )}
       </div>
 
-      <div className="page-header__divider" />
     </header>
   );
 }

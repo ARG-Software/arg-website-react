@@ -1,0 +1,49 @@
+{
+  "ariaLabel": "ARG technology stack console",
+  "path": "arg@gold-standard ~ /stack.sh",
+  "meta": "type a command or click a shortcut",
+  "prompt": "arg@gold-standard:~$",
+  "shortcutLabel": "try:",
+  "inputPlaceholder": "/help",
+  "intro": {
+    "caption": "arg @ gold-standard - stack browser",
+    "text": "No surprises, no migration roulette. Every tool here is something we have run at scale, on call, with someone's money on the line."
+  },
+  "commands": {
+    "/languages": {
+      "label": "Production languages we use daily",
+      "items": ["TypeScript", "C# / .NET", "Node", "Python"],
+      "highlighted": ["TypeScript", "C# / .NET"]
+    },
+    "/databases": {
+      "label": "Data layer: storage, caches, and streams",
+      "items": ["Postgres", "Redis", "Kafka", "ClickHouse", "MongoDB"],
+      "highlighted": ["Postgres", "Kafka"]
+    },
+    "/frontend": {
+      "label": "Frontend: web and real-time UIs",
+      "items": ["React", "Next.js", "TanStack Query", "GSAP"],
+      "highlighted": ["React", "Next.js"]
+    },
+    "/infra": {
+      "label": "Infrastructure: ship, run, rollback",
+      "items": ["Docker", "Kubernetes", "Terraform", "GitHub Actions", "AWS"],
+      "highlighted": ["Kubernetes"]
+    },
+    "/observe": {
+      "label": "Observability: know before the customer does",
+      "items": ["OpenTelemetry", "Grafana", "Sentry", "Prometheus"],
+      "highlighted": ["OpenTelemetry"]
+    },
+    "/principles": {
+      "label": "How we work, in four lines",
+      "items": ["architecture-first", "no patchwork", "gold standard", "handoff-ready"],
+      "highlighted": ["architecture-first", "no patchwork", "gold standard"]
+    }
+  },
+  "systemCommands": {
+    "/help": "Show available commands",
+    "/all": "Show every stack category",
+    "/clear": "Reset the console"
+  }
+}

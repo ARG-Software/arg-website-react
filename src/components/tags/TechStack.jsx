@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function TechStack({ stack, label = 'Tech Stack:', className = '' }) {
   const technologies = Array.isArray(stack) ? stack : stack.split(', ').map(t => t.trim());
 

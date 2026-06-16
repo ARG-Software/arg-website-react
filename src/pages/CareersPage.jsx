@@ -9,8 +9,7 @@ import {
   SEO,
   JobAccordion,
   PageHeader,
-  CareerValueCard,
-  CareersFounderCard,
+  FounderCard,
   TechStackConsole,
 } from '../components';
 import JOBS from '../data/jobs.json';
@@ -91,6 +90,11 @@ const WHY_US_PILLARS = [
   },
 ];
 
+const TECH_STACK_INTRO = {
+  title: 'The tools are not the point. The operating history is.',
+  text: 'This console is a quick map of the stack we trust when the system needs to stay observable, scalable, and easy to hand over after the hard part is done.',
+};
+
 export default function CareersPage() {
   const [openJobId, setOpenJobId] = useState(null);
 
@@ -153,7 +157,7 @@ export default function CareersPage() {
           >
             <section
               id="why-us"
-              className="cp-whyus-section padding-section-xlarge border-radius-all background-color-white"
+              className="cp-whyus-section padding-section-large border-radius-all background-color-white"
             >
               <div className="container padding-global cp-whyus-inner">
                 <header className="cp-whyus-header" data-animate="fade-up">
@@ -169,7 +173,7 @@ export default function CareersPage() {
                       purpose - the systems that have to be right the first time - and we go in
                       architecture-first.
                     </p>
-                    <span>Co-founders, Lisbon - est. 2019</span>
+                    <span>ARG Team</span>
                   </aside>
                 </header>
 
@@ -178,7 +182,6 @@ export default function CareersPage() {
                     <article
                       key={pillar.index}
                       className="cp-whyus-pillar"
-                      data-index={String(index + 1).padStart(2, '0')}
                       data-animate-order={index}
                     >
                       <span className="cp-whyus-pillar-index">{pillar.index}</span>
@@ -192,13 +195,24 @@ export default function CareersPage() {
                   ))}
                 </div>
 
+                <div className="cp-tech-intro" data-animate="fade-up">
+                  <div>
+                    <h3>{TECH_STACK_INTRO.title}</h3>
+                    <p>{TECH_STACK_INTRO.text}</p>
+                  </div>
+                </div>
+
                 <TechStackConsole className="cp-whyus-console" />
               </div>
             </section>
 
+            <div className="section-divider-wrapper cp-section-divider">
+              <SectionDivider variant="default" hideOnMobile={false} />
+            </div>
+
             <section
               id="values"
-              className="cp-values-section padding-section-xlarge border-radius-all background-color-white"
+              className="cp-values-section padding-section-large border-radius-all background-color-white"
             >
               <div className="container padding-global cp-values-inner">
                 <div className="cp-section-header" data-animate="fade-up">
@@ -212,29 +226,36 @@ export default function CareersPage() {
                 </div>
                 <div className="cp-values-grid">
                   {INTERNAL_VALUES.map((value, index) => (
-                    <CareerValueCard
+                    <article
                       key={value.title}
-                      number={String(index + 1).padStart(2, '0')}
-                      title={value.title}
-                      description={value.description}
-                      antiValue={value.antiValue}
-                      animateOrder={index}
-                    />
+                      className="cp-value-card"
+                      data-animate="fade-up"
+                      data-animate-order={index}
+                    >
+                      <span className="cp-value-number">{String(index + 1).padStart(2, '0')}</span>
+                      <h3 className="cp-value-title">{value.title}</h3>
+                      <p className="cp-value-desc">{value.description}</p>
+                      <div className="cp-value-anti">
+                        <strong>NOT</strong> {value.antiValue}
+                      </div>
+                    </article>
                   ))}
                 </div>
               </div>
             </section>
 
+            <div className="section-divider-wrapper cp-section-divider">
+              <SectionDivider variant="default" hideOnMobile={false} />
+            </div>
+
             <section
               id="open-positions"
-              className="cp-jobs-section padding-section-xlarge border-radius-all background-color-white"
+              className="cp-jobs-section padding-section-large border-radius-all background-color-white"
             >
               <div className="container padding-global cp-jobs-inner">
                 <div className="cp-section-header" data-animate="fade-up">
                   <h2 className="cp-section-title">
-                    <span className="cp-line">
-                      {JOBS.length > 0 ? 'Open Positions' : 'We Are Currently Not Hiring'}
-                    </span>
+                    <span className="cp-line"></span>
                   </h2>
                 </div>
 
@@ -266,7 +287,7 @@ export default function CareersPage() {
                     </div>
                     <div className="cp-founders-grid">
                       {FOUNDERS.map((founder, index) => (
-                        <CareersFounderCard
+                        <FounderCard
                           key={founder.name}
                           founder={founder}
                           animateOrder={index}

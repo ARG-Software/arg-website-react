@@ -5022,11 +5022,25 @@ figcaption {
 }
 
 .page-header__side-dot {
-  background: linear-gradient(90deg, #ff6b6b, #d63384, #6f42c1);
+  animation: page-header-dot-gradient 3s ease-in-out infinite;
+  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd, #f0060d);
+  background-size: 260% 100%;
   border-radius: 999px;
   display: inline-block;
   height: 0.375rem;
+  box-shadow: 0 0 0.75rem rgba(201, 36, 215, 0.32);
   width: 0.375rem;
+}
+
+@keyframes page-header-dot-gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .page-header__side-list {
@@ -5072,15 +5086,6 @@ figcaption {
   margin: 0;
 }
 
-.page-header__divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  margin: 0 4.75rem;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
 
 /* Responsive adjustments */
 @media screen and (max-width: 991px) {
@@ -5117,9 +5122,6 @@ figcaption {
     font-size: clamp(1.75rem, 4vw, 2.5rem);
   }
 
-  .page-header__divider {
-    margin: 0 3rem;
-  }
 
   .page-header__side {
     padding-left: 1.75rem;
@@ -5156,9 +5158,6 @@ figcaption {
     margin-top: 1.25rem;
   }
 
-  .page-header__divider {
-    margin: 0 2.25rem;
-  }
 }
 
 @media screen and (max-width: 480px) {
@@ -5177,9 +5176,6 @@ figcaption {
     font-size: clamp(1.25rem, 2.5vw, 2rem);
   }
 
-  .page-header__divider {
-    margin: 0 1rem;
-  }
 }
 
 @media screen and (max-width: 320px) {

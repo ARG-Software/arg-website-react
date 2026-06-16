@@ -1,48 +1,5 @@
-
-
-
 import { useState } from 'react';
-
-const COMMANDS = {
-  '/languages': {
-    label: 'Production languages we use daily',
-    items: ['TypeScript', 'C# / .NET', 'Node', 'Python'],
-    highlighted: ['TypeScript', 'C# / .NET'],
-  },
-  '/databases': {
-    label: 'Data layer: storage, caches, and streams',
-    items: ['Postgres', 'Redis', 'Kafka', 'ClickHouse', 'MongoDB'],
-    highlighted: ['Postgres', 'Kafka'],
-  },
-  '/frontend': {
-    label: 'Frontend: web and real-time UIs',
-    items: ['React', 'Next.js', 'TanStack Query', 'GSAP'],
-    highlighted: ['React', 'Next.js'],
-  },
-  '/infra': {
-    label: 'Infrastructure: ship, run, rollback',
-    items: ['Docker', 'Kubernetes', 'Terraform', 'GitHub Actions', 'AWS'],
-    highlighted: ['Kubernetes'],
-  },
-  '/observe': {
-    label: 'Observability: know before the customer does',
-    items: ['OpenTelemetry', 'Grafana', 'Sentry', 'Prometheus'],
-    highlighted: ['OpenTelemetry'],
-  },
-  '/principles': {
-    label: 'How we work, in four lines',
-    items: ['architecture-first', 'no patchwork', 'gold standard', 'handoff-ready'],
-    highlighted: ['architecture-first', 'no patchwork', 'gold standard'],
-  },
-};
-
-const SYSTEM_COMMANDS = {
-  '/help': 'Show available commands',
-  '/all': 'Show every stack category',
-  '/clear': 'Reset the console',
-};
-
-const SHORTCUTS = ['/help', ...Object.keys(COMMANDS), '/all', '/clear'];
+import consoleData from '../../data/techStackConsole.json';
 
 const INITIAL_LOG = [
   {
@@ -56,6 +13,10 @@ export function TechStackConsole({ className = '' }) {
   const [log, setLog] = useState(INITIAL_LOG);
   const [activeCommand, setActiveCommand] = useState('/help');
 
+  const commands = consoleData.commands;
+  const systemCommands = consoleData.systemCommands;
+  const shortcuts = ['/help', ...Object.keys(commands), '/all', '/clear'];
+
   const runCommand = rawCommand => {
     const command = normalizeCommand(rawCommand);
     if (!command) return;
@@ -67,7 +28,7 @@ export function TechStackConsole({ className = '' }) {
       return;
     }
 
-    setLog(currentLog => [...currentLog, buildLogEntry(command)]);
+    setLog(currentLog => [...currentLog, buildLogEntry(command, commands)]);
     setInput('');
     setActiveCommand(command);
   };
@@ -78,37 +39,37 @@ export function TechStackConsole({ className = '' }) {
   };
 
   return (
-    <div
-      className={`tech-stack-console ${className}`.trim()}
-      aria-label="ARG technology stack console"
-    >
+    <div className={`tech-stack-console ${className}`.trim()} aria-label={consoleData.ariaLabel}>
       <div className="tech-stack-console__header">
         <span className="tech-stack-console__dots" aria-hidden="true">
           <span></span>
           <span></span>
           <span></span>
         </span>
-        <span className="tech-stack-console__path">arg@gold-standard ~ /stack.sh</span>
-        <span className="tech-stack-console__meta">type a command or click a shortcut</span>
+        <span className="tech-stack-console__path">{consoleData.path}</span>
+        <span className="tech-stack-console__meta">{consoleData.meta}</span>
       </div>
 
       <div className="tech-stack-console__body">
         <div className="tech-stack-console__log" aria-live="polite">
           <div className="tech-stack-console__response tech-stack-console__response--intro">
-            <span className="tech-stack-console__caption">arg @ gold-standard - stack browser</span>
-            <p>
-              No surprises, no migration roulette. Every tool here is something we have run at
-              scale, on call, with someone&apos;s money on the line.
-            </p>
+            <span className="tech-stack-console__caption">{consoleData.intro.caption}</span>
+            <p>{consoleData.intro.text}</p>
           </div>
           {log.map((entry, index) => (
-            <ConsoleEntry key={`${entry.command}-${index}`} entry={entry} />
+            <ConsoleEntry
+              key={`${entry.command}-${index}`}
+              entry={entry}
+              commands={commands}
+              prompt={consoleData.prompt}
+              systemCommands={systemCommands}
+            />
           ))}
         </div>
 
         <div className="tech-stack-console__shortcuts" aria-label="Console shortcuts">
-          <span>try:</span>
-          {SHORTCUTS.map(command => (
+          <span>{consoleData.shortcutLabel}</span>
+          {shortcuts.map(command => (
             <button
               key={command}
               type="button"
@@ -121,12 +82,12 @@ export function TechStackConsole({ className = '' }) {
         </div>
 
         <form className="tech-stack-console__input-row" onSubmit={handleSubmit}>
-          <span>arg@gold-standard:~$</span>
+          <span>{consoleData.prompt}</span>
           <input
             type="text"
             value={input}
             onChange={event => setInput(event.target.value)}
-            placeholder="/help"
+            placeholder={consoleData.inputPlaceholder}
             spellCheck="false"
             autoCapitalize="off"
             aria-label="Run stack console command"
@@ -137,31 +98,31 @@ export function TechStackConsole({ className = '' }) {
   );
 }
 
-function ConsoleEntry({ entry }) {
+function ConsoleEntry({ entry, commands, prompt, systemCommands }) {
   return (
     <div className="tech-stack-console__entry">
       <div className="tech-stack-console__prompt">
-        <span>arg@gold-standard:~$</span>
+        <span>{prompt}</span>
         <strong>{entry.command}</strong>
       </div>
-      {renderResponse(entry)}
+      {renderResponse(entry, commands, systemCommands)}
     </div>
   );
 }
 
-function renderResponse(entry) {
+function renderResponse(entry, commands, systemCommands) {
   if (entry.type === 'help') {
     return (
       <div className="tech-stack-console__response">
         <span className="tech-stack-console__caption">available commands</span>
         <div className="tech-stack-console__help">
-          {Object.entries(COMMANDS).map(([command, definition]) => (
+          {Object.entries(commands).map(([command, definition]) => (
             <span key={command}>
               <b>{command}</b>
               <i>{definition.label}</i>
             </span>
           ))}
-          {Object.entries(SYSTEM_COMMANDS).map(([command, label]) => (
+          {Object.entries(systemCommands).map(([command, label]) => (
             <span key={command}>
               <b>{command}</b>
               <i>{label}</i>
@@ -197,18 +158,18 @@ function renderResponse(entry) {
   );
 }
 
-function buildLogEntry(command) {
+function buildLogEntry(command, commands) {
   if (command === '/help') return { command, type: 'help' };
   if (command === '/all') {
     return {
       command,
       label: 'Every category at once',
-      items: Object.values(COMMANDS).flatMap(definition => definition.items),
-      highlighted: Object.values(COMMANDS).flatMap(definition => definition.highlighted),
+      items: Object.values(commands).flatMap(definition => definition.items),
+      highlighted: Object.values(commands).flatMap(definition => definition.highlighted),
     };
   }
 
-  const definition = COMMANDS[command];
+  const definition = commands[command];
   if (!definition) return { command, type: 'unknown' };
 
   return {

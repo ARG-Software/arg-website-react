@@ -73,7 +73,6 @@ export function BlogArticleSidebar({
             <h3>{cta.title}</h3>
             <a href={cta.href} target="_blank" rel="noopener noreferrer" onClick={cta.onClick}>
               {cta.label}
-              <span aria-hidden="true"> -&gt;</span>
             </a>
           </div>
         </SidebarBlock>

@@ -1,4 +1,4 @@
-export function CareersFounderCard({ founder, animateOrder, onEmailClick, onLinkedInClick }) {
+export function FounderCard({ founder, animateOrder, onEmailClick, onLinkedInClick }) {
   return (
     <article className="cp-founder-card" data-animate="fade-up" data-animate-order={animateOrder}>
       <div className="cp-founder-monogram" aria-hidden="true">
@@ -7,7 +7,7 @@ export function CareersFounderCard({ founder, animateOrder, onEmailClick, onLink
       <div className="cp-founder-content">
         <h3>{founder.name}</h3>
         <p className="cp-founder-role">{founder.role}</p>
-        <p className="cp-founder-bio">{founder.bio}</p>
+        {founder.bio && <p className="cp-founder-bio">{founder.bio}</p>}
 
         <div className="cp-founder-focus" aria-label={`What to talk to ${founder.name} about`}>
           <div>
