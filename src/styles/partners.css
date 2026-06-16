@@ -52,7 +52,7 @@
   border-radius: 2rem;
   background: transparent;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.875rem;
+  font-size: var(--type-ui);
   color: #474747;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -77,8 +77,8 @@
 }
 
 .pc-header-desc p {
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: var(--type-body);
+  line-height: var(--line-body);
   color: #474747;
   margin: 0;
 }
@@ -227,10 +227,10 @@
 
 .pc-drawer-industry {
   display: inline-block;
-  font-size: 0.6875rem;
+  font-size: var(--type-meta-small);
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--tracking-meta);
   color: #0c002e;
   background: rgba(12, 0, 46, 0.06);
   padding: 0.3rem 0.75rem;
@@ -241,14 +241,14 @@
   font-family: Neuemontreal, sans-serif;
   font-size: 2rem;
   font-weight: 400;
-  line-height: 1.2;
+  line-height: var(--line-title);
   color: #0c002e;
   margin: 0;
 }
 
 .pc-drawer-desc {
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: var(--type-body);
+  line-height: var(--line-body);
   color: #474747;
   margin: 0 0 1.25rem;
   max-width: 56ch;
@@ -259,7 +259,7 @@
   align-items: center;
   gap: 0.5rem;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.9375rem;
+  font-size: var(--type-body-small);
   font-weight: 500;
   color: #0c002e;
   text-decoration: none;
@@ -306,12 +306,12 @@
 
 .pt-timeline-heading {
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(2rem, 3vw, 2.75rem);
+  font-size: var(--type-section-title);
   font-weight: 400;
-  line-height: 1.15;
+  line-height: var(--line-tight);
   color: #fff;
   margin: 0 0 3rem;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-title);
   max-width: 32rem;
 }
 
@@ -329,7 +329,7 @@
 
 .pt-year-label {
   font-family: Neuemontreal, sans-serif;
-  font-size: 1rem;
+  font-size: var(--type-body);
   font-weight: 400;
   color: rgba(255, 255, 255, 0.35);
   text-align: left;
@@ -381,7 +381,7 @@
 .pt-duration {
   flex-shrink: 0;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.9375rem;
+  font-size: var(--type-body-small);
   font-weight: 400;
   color: #0c002e;
   min-width: 4.5rem;
@@ -430,7 +430,7 @@
 
 .pt-cta-label {
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.9375rem;
+  font-size: var(--type-body-small);
   font-weight: 400;
   color: rgba(255, 255, 255, 0.7);
   flex-shrink: 0;
@@ -444,7 +444,7 @@
   background: #fff;
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.875rem;
+  font-size: var(--type-ui);
   font-weight: 500;
   border: none;
   border-radius: 2rem;
@@ -478,7 +478,7 @@
 }
 
 .pt-mobile-since {
-  font-size: 0.75rem;
+  font-size: var(--type-meta);
   color: rgba(0, 0, 0, 0.4);
   margin-bottom: 0.75rem;
   display: block;
@@ -515,7 +515,7 @@
 
 .pt-mobile-cta-label {
   font-family: Neuemontreal, sans-serif;
-  font-size: 1.125rem;
+  font-size: var(--type-body-large);
   font-weight: 400;
   color: rgba(255, 255, 255, 0.7);
 }
@@ -657,6 +657,6 @@
   }
 
   .pc-drawer-desc {
-    font-size: 0.9375rem;
+    font-size: var(--type-body-small);
   }
 }

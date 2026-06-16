@@ -44,7 +44,7 @@
   display: block;
   font-size: 1rem;
   font-weight: 800;
-  letter-spacing: 0.3em;
+  letter-spacing: var(--tracking-kicker-wide);
   color: var(--dark-blue);
   margin-bottom: 12px;
   text-transform: uppercase;
@@ -131,7 +131,7 @@
 
   .notfound-page .error-num {
     font-size: 0.8rem;
-    letter-spacing: 0.2em;
+    letter-spacing: var(--tracking-kicker);
   }
 
   .notfound-page .message {

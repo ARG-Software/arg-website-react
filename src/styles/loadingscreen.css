@@ -35,7 +35,7 @@ html.ls-active {
   border-radius: 999px;
   font-size: clamp(0.7rem, 1.4vw, 0.9rem);
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--tracking-badge);
   color: #ffffff;
   white-space: nowrap;
 }
@@ -47,7 +47,7 @@ html.ls-active {
   left: clamp(1.25rem, 3vw, 3rem);
   font-size: clamp(2.5rem, 9vw, 7.5rem);
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: var(--tracking-display);
   text-transform: lowercase;
   color: #ffffff;
 }
@@ -81,7 +81,7 @@ html.ls-active {
   right: clamp(1.25rem, 3vw, 3rem);
   font-size: clamp(2.5rem, 9vw, 7.5rem);
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: var(--tracking-display);
   font-weight: 400;
   color: #ffffff;
   padding-bottom: 0.15em;
