@@ -26,10 +26,10 @@ export function HeroSection() {
         <div className="hero_list" data-animate="fade-up">
           <h1 className="hero_heading heading-style-h1">
             <div className="heading_line" data-animate-order="4">
-              <div className="heading_text">Building digital solutions</div>
+              <div className="heading_text">Building systems</div>
             </div>
             <div className="heading_line" data-animate-order="5">
-              <div className="text-color-gradiant">that grow with you</div>
+              <div className="text-color-gradiant">that endure as you scale</div>
             </div>
           </h1>
         </div>

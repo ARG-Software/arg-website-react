@@ -7195,3 +7195,73 @@ figcaption {
     font-size: 0.8125rem;
   }
 }
+
+/* Homepage hero atmosphere */
+.hero_wrap {
+  isolation: isolate;
+}
+
+.hero_wrap::before,
+.hero_wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero_wrap::before {
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(240, 6, 13, 0.14), transparent 40%),
+    radial-gradient(ellipse at 72% 36%, rgba(201, 36, 215, 0.08), transparent 36%);
+  mix-blend-mode: screen;
+}
+
+.hero_wrap::after {
+  background: linear-gradient(
+    180deg,
+    rgba(12, 0, 46, 0.06) 0%,
+    rgba(12, 0, 46, 0.18) 56%,
+    rgba(12, 0, 46, 0.38) 100%
+  );
+}
+
+.hero_contain.container.padding-global {
+  position: relative;
+  z-index: 1;
+}
+
+@media screen and (max-width: 991px) {
+  .hero_wrap::before {
+    background:
+      radial-gradient(ellipse at 52% 38%, rgba(240, 6, 13, 0.11), transparent 46%),
+      radial-gradient(ellipse at 76% 32%, rgba(201, 36, 215, 0.06), transparent 40%);
+  }
+
+  .hero_wrap::after {
+    background: linear-gradient(
+      180deg,
+      rgba(12, 0, 46, 0.04) 0%,
+      rgba(12, 0, 46, 0.16) 52%,
+      rgba(12, 0, 46, 0.42) 100%
+    );
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .hero_wrap::before {
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(240, 6, 13, 0.08), transparent 52%),
+      radial-gradient(ellipse at 76% 26%, rgba(201, 36, 215, 0.05), transparent 46%);
+    mix-blend-mode: normal;
+  }
+
+  .hero_wrap::after {
+    background: linear-gradient(
+      180deg,
+      rgba(12, 0, 46, 0.02) 0%,
+      rgba(12, 0, 46, 0.12) 42%,
+      rgba(12, 0, 46, 0.5) 100%
+    );
+  }
+}
