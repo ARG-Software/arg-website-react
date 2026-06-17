@@ -289,3 +289,28 @@ Avoid these from the discarded branch:
 ## Awwwards Direction Note
 
 Copy can reduce template smell, but it will not win Awwwards by itself. The real work should be art direction, interaction, motion, project storytelling, performance and precision of execution.
+
+## Future Social Feed Direction
+
+The homepage currently uses Elfsight for the LinkedIn/social feed. It works for now, but styling and layout control are limited because the embed owns the rendered markup.
+
+Future replacement direction:
+
+- Build an ARG-owned `SocialFeed`/`SocialPostCard` UI and render from local JSON, e.g. `src/data/socialPosts.json`.
+- Keep the data shape source-agnostic so the frontend does not care whether posts are curated manually or synced automatically.
+- Use Buffer as the likely automation source instead of LinkedIn directly, since ARG already posts through Buffer and Buffer exposes an API for sent posts.
+- Add a future GitHub Actions workflow that fetches sent LinkedIn-channel posts from Buffer weekly and updates the JSON through a PR.
+- Required GitHub secrets would likely be `BUFFER_API_KEY`, `BUFFER_ORGANIZATION_ID`, and `BUFFER_LINKEDIN_CHANNEL_ID`.
+- Keep Elfsight until the current subscription/time window makes sense to replace.
+
+Preferred future flow:
+
+```text
+Buffer LinkedIn post
+-> scheduled GitHub Action
+-> Buffer API fetches sent posts
+-> normalize into src/data/socialPosts.json
+-> custom ARG-styled React cards render the feed
+```
+
+Avoid scraping LinkedIn directly. It is brittle, likely blocked, and not worth building around.
