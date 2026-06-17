@@ -18,6 +18,7 @@ export function ProjectItem({
   logos,
   stack,
   animation = 'fade-up',
+  gridRowStart,
   onProjectClick,
   onProjectLinkClick,
 }) {
@@ -34,6 +35,11 @@ export function ProjectItem({
       id="project-item-wrapper-grid"
       role="listitem"
       className="projects_item_wrap w-dyn-item"
+      style={
+        Number.isInteger(gridRowStart)
+          ? { '--project-grid-row-start': String(gridRowStart) }
+          : undefined
+      }
       data-animate={animation}
     >
       <div className="projects_item" data-animate={animation}>

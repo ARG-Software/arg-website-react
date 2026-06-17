@@ -569,57 +569,58 @@ input[type='file']:focus-visible {
    Project Grid Layout
    ============================================ */
 @media (min-width: 992px) {
-  .projects_item_wrap:nth-child(1n) {
+  .projects_item_wrap {
+    grid-row-start: var(--project-grid-row-start, auto) !important;
+  }
+
+  .projects_item_wrap:nth-child(6n + 1) {
     grid-column: 1 / span 6 !important;
-    grid-row-start: 1 !important;
+    padding-top: 0;
     aspect-ratio: 3 / 2 !important;
   }
 
-  .projects_item_wrap:nth-child(1n) .projects_item {
+  .projects_item_wrap:nth-child(6n + 1) .projects_item {
     aspect-ratio: 3 / 2;
   }
 
-  .projects_item_wrap:nth-child(2n) {
+  .projects_item_wrap:nth-child(6n + 2) {
     grid-column: 1 / span 3 !important;
-    grid-row-start: 2 !important;
     padding-top: 8.5rem;
   }
 
-  .projects_item_wrap:nth-child(2n) .projects_item {
+  .projects_item_wrap:nth-child(6n + 2) .projects_item {
     aspect-ratio: 1 / 1;
   }
 
-  .projects_item_wrap:nth-child(3n) {
+  .projects_item_wrap:nth-child(6n + 3) {
     grid-column: 6 / span 4 !important;
-    grid-row-start: 2 !important;
+    padding-top: 0;
   }
 
-  .projects_item_wrap:nth-child(3n) .projects_item {
+  .projects_item_wrap:nth-child(6n + 3) .projects_item {
     aspect-ratio: 4.3 / 4;
   }
 
-  .projects_item_wrap:nth-child(4n) {
+  .projects_item_wrap:nth-child(6n + 4) {
     grid-column: 5 / span 6 !important;
-    grid-row-start: 3 !important;
     padding-top: 0rem;
   }
 
-  .projects_item_wrap:nth-child(4n) .projects_item {
+  .projects_item_wrap:nth-child(6n + 4) .projects_item {
     aspect-ratio: 3 / 2;
   }
 
-  .projects_item_wrap:nth-child(5n) {
+  .projects_item_wrap:nth-child(6n + 5) {
     grid-column: 1 / span 3 !important;
-    grid-row-start: 4 !important;
+    padding-top: 0;
   }
 
-  .projects_item_wrap:nth-child(5n) .projects_item {
+  .projects_item_wrap:nth-child(6n + 5) .projects_item {
     aspect-ratio: 4 / 5;
   }
 
   .projects_item_wrap:nth-child(6n) {
     grid-column: 6 / span 5 !important;
-    grid-row-start: 4 !important;
     padding-top: 20rem;
   }
 
