@@ -75,24 +75,11 @@
   overflow: hidden;
 }
 
-.prp-hero-canvas {
+.prp-hero-image {
   width: 100%;
   aspect-ratio: 16 / 9;
-  display: block;
-  opacity: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.prp-hero-image-fallback {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 0;
+  display: block;
 }
 
 /* ============================================
@@ -460,9 +447,10 @@
 
 .prp-results-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--prp-grid-gutter);
   align-items: start;
+  min-width: 0;
 }
 
 .prp-results-left {
@@ -471,6 +459,7 @@
   flex-direction: column;
   gap: 1.5rem;
   padding-top: 1rem;
+  min-width: 0;
 }
 
 .prp-results-left .prp-section-label {
@@ -497,19 +486,22 @@
 }
 
 .prp-results-right {
-  grid-column: 7 / span 6;
+  grid-column: 7 / span 5;
+  min-width: 0;
 }
 
 .prp-results-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
+  min-width: 0;
 }
 
 .prp-metric-card {
   background: var(--prp-dark);
   color: #fff;
   border-radius: 0.5rem;
+  min-width: 0;
   min-height: 280px;
   padding: 1.5rem;
   display: flex;
@@ -582,174 +574,6 @@
 }
 
 /* ============================================
-   Next Project
-   ============================================ */
-.prp-next {
-  background: var(--prp-dark);
-  color: var(--prp-dark-fg);
-  text-align: center;
-  position: relative;
-  overflow: visible;
-}
-
-.prp-next::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 3.75rem;
-  height: 0.1875rem;
-  background: linear-gradient(90deg, #f0060d, #c924d7 49%, #7904fd);
-  border-radius: 0.125rem;
-}
-
-.prp-next-label {
-  font-size: var(--type-meta-small);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-meta);
-  color: rgba(255, 255, 255, 0.35);
-  margin-bottom: 1rem;
-  display: block;
-}
-
-.prp-next-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 1rem;
-  color: var(--prp-dark-fg);
-  text-decoration: none;
-  transition: gap 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-}
-
-.prp-next-link::after {
-  content: '';
-  position: absolute;
-  bottom: -0.25rem;
-  left: 0;
-  width: 0;
-  height: 0.125rem;
-  background: linear-gradient(90deg, #f0060d, #c924d7 49%, #7904fd);
-  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.prp-next-link:hover::after {
-  width: 100%;
-}
-
-.prp-next-link:hover {
-  gap: 1.5rem;
-}
-
-.prp-next-title {
-  font-family: Neuemontreal, sans-serif;
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 700;
-  letter-spacing: var(--tracking-heading);
-  line-height: 1.1;
-  margin: 0;
-}
-
-.prp-next-arrow svg {
-  width: 2rem;
-  height: 2rem;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.prp-next-link:hover .prp-next-arrow svg {
-  transform: translateX(0.5rem);
-}
-
-/* Next project hover preview */
-.prp-next-preview {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%) translateY(100%);
-  width: 80%;
-  max-width: 40rem;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 10;
-}
-
-.prp-next-link:hover ~ .prp-next-preview,
-.prp-next-preview:hover {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-
-.prp-next-preview-bar {
-  background: rgba(255, 255, 255, 0.05);
-  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
-  border-bottom: none;
-  border-radius: 0.75rem 0.75rem 0 0;
-  padding: 0.75rem 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.prp-next-preview-loading {
-  font-size: var(--type-meta-small);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-meta);
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.prp-next-preview-progress {
-  flex: 1;
-  height: 0.125rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 100px;
-  overflow: hidden;
-  position: relative;
-}
-
-.prp-next-preview-progress::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -30%;
-  width: 30%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, #c924d7, transparent);
-  animation: prp-progress-slide 1.5s ease-in-out infinite;
-}
-
-@keyframes prp-progress-slide {
-  0% {
-    left: -30%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-.prp-next-preview-image {
-  border-radius: 0 0 0.75rem 0.75rem;
-  overflow: hidden;
-  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
-  border-top: none;
-  aspect-ratio: 16 / 9;
-}
-
-.prp-next-preview-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* ============================================
    Responsive
    ============================================ */
 @media (max-width: 1023px) {
@@ -790,7 +614,7 @@
   }
 
   .prp-results-cards {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 2rem;
   }
 }
@@ -799,8 +623,7 @@
   .prp-intro,
   .prp-challenge,
   .prp-solution,
-  .prp-results,
-  .prp-next {
+  .prp-results {
     padding-top: 4rem;
     padding-bottom: 4rem;
   }
@@ -830,12 +653,8 @@
     font-size: clamp(1.125rem, 4vw, 1.5rem);
   }
 
-  .prp-next-title {
-    font-size: clamp(1.5rem, 5vw, 2.5rem);
-  }
-
   .prp-results-cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 2rem;
   }
 }
@@ -881,16 +700,6 @@
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
   color: rgba(255, 255, 255, 0.5);
-}
-
-.prp-next-title {
-  font-family: Neuemontreal, sans-serif;
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  font-weight: 700;
-  letter-spacing: var(--tracking-display);
-  line-height: 1.1;
-  color: #fff;
-  margin: 0;
 }
 
 .prp-next-hint {
@@ -955,12 +764,9 @@
     grid-template-columns: 1fr;
   }
   .prp-results-left {
-    grid-column: 1;
+    grid-column: 1 / -1;
   }
   .prp-results-right {
-    grid-column: 1;
-  }
-  .prp-next-title {
-    font-size: clamp(2rem, 8vw, 3.5rem);
+    grid-column: 1 / -1;
   }
 }

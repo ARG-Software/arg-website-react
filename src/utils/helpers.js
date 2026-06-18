@@ -31,10 +31,26 @@ export function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
+/**
+ * Truncate a string to a specified maximum length.
+ * @param {string} text - The input string to truncate.
+ * @param {number} maxLength - The maximum length of the truncated string.
+ * @returns {string} - The truncated string.
+ */
 export function truncateText(text = '', maxLength = 200) {
   if (text.length <= maxLength) return text;
   return `${text
     .slice(0, maxLength)
     .trim()
     .replace(/[.,;:!?-]+$/, '')}...`;
+}
+
+/**
+ * Normalize a pathname by removing trailing slashes.
+ * @param {string} pathname - The pathname to normalize.
+ * @returns {string} - The normalized pathname.
+ */
+export function normalizePathname(pathname) {
+  if (!pathname || pathname === '/') return '/';
+  return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 }

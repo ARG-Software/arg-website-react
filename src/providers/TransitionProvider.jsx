@@ -1,44 +1,134 @@
-import { createContext, useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import { trackPageView } from '../hooks/useAnalytics';
-import { useLenis } from '../hooks/useLenis';
+import { useHashScroll } from '../hooks/useHashScroll';
+import { LenisContext } from './LenisProvider';
 import { PAGE_TRANSITION_DURATION_MS } from '../constants';
+import { PageTransitionOverlay } from '../components/layout/PageTransitionOverlay';
+import { normalizePathname } from '../utils/helpers';
 
 // Module-level variables to track navigation history
 let previousPath = '';
 let currentPath = '';
+
+const PROJECT_IMAGE_PRELOAD_TIMEOUT_MS = 320;
+const INSTANT_HOME_HASH_REVEAL_DELAY_MS = 120;
+
+function preloadTransitionImage(sourceImage) {
+  if (!sourceImage?.src || typeof window === 'undefined') {
+    return Promise.resolve();
+  }
+
+  return new Promise(resolve => {
+    let settled = false;
+    const image = new Image();
+    const timeout = window.setTimeout(() => finish(), PROJECT_IMAGE_PRELOAD_TIMEOUT_MS);
+
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      resolve();
+    };
+
+    image.decoding = 'async';
+    if ('fetchPriority' in image) image.fetchPriority = 'high';
+    if (sourceImage.sizes) image.sizes = sourceImage.sizes;
+    if (sourceImage.srcSet) image.srcset = sourceImage.srcSet;
+    image.src = sourceImage.src;
+
+    if (image.decode) {
+      image.decode().then(finish, finish);
+      return;
+    }
+
+    image.onload = finish;
+    image.onerror = finish;
+  });
+}
+
+function isModifiedClick(event) {
+  return event.metaKey || event.altKey || event.ctrlKey || event.shiftKey;
+}
+
+function getClickedAnchor(event) {
+  if (!(event.target instanceof Element)) return null;
+  return event.target.closest('a[href]');
+}
+
+function isHomeHashInstantSource(pathname) {
+  const normalizedPathname = normalizePathname(pathname);
+  return (
+    normalizedPathname === '/partners' ||
+    normalizedPathname === '/careers' ||
+    normalizedPathname === '/blog' ||
+    normalizedPathname.startsWith('/blog/')
+  );
+}
+
+function shouldJumpToHomeHash(currentPathname, targetPathname, hash) {
+  return Boolean(
+    hash && normalizePathname(targetPathname) === '/' && isHomeHashInstantSource(currentPathname)
+  );
+}
 
 export const TransitionContext = createContext(null);
 
 export function TransitionProvider({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const navigationType = useNavigationType();
 
   const [phase, setPhase] = useState('idle'); // idle | covering | revealing
-  const [overlayVariant, setOverlayVariant] = useState('vertical'); // vertical | horizontal
+  const [overlayVariant, setOverlayVariant] = useState('default'); // default | project-image
+  const [imageTransition, setImageTransition] = useState(null);
   const overlayRef = useRef(null);
   const pendingToRef = useRef(null);
   const isRunningRef = useRef(false);
   const isInitialLoadRef = useRef(true);
-  const lastPathRef = useRef(location.pathname);
-  const hashRef = useRef(location.hash);
-  const transitionStartTimeRef = useRef(0);
-  const lenis = useLenis();
+  const lenis = useContext(LenisContext);
+  const { scrollToHash, scrollToHashWhenReady } = useHashScroll();
   // Stable ref so the route-change effect doesn't re-fire when lenis initialises
   const lenisRef = useRef(lenis);
+  const scrollToHashWhenReadyRef = useRef(scrollToHashWhenReady);
 
-  const getTransitionDuration = useCallback(
-    variant => (variant === 'horizontal' ? 600 : PAGE_TRANSITION_DURATION_MS),
-    []
-  );
+  const getTransitionTimings = useCallback(variant => {
+    if (variant === 'project-image') {
+      return { cover: 760, reveal: 300 };
+    }
+
+    return {
+      cover: Math.max(PAGE_TRANSITION_DURATION_MS, 1680),
+      reveal: 820,
+    };
+  }, []);
+
+  const getNavigateOptions = useCallback(options => {
+    if (!options) return undefined;
+
+    const navigateOptions = { ...options };
+    delete navigateOptions.transition;
+    delete navigateOptions.sourceImage;
+    delete navigateOptions.scrollMode;
+
+    return Object.keys(navigateOptions).length > 0 ? navigateOptions : undefined;
+  }, []);
+
+  useEffect(() => {
+    const isTransitioning = phase === 'covering' || phase === 'revealing';
+    document.documentElement.classList.toggle('is-page-transitioning', isTransitioning);
+
+    return () => {
+      document.documentElement.classList.remove('is-page-transitioning');
+    };
+  }, [phase]);
   useEffect(() => {
     lenisRef.current = lenis;
   }, [lenis]);
 
-  // Keep hashRef updated with current location.hash
   useEffect(() => {
-    hashRef.current = location.hash;
-  }, [location.hash]);
+    scrollToHashWhenReadyRef.current = scrollToHashWhenReady;
+  }, [scrollToHashWhenReady]);
 
   // Initialize currentPath on first load
   useEffect(() => {
@@ -47,88 +137,34 @@ export function TransitionProvider({ children }) {
     }
   }, [location.pathname]);
 
-  // Same-page hash scrolling with Lenis
-  const scrollToHash = useCallback(
-    (hash, options = {}) => {
-      if (!hash) return false;
-
-      const element = document.getElementById(hash);
-      console.log('scrollToHash:', { hash, element });
-      if (!element) return false;
-
-      const mobileMenuDelay = options.mobileMenuDelay ?? 650;
-      const duration = options.duration ?? 1.8;
-      const offset = options.offset ?? 0;
-      const easing = options.easing ?? (progress => 1 - Math.pow(1 - progress, 4)); // ease-out quart
-
-      const doScroll = () => {
-        document.activeElement?.blur();
-
-        if (lenis) {
-          lenis.start();
-          lenis.scrollTo(element, { offset, duration, easing });
-        } else {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      };
-
-      setTimeout(doScroll, mobileMenuDelay);
-
-      // Keep React Router in sync instead of raw pushState
-      navigate(`#${hash}`, { replace: true });
-      return true;
-    },
-    [lenis, navigate]
-  );
-
-  // Scroll to appropriate section based on navigation history with retry logic
-  const scrollToPage = useCallback(() => {
-    // Wait 50ms for React to start rendering
+  const scrollToReturnTarget = useCallback(() => {
     setTimeout(() => {
       const tryScroll = (attempt = 0) => {
         let targetElement = null;
 
-        // FIRST: Check for hash in URL and scroll to it
-        if (hashRef.current) {
-          const hashId = hashRef.current.substring(1);
-          targetElement = document.getElementById(hashId);
-          if (targetElement) {
-            targetElement.scrollIntoView();
-            return;
-          }
-        }
-
-        // SECOND: Check special transition cases
-        if (previousPath === '/partners' && currentPath === '/' && !hashRef.current) {
+        if (previousPath === '/partners' && currentPath === '/') {
           targetElement = document.getElementById('partners-marquee');
         } else if (
           (previousPath === '/blog' || previousPath.startsWith('/blog/')) &&
-          currentPath === '/' &&
-          !hashRef.current
+          currentPath === '/'
         ) {
           targetElement = document.getElementById('blog-promo');
         }
 
-        // If target element found, scroll to it
         if (targetElement) {
-          targetElement.scrollIntoView(); // Quick scroll, no smooth
+          targetElement.scrollIntoView();
           return;
         }
 
-        // If element not found, retry based on attempt count
         if (attempt === 0) {
-          // First retry after 100ms
           setTimeout(() => tryScroll(1), 20);
         } else if (attempt === 1) {
-          // Second retry after 200ms total
           setTimeout(() => tryScroll(2), 30);
         } else {
-          // Fallback to top after all retries
           window.scrollTo({ top: 0 });
         }
       };
 
-      // Start trying
       tryScroll();
     }, 2);
   }, []);
@@ -139,45 +175,98 @@ export function TransitionProvider({ children }) {
       if (!to) return;
       if (isRunningRef.current) return;
 
-      // Parse hash from URL
       const [path, hash] = to.split('#');
-      const targetPath = path || '/';
-      const currentPath = location.pathname;
+      const targetPath = path || location.pathname;
+      const isSamePath = normalizePathname(targetPath) === normalizePathname(location.pathname);
+      const shouldUseInstantHomeHash = shouldJumpToHomeHash(location.pathname, targetPath, hash);
+      const transitionOptions = shouldUseInstantHomeHash
+        ? { ...options, scrollMode: options?.scrollMode ?? 'instant-home-hash' }
+        : options;
 
-      // Same-page hash scrolling
-      if (hash && targetPath === currentPath) {
-        scrollToHash(hash, options);
+      if (hash && isSamePath) {
+        scrollToHash(hash, transitionOptions);
         return;
       }
 
       // If already there, scroll to top
-      if (typeof to === 'string' && to === location.pathname) {
-        scrollToPage({ duration: 0.8 });
+      if (typeof to === 'string' && isSamePath && !hash) {
+        scrollToReturnTarget();
         return;
       }
 
       // Cross-page navigation with transition
       isRunningRef.current = true;
-      pendingToRef.current = { to, options };
+      pendingToRef.current = { to, options: transitionOptions, hash };
 
-      const isProjectNav =
-        targetPath.startsWith('/projects/') && location.pathname.startsWith('/projects/');
-      const variant = isProjectNav ? 'horizontal' : 'vertical';
+      const variant =
+        transitionOptions?.transition === 'project-image' ? 'project-image' : 'default';
       setOverlayVariant(variant);
+      setImageTransition(transitionOptions?.sourceImage ?? null);
 
       // stop scroll if you use Lenis
       if (lenis) lenis.stop();
 
-      transitionStartTimeRef.current = Date.now();
-      setPhase('covering');
+      const startCover = () => {
+        setPhase('covering');
 
-      const duration = getTransitionDuration(variant);
-      window.setTimeout(() => {
-        navigate(to, options);
-      }, duration);
+        const { cover } = getTransitionTimings(variant);
+        window.setTimeout(() => {
+          navigate(hash ? targetPath : to, getNavigateOptions(transitionOptions));
+        }, cover);
+      };
+
+      if (variant === 'project-image') {
+        preloadTransitionImage(transitionOptions?.sourceImage).then(startCover);
+        return;
+      }
+
+      startCover();
     },
-    [navigate, location.pathname, scrollToHash, scrollToPage, lenis, getTransitionDuration]
+    [
+      navigate,
+      location.pathname,
+      scrollToHash,
+      scrollToReturnTarget,
+      lenis,
+      getTransitionTimings,
+      getNavigateOptions,
+    ]
   );
+
+  useEffect(() => {
+    const handleHashAnchorClick = event => {
+      const anchor = getClickedAnchor(event);
+      if (!anchor) return;
+      if (event.defaultPrevented || event.button !== 0 || isModifiedClick(event)) return;
+      if (anchor.target && anchor.target !== '_self') return;
+      if (anchor.hasAttribute('download')) return;
+
+      const href = anchor.getAttribute('href');
+      if (!href || href === '#') return;
+
+      const url = new URL(href, window.location.href);
+      if (url.origin !== window.location.origin || !url.hash) return;
+
+      const hash = url.hash.slice(1);
+      if (!hash) return;
+
+      event.preventDefault();
+
+      const isSamePath =
+        normalizePathname(url.pathname) === normalizePathname(location.pathname) &&
+        url.search === location.search;
+
+      if (isSamePath) {
+        scrollToHash(hash, { mobileMenuDelay: 0 });
+        return;
+      }
+
+      go(`${url.pathname}${url.search}${url.hash}`);
+    };
+
+    document.addEventListener('click', handleHashAnchorClick);
+    return () => document.removeEventListener('click', handleHashAnchorClick);
+  }, [go, location.pathname, location.search, scrollToHash]);
 
   // When the route actually changes, reveal
   useEffect(() => {
@@ -185,24 +274,12 @@ export function TransitionProvider({ children }) {
     previousPath = currentPath;
     currentPath = location.pathname;
 
-    lastPathRef.current = location.pathname;
-
     // Fire GA4 page_view for SPA navigation
     trackPageView(location.pathname + location.search + location.hash);
 
     const unlockScroll = () => {
       if (lenisRef.current) lenisRef.current.start();
       document.documentElement.classList.remove('lenis-stopped');
-    };
-
-    // Cover instantly (no CSS fade-in) so scroll jump is never visible,
-    // then restore transition one frame later so the reveal can animate.
-    const coverInstant = () => {
-      if (overlayRef.current) overlayRef.current.style.transition = 'none';
-      setPhase('covering');
-      requestAnimationFrame(() => {
-        if (overlayRef.current) overlayRef.current.style.transition = '';
-      });
     };
 
     // Scroll to top while the overlay is covering — user never sees the jump.
@@ -218,68 +295,59 @@ export function TransitionProvider({ children }) {
       return;
     }
 
-    // We may arrive here either via go() or via normal <Link>
-    // If it wasn't via go(), still animate.
+    // Only explicit go() navigations animate. Browser back/forward and other
+    // route changes should render immediately without the page transition.
     if (!isRunningRef.current) {
-      isRunningRef.current = true;
-      if (lenisRef.current) lenisRef.current.stop();
-
-      transitionStartTimeRef.current = Date.now();
-
-      const isProjectNav =
-        currentPath.startsWith('/projects/') && previousPath.startsWith('/projects/');
-      const variant = isProjectNav ? 'horizontal' : 'vertical';
-      setOverlayVariant(variant);
-      const duration = getTransitionDuration(variant);
-
-      window.setTimeout(() => {
-        coverInstant();
-        scrollToTop(); // Scroll while covered — invisible to user
-
-        window.setTimeout(() => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              setPhase('revealing');
-              window.setTimeout(() => {
-                setPhase('idle');
-                isRunningRef.current = false;
-                unlockScroll();
-              }, duration);
-            });
-          });
-        }, duration);
-      }, 0);
-
+      unlockScroll();
       return;
     }
 
-    // go() path: overlay already covering — scroll to hash or top, then reveal
-    const hasHash = pendingToRef.current?.to?.includes('#');
-    if (hasHash) {
-      scrollToPage();
-    } else {
-      scrollToTop();
-    }
-    const duration = getTransitionDuration(overlayVariant);
-    window.setTimeout(() => {
+    // go() path: overlay already covering — restore the destination top while hidden.
+    const pendingHash = pendingToRef.current?.hash;
+    const shouldRevealAfterInstantHash =
+      pendingHash && pendingToRef.current?.options?.scrollMode === 'instant-home-hash';
+    scrollToTop();
+
+    const { reveal } = getTransitionTimings(overlayVariant);
+
+    const revealPage = () => {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setPhase('revealing');
           window.setTimeout(() => {
             setPhase('idle');
+            setImageTransition(null);
             isRunningRef.current = false;
             pendingToRef.current = null;
             unlockScroll();
-          }, duration);
+            if (pendingHash && !shouldRevealAfterInstantHash) {
+              scrollToHashWhenReadyRef.current(pendingHash, {
+                initialDelay: 80,
+                mobileMenuDelay: 0,
+              });
+            }
+          }, reveal);
         });
       });
-    }, 0);
+    };
+
+    if (shouldRevealAfterInstantHash) {
+      scrollToHashWhenReadyRef.current(pendingHash, {
+        initialDelay: 0,
+        mobileMenuDelay: 0,
+        immediate: true,
+      });
+      window.setTimeout(revealPage, INSTANT_HOME_HASH_REVEAL_DELAY_MS);
+      return;
+    }
+
+    window.setTimeout(revealPage, 0);
     // Only pathname changes represent real page transitions.
     // Hash changes are handled by scrollToHash (pushState) and must NOT
     // retrigger this effect — otherwise the cover→reveal cycle fires spuriously
     // ~1–2 s after load when lenis init causes scrollToHash to be recreated.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+  }, [location.pathname, navigationType]);
 
   // Create a click handler for hash scrolling (e.g., HeroSection, AboutSection)
   const createHashScrollHandler = (hash, options = {}) => {
@@ -293,20 +361,21 @@ export function TransitionProvider({ children }) {
     go,
     phase,
     scrollToHash,
-    scrollToPage,
+    scrollToPage: scrollToReturnTarget,
     createHashScrollHandler,
     transitioning: phase === 'covering' || phase === 'revealing',
-    setOverlayVariant,
   };
 
   return (
     <TransitionContext.Provider value={contextValue}>
       {/* overlay lives once here */}
-      <div
-        ref={overlayRef}
-        className={`pt-overlay ${phase} pt-overlay--${overlayVariant}`}
-        aria-hidden="true"
-      />
+      <div ref={overlayRef}>
+        <PageTransitionOverlay
+          phase={phase}
+          variant={overlayVariant}
+          imageTransition={imageTransition}
+        />
+      </div>
       {children}
     </TransitionContext.Provider>
   );

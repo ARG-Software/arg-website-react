@@ -3,12 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Navbar, SEO, SectionDivider, arrowSvg } from '../components';
 import { ShuffleText } from '../components/widgets/ShuffleText';
-import {
-  useScrollAnimations,
-  useCinematicZoomBlur,
-  useNextProjectSection,
-  useTimeOnPage,
-} from '../hooks';
+import { useScrollAnimations, useNextProjectSection, useTimeOnPage } from '../hooks';
 import { animateCountUp, getCountUpEnd } from '../hooks/useCountUp';
 import { trackCTA } from '../hooks/useAnalytics';
 import PROJECTS from '../data/projects.json';
@@ -19,8 +14,6 @@ export default function ProjectDetailPage() {
   const navigate = useNavigate();
   const nextSectionRef = useRef(null);
   const progressRef = useRef(null);
-  const canvasRef = useRef(null);
-  const fallbackRef = useRef(null);
   useScrollAnimations();
 
   const projectIndex = PROJECTS.findIndex(p => p.slug === slug);
@@ -60,8 +53,7 @@ export default function ProjectDetailPage() {
     }
   }, [project, navigate]);
 
-  useCinematicZoomBlur(canvasRef, fallbackRef, project?.imgSrc);
-  useNextProjectSection(nextSectionRef, progressRef, nextProject.slug);
+  useNextProjectSection(nextSectionRef, progressRef, nextProject);
 
   // Count-up observer for metric numbers
   useEffect(() => {
@@ -95,7 +87,13 @@ export default function ProjectDetailPage() {
   return (
     <>
       <Helmet>
-        <link rel="preload" as="image" href={nextProject.imgSrc} />
+        <link
+          rel="preload"
+          as="image"
+          href={nextProject.imgSrc}
+          imageSrcSet={nextProject.imgSrcSet}
+          imageSizes="100vw"
+        />
       </Helmet>
       <SEO
         title={`${project.title} - Case Study`}
@@ -108,14 +106,12 @@ export default function ProjectDetailPage() {
         {/* HERO */}
         <section className="prp-hero">
           <div className="prp-hero-image-wrap">
-            <canvas ref={canvasRef} className="prp-hero-canvas" />
             <img
-              ref={fallbackRef}
               src={project.imgSrc}
               srcSet={project.imgSrcSet}
               sizes="100vw"
               alt={project.title}
-              className="prp-hero-image-fallback"
+              className="prp-hero-image"
               width="1920"
               height="1080"
             />

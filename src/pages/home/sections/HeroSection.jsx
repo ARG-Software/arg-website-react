@@ -1,12 +1,13 @@
+import { useContext } from 'react';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { trackMailto } from '../../../hooks/useAnalytics';
-import { usePageTransition } from '../../../hooks/usePageTransition';
+import { TransitionContext } from '../../../providers/TransitionProvider';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 import { useWaterRipple } from '../../../hooks/useWaterRipple';
 
 export function HeroSection() {
   useWaterRipple('water-ripple-canvas');
-  const { createHashScrollHandler } = usePageTransition();
+  const { createHashScrollHandler } = useContext(TransitionContext);
 
   const handleContactClick = createHashScrollHandler('contact', {
     duration: 2.4,

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { RAFContext } from '../providers/RAFProvider';
 import { useContext } from 'react';
 
@@ -28,19 +28,4 @@ export function useRAF(callback, deps = []) {
       ctx.unsubscribe(id);
     };
   }, [ctx]);
-}
-
-export function useTransitioning() {
-  const transitioningRef = useRef(false);
-
-  const checkTransitioning = useCallback(() => {
-    const overlay = document.querySelector('.pt-overlay');
-    if (overlay) {
-      transitioningRef.current =
-        overlay.classList.contains('covering') || overlay.classList.contains('revealing');
-    }
-    return transitioningRef.current;
-  }, []);
-
-  return checkTransitioning;
 }

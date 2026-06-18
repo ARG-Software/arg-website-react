@@ -12,7 +12,6 @@ export {
   mediumSvg,
   closeSvg,
 } from './icons/SocialIcons';
-export { PlaceholderVisual } from './placeholders/PlaceholderVisual';
 export { StatsGrid } from './grids/StatsGrid';
 export { TechStack } from './tags/TechStack';
 export { ProjectItem } from './cards/ProjectItem';

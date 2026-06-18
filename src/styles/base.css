@@ -315,54 +315,6 @@ html::-webkit-scrollbar-corner {
   justify-content: center !important;
 }
 
-/* Page transition overlay — curtain effect */
-.pt-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: #0c002e;
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 380ms cubic-bezier(0.76, 0, 0.24, 1);
-  z-index: 999999;
-}
-
-/* horizontal wipe for project-to-project navigation */
-.pt-overlay--horizontal {
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 600ms cubic-bezier(0.76, 0, 0.24, 1);
-}
-
-/* cover: curtain drops from top */
-.pt-overlay.covering {
-  transform: scaleY(1);
-}
-
-/* horizontal cover: wipe from left */
-.pt-overlay--horizontal.covering {
-  transform: scaleX(1);
-}
-
-/* reveal: curtain lifts from bottom (origin stays at top, bottom edge rises) */
-.pt-overlay.revealing {
-  transform: scaleY(0);
-}
-
-/* horizontal reveal: wipe to right */
-.pt-overlay--horizontal.revealing {
-  transform: scaleX(0);
-}
-
-/* idle */
-.pt-overlay.idle {
-  transform: scaleY(0);
-}
-
-.pt-overlay--horizontal.idle {
-  transform: scaleX(0);
-}
-
 /* ============================================
    Spline & Services Illustration
    ============================================ */

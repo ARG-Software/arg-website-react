@@ -1,0 +1,136 @@
+/* ============================================
+   Page Transition Effects
+   ============================================ */
+
+.pt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  transition: visibility 0ms linear 1680ms;
+}
+
+.pt-overlay.covering,
+.pt-overlay.revealing {
+  opacity: 1;
+  visibility: visible;
+  transition: visibility 0ms linear 0ms;
+}
+
+.pt-overlay__shades {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(32, 1fr);
+  overflow: hidden;
+}
+
+.pt-overlay__shades span {
+  background: #0c002e;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 720ms cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: calc(var(--pt-shade-index) * 18ms);
+}
+
+.pt-overlay.covering .pt-overlay__shades span {
+  transform: scaleX(1);
+}
+
+.pt-overlay.revealing .pt-overlay__shades span {
+  transform-origin: right center;
+  transform: scaleX(0);
+  transition-delay: calc(var(--pt-shade-index) * 12ms);
+}
+
+.pt-overlay__brand {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pt-overlay.covering .pt-overlay__brand {
+  opacity: 1;
+  transition-delay: 1040ms;
+}
+
+.pt-overlay.revealing .pt-overlay__brand {
+  opacity: 0;
+  transition-delay: 0ms;
+}
+
+.pt-overlay__logo {
+  width: clamp(7rem, 18vw, 14rem);
+  height: auto;
+}
+
+.pt-overlay--project-image {
+  transition: visibility 0ms linear 300ms;
+}
+
+.pt-project-image {
+  position: fixed;
+  left: var(--pt-image-left);
+  top: var(--pt-image-top);
+  width: var(--pt-image-width);
+  height: var(--pt-image-height);
+  object-fit: cover;
+  border-radius: 0.75rem;
+  image-rendering: auto;
+  z-index: 2;
+  transform: translateZ(0);
+  animation: pt-project-image-cover 760ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+.pt-overlay.revealing .pt-project-image {
+  animation: pt-project-image-reveal 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pt-project-image-cover {
+  from {
+    left: var(--pt-image-left);
+    top: var(--pt-image-top);
+    width: var(--pt-image-width);
+    height: var(--pt-image-height);
+    border-radius: 0.75rem;
+  }
+  to {
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+}
+
+@keyframes pt-project-image-reveal {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-overlay,
+  .pt-overlay *,
+  .pt-project-image {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .pt-overlay.covering .pt-overlay__brand {
+    opacity: 1;
+  }
+}

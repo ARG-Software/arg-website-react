@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import hljs from 'highlight.js/lib/core';
 import bash from 'highlight.js/lib/languages/bash';
@@ -39,7 +39,8 @@ import {
   PageHeader,
   BlogArticleSidebar,
 } from '../../components';
-import { useScrollAnimations, usePageTransition, useTimeOnPage } from '../../hooks';
+import { useScrollAnimations, useTimeOnPage } from '../../hooks';
+import { TransitionContext } from '../../providers/TransitionProvider';
 import { trackBlogPostShare, trackCTA, trackEvent } from '../../hooks/useAnalytics';
 import { loadBlogPostsWithContent } from '../../utils/blog';
 import '../../styles/blog.css';
@@ -172,7 +173,7 @@ const renderBlock = (block, i) => {
 
 export default function BlogPostPage() {
   const { slug } = useParams();
-  const { scrollToHash } = usePageTransition();
+  const { scrollToHash } = useContext(TransitionContext);
   const BLOG_POST = BLOG_POSTS.find(blogPost => blogPost.slug === slug) || BLOG_POSTS[0];
   const [activeSection, setActiveSection] = useState('');
   const [isClicking, setIsClicking] = useState(false);

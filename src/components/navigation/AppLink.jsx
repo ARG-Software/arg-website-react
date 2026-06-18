@@ -1,5 +1,21 @@
+import { useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import { trackEvent } from '../../hooks/useAnalytics';
-import { usePageTransition } from '../../hooks/usePageTransition';
+import { TransitionContext } from '../../providers/TransitionProvider';
+import { normalizePathname } from '../../utils/helpers';
+
+function getSamePageHash(to, currentPathname) {
+  if (typeof to !== 'string') return null;
+
+  const hashIndex = to.indexOf('#');
+  if (hashIndex === -1) return null;
+
+  const hash = to.slice(hashIndex + 1);
+  if (!hash) return null;
+
+  const targetPathname = to.slice(0, hashIndex) || currentPathname;
+  return normalizePathname(targetPathname) === normalizePathname(currentPathname) ? hash : null;
+}
 
 export default function AppLink({
   to,
@@ -10,11 +26,13 @@ export default function AppLink({
   preventScrollReset,
   relative,
   unstable_viewTransition,
+  getTransitionOptions,
   trackEvent: trackEventName,
   trackData,
   ...rest
 }) {
-  const { go } = usePageTransition();
+  const location = useLocation();
+  const { go, scrollToHash } = useContext(TransitionContext);
 
   const options = {
     replace,
@@ -40,7 +58,19 @@ export default function AppLink({
         }
 
         event.preventDefault();
-        go(to, Object.keys(options).length > 0 ? options : undefined);
+        const samePageHash = getSamePageHash(to, location.pathname);
+        if (samePageHash) {
+          scrollToHash(samePageHash);
+          return;
+        }
+
+        const transitionOptions = getTransitionOptions?.(event) ?? {};
+        go(
+          to,
+          Object.keys({ ...options, ...transitionOptions }).length > 0
+            ? { ...options, ...transitionOptions }
+            : undefined
+        );
       }}
     >
       {children}

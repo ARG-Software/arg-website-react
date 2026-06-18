@@ -1,8 +1,9 @@
+import { useContext } from 'react';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
-import { usePageTransition } from '../../../hooks/usePageTransition';
+import { TransitionContext } from '../../../providers/TransitionProvider';
 
 export function AboutSection({ className = '' }) {
-  const { createHashScrollHandler } = usePageTransition();
+  const { createHashScrollHandler } = useContext(TransitionContext);
 
   const handleContactClick = createHashScrollHandler('contact', {
     duration: 2.4,

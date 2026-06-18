@@ -19,11 +19,7 @@ export function RAFProvider({ children }) {
       lastTimeRef.current = time;
       elapsedRef.current += delta;
 
-      // Poll transition state once per frame (no extra rAF loop)
-      const overlay = document.querySelector('.pt-overlay');
-      const transitioning = overlay
-        ? overlay.classList.contains('covering') || overlay.classList.contains('revealing')
-        : false;
+      const transitioning = document.documentElement.classList.contains('is-page-transitioning');
 
       const callbacks = callbacksRef.current;
       if (callbacks.size > 0) {

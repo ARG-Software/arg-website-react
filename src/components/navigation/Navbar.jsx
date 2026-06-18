@@ -1,14 +1,14 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useContext, useEffect, useState, useRef, useCallback } from 'react';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
 import { trackCTA } from '../../hooks/useAnalytics';
-import { useLenis } from '../../hooks/useLenis';
+import { LenisContext } from '../../providers/LenisProvider';
 import { NAV_SCROLL_THRESHOLD } from '../../constants';
 import { NavMenu } from './NavMenu';
 
 export function Navbar({ variant = 'transparent', position: _position = 'absolute' }) {
   const isCompact = variant === 'dark';
-  const lenis = useLenis();
+  const lenis = useContext(LenisContext);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [isMobile, setIsMobile] = useState(false);

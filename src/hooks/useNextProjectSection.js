@@ -7,16 +7,41 @@ import { trackEvent } from './useAnalytics';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function useNextProjectSection(sectionRef, progressRef, nextSlug) {
+export function useNextProjectSection(sectionRef, progressRef, nextProject) {
   const { go } = useContext(TransitionContext);
   const triggeredRef = useRef(false);
   const scrollTriggerRef = useRef(null);
+  const nextSlug = nextProject?.slug;
 
   useEffect(() => {
+    if (!nextSlug) return;
+
     const section = sectionRef?.current;
     const progressContainer = progressRef?.current;
     const progressBar = progressContainer?.querySelector('.prp-scroll-progress-bar');
     if (!section || !progressContainer || !progressBar) return;
+
+    const getNextProjectTransitionOptions = () => {
+      const image = section.querySelector('.prp-next-bg-img');
+      const rect = image?.getBoundingClientRect();
+      if (!image || !rect) return { scrollMode: 'top' };
+
+      return {
+        scrollMode: 'top',
+        transition: 'project-image',
+        sourceImage: {
+          src: nextProject.imgSrc || image.currentSrc || image.src,
+          srcSet: nextProject.imgSrcSet,
+          sizes: '100vw',
+          rect: {
+            left: rect.left,
+            top: rect.top,
+            width: rect.width,
+            height: rect.height,
+          },
+        },
+      };
+    };
 
     triggeredRef.current = false;
     gsap.set(progressContainer, { yPercent: 100, opacity: 0 });
@@ -53,7 +78,7 @@ export function useNextProjectSection(sectionRef, progressRef, nextSlug) {
             triggeredRef.current = true;
             scrollTriggerRef.current?.kill();
             trackEvent('project_next_auto', { to_project: nextSlug });
-            go(`/projects/${nextSlug}`, { scrollMode: 'top' });
+            go(`/projects/${nextSlug}`, getNextProjectTransitionOptions());
           }
         },
         onLeave: () => {
@@ -61,7 +86,7 @@ export function useNextProjectSection(sectionRef, progressRef, nextSlug) {
           triggeredRef.current = true;
           scrollTriggerRef.current?.kill();
           trackEvent('project_next_auto', { to_project: nextSlug });
-          go(`/projects/${nextSlug}`, { scrollMode: 'top' });
+          go(`/projects/${nextSlug}`, getNextProjectTransitionOptions());
         },
         onLeaveBack: () => {
           triggeredRef.current = false;
@@ -74,5 +99,5 @@ export function useNextProjectSection(sectionRef, progressRef, nextSlug) {
       scrollTriggerRef.current = null;
       ctx.revert();
     };
-  }, [sectionRef, progressRef, nextSlug, go]);
+  }, [sectionRef, progressRef, nextProject, nextSlug, go]);
 }

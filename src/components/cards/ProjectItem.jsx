@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { arrowSvg } from '../icons/SocialIcons';
 import AppLink from '../navigation/AppLink';
 
@@ -22,6 +22,7 @@ export function ProjectItem({
   onProjectClick,
   onProjectLinkClick,
 }) {
+  const coverImageRef = useRef(null);
   const solutionText = Array.isArray(solution) ? solution[0] : solution;
   const projectLinks =
     Array.isArray(links) && links.length > 0
@@ -29,6 +30,27 @@ export function ProjectItem({
       : liveLink
         ? [{ href: liveLink, label: liveLinkLabel }]
         : [];
+
+  const getProjectImageTransition = () => {
+    const image = coverImageRef.current;
+    if (!image) return undefined;
+
+    const rect = image.getBoundingClientRect();
+    return {
+      transition: 'project-image',
+      sourceImage: {
+        src: imgSrc,
+        srcSet: imgSrcSet,
+        sizes: '100vw',
+        rect: {
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height,
+        },
+      },
+    };
+  };
 
   return (
     <div
@@ -114,6 +136,7 @@ export function ProjectItem({
         </div>
         <div className="projects_item_cover-img">
           <img
+            ref={coverImageRef}
             data-wf-drag="false"
             loading="lazy"
             fetchPriority="auto"
@@ -134,6 +157,7 @@ export function ProjectItem({
           aria-label={title}
           className="text-button w-inline-block"
           onClick={() => onProjectClick?.(slug)}
+          getTransitionOptions={getProjectImageTransition}
         >
           <div className="text-button_list is-dark">
             <h3 className="heading-style-h3">{title}</h3>
