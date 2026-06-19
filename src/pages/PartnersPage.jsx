@@ -15,8 +15,7 @@ import {
 import data from '../data/partners.json';
 import '../styles/partners.css';
 
-const { categories, clients, timeline } = data;
-const clientMap = Object.fromEntries(clients.map(c => [c.slug, c]));
+const { categories, clients } = data;
 
 export default function PartnersPage() {
   const [activeCategory, setActiveCategory] = useState('All');
@@ -115,10 +114,7 @@ export default function PartnersPage() {
             <section id="timeline" className="pt-timeline-section padding-section-large">
               <Timeline
                 heading="Built on lasting partnerships"
-                rows={timeline.rows}
-                yearStart={timeline.yearStart}
-                yearEnd={timeline.yearEnd}
-                items={clientMap}
+                clients={clients}
                 ctaLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
                 onCtaClick={() => trackCTA('typeform', 'partners_timeline')}
                 animate={true}

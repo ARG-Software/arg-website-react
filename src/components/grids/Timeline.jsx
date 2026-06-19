@@ -1,9 +1,65 @@
+function getTimelineEndYear(timeline, yearEnd) {
+  if (timeline.ongoing) return yearEnd;
+  return timeline.startYear + timeline.durationYears - 1;
+}
+
+function getDurationLabel(row) {
+  const duration = row.ongoing ? Math.max(1, row.endYear - row.startYear) : row.durationYears;
+  const suffix = duration === 1 ? 'Year' : 'Years';
+  return `${duration}${row.ongoing ? '+' : ''} ${suffix}`;
+}
+
+function getRangeLabel(row) {
+  if (row.ongoing) return `since ${row.startYear}`;
+  if (row.startYear === row.endYear) return String(row.startYear);
+  return `${row.startYear}-${row.endYear}`;
+}
+
+function createTimelineRows(clients, yearStart, yearEnd) {
+  const rowsByTimeframe = new Map();
+
+  clients.forEach(client => {
+    const clientTimeline = client.timeline;
+    if (!clientTimeline?.startYear) return;
+
+    const endYear = getTimelineEndYear(clientTimeline, yearEnd);
+    if (endYear < yearStart || clientTimeline.startYear > yearEnd) return;
+
+    const rowKey = [
+      clientTimeline.startYear,
+      endYear,
+      clientTimeline.ongoing ? 'ongoing' : 'fixed',
+    ].join('-');
+
+    if (!rowsByTimeframe.has(rowKey)) {
+      const visibleStartYear = Math.max(clientTimeline.startYear, yearStart);
+      const visibleEndYear = Math.min(endYear, yearEnd);
+
+      rowsByTimeframe.set(rowKey, {
+        key: rowKey,
+        startYear: clientTimeline.startYear,
+        endYear,
+        visibleStartYear,
+        visibleEndYear,
+        durationYears: clientTimeline.durationYears,
+        ongoing: Boolean(clientTimeline.ongoing),
+        clients: [],
+      });
+    }
+
+    rowsByTimeframe.get(rowKey).clients.push(client);
+  });
+
+  return Array.from(rowsByTimeframe.values()).sort((a, b) => {
+    if (a.startYear !== b.startYear) return a.startYear - b.startYear;
+    return a.endYear - b.endYear;
+  });
+}
+
 export function Timeline({
   heading,
-  rows,
-  yearStart,
-  yearEnd,
-  items,
+  clients = [],
+  yearStart = 2020,
   ctaText = 'Your Project',
   ctaButtonText = 'Start Now',
   ctaLink = '#page-cta',
@@ -15,7 +71,9 @@ export function Timeline({
 }) {
   const isExternal = ctaLink.startsWith('http');
   const ctaAttrs = isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
-  const yearColumns = Array.from({ length: yearEnd - yearStart + 1 }, (_, i) => yearStart + i);
+  const safeYearEnd = new Date().getFullYear();
+  const yearColumns = Array.from({ length: safeYearEnd - yearStart + 1 }, (_, i) => yearStart + i);
+  const timelineRows = createTimelineRows(clients, yearStart, safeYearEnd);
 
   const scopeAttrs = animate
     ? {
@@ -41,7 +99,11 @@ export function Timeline({
       : {};
 
   return (
-    <div className="container padding-global pt-timeline-inner" {...scopeAttrs}>
+    <div
+      className="container padding-global pt-timeline-inner"
+      style={{ '--pt-year-count': yearColumns.length }}
+      {...scopeAttrs}
+    >
       <h2 className="pt-timeline-heading">{heading}</h2>
 
       {/* Desktop */}
@@ -55,19 +117,20 @@ export function Timeline({
         </div>
         <div className="pt-divider" />
         <div className="pt-rows">
-          {rows.map((row, i) => {
-            const startCol = row.startYear - yearStart + 1;
-            const partners = row.slugs.map(slug => items[slug]).filter(Boolean);
+          {timelineRows.map((row, i) => {
+            const startCol = row.visibleStartYear - yearStart + 1;
+            const span = row.visibleEndYear - row.visibleStartYear + 1;
+
             return (
-              <div key={i} className="pt-row">
+              <div key={row.key} className="pt-row">
                 <div
                   className="pt-row-card"
-                  style={{ gridColumn: `${startCol} / -1` }}
+                  style={{ gridColumn: `${startCol} / span ${span}` }}
                   {...rowAttrs(i)}
                 >
-                  <span className="pt-duration">{row.label}</span>
+                  <span className="pt-duration">{getDurationLabel(row)}</span>
                   <div className="pt-row-logos">
-                    {partners.map(p => (
+                    {row.clients.map(p => (
                       <img
                         key={p.slug}
                         src={p.logoSmall || p.logo}
@@ -81,30 +144,32 @@ export function Timeline({
             );
           })}
           <div className="pt-row">
-            <div
-              className="pt-row-cta-card"
-              style={{ gridColumn: '1 / -1' }}
-              {...rowAttrs(rows.length)}
+            <a
+              href={ctaLink}
+              className="button-base button-contact w-inline-block pt-row-cta-card"
+              style={{ gridColumn: `${yearColumns.length} / -1` }}
+              {...ctaAttrs}
+              onClick={onCtaClick}
+              {...rowAttrs(timelineRows.length)}
             >
-              <span className="pt-cta-label">{ctaText}</span>
-              <a href={ctaLink} className="pt-cta-btn" {...ctaAttrs} onClick={onCtaClick}>
-                {ctaButtonText}
-              </a>
-            </div>
+              <div className="button-base_text_wrap">
+                <div className="button-base__button-text">{ctaText}</div>
+                <div className="button-base__button-text is-animated">{ctaButtonText}</div>
+              </div>
+            </a>
           </div>
         </div>
       </div>
 
       {/* Mobile */}
       <div className="pt-timeline-mobile">
-        {rows.map((row, i) => {
-          const partners = row.slugs.map(slug => items[slug]).filter(Boolean);
+        {timelineRows.map((row, i) => {
           return (
-            <div key={i} className="pt-mobile-card" {...cardAttrs(i)}>
-              <div className="pt-mobile-duration">{row.label}</div>
-              <span className="pt-mobile-since">since {row.startYear}</span>
+            <div key={row.key} className="pt-mobile-card" {...cardAttrs(i)}>
+              <div className="pt-mobile-duration">{getDurationLabel(row)}</div>
+              <span className="pt-mobile-since">{getRangeLabel(row)}</span>
               <div className="pt-mobile-logos">
-                {partners.map(p => (
+                {row.clients.map(p => (
                   <img
                     key={p.slug}
                     src={p.logoSmall || p.logo}
@@ -116,12 +181,18 @@ export function Timeline({
             </div>
           );
         })}
-        <div className="pt-mobile-cta" {...cardAttrs(rows.length)}>
-          <span className="pt-mobile-cta-label">{ctaText}</span>
-          <a href={ctaLink} className="pt-cta-btn" {...ctaAttrs} onClick={onCtaClick}>
-            {ctaButtonText}
-          </a>
-        </div>
+        <a
+          href={ctaLink}
+          className="button-base button-contact w-inline-block pt-mobile-cta"
+          {...ctaAttrs}
+          onClick={onCtaClick}
+          {...cardAttrs(timelineRows.length)}
+        >
+          <div className="button-base_text_wrap">
+            <div className="button-base__button-text">{ctaText}</div>
+            <div className="button-base__button-text is-animated">{ctaButtonText}</div>
+          </div>
+        </a>
       </div>
     </div>
   );

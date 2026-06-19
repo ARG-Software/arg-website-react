@@ -8,7 +8,11 @@
       "category": "Fintech",
       "industry": "Fintech & Open Payments",
       "description": "A global nonprofit building an open, interoperable payment network through the Interledger Protocol — enabling seamless, currency-agnostic transactions that bring digital financial services to the 1.4 billion people currently excluded from traditional banking.",
-      "link": "https://interledger.org/"
+      "link": "https://interledger.org/",
+      "timeline": {
+        "startYear": 2019,
+        "ongoing": true
+      }
     },
     {
       "name": "People's Clearinghouse",
@@ -17,7 +21,11 @@
       "category": "Fintech",
       "industry": "Financial Inclusion",
       "description": "A social sector technology platform servicing community banks and credit unions in rural Mexico. Working with AMUCSS and the Interledger Foundation, it is building cross-border remittance infrastructure to connect 140 community banks to the global payments network — reducing fees and wait times for migrant families.",
-      "link": "https://lacamara.mx/"
+      "link": "https://lacamara.mx/",
+      "timeline": {
+        "startYear": 2020,
+        "durationYears": 3
+      }
     },
     {
       "name": "Mojaloop Foundation",
@@ -27,7 +35,11 @@
       "category": "Fintech",
       "industry": "Fintech & Open Source",
       "description": "An open-source foundation championing inclusive financial infrastructure. Mojaloop builds interoperable payment systems that bring affordable, accessible digital financial services to unbanked populations worldwide.",
-      "link": "https://mojaloop.io/"
+      "link": "https://mojaloop.io/",
+      "timeline": {
+        "startYear": 2019,
+        "ongoing": true
+      }
     },
     {
       "name": "ThreeSigma",
@@ -37,7 +49,11 @@
       "category": "Web3",
       "industry": "Blockchain & Web3",
       "description": "A research-driven investment and advisory firm focused on blockchain ecosystems and decentralised finance, supporting crypto-native projects with deep technical and market expertise.",
-      "link": "https://threesigma.xyz/"
+      "link": "https://threesigma.xyz/",
+      "timeline": {
+        "startYear": 2021,
+        "durationYears": 4
+      }
     },
     {
       "name": "Angry Ventures",
@@ -47,7 +63,11 @@
       "category": "Consultancy",
       "industry": "Venture Studio",
       "description": "A hands-on venture studio that conceives, builds, and scales digital products — blending product strategy, design, and engineering to take ideas from zero to market.",
-      "link": "https://angry.ventures/"
+      "link": "https://angry.ventures/",
+      "timeline": {
+        "startYear": 2021,
+        "durationYears": 4
+      }
     },
     {
       "name": "mb-netzwerk",
@@ -57,7 +77,11 @@
       "category": "Consultancy",
       "industry": "Digital Consultancy",
       "description": "A German digital consultancy specialising in software solutions for tax documentation and business process automation, with a strong focus on GDPR compliance and enterprise-grade reliability.",
-      "link": "https://www.dokutar.de/"
+      "link": "https://www.dokutar.de/",
+      "timeline": {
+        "startYear": 2020,
+        "durationYears": 3
+      }
     },
     {
       "name": "SEFA",
@@ -66,7 +90,11 @@
       "category": "Industry",
       "industry": "Foodservice Industry",
       "description": "A nationwide network in the foodservice industry that connects supply and equipment dealers with manufacturers, providing collective buying power, marketing support, and training services to strengthen market presence and business operations.",
-      "link": "https://www.sefa.com/"
+      "link": "https://www.sefa.com/",
+      "timeline": {
+        "startYear": 2023,
+        "durationYears": 2
+      }
     },
     {
       "name": "Hostelier",
@@ -76,7 +104,11 @@
       "category": "Industry",
       "industry": "Tourism & Hospitality",
       "description": "A hospitality management platform that helps property owners and tourism businesses streamline their operations — from bookings and scheduling to guest communication and day-to-day management.",
-      "link": "https://hostelier.weebly.com/"
+      "link": "https://hostelier.weebly.com/",
+      "timeline": {
+        "startYear": 2023,
+        "durationYears": 2
+      }
     },
     {
       "name": "SkyTracks",
@@ -85,7 +117,11 @@
       "category": "Music",
       "industry": "Music Tech",
       "description": "A cloud-based music production platform enabling real-time collaboration between musicians, producers, and audio engineers — anywhere in the world, with professional-grade tools built directly into the browser.",
-      "link": "https://skytracks.io/"
+      "link": "https://skytracks.io/",
+      "timeline": {
+        "startYear": 2024,
+        "durationYears": 1
+      }
     },
     {
       "name": "North Music Group",
@@ -94,43 +130,11 @@
       "logoSmall": "/images/partners/north-music-group-small.webp",
       "category": "Music",
       "industry": "Music Rights",
-      "description": "A music rights management company providing modern tools for catalogue management, royalty tracking, and licensing — making music ownership transparent and efficient for artists and publishers alike."
-    }
-  ],
-  "timeline": {
-    "yearStart": 2020,
-    "yearEnd": 2026,
-    "rows": [
-      {
-        "duration": "6+",
-        "label": "6+ Years",
-        "startYear": 2019,
-        "slugs": ["interledger-foundation", "mojaloop-foundation"]
-      },
-      {
-        "duration": "4",
-        "label": "4 Years",
-        "startYear": 2021,
-        "slugs": ["threesigma", "angry-ventures"]
-      },
-      {
-        "duration": "3",
-        "label": "3 Years",
-        "startYear": 2020,
-        "slugs": ["people-s-clearinghouse", "mb-netzwerk"]
-      },
-      {
-        "duration": "2",
-        "label": "2 Years",
-        "startYear": 2023,
-        "slugs": ["sefa", "hostelier"]
-      },
-      {
-        "duration": "1",
-        "label": "1 Year",
+      "description": "A music rights management company providing modern tools for catalogue management, royalty tracking, and licensing — making music ownership transparent and efficient for artists and publishers alike.",
+      "timeline": {
         "startYear": 2024,
-        "slugs": ["skytracks", "north-music-group"]
+        "durationYears": 1
       }
-    ]
-  }
+    }
+  ]
 }

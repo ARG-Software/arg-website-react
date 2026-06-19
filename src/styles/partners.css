@@ -302,6 +302,7 @@
 
 .pt-timeline-inner {
   display: block !important;
+  --pt-column-gap: clamp(0.75rem, 1.25vw, 1.25rem);
 }
 
 .pt-timeline-heading {
@@ -322,8 +323,8 @@
 
 .pt-years-row {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 0;
+  grid-template-columns: repeat(var(--pt-year-count), minmax(0, 1fr));
+  column-gap: var(--pt-column-gap);
   margin-bottom: 1.25rem;
 }
 
@@ -358,13 +359,15 @@
 /* Each row is a grid matching the year columns */
 .pt-row {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(var(--pt-year-count), minmax(0, 1fr));
+  column-gap: var(--pt-column-gap);
 }
 
 .pt-row-card {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  min-width: 14rem;
   padding: 0 1.25rem;
   height: 3.25rem;
   background: #fff;
@@ -384,7 +387,7 @@
   font-size: var(--type-body-small);
   font-weight: 400;
   color: #0c002e;
-  min-width: 4.5rem;
+  min-width: 3.5rem;
 }
 
 .pt-row-logos {
@@ -392,10 +395,13 @@
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .pt-row-logo {
   height: 1.25rem;
+  max-width: 5rem;
   width: auto;
   object-fit: contain;
   filter: grayscale(1) opacity(0.65);
@@ -408,53 +414,12 @@
 
 /* ── Your Project CTA row ── */
 .pt-row-cta-card {
-  grid-column: 7 / -1!important;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 0 1.25rem;
-  height: 3.25rem;
-  background: transparent;
-  border: 1px dashed rgba(255, 255, 255, 0.25);
-  border-radius: 0.5rem;
-  justify-content: space-between;
-  transition:
-    background 0.3s ease,
-    border-color 0.3s ease;
+  justify-self: start;
+  align-self: center;
 }
 
 .pt-row-cta-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.4);
-}
-
-.pt-cta-label {
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.7);
-  flex-shrink: 0;
-}
-
-.pt-cta-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1.5rem;
-  background: #fff;
-  color: #0c002e;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-ui);
-  font-weight: 500;
-  border: none;
-  border-radius: 2rem;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background 0.3s ease;
-}
-
-.pt-cta-btn:hover {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* ── Mobile Timeline ── */
@@ -504,20 +469,7 @@
 }
 
 .pt-mobile-cta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  background: transparent;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 0.5rem;
-}
-
-.pt-mobile-cta-label {
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-large);
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.75rem;
 }
 
 /* ═══════════════════════════════════════════════════════════
