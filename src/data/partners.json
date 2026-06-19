@@ -98,8 +98,8 @@
     }
   ],
   "timeline": {
-    "yearStart": 2018,
-    "yearEnd": 2025,
+    "yearStart": 2020,
+    "yearEnd": 2026,
     "rows": [
       {
         "duration": "6+",
@@ -116,7 +116,7 @@
       {
         "duration": "3",
         "label": "3 Years",
-        "startYear": 2022,
+        "startYear": 2020,
         "slugs": ["people-s-clearinghouse", "mb-netzwerk"]
       },
       {
