@@ -19,7 +19,8 @@
     "preview": "vite preview",
     "lint": "eslint src --ext .js,.jsx",
     "lint:fix": "eslint src --ext .js,.jsx --fix",
-    "format": "prettier --write \"src/**/*.{js,jsx}\""
+    "format": "prettier --write \"src/**/*.{js,jsx}\"",
+    "blog:import:medium": "node scripts/import-medium-articles.cjs"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^8.0.0",

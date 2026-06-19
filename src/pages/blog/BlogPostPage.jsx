@@ -252,7 +252,7 @@ export default function BlogPostPage() {
 
   const titleLines = splitArticleTitle(BLOG_POST.title);
   const articleUrl = `https://arg.software/blog/${BLOG_POST.slug}/`;
-  const shareUrl = BLOG_POST.mediumUrl || articleUrl;
+  const shareUrl = articleUrl;
 
   const handleTocClick = (event, section, sectionId) => {
     event.preventDefault();
