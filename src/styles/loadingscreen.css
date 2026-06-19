@@ -16,11 +16,18 @@ html.ls-active {
   opacity: 0;
 }
 
+.ls-bg-video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
 /* Pills row — flex container so pills wrap cleanly on small screens */
 .ls-hello-row {
   position: absolute;
   top: clamp(1.25rem, 3vh, 2rem);
   left: clamp(1.25rem, 3vw, 3rem);
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -45,6 +52,7 @@ html.ls-active {
   position: absolute;
   bottom: clamp(1.25rem, 3vh, 2.5rem);
   left: clamp(1.25rem, 3vw, 3rem);
+  z-index: 1;
   font-size: clamp(2.5rem, 9vw, 7.5rem);
   line-height: 1;
   letter-spacing: var(--tracking-display);
@@ -79,6 +87,7 @@ html.ls-active {
   position: absolute;
   bottom: clamp(1.25rem, 3vh, 2.5rem);
   right: clamp(1.25rem, 3vw, 3rem);
+  z-index: 1;
   font-size: clamp(2.5rem, 9vw, 7.5rem);
   line-height: 1;
   letter-spacing: var(--tracking-display);

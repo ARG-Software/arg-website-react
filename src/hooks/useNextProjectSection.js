@@ -7,10 +7,18 @@ import { trackEvent } from './useAnalytics';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const AUTO_NEXT_SCROLL_KEYS = new Set(['ArrowDown', 'PageDown', 'End', ' ']);
+
+function isAutoNextKey(event) {
+  return AUTO_NEXT_SCROLL_KEYS.has(event.key);
+}
+
 export function useNextProjectSection(sectionRef, progressRef, nextProject) {
   const { go } = useContext(TransitionContext);
   const triggeredRef = useRef(false);
+  const allowAutoNextRef = useRef(false);
   const scrollTriggerRef = useRef(null);
+  const touchStartYRef = useRef(null);
   const nextSlug = nextProject?.slug;
 
   useEffect(() => {
@@ -43,9 +51,51 @@ export function useNextProjectSection(sectionRef, progressRef, nextProject) {
       };
     };
 
+    const navigateToNextProject = () => {
+      if (triggeredRef.current) return;
+      triggeredRef.current = true;
+      scrollTriggerRef.current?.kill();
+      trackEvent('project_next_auto', { to_project: nextSlug });
+      go(`/projects/${nextSlug}`, getNextProjectTransitionOptions());
+    };
+
+    const enableAutoNext = () => {
+      allowAutoNextRef.current = true;
+      if (scrollTriggerRef.current?.progress >= 0.98) {
+        navigateToNextProject();
+      }
+    };
+
+    const enableAutoNextFromWheel = event => {
+      if (event.deltaY > 0) enableAutoNext();
+    };
+
+    const rememberTouchStart = event => {
+      touchStartYRef.current = event.touches?.[0]?.clientY ?? null;
+    };
+
+    const enableAutoNextFromTouch = event => {
+      const startY = touchStartYRef.current;
+      const currentY = event.touches?.[0]?.clientY;
+      if (startY !== null && currentY !== undefined && currentY < startY) {
+        enableAutoNext();
+      }
+    };
+
+    const enableAutoNextFromKey = event => {
+      if (isAutoNextKey(event)) enableAutoNext();
+    };
+
     triggeredRef.current = false;
+    allowAutoNextRef.current = false;
+    touchStartYRef.current = null;
     gsap.set(progressContainer, { yPercent: 100, opacity: 0 });
     gsap.set(progressBar, { scaleX: 0, transformOrigin: 'left center' });
+
+    window.addEventListener('wheel', enableAutoNextFromWheel, { passive: true });
+    window.addEventListener('touchstart', rememberTouchStart, { passive: true });
+    window.addEventListener('touchmove', enableAutoNextFromTouch, { passive: true });
+    window.addEventListener('keydown', enableAutoNextFromKey);
 
     const ctx = gsap.context(() => {
       scrollTriggerRef.current = ScrollTrigger.create({
@@ -74,19 +124,13 @@ export function useNextProjectSection(sectionRef, progressRef, nextProject) {
         onUpdate: self => {
           if (triggeredRef.current) return;
           gsap.set(progressBar, { scaleX: self.progress });
-          if (self.progress >= 0.98) {
-            triggeredRef.current = true;
-            scrollTriggerRef.current?.kill();
-            trackEvent('project_next_auto', { to_project: nextSlug });
-            go(`/projects/${nextSlug}`, getNextProjectTransitionOptions());
+          if (allowAutoNextRef.current && self.progress >= 0.98) {
+            navigateToNextProject();
           }
         },
         onLeave: () => {
           if (triggeredRef.current) return;
-          triggeredRef.current = true;
-          scrollTriggerRef.current?.kill();
-          trackEvent('project_next_auto', { to_project: nextSlug });
-          go(`/projects/${nextSlug}`, getNextProjectTransitionOptions());
+          if (allowAutoNextRef.current) navigateToNextProject();
         },
         onLeaveBack: () => {
           triggeredRef.current = false;
@@ -95,6 +139,10 @@ export function useNextProjectSection(sectionRef, progressRef, nextProject) {
     }, section);
 
     return () => {
+      window.removeEventListener('wheel', enableAutoNextFromWheel);
+      window.removeEventListener('touchstart', rememberTouchStart);
+      window.removeEventListener('touchmove', enableAutoNextFromTouch);
+      window.removeEventListener('keydown', enableAutoNextFromKey);
       if (scrollTriggerRef.current) scrollTriggerRef.current.kill();
       scrollTriggerRef.current = null;
       ctx.revert();

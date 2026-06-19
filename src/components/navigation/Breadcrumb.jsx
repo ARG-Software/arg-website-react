@@ -25,7 +25,9 @@ export function Breadcrumb({ items = [] }) {
           if (item.path) {
             return (
               <li key={index}>
-                <AppLink to={item.path}>{item.label}</AppLink>
+                <AppLink to={item.path} transition="curtain">
+                  {item.label}
+                </AppLink>
               </li>
             );
           }

@@ -3,9 +3,13 @@ import { gsap } from 'gsap';
 import '../../styles/loadingscreen.css';
 
 const COLORS = ['#F0060D', '#C924D7', '#7904FD'];
+const VIDEO_VISIBLE_DURATION = 10;
+const INTRO_DURATION = 1.65;
+const COUNTER_DURATION = VIDEO_VISIBLE_DURATION - INTRO_DURATION;
 
 export function LoadingScreen({ onComplete }) {
   const bgRef = useRef(null);
+  const videoRef = useRef(null);
   const letterRefs = useRef([]);
   const counterRef = useRef(null);
   const panelsRef = useRef([]);
@@ -26,6 +30,11 @@ export function LoadingScreen({ onComplete }) {
     gsap.set(letterRefs.current, { yPercent: 100 });
     gsap.set(panelsRef.current, { yPercent: 200 });
 
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {});
+    }
+
     const masterTl = gsap.timeline({ onComplete: () => onComplete?.() });
 
     masterTl.fromTo(
@@ -43,7 +52,7 @@ export function LoadingScreen({ onComplete }) {
     const counterObj = { val: 0 };
     masterTl.to(counterObj, {
       val: 100,
-      duration: 3,
+      duration: COUNTER_DURATION,
       ease: 'none',
       onUpdate: () => {
         if (counterRef.current) {
@@ -90,6 +99,24 @@ export function LoadingScreen({ onComplete }) {
       data-animate-default-stagger="200"
     >
       <div className="ls-bg" ref={bgRef}>
+        <div
+          data-autoplay="true"
+          data-loop="true"
+          data-wf-ignore="true"
+          className="ambient-bg-video ls-bg-video w-background-video w-background-video-atom"
+        >
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
+            data-wf-ignore="true"
+            data-object-fit="cover"
+          >
+            <source src="videos/loading.mp4" data-wf-ignore="true" />
+          </video>
+        </div>
         <div className="ls-hello-row" data-animate-order="0">
           <span className="ls-hello">Olá</span>
           <span className="ls-hello">Hola</span>

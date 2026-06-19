@@ -46,8 +46,8 @@ export function useHashScroll() {
 
   const updateHashUrl = useCallback(
     (hashId, options = {}) => {
-      if (options.updateUrl === false) return;
-      navigate(`#${hashId}`, { replace: options.replace ?? true });
+      if (options.updateUrl !== true) return;
+      navigate(`#${hashId}`, { replace: options.replace ?? false });
     },
     [navigate]
   );

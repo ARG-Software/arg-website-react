@@ -340,10 +340,22 @@ export default function ProjectDetailPage() {
                           </>
                         )}
                       </div>
-                      <p className="prp-metric-card-label">
-                        <span className="prp-metric-bullet"></span>
-                        <ShuffleText text={metric.label} tag="span" />
-                      </p>
+                      <div className="prp-metric-card-label-row">
+                        <p className="prp-metric-card-label">
+                          <span className="prp-metric-bullet"></span>
+                          <span className="prp-metric-label-text">
+                            <ShuffleText
+                              text={metric.label}
+                              tag="span"
+                              style={{
+                                whiteSpace: 'normal',
+                                display: 'inline',
+                                overflowWrap: 'anywhere',
+                              }}
+                            />
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   ))}
                 </div>

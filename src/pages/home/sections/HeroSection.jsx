@@ -1,19 +1,29 @@
 import { useContext } from 'react';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
-import { trackMailto } from '../../../hooks/useAnalytics';
+import { trackEvent, trackMailto } from '../../../hooks/useAnalytics';
 import { TransitionContext } from '../../../providers/TransitionProvider';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 import { useWaterRipple } from '../../../hooks/useWaterRipple';
 
 export function HeroSection() {
   useWaterRipple('water-ripple-canvas');
-  const { createHashScrollHandler } = useContext(TransitionContext);
+  const { scrollToHash } = useContext(TransitionContext);
 
-  const handleContactClick = createHashScrollHandler('contact', {
-    duration: 2.4,
-    easing: progress =>
-      progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2,
-  });
+  const handleContactClick = event => {
+    event.preventDefault();
+    trackEvent('section_navigation', {
+      section: 'contact',
+      source_path: `${window.location.pathname}${window.location.search}`,
+      target_path: '/',
+    });
+    scrollToHash('contact', {
+      duration: 2.4,
+      easing: progress =>
+        progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2,
+    });
+  };
 
   return (
     <header
@@ -94,7 +104,7 @@ export function HeroSection() {
           data-autoplay="true"
           data-loop="true"
           data-wf-ignore="true"
-          className="hero_bg-video w-background-video w-background-video-atom"
+          className="ambient-bg-video w-background-video w-background-video-atom"
         >
           <video
             id="hero-video"

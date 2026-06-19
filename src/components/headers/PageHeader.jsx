@@ -50,6 +50,14 @@ export function PageHeader({
       );
     }
 
+    if (item.href?.startsWith('#')) {
+      return (
+        <AppLink key={`${item.href}-${item.label}`} to={item.href} onClick={item.onClick}>
+          {content}
+        </AppLink>
+      );
+    }
+
     return (
       <a key={`${item.href}-${item.label}`} href={item.href} onClick={item.onClick}>
         {content}

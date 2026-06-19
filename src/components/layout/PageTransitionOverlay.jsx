@@ -5,6 +5,7 @@ const SHADES = Array.from({ length: SHADE_COUNT }, (_, index) => index);
 
 export function PageTransitionOverlay({ phase, variant, imageTransition }) {
   const isProjectImage = variant === 'project-image' && imageTransition;
+  const isCurtain = variant === 'curtain';
   const isDefault = variant === 'default';
   const imageStyle = isProjectImage
     ? {
@@ -17,6 +18,8 @@ export function PageTransitionOverlay({ phase, variant, imageTransition }) {
 
   return (
     <div className={`pt-overlay ${phase} pt-overlay--${variant}`} aria-hidden="true">
+      {isCurtain && <div className="pt-overlay__curtain" />}
+
       {isDefault && (
         <div className="pt-overlay__shades">
           {SHADES.map(index => (

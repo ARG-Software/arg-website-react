@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
-import { trackPageView } from '../hooks/useAnalytics';
+import { trackEvent, trackPageView } from '../hooks/useAnalytics';
 import { useHashScroll } from '../hooks/useHashScroll';
 import { LenisContext } from './LenisProvider';
 import { PAGE_TRANSITION_DURATION_MS } from '../constants';
@@ -12,7 +12,7 @@ let previousPath = '';
 let currentPath = '';
 
 const PROJECT_IMAGE_PRELOAD_TIMEOUT_MS = 320;
-const INSTANT_HOME_HASH_REVEAL_DELAY_MS = 120;
+const HASH_REVEAL_DELAY_MS = 120;
 
 function preloadTransitionImage(sourceImage) {
   if (!sourceImage?.src || typeof window === 'undefined') {
@@ -47,29 +47,29 @@ function preloadTransitionImage(sourceImage) {
   });
 }
 
-function isModifiedClick(event) {
-  return event.metaKey || event.altKey || event.ctrlKey || event.shiftKey;
+function getTargetLocation(to) {
+  if (typeof to !== 'string' || typeof window === 'undefined') {
+    return { pathname: '', search: '', hash: '' };
+  }
+
+  const url = new URL(to, window.location.href);
+  return {
+    pathname: url.pathname,
+    search: url.search,
+    hash: url.hash ? url.hash.slice(1) : '',
+  };
 }
 
-function getClickedAnchor(event) {
-  if (!(event.target instanceof Element)) return null;
-  return event.target.closest('a[href]');
+function getPathWithSearch(location) {
+  return `${location.pathname}${location.search}`;
 }
 
-function isHomeHashInstantSource(pathname) {
-  const normalizedPathname = normalizePathname(pathname);
-  return (
-    normalizedPathname === '/partners' ||
-    normalizedPathname === '/careers' ||
-    normalizedPathname === '/blog' ||
-    normalizedPathname.startsWith('/blog/')
-  );
-}
-
-function shouldJumpToHomeHash(currentPathname, targetPathname, hash) {
-  return Boolean(
-    hash && normalizePathname(targetPathname) === '/' && isHomeHashInstantSource(currentPathname)
-  );
+function trackSectionNavigation(section, sourcePath, targetPath) {
+  trackEvent('section_navigation', {
+    section,
+    source_path: sourcePath,
+    target_path: targetPath,
+  });
 }
 
 export const TransitionContext = createContext(null);
@@ -80,7 +80,7 @@ export function TransitionProvider({ children }) {
   const navigationType = useNavigationType();
 
   const [phase, setPhase] = useState('idle'); // idle | covering | revealing
-  const [overlayVariant, setOverlayVariant] = useState('default'); // default | project-image
+  const [overlayVariant, setOverlayVariant] = useState('curtain'); // curtain | default | project-image
   const [imageTransition, setImageTransition] = useState(null);
   const overlayRef = useRef(null);
   const pendingToRef = useRef(null);
@@ -97,6 +97,10 @@ export function TransitionProvider({ children }) {
       return { cover: 760, reveal: 300 };
     }
 
+    if (variant === 'curtain') {
+      return { cover: 560, reveal: 420 };
+    }
+
     return {
       cover: Math.max(PAGE_TRANSITION_DURATION_MS, 1680),
       reveal: 820,
@@ -110,6 +114,15 @@ export function TransitionProvider({ children }) {
     delete navigateOptions.transition;
     delete navigateOptions.sourceImage;
     delete navigateOptions.scrollMode;
+    delete navigateOptions.updateUrl;
+    delete navigateOptions.mobileMenuDelay;
+    delete navigateOptions.duration;
+    delete navigateOptions.easing;
+    delete navigateOptions.offset;
+    delete navigateOptions.immediate;
+    delete navigateOptions.initialDelay;
+    delete navigateOptions.retryDelay;
+    delete navigateOptions.maxRetries;
 
     return Object.keys(navigateOptions).length > 0 ? navigateOptions : undefined;
   }, []);
@@ -169,37 +182,55 @@ export function TransitionProvider({ children }) {
     }, 2);
   }, []);
 
-  // Enhanced go function that handles both page transitions and hash scrolling
+  // Explicit navigation entry point used by AppLink. Browser POP navigation never calls this.
   const go = useCallback(
     (to, options) => {
       if (!to) return;
       if (isRunningRef.current) return;
 
-      const [path, hash] = to.split('#');
-      const targetPath = path || location.pathname;
-      const isSamePath = normalizePathname(targetPath) === normalizePathname(location.pathname);
-      const shouldUseInstantHomeHash = shouldJumpToHomeHash(location.pathname, targetPath, hash);
-      const transitionOptions = shouldUseInstantHomeHash
-        ? { ...options, scrollMode: options?.scrollMode ?? 'instant-home-hash' }
-        : options;
+      const transitionOptions = options ?? {};
+      const targetLocation = getTargetLocation(to);
+      const targetPath = getPathWithSearch(targetLocation);
+      const currentPath = `${location.pathname}${location.search}`;
+      const isSamePath =
+        normalizePathname(targetLocation.pathname) === normalizePathname(location.pathname) &&
+        targetLocation.search === location.search;
 
-      if (hash && isSamePath) {
-        scrollToHash(hash, transitionOptions);
+      if (targetLocation.hash && isSamePath) {
+        trackSectionNavigation(targetLocation.hash, currentPath, targetPath);
+        scrollToHash(targetLocation.hash, { ...transitionOptions, updateUrl: false });
         return;
       }
 
       // If already there, scroll to top
-      if (typeof to === 'string' && isSamePath && !hash) {
+      if (typeof to === 'string' && isSamePath && !targetLocation.hash) {
         scrollToReturnTarget();
         return;
       }
 
+      if (transitionOptions.transition === 'none') {
+        navigate(targetLocation.hash ? targetPath : to, getNavigateOptions(transitionOptions));
+        return;
+      }
+
+      if (targetLocation.hash) {
+        trackSectionNavigation(targetLocation.hash, currentPath, targetPath);
+      }
+
       // Cross-page navigation with transition
       isRunningRef.current = true;
-      pendingToRef.current = { to, options: transitionOptions, hash };
+      pendingToRef.current = {
+        to: targetLocation.hash ? targetPath : to,
+        options: transitionOptions,
+        hash: targetLocation.hash,
+      };
 
       const variant =
-        transitionOptions?.transition === 'project-image' ? 'project-image' : 'default';
+        transitionOptions.transition === 'project-image'
+          ? 'project-image'
+          : transitionOptions.transition === 'page'
+            ? 'default'
+            : 'curtain';
       setOverlayVariant(variant);
       setImageTransition(transitionOptions?.sourceImage ?? null);
 
@@ -211,7 +242,7 @@ export function TransitionProvider({ children }) {
 
         const { cover } = getTransitionTimings(variant);
         window.setTimeout(() => {
-          navigate(hash ? targetPath : to, getNavigateOptions(transitionOptions));
+          navigate(targetLocation.hash ? targetPath : to, getNavigateOptions(transitionOptions));
         }, cover);
       };
 
@@ -225,6 +256,7 @@ export function TransitionProvider({ children }) {
     [
       navigate,
       location.pathname,
+      location.search,
       scrollToHash,
       scrollToReturnTarget,
       lenis,
@@ -234,48 +266,25 @@ export function TransitionProvider({ children }) {
   );
 
   useEffect(() => {
-    const handleHashAnchorClick = event => {
-      const anchor = getClickedAnchor(event);
-      if (!anchor) return;
-      if (event.defaultPrevented || event.button !== 0 || isModifiedClick(event)) return;
-      if (anchor.target && anchor.target !== '_self') return;
-      if (anchor.hasAttribute('download')) return;
+    trackPageView(location.pathname + location.search);
+  }, [location.pathname, location.search]);
 
-      const href = anchor.getAttribute('href');
-      if (!href || href === '#') return;
+  useEffect(() => {
+    if (!location.hash || isRunningRef.current || navigationType !== 'POP') return;
 
-      const url = new URL(href, window.location.href);
-      if (url.origin !== window.location.origin || !url.hash) return;
-
-      const hash = url.hash.slice(1);
-      if (!hash) return;
-
-      event.preventDefault();
-
-      const isSamePath =
-        normalizePathname(url.pathname) === normalizePathname(location.pathname) &&
-        url.search === location.search;
-
-      if (isSamePath) {
-        scrollToHash(hash, { mobileMenuDelay: 0 });
-        return;
-      }
-
-      go(`${url.pathname}${url.search}${url.hash}`);
-    };
-
-    document.addEventListener('click', handleHashAnchorClick);
-    return () => document.removeEventListener('click', handleHashAnchorClick);
-  }, [go, location.pathname, location.search, scrollToHash]);
+    scrollToHashWhenReadyRef.current(location.hash.slice(1), {
+      updateUrl: false,
+      mobileMenuDelay: 0,
+      initialDelay: 0,
+      immediate: true,
+    });
+  }, [location.pathname, location.search, location.hash, navigationType]);
 
   // When the route actually changes, reveal
   useEffect(() => {
     // Update navigation history
     previousPath = currentPath;
     currentPath = location.pathname;
-
-    // Fire GA4 page_view for SPA navigation
-    trackPageView(location.pathname + location.search + location.hash);
 
     const unlockScroll = () => {
       if (lenisRef.current) lenisRef.current.start();
@@ -304,8 +313,6 @@ export function TransitionProvider({ children }) {
 
     // go() path: overlay already covering — restore the destination top while hidden.
     const pendingHash = pendingToRef.current?.hash;
-    const shouldRevealAfterInstantHash =
-      pendingHash && pendingToRef.current?.options?.scrollMode === 'instant-home-hash';
     scrollToTop();
 
     const { reveal } = getTransitionTimings(overlayVariant);
@@ -320,49 +327,32 @@ export function TransitionProvider({ children }) {
             isRunningRef.current = false;
             pendingToRef.current = null;
             unlockScroll();
-            if (pendingHash && !shouldRevealAfterInstantHash) {
-              scrollToHashWhenReadyRef.current(pendingHash, {
-                initialDelay: 80,
-                mobileMenuDelay: 0,
-              });
-            }
           }, reveal);
         });
       });
     };
 
-    if (shouldRevealAfterInstantHash) {
+    if (pendingHash) {
       scrollToHashWhenReadyRef.current(pendingHash, {
+        updateUrl: false,
         initialDelay: 0,
         mobileMenuDelay: 0,
         immediate: true,
       });
-      window.setTimeout(revealPage, INSTANT_HOME_HASH_REVEAL_DELAY_MS);
+      window.setTimeout(revealPage, HASH_REVEAL_DELAY_MS);
       return;
     }
 
     window.setTimeout(revealPage, 0);
-    // Only pathname changes represent real page transitions.
-    // Hash changes are handled by scrollToHash (pushState) and must NOT
-    // retrigger this effect — otherwise the cover→reveal cycle fires spuriously
-    // ~1–2 s after load when lenis init causes scrollToHash to be recreated.
+    // Hash-only navigation is handled by scrollToHash and the POP restoration effect.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname, navigationType]);
-
-  // Create a click handler for hash scrolling (e.g., HeroSection, AboutSection)
-  const createHashScrollHandler = (hash, options = {}) => {
-    return event => {
-      if (event) event.preventDefault();
-      scrollToHash(hash, options);
-    };
-  };
+  }, [location.pathname, location.search, navigationType]);
 
   const contextValue = {
     go,
     phase,
     scrollToHash,
     scrollToPage: scrollToReturnTarget,
-    createHashScrollHandler,
     transitioning: phase === 'covering' || phase === 'revealing',
   };
 

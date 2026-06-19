@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { arrowSvg } from '../icons/SocialIcons';
 import AppLink from '../navigation/AppLink';
 
@@ -135,27 +135,35 @@ export function ProjectItem({
           </div>
         </div>
         <div className="projects_item_cover-img">
-          <img
-            ref={coverImageRef}
-            data-wf-drag="false"
-            loading="lazy"
-            fetchPriority="auto"
-            decoding="async"
-            alt=""
-            src={imgSrc}
-            sizes="(max-width: 767px) 91vw, (max-width: 991px) 88vw, 24vw"
-            srcSet={imgSrcSet}
-            className="projects_visual_img is-thumbnail"
-            width="1200"
-            height="800"
-          />
+          <AppLink
+            to={`/projects/${slug}`}
+            aria-label={`View ${title} case study`}
+            className="projects_item_cover-link"
+            onClick={() => onProjectClick?.(slug)}
+            getTransitionOptions={getProjectImageTransition}
+          >
+            <img
+              ref={coverImageRef}
+              data-wf-drag="false"
+              loading="lazy"
+              fetchPriority="auto"
+              decoding="async"
+              alt=""
+              src={imgSrc}
+              sizes="(max-width: 767px) 91vw, (max-width: 991px) 88vw, 24vw"
+              srcSet={imgSrcSet}
+              className="projects_visual_img is-thumbnail"
+              width="1200"
+              height="800"
+            />
+          </AppLink>
         </div>
       </div>
       <div className="projects_item_description">
         <AppLink
           to={`/projects/${slug}`}
           aria-label={title}
-          className="text-button w-inline-block"
+          className="text-button project-title-link w-inline-block"
           onClick={() => onProjectClick?.(slug)}
           getTransitionOptions={getProjectImageTransition}
         >
@@ -164,7 +172,7 @@ export function ProjectItem({
             <div className="arrow_icon-embed large w-embed">{arrowSvg}</div>
           </div>
           <div className="text-button_list is-animated is-dark">
-            <h3 className="heading-style-h3">{title}</h3>
+            <h3 className="heading-style-h3">I want to know more</h3>
             <div className="arrow_icon-embed large w-embed">{arrowSvg}</div>
           </div>
         </AppLink>

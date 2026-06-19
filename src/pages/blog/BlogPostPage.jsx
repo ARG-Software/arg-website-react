@@ -211,7 +211,7 @@ export default function BlogPostPage() {
     if (window.location.hash) {
       const hash = window.location.hash.substring(1);
       if (hash) {
-        scrollToHash(hash, { mobileMenuDelay: 0, offset: -120 });
+        scrollToHash(hash, { mobileMenuDelay: 0, offset: -120, updateUrl: false });
       }
     }
   }, [scrollToHash, slug]); // Re-run when article changes
