@@ -3,8 +3,8 @@ seoTitle: The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep
 slug: the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn
 tag: Architecture
 title: The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (and Which to Burn)
-subtitle: There is a growing movement in the .NET community right now, and it is fueled by pure exhaustion. Developers are tired. They are tired of opening...
-intro: There is a growing movement in the .NET community right now, and it is fueled by pure exhaustion. Developers are tired. They are tired of opening...
+subtitle: There is a growing movement in the .NET community right now, and it is fueled by pure exhaustion. Developers are tired. They are tired of…
+intro: There is a growing movement in the .NET community right now, and it is fueled by pure exhaustion. Developers are tired. They are tired of…
 date: June 6, 2026
 readTime: 8 min read
 excerpt: There is a growing movement in the .NET community right now, and it is fueled by pure exhaustion. Developers are tired. They are tired of opening a pull request to add a single database column, only to realize they have
@@ -217,7 +217,3 @@ Clean Architecture was never supposed to be a prison. It was designed to isolate
 Defend your Data Access Layer with your life. Abstract your third-party APIs. But be ruthless with everything else. Delete the pass-through services. Drop the redundant interfaces. Stop paying the abstraction tax on code that doesn’t deserve it.
 
 Architecture is not lost when noise is eliminated. You've finally found it.
-
-## About the Author
-
-We’re a team of senior engineers who’ve shipped production systems across finance, fintech, and the nonprofit sector - for organizations like the Gates Foundation, JP Morgan, Interledger, and Filecoin, among others. At ARG, we help teams navigate the technical decisions that actually matter. Follow us for more practical deep dives into the technologies shaping modern development.

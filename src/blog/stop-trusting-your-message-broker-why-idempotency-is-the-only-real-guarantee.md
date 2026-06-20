@@ -3,8 +3,8 @@ seoTitle: Stop Trusting Your Message Broker: Why Idempotency is the Only Real Gu
 slug: stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee
 tag: DevOps
 title: Stop Trusting Your Message Broker: Why Idempotency is the Only Real Guarantee
-subtitle: If you have ever debugged why a customer got charged twice, or why an order shipped before payment was captured, the lesson is familiar: message...
-intro: If you have ever debugged why a customer got charged twice, or why an order shipped before payment was captured, the lesson is familiar: message...
+subtitle: A practical look at what actually keeps event-driven systems correct.
+intro: A practical look at what actually keeps event-driven systems correct.
 date: April 21, 2026
 readTime: 8 min read
 excerpt: If you have ever debugged why a customer got charged twice, or why an order shipped before payment was captured, the lesson is familiar: message brokers do not give you the guarantees you think they do. Ordering is the
@@ -204,7 +204,3 @@ This complements the inbox rather than replacing it. The local transaction prote
 ## Closing Thought 💭
 
 At the end of the day, network failures aren’t edge cases; they are a mathematical certainty. By treating every message as a potential duplicate and every operation as a potential retry, you move from a brittle system that hopes for order to a resilient system that thrives in chaos. Don’t build for the happy path where packets arrive perfectly; build for the real path where packets arrive twice, late, or not at all. Make your code boring, predictable, and - above all - idempotent
-
-## About the Author
-
-We’re a team of senior engineers who’ve shipped production systems across finance, fintech, and the nonprofit sector — for organizations like the Gates Foundation, JP Morgan, Interledger, and Filecoin, among others. At Arg, we help teams navigate the technical decisions that actually matter. Follow us for more practical deep dives into the technologies shaping modern development.

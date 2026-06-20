@@ -2,9 +2,20 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 
-const FEED_URL = process.argv[2] || 'https://medium.com/feed/@arg-software';
+const DEFAULT_FEED_URL = 'https://medium.com/feed/@arg-software';
+const MEDIUM_USER_ID = '765b171ba7b3';
+const MEDIUM_JSON_PREFIX = '])}while(1);</x>';
+const MEDIUM_STREAM_URL = `https://medium.com/_/api/users/${MEDIUM_USER_ID}/profile/stream`;
+const STREAM_SOURCES = ['latest', 'overview'];
 const BLOG_DIR = path.resolve('src/blog');
 const IMAGE_ROOT = path.resolve('public/images/blog');
+const SOURCE_ARG = process.argv[2] || '';
+
+const BROWSER_HEADERS = {
+  'user-agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36 ARG Software blog importer',
+  accept: 'application/json, text/plain, */*',
+};
 
 const decodeEntities = value =>
   String(value || '')
@@ -48,10 +59,15 @@ const stripCode = value =>
     .replace(/\n[ \t]+/g, '\n')
     .trim();
 
-const sanitizeTitle = value =>
+const sanitizeText = value =>
   stripTags(value)
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
     .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const sanitizeTitle = value =>
+  sanitizeText(value)
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -61,6 +77,12 @@ const normalizeTitle = value =>
     .replace(/[“”]/g, '"')
     .replace(/[‘’]/g, "'")
     .replace(/\s+/g, ' ')
+    .trim();
+
+const normalizeHeading = value =>
+  sanitizeText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 
 const slugify = value =>
@@ -78,7 +100,7 @@ const escapeFrontmatter = value =>
     .replace(/"/g, "'")
     .trim();
 
-const getTag = (title, categories) => {
+const getTag = (title, categories = []) => {
   const haystack = `${title} ${categories.join(' ')}`.toLowerCase();
 
   if (haystack.includes('ai') || haystack.includes('artificial-intelligence') || haystack.includes('vector')) return 'AI';
@@ -94,8 +116,8 @@ const inferLang = code => {
 
   if (/^\{|"compilerOptions"|"rules"/.test(text)) return 'json';
   if (/\b(import|export|type|interface|function|const|let|async function)\b/.test(text)) return 'typescript';
-  if (/\b(public|private|Task<|IActionResult|ControllerBase|DbContext)\b/.test(text)) return 'csharp';
-  if (/grep|npm|dotnet|#/.test(text)) return 'bash';
+  if (/\b(public|private|Task<|IActionResult|ControllerBase|DbContext|namespace|class)\b/.test(text)) return 'csharp';
+  if (/grep|npm|dotnet|docker|kubectl|#/.test(text)) return 'bash';
 
   return 'text';
 };
@@ -125,10 +147,33 @@ const parseFeed = xml =>
       link: stripTags(extract(item, 'link')).replace(/\?source=.*$/, ''),
       guid: stripTags(extract(item, 'guid')),
       pubDate: stripTags(extract(item, 'pubDate')),
+      description: sanitizeText(extract(item, 'description')),
       categories: [...item.matchAll(/<category><!\[CDATA\[([\s\S]*?)\]\]><\/category>/g)].map(category => stripTags(category[1])),
       html: decodeEntities(extract(item, 'content:encoded')),
     };
   });
+
+const parseFrontmatter = raw => {
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  const meta = {};
+  if (!match) return meta;
+
+  match[1].split(/\r?\n/).forEach(line => {
+    const colon = line.indexOf(':');
+    if (colon === -1) return;
+    meta[line.slice(0, colon).trim()] = line
+      .slice(colon + 1)
+      .trim()
+      .replace(/^["']|["']$/g, '');
+  });
+
+  return meta;
+};
+
+const extractMediumId = value => {
+  const match = String(value || '').match(/(?:-|\/)([0-9a-f]{12})(?:\?|$)/i);
+  return match ? match[1] : '';
+};
 
 const readExistingPosts = () =>
   fs
@@ -137,14 +182,59 @@ const readExistingPosts = () =>
     .map(file => {
       const fullPath = path.join(BLOG_DIR, file);
       const raw = fs.readFileSync(fullPath, 'utf8');
-      const title = (raw.match(/\ntitle:\s*(.+)/) || [])[1] || '';
-      const order = Number((file.match(/^(\d+)-/) || [])[1] || 0);
+      const meta = parseFrontmatter(raw);
 
-      return { file, fullPath, raw, title: sanitizeTitle(title), order };
+      return {
+        file,
+        fullPath,
+        raw,
+        meta,
+        id: extractMediumId(meta.mediumUrl),
+        slug: meta.slug || file.replace(/\.md$/, ''),
+        title: sanitizeTitle(meta.title),
+      };
     });
+
+const stripNumericFilenamePrefixes = () => {
+  fs.readdirSync(BLOG_DIR)
+    .filter(file => /^\d+-.*\.md$/.test(file))
+    .forEach(file => {
+      const targetFile = file.replace(/^\d+-/, '');
+      const sourcePath = path.join(BLOG_DIR, file);
+      const targetPath = path.join(BLOG_DIR, targetFile);
+
+      if (fs.existsSync(targetPath)) {
+        throw new Error(`Cannot rename ${file}; ${targetFile} already exists.`);
+      }
+
+      fs.renameSync(sourcePath, targetPath);
+    });
+};
+
+const stripAuthorSectionFromMarkdown = markdown => {
+  const source = String(markdown || '');
+  const stripped = source.replace(/\n##\s*About\s+the\s+Author[\s\S]*$/i, '');
+
+  return stripped === source ? source : stripped.trimEnd();
+};
+
+const cleanExistingAuthorSections = () => {
+  const cleaned = [];
+
+  readExistingPosts().forEach(post => {
+    const nextRaw = stripAuthorSectionFromMarkdown(post.raw);
+    if (nextRaw === post.raw) return;
+
+    fs.writeFileSync(post.fullPath, `${nextRaw}\n`, 'utf8');
+    cleaned.push(post.file);
+  });
+
+  return cleaned;
+};
 
 const cleanMediumHtml = html =>
   String(html || '')
+    .replace(/<h[1-6][^>]*>\s*About\s+the\s+Author\s*<\/h[1-6]>[\s\S]*$/i, '')
     .replace(/<hr>[\s\S]*$/i, '')
     .replace(/<blockquote>[\s\S]*?Your Job Search[\s\S]*?<\/blockquote>\s*(?:<figure>[\s\S]*?<\/figure>)?/gi, '')
     .replace(/<h3>\s*Thank you for being a part of the community[\s\S]*$/i, '')
@@ -164,7 +254,7 @@ const shouldSkipImage = src =>
 const downloadImage = async (url, outputPath) => {
   const response = await fetch(url, {
     headers: {
-      'user-agent': 'Mozilla/5.0 ARG Software blog importer',
+      ...BROWSER_HEADERS,
       accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
     },
   });
@@ -201,6 +291,31 @@ const localizeImages = async (html, articleSlug, title) => {
 
   await Promise.all(downloads);
   return replaced;
+};
+
+const localizeMediumImage = async (paragraph, articleSlug, title, index) => {
+  const metadata = paragraph.metadata || {};
+  const imageId = metadata.id || metadata.imageId || '';
+  if (!imageId) return '';
+  if (metadata.originalWidth <= 64 && metadata.originalHeight <= 64) return '';
+
+  const imageDir = path.join(IMAGE_ROOT, articleSlug);
+  fs.mkdirSync(imageDir, { recursive: true });
+
+  const alt = sanitizeText(paragraph.text) || title;
+  const baseName = index === 1 ? `${articleSlug}-header` : `${slugify(alt) || 'image'}-${index}`;
+  const fileName = `${baseName}.webp`;
+  const outputPath = path.join(imageDir, fileName);
+  const publicPath = `/images/blog/${articleSlug}/${fileName}`;
+  const imageUrl = `https://miro.medium.com/v2/resize:fit:1400/${imageId}`;
+
+  try {
+    await downloadImage(imageUrl, outputPath);
+  } catch (error) {
+    console.warn(error.message);
+  }
+
+  return `![${alt}](${publicPath})`;
 };
 
 const convertHtmlToMarkdown = html => {
@@ -242,7 +357,7 @@ const convertHtmlToMarkdown = html => {
     text = text.replace(`@@CODE_BLOCK_${index}@@`, block);
   });
 
-  return text.replace(/\n{3,}/g, '\n\n').trim();
+  return stripAuthorSectionFromMarkdown(text.replace(/\n{3,}/g, '\n\n').trim());
 };
 
 const createExcerpt = markdown =>
@@ -258,15 +373,183 @@ const createExcerpt = markdown =>
 const createSubtitle = excerpt =>
   excerpt.length > 150 ? `${excerpt.slice(0, 147).replace(/\s+\S*$/, '')}...` : excerpt;
 
-const writePost = async item => {
+const stripMediumJsonPrefix = text => {
+  if (!text.startsWith(MEDIUM_JSON_PREFIX)) return text;
+  return text.slice(MEDIUM_JSON_PREFIX.length);
+};
+
+const fetchText = async (url, headers = BROWSER_HEADERS) => {
+  const response = await fetch(url, { headers });
+  if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.status}`);
+  return response.text();
+};
+
+const fetchMediumJson = async url => JSON.parse(stripMediumJsonPrefix(await fetchText(url)));
+
+const toQueryString = params => {
+  const query = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    if (Array.isArray(value)) {
+      if (value.length) query.set(key, value.join(','));
+      return;
+    }
+    query.set(key, String(value));
+  });
+
+  return query.toString();
+};
+
+const collectStreamPosts = async source => {
+  let next = { limit: 10, source };
+  const posts = new Map();
+
+  for (let page = 1; page <= 20; page += 1) {
+    const data = await fetchMediumJson(`${MEDIUM_STREAM_URL}?${toQueryString(next)}`);
+    Object.values(data.payload?.references?.Post || {}).forEach(post => {
+      if (post.inResponseToPostId) return;
+      posts.set(post.id, post);
+    });
+
+    next = data.payload?.paging?.next;
+    if (!next) break;
+  }
+
+  return posts;
+};
+
+const collectMediumPosts = async () => {
+  const posts = new Map();
+
+  for (const source of STREAM_SOURCES) {
+    const sourcePosts = await collectStreamPosts(source);
+    sourcePosts.forEach((post, id) => posts.set(id, post));
+  }
+
+  return [...posts.values()].sort((postA, postB) => postA.firstPublishedAt - postB.firstPublishedAt);
+};
+
+const fetchFullPost = async postId => {
+  const data = await fetchMediumJson(`https://medium.com/p/${postId}?format=json`);
+  return data.payload?.value;
+};
+
+const getPostUrl = post =>
+  post.mediumUrl || post.webCanonicalUrl || post.canonicalUrl || `https://medium.com/p/${post.id}`;
+
+const getPostCategories = post => (post.virtuals?.tags || []).map(tag => tag.name || tag.slug).filter(Boolean);
+
+const getCuratedDescription = post =>
+  [
+    post.metaDescription,
+    post.seoDescription,
+    post.content?.subtitle,
+    post.virtuals?.subtitle,
+    post.previewContent2?.subtitle,
+  ]
+    .map(sanitizeText)
+    .find(Boolean) || '';
+
+const isPartialLockedPost = post => {
+  if (!post?.isSubscriptionLocked) return false;
+
+  const paragraphs = post.content?.bodyModel?.paragraphs || [];
+  const bodyWords = paragraphs.reduce((count, paragraph) => count + sanitizeText(paragraph.text).split(/\s+/).filter(Boolean).length, 0);
+  const expectedWords = post.virtuals?.wordCount || 0;
+
+  return expectedWords > 0 && bodyWords < expectedWords * 0.7;
+};
+
+const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title) => {
+  const paragraphs = post.content?.bodyModel?.paragraphs || [];
+  const blocks = [];
+  let imageIndex = 0;
+
+  for (const paragraph of paragraphs) {
+    const text = sanitizeText(paragraph.text);
+    if (normalizeHeading(text) === 'about the author') break;
+    if (normalizeTitle(text) === normalizeTitle(title)) continue;
+
+    if (paragraph.type === 4) {
+      imageIndex += 1;
+      const image = await localizeMediumImage(paragraph, articleSlug, title, imageIndex);
+      if (image) blocks.push(image);
+      continue;
+    }
+
+    if (!text) continue;
+
+    if (paragraph.type === 8) {
+      blocks.push(`\`\`\`${inferLang(text)}\n${text}\n\`\`\``);
+      continue;
+    }
+
+    if (paragraph.type === 9 || paragraph.type === 10) {
+      blocks.push(`- ${text}`);
+      continue;
+    }
+
+    if (paragraph.type === 6 || paragraph.type === 7 || paragraph.type === 14) {
+      blocks.push(`> ${text.replace(/\n+/g, ' ')}`);
+      continue;
+    }
+
+    if (paragraph.type === 13) {
+      blocks.push(`### ${text}`);
+      continue;
+    }
+
+    if (paragraph.type === 3) {
+      blocks.push(`## ${text}`);
+      continue;
+    }
+
+    blocks.push(text);
+  }
+
+  return blocks;
+};
+
+const convertPostToMarkdown = async (post, articleSlug, title) => {
+  const blocks = await getMarkdownBlocksFromParagraphs(post, articleSlug, title);
+  return stripAuthorSectionFromMarkdown(blocks.join('\n\n').replace(/\n{3,}/g, '\n\n').trim());
+};
+
+const writePost = (post, markdown, subtitle, excerpt) => {
+  const title = sanitizeTitle(post.title);
+  const slug = slugify(title);
+  const categories = getPostCategories(post);
+  const tag = getTag(title, categories);
+  const frontmatter = [
+    '---',
+    `seoTitle: ${escapeFrontmatter(post.seoTitle || title)}`,
+    `slug: ${slug}`,
+    `tag: ${tag}`,
+    `title: ${escapeFrontmatter(title)}`,
+    `subtitle: ${escapeFrontmatter(subtitle)}`,
+    `intro: ${escapeFrontmatter(subtitle)}`,
+    `date: ${formatDate(post.firstPublishedAt || post.latestPublishedAt || post.createdAt)}`,
+    `readTime: ${estimateReadTime(markdown)}`,
+    `mediumUrl: ${getPostUrl(post)}`,
+    `excerpt: ${escapeFrontmatter(excerpt)}`,
+    '---',
+    '',
+  ].join('\n');
+  const outputPath = path.join(BLOG_DIR, `${slug}.md`);
+
+  fs.writeFileSync(outputPath, `${frontmatter}${markdown}\n`, 'utf8');
+  return { title, slug, outputPath };
+};
+
+const writeRssPost = async item => {
   const title = sanitizeTitle(item.title);
   const slug = slugify(title);
   const html = cleanMediumHtml(item.html);
   const withLocalImages = await localizeImages(html, slug, title);
   const markdown = convertHtmlToMarkdown(withLocalImages);
   const excerpt = createExcerpt(markdown);
-  const subtitle = createSubtitle(excerpt);
-  const date = formatDate(item.pubDate);
+  const subtitle = item.description || createSubtitle(excerpt);
   const tag = getTag(title, item.categories);
   const frontmatter = [
     '---',
@@ -276,62 +559,145 @@ const writePost = async item => {
     `title: ${escapeFrontmatter(title)}`,
     `subtitle: ${escapeFrontmatter(subtitle)}`,
     `intro: ${escapeFrontmatter(subtitle)}`,
-    `date: ${date}`,
+    `date: ${formatDate(item.pubDate)}`,
     `readTime: ${estimateReadTime(markdown)}`,
+    `mediumUrl: ${item.link}`,
     `excerpt: ${escapeFrontmatter(excerpt)}`,
     '---',
     '',
   ].join('\n');
-  const outputPath = path.join(BLOG_DIR, `999-${slug}.md`);
+  const outputPath = path.join(BLOG_DIR, `${slug}.md`);
 
   fs.writeFileSync(outputPath, `${frontmatter}${markdown}\n`, 'utf8');
   return { title, slug, outputPath };
 };
 
-const parsePostDate = raw => {
-  const value = (raw.match(/\ndate:\s*(.+)/) || [])[1] || '';
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? new Date(0) : date;
-};
+const replaceFrontmatterFields = (raw, fields) => {
+  const newline = raw.includes('\r\n') ? '\r\n' : '\n';
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!match) return raw;
 
-const renumberPosts = () => {
-  const posts = fs
-    .readdirSync(BLOG_DIR)
-    .filter(file => file.endsWith('.md'))
-    .map(file => {
-      const fullPath = path.join(BLOG_DIR, file);
-      const raw = fs.readFileSync(fullPath, 'utf8');
-      const currentOrder = Number((file.match(/^(\d+)-/) || [])[1] || 0);
-      const baseName = file.replace(/^\d+-/, '');
+  const lines = match[1].split(/\r?\n/);
+  const pending = new Map(Object.entries(fields).map(([key, value]) => [key, `${key}: ${escapeFrontmatter(value)}`]));
+  const nextLines = lines.map(line => {
+    const colon = line.indexOf(':');
+    if (colon === -1) return line;
 
-      return { file, fullPath, raw, currentOrder, baseName, date: parsePostDate(raw) };
-    })
-    .sort((a, b) => a.date - b.date || a.currentOrder - b.currentOrder || a.baseName.localeCompare(b.baseName));
+    const key = line.slice(0, colon).trim();
+    if (!pending.has(key)) return line;
 
-  posts.forEach(post => {
-    const tempPath = path.join(BLOG_DIR, `__tmp__${post.baseName}`);
-    fs.renameSync(post.fullPath, tempPath);
-    post.tempPath = tempPath;
+    const nextLine = pending.get(key);
+    pending.delete(key);
+    return nextLine;
   });
 
-  posts.forEach((post, index) => {
-    fs.renameSync(post.tempPath, path.join(BLOG_DIR, `${index + 1}-${post.baseName}`));
-  });
+  pending.forEach(line => nextLines.push(line));
+
+  const nextFrontmatter = ['---', ...nextLines, '---'].join(newline);
+  return `${nextFrontmatter}${raw.slice(match[0].length)}`;
 };
 
-(async () => {
-  const xml = await fetch(FEED_URL).then(response => response.text());
+const findExistingPost = (existingPosts, post) => {
+  const postTitle = normalizeTitle(post.title);
+  const postSlug = slugify(post.title);
+
+  return existingPosts.find(existing => existing.id === post.id) ||
+    existingPosts.find(existing => normalizeTitle(existing.title) === postTitle) ||
+    existingPosts.find(existing => existing.slug === postSlug);
+};
+
+const refreshExistingPostMetadata = (existingPost, post) => {
+  const subtitle = getCuratedDescription(post);
+  if (!subtitle) return false;
+
+  const nextRaw = replaceFrontmatterFields(existingPost.raw, {
+    subtitle,
+    intro: subtitle,
+  });
+
+  if (nextRaw === existingPost.raw) return false;
+
+  fs.writeFileSync(existingPost.fullPath, nextRaw, 'utf8');
+  return true;
+};
+
+const importFromMediumJson = async () => {
+  const streamPosts = await collectMediumPosts();
+  const existingPosts = readExistingPosts();
+  const imported = [];
+  const updated = [];
+  const skipped = [];
+
+  for (const streamPost of streamPosts) {
+    const post = await fetchFullPost(streamPost.id);
+    if (!post) {
+      skipped.push({ id: streamPost.id, title: streamPost.title, reason: 'missing full post payload' });
+      continue;
+    }
+
+    const existingPost = findExistingPost(existingPosts, post);
+    if (existingPost) {
+      if (refreshExistingPostMetadata(existingPost, post)) updated.push({ id: post.id, file: existingPost.file, title: sanitizeTitle(post.title) });
+      continue;
+    }
+
+    if (isPartialLockedPost(post)) {
+      skipped.push({ id: post.id, title: sanitizeTitle(post.title), reason: 'locked post only exposes partial preview content' });
+      continue;
+    }
+
+    const title = sanitizeTitle(post.title);
+    const slug = slugify(title);
+    const markdown = await convertPostToMarkdown(post, slug, title);
+    const excerpt = createExcerpt(markdown);
+    const subtitle = getCuratedDescription(post) || createSubtitle(excerpt);
+
+    if (!markdown) {
+      skipped.push({ id: post.id, title, reason: 'empty markdown after conversion' });
+      continue;
+    }
+
+    imported.push(writePost(post, markdown, subtitle, excerpt));
+  }
+
+  return { source: 'medium-json', discovered: streamPosts.length, imported, updated, skipped };
+};
+
+const importFromRss = async feedUrl => {
+  const xml = await fetchText(feedUrl, { ...BROWSER_HEADERS, accept: 'application/rss+xml, application/xml, text/xml, */*' });
   const items = parseFeed(xml);
   const existingTitles = new Set(readExistingPosts().map(post => normalizeTitle(post.title)));
   const missing = items.filter(item => !existingTitles.has(normalizeTitle(item.title)));
   const imported = [];
 
   for (const item of missing.reverse()) {
-    imported.push(await writePost(item));
+    imported.push(await writeRssPost(item));
   }
 
-  renumberPosts();
-  console.log(JSON.stringify({ feed: FEED_URL, imported: imported.length, posts: imported }, null, 2));
+  return { source: 'rss', feed: feedUrl, discovered: items.length, imported, updated: [], skipped: [] };
+};
+
+(async () => {
+  stripNumericFilenamePrefixes();
+  const cleanedAuthorSections = cleanExistingAuthorSections();
+  const result = SOURCE_ARG.includes('/feed/') ? await importFromRss(SOURCE_ARG || DEFAULT_FEED_URL) : await importFromMediumJson();
+
+  console.log(
+    JSON.stringify(
+      {
+        ...result,
+        cleanedAuthorSections,
+        imported: result.imported.length,
+        importedPosts: result.imported,
+        updated: result.updated.length,
+        updatedPosts: result.updated,
+        skipped: result.skipped.length,
+        skippedPosts: result.skipped,
+      },
+      null,
+      2
+    )
+  );
 })().catch(error => {
   console.error(error);
   process.exit(1);

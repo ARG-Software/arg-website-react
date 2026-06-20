@@ -42,7 +42,13 @@ import {
 import { useScrollAnimations, useTimeOnPage } from '../../hooks';
 import { TransitionContext } from '../../providers/TransitionProvider';
 import { trackBlogPostShare, trackCTA, trackEvent } from '../../hooks/useAnalytics';
-import { loadBlogPostsWithContent } from '../../utils/blog';
+import {
+  getHeadingId,
+  getRelatedPosts,
+  loadBlogPostsWithContent,
+  parseDateToIso,
+  splitArticleTitle,
+} from '../../utils/blog';
 import '../../styles/blog.css';
 
 // ─── Load all blog posts with full content ──────────────────────────────────
@@ -50,59 +56,6 @@ import '../../styles/blog.css';
 const BLOG_POSTS = loadBlogPostsWithContent();
 
 // ─── Block renderer ───────────────────────────────────────────────────────────
-
-const slugify = text =>
-  text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-
-const splitArticleTitle = title => {
-  const normalizedTitle = title.trim();
-  if (!normalizedTitle) return [''];
-
-  const minIndex = normalizedTitle.length * 0.35;
-  const maxIndex = normalizedTitle.length * 0.7;
-  const targetIndex = normalizedTitle.length * 0.5;
-  const candidates = [];
-
-  for (let index = 0; index < normalizedTitle.length; index += 1) {
-    const character = normalizedTitle[index];
-    const nextCharacter = normalizedTitle[index + 1];
-
-    if ('.:?!'.includes(character) && nextCharacter === ' ') {
-      candidates.push(index + 1);
-    }
-  }
-
-  [' - ', ' — ', ' – '].forEach(separator => {
-    const index = normalizedTitle.indexOf(separator);
-    if (index !== -1) candidates.push(index);
-  });
-
-  const bestPunctuationSplit = candidates
-    .filter(index => index >= minIndex && index <= maxIndex)
-    .sort((indexA, indexB) => Math.abs(indexA - targetIndex) - Math.abs(indexB - targetIndex))[0];
-
-  const splitIndex = bestPunctuationSplit ?? findNearestWordBoundary(normalizedTitle, targetIndex);
-  const firstLine = normalizedTitle.slice(0, splitIndex).trim();
-  const secondLine = normalizedTitle
-    .slice(splitIndex)
-    .replace(/^[-—–]\s*/, '')
-    .trim();
-
-  return secondLine ? [firstLine, secondLine] : [normalizedTitle];
-};
-
-const findNearestWordBoundary = (text, targetIndex) => {
-  const beforeTarget = text.lastIndexOf(' ', targetIndex);
-  const afterTarget = text.indexOf(' ', targetIndex);
-
-  if (beforeTarget === -1) return afterTarget === -1 ? text.length : afterTarget;
-  if (afterTarget === -1) return beforeTarget;
-
-  return targetIndex - beforeTarget <= afterTarget - targetIndex ? beforeTarget : afterTarget;
-};
 
 const renderBlock = (block, i) => {
   switch (block.type) {
@@ -120,13 +73,13 @@ const renderBlock = (block, i) => {
       );
     case 'heading':
       return (
-        <h2 key={i} id={slugify(block.text)} className="bp-h2" data-animate="fade-up">
+        <h2 key={i} id={getHeadingId(block.text)} className="bp-h2" data-animate="fade-up">
           {block.text}
         </h2>
       );
     case 'subheading':
       return (
-        <h3 key={i} id={slugify(block.text)} className="bp-h3" data-animate="fade-up">
+        <h3 key={i} id={getHeadingId(block.text)} className="bp-h3" data-animate="fade-up">
           {block.text}
         </h3>
       );
@@ -186,7 +139,7 @@ export default function BlogPostPage() {
       if (isClicking) return;
       const headings = BLOG_POST.content
         .filter(b => b.type === 'heading')
-        .map(b => document.getElementById(slugify(b.text)))
+        .map(b => document.getElementById(getHeadingId(b.text)))
         .filter(Boolean);
       const scrollPos = window.scrollY + 200;
 
@@ -245,10 +198,7 @@ export default function BlogPostPage() {
   }
 
   // Related & recent articles for sidebar
-  const relatedPosts = BLOG_POSTS.filter(p => p.slug !== slug && p.tag === BLOG_POST.tag).slice(
-    0,
-    3
-  );
+  const relatedPosts = getRelatedPosts(BLOG_POSTS, BLOG_POST);
 
   const titleLines = splitArticleTitle(BLOG_POST.title);
   const articleUrl = `https://arg.software/blog/${BLOG_POST.slug}/`;
@@ -334,15 +284,6 @@ export default function BlogPostPage() {
     },
   ];
 
-  // Parse date string to ISO format for structured data
-  const parseDate = dateStr => {
-    try {
-      return new Date(dateStr).toISOString();
-    } catch {
-      return '';
-    }
-  };
-
   return (
     <>
       <SEO
@@ -350,7 +291,7 @@ export default function BlogPostPage() {
         description={BLOG_POST.excerpt || BLOG_POST.subtitle}
         path={`/blog/${BLOG_POST.slug}/`}
         type="article"
-        publishedTime={parseDate(BLOG_POST.date)}
+        publishedTime={parseDateToIso(BLOG_POST.date)}
         author="Arg Software"
         section={BLOG_POST.tag}
         image={BLOG_POST.image}
@@ -361,7 +302,7 @@ export default function BlogPostPage() {
           '@type': 'Article',
           headline: BLOG_POST.title,
           description: BLOG_POST.excerpt || BLOG_POST.subtitle,
-          datePublished: parseDate(BLOG_POST.date),
+          datePublished: parseDateToIso(BLOG_POST.date),
           image: BLOG_POST.image ? `https://arg.software${BLOG_POST.image}` : undefined,
           author: {
             '@type': 'Organization',
@@ -415,7 +356,7 @@ export default function BlogPostPage() {
                 <BlogArticleSidebar
                   sectionLinks={sectionLinks}
                   activeSection={activeSection}
-                  getSectionId={slugify}
+                  getSectionId={getHeadingId}
                   onSectionClick={handleTocClick}
                   shareItems={shareItems}
                   feedItems={feedItems}

@@ -3,8 +3,8 @@ seoTitle: The AI Big Lie: You Don’t Need 32 GB of RAM for Vector Search Anymor
 slug: the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore
 tag: AI
 title: The AI Big Lie: You Don’t Need 32 GB of RAM for Vector Search Anymore
-subtitle: The enterprise AI landscape is currently misleading developers about hardware requirements. If you want to build Retrieval-Augmented Generation...
-intro: The enterprise AI landscape is currently misleading developers about hardware requirements. If you want to build Retrieval-Augmented Generation...
+subtitle: The Local AI RAM Crisis 💸
+intro: The Local AI RAM Crisis 💸
 date: June 10, 2026
 readTime: 6 min read
 excerpt: The enterprise AI landscape is currently misleading developers about hardware requirements. If you want to build Retrieval-Augmented Generation (RAG) or semantic search into your applications, the industry-standard
@@ -83,7 +83,3 @@ That said, TurboVec is a young project.
 The memory reduction is consistent regardless of hardware, if you’re storing large vector data, you will see the ~8× RAM savings. That said, TurboVec is still in Alpha, so benchmark it thoroughly on your data before committing to a production pipeline.
 
 The broader point stands: the AI industry’s default answer to the memory problem has been “buy more RAM.” TurboQuant proves that better math can achieve what brute-force hardware cannot.
-
-## About the Author
-
-We’re a team of senior engineers who’ve shipped production systems across finance, fintech, and the nonprofit sector — for organizations like the Gates Foundation, JP Morgan, Interledger, and Filecoin, among others. At ARG, we help teams navigate the technical decisions that actually matter. Follow us for more practical deep dives into the technologies shaping modern development.

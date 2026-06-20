@@ -13,7 +13,7 @@ import {
 import { useScrollAnimations, useBlogSearch, useTimeOnPage } from '../../hooks';
 import { trackBlogPostClick, trackCTA, trackEvent } from '../../hooks/useAnalytics';
 
-import { loadBlogPostsMetadata } from '../../utils/blog';
+import { getBlogTags, loadBlogPostsMetadata } from '../../utils/blog';
 import { BLOG_POSTS_PER_PAGE } from '../../constants';
 import '../../styles/blog.css';
 
@@ -47,9 +47,7 @@ export default function BlogPage() {
   const totalPages = Math.ceil(filteredPosts.length / BLOG_POSTS_PER_PAGE);
   const startIdx = (page - 1) * BLOG_POSTS_PER_PAGE;
   const paginatedPosts = filteredPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
-  const blogTags = Array.from(
-    new Set(blogPosts.map(article => article.tag).filter(Boolean))
-  ).sort();
+  const blogTags = getBlogTags(blogPosts);
 
   const listRef = useRef(null);
 

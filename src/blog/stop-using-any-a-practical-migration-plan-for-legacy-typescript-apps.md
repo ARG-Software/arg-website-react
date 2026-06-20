@@ -3,8 +3,8 @@ seoTitle: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript
 slug: stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps
 tag: Refactoring
 title: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps
-subtitle: Legacy TypeScript codebases don't become unsafe suddenly. They start to become unsafe one any at a
-intro: Legacy TypeScript codebases don't become unsafe suddenly. They start to become unsafe one any at a
+subtitle: Legacy TypeScript codebases don't become unsafe suddenly. They start to become unsafe one any at a time.
+intro: Legacy TypeScript codebases don't become unsafe suddenly. They start to become unsafe one any at a time.
 date: May 27, 2026
 readTime: 7 min read
 excerpt: Legacy TypeScript codebases don't become unsafe suddenly. They start to become unsafe one any at a
@@ -377,7 +377,3 @@ You do not need to remove every any this week. But you do need a migration strat
 - Track progress over time.
 
 The goal is not type purity. The goal is confidence. Because TypeScript cannot protect your application if you keep telling it to look away.
-
-## About the Author
-
-We’re a team of senior engineers who’ve shipped production systems across finance, fintech, and the nonprofit sector - for organizations like the Gates Foundation, JP Morgan, Interledger, and Filecoin, among others. At ARG, we help teams navigate the technical decisions that actually matter. Follow us for more practical deep dives into the technologies shaping modern development.

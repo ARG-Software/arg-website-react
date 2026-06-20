@@ -150,6 +150,17 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;');
 }
 
+function parseBlogDate(date) {
+  const timestamp = Date.parse(date || '');
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+}
+
+function sortBlogPostsNewestFirst(a, b) {
+  const dateDiff = parseBlogDate(b.date) - parseBlogDate(a.date);
+  if (dateDiff) return dateDiff;
+  return (a.title || a.slug || '').localeCompare(b.title || b.slug || '');
+}
+
 /**
  * Replace the OG / Twitter / title / description / canonical meta tags
  * in the built index.html with page-specific values.
@@ -259,11 +270,10 @@ export default function seoPrerender() {
         .map((file) => {
           const raw = fs.readFileSync(path.join(articlesDir, file), 'utf-8');
           const { meta, body } = parseFrontmatter(raw);
-          const orderMatch = file.match(/^(\d+)-/);
-          return meta.slug ? { ...meta, _body: body, _order: orderMatch ? parseInt(orderMatch[1], 10) : 0 } : null;
+          return meta.slug ? { ...meta, _body: body } : null;
         })
         .filter(Boolean)
-        .sort((a, b) => b._order - a._order);
+        .sort(sortBlogPostsNewestFirst);
 
       const blogPostLinks = blogPostMetas.map((meta) => ({
         href: `/blog/${meta.slug}/`,

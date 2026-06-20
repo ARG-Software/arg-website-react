@@ -3,8 +3,8 @@ seoTitle: Pure TypeScript DDD: Achieving True Persistence Ignorance with MikroOR
 slug: pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm
 tag: Architecture
 title: Pure TypeScript DDD: Achieving True Persistence Ignorance with MikroORM
-subtitle: You’ve read the books. You’ve studied Domain-Driven Design (DDD). You’ve carefully crafted a src/domain folder in your TypeScript project, ready...
-intro: You’ve read the books. You’ve studied Domain-Driven Design (DDD). You’ve carefully crafted a src/domain folder in your TypeScript project, ready...
+subtitle: How to decouple your Domain Model from the database layer to build scalable, testable, and future-proof enterprise systems.
+intro: How to decouple your Domain Model from the database layer to build scalable, testable, and future-proof enterprise systems.
 date: April 13, 2026
 readTime: 9 min read
 excerpt: You’ve read the books. You’ve studied Domain-Driven Design (DDD). You’ve carefully crafted a src/domain folder in your TypeScript project, ready to isolate your core business logic from the messy outside
@@ -251,7 +251,3 @@ You don’t decouple your core logic from your ORM just so you can swap database
 - ⚡️ Performance Overrides: Eventually, a specific read-query using your ORM will become too slow. You will need to bypass the ORM and write highly optimized, raw SQL for that one specific use case. If your application layer expects an ORM object, you are stuck. If it relies on a pure Repository Interface, you can quietly swap the underlying implementation for that specific query without breaking a sweat.
 
 Decoupling your database isn’t about predicting the future. It is about protecting the present. It ensures that your most valuable asset, your core business rules, remains testable, readable, and entirely under your control.
-
-## About the Author
-
-We’re a team of senior engineers who’ve shipped production systems across finance, fintech, and the nonprofit sector — for organizations like the Gates Foundation, JP Morgan, Interledger, and Filecoin, among others. At Arg, we help teams navigate the technical decisions that actually matter. Follow us for more practical deep dives into the technologies shaping modern development.

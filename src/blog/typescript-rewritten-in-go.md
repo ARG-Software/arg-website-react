@@ -3,8 +3,8 @@ seoTitle: TypeScript 7 Rewritten in Go: What to Do
 slug: typescript-7-rewritten-in-go
 tag: Architecture
 title: TypeScript 7.0 Is Being Rewritten in Go. Here's Why You Should Care (and What to Do Today)
-subtitle: The end of an era for JavaScript's most beloved compiler - and the beginning of 10x faster builds.
-intro: What TypeScript's Go rewrite changes for teams today, why the speedup matters, and how to prepare before the ecosystem shifts.
+subtitle: The end of an era for JavaScript’s most beloved compiler - and the beginning of 10x faster builds
+intro: The end of an era for JavaScript’s most beloved compiler - and the beginning of 10x faster builds
 date: March 24, 2026
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/typescript-7-rewritten-in-go

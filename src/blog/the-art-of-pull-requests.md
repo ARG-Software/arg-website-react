@@ -3,8 +3,8 @@ seoTitle: The Art of Pull Requests
 slug: the-art-of-pull-requests
 tag: Culture
 title: The Art of Pull Requests: How to Ship Faster Without Sacrificing Quality
-subtitle: The engineers who ship the fastest aren't necessarily the most talented coders. They're the ones who've mastered the art of making their code easy to review.
-intro: A guide to writing pull requests that are easier to review, faster to merge, and safer to ship without lowering engineering standards.
+subtitle: After reviewing thousands of pull requests, we’ve noticed something curious: the engineers who ship the fastest aren’t necessarily the most…
+intro: After reviewing thousands of pull requests, we’ve noticed something curious: the engineers who ship the fastest aren’t necessarily the most…
 date: October 9, 2025
 readTime: 6 min read
 mediumUrl: https://arg-software.medium.com/the-art-of-pull-requests-how-to-ship-faster-without-sacrificing-quality-55209d645bb1

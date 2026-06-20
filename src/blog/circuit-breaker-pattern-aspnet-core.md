@@ -3,8 +3,8 @@ seoTitle: Circuit Breaker Pattern in ASP.NET Core
 slug: circuit-breaker-pattern-aspnet-core
 tag: Architecture
 title: Stop Your ASP.NET Core App from Crashing: The Circuit Breaker Pattern Explained
-subtitle: Ever watched your ASP.NET application grind to a halt because one tiny microservice decided to take a nap? Let's fix that.
-intro: A practical explanation of the Circuit Breaker pattern and how it protects ASP.NET Core systems when downstream services start failing.
+subtitle: Ever watched your ASP.NET application grind to a halt because one tiny microservice decided to take a nap? Yeah, we too. Let’s fix that. 🔧
+intro: Ever watched your ASP.NET application grind to a halt because one tiny microservice decided to take a nap? Yeah, we too. Let’s fix that. 🔧
 date: October 24, 2025
 readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/%EF%B8%8F-stop-your-asp-net-core-app-from-crashing-the-circuit-breaker-pattern-explained-9b5a4ba9f0c7

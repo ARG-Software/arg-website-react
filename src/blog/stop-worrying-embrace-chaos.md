@@ -3,8 +3,8 @@ seoTitle: Stop Worrying, Embrace the Chaos
 slug: stop-worrying-embrace-chaos
 tag: Culture
 title: How I Learned to Stop Worrying and Embrace the Chaos (Spoiler: I Didn't)
-subtitle: Fifteen years in this industry taught me one thing — we're exceptional at creating expensive problems disguised as innovative solutions.
-intro: A candid reflection on the industry's habit of turning complexity into expensive theater and what teams should question before adopting the next trend.
+subtitle: Fifteen years in this industry taught me one thing: we’re exceptional at creating expensive problems disguised as innovative solutions.
+intro: Fifteen years in this industry taught me one thing: we’re exceptional at creating expensive problems disguised as innovative solutions.
 date: February 6, 2026
 readTime: 5 min read
 mediumUrl: https://arg-software.medium.com/how-i-learned-to-stop-worrying-and-embrace-the-chaos-spoiler-i-didnt-54533117938c

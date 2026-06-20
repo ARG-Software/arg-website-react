@@ -3,8 +3,8 @@ seoTitle: API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready 
 slug: api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide
 tag: Architecture
 title: API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide
-subtitle: API versioning allows systems to evolve from v1 to v2 without breaking existing
-intro: API versioning allows systems to evolve from v1 to v2 without breaking existing
+subtitle: Learn how to implement API versioning in .NET 10 Minimal APIs using URL-based versioning, Swagger integration, and production-ready…
+intro: Learn how to implement API versioning in .NET 10 Minimal APIs using URL-based versioning, Swagger integration, and production-ready…
 date: April 27, 2026
 readTime: 11 min read
 excerpt: API versioning allows systems to evolve from v1 to v2 without breaking existing
@@ -547,7 +547,3 @@ Adding versioning early is cheap. Adding it later - after clients depend on your
 There’s more you can build on top of this - like automated OpenAPI diffing in CI pipelines, client SDK versioning, deeper database evolution strategies, or aligning with standards such as RFC 8594 - but those are optimizations, not prerequisites.
 
 Get the fundamentals right first. That’s what keeps your API stable as it evolves.
-
-## About the Author
-
-We’re a team of senior engineers who’ve shipped production systems across finance, fintech, and the nonprofit sector — for organizations like the Gates Foundation, JP Morgan, Interledger, and Filecoin, among others. At ARG, we help teams navigate the technical decisions that actually matter. Follow us for more practical deep dives into the technologies shaping modern development.
