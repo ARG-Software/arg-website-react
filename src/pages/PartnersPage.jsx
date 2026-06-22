@@ -75,21 +75,22 @@ export default function PartnersPage() {
               className="pc-clients-section padding-section-large background-color-white border-radius-all"
             >
               <div className="container padding-global pc-clients-inner">
-                <div className="pc-header" data-animate="fade-up">
+                <div className="pc-header">
                   <div className="pc-header-main">
                     <div className="pc-filters">
-                      {categories.map(cat => (
+                      {categories.map((cat, index) => (
                         <button
                           key={cat}
                           className={`pc-filter-btn${activeCategory === cat ? ' is-active' : ''}`}
                           onClick={() => handleCategoryChange(cat)}
+                          data-animate-order={index}
                         >
                           {cat}
                         </button>
                       ))}
                     </div>
                   </div>
-                  <div className="pc-header-desc">
+                  <div className="pc-header-desc" data-animate-order={categories.length}>
                     <p>
                       ARG is proud to work with companies that have sustainable impact goals and
                       share our passion for technical excellence and innovation.
@@ -133,6 +134,7 @@ export default function PartnersPage() {
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="pp-animate"
+              animate={true}
               buttonLink="https://zcal.co/argsoftware/project"
               onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />

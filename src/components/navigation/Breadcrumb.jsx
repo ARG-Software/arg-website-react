@@ -5,11 +5,24 @@ import AppLink from './AppLink';
  * @param {Object} props
  * @param {Array} props.items - Array of breadcrumb items: { label: string, path?: string, isTag?: boolean }
  */
-export function Breadcrumb({ items = [] }) {
+export function Breadcrumb({
+  items = [],
+  animate = false,
+  animationTrigger = 'load',
+  animationOrder = 0,
+}) {
   if (!items.length) return null;
 
+  const animationAttrs = animate
+    ? {
+        'data-animate': 'fade-up',
+        'data-animate-trigger': animationTrigger,
+        'data-animate-order': String(animationOrder),
+      }
+    : {};
+
   return (
-    <nav className="breadcrumb-nav" aria-label="Breadcrumb">
+    <nav className="breadcrumb-nav" aria-label="Breadcrumb" {...animationAttrs}>
       <ol className="breadcrumb">
         {items.map((item, index) => {
           const isTag = item.isTag || false;

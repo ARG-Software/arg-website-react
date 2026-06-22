@@ -226,6 +226,7 @@ export default function PrivacyPage() {
               buttonTextHover="Let's meet"
               buttonLink="mailto:info@arg.software?subject=Privacy%20Inquiry"
               animationClass="legal-animate"
+              animate={true}
               onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
           </div>

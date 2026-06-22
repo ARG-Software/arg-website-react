@@ -12,6 +12,9 @@ export function Marquee({
   revealOnScroll = false,
   className = '',
   children,
+  animate = false,
+  animationPreset = 'fade-up',
+  animationOrder,
 }) {
   const outerRef = useRef(null);
   const trackRef = useRef(null);
@@ -21,7 +24,7 @@ export function Marquee({
   const speedMultiplierRef = useRef(1);
   const observerRef = useRef(null);
 
-  const animate = useCallback(() => {
+  const startAnimation = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
     const halfWidth = track.scrollWidth / 2;
@@ -74,7 +77,7 @@ export function Marquee({
   }, [revealOnScroll]);
 
   useEffect(() => {
-    const cleanupAnim = animate();
+    const cleanupAnim = startAnimation();
 
     const el = outerRef.current || trackRef.current;
     if (el) {
@@ -89,7 +92,7 @@ export function Marquee({
         el.removeEventListener('mouseleave', handleMouseLeave);
       }
     };
-  }, [animate, handleMouseEnter, handleMouseLeave]);
+  }, [startAnimation, handleMouseEnter, handleMouseLeave]);
 
   const hasItems = items && renderItem;
 
@@ -112,6 +115,13 @@ export function Marquee({
     ));
   };
 
+  const animationAttrs = animate
+    ? {
+        'data-animate': animationPreset,
+        ...(animationOrder !== undefined ? { 'data-animate-order': String(animationOrder) } : {}),
+      }
+    : {};
+
   const trackElement = (
     <div className={trackClassName} ref={trackRef}>
       {renderContent()}
@@ -120,7 +130,7 @@ export function Marquee({
 
   if (outerClassName) {
     return (
-      <div className={`${outerClassName} ${className}`.trim()} ref={outerRef}>
+      <div className={`${outerClassName} ${className}`.trim()} ref={outerRef} {...animationAttrs}>
         {trackElement}
       </div>
     );

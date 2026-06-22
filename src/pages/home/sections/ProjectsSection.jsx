@@ -1,4 +1,5 @@
 import { ProjectItem } from '../../../components/cards/ProjectItem';
+import { ANIMATION_PRESETS } from '../../../animations/attribute-presets';
 import { trackEvent, trackOutbound } from '../../../hooks/useAnalytics';
 
 const PROJECT_GRID_PATTERN_ROWS = [1, 2, 2, 3, 4, 4];
@@ -11,18 +12,23 @@ export function ProjectsSection({ projects, className = '' }) {
       className={`projects_wrap background-color-white padding-section-xlarge border-radius-bottom ${className}`.trim()}
       data-animate-scope
       data-animate-trigger="scroll"
-      data-animate-default-preset="slide-up"
+      data-animate-default-preset={ANIMATION_PRESETS.slideUp}
+      data-animate-default-stagger="120"
     >
       <div className="projects_contain container padding-global">
-        <div className="projects_heading-wrapper" data-animate-stagger="200">
+        <div className="projects_heading-wrapper">
           <h2
             className="projects_heading heading-style-h2"
-            data-animate="fade"
+            data-animate={ANIMATION_PRESETS.fadeUp}
             data-animate-order="0"
           >
             They trusted us. It's your time now.
           </h2>
-          <div className="subtitle_tag-wrapper" data-animate="fade" data-animate-order="1">
+          <div
+            className="subtitle_tag-wrapper"
+            data-animate={ANIMATION_PRESETS.fadeUp}
+            data-animate-order="1"
+          >
             <div>Use Cases</div>
           </div>
         </div>
@@ -37,7 +43,9 @@ export function ProjectsSection({ projects, className = '' }) {
               return (
                 <ProjectItem
                   key={project.slug}
-                  animation="slide-in-right"
+                  animate={true}
+                  animationPreset={ANIMATION_PRESETS.slideInRight}
+                  animationOrder={i + 2}
                   {...project}
                   gridRowStart={gridRowStart}
                   onProjectClick={slug =>

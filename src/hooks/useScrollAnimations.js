@@ -3,11 +3,11 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { animateCountUp, getCountUpEnd } from './useCountUp';
 import {
+  ANIMATION_PRESETS,
   ATTRIBUTE_PRESETS,
   DEFAULT_THRESHOLD,
   DEFAULT_ROOT_MARGIN,
   MOBILE_BREAKPOINT,
-  getVisibleClassForElement,
 } from '../animations/attribute-presets';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -173,7 +173,7 @@ const applyInitialState = (element, preset, presetName) => {
 
   // Handle custom rotate for slide-up-rotate preset
   let initialTransform = preset.initialTransform;
-  if (presetName === 'slide-up-rotate' && config.rotate) {
+  if (presetName === ANIMATION_PRESETS.slideUpRotate && config.rotate) {
     // Replace the rotate value in the transform
     initialTransform = preset.initialTransform.replace(
       'rotateZ(5deg)',
@@ -190,7 +190,7 @@ const applyInitialState = (element, preset, presetName) => {
   }
 
   // Special handling for team overlay (height collapse animation)
-  if (presetName === 'overlay-reveal') {
+  if (presetName === ANIMATION_PRESETS.overlayReveal) {
     const overlay = element.querySelector('.team_image-overlay');
     if (overlay) {
       overlay.style.setProperty('height', '100%', 'important');
@@ -199,7 +199,7 @@ const applyInitialState = (element, preset, presetName) => {
     element.style.setProperty('opacity', '0', 'important');
   }
 
-  if (presetName === 'width-countup') {
+  if (presetName === ANIMATION_PRESETS.widthCountup) {
     const line = element.querySelector('.work-item_line, .prp-metric-line');
     if (line) {
       line.style.setProperty('width', '0%', 'important');
@@ -209,10 +209,10 @@ const applyInitialState = (element, preset, presetName) => {
 
 // Get final transform state based on preset
 const getFinalTransform = presetName => {
-  if (presetName === 'slide-up-rotate') {
+  if (presetName === ANIMATION_PRESETS.slideUpRotate) {
     return 'translate3d(0, 0, 0) rotateZ(0deg)';
   }
-  if (presetName === 'divider-expander-show') {
+  if (presetName === ANIMATION_PRESETS.dividerExpanderShow) {
     return 'scale3d(1, 1, 1)';
   }
   return 'translate3d(0, 0, 0)';
@@ -260,7 +260,7 @@ const animateElement = (element, preset, presetName, index = 0) => {
     }
 
     // Special handling for team overlay
-    if (presetName === 'overlay-reveal') {
+    if (presetName === ANIMATION_PRESETS.overlayReveal) {
       const overlay = element.querySelector('.team_image-overlay');
       if (overlay) {
         overlay.style.transition = preset.transition;
@@ -268,12 +268,10 @@ const animateElement = (element, preset, presetName, index = 0) => {
       }
     }
 
-    // Handle class toggle animations (elements with -animate class)
-    const visibleClass = getVisibleClassForElement(element);
-    element.classList.add(visibleClass);
+    element.classList.add('is-visible');
 
     // Handle number count-up
-    if (presetName === 'width-countup') {
+    if (presetName === ANIMATION_PRESETS.widthCountup) {
       const line = element.querySelector('.work-item_line, .prp-metric-line');
       if (line) {
         line.style.transition = preset.transition;
@@ -318,9 +316,7 @@ export function useScrollAnimations(config = {}) {
     requestAnimationFrame(() => {
       if (!mountedRef.current) return;
 
-      // Find all elements that need animation
-      // 1. Elements with data-animate attribute
-      // 2. Elements with class ending in -animate (pp-animate, bp-animate, etc.)
+      // Find all elements that need animation.
       const scrollElements = [];
       const loadElements = [];
 
@@ -371,23 +367,6 @@ export function useScrollAnimations(config = {}) {
         });
       });
 
-      // Class-based elements (backward compatibility) - always scroll triggered
-      document.querySelectorAll('[class*="-animate"]').forEach(element => {
-        const classList = Array.from(element.classList);
-        const animateClass = classList.find(cls => cls.endsWith('-animate'));
-        if (animateClass) {
-          // Check if already handled by data-animate
-          if (!element.hasAttribute('data-animate')) {
-            scrollElements.push({
-              element,
-              preset: ATTRIBUTE_PRESETS['class-toggle'],
-              presetName: 'class-toggle',
-              orderIndex: 0, // class-based elements don't support ordering
-            });
-          }
-        }
-      });
-
       // Animate load-triggered elements immediately
       loadElements.forEach(({ element, preset, presetName, orderIndex }) => {
         applyInitialState(element, preset, presetName);
@@ -420,11 +399,11 @@ export function useScrollAnimations(config = {}) {
         applyInitialState(element, preset, presetName);
 
         // Force reflow for CSS !important overrides
-        if (presetName === 'overlay-reveal') {
+        if (presetName === ANIMATION_PRESETS.overlayReveal) {
           element.offsetHeight;
         }
 
-        if (presetName === 'width-countup') {
+        if (presetName === ANIMATION_PRESETS.widthCountup) {
           const line = element.querySelector('.work-item_line, .prp-metric-line');
           if (line) line.offsetHeight;
         }
@@ -436,38 +415,24 @@ export function useScrollAnimations(config = {}) {
       observerRef.current = observer;
 
       // GSAP ScrollTrigger animations
-      document.querySelectorAll('[data-animate="gsap-parallax"]').forEach(element => {
-        const speed = parseFloat(element.getAttribute('data-animate-speed')) || 0.5;
-        const trigger = ScrollTrigger.create({
-          trigger: element,
-          start: 'top 80%',
-          end: 'bottom 20%',
-          scrub: true,
-          invalidateOnRefresh: true,
-          onUpdate: self => {
-            const yPos = (self.progress - 0.5) * speed * 200;
-            gsap.set(element, { y: yPos });
-          },
+      document
+        .querySelectorAll(`[data-animate="${ANIMATION_PRESETS.gsapScale}"]`)
+        .forEach(element => {
+          const from = parseFloat(element.getAttribute('data-animate-from')) || 1.15;
+          const to = parseFloat(element.getAttribute('data-animate-to')) || 1;
+          gsap.set(element, { scale: from, overflow: 'hidden' });
+          const trigger = ScrollTrigger.create({
+            trigger: element,
+            start: 'top 80%',
+            end: 'center center',
+            scrub: true,
+            invalidateOnRefresh: true,
+            onUpdate: self => {
+              gsap.set(element, { scale: from + (to - from) * self.progress });
+            },
+          });
+          gsapTriggers.push(trigger);
         });
-        gsapTriggers.push(trigger);
-      });
-
-      document.querySelectorAll('[data-animate="gsap-scale"]').forEach(element => {
-        const from = parseFloat(element.getAttribute('data-animate-from')) || 1.15;
-        const to = parseFloat(element.getAttribute('data-animate-to')) || 1;
-        gsap.set(element, { scale: from, overflow: 'hidden' });
-        const trigger = ScrollTrigger.create({
-          trigger: element,
-          start: 'top 80%',
-          end: 'center center',
-          scrub: true,
-          invalidateOnRefresh: true,
-          onUpdate: self => {
-            gsap.set(element, { scale: from + (to - from) * self.progress });
-          },
-        });
-        gsapTriggers.push(trigger);
-      });
 
       // Store GSAP triggers for cleanup
       if (gsapTriggers.length > 0) {

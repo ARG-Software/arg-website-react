@@ -32,7 +32,8 @@ export function TeamSection({ className = '' }) {
       className={`section_team background-color-white padding-section-large border-radius-bottom ${className}`.trim()}
       data-animate-scope
       data-animate-trigger="scroll"
-      data-animate-default-preset="fade"
+      data-animate-default-preset="fade-up"
+      data-animate-default-stagger="120"
     >
       <div className="padding-global">
         <div className="container-medium">
@@ -44,7 +45,7 @@ export function TeamSection({ className = '' }) {
               <div className="team_header-wrapper">
                 <div className="overflow-hidden">
                   <div className="heading_wrap">
-                    <h2 className="team_heading" data-animate-order="1">
+                    <h2 className="team_heading" data-animate="fade-up" data-animate-order="1">
                       You can't do anything without brains
                     </h2>
                   </div>
@@ -58,7 +59,13 @@ export function TeamSection({ className = '' }) {
               <div className="padding-bottom padding-80-74"></div>
               <div className="team_items-wrapper">
                 {teamMembers.map((m, i) => (
-                  <div key={i} className="team-item">
+                  <div
+                    key={i}
+                    className="team-item"
+                    data-animate-scope
+                    data-animate-default-preset="fade-up"
+                    data-animate-default-stagger="80"
+                  >
                     <div
                       className="team_image-wrapper"
                       data-animate="overlay-reveal"
@@ -77,11 +84,15 @@ export function TeamSection({ className = '' }) {
                       <div className="team_image-overlay"></div>
                     </div>
                     <div className="team-item_text">
-                      <h3 className="heading-style-h5" data-animate-order={i + 4}>
+                      <h3
+                        className="heading-style-h5"
+                        data-animate="fade-up"
+                        data-animate-order="0"
+                      >
                         {m.name}
                       </h3>
                       <div className="padding-bottom padding-small"></div>
-                      <div className="subtitle-team" data-animate-order={i + 5}>
+                      <div className="subtitle-team" data-animate="fade-up" data-animate-order="1">
                         {m.role}
                       </div>
                       <div className="padding-bottom padding-small"></div>
@@ -91,12 +102,13 @@ export function TeamSection({ className = '' }) {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-button w-inline-block"
+                        data-animate="fade-up"
+                        data-animate-order="2"
                         onClick={() => trackSocial('linkedin', 'homepage_team')}
                       >
                         <div
                           className="icon-1x1-small socials-button w-embed"
                           style={{ color: '#000' }}
-                          data-animate-order={i + 6}
                         >
                           {linkedinSvg}
                         </div>

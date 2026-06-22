@@ -24,6 +24,8 @@ export function ContactSection({ className = '' }) {
             secondButtonTextHover="2 minutes"
             secondButtonLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
             onSecondaryClick={() => trackCTA('typeform', 'homepage_contact')}
+            animate={true}
+            animationStagger={120}
           />
         </div>
       </div>

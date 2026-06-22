@@ -1,6 +1,20 @@
-export function FounderCard({ founder, animateOrder, onEmailClick, onLinkedInClick }) {
+export function FounderCard({
+  founder,
+  animate = false,
+  animationPreset = 'fade-up',
+  animateOrder,
+  onEmailClick,
+  onLinkedInClick,
+}) {
+  const animationAttrs = animate
+    ? {
+        'data-animate': animationPreset,
+        ...(animateOrder !== undefined ? { 'data-animate-order': String(animateOrder) } : {}),
+      }
+    : {};
+
   return (
-    <article className="cp-founder-card" data-animate="fade-up" data-animate-order={animateOrder}>
+    <article className="cp-founder-card" {...animationAttrs}>
       <div className="cp-founder-monogram" aria-hidden="true">
         {founder.initials}
       </div>

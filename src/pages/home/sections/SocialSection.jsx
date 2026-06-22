@@ -121,10 +121,10 @@ export function SocialSection({ className = '' }) {
           className="container-large"
           data-animate-scope
           data-animate-default-preset="fade-up"
-          data-animate-default-stagger="150"
+          data-animate-default-stagger="120"
         >
           <div className="blog-component">
-            <div className="social-section_header" data-animate="fade-up">
+            <div className="social-section_header" data-animate-order="0">
               <div>
                 <h2 className="heading-style-h2" style={{ color: '#fff' }}>
                   See what what we are saying outside of our website
@@ -134,7 +134,7 @@ export function SocialSection({ className = '' }) {
                 <div>Social</div>
               </div>
             </div>
-            <div className="swiper_blog-component" data-animate="fade-up">
+            <div className="swiper_blog-component" data-animate-order="1">
               <div className="w-embed w-script">
                 <div className="elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b"></div>
               </div>

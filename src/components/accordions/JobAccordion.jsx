@@ -1,13 +1,28 @@
 import { arrowSvg } from '../icons/SocialIcons';
 
-export function JobAccordion({ job, isOpen, onToggle, onApply }) {
+export function JobAccordion({
+  job,
+  isOpen,
+  onToggle,
+  onApply,
+  animate = false,
+  animationPreset = 'fade-up',
+  animationOrder,
+}) {
   const handleSubmit = event => {
     event.preventDefault();
     onApply?.(job);
   };
 
+  const animationAttrs = animate
+    ? {
+        'data-animate': animationPreset,
+        ...(animationOrder !== undefined ? { 'data-animate-order': String(animationOrder) } : {}),
+      }
+    : {};
+
   return (
-    <div className={`cp-job-item ${isOpen ? 'is-open' : ''}`}>
+    <div className={`cp-job-item ${isOpen ? 'is-open' : ''}`} {...animationAttrs}>
       <button className="cp-job-header" onClick={onToggle} aria-expanded={isOpen}>
         <div className="cp-job-info">
           <h3 className="cp-job-title">{job.title}</h3>

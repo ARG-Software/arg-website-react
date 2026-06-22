@@ -17,16 +17,27 @@ const SOCIAL_LINKS = [
   { label: 'Medium', href: 'https://medium.com/@arg-software', event: 'medium' },
 ];
 
-export function Footer() {
+export function Footer({ animate = true, animationPreset = 'fade-up', animationStagger = 80 }) {
+  const scopeAttrs = animate
+    ? {
+        'data-animate-scope': true,
+        'data-animate-default-preset': animationPreset,
+        'data-animate-default-stagger': String(animationStagger),
+      }
+    : {};
+
   return (
     <>
-      <SectionDivider variant="light" />
+      <SectionDivider
+        variant="light"
+        data-animate={animate ? 'divider-expander-show' : undefined}
+      />
 
-      <footer className="footer-main" data-animate-scope data-animate-default-stagger="50">
+      <footer className="footer-main" {...scopeAttrs}>
         <div className="container padding-global">
           <div className="footer-wrapper">
             {/* Panel 1 — Logo centered */}
-            <div className="footer-left" data-animate="fade-up">
+            <div className="footer-left" data-animate-order={animate ? '0' : undefined}>
               <div className="footer-left__logo">
                 <MarkNameWhite />
               </div>
@@ -36,7 +47,7 @@ export function Footer() {
             {/* Panel 2 — Nav / Services / Contact / Social / CTA / Bottom */}
             <div className="footer-right">
               {/* 3-column row */}
-              <div className="footer-nav-row" data-animate="fade-up" data-animate-order="1">
+              <div className="footer-nav-row" data-animate-order={animate ? '1' : undefined}>
                 {/* Navigation */}
                 <div className="footer-nav-col">
                   <div className="footer-col-title">Navigate</div>
@@ -98,10 +109,14 @@ export function Footer() {
                 </div>
               </div>
 
-              <SectionDivider variant="light" />
+              <SectionDivider
+                variant="light"
+                data-animate={animate ? 'divider-expander-show' : undefined}
+                data-animate-order={animate ? '2' : undefined}
+              />
 
               {/* Bottom bar */}
-              <div className="footer-bottom">
+              <div className="footer-bottom" data-animate-order={animate ? '3' : undefined}>
                 <a href="/privacy" className="footer-bottom__link">
                   Privacy Policy
                 </a>

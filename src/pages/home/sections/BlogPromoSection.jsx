@@ -16,12 +16,14 @@ function getTagColorStyle(tag) {
   };
 }
 
-function BlogCard({ blogPost }) {
+function BlogCard({ blogPost, animationOrder }) {
   const tagStyle = getTagColorStyle(blogPost.tag);
   return (
     <AppLink
       to={`/blog/${blogPost.slug}/`}
       className="blog-promo_card-new"
+      data-animate="fade-up"
+      data-animate-order={animationOrder}
       onClick={() => trackBlogPostClick(blogPost.slug, blogPost.title, 'homepage_promo_card')}
     >
       <div className="blog-promo_card-new-header">
@@ -41,11 +43,11 @@ function BlogCard({ blogPost }) {
   );
 }
 
-function displayBlogGridRow(blogPosts = []) {
+function displayBlogGridRow(blogPosts = [], startOrder = 0) {
   return (
-    <div className="blog-promo_cards-new" data-animate="fade-up">
-      {blogPosts.map(blogPost => (
-        <BlogCard key={blogPost.slug} blogPost={blogPost} />
+    <div className="blog-promo_cards-new">
+      {blogPosts.map((blogPost, index) => (
+        <BlogCard key={blogPost.slug} blogPost={blogPost} animationOrder={startOrder + index} />
       ))}
     </div>
   );
@@ -61,19 +63,22 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
       id="blog-promo"
       className={`section_blog-promo padding-section-medium ${className}`.trim()}
       style={{ backgroundColor: '#0c002e' }}
+      data-animate-scope
+      data-animate-default-preset="fade-up"
+      data-animate-default-stagger="120"
     >
       <div className="padding-global">
         <div className="container-large">
           <div className="blog-promo_inner">
             <div className="social-section_header">
               <div>
-                <h2 className="heading-style-h2" style={{ color: '#fff' }} data-animate="fade">
+                <h2 className="heading-style-h2" style={{ color: '#fff' }} data-animate-order="0">
                   We write about what we build
                 </h2>
               </div>
               <div
                 className="subtitle_tag-wrapper is--white hide-mobile-landscape"
-                data-animate="fade"
+                data-animate-order="1"
               >
                 <div>Blog</div>
               </div>
@@ -81,11 +86,13 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
             <AppLink
               to={`/blog/${heroPost.slug}/`}
               className="blog-promo_hero blog-promo_card-new"
+              data-animate="fade-up"
+              data-animate-order="2"
               onClick={() =>
                 trackBlogPostClick(heroPost.slug, heroPost.title, 'homepage_promo_hero')
               }
             >
-              <div className="blog-promo_hero-content" data-animate="fade-up">
+              <div className="blog-promo_hero-content">
                 <div className="blog-promo_card-new-header">
                   <h3 className="blog-promo_hero-title">{heroPost.title}</h3>
                   <p className="blog-promo_card-new-excerpt">{heroPost.excerpt}</p>
@@ -101,9 +108,9 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
                 </div>
               </div>
             </AppLink>
-            {displayBlogGridRow(gridPosts)}
+            {displayBlogGridRow(gridPosts, 3)}
 
-            <div className="blog-promo_footer">
+            <div className="blog-promo_footer" data-animate-order="10">
               <AppLink to="/blog" className="text-button w-inline-block">
                 <div className="text-button_list">
                   <div className="text-button_text text-no-wrap">Read all blog posts</div>

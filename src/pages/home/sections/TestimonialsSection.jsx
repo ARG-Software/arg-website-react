@@ -31,7 +31,7 @@ export function TestimonialsSection({ className = '' }) {
       className={`section_testimonials padding-section-large ${className}`.trim()}
       data-animate-scope
       data-animate-trigger="scroll"
-      data-animate-default-stagger="400"
+      data-animate-default-stagger="180"
       data-animate-default-preset="fade-up"
     >
       <div className="padding-global">
@@ -41,10 +41,12 @@ export function TestimonialsSection({ className = '' }) {
               <div key={i} className="testimonials-item" data-animate-order={i}>
                 <div className="max-width-testimonials align-center">
                   <div className="overflow-hidden">
-                    <p className="text-size-24-18">{t.quote}</p>
+                    <p className="text-size-24-18" data-animate-order={i * 2}>
+                      {t.quote}
+                    </p>
                   </div>
                   <div className="padding-bottom padding-40-32"></div>
-                  <div className="testimonials-item_name">
+                  <div className="testimonials-item_name" data-animate-order={i * 2 + 1}>
                     <div className="testimonials-item_dot"></div>
                     <div className="text-size-18-15">{t.author}</div>
                   </div>
@@ -52,7 +54,7 @@ export function TestimonialsSection({ className = '' }) {
                 {!t.isLast && (
                   <>
                     <div className="padding-bottom padding-80-40"></div>
-                    <SectionDivider variant="thin-light" />
+                    <SectionDivider variant="thin-light" data-animate="divider-expander-show" />
                   </>
                 )}
               </div>

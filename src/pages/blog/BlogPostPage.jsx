@@ -62,25 +62,25 @@ const renderBlock = (block, i) => {
   switch (block.type) {
     case 'lead':
       return (
-        <p key={i} className="bp-lead" data-animate="fade-up">
+        <p key={i} className="bp-lead">
           {block.text}
         </p>
       );
     case 'paragraph':
       return (
-        <p key={i} className="bp-p" data-animate="fade-up">
+        <p key={i} className="bp-p">
           {block.text}
         </p>
       );
     case 'heading':
       return (
-        <h2 key={i} id={getHeadingId(block.text)} className="bp-h2" data-animate="fade-up">
+        <h2 key={i} id={getHeadingId(block.text)} className="bp-h2">
           {block.text}
         </h2>
       );
     case 'subheading':
       return (
-        <h3 key={i} id={getHeadingId(block.text)} className="bp-h3" data-animate="fade-up">
+        <h3 key={i} id={getHeadingId(block.text)} className="bp-h3">
           {block.text}
         </h3>
       );
@@ -88,7 +88,7 @@ const renderBlock = (block, i) => {
       return (
         <ol key={i} className="bp-list bp-list--ordered">
           {block.items.map((item, j) => (
-            <li key={j} className="bp-list-item" data-animate="fade-up">
+            <li key={j} className="bp-list-item">
               {item.label ? <span className="bp-list-label">{item.label}</span> : null} {item.text}
             </li>
           ))}
@@ -96,14 +96,14 @@ const renderBlock = (block, i) => {
       );
     case 'callout':
       return (
-        <blockquote key={i} className="bp-callout" data-animate="fade-up">
+        <blockquote key={i} className="bp-callout">
           {block.text}
         </blockquote>
       );
     case 'code': {
       const codeClassName = block.lang === 'plaintext' ? 'nohighlight' : `language-${block.lang}`;
       return (
-        <div key={i} className="bp-code-wrap" data-animate="fade-up">
+        <div key={i} className="bp-code-wrap">
           <div className="bp-code-bar">
             <span className="bp-code-lang">{block.lang === 'plaintext' ? 'text' : block.lang}</span>
           </div>
@@ -117,7 +117,7 @@ const renderBlock = (block, i) => {
       return (
         <ul key={i} className="bp-list">
           {block.items.map((item, j) => (
-            <li key={j} className="bp-list-item" data-animate="fade-up">
+            <li key={j} className="bp-list-item">
               {item.label ? <span className="bp-list-label">{item.label}</span> : null} {item.text}
             </li>
           ))}
@@ -125,7 +125,7 @@ const renderBlock = (block, i) => {
       );
     case 'image':
       return (
-        <figure key={i} className="bp-figure" data-animate="fade-up">
+        <figure key={i} className="bp-figure">
           <img src={block.src} alt={block.alt} className="bp-image" loading="lazy" />
           {block.alt ? <figcaption>{block.alt}</figcaption> : null}
         </figure>
@@ -356,7 +356,12 @@ export default function BlogPostPage() {
             size="small"
             variant="article bp-article-page-header"
           >
-            <div className="bp-header-meta" data-animate="fade-up" data-animate-trigger="load">
+            <div
+              className="bp-header-meta"
+              data-animate="fade-up"
+              data-animate-trigger="load"
+              data-animate-order="3"
+            >
               <span>{BLOG_POST.date}</span>
               <span className="bp-header-meta__sep" aria-hidden="true" />
               <span>{BLOG_POST.readTime}</span>
@@ -368,7 +373,7 @@ export default function BlogPostPage() {
           <div
             data-animate-scope
             data-animate-default-preset="fade-up"
-            data-animate-default-stagger="0"
+            data-animate-default-stagger="80"
           >
             <section className="bp-body background-color-white padding-section-large border-radius-all">
               <div className="bp-body-inner container container--section padding-global">
@@ -389,11 +394,15 @@ export default function BlogPostPage() {
                   <SocialShareButtons
                     items={shareItems}
                     className="bp-share-row bp-share-row--bottom"
+                    animate={true}
+                    animationOrder={contentBlocks.length + 1}
                   />
                   <SocialShareButtons
                     items={feedItems}
                     className="bp-share-row bp-feed-row bp-feed-row--bottom"
                     label="Feeds"
+                    animate={true}
+                    animationOrder={contentBlocks.length + 2}
                   />
                 </article>
 
@@ -403,6 +412,8 @@ export default function BlogPostPage() {
                   getSectionId={getHeadingId}
                   onSectionClick={handleTocClick}
                   className="bp-sidebar-right"
+                  animate={true}
+                  animationOrder={0}
                 />
               </div>
             </section>
@@ -410,7 +421,12 @@ export default function BlogPostPage() {
 
           <section className="bp-related-section padding-section-large">
             <div className="container container--section padding-global">
-              <RelatedArticlesCarousel key={slug} posts={relatedPosts} sourceSlug={slug} />
+              <RelatedArticlesCarousel
+                key={slug}
+                posts={relatedPosts}
+                sourceSlug={slug}
+                animate={true}
+              />
             </div>
           </section>
 
@@ -422,6 +438,7 @@ export default function BlogPostPage() {
               buttonTextNotHover="Let's talk"
               buttonTextHover="Send us a message"
               animationClass="bp-animate"
+              animate={true}
               onPrimaryClick={() => trackCTA('send_message', 'blog_post_cta')}
             />
           </section>

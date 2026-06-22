@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import consoleData from '../../data/techStackConsole.json';
 
-export function TechStackConsole({ className = '' }) {
+export function TechStackConsole({
+  className = '',
+  animate = false,
+  animationPreset = 'fade-up',
+  animationOrder,
+}) {
   const [input, setInput] = useState('');
   const [entries, setEntries] = useState([]);
   const logRef = useRef(null);
@@ -30,8 +35,19 @@ export function TechStackConsole({ className = '' }) {
     runCommand(input);
   };
 
+  const animationAttrs = animate
+    ? {
+        'data-animate': animationPreset,
+        ...(animationOrder !== undefined ? { 'data-animate-order': String(animationOrder) } : {}),
+      }
+    : {};
+
   return (
-    <div className={`tech-stack-console ${className}`.trim()} aria-label={consoleData.ariaLabel}>
+    <div
+      className={`tech-stack-console ${className}`.trim()}
+      aria-label={consoleData.ariaLabel}
+      {...animationAttrs}
+    >
       <div className="tech-stack-console__header">
         <span className="tech-stack-console__dots" aria-hidden="true">
           <span></span>

@@ -4,11 +4,27 @@ export function ArticleSidebar({
   getSectionId,
   onSectionClick,
   className = '',
+  animate = false,
+  animationPreset = 'fade-up',
+  animationStagger = 80,
+  animationOrder = 0,
 }) {
   if (!sectionLinks.length) return null;
 
+  const animationAttrs = animate
+    ? {
+        'data-animate': animationPreset,
+        'data-animate-order': String(animationOrder),
+        'data-animate-stagger': String(animationStagger),
+      }
+    : {};
+
   return (
-    <aside className={`article-sidebar ${className}`.trim()} aria-label="Article navigation">
+    <aside
+      className={`article-sidebar ${className}`.trim()}
+      aria-label="Article navigation"
+      {...animationAttrs}
+    >
       <div className="article-sidebar__section article-sidebar__section--toc">
         <span className="article-sidebar__label">In this article</span>
         <nav className="article-sidebar__links" aria-label="Article sections">

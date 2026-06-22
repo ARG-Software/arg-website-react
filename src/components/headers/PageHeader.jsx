@@ -24,11 +24,32 @@ export function PageHeader({
   children,
   size = 'default',
   variant,
+  animate = true,
+  animationTrigger = 'load',
+  animationStagger = 150,
 }) {
   const titleLines = Array.isArray(title) ? title : [title];
   const sizeClass = `page-header--${size}`;
   const variantClass = variant ? ` page-header--${variant}` : '';
   const hasSideContent = sideItems.length > 0 || sideText;
+
+  const scopeAttrs = animate
+    ? {
+        'data-animate-scope': true,
+        'data-animate-default-trigger': animationTrigger,
+        'data-animate-default-preset': 'fade-up',
+        'data-animate-default-stagger': String(animationStagger),
+      }
+    : {};
+
+  const itemAnimationAttrs = order =>
+    animate
+      ? {
+          'data-animate': 'fade-up',
+          'data-animate-trigger': animationTrigger,
+          'data-animate-order': String(order),
+        }
+      : {};
 
   const renderSideItem = (item, index) => {
     const content = (
@@ -44,7 +65,12 @@ export function PageHeader({
 
     if (item.to) {
       return (
-        <AppLink key={`${item.to}-${item.label}`} to={item.to} onClick={item.onClick}>
+        <AppLink
+          key={`${item.to}-${item.label}`}
+          to={item.to}
+          onClick={item.onClick}
+          {...itemAnimationAttrs(index + 4)}
+        >
           {content}
         </AppLink>
       );
@@ -52,38 +78,46 @@ export function PageHeader({
 
     if (item.href?.startsWith('#')) {
       return (
-        <AppLink key={`${item.href}-${item.label}`} to={item.href} onClick={item.onClick}>
+        <AppLink
+          key={`${item.href}-${item.label}`}
+          to={item.href}
+          onClick={item.onClick}
+          {...itemAnimationAttrs(index + 4)}
+        >
           {content}
         </AppLink>
       );
     }
 
     return (
-      <a key={`${item.href}-${item.label}`} href={item.href} onClick={item.onClick}>
+      <a
+        key={`${item.href}-${item.label}`}
+        href={item.href}
+        onClick={item.onClick}
+        {...itemAnimationAttrs(index + 4)}
+      >
         {content}
       </a>
     );
   };
 
   return (
-    <header
-      className={`page-header ${sizeClass}${variantClass}`}
-      data-animate-scope
-      data-animate-default-stagger="150"
-    >
+    <header className={`page-header ${sizeClass}${variantClass}`} {...scopeAttrs}>
       <div className={`page-header__inner${hasSideContent ? '' : ' page-header__inner--single'}`}>
         <div className="page-header__lead">
-          {breadcrumbs && breadcrumbs.length > 0 && <Breadcrumb items={breadcrumbs} />}
+          {breadcrumbs && breadcrumbs.length > 0 && (
+            <Breadcrumb items={breadcrumbs} animate={animate} animationTrigger={animationTrigger} />
+          )}
 
           <h1>
             {titleLines.map((line, index) => (
               <div key={index} className="heading_line">
                 <span
                   className={`page-header__heading-line ${index === 1 ? 'text-color-gradiant' : ''}`}
-                  data-animate="slide-up-rotate"
-                  data-animate-trigger="load"
-                  data-animate-distance="150%"
-                  data-animate-order={`${index}`}
+                  data-animate={animate ? 'slide-up-rotate' : undefined}
+                  data-animate-trigger={animate ? animationTrigger : undefined}
+                  data-animate-distance={animate ? '150%' : undefined}
+                  data-animate-order={animate ? `${index}` : undefined}
                   style={{ textAlign: 'left' }}
                 >
                   {line}
@@ -95,9 +129,9 @@ export function PageHeader({
           {subtitle && (
             <p
               className="page-header__subtitle"
-              data-animate="fade-up"
-              data-animate-trigger="load"
-              data-animate-order="2"
+              data-animate={animate ? 'fade-up' : undefined}
+              data-animate-trigger={animate ? animationTrigger : undefined}
+              data-animate-order={animate ? '2' : undefined}
             >
               {subtitle}
             </p>
@@ -108,14 +142,16 @@ export function PageHeader({
 
         {hasSideContent && (
           <aside className="page-header__side hide-mobile-landscape" aria-label={sideLabel}>
-            <div className="page-header__side-label">
+            <div className="page-header__side-label" {...itemAnimationAttrs(3)}>
               <span className="page-header__side-dot" aria-hidden="true" />
               {sideLabel}
             </div>
             {sideItems.length > 0 ? (
               <nav className="page-header__side-list">{sideItems.map(renderSideItem)}</nav>
             ) : (
-              <p className="page-header__side-text">{sideText}</p>
+              <p className="page-header__side-text" {...itemAnimationAttrs(4)}>
+                {sideText}
+              </p>
             )}
           </aside>
         )}

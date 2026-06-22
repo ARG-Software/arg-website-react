@@ -17,7 +17,9 @@ export function ProjectItem({
   links,
   logos,
   stack,
-  animation = 'fade-up',
+  animate = false,
+  animationPreset = 'fade-up',
+  animationOrder,
   gridRowStart,
   onProjectClick,
   onProjectLinkClick,
@@ -52,6 +54,13 @@ export function ProjectItem({
     };
   };
 
+  const animationAttrs = animate
+    ? {
+        'data-animate': animationPreset,
+        ...(animationOrder !== undefined ? { 'data-animate-order': String(animationOrder) } : {}),
+      }
+    : {};
+
   return (
     <div
       id="project-item-wrapper-grid"
@@ -62,9 +71,9 @@ export function ProjectItem({
           ? { '--project-grid-row-start': String(gridRowStart) }
           : undefined
       }
-      data-animate={animation}
+      {...animationAttrs}
     >
-      <div className="projects_item" data-animate={animation}>
+      <div className="projects_item">
         <div className="projects_item_display">
           <div
             className="projects_item_visual"

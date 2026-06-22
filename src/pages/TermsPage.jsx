@@ -209,6 +209,7 @@ export default function TermsPage() {
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="legal-animate"
+              animate={true}
               buttonLink="mailto:info@arg.software?subject=Terms%20Inquiry"
               onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />

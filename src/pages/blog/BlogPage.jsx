@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import AppLink from '../../components/navigation/AppLink';
 import {
   Navbar,
@@ -49,8 +49,6 @@ export default function BlogPage() {
   const paginatedPosts = filteredPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
   const blogTags = getBlogTags(blogPosts);
 
-  const listRef = useRef(null);
-
   function toggleTag(tag) {
     const isSelected = selectedTags.includes(tag);
 
@@ -75,29 +73,6 @@ export default function BlogPage() {
       trackEvent('blog_search', { query: debouncedQuery, result_count: resultCount });
     }
   }, [debouncedQuery, resultCount, selectedTags]);
-
-  // Re-observe new article rows whenever the page changes
-  useEffect(() => {
-    if (!listRef.current) return;
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('blp-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    listRef.current.querySelectorAll('.blp-animate:not(.blp-visible)').forEach(el => {
-      observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [page, filteredPosts.length]);
 
   function goToPage(p) {
     setPage(p);
@@ -143,9 +118,9 @@ export default function BlogPage() {
               id="blog-list"
               className="blp-section background-color-white padding-section-large border-radius-all"
             >
-              <div className="blp-inner container padding-global" ref={listRef}>
-                <div className="blp-filter-bar" data-animate="fade-up">
-                  <div className="blp-search">
+              <div className="blp-inner container padding-global">
+                <div className="blp-filter-bar">
+                  <div className="blp-search" data-animate-order="0">
                     <span className="blp-search-icon">{searchSvg}</span>
                     <input
                       type="text"
@@ -164,9 +139,11 @@ export default function BlogPage() {
                     selectedTags={selectedTags}
                     onToggle={toggleTag}
                     onRemove={removeTag}
+                    animate={true}
+                    animationOrder={1}
                   />
 
-                  <span className="blp-count">
+                  <span className="blp-count" data-animate-order="2">
                     {resultCount} blog post{resultCount !== 1 ? 's' : ''}
                     {debouncedQuery && ` matching "${debouncedQuery}"`}
                     {selectedTags.length > 0 && ` in ${selectedTags.join(', ')}`}
@@ -185,7 +162,8 @@ export default function BlogPage() {
                       <AppLink
                         key={article.slug}
                         to={`/blog/${article.slug}/`}
-                        className="blp-article-row blp-animate"
+                        className="blp-article-row"
+                        data-animate-order={i + 3}
                         style={{ transitionDelay: `${i * 0.07}s` }}
                         onClick={() => trackBlogPostClick(article.slug, article.title, 'blog_list')}
                       >
@@ -213,7 +191,11 @@ export default function BlogPage() {
                     ))}
 
                     {totalPages > 1 && (
-                      <nav className="blp-pagination" aria-label="Blog pagination">
+                      <nav
+                        className="blp-pagination"
+                        aria-label="Blog pagination"
+                        data-animate-order={paginatedPosts.length + 3}
+                      >
                         <button
                           className="blp-pagination-arrow"
                           onClick={() => goToPage(page - 1)}
@@ -259,6 +241,7 @@ export default function BlogPage() {
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="blp-animate"
+              animate={true}
               onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
           </div>

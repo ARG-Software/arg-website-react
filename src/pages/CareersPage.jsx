@@ -166,7 +166,7 @@ export default function CareersPage() {
               className="cp-whyus-section padding-section-large border-radius-top background-color-white"
             >
               <div className="container padding-global cp-whyus-inner">
-                <header className="cp-whyus-header" data-animate="fade-up">
+                <header className="cp-whyus-header" data-animate-order="0">
                   <div>
                     <h2 className="cp-whyus-title">
                       We don't do <span className="cp-whyus-strike">patchwork.</span> We design the
@@ -188,7 +188,7 @@ export default function CareersPage() {
                     <article
                       key={pillar.index}
                       className="cp-whyus-pillar"
-                      data-animate-order={index}
+                      data-animate-order={index + 1}
                     >
                       <span className="cp-whyus-pillar-index">{pillar.index}</span>
                       <div className="cp-whyus-kpi">
@@ -201,14 +201,14 @@ export default function CareersPage() {
                   ))}
                 </div>
 
-                <div className="cp-tech-intro" data-animate="fade-up">
+                <div className="cp-tech-intro" data-animate-order="4">
                   <div>
                     <h3>{TECH_STACK_INTRO.title}</h3>
                     <p>{TECH_STACK_INTRO.text}</p>
                   </div>
                 </div>
 
-                <TechStackConsole className="cp-whyus-console" />
+                <TechStackConsole className="cp-whyus-console" animate={true} animationOrder={5} />
               </div>
               <div className="padding-bottom padding-80-40"></div>
               <SectionDivider variant="default" hideOnMobile={false} />
@@ -219,7 +219,7 @@ export default function CareersPage() {
               className="cp-values-section padding-section-large background-color-white"
             >
               <div className="container padding-global cp-values-inner">
-                <div className="cp-section-header" data-animate="fade-up">
+                <div className="cp-section-header" data-animate-order="0">
                   <h2 className="cp-section-title">
                     <span className="cp-line">Four things we actually mean.</span>
                   </h2>
@@ -234,7 +234,7 @@ export default function CareersPage() {
                       key={value.title}
                       className="cp-value-card"
                       data-animate="fade-up"
-                      data-animate-order={index}
+                      data-animate-order={index + 1}
                     >
                       <span className="cp-value-number">{String(index + 1).padStart(2, '0')}</span>
                       <h3 className="cp-value-title">{value.title}</h3>
@@ -256,7 +256,7 @@ export default function CareersPage() {
             >
               <div className="container padding-global cp-jobs-inner">
                 {JOBS.length > 0 && (
-                  <div className="cp-section-header" data-animate="fade-up">
+                  <div className="cp-section-header" data-animate-order="0">
                     <h2 className="cp-section-title">
                       <span className="cp-line">{OPEN_JOBS_HEADER.title}</span>
                     </h2>
@@ -267,19 +267,20 @@ export default function CareersPage() {
                 {JOBS.length > 0 ? (
                   <div className="cp-jobs-list">
                     {JOBS.map((job, index) => (
-                      <div key={job.id} data-animate-order={index}>
-                        <JobAccordion
-                          job={job}
-                          isOpen={openJobId === job.id}
-                          onToggle={() => handleJobToggle(job.id)}
-                          onApply={handleJobApply}
-                        />
-                      </div>
+                      <JobAccordion
+                        key={job.id}
+                        job={job}
+                        isOpen={openJobId === job.id}
+                        onToggle={() => handleJobToggle(job.id)}
+                        onApply={handleJobApply}
+                        animate={true}
+                        animationOrder={index + 1}
+                      />
                     ))}
                   </div>
                 ) : (
-                  <div className="cp-jobs-empty" data-animate="fade-up">
-                    <div className="cp-jobs-empty-header">
+                  <div className="cp-jobs-empty">
+                    <div className="cp-jobs-empty-header" data-animate-order="1">
                       <h3>
                         Although we are not hiring you can talk to us.{' '}
                         <span>Talk to a founder directly.</span>
@@ -295,7 +296,8 @@ export default function CareersPage() {
                         <FounderCard
                           key={founder.name}
                           founder={founder}
-                          animateOrder={index}
+                          animate={true}
+                          animateOrder={index + 2}
                           onEmailClick={handleFounderEmail}
                           onLinkedInClick={handleFounderLinkedIn}
                         />
@@ -314,6 +316,7 @@ export default function CareersPage() {
               buttonTextNotHover="Send us a message"
               buttonTextHover="Let's meet"
               animationClass="cp-animate"
+              animate={true}
               buttonLink="mailto:hr@arg.software?subject=Career%20Inquiry"
               onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />

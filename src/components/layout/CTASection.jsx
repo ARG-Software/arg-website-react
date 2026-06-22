@@ -17,19 +17,38 @@ export function CTASection({
   secondButtonTextHover,
   secondButtonLink,
   onSecondaryClick,
+  animate = true,
+  animationPreset = 'fade-up',
+  animationStagger = 120,
 }) {
+  const scopeAttrs = animate
+    ? {
+        'data-animate-scope': true,
+        'data-animate-default-preset': animationPreset,
+        'data-animate-default-stagger': String(animationStagger),
+      }
+    : {};
+
+  const animationAttrs = order =>
+    animate
+      ? {
+          'data-animate': animationPreset,
+          'data-animate-order': String(order),
+        }
+      : {};
+
   const innerContent = (
     <div className="container-large">
       <div className="padding-bottom padding-80-40"></div>
       <div className="cta-wrapper border-radius-all">
-        <div className="cta-content">
+        <div className="cta-content" {...scopeAttrs}>
           <div className="heading_wrap">
             {renderTitle ? (
               renderTitle()
             ) : showSplitTitle ? (
               <>
                 <div className="header-animation">
-                  <h2 className={`heading-style-h1 ${animationClass}`} data-animate="fade-up">
+                  <h2 className={`heading-style-h1 ${animationClass}`} {...animationAttrs(0)}>
                     {title}
                   </h2>
                 </div>
@@ -37,7 +56,7 @@ export function CTASection({
                   <div className="header-animation">
                     <h2
                       className={`heading-style-h1 text-color-gradiant-2 ${animationClass} pp-d1`}
-                      data-animate="fade-up"
+                      {...animationAttrs(1)}
                       style={{
                         color: '#000',
                         WebkitTextFillColor: 'transparent',
@@ -53,7 +72,7 @@ export function CTASection({
               </>
             ) : (
               <div className="header-animation">
-                <h2 className={`heading-style-h1 ${animationClass}`} data-animate="fade-up">
+                <h2 className={`heading-style-h1 ${animationClass}`} {...animationAttrs(0)}>
                   {title}
                 </h2>
               </div>
@@ -61,7 +80,9 @@ export function CTASection({
           </div>
           {subtitle && (
             <div className="padding-bottom padding-48">
-              <p className="cta-subtitle">{subtitle}</p>
+              <p className="cta-subtitle" {...animationAttrs(2)}>
+                {subtitle}
+              </p>
             </div>
           )}
           <div className="padding-bottom padding-48"></div>
@@ -71,7 +92,7 @@ export function CTASection({
               target="_blank"
               rel="noopener noreferrer"
               className={`button-base button-contact w-inline-block ${animationClass} pp-d2`}
-              data-animate="fade-up"
+              {...animationAttrs(3)}
               onClick={onPrimaryClick}
             >
               <div className="button-base_text_wrap">
@@ -85,7 +106,7 @@ export function CTASection({
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`button-base button-contact w-inline-block ${animationClass} pp-d2`}
-                data-animate="fade-up"
+                {...animationAttrs(4)}
                 onClick={onSecondaryClick}
               >
                 <div className="button-base_text_wrap">

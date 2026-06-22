@@ -15,9 +15,27 @@ const ACTION_ICONS = {
   x: XIcon,
 };
 
-export function SocialShareButtons({ items, className = '', label = 'Share' }) {
+export function SocialShareButtons({
+  items,
+  className = '',
+  label = 'Share',
+  animate = false,
+  animationPreset = 'fade-up',
+  animationOrder,
+}) {
+  const animationAttrs = animate
+    ? {
+        'data-animate': animationPreset,
+        ...(animationOrder !== undefined ? { 'data-animate-order': String(animationOrder) } : {}),
+      }
+    : {};
+
   return (
-    <div className={`social-share-buttons ${className}`.trim()} aria-label={label}>
+    <div
+      className={`social-share-buttons ${className}`.trim()}
+      aria-label={label}
+      {...animationAttrs}
+    >
       <span className="social-share-buttons__label">{label}</span>
       {items.map(item => {
         const Icon = ACTION_ICONS[item.icon || item.id];

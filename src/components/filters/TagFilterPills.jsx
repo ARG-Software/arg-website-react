@@ -6,14 +6,28 @@ export function TagFilterPills({
   label,
   placeholder = 'Select a topic',
   className = '',
+  animate = false,
+  animationPreset = 'fade-up',
+  animationOrder,
 }) {
   const selectedTagSet = new Set(selectedTags);
   const availableTags = tags.filter(tag => !selectedTagSet.has(tag));
 
   if (!tags.length) return null;
 
+  const animationAttrs = animate
+    ? {
+        'data-animate': animationPreset,
+        ...(animationOrder !== undefined ? { 'data-animate-order': String(animationOrder) } : {}),
+      }
+    : {};
+
   return (
-    <div className={`tag-filter ${className}`.trim()} aria-label={label || placeholder}>
+    <div
+      className={`tag-filter ${className}`.trim()}
+      aria-label={label || placeholder}
+      {...animationAttrs}
+    >
       {label && <span className="tag-filter__label">{label}</span>}
 
       <div className="tag-filter__panel">

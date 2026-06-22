@@ -4,7 +4,13 @@ import AppLink from '../navigation/AppLink';
 const VISIBLE_COUNT = 3;
 const TRANSITION_DELAY_MS = 360;
 
-export function RelatedArticlesCarousel({ posts = [], sourceSlug }) {
+export function RelatedArticlesCarousel({
+  posts = [],
+  sourceSlug,
+  animate = false,
+  animationPreset = 'fade-up',
+  animationStagger = 120,
+}) {
   const [startIndex, setStartIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const transitionTimer = useRef(null);
@@ -44,9 +50,24 @@ export function RelatedArticlesCarousel({ posts = [], sourceSlug }) {
     }, TRANSITION_DELAY_MS);
   };
 
+  const scopeAttrs = animate
+    ? {
+        'data-animate-scope': true,
+        'data-animate-default-preset': animationPreset,
+        'data-animate-default-stagger': String(animationStagger),
+      }
+    : {};
+
   return (
-    <div className="related-articles-carousel" aria-labelledby="related-articles-carousel-title">
-      <div className="related-articles-carousel__head">
+    <div
+      className="related-articles-carousel"
+      aria-labelledby="related-articles-carousel-title"
+      {...scopeAttrs}
+    >
+      <div
+        className="related-articles-carousel__head"
+        data-animate-order={animate ? '0' : undefined}
+      >
         <div>
           <span className="related-articles-carousel__kicker">Continue reading</span>
           <h2 id="related-articles-carousel-title">
@@ -63,6 +84,7 @@ export function RelatedArticlesCarousel({ posts = [], sourceSlug }) {
             aria-label="Show previous related articles"
             disabled={!canGoPrevious}
             onClick={() => navigate(-1)}
+            data-animate-order={animate ? '1' : undefined}
           >
             ←
           </button>
@@ -72,11 +94,12 @@ export function RelatedArticlesCarousel({ posts = [], sourceSlug }) {
           className={`related-articles-carousel__track${isTransitioning ? ' is-transitioning' : ''}`}
           aria-live="polite"
         >
-          {visiblePosts.map(post => (
+          {visiblePosts.map((post, index) => (
             <AppLink
               key={post.slug}
               to={`/blog/${post.slug}/`}
               className="related-article-card"
+              data-animate-order={animate ? String(index + 2) : undefined}
               trackEvent="blog_related_click"
               trackData={{
                 blog_post_slug: post.slug,
@@ -101,6 +124,7 @@ export function RelatedArticlesCarousel({ posts = [], sourceSlug }) {
             aria-label="Show next related articles"
             disabled={!canGoNext}
             onClick={() => navigate(1)}
+            data-animate-order={animate ? String(visiblePosts.length + 2) : undefined}
           >
             →
           </button>

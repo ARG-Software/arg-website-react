@@ -104,18 +104,20 @@ export function Timeline({
       style={{ '--pt-year-count': yearColumns.length }}
       {...scopeAttrs}
     >
-      <h2 className="pt-timeline-heading">{heading}</h2>
+      <h2 className="pt-timeline-heading" data-animate-order={animate ? '0' : undefined}>
+        {heading}
+      </h2>
 
       {/* Desktop */}
       <div className="pt-timeline-desktop">
-        <div className="pt-years-row">
+        <div className="pt-years-row" data-animate-order={animate ? '1' : undefined}>
           {yearColumns.map(year => (
             <span key={year} className="pt-year-label">
               {year}
             </span>
           ))}
         </div>
-        <div className="pt-divider" />
+        <div className="pt-divider" data-animate-order={animate ? '2' : undefined} />
         <div className="pt-rows">
           {timelineRows.map((row, i) => {
             const startCol = row.visibleStartYear - yearStart + 1;
@@ -126,7 +128,7 @@ export function Timeline({
                 <div
                   className="pt-row-card"
                   style={{ gridColumn: `${startCol} / span ${span}` }}
-                  {...rowAttrs(i)}
+                  {...rowAttrs(i + 3)}
                 >
                   <span className="pt-duration">{getDurationLabel(row)}</span>
                   <div className="pt-row-logos">
@@ -150,7 +152,7 @@ export function Timeline({
               style={{ gridColumn: `${yearColumns.length} / -1` }}
               {...ctaAttrs}
               onClick={onCtaClick}
-              {...rowAttrs(timelineRows.length)}
+              {...rowAttrs(timelineRows.length + 3)}
             >
               <div className="button-base_text_wrap">
                 <div className="button-base__button-text">{ctaText}</div>
@@ -165,7 +167,7 @@ export function Timeline({
       <div className="pt-timeline-mobile">
         {timelineRows.map((row, i) => {
           return (
-            <div key={row.key} className="pt-mobile-card" {...cardAttrs(i)}>
+            <div key={row.key} className="pt-mobile-card" {...cardAttrs(i + 1)}>
               <div className="pt-mobile-duration">{getDurationLabel(row)}</div>
               <span className="pt-mobile-since">{getRangeLabel(row)}</span>
               <div className="pt-mobile-logos">
@@ -186,7 +188,7 @@ export function Timeline({
           className="button-base button-contact w-inline-block pt-mobile-cta"
           {...ctaAttrs}
           onClick={onCtaClick}
-          {...cardAttrs(timelineRows.length)}
+          {...cardAttrs(timelineRows.length + 1)}
         >
           <div className="button-base_text_wrap">
             <div className="button-base__button-text">{ctaText}</div>

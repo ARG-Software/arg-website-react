@@ -40,12 +40,17 @@ export default function HomePage() {
             className="partners_wrap background-color-white padding-section-compact border-radius-top"
             data-animate-scope
             data-animate-trigger="scroll"
+            data-animate-default-preset="fade-up"
             data-animate-default-stagger="50"
           >
             <Marquee
               items={PARTNERS.clients}
-              renderItem={c => (
-                <span className="partners_logo_wrap" data-animate="fade">
+              renderItem={(c, index) => (
+                <span
+                  className="partners_logo_wrap"
+                  data-animate="fade-up"
+                  data-animate-order={index}
+                >
                   <img
                     src={c.logoSmall || c.logo}
                     alt={c.name}
@@ -63,6 +68,8 @@ export default function HomePage() {
 
             <div
               className="partners_contain container padding-global"
+              data-animate="fade-up"
+              data-animate-order="1"
               style={{
                 paddingTop: '2rem',
                 paddingBottom: '2.5rem',
@@ -87,9 +94,15 @@ export default function HomePage() {
 
           <AboutSection />
 
-          <div className="section_infinity background-color-gray overflow-hidden">
+          <div
+            className="section_infinity background-color-gray overflow-hidden"
+            data-animate-scope
+            data-animate-default-preset="fade-up"
+          >
             <Marquee repetitions={2} trackClassName="infinity_list">
-              <p className="infinity_text">{servicesText}</p>
+              <p className="infinity_text" data-animate="fade-up">
+                {servicesText}
+              </p>
             </Marquee>
           </div>
 
