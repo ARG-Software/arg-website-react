@@ -1,16 +1,12 @@
 export { Logo } from './icons/Logo';
+export { AtomIcon } from './icons/AtomIcon';
+export { BlueskyIcon } from './icons/BlueskyIcon';
+export { CopyIcon } from './icons/CopyIcon';
+export { LinkedInIcon } from './icons/LinkedInIcon';
+export { RssIcon } from './icons/RssIcon';
+export { XIcon } from './icons/XIcon';
 
-export {
-  SocialIcons,
-  SocialIconsWithLabel,
-  arrowSvg,
-  linkedinSvg,
-  githubSvg,
-  mediumSvg,
-  closeSvg,
-} from './icons/SocialIcons';
-export { StatsGrid } from './grids/StatsGrid';
-export { TechStack } from './tags/TechStack';
+export { arrowSvg, linkedinSvg, closeSvg } from './icons/SocialIcons';
 export { ProjectItem } from './cards/ProjectItem';
 export { FounderCard } from './cards/FounderCard';
 export { JobAccordion } from './accordions/JobAccordion';
@@ -22,6 +18,7 @@ export { Timeline } from './grids/Timeline';
 export { Marquee } from './layout/Marquee';
 export { Navbar } from './navigation/Navbar';
 export { Breadcrumb } from './navigation/Breadcrumb';
+export { ArticleSidebar } from './navigation/ArticleSidebar';
 export { Footer } from './layout/Footer';
 export { CTASection } from './layout/CTASection';
 export { SectionDivider } from './layout/SectionDivider';
@@ -29,7 +26,6 @@ export { LoadingScreen } from './layout/LoadingScreen';
 export { SEO } from './seo/SEO';
 export { PageHeader } from './headers/PageHeader';
 export { TagFilterPills } from './filters/TagFilterPills';
-export { BlogArticleSidebar } from './blog/BlogArticleSidebar';
-export { SocialShareButtons } from './blog/SocialShareButtons';
-export { RelatedArticlesCarousel } from './blog/RelatedArticlesCarousel';
+export { SocialShareButtons } from './actions/SocialShareButtons';
+export { RelatedArticlesCarousel } from './widgets/RelatedArticlesCarousel';
 export { TechStackConsole } from './widgets/TechStackConsole';

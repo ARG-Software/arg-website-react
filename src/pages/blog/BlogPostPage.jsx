@@ -37,7 +37,7 @@ import {
   PageHeader,
   CTASection,
   SocialShareButtons,
-  BlogArticleSidebar,
+  ArticleSidebar,
   RelatedArticlesCarousel,
 } from '../../components';
 import { useScrollAnimations, useTimeOnPage } from '../../hooks';
@@ -371,18 +371,8 @@ export default function BlogPostPage() {
             data-animate-default-stagger="0"
           >
             <section className="bp-body background-color-white padding-section-large border-radius-all">
-              <div className="bp-body-inner container padding-global">
+              <div className="bp-body-inner container container--section padding-global">
                 <article className="bp-content">
-                  <SocialShareButtons
-                    items={shareItems}
-                    className="bp-share-row bp-share-row--top"
-                  />
-                  <SocialShareButtons
-                    items={feedItems}
-                    className="bp-share-row bp-feed-row bp-feed-row--top"
-                    label="Feeds"
-                  />
-
                   {heroImage && (
                     <figure className="bp-hero-figure" data-animate="fade-up">
                       <img
@@ -407,19 +397,24 @@ export default function BlogPostPage() {
                   />
                 </article>
 
-                <BlogArticleSidebar
+                <ArticleSidebar
                   sectionLinks={sectionLinks}
                   activeSection={activeSection}
                   getSectionId={getHeadingId}
                   onSectionClick={handleTocClick}
+                  className="bp-sidebar-right"
                 />
               </div>
             </section>
           </div>
 
-          <RelatedArticlesCarousel key={slug} posts={relatedPosts} sourceSlug={slug} />
+          <section className="bp-related-section padding-section-large">
+            <div className="container container--section padding-global">
+              <RelatedArticlesCarousel key={slug} posts={relatedPosts} sourceSlug={slug} />
+            </div>
+          </section>
 
-          <div className="page-cta-wrapper">
+          <section className="page-cta-wrapper">
             <CTASection
               title="Like what you read?"
               titleHighlight="Subscribe to our newsletter"
@@ -429,7 +424,7 @@ export default function BlogPostPage() {
               animationClass="bp-animate"
               onPrimaryClick={() => trackCTA('send_message', 'blog_post_cta')}
             />
-          </div>
+          </section>
         </main>
 
         <Footer />

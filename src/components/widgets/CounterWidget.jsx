@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * CounterWidget - Reusable statistic component with count-up animation.
- * Supports two variants: 'compact' (StatsGrid) and 'expanded' (WorkStatsSection).
+ * Supports compact project stats and expanded homepage work stats layouts.
  */
 export function CounterWidget({
   value,
@@ -38,7 +38,7 @@ export function CounterWidget({
       <div className="work-item_line" />
 
       {isCompact ? (
-        // Compact layout (StatsGrid)
+        // Compact layout
         <>
           <div className="prp-stat-num">
             <span className="prp-count" {...countUpProps}>
@@ -49,7 +49,7 @@ export function CounterWidget({
           <div className="prp-stat-label">{label}</div>
         </>
       ) : (
-        // Expanded layout (WorkStatsSection)
+        // Expanded homepage stats layout
         <>
           {showLine && <div className="padding-bottom padding-medium" />}
           <div className="count-up_wrap">
