@@ -1,3 +1,47 @@
-[
-
-]
+{
+  "jobs": [],
+  "careerTraits": [
+    {
+      "title": "Architecture-first thinking",
+      "body": "You design the system before you write a line of it. You'd rather spend two days on a diagram than two weeks unpicking a bad one."
+    },
+    {
+      "title": "Allergic to patchwork",
+      "body": "You can't leave a broken abstraction alone. If you have to hold your nose to ship, you'd rather refactor the thing properly."
+    },
+    {
+      "title": "The gold-standard stack feels like home",
+      "body": "TypeScript, .NET, Node, PostgreSQL, Kafka, Docker. Opinionated about these tools because you've used them under real load."
+    },
+    {
+      "title": "You ship, and you stay",
+      "body": "Production on a Tuesday - never a Friday. You own things after they ship: bugs, performance, and the unexpected page."
+    },
+    {
+      "title": "Direct, kind, no politics",
+      "body": "Honest in code review, honest in retro. Small team means every personality compounds. We say the thing."
+    },
+    {
+      "title": "Curious about messy domains",
+      "body": "Fintech rails, music rights, real-time audio. You don't need to know the domain on day one - you need to want to learn it deeply."
+    }
+  ],
+  "hiringSteps": [
+    {
+      "title": "Send your application",
+      "body": "Fill in the form with a few lines about yourself and attach your CV. Tell us what you've built, not just where you worked."
+    },
+    {
+      "title": "We review and reply",
+      "body": "Every application gets a real read. Expect a response within 5 business days - yes or no, always."
+    },
+    {
+      "title": "Founders call",
+      "body": "A direct conversation with Jose and Rui. No trick questions - we want to understand how you think and what problems excite you."
+    },
+    {
+      "title": "Technical interview",
+      "body": "Real work, not whiteboard theatre. We'll look at something you've built, walk through a design decision, or pair on a focused exercise."
+    }
+  ]
+}

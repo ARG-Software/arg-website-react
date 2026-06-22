@@ -7,6 +7,8 @@
 
 / /index.html 200
 /partners /index.html 200
+/careers /index.html 200
+/work-with-us /index.html 200
 
 /projects      /index.html   200
 /projects/*    /index.html   200

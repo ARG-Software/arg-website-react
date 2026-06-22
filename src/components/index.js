@@ -9,7 +9,6 @@ export { XIcon } from './icons/XIcon';
 export { arrowSvg, linkedinSvg, closeSvg } from './icons/SocialIcons';
 export { ProjectItem } from './cards/ProjectItem';
 export { FounderCard } from './cards/FounderCard';
-export { JobAccordion } from './accordions/JobAccordion';
 export { CookieConsent } from './overlays/CookieConsent';
 export { EmailCapture } from './overlays/EmailCapture';
 export { Drawer } from './overlays/Drawer';

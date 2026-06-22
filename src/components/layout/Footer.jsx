@@ -7,6 +7,7 @@ import SERVICES from '../../data/services.json';
 const NAV_LINKS = [
   { label: 'Blog', path: '/blog' },
   { label: 'Careers', path: '/careers' },
+  { label: 'Work With Us', path: '/work-with-us' },
   { label: 'Partners', path: '/partners' },
   { label: 'Use Cases', path: '/projects' },
 ];

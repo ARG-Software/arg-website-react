@@ -21,6 +21,7 @@ const NAV_LINKS = [
   { href: '/partners/', label: 'Partners' },
   { href: '/projects/', label: 'Projects' },
   { href: '/careers/', label: 'Careers' },
+  { href: '/work-with-us/', label: 'Work With Us' },
   { href: '/#contact', label: 'Contact' },
 ];
 
@@ -90,14 +91,26 @@ const STATIC_PAGES = [
   },
   {
     path: '/careers/',
-    title: 'Career & Culture | Arg Software',
-    h1: 'Career & Culture',
+    title: 'Careers | Arg Software',
+    h1: 'Careers at ARG Software',
     description:
-      'Join ARG and tackle complex problems in high-concurrency environments. Build systems that handle thousands of transactions per second with total confidence.',
+      'Explore open roles at Arg Software and apply to join an architecture-first engineering team building complex production systems.',
     paragraphs: [
-      'At ARG, we are architecture-first. Working with us means tackling complex problems in high-concurrency environments, from open-payment protocols to real-time audio synchronization.',
-      'We offer career opportunities in backend engineering, frontend development, DevOps, security, and data engineering.',
-      'We welcome applications from all qualified candidates, including persons with disabilities, as part of our commitment to inclusion and equal opportunity.',
+      'Arg Software hires for meaningful ownership on production systems, with open roles across backend engineering, frontend engineering, DevOps, security, product, and data.',
+      'Every role is scoped for senior contributors who can design architecture-first systems, ship carefully, and stay close after production deploys.',
+      'Applications are reviewed directly by the founders, with a clear process and practical technical conversations instead of hiring theatre.',
+    ],
+  },
+  {
+    path: '/work-with-us/',
+    title: 'Work With Us | Arg Software',
+    h1: 'Work With ARG Software',
+    description:
+      'Work with ARG Software to design architecture-first platforms for fintech, media, and high-growth technology teams.',
+    paragraphs: [
+      'Working with ARG Software means partnering with a small architecture-first engineering team that designs the system before writing it.',
+      'We build production-ready platforms for fintech, media, open payments, music technology, and high-growth technology companies.',
+      'Our process emphasizes technical planning, observable systems, clean hand-off, and senior founder involvement from first conversation to production support.',
     ],
   },
   {
@@ -417,6 +430,7 @@ export default function seoPrerender() {
       sitemapUrls.push({ loc: `${SITE_URL}/`, priority: '1.0', changefreq: 'weekly' });
       sitemapUrls.push({ loc: `${SITE_URL}/partners/`, priority: '0.8', changefreq: 'monthly' });
       sitemapUrls.push({ loc: `${SITE_URL}/careers/`, priority: '0.9', changefreq: 'weekly' });
+      sitemapUrls.push({ loc: `${SITE_URL}/work-with-us/`, priority: '0.8', changefreq: 'monthly' });
       sitemapUrls.push({ loc: `${SITE_URL}/blog/`, priority: '0.9', changefreq: 'weekly' });
       sitemapUrls.push({ loc: `${SITE_URL}/privacy/`, priority: '0.3', changefreq: 'yearly' });
       sitemapUrls.push({ loc: `${SITE_URL}/terms/`, priority: '0.3', changefreq: 'yearly' });

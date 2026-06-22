@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA, trackEvent } from '../hooks/useAnalytics';
 import {
@@ -7,40 +7,15 @@ import {
   CTASection,
   SectionDivider,
   SEO,
-  JobAccordion,
   PageHeader,
   FounderCard,
-  TechStackConsole,
 } from '../components';
-import JOBS from '../data/jobs.json';
+import CAREERS_DATA from '../data/jobs.json';
 import '../styles/careers.css';
 
-const INTERNAL_VALUES = [
-  {
-    title: 'Architecture first',
-    description:
-      "The system is designed before it's written. If we can't explain it clearly, we don't build it yet.",
-    antiValue: 'ship fast, fix later',
-  },
-  {
-    title: 'No patchwork',
-    description:
-      "If a fix needs a workaround, we refactor the abstraction. Band-aids compound; we'd rather pay the cost now.",
-    antiValue: 'good enough for now',
-  },
-  {
-    title: 'Production on a Tuesday',
-    description:
-      'We deploy when we can stay close. We own what we ship: bugs, performance, and the unexpected page.',
-    antiValue: 'merge Friday, ghost the weekend',
-  },
-  {
-    title: 'Direct, kind, no politics',
-    description:
-      'Honest in code review, honest in retro. Small team means every personality compounds.',
-    antiValue: "let's circle back offline",
-  },
-];
+const JOBS = CAREERS_DATA.jobs;
+const CAREER_TRAITS = CAREERS_DATA.careerTraits;
+const HIRING_STEPS = CAREERS_DATA.hiringSteps;
 
 const FOUNDERS = [
   {
@@ -49,79 +24,95 @@ const FOUNDERS = [
     role: 'Co-founder - Software Engineer',
     focus: 'Backend - Systems - Data - AI',
     replyTime: '~ 36 hours',
-    emailHref: 'mailto:hr@arg.software?subject=Career%20Inquiry%20-%20Jose%20Antunes',
+    emailHref: 'mailto:jfantunes@arg.software?subject=Career%20Inquiry%20-%20Jose%20Antunes',
     linkedin: 'https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/',
   },
   {
     name: 'Rui Rocha',
     initials: 'RR',
     role: 'Co-founder - Software Engineer',
-    focus: 'Frontend - Backend - Mobile - AI',
+    focus: 'Frontend - Mobile - AI',
     replyTime: '~ 36 hours',
-    emailHref: 'mailto:hr@arg.software?subject=Career%20Inquiry%20-%20Rui%20Rocha',
+    emailHref: 'mailto:rui.rocha@arg.software?subject=Career%20Inquiry%20-%20Rui%20Rocha',
     linkedin: 'https://www.linkedin.com/in/ruirochawork/',
   },
 ];
 
-const WHY_US_PILLARS = [
-  {
-    index: '01 - Method',
-    metric: '100%',
-    unit: 'of projects',
-    title: 'Diagram first. Then code.',
-    description:
-      'Every engagement opens with a written technical plan you can argue with. Two days on architecture beats two weeks unpicking a wrong call.',
-  },
-  {
-    index: '02 - Domain',
-    metric: '10k',
-    unit: 'tx/sec, live',
-    title: 'The systems that fall over.',
-    description:
-      'Open-payment rails, real-time audio sync, exchange order flow. The work where it usually works is not a passing grade.',
-  },
-  {
-    index: '03 - Craft',
-    metric: '0',
-    unit: 'band-aids shipped',
-    title: 'Gold standard, not trendy.',
-    description:
-      'Battle-tested tools we have used in anger, not the ones with the loudest feed. Clean code, easy hand-off when we are done.',
-  },
-];
-
-const TECH_STACK_INTRO = {
-  title: 'The tools are not the point. The operating history is.',
-  text: 'This console is a quick map of the stack we trust when the system needs to stay observable, scalable, and easy to hand over after the hard part is done.',
+const EMPTY_FORM = {
+  name: '',
+  email: '',
+  role: '',
+  linkedin: '',
+  message: '',
 };
 
-const OPEN_JOBS_HEADER = {
-  title: 'Open Positions',
-  subtitle:
-    'When we open a role, it is because there is meaningful work ready for someone to own. No filler positions, no hiring theatre.',
-};
+function getJobTags(job) {
+  return [job.department, job.type, ...job.requirements.slice(0, 3)];
+}
+
+function CareerJobCard({ job, index, onApply }) {
+  return (
+    <article className="cp-career-job-card" data-animate="fade-up" data-animate-order={index + 1}>
+      <div className="cp-career-job-main">
+        <span className="cp-career-job-dept">{job.department}</span>
+        <h3>{job.title}</h3>
+        <p>{job.description}</p>
+        <div className="cp-career-job-tags">
+          {getJobTags(job).map(tag => (
+            <span key={tag}>{tag}</span>
+          ))}
+        </div>
+      </div>
+      <div className="cp-career-job-meta">
+        <span>{job.location}</span>
+        <span>{job.type}</span>
+        <button type="button" onClick={() => onApply(job)}>
+          Apply
+        </button>
+      </div>
+    </article>
+  );
+}
 
 export default function CareersPage() {
-  const [openJobId, setOpenJobId] = useState(null);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [submitted, setSubmitted] = useState(false);
+  const applicationRef = useRef(null);
+  const nameInputRef = useRef(null);
+  const hasJobs = JOBS.length > 0;
 
   useTimeOnPage('/careers/');
   useScrollAnimations();
 
-  const handleJobToggle = jobId => {
-    const isOpening = openJobId !== jobId;
-    setOpenJobId(isOpening ? jobId : null);
-    if (isOpening) {
-      const job = JOBS.find(j => j.id === jobId);
-      if (job) {
-        trackEvent('job_accordion_open', { job_title: job.title, department: job.department });
-      }
-    }
+  const selectedJob = JOBS.find(job => job.id === form.role);
+
+  const handleApplyClick = job => {
+    setSubmitted(false);
+    setForm(current => ({ ...current, role: job.id }));
+    trackEvent('career_role_apply_click', {
+      job_id: job.id,
+      job_title: job.title,
+      department: job.department,
+    });
+    requestAnimationFrame(() => {
+      applicationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      nameInputRef.current?.focus({ preventScroll: true });
+    });
   };
 
-  const handleJobApply = job => {
-    trackEvent('job_apply', { job_title: job.title, department: job.department });
-    const subject = encodeURIComponent(`${job.title} - Application`);
-    window.location.href = `mailto:hr@arg.software?subject=${subject}`;
+  const handleInputChange = event => {
+    const { name, value } = event.target;
+    setSubmitted(false);
+    setForm(current => ({ ...current, [name]: value }));
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    trackEvent('career_application_submit', {
+      job_id: form.role || 'general',
+      job_title: selectedJob?.title || 'General application',
+    });
+    setSubmitted(true);
   };
 
   const handleFounderEmail = founderName => {
@@ -135,8 +126,8 @@ export default function CareersPage() {
   return (
     <>
       <SEO
-        title="Career & Culture"
-        description="Join ARG and tackle complex problems in high-concurrency environments. Build systems that handle thousands of transactions per second."
+        title="Careers"
+        description="Explore open roles at ARG Software and apply to join an architecture-first engineering team building complex production systems."
         path="/careers/"
       />
       <div className="page-wrapper w-clearfix">
@@ -144,151 +135,233 @@ export default function CareersPage() {
 
         <main className="main-wrapper background-color-dark">
           <PageHeader
-            title={['Take Your Career', 'to New Heights']}
-            subtitle="Join us and unlock opportunities for growth, innovation, and success in an inclusive environment that nurtures talent."
+            title={hasJobs ? ['Careers at ARG', 'Open Roles'] : ['Careers at ARG', 'No Open Roles']}
+            subtitle={
+              hasJobs
+                ? 'Every role is scoped for meaningful ownership on production systems. No hiring theatre, no filler seats.'
+                : 'We are not hiring today, but we still want to hear from people who think like us. The next opening is often written around someone we already know.'
+            }
             breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Careers' }]}
-            sideItems={[
-              { label: 'Why Working with us?', href: '#why-us' },
-              { label: 'Internal Values', href: '#values' },
-              { label: 'Open Positions', href: '#open-positions', meta: String(JOBS.length) },
-              { label: 'Contact', href: '#contact' },
-            ]}
+            sideItems={
+              hasJobs
+                ? [
+                    { label: 'Open Roles', href: '#roles', meta: String(JOBS.length) },
+                    { label: 'How to Apply', href: '#apply' },
+                    { label: 'Contact', href: '#contact' },
+                  ]
+                : [
+                    { label: 'Who We Look For', href: '#who' },
+                    { label: 'Talk to Founders', href: '#founders' },
+                    { label: 'Contact', href: '#contact' },
+                  ]
+            }
             size="small"
           />
 
           <div
             data-animate-scope
             data-animate-default-preset="fade-up"
-            data-animate-default-stagger="150"
+            data-animate-default-stagger="120"
           >
-            <section
-              id="why-us"
-              className="cp-whyus-section padding-section-large border-radius-top background-color-white"
-            >
-              <div className="container padding-global cp-whyus-inner">
-                <header className="cp-whyus-header" data-animate-order="0">
-                  <div>
-                    <h2 className="cp-whyus-title">
-                      We don't do <span className="cp-whyus-strike">patchwork.</span> We design the
-                      system <span>before we write it.</span>
-                    </h2>
+            {hasJobs ? (
+              <>
+                <section
+                  id="roles"
+                  className="cp-careers-roles-section padding-section-large border-radius-top background-color-white"
+                >
+                  <div className="container padding-global cp-careers-inner">
+                    <div className="cp-section-header" data-animate-order="0">
+                      <h2 className="cp-section-title">
+                        The team is <span className="text-color-gradiant">growing.</span>
+                      </h2>
+                      <p className="cp-section-subtitle">
+                        Focused openings across engineering, infrastructure, product, security, and
+                        data. Each one is built for senior contributors with a direct feedback loop.
+                      </p>
+                    </div>
+                    <div className="cp-career-jobs-list">
+                      {JOBS.map((job, index) => (
+                        <CareerJobCard
+                          key={job.id}
+                          job={job}
+                          index={index}
+                          onApply={handleApplyClick}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <aside className="cp-whyus-side">
-                    <p>
-                      ARG is a small, opinionated engineering team. We pick the hard problems on
-                      purpose - the systems that have to be right the first time - and we go in
-                      architecture-first.
-                    </p>
-                    <span>ARG Team</span>
-                  </aside>
-                </header>
+                  <div className="padding-bottom padding-80-40"></div>
+                  <SectionDivider variant="default" hideOnMobile={false} />
+                </section>
 
-                <div className="cp-whyus-pillars">
-                  {WHY_US_PILLARS.map((pillar, index) => (
-                    <article
-                      key={pillar.index}
-                      className="cp-whyus-pillar"
-                      data-animate-order={index + 1}
-                    >
-                      <span className="cp-whyus-pillar-index">{pillar.index}</span>
-                      <div className="cp-whyus-kpi">
-                        <span>{pillar.metric}</span>
-                        <small>{pillar.unit}</small>
+                <section
+                  id="apply"
+                  className="cp-careers-apply-section padding-section-large border-radius-bottom background-color-white"
+                  ref={applicationRef}
+                >
+                  <div className="container padding-global cp-careers-process-grid">
+                    <div className="cp-careers-process" data-animate-order="0">
+                      <div className="cp-section-header">
+                        <h2 className="cp-section-title">
+                          How we <span className="text-color-gradiant">hire.</span>
+                        </h2>
+                        <p className="cp-section-subtitle">
+                          Four steps. No take-home puzzles, no ghost stages. We move fast when we
+                          find the right person.
+                        </p>
                       </div>
-                      <h3>{pillar.title}</h3>
-                      <p>{pillar.description}</p>
-                    </article>
-                  ))}
-                </div>
-
-                <div className="cp-tech-intro" data-animate-order="4">
-                  <div>
-                    <h3>{TECH_STACK_INTRO.title}</h3>
-                    <p>{TECH_STACK_INTRO.text}</p>
-                  </div>
-                </div>
-
-                <TechStackConsole className="cp-whyus-console" animate={true} animationOrder={5} />
-              </div>
-              <div className="padding-bottom padding-80-40"></div>
-              <SectionDivider variant="default" hideOnMobile={false} />
-            </section>
-
-            <section
-              id="values"
-              className="cp-values-section padding-section-large background-color-white"
-            >
-              <div className="container padding-global cp-values-inner">
-                <div className="cp-section-header" data-animate-order="0">
-                  <h2 className="cp-section-title">
-                    <span className="cp-line">Four things we actually mean.</span>
-                  </h2>
-                  <p className="cp-section-subtitle">
-                    Most companies list values that could belong to anyone. Ours are operational:
-                    they decide what we ship, what we refuse, and who fits on the team.
-                  </p>
-                </div>
-                <div className="cp-values-grid">
-                  {INTERNAL_VALUES.map((value, index) => (
-                    <article
-                      key={value.title}
-                      className="cp-value-card"
-                      data-animate="fade-up"
-                      data-animate-order={index + 1}
-                    >
-                      <span className="cp-value-number">{String(index + 1).padStart(2, '0')}</span>
-                      <h3 className="cp-value-title">{value.title}</h3>
-                      <p className="cp-value-desc">{value.description}</p>
-                      <div className="cp-value-anti">
-                        <strong>NOT</strong> {value.antiValue}
+                      <div className="cp-careers-steps">
+                        {HIRING_STEPS.map((step, index) => (
+                          <article key={step.title} className="cp-careers-step">
+                            <span>{String(index + 1).padStart(2, '0')}</span>
+                            <div>
+                              <h3>{step.title}</h3>
+                              <p>{step.body}</p>
+                            </div>
+                          </article>
+                        ))}
                       </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
-              <div className="padding-bottom padding-80-40"></div>
-              <SectionDivider variant="default" hideOnMobile={false} />
-            </section>
+                    </div>
 
-            <section
-              id="open-positions"
-              className="cp-jobs-section padding-section-large border-radius-bottom background-color-white"
-            >
-              <div className="container padding-global cp-jobs-inner">
-                {JOBS.length > 0 && (
-                  <div className="cp-section-header" data-animate-order="0">
-                    <h2 className="cp-section-title">
-                      <span className="cp-line">{OPEN_JOBS_HEADER.title}</span>
-                    </h2>
-                    <p className="cp-section-subtitle">{OPEN_JOBS_HEADER.subtitle}</p>
-                  </div>
-                )}
+                    <form
+                      className="cp-application-form"
+                      onSubmit={handleSubmit}
+                      data-animate-order="1"
+                    >
+                      <div>
+                        <h3>Apply for a role</h3>
+                        <p>Reviewed by founders directly - no recruiter in the middle.</p>
+                      </div>
 
-                {JOBS.length > 0 ? (
-                  <div className="cp-jobs-list">
-                    {JOBS.map((job, index) => (
-                      <JobAccordion
-                        key={job.id}
-                        job={job}
-                        isOpen={openJobId === job.id}
-                        onToggle={() => handleJobToggle(job.id)}
-                        onApply={handleJobApply}
-                        animate={true}
-                        animationOrder={index + 1}
-                      />
-                    ))}
+                      <div className="cp-application-grid">
+                        <label>
+                          <span>Full name</span>
+                          <input
+                            ref={nameInputRef}
+                            type="text"
+                            name="name"
+                            value={form.name}
+                            onChange={handleInputChange}
+                            placeholder="Your name"
+                            required
+                          />
+                        </label>
+                        <label>
+                          <span>Email</span>
+                          <input
+                            type="email"
+                            name="email"
+                            value={form.email}
+                            onChange={handleInputChange}
+                            placeholder="you@example.com"
+                            required
+                          />
+                        </label>
+                      </div>
+
+                      <label>
+                        <span>Role</span>
+                        <select name="role" value={form.role} onChange={handleInputChange} required>
+                          <option value="">Select a role</option>
+                          {JOBS.map(job => (
+                            <option key={job.id} value={job.id}>
+                              {job.title}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label>
+                        <span>LinkedIn or portfolio - optional</span>
+                        <input
+                          type="url"
+                          name="linkedin"
+                          value={form.linkedin}
+                          onChange={handleInputChange}
+                          placeholder="https://linkedin.com/in/yourprofile"
+                        />
+                      </label>
+
+                      <label>
+                        <span>Why ARG? What have you built?</span>
+                        <textarea
+                          name="message"
+                          value={form.message}
+                          onChange={handleInputChange}
+                          placeholder="A few lines about your work, what you value in a team, and why now..."
+                          rows={5}
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        <span>CV / portfolio</span>
+                        <input type="file" name="cv" accept=".pdf,.doc,.docx" />
+                      </label>
+
+                      <div className="cp-application-submit">
+                        <button type="submit">Send application</button>
+                        <span>
+                          {submitted
+                            ? 'Application captured for testing.'
+                            : 'We reply to every application.'}
+                        </span>
+                      </div>
+                    </form>
                   </div>
-                ) : (
-                  <div className="cp-jobs-empty">
-                    <div className="cp-jobs-empty-header" data-animate-order="1">
-                      <h3>
-                        Although we are not hiring you can talk to us.{' '}
-                        <span>Talk to a founder directly.</span>
-                      </h3>
+                </section>
+              </>
+            ) : (
+              <>
+                <section
+                  id="who"
+                  className="cp-careers-who-section padding-section-large border-radius-top background-color-white"
+                >
+                  <div className="container padding-global cp-careers-inner">
+                    <div className="cp-section-header" data-animate-order="0">
+                      <h2 className="cp-section-title">
+                        Not hiring today. But here's{' '}
+                        <span className="text-color-gradiant">who we look for.</span>
+                      </h2>
+                      <p className="cp-section-subtitle">
+                        Roles open when a project calls for it. If any of this sounds like you,
+                        reach out - the next opening is usually written around someone we already
+                        know.
+                      </p>
+                    </div>
+                    <div className="cp-careers-traits-grid">
+                      {CAREER_TRAITS.map((trait, index) => (
+                        <article
+                          key={trait.title}
+                          className="cp-careers-trait"
+                          data-animate="fade-up"
+                          data-animate-order={index + 1}
+                        >
+                          <span>{String(index + 1).padStart(2, '0')}</span>
+                          <div>
+                            <h3>{trait.title}</h3>
+                            <p>{trait.body}</p>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="padding-bottom padding-80-40"></div>
+                  <SectionDivider variant="default" hideOnMobile={false} />
+                </section>
+
+                <section
+                  id="founders"
+                  className="cp-founders-section padding-section-large border-radius-bottom background-color-white"
+                >
+                  <div className="container padding-global cp-founders-inner">
+                    <div className="cp-founders-intro" data-animate-order="0">
+                      <h2>
+                        We're small. <span>Talk to a founder directly.</span>
+                      </h2>
                       <p>
                         No recruiter wall, no ATS black hole. If you think you'd fit at ARG, the
-                        fastest way in is a short note to one of us. We read every email and reply
-                        when there is a real fit.
+                        fastest way in is a short note to one of us.
                       </p>
                     </div>
                     <div className="cp-founders-grid">
@@ -297,28 +370,28 @@ export default function CareersPage() {
                           key={founder.name}
                           founder={founder}
                           animate={true}
-                          animateOrder={index + 2}
+                          animateOrder={index + 1}
                           onEmailClick={handleFounderEmail}
                           onLinkedInClick={handleFounderLinkedIn}
                         />
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
-            </section>
+                </section>
+              </>
+            )}
           </div>
 
           <section className="page-cta-wrapper background-color-dark" id="contact">
             <CTASection
-              title="Didn't find any match,"
-              titleHighlight="reach to us anyway!"
-              buttonTextNotHover="Send us a message"
-              buttonTextHover="Let's meet"
+              title={hasJobs ? 'Ready to apply,' : "Didn't find a match,"}
+              titleHighlight={hasJobs ? 'show us your work.' : 'reach us anyway!'}
+              buttonTextNotHover={hasJobs ? 'Email careers' : 'Send us a message'}
+              buttonTextHover="Let's talk"
               animationClass="cp-animate"
               animate={true}
               buttonLink="mailto:hr@arg.software?subject=Career%20Inquiry"
-              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
+              onPrimaryClick={() => trackCTA('career_inquiry', 'careers_cta')}
             />
           </section>
         </main>

@@ -14,7 +14,7 @@ const menuItems = [
   { to: '/#social', label: 'Social' },
   { to: '/#testimonials', label: 'Testimonials' },
   { to: '/projects/', label: 'Use Cases', isUseCases: true },
-  { to: '/#work-with-us', label: 'Working with Us' },
+  { to: '/work-with-us/', label: 'Working with Us' },
 ];
 
 const chevronSvg = (
