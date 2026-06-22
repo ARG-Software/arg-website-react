@@ -59,9 +59,14 @@ export function getBlogTags(posts) {
 }
 
 export function getRelatedPosts(posts, sourcePost, limit = 3) {
-  return posts
-    .filter(post => post.slug !== sourcePost.slug && post.tag === sourcePost.tag)
-    .slice(0, limit);
+  const related = posts.filter(
+    post => post.slug !== sourcePost.slug && post.tag === sourcePost.tag
+  );
+  const fallback = posts.filter(
+    post => post.slug !== sourcePost.slug && post.tag !== sourcePost.tag
+  );
+
+  return [...related, ...fallback].slice(0, limit);
 }
 
 export function getHeadingId(text) {
@@ -69,6 +74,26 @@ export function getHeadingId(text) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+}
+
+function normalizeHeadingText(text) {
+  return text.replace(/^[-–—]\s*/, '').trim();
+}
+
+function normalizeCodeLanguage(language) {
+  const normalizedLanguage = (language || '').trim().toLowerCase();
+  if (!normalizedLanguage || normalizedLanguage === 'text' || normalizedLanguage === 'txt') {
+    return 'plaintext';
+  }
+
+  return normalizedLanguage;
+}
+
+function parseListItem(row) {
+  const match = row.match(/^\*\*(.+?)\*\*\.?\s*(.*)/s);
+  return match
+    ? { label: match[1].replace(/\.$/, '') + '.', text: match[2].trim() }
+    : { label: '', text: row };
 }
 
 function findNearestWordBoundary(text, targetIndex) {
@@ -86,8 +111,8 @@ export function splitArticleTitle(title) {
   if (!normalizedTitle) return [''];
 
   const minIndex = normalizedTitle.length * 0.35;
-  const maxIndex = normalizedTitle.length * 0.7;
-  const targetIndex = normalizedTitle.length * 0.5;
+  const maxIndex = normalizedTitle.length * 0.72;
+  const targetIndex = normalizedTitle.length * 0.52;
   const candidates = [];
 
   for (let index = 0; index < normalizedTitle.length; index += 1) {
@@ -158,7 +183,7 @@ export function parseBlocks(body) {
     if (!trimmedChunk) continue;
     const code = trimmedChunk.match(/^```(\w*)\r?\n([\s\S]*?)\r?\n```$/);
     if (code) {
-      blocks.push({ type: 'code', lang: code[1] || 'text', text: code[2] });
+      blocks.push({ type: 'code', lang: normalizeCodeLanguage(code[1]), text: code[2] });
       continue;
     }
     if (trimmedChunk.startsWith('>')) {
@@ -173,11 +198,24 @@ export function parseBlocks(body) {
       continue;
     }
     if (trimmedChunk.startsWith('## ')) {
-      blocks.push({ type: 'heading', text: trimmedChunk.slice(3).trim() });
+      blocks.push({ type: 'heading', text: normalizeHeadingText(trimmedChunk.slice(3)) });
       continue;
     }
     if (trimmedChunk.startsWith('### ')) {
-      blocks.push({ type: 'subheading', text: trimmedChunk.slice(4).trim() });
+      blocks.push({ type: 'subheading', text: normalizeHeadingText(trimmedChunk.slice(4)) });
+      continue;
+    }
+    if (/^\d+\.\s+\S.+/.test(trimmedChunk) && !trimmedChunk.includes('\n')) {
+      blocks.push({ type: 'subheading', text: trimmedChunk.trim() });
+      continue;
+    }
+    if (trimmedChunk.split('\n').every(line => /^\s*\d+\.\s+/.test(line))) {
+      const items = trimmedChunk
+        .split('\n')
+        .map(line => line.replace(/^\s*\d+\.\s+/, '').trim())
+        .filter(Boolean)
+        .map(parseListItem);
+      blocks.push({ type: 'ordered-list', items });
       continue;
     }
     if (trimmedChunk.split('\n').every(line => line.trimStart().startsWith('- '))) {
@@ -185,12 +223,7 @@ export function parseBlocks(body) {
         .split('\n')
         .map(line => line.replace(/^\s*-\s/, '').trim())
         .filter(Boolean)
-        .map(row => {
-          const match = row.match(/^\*\*(.+?)\*\*\.?\s*(.*)/s);
-          return match
-            ? { label: match[1].replace(/\.$/, '') + '.', text: match[2].trim() }
-            : { label: '', text: row };
-        });
+        .map(parseListItem);
       blocks.push({ type: 'list', items });
       continue;
     }

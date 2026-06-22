@@ -33,11 +33,12 @@ hljs.registerAliases(['promql'], { languageName: 'sql' });
 import {
   Navbar,
   Footer,
-  CTASection,
-  SectionDivider,
   SEO,
   PageHeader,
+  CTASection,
+  SocialShareButtons,
   BlogArticleSidebar,
+  RelatedArticlesCarousel,
 } from '../../components';
 import { useScrollAnimations, useTimeOnPage } from '../../hooks';
 import { TransitionContext } from '../../providers/TransitionProvider';
@@ -83,23 +84,35 @@ const renderBlock = (block, i) => {
           {block.text}
         </h3>
       );
+    case 'ordered-list':
+      return (
+        <ol key={i} className="bp-list bp-list--ordered">
+          {block.items.map((item, j) => (
+            <li key={j} className="bp-list-item" data-animate="fade-up">
+              {item.label ? <span className="bp-list-label">{item.label}</span> : null} {item.text}
+            </li>
+          ))}
+        </ol>
+      );
     case 'callout':
       return (
         <blockquote key={i} className="bp-callout" data-animate="fade-up">
           {block.text}
         </blockquote>
       );
-    case 'code':
+    case 'code': {
+      const codeClassName = block.lang === 'plaintext' ? 'nohighlight' : `language-${block.lang}`;
       return (
         <div key={i} className="bp-code-wrap" data-animate="fade-up">
           <div className="bp-code-bar">
-            <span className="bp-code-lang">{block.lang}</span>
+            <span className="bp-code-lang">{block.lang === 'plaintext' ? 'text' : block.lang}</span>
           </div>
           <pre>
-            <code className={`language-${block.lang}`}>{block.text}</code>
+            <code className={codeClassName}>{block.text}</code>
           </pre>
         </div>
       );
+    }
     case 'list':
       return (
         <ul key={i} className="bp-list">
@@ -127,14 +140,16 @@ const renderBlock = (block, i) => {
 export default function BlogPostPage() {
   const { slug } = useParams();
   const { scrollToHash } = useContext(TransitionContext);
-  const BLOG_POST = BLOG_POSTS.find(blogPost => blogPost.slug === slug) || BLOG_POSTS[0];
+  const BLOG_POST = BLOG_POSTS.find(blogPost => blogPost.slug === slug);
   const [activeSection, setActiveSection] = useState('');
   const [isClicking, setIsClicking] = useState(false);
   const [copyLabel, setCopyLabel] = useState('Copy link');
 
-  const sectionLinks = BLOG_POST.content.filter(b => b.type === 'heading');
+  const sectionLinks = BLOG_POST?.content.filter(b => b.type === 'heading') || [];
 
   useEffect(() => {
+    if (!BLOG_POST) return undefined;
+
     const handleScroll = () => {
       if (isClicking) return;
       const headings = BLOG_POST.content
@@ -155,7 +170,7 @@ export default function BlogPostPage() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [slug, BLOG_POST.content, isClicking]);
+  }, [slug, BLOG_POST, isClicking]);
 
   useScrollAnimations(); // Scroll animations including footer
 
@@ -197,12 +212,18 @@ export default function BlogPostPage() {
     );
   }
 
-  // Related & recent articles for sidebar
-  const relatedPosts = getRelatedPosts(BLOG_POSTS, BLOG_POST);
-
-  const titleLines = splitArticleTitle(BLOG_POST.title);
+  const relatedPosts = getRelatedPosts(BLOG_POSTS, BLOG_POST, 9);
+  const heroImageIndex = BLOG_POST.content.findIndex(block => block.type === 'image');
+  const heroImage = heroImageIndex >= 0 ? BLOG_POST.content[heroImageIndex] : null;
+  const contentBlocks = BLOG_POST.content.filter((block, index) => index !== heroImageIndex);
+  const breadcrumbs = [
+    { label: 'Home', path: '/' },
+    { label: 'Blog', path: '/blog/' },
+    { label: BLOG_POST.tag, isTag: true },
+  ];
   const articleUrl = `https://arg.software/blog/${BLOG_POST.slug}/`;
   const shareUrl = articleUrl;
+  const titleLines = splitArticleTitle(BLOG_POST.title);
 
   const handleTocClick = (event, section, sectionId) => {
     event.preventDefault();
@@ -328,20 +349,22 @@ export default function BlogPostPage() {
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">
-          {/* HERO */}
           <PageHeader
             title={titleLines}
             subtitle={BLOG_POST.subtitle}
-            breadcrumbs={[
-              { label: 'Home', path: '/' },
-              { label: 'Blog', path: '/blog/' },
-              { label: BLOG_POST.tag, isTag: true },
-            ]}
+            breadcrumbs={breadcrumbs}
             size="small"
-            variant="article"
-          />
+            variant="article bp-article-page-header"
+          >
+            <div className="bp-header-meta" data-animate="fade-up" data-animate-trigger="load">
+              <span>{BLOG_POST.date}</span>
+              <span className="bp-header-meta__sep" aria-hidden="true" />
+              <span>{BLOG_POST.readTime}</span>
+              <span className="bp-header-meta__sep" aria-hidden="true" />
+              <span>ARG Software</span>
+            </div>
+          </PageHeader>
 
-          {/* BLOG_POST BODY */}
           <div
             data-animate-scope
             data-animate-default-preset="fade-up"
@@ -350,7 +373,38 @@ export default function BlogPostPage() {
             <section className="bp-body background-color-white padding-section-large border-radius-all">
               <div className="bp-body-inner container padding-global">
                 <article className="bp-content">
-                  {BLOG_POST.content.map((block, i) => renderBlock(block, i))}
+                  <SocialShareButtons
+                    items={shareItems}
+                    className="bp-share-row bp-share-row--top"
+                  />
+                  <SocialShareButtons
+                    items={feedItems}
+                    className="bp-share-row bp-feed-row bp-feed-row--top"
+                    label="Feeds"
+                  />
+
+                  {heroImage && (
+                    <figure className="bp-hero-figure" data-animate="fade-up">
+                      <img
+                        src={heroImage.src}
+                        alt={heroImage.alt || BLOG_POST.title}
+                        loading="eager"
+                      />
+                      {heroImage.alt ? <figcaption>{heroImage.alt}</figcaption> : null}
+                    </figure>
+                  )}
+
+                  {contentBlocks.map((block, i) => renderBlock(block, i))}
+
+                  <SocialShareButtons
+                    items={shareItems}
+                    className="bp-share-row bp-share-row--bottom"
+                  />
+                  <SocialShareButtons
+                    items={feedItems}
+                    className="bp-share-row bp-feed-row bp-feed-row--bottom"
+                    label="Feeds"
+                  />
                 </article>
 
                 <BlogArticleSidebar
@@ -358,31 +412,22 @@ export default function BlogPostPage() {
                   activeSection={activeSection}
                   getSectionId={getHeadingId}
                   onSectionClick={handleTocClick}
-                  shareItems={shareItems}
-                  feedItems={feedItems}
-                  relatedPosts={relatedPosts}
-                  sourceSlug={slug}
-                  cta={{
-                    eyebrow: 'Work with ARG',
-                    title: 'Need a team that keeps architecture clean?',
-                    label: 'Book a Meeting',
-                    href: 'https://zcal.co/argsoftware/project',
-                    onClick: () => trackCTA('book_meeting', 'blog_sidebar'),
-                  }}
                 />
               </div>
             </section>
           </div>
 
+          <RelatedArticlesCarousel key={slug} posts={relatedPosts} sourceSlug={slug} />
+
           <div className="page-cta-wrapper">
-            <SectionDivider variant="light" hideOnMobile={true} />
             <CTASection
-              title="Stop searching."
-              titleHighlight="Start building."
-              buttonTextNotHover="Book a Meeting"
-              buttonTextHover="Let's meet"
+              title="Like what you read?"
+              titleHighlight="Subscribe to our newsletter"
+              subtitle="Stay updated with our latest insights and news."
+              buttonTextNotHover="Let's talk"
+              buttonTextHover="Send us a message"
               animationClass="bp-animate"
-              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
+              onPrimaryClick={() => trackCTA('send_message', 'blog_post_cta')}
             />
           </div>
         </main>
