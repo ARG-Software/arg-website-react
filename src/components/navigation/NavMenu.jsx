@@ -1,37 +1,63 @@
-import { useEffect, useLayoutEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { gsap } from 'gsap';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
 import { trackCTA, trackEvent } from '../../hooks/useAnalytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { arrowSvg } from '../icons/SocialIcons';
-import PROJECTS from '../../data/projects.json';
+import projects from '../../data/projects.json';
 
-const menuItems = [
-  { to: '/#about', label: 'About' },
-  { to: '/#contact', label: 'Contact' },
-  { to: '/#services', label: 'Services' },
-  { to: '/#social', label: 'Social' },
-  { to: '/#testimonials', label: 'Testimonials' },
-  { to: '/projects/', label: 'Use Cases', isUseCases: true },
-  { to: '/work-with-us/', label: 'Working with Us' },
+const primaryMenuItems = [
+  {
+    label: 'Partners',
+    to: '/#partners',
+    detailLabel: 'Full overview',
+    detailTo: '/partners/',
+  },
+  {
+    label: 'Services',
+    to: '/#services',
+  },
+  {
+    label: 'Use Cases',
+    to: '/#cases',
+    projectLinks: projects.map(project => ({
+      label: project.title,
+      to: `/projects/${project.slug}/`,
+    })),
+  },
+  {
+    label: 'Working with Us',
+    to: '/#work-with-us',
+    detailLabel: 'Full overview',
+    detailTo: '/work-with-us/',
+  },
+  {
+    label: 'Blog',
+    to: '/#blog-promo',
+    detailLabel: 'All articles',
+    detailTo: '/blog/',
+  },
+  {
+    label: 'About',
+    to: '/#about',
+  },
 ];
 
-const chevronSvg = (
-  <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M4 6L8 10L12 6"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+const secondaryMenuItems = [
+  { label: 'Testimonials', to: '/#testimonials' },
+  { label: 'Meet our Team', to: '/#team' },
+  { label: 'FAQ', to: '/#faq' },
+  { label: 'Social', to: '/#social' },
+  { label: 'Contact', to: '/#contact' },
+];
+
+function ArrowIcon({ className = '' }) {
+  return <span className={`arrow_icon-embed w-embed ${className}`.trim()}>{arrowSvg}</span>;
+}
 
 export function NavMenu({ isOpen, isClosing, onClose }) {
   const [latestPost, setLatestPost] = useState(null);
-  const [useCasesOpen, setUseCasesOpen] = useState(false);
   const wrapperRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -59,14 +85,6 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
     gsap.to(wrapperRef.current, { autoAlpha: 0, duration: 0.4, delay: 0.2, ease: 'power2.in' });
   }, [isClosing]);
 
-  // Reset accordion when menu closes
-  useLayoutEffect(() => {
-    if (!isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setUseCasesOpen(false);
-    }
-  }, [isOpen]);
-
   // Load latest blog post when overlay opens
   useEffect(() => {
     if (!isOpen) return;
@@ -81,6 +99,21 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
     return () => clearTimeout(timer);
   }, [isOpen]);
 
+  // Lock the page behind the overlay; the menu owns scrolling while active.
+  useEffect(() => {
+    if (!isOpen && !isClosing) return;
+
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+    };
+  }, [isOpen, isClosing]);
+
   // Escape key
   useEffect(() => {
     if (!isOpen) return;
@@ -92,16 +125,6 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
   }, [isOpen, onClose]);
 
   const handleLinkClick = useCallback(() => onClose(), [onClose]);
-
-  const toggleUseCases = useCallback(e => {
-    e.stopPropagation();
-    e.preventDefault();
-    setUseCasesOpen(prev => {
-      const next = !prev;
-      trackEvent('nav_use_cases_toggle', { action: next ? 'open' : 'close' });
-      return next;
-    });
-  }, []);
 
   const latestDate = latestPost
     ? new Date(latestPost.date).toLocaleDateString('en-US', {
@@ -116,150 +139,129 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
       className={`nav_overlay-wrapper${isOpen ? ' active' : ''}`}
       onClick={onClose}
     >
-      <div ref={containerRef} className="nav_overlay-container" onClick={e => e.stopPropagation()}>
-        <button className="nav_overlay-close" onClick={onClose} aria-label="Close menu">
-          ×
-        </button>
+      <div
+        ref={containerRef}
+        className="nav_overlay-container"
+        onClick={event => event.stopPropagation()}
+        onWheel={event => event.stopPropagation()}
+        onTouchMove={event => event.stopPropagation()}
+      >
+        <aside className="nav_overlay-left" aria-label="Latest update">
+          <span className="nav_overlay-left-label">Latest</span>
 
-        {/* Left: transparent panel with latest post card at bottom */}
-        <div className="nav_overlay-aside">
           {latestPost && (
-            <div className="nav_overlay-latest">
-              <span className="nav_overlay-latest-label">Latest update</span>
-              <div className="nav_overlay-latest-img-wrap">
-                <img
-                  src={latestPost.image}
-                  alt={latestPost.title}
-                  className="nav_overlay-latest-img"
-                />
+            <AppLink
+              to={`/blog/${latestPost.slug}/`}
+              className="nav_overlay-article-link"
+              onClick={handleLinkClick}
+            >
+              <span className="nav_overlay-article-tag">
+                {latestPost.tag || 'Engineering'} {latestDate ? `· ${latestDate}` : ''}
+              </span>
+              <h3>{latestPost.title}</h3>
+              <div className="nav_overlay-article-meta">
+                {latestPost.readTime && <span>{latestPost.readTime}</span>}
+                <span className="nav_overlay-article-arrow" aria-hidden="true">
+                  ↗
+                </span>
               </div>
-              {latestDate && <div className="nav_overlay-latest-date">{latestDate}</div>}
-              <AppLink
-                to={`/blog/${latestPost.slug}/`}
-                className="nav_overlay-latest-post-title"
-                onClick={handleLinkClick}
-              >
-                {latestPost.title}
-              </AppLink>
-            </div>
+
+              {latestPost.image && (
+                <span className="nav_overlay-article-image-wrap">
+                  <img src={latestPost.image} alt="" className="nav_overlay-article-image" />
+                </span>
+              )}
+            </AppLink>
           )}
-        </div>
 
-        {/* Right: logo + nav links + CTAs */}
-        <div className="nav_overlay-main">
-          {/* Logo at the top of the right panel */}
-          <div className="nav_overlay-main-logo">
-            <Logo />
+          <div className="nav_overlay-ai-line">
+            <p>ARG AI — coming soon</p>
+            <span>In development</span>
           </div>
+        </aside>
 
-          <nav className="nav_overlay-nav">
-            {menuItems.map(item =>
-              item.isUseCases ? (
-                <div key={item.to} className="nav_overlay-nav-item">
-                  <div className="nav_overlay-usecases-toggle">
+        <main className="nav_overlay-right" aria-label="Menu">
+          <header className="nav_overlay-right-head">
+            <AppLink
+              to="/"
+              aria-label="Arg Software"
+              className="nav_overlay-logo"
+              onClick={handleLinkClick}
+            >
+              <Logo />
+            </AppLink>
+
+            <button className="nav_overlay-close" onClick={onClose} aria-label="Close menu">
+              <span>Close</span>
+              <span className="nav_overlay-close-icon" aria-hidden="true">
+                ×
+              </span>
+            </button>
+          </header>
+
+          <nav className="nav_overlay-nav" aria-label="Main">
+            {primaryMenuItems.map(item => (
+              <div key={item.label} className="nav_overlay-nav-item">
+                <div className="nav_overlay-nav-row">
+                  <AppLink to={item.to} className="nav_overlay-nav-label" onClick={handleLinkClick}>
+                    {item.label}
+                  </AppLink>
+                  {item.detailTo && (
                     <AppLink
-                      to={item.to}
-                      className="nav_overlay-nav-link"
+                      to={item.detailTo}
+                      className="nav_overlay-nav-detail"
                       onClick={handleLinkClick}
                     >
-                      {item.label}
+                      {item.detailLabel}
+                      <span aria-hidden="true">↗</span>
                     </AppLink>
-                    <button
-                      className={`nav_overlay-usecases-chevron${useCasesOpen ? ' is-open' : ''}`}
-                      onClick={toggleUseCases}
-                      aria-label={useCasesOpen ? 'Collapse use cases' : 'Expand use cases'}
-                      aria-expanded={useCasesOpen}
-                    >
-                      {chevronSvg}
-                    </button>
-                  </div>
-                  <div
-                    className={`nav_overlay-usecases-list${useCasesOpen ? ' is-open' : ''}`}
-                    aria-hidden={!useCasesOpen}
-                  >
-                    {PROJECTS.map(project => (
+                  )}
+                </div>
+
+                {item.projectLinks && (
+                  <div className="nav_overlay-project-pills" aria-label="Use case pages">
+                    {item.projectLinks.map(project => (
                       <AppLink
-                        key={project.slug}
-                        to={`/projects/${project.slug}/`}
-                        className="nav_overlay-usecases-item"
+                        key={project.to}
+                        to={project.to}
+                        className="nav_overlay-project-pill"
                         onClick={handleLinkClick}
                       >
-                        {project.title}
+                        {project.label}
+                        <ArrowIcon className="nav_overlay-project-pill-arrow" />
                       </AppLink>
                     ))}
                   </div>
-                </div>
-              ) : (
-                <div key={item.to} className="nav_overlay-nav-item">
-                  <AppLink to={item.to} className="nav_overlay-nav-link" onClick={handleLinkClick}>
-                    {item.label}
-                  </AppLink>
-                </div>
-              )
-            )}
+                )}
+              </div>
+            ))}
           </nav>
 
-          {/* Latest post — visible only on mobile (aside hidden ≤991px) */}
-          {latestPost && (
-            <div className="nav_overlay-latest-mobile">
-              <div className="nav_overlay-latest-mobile-img-wrap">
-                <img
-                  src={latestPost.image}
-                  alt={latestPost.title}
-                  className="nav_overlay-latest-mobile-img"
-                />
-              </div>
-              <div className="nav_overlay-latest-mobile-text">
-                <span className="nav_overlay-latest-label">Latest update</span>
-                {latestDate && <div className="nav_overlay-latest-date">{latestDate}</div>}
-                <AppLink
-                  to={`/blog/${latestPost.slug}/`}
-                  className="nav_overlay-latest-post-title"
-                  onClick={handleLinkClick}
-                >
-                  {latestPost.title}
-                </AppLink>
-              </div>
-            </div>
-          )}
+          <div className="nav_overlay-secondary" aria-label="Secondary menu">
+            {secondaryMenuItems.map(item => (
+              <AppLink key={item.to} to={item.to} onClick={handleLinkClick}>
+                {item.label}
+              </AppLink>
+            ))}
+          </div>
 
-          {/* Bottom CTA row */}
-          <div className="nav_overlay-ctas">
-            <AppLink to="/blog/" className="nav_overlay-cta" onClick={handleLinkClick}>
-              <span>Blog</span>
-              <span className="nav_overlay-cta-arrow">
-                <span className="arrow_icon-embed w-embed">{arrowSvg}</span>
-              </span>
-            </AppLink>
-            <AppLink to="/partners/" className="nav_overlay-cta" onClick={handleLinkClick}>
-              <span>Partners</span>
-              <span className="nav_overlay-cta-arrow">
-                <span className="arrow_icon-embed w-embed">{arrowSvg}</span>
-              </span>
-            </AppLink>
-            <AppLink to="/careers/" className="nav_overlay-cta" onClick={handleLinkClick}>
-              <span>Careers</span>
-              <span className="nav_overlay-cta-arrow">
-                <span className="arrow_icon-embed w-embed">{arrowSvg}</span>
-              </span>
-            </AppLink>
+          <footer className="nav_overlay-footer">
+            <span>Have a project in mind?</span>
             <a
               href="https://zcal.co/argsoftware/project"
               target="_blank"
               rel="noopener noreferrer"
-              className="nav_overlay-cta"
+              className="nav_overlay-book"
               onClick={() => {
-                trackCTA('book_meeting', 'overlay');
+                trackCTA('book_meeting', 'overlay_menu');
                 handleLinkClick();
               }}
             >
-              <span>Book Meeting</span>
-              <span className="nav_overlay-cta-arrow">
-                <span className="arrow_icon-embed w-embed">{arrowSvg}</span>
-              </span>
+              Book a meeting
+              <ArrowIcon className="nav_overlay-book-arrow" />
             </a>
-          </div>
-        </div>
+          </footer>
+        </main>
       </div>
     </div>
   );

@@ -36,7 +36,7 @@ export default function HomePage() {
           <HeroSection />
 
           <section
-            id="partners-marquee"
+            id="partners"
             className="partners_wrap background-color-white padding-section-compact border-radius-top"
             data-animate-scope
             data-animate-trigger="scroll"

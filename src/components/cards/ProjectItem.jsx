@@ -155,7 +155,6 @@ export function ProjectItem({
               ref={coverImageRef}
               data-wf-drag="false"
               loading="lazy"
-              fetchPriority="auto"
               decoding="async"
               alt=""
               src={imgSrc}

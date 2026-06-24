@@ -1,4 +1,75 @@
 import { useEffect, useRef } from 'react';
+import '../../../styles/elfsight.css';
+
+const ELFSIGHT_APP_SELECTOR = '.elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b';
+const ELFSIGHT_CARD_SELECTOR =
+  '[class*="CardContainer"], .eapps-social-feed-posts-item, .eapps-instagram-feed-posts-grid-item';
+const ELFSIGHT_MEDIA_SELECTOR = 'img, video';
+
+function getMediaScore(media) {
+  const rect = media.getBoundingClientRect();
+  const renderedArea = rect.width * rect.height;
+  if (renderedArea > 0) return renderedArea;
+
+  if (media instanceof HTMLImageElement) {
+    return media.naturalWidth * media.naturalHeight;
+  }
+
+  if (media instanceof HTMLVideoElement) {
+    return media.videoWidth * media.videoHeight;
+  }
+
+  return 0;
+}
+
+function isLargeFeedMedia(media) {
+  if (media instanceof HTMLVideoElement) return true;
+
+  if (!(media instanceof HTMLImageElement)) return false;
+
+  const src = media.currentSrc || media.src || '';
+  const className = String(media.className || '');
+  if (/\.svg($|\?)/i.test(src)) return false;
+  if (/avatar|profile|logo|icon|emoji/i.test(className)) return false;
+
+  const score = getMediaScore(media);
+  return score === 0 || score >= 14400;
+}
+
+function hasMeaningfulText(element) {
+  return element.textContent.trim().length > 0;
+}
+
+function markMediaFrame(media, card) {
+  let element = media.parentElement;
+
+  while (element && element !== card && !hasMeaningfulText(element)) {
+    element.classList.add('arg-elfsight-media-frame');
+    element = element.parentElement;
+  }
+}
+
+function normalizeElfsightFeed(container) {
+  container.classList.add('arg-elfsight-feed');
+
+  container.querySelectorAll(ELFSIGHT_CARD_SELECTOR).forEach(card => {
+    card.classList.add('arg-elfsight-card');
+
+    const media = Array.from(card.querySelectorAll(ELFSIGHT_MEDIA_SELECTOR))
+      .filter(isLargeFeedMedia)
+      .sort((a, b) => getMediaScore(b) - getMediaScore(a))[0];
+
+    if (!media) return;
+
+    media.classList.add('arg-elfsight-media-element');
+    markMediaFrame(media, card);
+
+    if (media instanceof HTMLImageElement && !media.dataset.argElfsightLoadObserved) {
+      media.dataset.argElfsightLoadObserved = 'true';
+      media.addEventListener('load', () => normalizeElfsightFeed(container), { once: true });
+    }
+  });
+}
 
 export function SocialSection({ className = '' }) {
   const observersRef = useRef([]);
@@ -26,7 +97,7 @@ export function SocialSection({ className = '' }) {
   };
 
   useEffect(() => {
-    const container = document.querySelector('.elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b');
+    const container = document.querySelector(ELFSIGHT_APP_SELECTOR);
     if (!container) return;
 
     const observer = new IntersectionObserver(
@@ -47,13 +118,11 @@ export function SocialSection({ className = '' }) {
 
   // Elfsight feed animations (moved from useScrollAnimations)
   useEffect(() => {
-    const elfsightContainer = document.querySelector(
-      '.elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b'
-    );
+    const elfsightContainer = document.querySelector(ELFSIGHT_APP_SELECTOR);
     const swiperContainer = document.querySelector('.swiper_blog-component');
     if (!elfsightContainer || !swiperContainer) return;
 
-    const CARD_SELECTOR = '[class*="CardContainer"]';
+    normalizeElfsightFeed(elfsightContainer);
     let cardsAnimated = false;
 
     const animateItems = items => {
@@ -80,7 +149,8 @@ export function SocialSection({ className = '' }) {
       entries => {
         if (entries[0].isIntersecting && !cardsAnimated) {
           cardsAnimated = true;
-          const items = elfsightContainer.querySelectorAll(CARD_SELECTOR);
+          normalizeElfsightFeed(elfsightContainer);
+          const items = elfsightContainer.querySelectorAll(ELFSIGHT_CARD_SELECTOR);
           if (items.length) animateItems(items);
           swiperObserver.unobserve(swiperContainer);
         }
@@ -92,8 +162,9 @@ export function SocialSection({ className = '' }) {
     observersRef.current.push(swiperObserver);
 
     const feedObserver = new MutationObserver(() => {
+      normalizeElfsightFeed(elfsightContainer);
       if (cardsAnimated) {
-        const items = elfsightContainer.querySelectorAll(CARD_SELECTOR);
+        const items = elfsightContainer.querySelectorAll(ELFSIGHT_CARD_SELECTOR);
         if (items.length) animateItems(items);
       }
     });

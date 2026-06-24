@@ -1,0 +1,57 @@
+.arg-elfsight-feed {
+  --eapps-feed-margin: 1.5rem !important;
+}
+
+.arg-elfsight-card {
+  border-radius: 0.75rem !important;
+  margin-bottom: 1.5rem !important;
+  overflow: hidden !important;
+  animation: argElfsightFeedIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.arg-elfsight-media-frame {
+  display: block !important;
+  inline-size: 100% !important;
+  block-size: clamp(12rem, 19vw, 18rem) !important;
+  min-block-size: 0 !important;
+  max-block-size: clamp(12rem, 19vw, 18rem) !important;
+  width: 100% !important;
+  height: clamp(12rem, 19vw, 18rem) !important;
+  min-height: 0 !important;
+  max-height: clamp(12rem, 19vw, 18rem) !important;
+  overflow: hidden !important;
+  border-radius: 0.75rem 0.75rem 0 0 !important;
+}
+
+.arg-elfsight-media-element {
+  display: block !important;
+  inline-size: 100% !important;
+  block-size: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 0.75rem 0.75rem 0 0 !important;
+}
+
+@keyframes argElfsightFeedIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 2rem, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .arg-elfsight-media-frame {
+    block-size: clamp(11rem, 54vw, 18rem) !important;
+    max-block-size: clamp(11rem, 54vw, 18rem) !important;
+    height: clamp(11rem, 54vw, 18rem) !important;
+    max-height: clamp(11rem, 54vw, 18rem) !important;
+  }
+}

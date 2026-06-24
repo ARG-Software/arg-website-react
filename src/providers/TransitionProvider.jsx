@@ -156,7 +156,7 @@ export function TransitionProvider({ children }) {
         let targetElement = null;
 
         if (previousPath === '/partners' && currentPath === '/') {
-          targetElement = document.getElementById('partners-marquee');
+          targetElement = document.getElementById('partners');
         } else if (
           (previousPath === '/blog' || previousPath.startsWith('/blog/')) &&
           currentPath === '/'

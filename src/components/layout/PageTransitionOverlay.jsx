@@ -37,7 +37,6 @@ export function PageTransitionOverlay({ phase, variant, imageTransition }) {
           className="pt-project-image"
           style={imageStyle}
           decoding="async"
-          fetchPriority="high"
         />
       )}
 
