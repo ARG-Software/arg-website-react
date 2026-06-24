@@ -97,21 +97,16 @@ export function TeamSection({ className = '' }) {
                       </div>
                       <div className="padding-bottom padding-small"></div>
                       <a
-                        aria-label="Linkedin"
+                        aria-label={`${m.name} on LinkedIn`}
                         href={m.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-button w-inline-block"
+                        className="team-social-link w-inline-block"
                         data-animate="fade-up"
                         data-animate-order="2"
                         onClick={() => trackSocial('linkedin', 'homepage_team')}
                       >
-                        <div
-                          className="icon-1x1-small socials-button w-embed"
-                          style={{ color: '#000' }}
-                        >
-                          {linkedinSvg}
-                        </div>
+                        <div className="team-social-link-icon w-embed">{linkedinSvg}</div>
                       </a>
                     </div>
                   </div>

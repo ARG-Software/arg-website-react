@@ -302,7 +302,6 @@
 
 .pt-timeline-inner {
   display: block !important;
-  --pt-column-gap: clamp(0.75rem, 1.25vw, 1.25rem);
 }
 
 .pt-timeline-heading {
@@ -323,8 +322,8 @@
 
 .pt-years-row {
   display: grid;
-  grid-template-columns: repeat(var(--pt-year-count), minmax(0, 1fr));
-  column-gap: var(--pt-column-gap);
+  grid-template-columns: repeat(var(--pt-month-count), minmax(0, 1fr));
+  column-gap: 0;
   margin-bottom: 1.25rem;
 }
 
@@ -359,21 +358,22 @@
 /* Each row is a grid matching the year columns */
 .pt-row {
   display: grid;
-  grid-template-columns: repeat(var(--pt-year-count), minmax(0, 1fr));
-  column-gap: var(--pt-column-gap);
+  grid-template-columns: repeat(var(--pt-month-count), minmax(0, 1fr));
+  column-gap: 0;
 }
 
 .pt-row-card {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  min-width: 14rem;
+  min-width: 0;
   padding: 0 1.25rem;
   height: 3.25rem;
   background: #fff;
   border: none;
   justify-content: space-between;
   border-radius: 0.5rem;
+  overflow: hidden;
   transition: background 0.3s ease;
 }
 
@@ -387,7 +387,8 @@
   font-size: var(--type-body-small);
   font-weight: 400;
   color: #0c002e;
-  min-width: 3.5rem;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .pt-row-logos {

@@ -1,60 +1,10 @@
-function getTimelineEndYear(timeline, yearEnd) {
-  if (timeline.ongoing) return yearEnd;
-  return timeline.startYear + timeline.durationYears - 1;
-}
-
-function getDurationLabel(row) {
-  const duration = row.ongoing ? Math.max(1, row.endYear - row.startYear) : row.durationYears;
-  const suffix = duration === 1 ? 'Year' : 'Years';
-  return `${duration}${row.ongoing ? '+' : ''} ${suffix}`;
-}
-
-function getRangeLabel(row) {
-  if (row.ongoing) return `since ${row.startYear}`;
-  if (row.startYear === row.endYear) return String(row.startYear);
-  return `${row.startYear}-${row.endYear}`;
-}
-
-function createTimelineRows(clients, yearStart, yearEnd) {
-  const rowsByTimeframe = new Map();
-
-  clients.forEach(client => {
-    const clientTimeline = client.timeline;
-    if (!clientTimeline?.startYear) return;
-
-    const endYear = getTimelineEndYear(clientTimeline, yearEnd);
-    if (endYear < yearStart || clientTimeline.startYear > yearEnd) return;
-
-    const rowKey = [
-      clientTimeline.startYear,
-      endYear,
-      clientTimeline.ongoing ? 'ongoing' : 'fixed',
-    ].join('-');
-
-    if (!rowsByTimeframe.has(rowKey)) {
-      const visibleStartYear = Math.max(clientTimeline.startYear, yearStart);
-      const visibleEndYear = Math.min(endYear, yearEnd);
-
-      rowsByTimeframe.set(rowKey, {
-        key: rowKey,
-        startYear: clientTimeline.startYear,
-        endYear,
-        visibleStartYear,
-        visibleEndYear,
-        durationYears: clientTimeline.durationYears,
-        ongoing: Boolean(clientTimeline.ongoing),
-        clients: [],
-      });
-    }
-
-    rowsByTimeframe.get(rowKey).clients.push(client);
-  });
-
-  return Array.from(rowsByTimeframe.values()).sort((a, b) => {
-    if (a.startYear !== b.startYear) return a.startYear - b.startYear;
-    return a.endYear - b.endYear;
-  });
-}
+import {
+  MONTHS_PER_YEAR,
+  createTimelineRows,
+  formatTimelineDuration,
+  formatTimelineRange,
+  getTimelineYearColumns,
+} from '../../utils/timeline';
 
 export function Timeline({
   heading,
@@ -72,8 +22,11 @@ export function Timeline({
   const isExternal = ctaLink.startsWith('http');
   const ctaAttrs = isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
   const safeYearEnd = new Date().getFullYear();
-  const yearColumns = Array.from({ length: safeYearEnd - yearStart + 1 }, (_, i) => yearStart + i);
+  const yearColumns = getTimelineYearColumns(yearStart, safeYearEnd);
+  const monthColumnCount = yearColumns.length * MONTHS_PER_YEAR;
   const timelineRows = createTimelineRows(clients, yearStart, safeYearEnd);
+  const timelineStartMonthIndex = yearStart * MONTHS_PER_YEAR;
+  const finalYearStartColumn = (yearColumns.length - 1) * MONTHS_PER_YEAR + 1;
 
   const scopeAttrs = animate
     ? {
@@ -101,7 +54,7 @@ export function Timeline({
   return (
     <div
       className="container padding-global pt-timeline-inner"
-      style={{ '--pt-year-count': yearColumns.length }}
+      style={{ '--pt-month-count': monthColumnCount }}
       {...scopeAttrs}
     >
       <h2 className="pt-timeline-heading" data-animate-order={animate ? '0' : undefined}>
@@ -112,7 +65,11 @@ export function Timeline({
       <div className="pt-timeline-desktop">
         <div className="pt-years-row" data-animate-order={animate ? '1' : undefined}>
           {yearColumns.map(year => (
-            <span key={year} className="pt-year-label">
+            <span
+              key={year}
+              className="pt-year-label"
+              style={{ gridColumn: `span ${MONTHS_PER_YEAR}` }}
+            >
               {year}
             </span>
           ))}
@@ -120,8 +77,8 @@ export function Timeline({
         <div className="pt-divider" data-animate-order={animate ? '2' : undefined} />
         <div className="pt-rows">
           {timelineRows.map((row, i) => {
-            const startCol = row.visibleStartYear - yearStart + 1;
-            const span = row.visibleEndYear - row.visibleStartYear + 1;
+            const startCol = row.visibleStartMonthIndex - timelineStartMonthIndex + 1;
+            const span = row.visibleEndMonthIndex - row.visibleStartMonthIndex + 1;
 
             return (
               <div key={row.key} className="pt-row">
@@ -130,7 +87,9 @@ export function Timeline({
                   style={{ gridColumn: `${startCol} / span ${span}` }}
                   {...rowAttrs(i + 3)}
                 >
-                  <span className="pt-duration">{getDurationLabel(row)}</span>
+                  <span className="pt-duration">
+                    {formatTimelineDuration(row.durationMonths, row.ongoing)}
+                  </span>
                   <div className="pt-row-logos">
                     {row.clients.map(p => (
                       <img
@@ -149,7 +108,7 @@ export function Timeline({
             <a
               href={ctaLink}
               className="button-base button-contact w-inline-block pt-row-cta-card"
-              style={{ gridColumn: `${yearColumns.length} / -1` }}
+              style={{ gridColumn: `${finalYearStartColumn} / -1` }}
               {...ctaAttrs}
               onClick={onCtaClick}
               {...rowAttrs(timelineRows.length + 3)}
@@ -168,8 +127,10 @@ export function Timeline({
         {timelineRows.map((row, i) => {
           return (
             <div key={row.key} className="pt-mobile-card" {...cardAttrs(i + 1)}>
-              <div className="pt-mobile-duration">{getDurationLabel(row)}</div>
-              <span className="pt-mobile-since">{getRangeLabel(row)}</span>
+              <div className="pt-mobile-duration">
+                {formatTimelineDuration(row.durationMonths, row.ongoing)}
+              </div>
+              <span className="pt-mobile-since">{formatTimelineRange(row)}</span>
               <div className="pt-mobile-logos">
                 {row.clients.map(p => (
                   <img
