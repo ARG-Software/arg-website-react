@@ -228,10 +228,7 @@
   margin-bottom: 1.75rem;
 }
 .cp-whyus-kpi span {
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   letter-spacing: var(--tracking-display-tight);
@@ -298,7 +295,8 @@
 
 /* Careers Roles */
 .cp-careers-inner,
-.cp-founders-inner {
+.cp-founders-inner,
+.cp-fit-inner {
   display: block !important;
 }
 .cp-career-jobs-list {
@@ -570,6 +568,142 @@
   padding-left: 2rem;
 }
 
+/* Fit Check */
+.cp-fit-section {
+  border-bottom: 1px solid #e0e0e0;
+}
+.cp-fit-header {
+  display: block;
+  margin-bottom: 3rem;
+}
+.cp-fit-header h2 {
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-section-title);
+  font-weight: 400;
+  letter-spacing: var(--tracking-title);
+  line-height: var(--line-tight);
+  margin: 0 0 1.5rem;
+  max-width: 18ch;
+}
+.cp-fit-header h2 span {
+  color: #0c002e;
+  display: block;
+}
+.cp-fit-header p {
+  color: #555;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-body);
+  line-height: var(--line-body);
+  margin: 0;
+  max-width: 48rem;
+}
+.cp-fit-panel {
+  display: grid;
+  gap: clamp(3rem, 7vw, 5rem);
+}
+.cp-fit-block {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 2.75rem);
+}
+.cp-fit-ticker {
+  max-width: none;
+}
+.cp-fit-ticker .section-ticker__line {
+  display: none;
+}
+.cp-fit-columns {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.cp-fit-column {
+  color: #0c002e;
+  display: grid;
+  gap: 1.125rem;
+  min-width: 0;
+}
+.cp-fit-accent {
+  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  border-radius: 999px;
+  display: block;
+  height: 0.1875rem;
+  width: 2.5rem;
+}
+.cp-fit-column-heading {
+  align-items: baseline;
+  column-gap: 0.875rem;
+  display: flex;
+}
+.cp-fit-column-heading span {
+  color: rgba(12, 0, 46, 0.42);
+  flex: 0 0 auto;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-meta-small);
+  letter-spacing: var(--tracking-meta-wide);
+  line-height: 1;
+  text-transform: uppercase;
+}
+.cp-fit-column h4,
+.cp-fit-step h4 {
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-card-title);
+  font-weight: 400;
+  letter-spacing: var(--tracking-card-title);
+  line-height: var(--line-tight);
+  margin: 0;
+}
+.cp-fit-column p,
+.cp-fit-step p {
+  color: #555;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-body-small);
+  line-height: var(--line-small);
+  margin: 0;
+}
+.cp-fit-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  position: relative;
+}
+.cp-fit-stepper-line {
+  background: #0c002e;
+  display: block;
+  height: 2px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0.875rem;
+}
+.cp-fit-step {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  padding-right: clamp(1.25rem, 3vw, 2rem);
+  position: relative;
+}
+.cp-fit-step-number {
+  align-items: center;
+  background: #0c002e;
+  border-radius: 999px;
+  box-shadow: 0 0.8rem 1.5rem -1rem rgba(12, 0, 46, 0.55);
+  color: #fff;
+  display: inline-flex;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-meta-small);
+  height: 1.75rem;
+  justify-content: center;
+  letter-spacing: var(--tracking-meta-wide);
+  line-height: 1;
+  position: relative;
+  width: 1.75rem;
+  z-index: 1;
+}
+.cp-fit-step h4 {
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+}
+
 /* Founder Contact */
 .cp-founders-section {
   border-bottom: 1px solid #e0e0e0;
@@ -737,6 +871,25 @@
   .cp-founders-grid {
     grid-template-columns: 1fr;
   }
+  .cp-fit-columns {
+    grid-template-columns: 1fr;
+  }
+  .cp-fit-stepper {
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    padding-left: 2.25rem;
+  }
+  .cp-fit-stepper-line {
+    bottom: 0.25rem;
+    height: auto;
+    left: 0.875rem;
+    right: auto;
+    top: 0.875rem;
+    width: 2px;
+  }
+  .cp-fit-step {
+    padding-right: 0;
+  }
   .cp-careers-process-grid,
   .cp-application-grid {
     grid-template-columns: 1fr;
@@ -757,6 +910,20 @@
   }
   .cp-values-grid {
     grid-template-columns: 1fr;
+  }
+  .cp-fit-header h2 {
+    font-size: var(--type-section-title-mobile);
+  }
+  .cp-fit-column-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .cp-fit-panel {
+    gap: 3rem;
+  }
+  .cp-fit-block {
+    gap: 1.75rem;
   }
   .cp-section-header {
     margin-bottom: 2.5rem;

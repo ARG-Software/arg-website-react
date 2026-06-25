@@ -21,6 +21,7 @@ export { ArticleSidebar } from './navigation/ArticleSidebar';
 export { Footer } from './layout/Footer';
 export { CTASection } from './layout/CTASection';
 export { SectionDivider } from './layout/SectionDivider';
+export { SectionTicker } from './layout/SectionTicker';
 export { LoadingScreen } from './layout/LoadingScreen';
 export { SEO } from './seo/SEO';
 export { PageHeader } from './headers/PageHeader';

@@ -21,7 +21,7 @@ const NAV_LINKS = [
   { href: '/partners/', label: 'Partners' },
   { href: '/projects/', label: 'Projects' },
   { href: '/careers/', label: 'Careers' },
-  { href: '/work-with-us/', label: 'Work With Us' },
+  { href: '/working-with-us/', label: 'Working with Us' },
   { href: '/#contact', label: 'Contact' },
 ];
 
@@ -102,9 +102,9 @@ const STATIC_PAGES = [
     ],
   },
   {
-    path: '/work-with-us/',
-    title: 'Work With Us | Arg Software',
-    h1: 'Work With ARG Software',
+    path: '/working-with-us/',
+    title: 'Working with Us | Arg Software',
+    h1: 'Working with ARG Software',
     description:
       'Work with ARG Software to design architecture-first platforms for fintech, media, and high-growth technology teams.',
     paragraphs: [
@@ -430,7 +430,7 @@ export default function seoPrerender() {
       sitemapUrls.push({ loc: `${SITE_URL}/`, priority: '1.0', changefreq: 'weekly' });
       sitemapUrls.push({ loc: `${SITE_URL}/partners/`, priority: '0.8', changefreq: 'monthly' });
       sitemapUrls.push({ loc: `${SITE_URL}/careers/`, priority: '0.9', changefreq: 'weekly' });
-      sitemapUrls.push({ loc: `${SITE_URL}/work-with-us/`, priority: '0.8', changefreq: 'monthly' });
+      sitemapUrls.push({ loc: `${SITE_URL}/working-with-us/`, priority: '0.8', changefreq: 'monthly' });
       sitemapUrls.push({ loc: `${SITE_URL}/blog/`, priority: '0.9', changefreq: 'weekly' });
       sitemapUrls.push({ loc: `${SITE_URL}/privacy/`, priority: '0.3', changefreq: 'yearly' });
       sitemapUrls.push({ loc: `${SITE_URL}/terms/`, priority: '0.3', changefreq: 'yearly' });

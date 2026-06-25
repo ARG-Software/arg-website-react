@@ -11,6 +11,37 @@
 }
 
 /* ==========================================================================
+   components/layout
+   SectionTicker
+   ========================================================================== */
+
+.section-ticker {
+  align-items: center;
+  display: flex;
+  gap: 0.875rem;
+  width: 100%;
+}
+
+.section-ticker__label {
+  color: rgba(12, 0, 46, 0.46);
+  flex: 0 0 auto;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-kicker);
+  font-weight: 500;
+  letter-spacing: var(--tracking-kicker-wide);
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.section-ticker__line {
+  background: rgba(12, 0, 46, 0.12);
+  display: block;
+  flex: 1 1 auto;
+  height: 1px;
+  min-width: 2rem;
+}
+
+/* ==========================================================================
    components/buttons
    ButtonBase
    ========================================================================== */
@@ -674,11 +705,22 @@
 }
 
 .page-header__side-index,
-.page-header__side-meta,
-.page-header__side-arrow {
+.page-header__side-meta {
   color: rgba(255, 255, 255, 0.42);
   font-size: 0.75rem;
   letter-spacing: var(--tracking-ui);
+}
+
+.page-header__side-arrow {
+  color: rgba(255, 255, 255, 0.42);
+  flex: 0 0 auto;
+  height: 0.875rem;
+  transition: transform 0.2s ease;
+  width: 0.875rem;
+}
+
+.page-header__side-list a:hover .page-header__side-arrow {
+  transform: rotate(-50deg) translateX(3px);
 }
 
 .page-header__side-item-label {

@@ -28,9 +28,9 @@ const primaryMenuItems = [
   },
   {
     label: 'Working with Us',
-    to: '/#work-with-us',
+    to: '/#working-with-us',
     detailLabel: 'Full overview',
-    detailTo: '/work-with-us/',
+    detailTo: '/working-with-us/',
   },
   {
     label: 'Blog',

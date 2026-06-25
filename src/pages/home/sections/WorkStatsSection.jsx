@@ -191,7 +191,7 @@ export function WorkStatsSection({ className = '' }) {
 
   return (
     <section
-      id="work-with-us"
+      id="working-with-us"
       className={`section_work background-color-white padding-section-large border-radius-top ${className}`.trim()}
       data-animate-scope
       data-animate-trigger="scroll"

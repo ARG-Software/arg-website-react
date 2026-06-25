@@ -1,13 +1,13 @@
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA, trackEvent } from '../hooks/useAnalytics';
+import { trackCTA } from '../hooks/useAnalytics';
 import {
   Navbar,
   Footer,
   CTASection,
   SectionDivider,
+  SectionTicker,
   SEO,
   PageHeader,
-  FounderCard,
   TechStackConsole,
 } from '../components';
 import '../styles/careers.css';
@@ -39,24 +39,43 @@ const INTERNAL_VALUES = [
   },
 ];
 
-const FOUNDERS = [
+const FIT_CHECKS = [
   {
-    name: 'Jose Antunes',
-    initials: 'JA',
-    role: 'Co-founder - Software Engineer',
-    focus: 'Backend - Systems - Data - AI',
-    replyTime: '~ 36 hours',
-    emailHref: 'mailto:hr@arg.software?subject=Work%20With%20Us%20-%20Jose%20Antunes',
-    linkedin: 'https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/',
+    index: '01',
+    title: 'High-stakes architecture',
+    description:
+      'You are making decisions that will shape the product for years: platform design, migrations, integrations, or a system that needs to scale without becoming fragile.',
   },
   {
-    name: 'Rui Rocha',
-    initials: 'RR',
-    role: 'Co-founder - Software Engineer',
-    focus: 'Frontend - Backend - Mobile - AI',
-    replyTime: '~ 36 hours',
-    emailHref: 'mailto:hr@arg.software?subject=Work%20With%20Us%20-%20Rui%20Rocha',
-    linkedin: 'https://www.linkedin.com/in/ruirochawork/',
+    index: '02',
+    title: 'Production reliability',
+    description:
+      'The system is already live, or close to it, and performance, observability, recovery, or operational confidence matters more than another feature sprint.',
+  },
+  {
+    index: '03',
+    title: 'Senior execution',
+    description:
+      'You do not need a large vendor layer. You need people who can reason about the product, write the code, and stay accountable when it reaches production.',
+  },
+];
+
+const CONVERSATION_STEPS = [
+  {
+    title: 'Send context',
+    description: 'Share the product, constraint, or technical risk you need to solve.',
+  },
+  {
+    title: 'We review the problem',
+    description: 'We look for fit before suggesting calls, proposals, or unnecessary process.',
+  },
+  {
+    title: 'You speak with someone technical',
+    description: 'The first conversation is with someone who can reason about the system.',
+  },
+  {
+    title: 'We suggest the next move',
+    description: 'You leave with a clear recommendation, even if that means ARG is not the fit.',
   },
 ];
 
@@ -92,24 +111,16 @@ const TECH_STACK_INTRO = {
   text: 'This console is a quick map of the stack we trust when the system needs to stay observable, scalable, and easy to hand over after the hard part is done.',
 };
 
-export default function WorkWithUsPage() {
-  useTimeOnPage('/work-with-us/');
+export default function WorkingWithUsPage() {
+  useTimeOnPage('/working-with-us/');
   useScrollAnimations();
-
-  const handleFounderEmail = founderName => {
-    trackEvent('work_with_us_founder_email_click', { founder_name: founderName });
-  };
-
-  const handleFounderLinkedIn = founderName => {
-    trackEvent('work_with_us_founder_linkedin_click', { founder_name: founderName });
-  };
 
   return (
     <>
       <SEO
-        title="Work With Us"
+        title="Working with Us"
         description="Work with ARG Software to design architecture-first platforms for fintech, media, and high-growth technology teams."
-        path="/work-with-us/"
+        path="/working-with-us/"
       />
       <div className="page-wrapper w-clearfix">
         <Navbar position="absolute" isHomePage={true} />
@@ -118,12 +129,12 @@ export default function WorkWithUsPage() {
           <PageHeader
             title={['Work With', 'ARG Software']}
             subtitle="Work with a small architecture-first team that designs the system before writing it, then stays close through production."
-            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Work With Us' }]}
+            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Working with Us' }]}
             sideItems={[
-              { label: 'Why Working with us?', href: '#why-us' },
-              { label: 'Internal Values', href: '#values' },
-              { label: 'Talk to Founders', href: '#founders' },
-              { label: 'Contact', href: '#contact' },
+              { label: 'Why ARG', href: '#why-us' },
+              { label: 'How we work', href: '#values' },
+              { label: 'Fit check', href: '#fit-check' },
+              { label: 'Start a conversation', href: '#contact' },
             ]}
             size="small"
           />
@@ -223,30 +234,58 @@ export default function WorkWithUsPage() {
             </section>
 
             <section
-              id="founders"
-              className="cp-founders-section padding-section-large border-radius-bottom background-color-white"
+              id="fit-check"
+              className="cp-fit-section padding-section-large border-radius-bottom background-color-white"
             >
-              <div className="container padding-global cp-founders-inner">
-                <div className="cp-founders-intro" data-animate-order="0">
-                  <h2>
-                    No account maze. <span>Talk to a founder directly.</span>
-                  </h2>
-                  <p>
-                    If your project needs senior engineering judgement, the fastest way in is a
-                    short note to one of us. We read every email and reply when there is a real fit.
-                  </p>
+              <div className="container padding-global cp-fit-inner">
+                <div className="cp-fit-header" data-animate-order="0">
+                  <div>
+                    <h2>
+                      Not every project needs ARG. <span>The hard ones usually do.</span>
+                    </h2>
+                    <p>
+                      Before we talk scope, we look for the shape of the problem: where the risk is,
+                      what needs to stay reliable, and whether a small senior team can make a real
+                      difference.
+                    </p>
+                  </div>
                 </div>
-                <div className="cp-founders-grid">
-                  {FOUNDERS.map((founder, index) => (
-                    <FounderCard
-                      key={founder.name}
-                      founder={founder}
-                      animate={true}
-                      animateOrder={index + 1}
-                      onEmailClick={handleFounderEmail}
-                      onLinkedInClick={handleFounderLinkedIn}
-                    />
-                  ))}
+
+                <div className="cp-fit-panel" data-animate-order="1">
+                  <section className="cp-fit-block" aria-label="Where ARG fits">
+                    <SectionTicker label="Where ARG fits" className="cp-fit-ticker" />
+                    <div className="cp-fit-columns">
+                      {FIT_CHECKS.map(item => (
+                        <article key={item.title} className="cp-fit-column">
+                          <span className="cp-fit-accent" aria-hidden="true" />
+                          <div className="cp-fit-column-heading">
+                            <span>{item.index}</span>
+                            <h4>{item.title}</h4>
+                          </div>
+                          <p>{item.description}</p>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section
+                    className="cp-fit-block cp-fit-block--process"
+                    aria-label="How it starts"
+                  >
+                    <SectionTicker label="How it starts" className="cp-fit-ticker" />
+                    <div className="cp-fit-stepper">
+                      <span className="cp-fit-stepper-line" aria-hidden="true" />
+                      {CONVERSATION_STEPS.map((step, index) => (
+                        <article key={step.title} className="cp-fit-step">
+                          <span className="cp-fit-step-number">
+                            {String(index + 1).padStart(2, '0')}
+                          </span>
+                          <h4>{step.title}</h4>
+                          <p>{step.description}</p>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
                 </div>
               </div>
             </section>
@@ -260,8 +299,8 @@ export default function WorkWithUsPage() {
               buttonTextHover="Let's meet"
               animationClass="cp-animate"
               animate={true}
-              buttonLink="mailto:info@arg.software?subject=Work%20With%20ARG"
-              onPrimaryClick={() => trackCTA('work_with_us_message', 'work_with_us_cta')}
+              buttonLink="mailto:info@arg.software?subject=Working%20with%20ARG"
+              onPrimaryClick={() => trackCTA('working_with_us_message', 'working_with_us_cta')}
             />
           </section>
         </main>
