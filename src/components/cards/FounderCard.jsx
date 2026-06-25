@@ -1,3 +1,5 @@
+import { BaseCard } from './BaseCard';
+
 export function FounderCard({
   founder,
   animate = false,
@@ -6,15 +8,15 @@ export function FounderCard({
   onEmailClick,
   onLinkedInClick,
 }) {
-  const animationAttrs = animate
-    ? {
-        'data-animate': animationPreset,
-        ...(animateOrder !== undefined ? { 'data-animate-order': String(animateOrder) } : {}),
-      }
-    : {};
-
   return (
-    <article className="cp-founder-card" {...animationAttrs}>
+    <BaseCard
+      className="cp-founder-card"
+      variant="white"
+      padding="xl"
+      animate={animate}
+      animationPreset={animationPreset}
+      animationOrder={animateOrder}
+    >
       <div className="cp-founder-monogram" aria-hidden="true">
         {founder.initials}
       </div>
@@ -48,6 +50,6 @@ export function FounderCard({
           </a>
         </div>
       </div>
-    </article>
+    </BaseCard>
   );
 }

@@ -2,6 +2,7 @@ import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
 import {
   Navbar,
+  BaseCard,
   Footer,
   CTASection,
   SectionDivider,
@@ -213,11 +214,13 @@ export default function WorkingWithUsPage() {
                 </div>
                 <div className="cp-values-grid">
                   {INTERNAL_VALUES.map((value, index) => (
-                    <article
+                    <BaseCard
                       key={value.title}
                       className="cp-value-card"
-                      data-animate="fade-up"
-                      data-animate-order={index + 1}
+                      variant="light"
+                      padding="lg"
+                      animate={true}
+                      animationOrder={index + 1}
                     >
                       <span className="cp-value-number">{String(index + 1).padStart(2, '0')}</span>
                       <h3 className="cp-value-title">{value.title}</h3>
@@ -225,7 +228,7 @@ export default function WorkingWithUsPage() {
                       <div className="cp-value-anti">
                         <strong>NOT</strong> {value.antiValue}
                       </div>
-                    </article>
+                    </BaseCard>
                   ))}
                 </div>
               </div>

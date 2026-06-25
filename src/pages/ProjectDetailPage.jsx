@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Navbar, SEO, SectionDivider, arrowSvg } from '../components';
+import { BaseCard, Navbar, Pill, SEO, SectionDivider, arrowSvg } from '../components';
 import { ShuffleText } from '../components/widgets/ShuffleText';
 import { useScrollAnimations, useNextProjectSection, useTimeOnPage } from '../hooks';
 import { animateCountUp, getCountUpEnd } from '../hooks/useCountUp';
@@ -156,14 +156,16 @@ export default function ProjectDetailPage() {
                     <span className="prp-meta-label">Services</span>
                     <div className="prp-meta-services">
                       {project.services.map((service, i) => (
-                        <span
+                        <Pill
                           key={i}
                           className="prp-meta-service-tag"
+                          variant="outline"
+                          size="xs"
                           data-animate="tag-pop"
                           data-animate-order={i}
                         >
                           {service}
-                        </span>
+                        </Pill>
                       ))}
                     </div>
                   </div>
@@ -171,14 +173,16 @@ export default function ProjectDetailPage() {
                     <span className="prp-meta-label">Technology</span>
                     <div className="prp-meta-services">
                       {stackItems.map((tech, i) => (
-                        <span
+                        <Pill
                           key={i}
                           className="prp-stack-tag prp-stack-tag--inline"
+                          variant="light"
+                          size="sm"
                           data-animate="tag-pop"
                           data-animate-order={i + 4}
                         >
                           {tech}
-                        </span>
+                        </Pill>
                       ))}
                     </div>
                   </div>
@@ -316,11 +320,15 @@ export default function ProjectDetailPage() {
               <div className="prp-results-right">
                 <div className="prp-results-cards" data-animate-scope data-animate-stagger="150">
                   {project.metrics.map((metric, i) => (
-                    <div
+                    <BaseCard
                       key={i}
                       className="prp-metric-card"
-                      data-animate="fade-up"
-                      data-animate-order={i}
+                      variant="dark"
+                      padding="sm"
+                      radius="sm"
+                      hover="none"
+                      animate={true}
+                      animationOrder={i}
                     >
                       <div className="prp-metric-card-number">
                         {metric.displayValue ? (
@@ -355,7 +363,7 @@ export default function ProjectDetailPage() {
                           </span>
                         </p>
                       </div>
-                    </div>
+                    </BaseCard>
                   ))}
                 </div>
               </div>

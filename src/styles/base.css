@@ -1064,15 +1064,8 @@ input[type='file']:focus-visible {
 }
 
 .blog-promo_card-new-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.625rem;
-  border-radius: 999px;
-  font-size: var(--type-meta-small);
   font-weight: 500;
-  font-family: Neuemontreal, sans-serif;
   letter-spacing: var(--tracking-subtle);
-  white-space: nowrap;
 }
 
 .blog-promo_card-new-meta {

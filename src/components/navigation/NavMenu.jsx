@@ -5,6 +5,7 @@ import { Logo } from '../icons/Logo';
 import { trackCTA, trackEvent } from '../../hooks/useAnalytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { arrowSvg } from '../icons/SocialIcons';
+import { PillButton } from '../pills/Pill';
 import projects from '../../data/projects.json';
 
 const primaryMenuItems = [
@@ -221,15 +222,18 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
                 {item.projectLinks && (
                   <div className="nav_overlay-project-pills" aria-label="Use case pages">
                     {item.projectLinks.map(project => (
-                      <AppLink
+                      <PillButton
+                        as={AppLink}
                         key={project.to}
                         to={project.to}
                         className="nav_overlay-project-pill"
+                        variant="dark"
+                        size="xs"
                         onClick={handleLinkClick}
+                        iconAfter={<ArrowIcon className="nav_overlay-project-pill-arrow" />}
                       >
                         {project.label}
-                        <ArrowIcon className="nav_overlay-project-pill-arrow" />
-                      </AppLink>
+                      </PillButton>
                     ))}
                   </div>
                 )}

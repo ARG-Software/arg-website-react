@@ -7,6 +7,7 @@ export { RssIcon } from './icons/RssIcon';
 export { XIcon } from './icons/XIcon';
 
 export { arrowSvg, linkedinSvg, closeSvg } from './icons/SocialIcons';
+export { BaseCard } from './cards/BaseCard';
 export { ProjectItem } from './cards/ProjectItem';
 export { FounderCard } from './cards/FounderCard';
 export { CookieConsent } from './overlays/CookieConsent';
@@ -25,6 +26,7 @@ export { SectionTicker } from './layout/SectionTicker';
 export { LoadingScreen } from './layout/LoadingScreen';
 export { SEO } from './seo/SEO';
 export { PageHeader } from './headers/PageHeader';
+export { Pill, PillButton } from './pills/Pill';
 export { TagFilterPills } from './filters/TagFilterPills';
 export { SocialShareButtons } from './actions/SocialShareButtons';
 export { RelatedArticlesCarousel } from './widgets/RelatedArticlesCarousel';

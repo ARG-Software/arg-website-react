@@ -36,27 +36,17 @@
   gap: 1rem;
 }
 .cp-value-card {
-  background: #fafafd;
-  border: 1px solid rgba(12, 0, 46, 0.08);
-  border-radius: 1.25rem;
-  color: #0c002e;
   display: flex;
   flex-direction: column;
   min-height: 18rem;
   overflow: hidden;
-  padding: 1.875rem;
-  position: relative;
   text-align: left;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
 }
 .cp-value-card::before {
   content: '';
   position: absolute;
   inset: -1px;
-  border-radius: 1.25rem;
+  border-radius: inherit;
   padding: 1px;
   background: linear-gradient(
     150deg,
@@ -72,11 +62,6 @@
   mask-composite: exclude;
   opacity: 0.65;
   pointer-events: none;
-}
-.cp-value-card:hover {
-  border-color: rgba(12, 0, 46, 0.18);
-  box-shadow: 0 1rem 2rem -1.4rem rgba(12, 0, 46, 0.22);
-  transform: translateY(-0.125rem) !important;
 }
 .cp-value-number {
   background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
@@ -306,24 +291,10 @@
 }
 .cp-career-job-card {
   align-items: stretch;
-  background: #fff;
-  border: 1px solid rgba(12, 0, 46, 0.08);
-  border-radius: 1.25rem;
   display: grid;
   gap: 2rem;
   grid-template-columns: minmax(0, 1fr) auto;
   overflow: hidden;
-  padding: 2rem;
-  position: relative;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
-}
-.cp-career-job-card:hover {
-  border-color: rgba(12, 0, 46, 0.18);
-  box-shadow: 0 1rem 2rem -1.4rem rgba(12, 0, 46, 0.22);
-  transform: translateY(-0.125rem) !important;
 }
 .cp-career-job-card > * {
   position: relative;
@@ -359,18 +330,6 @@
   flex-wrap: wrap;
   gap: 0.5rem;
 }
-.cp-career-job-tags span,
-.cp-career-job-meta span {
-  border: 1px solid rgba(12, 0, 46, 0.12);
-  border-radius: 999px;
-  color: #666;
-  display: inline-flex;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
-  letter-spacing: var(--tracking-ui);
-  line-height: 1;
-  padding: 0.5rem 0.75rem;
-}
 .cp-career-job-meta {
   align-items: flex-end;
   display: flex;
@@ -380,28 +339,8 @@
   justify-content: space-between;
   min-width: 13rem;
 }
-.cp-career-job-meta button {
+.cp-career-job-apply {
   margin-top: auto;
-}
-.cp-career-job-meta button,
-.cp-application-submit button {
-  background: #0c002e;
-  border: 1px solid #0c002e;
-  border-radius: 999px;
-  color: #fff;
-  cursor: pointer;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-ui);
-  padding: 0.875rem 1.35rem;
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-  white-space: nowrap;
-}
-.cp-career-job-meta button:hover,
-.cp-application-submit button:hover {
-  opacity: 0.86;
-  transform: translateY(-1px);
 }
 
 /* Application Form */
@@ -531,10 +470,8 @@
   box-shadow: 0 0 0 3px rgba(201, 36, 215, 0.24);
   outline: none;
 }
-.cp-application-submit button {
-  background: #0c002e;
+.cp-application-submit .pill {
   border-color: rgba(255, 255, 255, 0.72);
-  color: #fff;
 }
 .cp-application-submit {
   align-items: center;
@@ -742,22 +679,9 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .cp-founder-card {
-  background: #fff;
-  border: 1px solid rgba(12, 0, 46, 0.08);
-  border-radius: 1.25rem;
   display: grid;
   gap: 1.75rem;
   grid-template-columns: 7.5rem minmax(0, 1fr);
-  padding: 2rem;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
-}
-.cp-founder-card:hover {
-  border-color: rgba(12, 0, 46, 0.18);
-  box-shadow: 0 1rem 2rem -1.4rem rgba(12, 0, 46, 0.22);
-  transform: translateY(-0.125rem) !important;
 }
 .cp-founder-monogram {
   align-items: center;

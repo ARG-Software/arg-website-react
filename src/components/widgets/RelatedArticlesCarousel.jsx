@@ -1,5 +1,7 @@
 import { startTransition, useEffect, useRef, useState } from 'react';
+import { BaseCard } from '../cards/BaseCard';
 import AppLink from '../navigation/AppLink';
+import { Pill } from '../pills/Pill';
 
 const VISIBLE_COUNT = 3;
 const TRANSITION_DELAY_MS = 360;
@@ -95,11 +97,17 @@ export function RelatedArticlesCarousel({
           aria-live="polite"
         >
           {visiblePosts.map((post, index) => (
-            <AppLink
+            <BaseCard
+              as={AppLink}
               key={post.slug}
               to={`/blog/${post.slug}/`}
               className="related-article-card"
-              data-animate-order={animate ? String(index + 2) : undefined}
+              variant="glass"
+              padding="sm"
+              radius="lg"
+              hover="none"
+              animate={animate}
+              animationOrder={index + 2}
               trackEvent="blog_related_click"
               trackData={{
                 blog_post_slug: post.slug,
@@ -107,13 +115,15 @@ export function RelatedArticlesCarousel({
                 location: 'blog_related_carousel',
               }}
             >
-              <span className="related-article-card__tag">{post.tag}</span>
+              <Pill className="related-article-card__tag" variant="muted" size="xs">
+                {post.tag}
+              </Pill>
               <h3>{post.title}</h3>
               <p>{post.subtitle || post.excerpt}</p>
               <span className="related-article-card__meta">
                 {[post.date, post.readTime].filter(Boolean).join(' - ')}
               </span>
-            </AppLink>
+            </BaseCard>
           ))}
         </div>
 

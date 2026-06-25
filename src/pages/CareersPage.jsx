@@ -3,6 +3,9 @@ import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA, trackEvent } from '../hooks/useAnalytics';
 import {
   Navbar,
+  BaseCard,
+  Pill,
+  PillButton,
   Footer,
   CTASection,
   SectionDivider,
@@ -52,25 +55,42 @@ function getJobTags(job) {
 
 function CareerJobCard({ job, index, onApply }) {
   return (
-    <article className="cp-career-job-card" data-animate="fade-up" data-animate-order={index + 1}>
+    <BaseCard
+      className="cp-career-job-card"
+      variant="white"
+      padding="xl"
+      animate={true}
+      animationOrder={index + 1}
+    >
       <div className="cp-career-job-main">
         <span className="cp-career-job-dept">{job.department}</span>
         <h3>{job.title}</h3>
         <p>{job.description}</p>
         <div className="cp-career-job-tags">
           {getJobTags(job).map(tag => (
-            <span key={tag}>{tag}</span>
+            <Pill key={tag} variant="outline" size="sm">
+              {tag}
+            </Pill>
           ))}
         </div>
       </div>
       <div className="cp-career-job-meta">
-        <span>{job.location}</span>
-        <span>{job.type}</span>
-        <button type="button" onClick={() => onApply(job)}>
+        <Pill variant="outline" size="sm">
+          {job.location}
+        </Pill>
+        <Pill variant="outline" size="sm">
+          {job.type}
+        </Pill>
+        <PillButton
+          className="cp-career-job-apply"
+          variant="dark"
+          size="md"
+          onClick={() => onApply(job)}
+        >
           Apply
-        </button>
+        </PillButton>
       </div>
-    </article>
+    </BaseCard>
   );
 }
 
@@ -300,7 +320,9 @@ export default function CareersPage() {
                       </label>
 
                       <div className="cp-application-submit">
-                        <button type="submit">Send application</button>
+                        <PillButton variant="dark" size="md" type="submit">
+                          Send application
+                        </PillButton>
                         <span>
                           {submitted
                             ? 'Application captured for testing.'

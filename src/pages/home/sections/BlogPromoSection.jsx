@@ -1,5 +1,6 @@
 import AppLink from '../../../components/navigation/AppLink';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
+import { Pill } from '../../../components/pills/Pill';
 import { trackBlogPostClick } from '../../../hooks/useAnalytics';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 
@@ -31,9 +32,9 @@ function BlogCard({ blogPost, animationOrder }) {
         <p className="blog-promo_card-new-excerpt">{blogPost.excerpt}</p>
       </div>
       <div className="blog-promo_card-new-footer">
-        <div className="blog-promo_card-new-tag" style={tagStyle}>
-          <span>{blogPost.tag}</span>
-        </div>
+        <Pill className="blog-promo_card-new-tag" variant="custom" size="xs" style={tagStyle}>
+          {blogPost.tag}
+        </Pill>
         <div className="blog-promo_card-new-meta">
           <span className="blog-promo_card-new-date">{blogPost.date}</span>
           <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
@@ -98,9 +99,14 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
                   <p className="blog-promo_card-new-excerpt">{heroPost.excerpt}</p>
                 </div>
                 <div className="blog-promo_hero-meta">
-                  <div className="blog-promo_card-new-tag" style={heroTagStyle}>
-                    <span>{heroPost.tag}</span>
-                  </div>
+                  <Pill
+                    className="blog-promo_card-new-tag"
+                    variant="custom"
+                    size="xs"
+                    style={heroTagStyle}
+                  >
+                    {heroPost.tag}
+                  </Pill>
                   <div className="blog-promo_hero-meta-bottom">
                     <span className="blog-promo_hero-date">{heroPost.date}</span>
                     <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
