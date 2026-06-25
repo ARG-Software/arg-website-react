@@ -4679,6 +4679,32 @@ figcaption {
   /* font-style: italic; */
 }
 
+.about_paragraph .about_point {
+  align-items: baseline;
+  display: flex;
+  gap: 0.875rem;
+  transition: color 0.2s ease;
+}
+
+.about_paragraph .about_point::before {
+  background-image: linear-gradient(90deg, #f0060d, #c924d7 49%, #7904fd);
+  border-radius: 999px;
+  content: '';
+  flex: 0 0 auto;
+  height: 0.125rem;
+  margin-top: 0.7em;
+  transition: width 0.2s ease;
+  width: 1.75rem;
+}
+
+.about_paragraph .about_point:hover {
+  color: #0c002e;
+}
+
+.about_paragraph .about_point:hover::before {
+  width: 2.5rem;
+}
+
 .services_contain.container.padding-global {
   padding-top: 8rem;
   padding-bottom: 8rem;

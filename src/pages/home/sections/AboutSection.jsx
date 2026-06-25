@@ -44,17 +44,19 @@ export function AboutSection({ className = '' }) {
           <div id="about-content-grid" className="about_content">
             <div className="about_paragraph">
               <p data-animate-order="2">
-                ARG builds digital products designed to grow alongside your business. Whether you
-                are a startup finding your footing or an enterprise scaling to new heights, we act
-                as your long-term partner—not just another vendor. We don't just write code; we
-                solve business problems. By combining technical rigour with strategic product
-                thinking, we ensure your software is ready for where you’re going, not just where
-                you are today.
+                ARG builds digital products designed to grow with your business. From early MVPs to
+                systems that need to scale, we work as a long-term engineering partner, not a
+                handoff vendor. We combine technical rigour with product thinking so your software
+                is ready for where you are going, not just where you are today.
               </p>
-              <p data-animate-order="3">Solid Architecture, built to scale.</p>
-              <p data-animate-order="4">Clean Code, maintainable and robust.</p>
-              <p data-animate-order="5">
-                True Partnership, we’re with you from the first sprint to the tenth iteration.
+              <p className="about_point" data-animate-order="3">
+                Solid architecture, built to scale.
+              </p>
+              <p className="about_point" data-animate-order="4">
+                Clean code, maintainable by design.
+              </p>
+              <p className="about_point" data-animate-order="5">
+                True partnership, from first sprint to future iterations.
               </p>
             </div>
             <a
@@ -66,7 +68,7 @@ export function AboutSection({ className = '' }) {
               onClick={handleContactClick}
             >
               <div className="text-button_list is-dark">
-                <div className="text-button_text">Help me with my product</div>
+                <div className="text-button_text">Build with ARG</div>
                 <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
               </div>
               <div className="text-button_list is-animated is-dark">
