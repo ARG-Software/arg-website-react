@@ -2,6 +2,17 @@ import { Breadcrumb } from '../navigation/Breadcrumb';
 import AppLink from '../navigation/AppLink';
 import { arrowSvg } from '../icons/SocialIcons';
 
+const SIZE_CLASSES = {
+  default: '',
+  large: 'page-header--large',
+  small: 'page-header--small',
+};
+
+const VARIANT_CLASSES = {
+  article: 'page-header--article',
+  'article bp-article-page-header': 'page-header--article bp-article-page-header',
+};
+
 /**
  * Unified page header component for subpages.
  * @param {Object} props
@@ -30,9 +41,17 @@ export function PageHeader({
   animationStagger = 150,
 }) {
   const titleLines = Array.isArray(title) ? title : [title];
-  const sizeClass = `page-header--${size}`;
-  const variantClass = variant ? ` page-header--${variant}` : '';
+  const headerClass = [
+    'page-header',
+    SIZE_CLASSES[size] ?? SIZE_CLASSES.default,
+    variant ? VARIANT_CLASSES[variant] : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
   const hasSideContent = sideItems.length > 0 || sideText;
+  const innerClass = hasSideContent
+    ? 'page-header__inner'
+    : 'page-header__inner page-header__inner--single';
 
   const scopeAttrs = animate
     ? {
@@ -103,8 +122,8 @@ export function PageHeader({
   };
 
   return (
-    <header className={`page-header ${sizeClass}${variantClass}`} {...scopeAttrs}>
-      <div className={`page-header__inner${hasSideContent ? '' : ' page-header__inner--single'}`}>
+    <header className={headerClass} {...scopeAttrs}>
+      <div className={innerClass}>
         <div className="page-header__lead">
           {breadcrumbs && breadcrumbs.length > 0 && (
             <Breadcrumb items={breadcrumbs} animate={animate} animationTrigger={animationTrigger} />
@@ -114,7 +133,11 @@ export function PageHeader({
             {titleLines.map((line, index) => (
               <div key={index} className="heading_line">
                 <span
-                  className={`page-header__heading-line ${index === 1 ? 'text-color-gradiant' : ''}`}
+                  className={
+                    index === 1
+                      ? 'page-header__heading-line text-color-gradiant'
+                      : 'page-header__heading-line'
+                  }
                   data-animate={animate ? 'slide-up-rotate' : undefined}
                   data-animate-trigger={animate ? animationTrigger : undefined}
                   data-animate-distance={animate ? '150%' : undefined}

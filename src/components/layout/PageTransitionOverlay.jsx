@@ -3,6 +3,18 @@ import { Logo } from '../icons/Logo';
 const SHADE_COUNT = 32;
 const SHADES = Array.from({ length: SHADE_COUNT }, (_, index) => index);
 
+const PHASE_CLASSES = {
+  idle: '',
+  covering: 'covering',
+  revealing: 'revealing',
+};
+
+const VARIANT_CLASSES = {
+  curtain: 'pt-overlay--curtain',
+  default: 'pt-overlay--default',
+  'project-image': 'pt-overlay--project-image',
+};
+
 export function PageTransitionOverlay({ phase, variant, imageTransition }) {
   const isProjectImage = variant === 'project-image' && imageTransition;
   const isCurtain = variant === 'curtain';
@@ -16,8 +28,16 @@ export function PageTransitionOverlay({ phase, variant, imageTransition }) {
       }
     : undefined;
 
+  const overlayClass = [
+    'pt-overlay',
+    PHASE_CLASSES[phase] ?? PHASE_CLASSES.idle,
+    VARIANT_CLASSES[variant] ?? VARIANT_CLASSES.default,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div className={`pt-overlay ${phase} pt-overlay--${variant}`} aria-hidden="true">
+    <div className={overlayClass} aria-hidden="true">
       {isCurtain && <div className="pt-overlay__curtain" />}
 
       {isDefault && (
