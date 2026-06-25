@@ -7,6 +7,8 @@ export function ProjectItem({
   imgSrc,
   mockupSrc,
   imgSrcSet,
+  thumbnailSrc,
+  thumbnailSrcSet,
   title,
   subtitle,
   problem,
@@ -25,6 +27,8 @@ export function ProjectItem({
   onProjectLinkClick,
 }) {
   const coverImageRef = useRef(null);
+  const coverSrc = thumbnailSrc || imgSrc;
+  const coverSrcSet = thumbnailSrcSet || imgSrcSet;
   const solutionText = Array.isArray(solution) ? solution[0] : solution;
   const projectLinks =
     Array.isArray(links) && links.length > 0
@@ -41,8 +45,8 @@ export function ProjectItem({
     return {
       transition: 'project-image',
       sourceImage: {
-        src: imgSrc,
-        srcSet: imgSrcSet,
+        src: coverSrc,
+        srcSet: coverSrcSet,
         sizes: '100vw',
         rect: {
           left: rect.left,
@@ -157,9 +161,9 @@ export function ProjectItem({
               loading="lazy"
               decoding="async"
               alt=""
-              src={imgSrc}
+              src={coverSrc}
               sizes="(max-width: 767px) 91vw, (max-width: 991px) 88vw, 24vw"
-              srcSet={imgSrcSet}
+              srcSet={coverSrcSet}
               className="projects_visual_img is-thumbnail"
               width="1200"
               height="800"

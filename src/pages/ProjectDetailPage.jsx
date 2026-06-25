@@ -224,10 +224,9 @@ export default function ProjectDetailPage() {
                       <img
                         src={projectMockup.src}
                         srcSet={projectMockup.srcSet}
+                        sizes="(max-width: 767px) 75vw, 26rem"
                         alt={projectMockup.alt}
                         loading="lazy"
-                        width="800"
-                        height="600"
                       />
                     </div>
                   </div>
