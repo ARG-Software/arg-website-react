@@ -3671,6 +3671,14 @@ figcaption {
   white-space: nowrap;
   font-size: 3.4375rem;
 }
+.infinity_item {
+  align-items: center;
+  display: inline-flex;
+}
+.infinity_dot {
+  margin-left: 0.45em;
+  margin-right: 0.45em;
+}
 .section_services {
   padding-top: 14rem;
 }

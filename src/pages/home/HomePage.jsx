@@ -20,8 +20,6 @@ import PROJECTS from '../../data/projects.json';
 import PARTNERS from '../../data/partners.json';
 import SERVICES from '../../data/services.json';
 
-const servicesText = SERVICES.infinityBand.join('   •   ') + '   •   ';
-
 export default function HomePage() {
   const [blogPosts] = useState(() => loadBlogPosts().slice(0, HOMEPAGE_BLOG_POSTS_COUNT));
 
@@ -101,7 +99,14 @@ export default function HomePage() {
           >
             <Marquee repetitions={2} trackClassName="infinity_list">
               <p className="infinity_text" data-animate="fade-up">
-                {servicesText}
+                {SERVICES.infinityBand.map(service => (
+                  <span className="infinity_item" key={service}>
+                    <span className="infinity_label">{service}</span>
+                    <span className="infinity_dot" aria-hidden="true">
+                      •
+                    </span>
+                  </span>
+                ))}
               </p>
             </Marquee>
           </div>
