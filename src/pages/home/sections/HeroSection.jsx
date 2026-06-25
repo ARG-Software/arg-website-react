@@ -56,7 +56,7 @@ export function HeroSection() {
             <div className="hero_bottom_info">
               <div className="hero_bottom_content">
                 <p className="hero_bottom_paragraph" data-animate="slide-up" data-animate-order="1">
-                  Your partner in creating scalable, reliable solutions
+                  Software architecture beyond the MVP
                 </p>
               </div>
             </div>
@@ -67,11 +67,11 @@ export function HeroSection() {
                 onClick={() => trackMailto('share_ideas', 'hero')}
               >
                 <div className="text-button_list" data-animate="slide-up" data-animate-order="2">
-                  <div className="text-button_text">Share my ideas</div>
+                  <div className="text-button_text">Talk through an idea</div>
                   <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                 </div>
                 <div className="text-button_list is-animated">
-                  <div className="text-button_text">Write us</div>
+                  <div className="text-button_text">Write to us</div>
                   <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                 </div>
               </a>
@@ -84,11 +84,11 @@ export function HeroSection() {
                   onClick={handleContactClick}
                 >
                   <div className="text-button_list" data-animate="slide-up" data-animate-order="3">
-                    <div className="text-button_text">I want a new software</div>
+                    <div className="text-button_text">Start a project</div>
                     <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                   </div>
                   <div className="text-button_list is-animated">
-                    <div className="text-button_text">We are here to help</div>
+                    <div className="text-button_text">Let's talk</div>
                     <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                   </div>
                 </a>
