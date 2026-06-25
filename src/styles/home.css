@@ -1,0 +1,67 @@
+/* ===== HOMEPAGE STYLES ===== */
+
+/* Services marquee */
+.section_infinity {
+  display: flex;
+  overflow: hidden;
+  padding-bottom: 5.625rem;
+  padding-top: 5.625rem;
+}
+
+.section_infinity.background-color-gray {
+  background-color: #f6f6f7;
+  color: #f6f6f7;
+}
+
+.section_infinity.background-color-gray.overflow-hidden {
+  background-color: #f6f6f7;
+  display: flex;
+  padding-bottom: 5rem;
+  padding-top: 5rem;
+}
+
+.infinity_list {
+  display: flex;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.infinity_text {
+  color: #0c002e;
+  font-size: 3.4375rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.infinity_item {
+  align-items: center;
+  display: inline-flex;
+}
+
+.infinity_dot {
+  margin-left: 0.45em;
+  margin-right: 0.45em;
+}
+
+@media screen and (max-width: 991px) {
+  .infinity_text {
+    font-size: 2.5rem;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .section_infinity {
+    padding-bottom: 1.875rem;
+    padding-top: 1.875rem;
+  }
+
+  .infinity_text {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .infinity_text {
+    font-size: 1.5rem;
+  }
+}

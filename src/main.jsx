@@ -9,6 +9,7 @@ import { LenisProvider } from './providers/LenisProvider.jsx';
 import { TransitionProvider } from './providers/TransitionProvider.jsx';
 import { CookieConsent } from './components/index.js';
 import './styles/base.css';
+import './styles/home.css';
 import './styles/components.css';
 import './styles/effects.css';
 
