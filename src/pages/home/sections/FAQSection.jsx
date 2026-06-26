@@ -8,18 +8,17 @@ const faqData = [
     a: (
       <>
         <p>
-          The cost depends entirely on scope, complexity, integrations, and scalability
-          requirements. An MVP with a focused feature set is very different from a multi-role
-          platform with complex workflows and third-party integrations.
+          Cost depends on the shape of the system: scope, risk, integrations, compliance,
+          performance, and how much uncertainty we need to remove before writing code.
         </p>
-        <p>Instead of fixed pricing, we provide:</p>
+        <p>Before estimating, we usually define:</p>
         <ul>
-          <li>A structured discovery phase</li>
-          <li>Technical breakdown of features</li>
-          <li>Architecture recommendations</li>
-          <li>A realistic timeline and budget range</li>
+          <li>The core workflows</li>
+          <li>The technical risks</li>
+          <li>The architecture direction</li>
+          <li>A realistic delivery range</li>
         </ul>
-        <p>This ensures clarity and prevents scope surprises later.</p>
+        <p>That keeps the conversation grounded and avoids optimistic guesses.</p>
       </>
     ),
   },
@@ -27,16 +26,16 @@ const faqData = [
     q: 'How long does it take to build an MVP?',
     a: (
       <>
-        <p>Most MVPs are delivered within 8–14 weeks, depending on:</p>
+        <p>Most focused MVPs take 8 to 14 weeks, depending on:</p>
         <ul>
           <li>Feature complexity</li>
-          <li>UX/UI depth</li>
-          <li>Integrations (payments, APIs, compliance, etc.)</li>
-          <li>Performance or security constraints</li>
+          <li>Product clarity</li>
+          <li>Integration depth</li>
+          <li>Security or compliance needs</li>
         </ul>
         <p>
-          We work in short development cycles so you can validate quickly and iterate based on real
-          user feedback.
+          We move quickly, but we do not build throwaway foundations. The goal is a product you can
+          learn from and keep evolving.
         </p>
       </>
     ),
@@ -46,16 +45,16 @@ const faqData = [
     a: (
       <>
         <p>
-          Yes. We collaborate with companies in North America, South America, Europe, and globally.
-          Our process is built for remote execution with:
+          Yes. ARG works remotely with teams across regions. What matters is not location, but
+          whether the communication rhythm supports serious engineering work.
         </p>
         <ul>
-          <li>Structured sprint reviews</li>
-          <li>Clear documentation</li>
-          <li>Transparent progress tracking</li>
-          <li>Reliable time zone overlap</li>
+          <li>Clear written context</li>
+          <li>Direct technical conversations</li>
+          <li>Predictable async updates</li>
+          <li>Enough overlap for decisions</li>
         </ul>
-        <p>Location is never a limitation — communication and process matter more.</p>
+        <p>If the problem is clear and the ownership is real, distance is not the blocker.</p>
       </>
     ),
   },
@@ -65,12 +64,12 @@ const faqData = [
       <>
         <p>Both. We support:</p>
         <ul>
-          <li>Startups building and validating MVPs</li>
-          <li>SMEs modernizing systems</li>
-          <li>Scaling companies optimizing performance</li>
-          <li>Enterprises building custom internal platforms</li>
+          <li>Startups building launch-ready products</li>
+          <li>Companies modernizing fragile systems</li>
+          <li>Teams scaling performance or reliability</li>
+          <li>Organizations building internal platforms</li>
         </ul>
-        <p>Engagement models are tailored to your growth stage.</p>
+        <p>The common thread is technical ownership, not company size.</p>
       </>
     ),
   },
@@ -79,17 +78,17 @@ const faqData = [
     a: (
       <>
         <p>
-          We select technology based on long-term maintainability and scalability, not trends.
-          Common stacks include:
+          We choose technology for maintainability, team fit, and production requirements. The stack
+          is a tool, not the strategy.
         </p>
         <ul>
           <li>Web: React, Next.js, TypeScript</li>
           <li>Backend: Node.js, .NET, Java</li>
           <li>Cloud: AWS, Azure, GCP</li>
-          <li>Mobile: React Native, Flutter</li>
+          <li>Mobile: React Native and Flutter</li>
           <li>Databases: PostgreSQL, MongoDB</li>
         </ul>
-        <p>Architecture decisions are driven by business goals.</p>
+        <p>The important part is choosing a system your team can operate after launch.</p>
       </>
     ),
   },
@@ -97,16 +96,16 @@ const faqData = [
     q: 'How do you ensure scalability and code quality?',
     a: (
       <>
-        <p>We apply engineering best practices:</p>
+        <p>Quality starts before implementation. We make the important decisions explicit:</p>
         <ul>
-          <li>Clean architecture principles</li>
-          <li>Automated testing</li>
+          <li>Architecture boundaries</li>
+          <li>Testing strategy</li>
           <li>Code reviews</li>
-          <li>CI/CD pipelines</li>
-          <li>Infrastructure as Code</li>
-          <li>Security-first design</li>
+          <li>CI/CD and release flow</li>
+          <li>Observability and recovery paths</li>
+          <li>Security and data constraints</li>
         </ul>
-        <p>We build software meant to evolve — not to be rewritten after year one.</p>
+        <p>We build software meant to evolve, not be rewritten after year one.</p>
       </>
     ),
   },
@@ -114,14 +113,15 @@ const faqData = [
     q: 'Can you scale our product after launch?',
     a: (
       <>
-        <p>Yes. We frequently support clients post-launch with:</p>
+        <p>Yes. Some of our most valuable work happens after launch:</p>
         <ul>
           <li>Performance optimization</li>
-          <li>Cloud cost optimization</li>
-          <li>Feature expansion</li>
-          <li>Dedicated team extension</li>
+          <li>Reliability improvements</li>
+          <li>Cloud and platform work</li>
+          <li>Feature evolution</li>
+          <li>Senior team extension</li>
         </ul>
-        <p>Our goal is long-term partnership, not one-off delivery.</p>
+        <p>We prefer long-term ownership over one-off handoffs.</p>
       </>
     ),
   },
@@ -129,12 +129,13 @@ const faqData = [
     q: 'Do you provide dedicated development teams?',
     a: (
       <>
-        <p>Yes. You can work with:</p>
+        <p>Yes. Depending on the need, we can provide:</p>
         <ul>
-          <li>A cross-functional product team</li>
-          <li>Dedicated engineers embedded into your internal team</li>
+          <li>A focused product team</li>
+          <li>Senior engineers embedded with your team</li>
+          <li>Architecture or consulting support</li>
         </ul>
-        <p>We adapt to your preferred collaboration model.</p>
+        <p>We adapt the model to the work, but keep the team senior and accountable.</p>
       </>
     ),
   },
@@ -142,15 +143,15 @@ const faqData = [
     q: 'What is your development process?',
     a: (
       <>
-        <p>Our structured process includes:</p>
+        <p>Our process is intentionally simple:</p>
         <ul>
-          <li>Discovery &amp; technical planning</li>
-          <li>Architecture design</li>
-          <li>Agile sprint-based development</li>
-          <li>Continuous QA &amp; testing</li>
-          <li>Launch &amp; support</li>
+          <li>Understand the context</li>
+          <li>Map the risks</li>
+          <li>Design the architecture</li>
+          <li>Build in short cycles</li>
+          <li>Launch and stay close</li>
         </ul>
-        <p>You maintain full visibility and control throughout the lifecycle.</p>
+        <p>You get visibility without process theatre.</p>
       </>
     ),
   },
@@ -158,15 +159,16 @@ const faqData = [
     q: 'How do we get started?',
     a: (
       <>
-        <p>We begin with a strategy call to understand:</p>
+        <p>Send us the context first. We look for the shape of the problem:</p>
         <ul>
-          <li>Your business goals</li>
+          <li>Your product goals</li>
           <li>Technical constraints</li>
-          <li>Growth plans</li>
+          <li>Current risks</li>
           <li>Timeline expectations</li>
         </ul>
         <p>
-          From there, we provide a clear roadmap and proposal. No guesswork. No inflated promises.
+          If there is a fit, the first conversation is technical. If there is not, we will say that
+          clearly.
         </p>
       </>
     ),

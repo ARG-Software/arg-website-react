@@ -74,7 +74,7 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
             <div className="social-section_header">
               <div>
                 <h2 className="heading-style-h2" style={{ color: '#fff' }} data-animate-order="0">
-                  We write about what we build
+                  Engineering Field Notes
                 </h2>
               </div>
               <div
@@ -119,11 +119,11 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
             <div className="blog-promo_footer" data-animate-order="10">
               <AppLink to="/blog" className="text-button w-inline-block">
                 <div className="text-button_list">
-                  <div className="text-button_text text-no-wrap">Read all blog posts</div>
+                  <div className="text-button_text text-no-wrap">Read blog</div>
                   <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                 </div>
                 <div className="text-button_list is-animated">
-                  <div className="text-button_text text-no-wrap">Browse the blog</div>
+                  <div className="text-button_text text-no-wrap">Browse posts</div>
                   <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                 </div>
               </AppLink>

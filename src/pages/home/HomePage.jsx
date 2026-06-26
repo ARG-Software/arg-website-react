@@ -77,11 +77,11 @@ export default function HomePage() {
             >
               <AppLink to="/partners" className="text-button w-inline-block meet-up-align">
                 <div className="text-button_list is-dark">
-                  <div className="text-button_text">See all partners</div>
+                  <div className="text-button_text">View partners</div>
                   <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                 </div>
                 <div className="text-button_list is-animated is-dark">
-                  <div className="text-button_text meet-text">Meet them</div>
+                  <div className="text-button_text meet-text">Who trusts us</div>
                   <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
                 </div>
               </AppLink>

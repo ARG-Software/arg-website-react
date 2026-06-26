@@ -14,14 +14,14 @@ export function ContactSection({ className = '' }) {
           <CTASection
             wrapInSection={false}
             includePadding={false}
-            title="Ready to scale?"
-            titleHighlight="We're listening"
-            buttonTextNotHover="Show me more"
-            buttonTextHover="View Portfolio"
+            title="Hard problem?"
+            titleHighlight="Let's solve it"
+            buttonTextNotHover="Portfolio"
+            buttonTextHover="See proof"
             buttonLink="/files/portfolio.pdf"
             onPrimaryClick={() => trackCTA('portfolio', 'homepage_cta')}
-            secondButtonTextNotHover="Let's start"
-            secondButtonTextHover="2 minutes"
+            secondButtonTextNotHover="Start brief"
+            secondButtonTextHover="2 min brief"
             secondButtonLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
             onSecondaryClick={() => trackCTA('typeform', 'homepage_contact')}
             animate={true}

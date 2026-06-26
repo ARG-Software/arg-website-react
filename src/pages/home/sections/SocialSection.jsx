@@ -198,7 +198,7 @@ export function SocialSection({ className = '' }) {
             <div className="social-section_header" data-animate-order="0">
               <div>
                 <h2 className="heading-style-h2" style={{ color: '#fff' }}>
-                  See what what we are saying outside of our website
+                  What we share outside the site
                 </h2>
               </div>
               <div className="subtitle_tag-wrapper is--white hide-mobile-landscape">

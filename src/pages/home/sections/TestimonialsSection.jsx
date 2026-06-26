@@ -3,7 +3,7 @@ import { SectionDivider } from '../../../components/layout/SectionDivider';
 const testimonialsData = [
   {
     quote:
-      'It was a pleasure to work with! Good communication solid work and helped us deliver our new version of the product in a timely fashionable way.',
+      'It was a pleasure to work with! Good communication, solid work, and helped us deliver our new version of the product in a timely fashion.',
     author: 'Marc-André Mignault, Project Manager at Skytracks',
   },
   {
@@ -13,7 +13,7 @@ const testimonialsData = [
   },
   {
     quote:
-      'Jose and Rui delivered good work and I enjoyed working with them. They transformed a legacy api from PHP to Typescript, where their architectural skills in building an object-oriented backend where really handy. They were quick in extending their knowledge and competence in Typescript-based projects to successfully complete the project. It is likely that we will hire them in the future for projects.',
+      'Jose and Rui delivered good work and I enjoyed working with them. They transformed a legacy API from PHP to TypeScript, where their architectural skills in building an object-oriented backend were really handy. They were quick in extending their knowledge and competence in TypeScript-based projects to successfully complete the project. It is likely that we will hire them in the future for projects.',
     author: 'Hendrik, CTO at Dokutar',
   },
   {
