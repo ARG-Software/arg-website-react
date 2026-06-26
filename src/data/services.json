@@ -1,58 +1,58 @@
 {
   "infinityBand": [
-    "Product Engineering",
-    "Scalable Platforms",
-    "SaaS Products",
-    "Launch-Ready MVPs",
+    "Dedicated Teams",
+    "Staff Augmentation",
+    "Technical Consulting",
+    "MVP Delivery",
     "AI Automation",
-    "Cloud Infrastructure",
-    "Backend Systems",
-    "Frontend Experiences"
+    "Software Architecture",
+    "Cloud Platforms",
+    "Product Engineering"
   ],
   "details": [
     {
       "number": "01",
-      "heading": "Product Discovery + Prototyping",
-      "tags": ["Product Design", "Prototyping"],
-      "content": "You have to love it, but the truth is: we're thinking about your customer from day one. We study your ideas before transforming them into actionable plans, by analyzing your business needs, market trends, and customer demands. Only then do you get an in-depth roadmap to create your digital product. Let's build one that doesn't just enter the market but leads it."
+      "heading": "Dedicated Product Teams",
+      "tags": ["Product Engineering", "Long-Term Delivery"],
+      "content": "A focused ARG team working as your software delivery partner. We bring senior engineers, product thinking, architecture discipline, and delivery ownership to build, ship, and evolve products over time."
     },
     {
       "number": "02",
-      "heading": "MVP Launch",
-      "tags": ["Minimum Viable Product", "Launch", "AI"],
-      "content": "You guessed it right: the proper strategy can do you places. Launch your MVP flawlessly with a streamlined approach. We combine human expertise with AI-powered insights to refine your concept, validate assumptions, and prioritize what really matters. Get expert advice from concept to market launch, focusing on your MVP's prime features. This fast, data-driven strategy works wonders in today's fast-paced business world. So, rest assured, your (minimum) effort will land optimal results."
+      "heading": "Staff Augmentation",
+      "tags": ["Senior Engineers", "Team Extension"],
+      "content": "Add experienced engineers to your existing team without lowering the bar. We help companies increase delivery capacity, fill technical gaps, and move faster while keeping quality, communication, and ownership high."
     },
     {
       "number": "03",
-      "heading": "Frontend Development",
-      "tags": ["Maintainable", "Scalable"],
-      "content": "Build a website or app that adjusts, adapts, and delivers clear messages. You can only get this by creating a smooth experience across all devices — for everyone. Function and appeal have never looked so good."
+      "heading": "Technical Consulting",
+      "tags": ["Architecture", "Audits", "Strategy"],
+      "content": "Bring us in when the technical decisions matter. We help with architecture reviews, scalability planning, modernization, delivery strategy, AI adoption, and complex product or platform decisions."
     },
     {
       "number": "04",
-      "heading": "Backend Development",
-      "tags": ["Efficient", "Scalable"],
-      "content": "The behind-the-scenes nobody sees is where everything starts. Build your website or app from the basics: databases, servers, and accounts. We handle what users don't see, assuring everything runs smoothly whenever they land on your (brand-new) digital product. Bet on a solution that scales with your business."
+      "heading": "MVP + Product Delivery",
+      "tags": ["MVP", "Launch", "Iteration"],
+      "content": "We take ideas from concept to launch with the right balance of speed and engineering judgment. The result is not a throwaway prototype, but a product foundation ready to learn, adapt, and grow."
     },
     {
       "number": "05",
-      "heading": "Server Infrastructure",
-      "tags": ["DevOps", "Cloud"],
-      "content": "Set up robust server infrastructure with automated deployment pipelines. We build scalable, secure, and cost-effective solutions that grow with your business. From cloud architecture to CI/CD, we handle the foundation so you can focus on building features."
+      "heading": "AI + Automation",
+      "tags": ["AI", "Integrations", "Workflows"],
+      "content": "We embrace AI where it creates real leverage. From intelligent product features to system integrations, internal automation, and developer workflows, we use AI and automation to reduce friction, connect tools, and help teams move faster."
     },
     {
       "number": "06",
-      "heading": "Automation",
-      "tags": ["Efficiency", "AI"],
-      "content": "Efficiency isn't just a goal—it's a strategy. Streamline your operations with smart automation that removes friction and frees your team to focus on what truly matters. Combining proven workflows with AI-powered optimization, we help you cut manual effort, reduce errors, and move faster than ever. From automating repetitive tasks to orchestrating complex processes, our approach ensures every system works in sync."
+      "heading": "Cloud + Platform Engineering",
+      "tags": ["Cloud", "DevOps", "Reliability"],
+      "content": "We build the technical foundation behind reliable software: cloud infrastructure, CI/CD, observability, environments, deployments, and platform practices that help teams ship with confidence."
     }
   ],
-  "expertise": [
-    "AI & Intelligent Systems",
-    "Architecture Consulting",
-    "Custom Development",
-    "ERP & CRM",
-    "Fintech Solutions",
-    "Scalability"
+  "services": [
+    "Dedicated Teams",
+    "Staff Augmentation",
+    "Technical Consulting",
+    "MVP Delivery",
+    "AI + Automation",
+    "Cloud Platforms"
   ]
 }

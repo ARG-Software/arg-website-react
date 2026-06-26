@@ -69,9 +69,9 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
 
                 {/* Services (text only) */}
                 <div className="footer-nav-col">
-                  <div className="footer-col-title">Expertise</div>
+                  <div className="footer-col-title">Services</div>
                   <div className="footer-col-list">
-                    {SERVICES.expertise.map(item => (
+                    {SERVICES.services.map(item => (
                       <span key={item} className="footer-col-text">
                         {item}
                       </span>

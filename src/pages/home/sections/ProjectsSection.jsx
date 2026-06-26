@@ -22,7 +22,7 @@ export function ProjectsSection({ projects, className = '' }) {
             data-animate={ANIMATION_PRESETS.fadeUp}
             data-animate-order="0"
           >
-            They trusted us. It's your time now.
+            Proof in production, not promises.
           </h2>
           <div
             className="subtitle_tag-wrapper"

@@ -15,7 +15,7 @@ const STATS = [
   },
   {
     value: '25',
-    label: 'Years of experience combined',
+    label: 'Years of senior engineering experience',
     imageSrc: '/images/homepage/stats-experience.webp',
   },
   {
@@ -209,32 +209,21 @@ export function WorkStatsSection({ className = '' }) {
                 <div className="overflow-hidden">
                   <div className="heading_wrap">
                     <h2 data-animate="fade-up" data-animate-order="1" className="work_heading">
-                      From Zero to Hero
+                      Senior Ownership
                     </h2>
                   </div>
                 </div>
                 <div className="padding-bottom padding-30-44"></div>
                 <p className="text-color-grey" data-animate="fade-up" data-animate-order="2">
-                  By trusting us, you (always) end up winning. Even if we meet once in a lifetime,
-                  you get a solid, lasting partnership where people come first. <br />
-                  And each challenge, too.
-                  <br />‍<br />
-                  Once you decide to go on this adventure, know that your job always comes first.
-                  Each client and challenge deserves everything we have, so we don't pile up tasks
-                  but instead focus on increasing quality.
-                  <br />
-                  And yes, we answer fast. So, feel free to tell us what worries you during the
-                  process.
-                  <br />
-                  <br />
-                  Don't expect endless emails and calls. We'll discuss everything at the right time.
-                  <br />
-                  <br />
-                  There's no micro-management, only a primary focus: meeting your goals and
-                  deadlines.
-                  <br />
-                  One thing is sure: you'll always get a digital, battle-proof, scalable solution.
-                  Expect an all-in team, ready to meet your expectations.
+                  ARG works best when the problem is complex, the stakes are real, and the system
+                  has to last. We keep the team small, senior, and close to the work: understand the
+                  risk, design the path, ship the code, and stay accountable when it reaches
+                  production.
+                </p>
+                <p className="text-color-grey" data-animate="fade-up" data-animate-order="3">
+                  No vendor theatre, no endless status loops. You get direct technical
+                  conversations, clear trade-offs, fast answers, and the discipline to say no when a
+                  shortcut will cost you later.
                 </p>
               </div>
               <div className="padding-bottom padding-80-76"></div>

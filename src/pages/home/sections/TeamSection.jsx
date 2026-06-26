@@ -5,7 +5,7 @@ import { trackSocial } from '../../../hooks/useAnalytics';
 const teamMembers = [
   {
     name: 'Jose Antunes',
-    role: 'CO-FOUNDER - Software developer',
+    role: 'Co-founder, Software Engineer',
     linkedin: 'https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/',
     imgSrc:
       'https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9.jpg',
@@ -15,7 +15,7 @@ const teamMembers = [
   },
   {
     name: 'Rui Rocha',
-    role: 'CO-FOUNDER - Software developer',
+    role: 'Co-founder, Software Engineer',
     linkedin: 'https://www.linkedin.com/in/ruirochawork/',
     imgSrc:
       'https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1).jpg',
@@ -46,14 +46,15 @@ export function TeamSection({ className = '' }) {
                 <div className="overflow-hidden">
                   <div className="heading_wrap">
                     <h2 className="team_heading" data-animate="fade-up" data-animate-order="1">
-                      You can't do anything without brains
+                      Built by Engineers
                     </h2>
                   </div>
                 </div>
                 <div className="padding-bottom padding-30-44"></div>
                 <p className="text-color-grey" data-animate-order="2">
-                  More than a team — your innovation partners. Meet the passionate experts dedicated
-                  to fueling your success.
+                  ARG is led by senior engineers who stay close to the architecture, code, and
+                  production reality. You do not get layers of account management. You work with the
+                  people responsible for the technical decisions.
                 </p>
               </div>
               <div className="padding-bottom padding-80-74"></div>
@@ -101,12 +102,10 @@ export function TeamSection({ className = '' }) {
                         href={m.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="team-social-link w-inline-block"
-                        data-animate="fade-up"
-                        data-animate-order="2"
+                        className="team-social-link"
                         onClick={() => trackSocial('linkedin', 'homepage_team')}
                       >
-                        <div className="team-social-link-icon w-embed">{linkedinSvg}</div>
+                        <span className="team-social-link-icon">{linkedinSvg}</span>
                       </a>
                     </div>
                   </div>
