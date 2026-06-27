@@ -5,7 +5,7 @@
     "subtitle": "Fintech",
     "client": "Mojaloop",
     "timeline": "Ongoing",
-    "services": ["Backend", "Frontend", "CI/CD", "QA & Testing"],
+    "services": ["Core Platform Rebuild", "Payments Architecture", "Backend", "QA & Testing"],
     "imgSrc": "/images/projects/heroes/mojaloop-hero-3200.webp",
     "imgSrcSet": "/images/projects/heroes/mojaloop-hero-640.webp 640w, /images/projects/heroes/mojaloop-hero-828.webp 828w, /images/projects/heroes/mojaloop-hero-1280.webp 1280w, /images/projects/heroes/mojaloop-hero-1600.webp 1600w, /images/projects/heroes/mojaloop-hero-1920.webp 1920w, /images/projects/heroes/mojaloop-hero-2560.webp 2560w, /images/projects/heroes/mojaloop-hero-3200.webp 3200w",
     "thumbnailSrc": "/images/projects/heroes/mojaloop-thumb-1600.webp",
@@ -14,19 +14,19 @@
     "mockupSrcSet": "/images/projects/mockups/mojaloop-mockup-360.webp 360w, /images/projects/mockups/mojaloop-mockup-500.webp 500w, /images/projects/mockups/mojaloop-mockup-800.webp 800w",
     "liveLink": "https://mojaloop.io/",
     
-    "intro": "An open-source platform designed to foster financial inclusion on a global scale - connecting diverse financial systems and enabling seamless, secure digital transactions for underserved populations.",
-    "challenge": "Implementing Mojaloop's financial hub was not simply about building a platform - it was about making fundamentally different systems work together in environments where little is standardized.\n\nFrom a technical standpoint, the main challenge was integrating multiple independent systems - such as banks, mobile wallets, and payment providers - that were never designed to interoperate. Each operates with its own protocols, data formats, and constraints. Creating a unified and reliable transaction flow required a resilient architecture capable of ensuring consistency, security, and high performance, even under heavy load. This became even more complex in regions with unstable networks or limited bandwidth, where fault tolerance is essential.\n\nAt the same time, the implementation had to adapt to diverse regulatory environments. Every country brings its own legal requirements, compliance rules, and financial standards. Aligning the platform with these regulations - without fragmenting the system or limiting scalability - required careful design and continuous adjustment.\n\nBeyond technology and regulation, there was also an ecosystem challenge. The platform depends on collaboration between institutions that may not naturally align, such as banks, fintechs, and telecom operators. Encouraging these participants to adopt shared standards and integrate into a common infrastructure required building trust and coordinating across organizational boundaries.\n\nIn essence, the challenge was about orchestrating a complex and evolving system where technology, regulation, and collaboration all needed to align under constrained and fragmented conditions.",
+    "intro": "A ground-up rebuild of Mojaloop vNext, the open-source payment switch built for interoperable, high-volume transactions across banks, wallets, payment providers, and financial institutions.",
+    "description": "ARG joined the core Mojaloop vNext team to help rebuild the open-source payment switch from the ground up. The previous implementation was no longer fit for the intended transaction flow, scale, and bank adoption path, so the work focused on redesigning the architecture around microservices, zero-trust service boundaries, controlled core dependencies, and compatibility with multiple ISO/payment-message standards.",
+    "challenge": "Mojaloop vNext needed to move beyond an implementation that was blocking the intended payment flow and limiting the path toward reliable bank adoption.\n\nThe goal was not to patch the old system, but to rebuild the open-source switch around clearer service boundaries, controlled core logic, and transaction flows that could support mass usage.\n\nThe platform also needed to interoperate with different financial institutions and payment-message standards, including ISO-based requirements, so banks and payment providers could integrate it without forcing every participant into the same internal model.",
     "solution": [
-      "Upgraded the technology stack to ensure scalability, security, and performance - adopting the latest versions of programming languages, databases, and infrastructure components to accommodate growing transaction volumes",
-      "Refined the architecture to be more modular and extensible using microservices, enabling agile development and scalability while maintaining interoperability standards",
-      "Implemented real-time transaction settlement to reduce delays and improve user experience, integrating instant payment systems for swift and secure fund transfers",
-      "Prioritized robust security measures including advanced encryption, multi-factor authentication, and biometric verification - with regular security audits to safeguard sensitive financial data",
-      "Developed tools and features that assist financial institutions in adhering to evolving regulatory standards across different jurisdictions, including automated reporting, KYC/AML processes, and audit trails",
-      "Enhanced the user experience by improving the platform's interface, ensuring it's intuitive and accessible to diverse user groups with localization and assistive technology support",
-      "Provided comprehensive documentation, SDKs, and APIs to encourage third-party developers to build upon the Mojaloop platform and foster an active developer community",
-      "Created a detailed migration plan ensuring a smooth transition from the current version to vNext, including data migration strategies, backward compatibility considerations, and a phased rollout approach"
+      "Helped redesign Mojaloop vNext as a ground-up rebuild of the open-source payment switch",
+      "Reworked the platform around a microservice architecture with zero trust between services",
+      "Rebuilt core payment services with a controlled dependency surface so critical logic stayed understandable, maintainable, and owned by the project",
+      "Designed transaction flows for high-volume payment processing across banks, wallets, and payment providers",
+      "Supported compatibility with multiple ISO/payment-message standards to make bank adoption and integration more practical",
+      "Strengthened participant isolation, transaction orchestration, settlement flows, and operational reliability",
+      "Supported testing, QA, and migration work so the new version could move from architectural redesign toward production-grade adoption"
     ],
-    "impact": "Enabled seamless digital payments across borders, empowering people in developing regions to access financial tools through mobile money, banking apps, and fintech - transforming the landscape of inclusive finance.",
+    "impact": "Helped move Mojaloop vNext toward a more controllable, secure, scalable, and bank-ready payment-switch foundation, capable of supporting high-volume transaction processing and integration across different financial institutions and payment-message standards.",
     "metrics": [
       { "value": "2000", "label": "Transactions per second" },
       { "value": "6", "label": "Countries impacted" },
@@ -90,28 +90,21 @@
         "label": "Requests per second under sustained cluster load"
       },
       {
-        "value": "300",
-        "displayValue": "200-300ms",
-        "label": "Average lookup and quote response time"
-      },
-      {
         "value": "770",
         "displayValue": "770ms",
         "label": "Average ledger transfer processing time"
       },
-      { "value": "0", "suffix": "", "label": "Functional errors in multi-million request tests" },
-      { "value": "100", "suffix": "+", "label": "Summit attendees using the app on site" },
-      { "value": "0", "suffix": "", "label": "Transfer requests failed during the live showcase" }
+      { "value": "0", "suffix": "", "label": "Failed transfers during 100+ person live showcase" }
     ],
     "stack": "Mojaloop vNext, Open Payments, Interledger Protocol, Event-Driven Architecture, Domain-Driven Design, Distributed Systems, Payment Switching, Ledger Orchestration, QR Payments, Merchant Payments, Mobile App, Core Banking"
   },
   {
     "slug": "dokutar",
     "title": "Dokutar",
-    "subtitle": "Digital Marketing",
+    "subtitle": "Compliance Tech",
     "client": "MbNetzwerk",
     "timeline": "2 Years",
-    "services": ["Backend", "Frontend", "CI/CD", "QA & Testing"],
+    "services": ["Backend Redesign", "Database Migration", "Multitenancy", "Security"],
     "imgSrc": "/images/projects/heroes/dokutar-hero-3200.webp",
     "imgSrcSet": "/images/projects/heroes/dokutar-hero-640.webp 640w, /images/projects/heroes/dokutar-hero-828.webp 828w, /images/projects/heroes/dokutar-hero-1280.webp 1280w, /images/projects/heroes/dokutar-hero-1600.webp 1600w, /images/projects/heroes/dokutar-hero-1920.webp 1920w, /images/projects/heroes/dokutar-hero-2560.webp 2560w, /images/projects/heroes/dokutar-hero-3200.webp 3200w",
     "thumbnailSrc": "/images/projects/heroes/dokutar-thumb-1600.webp",
@@ -119,20 +112,22 @@
     "mockupSrc": "/images/projects/mockups/dokutar-mockup-800.webp",
     "mockupSrcSet": "/images/projects/mockups/dokutar-mockup-360.webp 360w, /images/projects/mockups/dokutar-mockup-500.webp 500w, /images/projects/mockups/dokutar-mockup-800.webp 800w",
     "liveLink": "https://www.dokutar.de",
-    "intro": "A cloud-based software for creating process documentation - guiding freelancers and entrepreneurs through complex tax compliance with ease, saving time and money for the next audit.",
-    "challenge": "Designing a modern tax documentation platform tailored for businesses in Germany, with emphasis on local compliance, stability, and scalability.\n\nThe challenge was to create a digital tool that streamlines and manages the documentation and compliance processes related to taxation. The platform needed to securely store and organize tax-related documents - financial records, invoices, receipts, and tax forms - in a cloud-based environment with automatic data capture and extraction to reduce manual entry errors.\n\nWorkflow automation was critical: guiding users through the tax documentation process, ensuring all necessary steps are completed, with real-time collaboration capabilities for colleagues and tax professionals. The system also needed robust security measures including data encryption, access controls, detailed audit trails, and full compliance with German tax regulations and standards.",
+    "intro": "A compliance platform for German businesses that had outgrown its original Node and WordPress architecture and needed a scalable, secure, multitenant backend foundation.",
+    "description": "ARG was brought in after Dokutar had outgrown its original Node and WordPress-based architecture. The platform needed to support more clients, stronger tenant isolation, and a scalable backend foundation, so we redesigned the backend and database, performed migrations, introduced multitenancy, and reinforced security to keep each client's data private and separated.",
+    "challenge": "Dokutar had grown beyond its original technical foundation. Parts of the system were built across Node and WordPress, which made scaling harder as the client base expanded and the product needed stronger data isolation between tenants.\n\nThe core problem was architectural: the backend, database model, and deployment approach needed to support more clients without creating data leakage risk, performance bottlenecks, or operational complexity.\n\nBecause the platform handled sensitive tax and process documentation, each client needed strict privacy guarantees. Multitenancy could not simply mean shared infrastructure; it required clear tenant separation, safer data access patterns, and stronger controls around sensitive information.",
     "solution": [
-      "Rebuilt the backend from scratch using a secure, scalable architecture - implementing cloud-based document storage with automatic data capture and extraction to eliminate manual entry errors",
-      "Implemented a point-and-click UI that simplifies documentation workflows - guiding users through complex tax questions with contextual explanations and support at crucial decision points",
-      "Automated complex compliance and audit requirements tailored to local German regulations - including version control, compliance checks with real-time alerts, and detailed audit trails for full transparency",
-      "Built real-time collaboration features enabling users and tax professionals to review and approve documents simultaneously, with role-based access control to protect sensitive information",
-      "Integrated with accounting software and tax filing systems to streamline the entire tax process from documentation to submission, with reporting and analytics tools for data-driven decisions"
+      "Redesigned the backend architecture so the platform could scale beyond its original Node and WordPress-based foundation",
+      "Reworked the database model to support growth, safer data access, and tenant-aware workflows",
+      "Planned and executed migrations from the legacy setup into the redesigned backend foundation",
+      "Introduced multitenancy so multiple clients could operate on the platform with clear separation",
+      "Reinforced security controls to reduce the risk of client data exposure across tenants",
+      "Improved the technical foundation for compliance-heavy workflows, auditability, and future product growth"
     ],
-    "impact": "Businesses can now manage tax workflows with ease, meet German regulatory standards, and expand operations with confidence - turning a complex compliance process into a simple, guided experience.",
+    "impact": "Dokutar gained a backend foundation that could support growth without compromising tenant privacy. The platform became easier to scale, safer to operate, and better prepared for more clients, migrations, and compliance-heavy workflows.",
     "metrics": [
       { "value": "50000", "label": "Documents processed monthly" },
       { "value": "98", "label": "Compliance accuracy rate %" },
-      { "value": "2000", "label": "Active business users" }
+      { "value": "5", "suffix": "+", "label": "Multitenant client workspaces" }
     ],
     "stack": "TypeORM, Express, React, Docker, Jest, MySQL, Node"
   },
@@ -142,7 +137,7 @@
     "subtitle": "Music Tech",
     "client": "SkyTracks",
     "timeline": "1 Year",
-    "services": ["Backend", "Frontend", "CI/CD", "QA & Testing"],
+    "services": ["Frontend Migration", "Latency Optimization", "Instrument Connectivity", "QA & Testing"],
     "imgSrc": "/images/projects/heroes/sky-tracks-hero-3200.webp",
     "imgSrcSet": "/images/projects/heroes/sky-tracks-hero-640.webp 640w, /images/projects/heroes/sky-tracks-hero-828.webp 828w, /images/projects/heroes/sky-tracks-hero-1280.webp 1280w, /images/projects/heroes/sky-tracks-hero-1600.webp 1600w, /images/projects/heroes/sky-tracks-hero-1920.webp 1920w, /images/projects/heroes/sky-tracks-hero-2560.webp 2560w, /images/projects/heroes/sky-tracks-hero-3200.webp 3200w",
     "thumbnailSrc": "/images/projects/heroes/sky-tracks-thumb-1600.webp",
@@ -150,21 +145,22 @@
     "mockupSrc": "/images/projects/mockups/sky-tracks-mockup-800.webp",
     "mockupSrcSet": "/images/projects/mockups/sky-tracks-mockup-360.webp 360w, /images/projects/mockups/sky-tracks-mockup-500.webp 500w, /images/projects/mockups/sky-tracks-mockup-800.webp 800w",
     "liveLink": "https://skytracks.io/",
-    "intro": "A cloud-based music production suite with synths, drums, and effects - a digital platform that allows musicians and producers to create, record, and manipulate music entirely in the cloud.",
-    "challenge": "Musicians needed a platform to collaborate in real-time on music production - from anywhere in the world - with low latency and pro-grade tools.\n\nThe platform required a full digital audio workstation accessible through a web browser, offering audio recording, MIDI sequencing, audio editing, and mixing capabilities. Real-time collaboration tools were essential - multi-user project editing, chat, and the ability for musicians and producers to work together remotely.\n\nBeyond collaboration, the platform needed a range of virtual instruments including synthesizers, drum machines, and sample libraries, plus a comprehensive library of audio effects, plugins, and processing tools. All of this had to work with low-latency audio streaming, robust security measures for protecting users' music and data, and seamless export options for finished tracks.",
+    "intro": "A cloud music production platform rebuilt for a new product launch, with lower-latency performance, an Angular frontend migration, and support for external instrument connectivity.",
+    "description": "ARG helped SkyTracks launch a new version of its browser-based music production platform. We migrated the frontend to Angular, implemented the updated design, reduced data latency, connected external instruments, and stabilized product features that had not worked reliably in earlier versions.",
+    "challenge": "SkyTracks needed to ship a new version of its cloud music production platform after earlier implementations left key features unreliable. The product had to support browser-based music creation while reducing latency enough for a smoother creative workflow.\n\nThe frontend also needed to move to Angular and match a new product design, without losing the complexity required by a music tool: instrument controls, audio interactions, project workflows, and responsive behavior across devices.\n\nA major requirement was external instrument connectivity, so musicians could work with hardware inputs rather than being limited to in-browser controls.",
     "solution": [
-      "Built a WebRTC-powered collaboration system with real-time audio sync - enabling musicians to work together remotely with multi-user project editing and instant communication",
-      "Integrated virtual instruments and multitrack audio editing - including synthesizers, drum machines, sample libraries, and a full DAW accessible directly from the browser",
-      "Implemented low-latency audio streaming solutions to ensure real-time interaction with virtual instruments and effects, using specialized audio streaming APIs for professional-grade performance",
-      "Designed an intuitive and responsive user interface that allows users to easily access and control virtual instruments and effects, with an efficient workflow optimized for music production",
-      "Built robust security measures to protect user data, music files, and sensitive information - using encryption, access controls, and regular security audits",
-      "Designed the platform to be scalable with auto-scaling and load balancing to maintain optimal performance across varying levels of user activity, with cloud-based storage for projects and audio files"
+      "Migrated the frontend to Angular and implemented the redesigned product interface",
+      "Reduced data latency across interactive music workflows to make the platform feel more responsive",
+      "Connected external instruments so musicians could use hardware inputs inside the browser-based production environment",
+      "Stabilized features that were incomplete or unreliable in previous versions",
+      "Reworked product flows around music creation, editing, and playback so users could complete core tasks more consistently",
+      "Supported QA and release work needed to launch the new platform version"
     ],
-    "impact": "Artists can co-create tracks remotely in real time, eliminating geographic barriers to collaboration and creation - bringing professional music production to the cloud.",
+    "impact": "SkyTracks was able to move toward a more reliable product launch with a modern Angular frontend, lower-latency interactions, external instrument support, and stabilized core features for browser-based music production.",
     "metrics": [
-      { "value": "1000", "label": "Collaborative sessions" },
-      { "value": "20", "label": "Avg latency in ms" },
-      { "value": "5000", "label": "Tracks created" }
+      { "value": "1", "suffix": "", "label": "New platform version launched" },
+      { "value": "20", "suffix": "", "label": "Average latency in ms" },
+      { "value": "1", "suffix": "", "label": "External instrument workflow enabled" }
     ],
     "stack": "Knex, Tone.js, Tailwind, Koa, Angular, Docker, Jest, Node"
   },
@@ -174,7 +170,7 @@
     "subtitle": "Entertainment",
     "client": "TV Cine",
     "timeline": "1 Year",
-    "services": ["Backend", "Frontend", "CI/CD", "QA & Testing"],
+    "services": ["Frontend Refactor", "API Design", "Backoffice Systems", "Feature Delivery"],
     "imgSrc": "/images/projects/heroes/tv-cine-hero-3200.webp",
     "imgSrcSet": "/images/projects/heroes/tv-cine-hero-640.webp 640w, /images/projects/heroes/tv-cine-hero-828.webp 828w, /images/projects/heroes/tv-cine-hero-1280.webp 1280w, /images/projects/heroes/tv-cine-hero-1600.webp 1600w, /images/projects/heroes/tv-cine-hero-1920.webp 1920w, /images/projects/heroes/tv-cine-hero-2560.webp 2560w, /images/projects/heroes/tv-cine-hero-3200.webp 3200w",
     "thumbnailSrc": "/images/projects/heroes/tv-cine-thumb-1600.webp",
@@ -182,30 +178,32 @@
     "mockupSrc": "/images/projects/mockups/tv-cine-mockup-800.webp",
     "mockupSrcSet": "/images/projects/mockups/tv-cine-mockup-360.webp 360w, /images/projects/mockups/tv-cine-mockup-500.webp 500w, /images/projects/mockups/tv-cine-mockup-800.webp 800w",
     "liveLink": "https://www.tvcine.pt/",
-    "intro": "Portugal's premium movie channel brand - owned by NOS Comunicações - offering recent blockbusters, classic films, independent cinema, and original content to subscribers.",
-    "challenge": "Maintaining and evolving features for both the user-facing frontend and administrative backoffice of a premium cinema platform - ensuring cross-device compatibility, responsive design, performance optimization, and workflow automation.\n\nThe frontend required an intuitive and user-friendly interface that balances aesthetics with functionality while ensuring crucial usability across various web browsers and devices - desktops, smartphones, and tablets. Implementing a responsive design to different screen sizes and orientations was essential for providing a consistent experience.\n\nOn the backoffice side, the challenges included handling and managing large volumes of data effectively, implementing robust user authorization and access control mechanisms, designing workflow automation processes to streamline tasks, and continuously maintaining and updating the system to address bugs, security vulnerabilities, and evolving business needs.",
+    "intro": "A premium Portuguese entertainment platform where ARG helped expand product functionality across the user-facing experience, admin workflows, and backend API layer.",
+    "description": "ARG helped TV Cine deliver new features across the public website and backoffice. The work included reshaping the Vue frontend, refactoring backend logic that had been constrained by the original Strapi setup, and adding a new API layer so both admins and users could access richer platform functionality.",
+    "challenge": "TV Cine needed to keep evolving its digital platform without being limited by the original implementation. New user-facing features had to fit the premium entertainment experience, while admins needed better backoffice tooling to manage content and platform operations.\n\nThe backend had also reached limits in its Strapi-based setup. To support the next set of features, the platform needed cleaner backend logic, a more flexible API layer, and frontend work in Vue that could carry the updated product experience.",
     "solution": [
-      "Designed an intuitive, responsive frontend compatible across devices and browsers - balancing aesthetics with functionality to deliver a seamless cinematic experience for subscribers",
-      "Optimized frontend performance to ensure fast loading times and smooth interactions - critical for a streaming platform where every second of delay impacts user satisfaction",
-      "Built backoffice tools with workflow automation for streamlined content management - enabling efficient data entry, storage, retrieval, and processing for large volumes of media content",
-      "Implemented robust user authorization and access control mechanisms to ensure only authorized personnel can access and modify sensitive data, with role-based permissions for different team members",
-      "Established continuous maintenance and update processes to address bugs, security vulnerabilities, and evolving business needs - keeping the platform reliable and up-to-date"
+      "Implemented new user-facing product features across the TV Cine web experience",
+      "Reworked Vue frontend components and flows to support updated functionality",
+      "Refactored backend logic that had been constrained by the original Strapi-based implementation",
+      "Added a new API layer to expose richer functionality to both admins and users",
+      "Improved backoffice workflows so internal teams could manage platform content and operations more effectively",
+      "Supported QA and release work across frontend, backend, and admin-facing features"
     ],
-    "impact": "Exceeded key performance indicators and significantly improved user engagement across the platform's digital presence - delivering a premium streaming experience to thousands of subscribers.",
+    "impact": "TV Cine gained a more flexible platform foundation, with new public-facing features, improved admin workflows, and a backend/API structure better suited to ongoing product evolution.",
     "metrics": [
-      { "value": "100000", "label": "Active subscribers" },
-      { "value": "500", "label": "Content titles available" },
-      { "value": "99.5", "label": "Platform availability %" }
+      { "value": "1", "suffix": "", "label": "New API layer delivered" },
+      { "value": "2", "suffix": "", "label": "User and admin surfaces improved" },
+      { "value": "1", "suffix": "", "label": "Backend architecture refactored" }
     ],
     "stack": "Vue.js, MongoDB, Entity Framework, .NET Core, Nuxt"
   },
   {
     "slug": "royalty-flush",
     "title": "Royalty Flush",
-    "subtitle": "Music Tech - CWR",
+    "subtitle": "Music Rights",
     "client": "North Music Group",
     "timeline": "1 Year",
-    "services": ["Backend", "CI/CD", "QA & Testing"],
+    "services": ["Royalty Engine", "CWR Processing", "Reporting", "Backend"],
     "imgSrc": "/images/projects/heroes/royalty-flush-hero-3200.webp",
     "imgSrcSet": "/images/projects/heroes/royalty-flush-hero-640.webp 640w, /images/projects/heroes/royalty-flush-hero-828.webp 828w, /images/projects/heroes/royalty-flush-hero-1280.webp 1280w, /images/projects/heroes/royalty-flush-hero-1600.webp 1600w, /images/projects/heroes/royalty-flush-hero-1920.webp 1920w, /images/projects/heroes/royalty-flush-hero-2560.webp 2560w, /images/projects/heroes/royalty-flush-hero-3200.webp 3200w",
     "thumbnailSrc": "/images/projects/heroes/royalty-flush-thumb-1600.webp",
@@ -213,20 +211,22 @@
     "mockupSrc": "/images/projects/mockups/royalty-flush-mockup-800.webp",
     "mockupSrcSet": "/images/projects/mockups/royalty-flush-mockup-360.webp 360w, /images/projects/mockups/royalty-flush-mockup-500.webp 500w, /images/projects/mockups/royalty-flush-mockup-800.webp 800w",
     "liveLink": "https://www.northmusicgroup.com/",
-    "intro": "A comprehensive digital tool tailored to assist music publishers and sound recording owners in efficiently managing their music catalogs, licensing, royalties, and revenue streams.",
-    "challenge": "Managing music royalties and contract metadata for artists and labels often involves slow, manual processes that lack transparency.\n\nThe platform needed to maintain an organized database of music compositions and sound recordings - including detailed metadata, ownership information, and ISRC/ISWC codes. It had to track and manage royalty obligations and revenue streams for each musical work, ensuring accurate and transparent royalty calculations.\n\nBeyond tracking, the system needed to facilitate the licensing process for music usage in films, TV shows, commercials, and video games - while enforcing copyright and licensing terms to protect intellectual property. Performance data from streaming and radio airplay needed to be monitored, with detailed reports and analytics on royalties, earnings, and music usage trends.",
+    "intro": "A royalty-processing platform where ARG replaced spreadsheet-heavy workflows with a backend engine for CWR ingestion, royalty calculation, and reporting.",
+    "description": "ARG automated a royalty-processing workflow that previously depended on Excel sheets and macros. We built a backend royalty engine for CWR file processing, royalty organization, obligation calculation, and reporting, giving the team a controlled, repeatable alternative to manual spreadsheet operations.",
+    "challenge": "Royalty Flush needed to replace a manual royalty workflow built around Excel sheets and macros. The process could handle some internal needs, but it was difficult to scale, audit, and operate reliably as royalty data grew.\n\nThe platform needed to ingest multiple CWR files, normalize royalty information, calculate obligations, and generate reports without relying on fragile spreadsheet logic.\n\nThe challenge was to turn a manual finance operation into backend software that could be repeated, reviewed, and trusted.",
     "solution": [
-      "Developed a custom backend that ingests streaming data and calculates royalties accurately - providing a centralized platform for catalog organization, royalty tracking, licensing, and reporting",
-      "Created smart-contract-style transparency tools for contracts and splits - managing agreements with artists, songwriters, and other parties while ensuring compliance with terms",
-      "Optimized performance to handle surges during royalty payout cycles - with payment processing integration that supports calculation and distribution of royalties to all stakeholders",
-      "Built comprehensive reporting and analytics capabilities - generating detailed reports on royalties, earnings, and music usage to help users gain insights into revenue sources and track trends",
-      "Integrated with performance rights organizations, digital streaming platforms, and industry-specific databases for seamless data exchange - with role-based access control to safeguard sensitive data"
+      "Built a backend royalty engine to replace Excel-based processing",
+      "Implemented CWR file ingestion for multiple royalty input files",
+      "Structured royalty data so obligations could be calculated and reviewed consistently",
+      "Added reporting flows to make royalty outputs easier to inspect and share",
+      "Reduced dependence on manual macros by moving repeatable logic into backend services",
+      "Supported QA around calculation flows, file handling, and reporting output"
     ],
-    "impact": "Labels and artists gain clarity and confidence in their revenue flows, reducing disputes and improving trust across the board - streamlining workflows, maximizing revenue, and empowering data-driven decisions.",
+    "impact": "Royalty Flush moved royalty operations away from fragile spreadsheets and into a repeatable backend workflow, making CWR processing, royalty calculation, and reporting easier to operate and review.",
     "metrics": [
-      { "value": "10", "displayValue": "$10M+", "label": "Royalties processed" },
-      { "value": "1000", "label": "Music catalogs managed" },
-      { "value": "50", "label": "Platform integrations" }
+      { "value": "1", "suffix": "", "label": "Royalty engine built" },
+      { "value": "2", "suffix": "+", "label": "CWR file types supported" },
+      { "value": "1", "suffix": "", "label": "Spreadsheet workflow automated" }
     ],
     "stack": ".NET Core, Entity Framework, Octopus Deploy, Docker, React, Hangfire, PostgreSQL, MediatR"
   },
@@ -236,7 +236,7 @@
     "subtitle": "Fintech",
     "client": "Liminality Labs",
     "timeline": "6 Months",
-    "services": ["Backend", "Frontend", "CI/CD", "QA & Testing"],
+    "services": ["Backend Rebuild", "Authentication", "Exchange Integrations", "Trading Automation"],
     "imgSrc": "/images/projects/heroes/vector-hero-3200.webp",
     "imgSrcSet": "/images/projects/heroes/vector-hero-640.webp 640w, /images/projects/heroes/vector-hero-828.webp 828w, /images/projects/heroes/vector-hero-1280.webp 1280w, /images/projects/heroes/vector-hero-1600.webp 1600w, /images/projects/heroes/vector-hero-1920.webp 1920w, /images/projects/heroes/vector-hero-2560.webp 2560w, /images/projects/heroes/vector-hero-3200.webp 3200w",
     "thumbnailSrc": "/images/projects/heroes/vector-thumb-1600.webp",
@@ -244,21 +244,22 @@
     "mockupSrc": "/images/projects/mockups/vector-mockup-1080.webp",
     "mockupSrcSet": "/images/projects/mockups/vector-mockup-360.webp 360w, /images/projects/mockups/vector-mockup-500.webp 500w, /images/projects/mockups/vector-mockup-800.webp 800w, /images/projects/mockups/vector-mockup-1080.webp 1080w",
     "liveLink": "https://quantapes.com/",
-    "intro": "A high-frequency trading platform connecting user accounts on exchanges like Bybit and Coinbase - automating trades based on price signals and predefined strategies.",
-    "challenge": "Liminality Labs needed a high-frequency trading platform that could connect user accounts on exchanges like Bybit and Coinbase and automate trades based on price signals and predefined strategies.\n\nThe application arrived in a completely non-functional state. While the user interface was implemented, it was merely illustrative and lacked any connection to the backend. The backend itself was dysfunctional - creating frustration for the project owner and leaving the platform unable to execute a single trade.\n\nThe core challenge was not just fixing existing code, but rebuilding the entire system from the ground up - creating a reliable architecture capable of handling real-time strategy execution, secure exchange integrations, and automated crypto trades with precision and speed.",
+    "intro": "A crypto trading platform rebuilt from a non-functional prototype into a working product with authentication, exchange connectivity, strategy execution, and live trading flows.",
+    "description": "ARG rebuilt Vector from a non-functional prototype into a working trading platform. The client arrived with an interface that looked complete but had no authentication, transaction flow, or live exchange activity, so we rebuilt the backend foundation, connected the frontend to real functionality, and implemented the systems needed for automated trading.",
+    "challenge": "Vector arrived as a prototype that looked complete on the surface but could not operate as a trading product. Authentication was missing, transaction flows were not functional, the frontend was not connected to real backend behavior, and exchange activity could not be executed.\n\nThe challenge was to rebuild the product foundation without discarding the intended user experience. The platform needed secure user access, exchange integrations, automated strategy execution, and live trading flows that could turn an illustrative interface into working financial software.",
     "solution": [
-      "Rebuilt the entire backend from scratch with a new tech stack - creating a reliable architecture capable of handling real-time strategy execution and high-frequency trading operations",
-      "Integrated secure exchange connections for Bybit and Coinbase - enabling automated crypto trades with proper authentication, rate limiting, and error handling",
-      "Restored full buy/sell automation based on user-defined price signals - ensuring trades execute seamlessly when market conditions match predefined criteria",
-      "Implemented a robust strategies system allowing users to subscribe to and run automated trading algorithms designed by experts - with real-time monitoring and performance tracking",
-      "Connected the existing UI to the fully operational backend - transforming an illustrative interface into a functional trading dashboard with live data and execution controls",
-      "Delivered the reworked application within months - meeting all objectives and delivering core functionalities including strategy management, trade execution, and portfolio monitoring"
+      "Rebuilt the backend foundation around functional trading flows and secure user authentication",
+      "Connected the frontend to real backend behavior so the interface could move beyond static screens",
+      "Implemented exchange integrations for live trading activity",
+      "Built transaction flows for automated buy and sell execution based on strategy conditions",
+      "Added strategy-management functionality so users could configure or subscribe to trading logic",
+      "Supported QA around authentication, exchange behavior, trade execution, and dashboard state"
     ],
-    "impact": "Vector now provides a robust automation platform where users can subscribe to expert-built trading strategies that execute trades seamlessly - turning a broken application into a fully functional high-frequency trading system.",
+    "impact": "Vector moved from a non-functional prototype to a working trading platform with authentication, live exchange connectivity, automated transaction flows, and a frontend connected to real product behavior.",
     "metrics": [
-      { "value": "10", "label": "Average execution time in ms" },
-      { "value": "3", "label": "Exchange integrations" },
-      { "value": "24", "label": "Hours of daily monitoring" }
+      { "value": "1", "suffix": "", "label": "Backend rebuilt" },
+      { "value": "2", "suffix": "", "label": "Exchange integrations connected" },
+      { "value": "1", "suffix": "", "label": "Trading flow activated" }
     ],
     "stack": "MikroORM, Next.js, Kafka, PostgreSQL, Docker, Nx, Webpack, NestJS"
   }

@@ -100,7 +100,7 @@ export default function ProjectDetailPage() {
         />
       </Helmet>
       <SEO
-        title={`${project.title} - Case Study`}
+        title={`${project.title} - Use Case`}
         description={seoDescription}
         path={`/projects/${slug}/`}
       />
@@ -246,10 +246,10 @@ export default function ProjectDetailPage() {
               </div>
               <div className="prp-challenge-content">
                 <span className="prp-section-label" data-animate="slide-from-left">
-                  The Challenge
+                  The Problem
                 </span>
                 <h2 className="prp-section-heading" data-animate="slide-up">
-                  What we set out to solve
+                  What had to be solved
                 </h2>
                 {project.challenge.split('\n\n').map((paragraph, i) => (
                   <p
@@ -273,10 +273,10 @@ export default function ProjectDetailPage() {
             <div className="prp-solution-grid">
               <div className="prp-solution-content">
                 <span className="prp-solution-label" data-animate="slide-from-left">
-                  Our Solution
+                  The Approach
                 </span>
                 <h2 className="prp-solution-heading" data-animate="slide-up">
-                  How we approached it
+                  How we made it work
                 </h2>
                 <ul className="prp-solution-list" data-animate-scope data-animate-stagger="100">
                   {project.solution.map((item, i) => (
@@ -387,9 +387,9 @@ export default function ProjectDetailPage() {
             <img src={nextProject.imgSrc} alt={nextProject.title} className="prp-next-bg-img" />
           </div>
           <div className="prp-next-content">
-            <span className="prp-next-eyebrow">Next project</span>
+            <span className="prp-next-eyebrow">Next use case</span>
             <div className="prp-next-hint">
-              <span>Keep Scrolling for next project</span>
+              <span>Keep scrolling for the next use case</span>
               <div className="prp-next-hint-arrow prp-next-hint-arrow--down">{arrowSvg}</div>
             </div>
           </div>

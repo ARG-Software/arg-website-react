@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
+Allow: /llm.txt
+Allow: /llms.txt
+Allow: /full-llm.txt
+Allow: /llms-full.txt
 Disallow: /404.html
 
 Sitemap: https://arg.software/sitemap.xml

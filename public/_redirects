@@ -3,6 +3,12 @@
 /g/js https://www.googletagmanager.com/gtag/js 200
 /g/collect https://www.google-analytics.com/g/collect 200
 
+# LLM metadata aliases
+
+/llm.txt /llms.txt 301
+/full-llm.txt /llms-full.txt 301
+/full-llms.txt /llms-full.txt 301
+
 # SPA routes — must be listed before the 404 fallback
 
 / /index.html 200
@@ -14,7 +20,7 @@
 /projects/*    /index.html   200
 
 /blog /index.html 200
-/blog/\* /index.html 200
+/blog/* /index.html 200
 
 # Legacy URL redirects (prevents 404 from old article paths)
 
@@ -25,4 +31,4 @@
 
 # Everything else → 404 page with correct HTTP status
 
-/\* /404.html 404
+/* /404.html 404

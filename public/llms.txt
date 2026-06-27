@@ -1,0 +1,64 @@
+# Arg Software
+
+> Arg Software is a Portugal-based software studio building secure, scalable digital platforms for fintech, open payments, music technology, media, and high-growth technology companies. The team is architecture-first, senior-led, and focused on production-ready systems.
+
+## Company
+
+- Website: https://arg.software/
+- Full LLM context: https://arg.software/llms-full.txt
+- Location: Funchal and Porto, Portugal
+- Works with: clients worldwide
+- Contact: hello@arg.software
+- Project brief: https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC
+- Portfolio: https://arg.software/files/portfolio.pdf
+
+## What We Do
+
+- Dedicated product teams for long-term product engineering
+- Staff augmentation with senior engineers
+- Technical consulting, architecture reviews, modernization, and delivery strategy
+- MVP and product delivery for launch-ready software
+- AI and automation for product features, integrations, workflows, and internal tools
+- Cloud and platform engineering, including CI/CD, observability, deployments, and reliability work
+
+## Industries
+
+- Fintech and open payments
+- Financial inclusion and interoperable payment systems
+- Music technology and music rights
+- Media and entertainment platforms
+- Web3 and blockchain infrastructure
+- SaaS, internal platforms, and high-growth technology products
+
+## Selected Work
+
+- Mojaloop: https://arg.software/projects/mojaloop/
+- People's Clearinghouse: https://arg.software/projects/peoples-clearinghouse/
+- Dokutar: https://arg.software/projects/dokutar/
+- Sky Tracks: https://arg.software/projects/sky-tracks/
+- TV Cine: https://arg.software/projects/tv-cine/
+- Royalty Flush: https://arg.software/projects/royalty-flush/
+- Vector: https://arg.software/projects/vector/
+
+## Key Pages
+
+- Working with Arg Software: https://arg.software/working-with-us/
+- Partners: https://arg.software/partners/
+- Blog and engineering insights: https://arg.software/blog/
+- Careers: https://arg.software/careers/
+- Privacy policy: https://arg.software/privacy/
+- Terms of service: https://arg.software/terms/
+
+## Technical Focus
+
+- Backend systems, APIs, distributed systems, and event-driven architecture
+- Frontend and product interfaces with React, Next.js, Angular, Vue, and TypeScript
+- Payment switching, ledgers, interoperability, Open Payments, Interledger, and Mojaloop vNext
+- Cloud infrastructure, Docker, Kubernetes, CI/CD, observability, and production operations
+- Databases and data workflows with PostgreSQL, MongoDB, MySQL, Kafka, and related tooling
+
+## Social Links
+
+- LinkedIn: https://www.linkedin.com/company/arg-software
+- GitHub: https://github.com/ARG-Software
+- Medium: https://medium.com/@arg-software

@@ -379,7 +379,7 @@ export default function seoPrerender() {
           if (!project.slug) continue;
 
           const projectUrl = `${SITE_URL}/projects/${project.slug}/`;
-          const title = `${project.title} - Case Study | Arg Software`;
+          const title = `${project.title} - Use Case | Arg Software`;
           const description = (project.intro || project.challenge || '')
             .replace(/\n+/g, ' ')
             .slice(0, 160)
