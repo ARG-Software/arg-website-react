@@ -243,13 +243,6 @@ input[type='file']:focus-visible {
    Append this to the end of your base CSS (doc1)
    ============================================ */
 
-/* ── Hero Section Overflow ── */
-.hero_wrap {
-  overflow: hidden;
-}
-.hero_visual {
-  overflow: hidden;
-}
 .ambient-bg-video,
 .ambient-bg-video video {
   width: 100%;
@@ -295,9 +288,6 @@ input[type='file']:focus-visible {
     padding-top: 2rem !important;
   }
 
-  .hero_contain.container.padding-global {
-    justify-content: flex-end;
-  }
 }
 
 @media screen and (max-width: 480px) {
@@ -305,24 +295,12 @@ input[type='file']:focus-visible {
     padding-top: 2rem !important;
   }
 
-  .hero_bottom_wrap {
-    padding-top: 0 !important;
-  }
-
-  .hero_contain.container.padding-global {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
 }
 
 @media screen and (max-width: 480px) {
   .padding-global {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
-  }
-
-  .hero_list {
-    height: 75%;
   }
 
   .bp-tag {
@@ -334,33 +312,11 @@ input[type='file']:focus-visible {
   padding-top: 5rem;
 }
 
-/* Explicitly match hero container padding to page padding-global on desktop */
-
-@media screen and (max-width: 990px) {
-  .hero_contain.container.padding-global {
-    padding-left: 0rem !important;
-    padding-right: 0rem !important;
-  }
-
-  .hero_bottom_list {
-    margin-left: 3rem;
-  }
-}
-
 @media screen and (max-width: 990px) {
   .pp-partner-body {
     justify-content: flex-start !important;
     width: 100%;
   }
-}
-
-@media screen and (max-width: 768px) {
-  .hero_bottom_list {
-    /* padding: 0;
-    margin: 0 1rem; */
-    margin-left: 2.25rem;
-  }
-
 }
 
 .text-no-wrap {
@@ -1092,45 +1048,12 @@ figcaption {
   display: block;
 }
 
-.hero_list {
-  flex-direction: column;
-  grid-template-rows: auto auto;
-  grid-template-columns: 1fr 1fr;
-  grid-auto-columns: 1fr;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 90%;
-  display: flex;
-}
-.hero_heading-wrapper {
-  max-width: 50rem;
-  height: 100%;
-}
 .text-color-gradiant {
   color: #000;
   -webkit-text-fill-color: transparent;
   background-image: linear-gradient(90deg, #f0060d, #c924d7 49%, #920ef1 84%, #7904fd);
   -webkit-background-clip: text;
   background-clip: text;
-}
-.hero_bottom_wrap {
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  display: flex;
-  overflow: hidden;
-}
-.hero_bottom_list {
-  grid-column-gap: 1rem;
-  grid-row-gap: 1rem;
-  grid-template-rows: auto;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-auto-columns: 1fr;
-  justify-content: space-between;
-  width: 100%;
-  padding-top: 2.25rem;
-  display: flex;
 }
 .section_projects {
   padding-top: 11.25rem;
@@ -1175,9 +1098,6 @@ figcaption {
   text-decoration: underline;
 }
 
-.bottom_buttons-wrapper {
-  overflow: hidden;
-}
 .text-color-gradiant-2 {
   color: #000;
   -webkit-text-fill-color: transparent;
@@ -1418,11 +1338,6 @@ figcaption {
 }
 
 
-.hero_wrap {
-  background-color: #0000;
-  height: 100vh;
-  position: relative;
-}
 .container {
   width: 100%;
   max-width: 89rem;
@@ -1435,47 +1350,8 @@ figcaption {
   height: 100%;
   display: flex;
 }
-.hero_heading {
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  display: flex;
-}
-.hero_heading.heading-style-h1 {
-  align-items: center;
-  font-size: var(--type-hero-title);
-}
 .heading_line {
   overflow: hidden;
-}
-.hero_contain.container.padding-global {
-  flex-direction: column;
-  justify-content: flex-start;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-}
-.hero_bottom_content {
-  display: block;
-  overflow: hidden;
-}
-.hero_bottom_paragraph {
-  clear: left;
-  max-width: 40ch;
-  display: flex;
-}
-.hero_bottom_info {
-  grid-column-gap: 1rem;
-  grid-row-gap: 1rem;
-  flex-direction: row;
-  align-items: flex-start;
-  display: flex;
-}
-.hero_visual {
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  inset: 0%;
 }
 .ambient-bg-video {
   z-index: 1;
@@ -1483,23 +1359,6 @@ figcaption {
   width: 100%;
   height: 100%;
 }
-/* ── Water Ripple Canvas ── */
-#water-ripple-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  display: block;
-  pointer-events: none;
-}
-.hero_visual_overlay {
-  opacity: 1;
-  background-color: #0c002e;
-  position: absolute;
-  inset: 0%;
-}
-
 /* ==========================================================================
    SUBPAGE HERO - Unified hero for all subpages (Team, Partners, Blog, Blog Post, Projects)
    ========================================================================== */
@@ -1722,21 +1581,6 @@ figcaption {
     padding-top: 5rem;
     padding-bottom: 5rem;
   }
-  .hero_list {
-    max-height: 80%;
-    display: flex;
-  }
-  .hero_heading-wrapper {
-    max-width: none;
-  }
-  .hero_bottom_list {
-    grid-column-gap: 1rem;
-    grid-row-gap: 1rem;
-    flex-direction: column;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-    padding-top: 1.5rem;
-    display: flex;
-  }
   .cta-wrapper {
     text-align: center;
     padding-left: 3rem;
@@ -1755,12 +1599,6 @@ figcaption {
     grid-template-columns: 1fr;
   }
 
-  .bottom_buttons-wrapper {
-    grid-column-gap: 1rem;
-    grid-row-gap: 1rem;
-    flex-direction: column;
-    display: flex;
-  }
   .text-color-gradiant-2 {
     text-align: center;
     display: inline;
@@ -1777,9 +1615,6 @@ figcaption {
   .header-animation.special.show-tablet,
   .header-animation.show-tablet-portrait {
     display: flex;
-  }
-  .hero_contain.container.padding-global {
-    position: relative;
   }
   .partners_logo_list {
     grid-column-gap: 5rem;
@@ -1980,30 +1815,6 @@ figcaption {
   .home-message_content {
     border-radius: 0;
   }
-  .section_hero {
-    padding-bottom: 3rem;
-  }
-  .hero_list {
-    height: 75%;
-  }
-  .hero_heading-wrapper {
-    padding-top: 13.25rem;
-    padding-bottom: 1.875rem;
-  }
-  .hero_bottom_wrap {
-    grid-column-gap: 7.5rem;
-    grid-row-gap: 7.5rem;
-    flex-direction: column;
-    padding-top: 2.125rem;
-  }
-  .hero_bottom_list {
-    clear: none;
-    flex: 0 auto;
-    min-height: 0;
-    padding-top: 0.5rem;
-    display: flex;
-    position: static;
-  }
   .section_projects {
     padding-top: 8.75rem;
     padding-bottom: 9rem;
@@ -2174,25 +1985,9 @@ figcaption {
     padding-left: 0;
     padding-right: 0;
   }
-  .hero_list {
-    height: 50%;
-  }
   .text-color-gradiant {
     text-align: center;
     font-size: 2rem;
-  }
-  .hero_bottom_wrap {
-    grid-column-gap: 0rem;
-    grid-row-gap: 0rem;
-    height: auto;
-    padding-top: 7rem;
-  }
-  .hero_bottom_list {
-    grid-column-gap: 1rem;
-    grid-row-gap: 1rem;
-    padding-top: 1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
   }
   .footer {
     padding-left: 1rem;
@@ -2212,29 +2007,8 @@ figcaption {
   .footer_copywrite-text-mobile {
     align-self: auto;
   }
-  .hero_wrap {
-    height: 100svh;
-  }
-  .hero_heading.heading-style-h1 {
-    padding-top: 0;
-  }
   .heading_line {
     display: flex;
-  }
-  .hero_contain.container.padding-global {
-    justify-content: flex-end;
-    max-height: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  .hero_bottom_paragraph {
-    font-size: var(--type-body-small);
-  }
-  .hero_bottom_info {
-    grid-column-gap: 2rem;
-    grid-row-gap: 2rem;
   }
   .partners_logo_list {
     grid-column-gap: 2rem;
@@ -2298,11 +2072,6 @@ figcaption {
 }
 
 @media screen and (max-width: 480px) {
-  .hero_bottom_list {
-    padding: 0 1rem;
-    margin: 0;
-  }
-
   .padding-global {
     padding-left: 1rem;
     padding-right: 1rem;
@@ -2317,10 +2086,6 @@ figcaption {
 }
 
 @media screen and (max-width: 990px) {
-  .hero_contain.container.padding-global {
-    padding-left: 0rem !important;
-    padding-right: 0rem !important;
-  }
   .padding-section-compact {
     padding-top: 0 !important;
   }
@@ -2330,12 +2095,6 @@ figcaption {
   }
 }
 @media screen and (max-width: 480px) {
-  .hero_list {
-    height: 75%;
-  }
-  .hero_heading.heading-style-h1 {
-    padding-top: 0 !important;
-  }
   .padding-section-xlarge {
     padding-top: 2.5rem;
     padding-bottom: 2.5rem;
