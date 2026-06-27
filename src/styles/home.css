@@ -173,6 +173,122 @@
   }
 }
 
+/* Team */
+
+.team-component {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-column-gap: 16px;
+  grid-row-gap: 16px;
+  grid-template-columns: 0.5fr 0.75fr;
+  grid-template-rows: auto;
+}
+
+.team_items-wrapper {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-column-gap: 16px;
+  grid-row-gap: 16px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+}
+
+.team-item {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  grid-column-gap: 2.75rem;
+  grid-row-gap: 2.75rem;
+}
+
+.team_image-wrapper {
+  height: 20.75rem;
+  overflow: hidden;
+  position: relative;
+  width: 19rem;
+}
+
+.team_image {
+  border-radius: 0.75rem;
+}
+
+.team-item_text {
+  overflow: hidden;
+}
+
+.team-social-link {
+  align-items: center;
+  color: #000;
+  display: inline-flex;
+  height: 1.5rem;
+  justify-content: center;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+  width: 1.5rem;
+}
+
+.team-social-link:hover {
+  opacity: 0.7;
+}
+
+.team-social-link-icon,
+.team-social-link-icon svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.subtitle-team {
+  color: #000;
+  font-size: var(--type-kicker);
+  letter-spacing: var(--tracking-kicker-wide);
+  text-transform: uppercase;
+}
+
+.team_image-overlay {
+  background-color: #fff;
+  height: 100%;
+  inset: auto 0% 0%;
+  position: absolute;
+  width: 100%;
+}
+
+.team_heading {
+  font-size: var(--type-section-title);
+  font-weight: 400;
+  letter-spacing: var(--tracking-title);
+  line-height: var(--line-tight);
+}
+
+#team-subtitle-grid {
+  place-self: start;
+}
+
+@media screen and (max-width: 991px) {
+  .team_items-wrapper {
+    grid-column-gap: 2rem;
+    grid-row-gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .team-component {
+    grid-template-columns: 1fr;
+  }
+
+  .team-item {
+    grid-column-gap: 2.5rem;
+    grid-row-gap: 2.5rem;
+  }
+
+  .team_image-wrapper {
+    height: auto;
+    width: auto;
+  }
+}
+
 /* Testimonials */
 .testimonials-item_quote {
   font-size: var(--type-testimonials-quote);

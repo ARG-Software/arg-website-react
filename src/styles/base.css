@@ -2692,69 +2692,6 @@ figcaption {
   height: 1px;
   width: 0;
 }
-.section_team {
-}
-.team-component {
-  grid-column-gap: 16px;
-  grid-row-gap: 16px;
-  grid-template-rows: auto;
-  grid-template-columns: 0.5fr 0.75fr;
-  grid-auto-columns: 1fr;
-  display: grid;
-}
-.team_items-wrapper {
-  grid-column-gap: 16px;
-  grid-row-gap: 16px;
-  grid-template-rows: auto;
-  grid-template-columns: 1fr 1fr;
-  grid-auto-columns: 1fr;
-  display: grid;
-}
-.team-item {
-  grid-column-gap: 2.75rem;
-  grid-row-gap: 2.75rem;
-  flex-direction: column;
-  align-items: flex-start;
-  display: flex;
-}
-.team_image-wrapper {
-  width: 19rem;
-  height: 20.75rem;
-  position: relative;
-  overflow: hidden;
-}
-.team_image {
-  border-radius: 0.75rem;
-}
-.team-item_text {
-  overflow: hidden;
-}
-.team-social-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  color: #000;
-  transition:
-    color 0.2s ease,
-    opacity 0.2s ease;
-}
-.team-social-link:hover {
-  opacity: 0.7;
-}
-.team-social-link-icon,
-.team-social-link-icon svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-.subtitle-team {
-  color: #000;
-  letter-spacing: var(--tracking-kicker-wide);
-  text-transform: uppercase;
-  font-size: var(--type-kicker);
-}
 .section_blog {
   overflow: hidden;
 }
@@ -2946,13 +2883,6 @@ figcaption {
   grid-column-gap: 0.625rem;
   grid-row-gap: 0.625rem;
   display: flex;
-}
-.team_image-overlay {
-  background-color: #fff;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  inset: auto 0% 0%;
 }
 .arrow_icon-embed {
   justify-content: center;
@@ -3615,8 +3545,7 @@ figcaption {
   --navbar-height-mobile: 4rem;
 }
 
-.work_heading,
-.team_heading {
+.work_heading {
   font-size: var(--type-section-title);
   font-weight: 400;
   letter-spacing: var(--tracking-title);
@@ -4038,11 +3967,6 @@ figcaption {
   }
   .work_items-wrapper {
     grid-column-gap: 5rem;
-  }
-  .team_items-wrapper {
-    grid-column-gap: 2rem;
-    grid-row-gap: 2rem;
-    grid-template-columns: 1fr;
   }
   .cta-wrapper {
     text-align: center;
@@ -4495,18 +4419,6 @@ figcaption {
   .work_items-wrapper {
     grid-column-gap: 4rem;
     grid-row-gap: 4rem;
-  }
-
-  .team-component {
-    grid-template-columns: 1fr;
-  }
-  .team-item {
-    grid-column-gap: 2.5rem;
-    grid-row-gap: 2.5rem;
-  }
-  .team_image-wrapper {
-    width: auto;
-    height: auto;
   }
 
   .blog-component {
@@ -5089,9 +5001,6 @@ figcaption {
   place-self: start;
 }
 
-#team-subtitle-grid {
-  place-self: start;
-}
 @media screen and (max-width: 766px) {
   #about-heading-grid {
     grid-column: span 6 / span 6;
