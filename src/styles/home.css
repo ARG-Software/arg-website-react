@@ -1,8 +1,10 @@
 /* ===== HOMEPAGE STYLES ===== */
 
 :root {
-  --type-testimonials-quote: 1.5rem;
+  --type-home-section-title: clamp(1.875rem, 2.6vw, 2.5rem);
+  --type-testimonials-quote: 1.375rem;
   --line-testimonials-quote: 1.5;
+  --space-home-heading-content: 4rem;
 }
 
 /* Hero */
@@ -884,16 +886,32 @@
   height: 100%;
 }
 
-.work_heading {
-  font-size: var(--type-section-title);
+.home-section-title {
+  font-size: var(--type-home-section-title);
   font-weight: 400;
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
+  margin: 0;
+  max-width: 26ch;
 }
 
-.work-content > .text-color-grey {
+.home-section-title--light {
+  color: #fff;
+}
+
+.work_header-wrapper .padding-bottom.padding-30-44,
+.team_header-wrapper .padding-bottom.padding-30-44 {
+  padding-bottom: 2.25rem;
+}
+
+.work_header-wrapper .text-color-grey,
+.team_header-wrapper .text-color-grey {
   font-size: var(--type-body);
   line-height: var(--line-body);
+}
+
+.work_items-wrapper .work-item p {
+  line-height: var(--line-small);
 }
 
 #workstats-subtitle-grid {
@@ -999,13 +1017,6 @@
   overflow: hidden;
 }
 
-.projects_heading {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
 .home-projects__heading-wrapper {
   gap: 2rem;
   overflow: visible;
@@ -1019,7 +1030,7 @@
   color: #5b596f;
   font-size: var(--type-section-subtitle);
   line-height: var(--line-body);
-  margin: 1.5rem 0 0;
+  margin: 2rem 0 0;
   max-width: 60rem;
 }
 
@@ -1119,25 +1130,25 @@
     margin-bottom: 4rem;
   }
 
-  .projects_heading.heading-style-h2 {
+  .home-projects__heading-copy .home-section-title {
     text-wrap: balance;
   }
 }
 
 /* Shared homepage section header */
 
-.social-section_header {
+.home-section-header {
   align-items: flex-start;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 3.5rem;
+  margin-bottom: var(--space-home-heading-content);
 }
 
-.social-section_header h2 {
+.home-section-header h2 {
   margin: 0;
 }
 
-.social-section_header .subtitle_tag-wrapper {
+.home-section-header .subtitle_tag-wrapper {
   margin-bottom: 0.25rem;
 }
 
@@ -1206,11 +1217,11 @@
 }
 
 @media screen and (max-width: 767px) {
-  .social-section_header {
+  .home-section-header {
     align-items: flex-start;
     flex-direction: column;
     gap: 1.5rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
   }
 
   .section_blog .container-large {
@@ -1299,13 +1310,6 @@
   width: 100%;
 }
 
-.team_heading {
-  font-size: var(--type-section-title);
-  font-weight: 400;
-  letter-spacing: var(--tracking-title);
-  line-height: var(--line-tight);
-}
-
 #team-subtitle-grid {
   place-self: start;
 }
@@ -1340,7 +1344,6 @@
   display: flex;
   flex-direction: column;
   grid-column-gap: 3rem;
-  grid-row-gap: 3rem;
 }
 
 .testimonials-item {
@@ -1384,7 +1387,6 @@
 
   .testimonials-component {
     grid-column-gap: 4.375rem;
-    grid-row-gap: 4.375rem;
   }
 
   .testimonials-item_dot {
@@ -1411,7 +1413,7 @@
   display: flex;
   gap: 2rem;
   justify-content: space-between;
-  margin-bottom: 3.5rem;
+  margin-bottom: var(--space-home-heading-content);
   overflow: hidden;
 }
 
@@ -1700,6 +1702,7 @@
   .faq_header {
     align-items: flex-start;
     flex-direction: column;
+    margin-bottom: 3rem;
     padding-left: 1rem;
     padding-right: 1rem;
   }
@@ -1743,28 +1746,6 @@
 .blog-promo_inner {
   padding-bottom: 0;
   padding-top: 6rem;
-}
-
-.blog-promo_header {
-  align-items: flex-end;
-  display: flex;
-  gap: 2rem;
-  justify-content: space-between;
-  margin-bottom: 3rem;
-}
-
-.blog-promo_header h2 {
-  color: #fff;
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 400;
-  line-height: 1.05;
-  margin: 0;
-}
-
-.blog-promo_header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
 }
 
 .blog-promo_cards {
@@ -1839,11 +1820,6 @@
 .blog-promo_card .subtitle_tag-wrapper {
   border-color: rgba(255, 255, 255, 0.18) !important;
   color: rgba(255, 255, 255, 1) !important;
-}
-
-.blog-promo_header .subtitle_tag-wrapper {
-  border-color: rgba(255, 255, 255, 0.18) !important;
-  color: rgba(255, 255, 255, 0.55) !important;
 }
 
 .blog-promo_cards-new {
@@ -2501,7 +2477,7 @@
 
 @media screen and (max-width: 61.9375rem) {
   :root {
-    --type-testimonials-quote: 1.5rem;
+    --type-testimonials-quote: 1.375rem;
     --line-testimonials-quote: 1.5;
   }
 
@@ -2518,7 +2494,7 @@
 
 @media screen and (max-width: 47.9375rem) {
   :root {
-    --type-testimonials-quote: 1.25rem;
+    --type-testimonials-quote: 1.1875rem;
     --line-testimonials-quote: 1.45;
   }
 
@@ -2562,7 +2538,7 @@
 
 @media screen and (max-width: 29.9375rem) {
   :root {
-    --type-testimonials-quote: 1.125rem;
+    --type-testimonials-quote: 1.0625rem;
     --line-testimonials-quote: 1.45;
   }
 }

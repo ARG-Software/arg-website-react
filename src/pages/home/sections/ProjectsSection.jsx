@@ -19,7 +19,7 @@ export function ProjectsSection({ projects, className = '' }) {
         <div className="projects_heading-wrapper home-projects__heading-wrapper">
           <div className="home-projects__heading-copy">
             <h2
-              className="projects_heading heading-style-h2"
+              className="home-section-title"
               data-animate={ANIMATION_PRESETS.fadeUp}
               data-animate-order="0"
             >

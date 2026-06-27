@@ -41,12 +41,10 @@ export function TestimonialsSection({ className = '' }) {
               <div key={i} className="testimonials-item" data-animate-order={i}>
                 <div className="max-width-testimonials align-center">
                   <div className="overflow-hidden">
-                    <p className="testimonials-item_quote" data-animate-order={i * 2}>
-                      {t.quote}
-                    </p>
+                    <p className="testimonials-item_quote">{t.quote}</p>
                   </div>
                   <div className="padding-bottom padding-40-32"></div>
-                  <div className="testimonials-item_name" data-animate-order={i * 2 + 1}>
+                  <div className="testimonials-item_name">
                     <div className="testimonials-item_dot"></div>
                     <div className="testimonials-item_author">{t.author}</div>
                   </div>

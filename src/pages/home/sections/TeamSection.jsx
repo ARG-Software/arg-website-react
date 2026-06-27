@@ -45,7 +45,11 @@ export function TeamSection({ className = '' }) {
               <div className="team_header-wrapper">
                 <div className="overflow-hidden">
                   <div className="heading_wrap">
-                    <h2 className="team_heading" data-animate="fade-up" data-animate-order="1">
+                    <h2
+                      className="home-section-title"
+                      data-animate="fade-up"
+                      data-animate-order="1"
+                    >
                       Built by Engineers
                     </h2>
                   </div>

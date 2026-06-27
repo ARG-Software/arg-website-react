@@ -304,9 +304,9 @@ export function FAQSection({ className = '' }) {
     >
       <div className="padding-global">
         <div className="container-large">
-          <div className="faq_header">
+          <div className="faq_header home-section-header">
             <div className="heading_wrap">
-              <h2>
+              <h2 className="home-section-title">
                 Common questions,
                 <br />
                 honest answers.

@@ -71,9 +71,9 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
       <div className="padding-global">
         <div className="container-large">
           <div className="blog-promo_inner">
-            <div className="social-section_header">
+            <div className="home-section-header">
               <div>
-                <h2 className="heading-style-h2" style={{ color: '#fff' }} data-animate-order="0">
+                <h2 className="home-section-title home-section-title--light" data-animate-order="0">
                   Engineering Field Notes
                 </h2>
               </div>

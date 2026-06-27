@@ -195,9 +195,9 @@ export function SocialSection({ className = '' }) {
           data-animate-default-stagger="120"
         >
           <div className="blog-component">
-            <div className="social-section_header" data-animate-order="0">
+            <div className="home-section-header" data-animate-order="0">
               <div>
-                <h2 className="heading-style-h2" style={{ color: '#fff' }}>
+                <h2 className="home-section-title home-section-title--light">
                   What we share outside the site
                 </h2>
               </div>

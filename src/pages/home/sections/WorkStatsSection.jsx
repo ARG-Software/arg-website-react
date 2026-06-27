@@ -210,7 +210,11 @@ export function WorkStatsSection({ className = '' }) {
               <div className="work_header-wrapper">
                 <div className="overflow-hidden">
                   <div className="heading_wrap">
-                    <h2 data-animate="fade-up" data-animate-order="1" className="work_heading">
+                    <h2
+                      data-animate="fade-up"
+                      data-animate-order="1"
+                      className="home-section-title"
+                    >
                       Senior Ownership
                     </h2>
                   </div>
