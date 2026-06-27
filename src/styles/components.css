@@ -1,5 +1,35 @@
 /* ===== SHARED COMPONENT STYLES ===== */
 
+:root {
+  --type-section-pill: var(--type-pill-lg);
+  --size-section-pill-padding-y: 0.75rem;
+  --size-section-pill-padding-x: 1.25rem;
+}
+
+@media screen and (max-width: 61.9375rem) {
+  :root {
+    --type-section-pill: var(--type-pill-md);
+    --size-section-pill-padding-y: 0.625rem;
+    --size-section-pill-padding-x: 1.125rem;
+  }
+}
+
+@media screen and (max-width: 47.9375rem) {
+  :root {
+    --type-section-pill: var(--type-pill-md);
+    --size-section-pill-padding-y: 0.5625rem;
+    --size-section-pill-padding-x: 1rem;
+  }
+}
+
+@media screen and (max-width: 29.9375rem) {
+  :root {
+    --type-section-pill: var(--type-pill-sm);
+    --size-section-pill-padding-y: 0.5rem;
+    --size-section-pill-padding-x: 0.875rem;
+  }
+}
+
 /* ==========================================================================
    components/pills
    Pill / PillButton
@@ -121,6 +151,31 @@
   flex: 0 0 auto;
   justify-content: center;
   line-height: 1;
+}
+
+.subtitle_tag-wrapper {
+  border: 1.5px solid #000;
+  border-radius: 1.5625rem;
+  font-size: var(--type-section-pill);
+  line-height: 1;
+  padding: var(--size-section-pill-padding-y) var(--size-section-pill-padding-x);
+}
+
+.subtitle_tag-wrapper.is--white {
+  border-color: #fff;
+  color: rgba(255, 255, 255, 1);
+}
+
+@media (max-width: 1320px) {
+  .subtitle_tag-wrapper {
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .subtitle_tag-wrapper {
+    display: none;
+  }
 }
 
 /* ==========================================================================

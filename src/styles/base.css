@@ -1551,11 +1551,6 @@ input[type='file']:focus-visible {
   }
 }
 
-/* ── subtitle_tag-wrapper white variant: also sets text color ── */
-.subtitle_tag-wrapper.is--white {
-  color: rgba(255, 255, 255, 1);
-}
-
 /* ── Social section header (now in JSX) ── */
 .social-section_header {
   display: flex;
@@ -2059,12 +2054,6 @@ textarea.ec-input {
   margin-left: 2rem;
 }
 
-@media (max-width: 1320px) {
-  .subtitle_tag-wrapper {
-    text-align: center;
-  }
-}
-
 @media (max-width: 768px) {
   .meet-text {
     margin-left: 0;
@@ -2467,7 +2456,6 @@ label {
   --type-meta: 0.75rem;
   --type-meta-small: 0.75rem;
   --type-kicker: 0.6875rem;
-  --type-testimonial: 1.5rem;
 
   /* CTA and controls */
   --type-cta-title: clamp(2.5rem, 5vw, 4rem);
@@ -2478,12 +2466,9 @@ label {
   --type-pill-sm: var(--type-meta-small);
   --type-pill-md: var(--type-ui);
   --type-pill-lg: var(--type-body-small);
-  --type-section-pill: var(--type-pill-lg);
   --size-button-padding-y: 0.75rem;
   --size-button-padding-x: 2rem;
   --size-button-radius: 100px;
-  --size-section-pill-padding-y: 0.75rem;
-  --size-section-pill-padding-x: 1.25rem;
   --size-text-button-icon: 1rem;
 
   /* Footer typography is intentionally independent from page body text. */
@@ -2501,7 +2486,6 @@ label {
   --line-article: 1.85;
   --line-cta: 1.2;
   --line-footer: 1.6;
-  --line-testimonial: 1.5;
   --tracking-display-tight: -0.04em;
   --tracking-display: -0.03em;
   --tracking-heading: -0.02em;
@@ -2528,11 +2512,6 @@ label {
   :root {
     --type-hero-title: 3.5rem;
     --type-about-title: 3.25rem;
-    --type-testimonial: 1.5rem;
-    --type-section-pill: var(--type-pill-md);
-    --size-section-pill-padding-y: 0.625rem;
-    --size-section-pill-padding-x: 1.125rem;
-    --line-testimonial: 1.5;
   }
 }
 
@@ -2540,11 +2519,6 @@ label {
   :root {
     --type-hero-title: 2.5rem;
     --type-about-title: 2.75rem;
-    --type-testimonial: 1.25rem;
-    --type-section-pill: var(--type-pill-md);
-    --size-section-pill-padding-y: 0.5625rem;
-    --size-section-pill-padding-x: 1rem;
-    --line-testimonial: 1.45;
   }
 }
 
@@ -2552,11 +2526,6 @@ label {
   :root {
     --type-hero-title: 2rem;
     --type-about-title: 2.5rem;
-    --type-testimonial: 1.125rem;
-    --type-section-pill: var(--type-pill-sm);
-    --size-section-pill-padding-y: 0.5rem;
-    --size-section-pill-padding-x: 0.875rem;
-    --line-testimonial: 1.45;
   }
 }
 body {
@@ -3433,16 +3402,6 @@ figcaption {
   display: flex;
   overflow: hidden;
 }
-.subtitle_tag-wrapper {
-  border: 1.5px solid #000;
-  border-radius: 1.5625rem;
-  padding: var(--size-section-pill-padding-y) var(--size-section-pill-padding-x);
-  font-size: var(--type-section-pill);
-  line-height: 1;
-}
-.subtitle_tag-wrapper.is--white {
-  border-color: #fff;
-}
 .projects-grid {
   grid-column-gap: 1rem;
   grid-row-gap: 1rem;
@@ -3795,14 +3754,6 @@ figcaption {
 }
 .bottom_buttons-wrapper {
   overflow: hidden;
-}
-.text-size-24-18 {
-  font-size: var(--type-testimonial);
-  line-height: var(--line-testimonial);
-}
-.text-size-18-15 {
-  font-size: var(--type-section-subtitle);
-  line-height: var(--line-compact);
 }
 .text-color-gradiant-2 {
   color: #000;
@@ -5363,9 +5314,6 @@ figcaption {
     padding-top: 8.75rem;
     padding-bottom: 9rem;
   }
-  .subtitle_tag-wrapper {
-    display: none;
-  }
   .projects-grid {
     grid-template: '.' '.' '.' '.' '.' '.'/1fr;
   }
@@ -5703,9 +5651,6 @@ figcaption {
   }
   .projects_heading-wrapper {
     margin-bottom: 4rem;
-  }
-  .subtitle_tag-wrapper {
-    display: none;
   }
   .projects-grid {
     grid-column-gap: 2rem;
