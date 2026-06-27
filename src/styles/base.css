@@ -71,15 +71,6 @@ html::-webkit-scrollbar-corner {
 }
 
 /* ============================================
-   Navigation
-   ============================================ */
-@media screen and (min-width: 1415px) {
-  .nav_menu-wrapper {
-    margin-right: auto;
-  }
-}
-
-/* ============================================
    Lenis Smooth Scroll
    ============================================ */
 html.lenis,
@@ -1257,15 +1248,6 @@ figcaption {
   clear: none;
   transform: rotate(0);
 }
-.nav_menu-wrapper {
-  z-index: 1;
-  background-color: #0000;
-  width: 100%;
-  max-width: 80rem;
-  margin-left: auto;
-  position: fixed;
-  inset: 0%;
-}
 .nav_buttons-wrapper {
   grid-column-gap: 2.125rem;
   grid-row-gap: 2.125rem;
@@ -1355,34 +1337,6 @@ figcaption {
   text-decoration: underline;
 }
 
-.nav-link {
-  opacity: 1;
-  color: #000;
-  border-bottom: 0.5px solid #0006;
-  margin-left: 0;
-  margin-right: 0;
-  padding: 0 0 0.375rem;
-  transition: all 0.4s cubic-bezier(0.55, 0.055, 0.675, 0.19);
-}
-.nav-link:hover {
-  padding-left: 1rem;
-}
-.nav-link.is--last {
-  border-bottom-style: none;
-  border-bottom-width: 0;
-  padding-bottom: 0.375rem;
-}
-.nav_menu-layout {
-  z-index: 1;
-  grid-column-gap: 0.375rem;
-  grid-row-gap: 0.375rem;
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-  padding: 1.625rem 2.375rem;
-  display: flex;
-  position: relative;
-}
 .bottom_buttons-wrapper {
   overflow: hidden;
 }
@@ -1439,27 +1393,10 @@ figcaption {
   border-top-right-radius: 1.25rem;
   position: relative;
 }
-.nav_logo-embed {
-  height: 2rem;
-}
 .submit-form {
   z-index: 1;
   background-color: #3898ec00;
   padding: 0;
-}
-.nav_menu-layout-wrapper {
-  border-radius: 0.75rem;
-  width: 100%;
-  max-width: 15rem;
-  display: none;
-  position: absolute;
-  inset: 5rem 0 auto auto;
-  overflow: hidden;
-}
-.nav-menu_backdrop {
-  background-color: #fff;
-  position: absolute;
-  inset: 0%;
 }
 .heading_wrap {
   position: static;
@@ -2069,9 +2006,6 @@ figcaption {
   .nav_logo_icon {
     width: 3.5rem;
   }
-  .nav_menu-wrapper {
-    margin-right: 4rem;
-  }
   .hero_list {
     max-height: 80%;
     display: flex;
@@ -2105,9 +2039,6 @@ figcaption {
     grid-template-columns: 1fr;
   }
 
-  .nav-link:hover {
-    padding-left: 0;
-  }
   .bottom_buttons-wrapper {
     grid-column-gap: 1rem;
     grid-row-gap: 1rem;
@@ -2364,9 +2295,6 @@ figcaption {
   .nav-component {
     display: flex;
   }
-  .nav_menu-wrapper {
-    margin-right: 2.25rem;
-  }
   .nav_buttons-wrapper {
     grid-column-gap: 0.875rem;
     grid-row-gap: 0.875rem;
@@ -2432,10 +2360,6 @@ figcaption {
     padding-bottom: 2.75rem;
   }
 
-  .nav_menu-layout {
-    max-width: 12.6rem;
-    padding: 1.5rem;
-  }
   .text-size-16-14 {
     font-size: 0.875rem;
   }
@@ -2659,9 +2583,6 @@ figcaption {
   .footer_copywrite-buttons {
     text-align: left;
     align-self: flex-start;
-  }
-  .nav_menu-layout {
-    max-width: 11.6rem;
   }
   .text-color-gradiant-2 {
     text-align: left;
