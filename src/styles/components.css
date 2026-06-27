@@ -871,6 +871,164 @@
   margin-top: 0;
 }
 
+.line-separate.is--work {
+  border-top: 1px solid #ccc;
+  background-color: transparent;
+  height: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.line-separate.is--partners {
+  border-top: 1px solid #ccc;
+  background-color: transparent;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.line-separate.is--testimonials {
+  border-top: 0.5px solid #9b9fbb66;
+  background-color: transparent;
+  height: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.line-separate.is--blog {
+  border-top: 1px solid #9b9fbb66;
+  background-color: transparent;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.line-separate.is--footer {
+  border-top: 1px solid #9b9fbb66;
+  background-color: transparent;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.line-separate.is--hero {
+  border-top: 1px solid #fff6;
+  background-color: transparent;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+@media screen and (max-width: 990px) {
+  .line-separate {
+    max-width: 100% !important;
+  }
+
+  .line-separate.is--testimonials,
+  .line-separate--thin-light {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
+
+@media screen and (min-width: 1447px) {
+  .line-separate {
+    max-width: 80.5rem;
+  }
+}
+
+@media screen and (min-width: 991px) {
+  .line-separate.is--partners,
+  .line-separate--default {
+    width: calc(100% - 9.5rem);
+  }
+}
+
+@media screen and (max-width: 990px) {
+  .line-separate.is--hero,
+  .line-separate--white {
+    min-width: 0 !important;
+    max-width: calc(100% - 6rem) !important;
+  }
+
+  .line-separate.is--partners,
+  .line-separate--default {
+    max-width: calc(100% - 6rem) !important;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .line-separate.is--hero {
+    border-top: 1px solid #fff6;
+    height: 0;
+    font-size: 1.1rem;
+  }
+
+  .line-separate--white {
+    border-top: 1px solid #fff6;
+    background-color: transparent;
+    height: 0;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .line-separate.is--hero,
+  .line-separate--white {
+    flex: 0 auto;
+    height: 0;
+    position: relative;
+    top: 10vh;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .line-separate.is--hero,
+  .line-separate--white {
+    min-width: 0 !important;
+    margin-left: 2.25rem;
+    max-width: calc(100% - 4.5rem) !important;
+  }
+
+  .line-separate.is--partners,
+  .line-separate--default {
+    max-width: calc(100% - 4.5rem) !important;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .line-separate {
+    margin-left: 0;
+  }
+
+  .line-separate.is--hero,
+  .line-separate--white {
+    padding-left: 0;
+    padding-right: 0;
+    top: 0;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .line-separate {
+    max-width: calc(100% - 2rem);
+    padding-left: 0rem;
+    padding-right: 0rem;
+  }
+
+  .line-separate.is--partners,
+  .line-separate--default {
+    max-width: calc(100% - 2rem) !important;
+    margin-left: 1rem;
+  }
+
+  .line-separate.is--hero,
+  .line-separate--white {
+    min-width: 0 !important;
+    margin-left: 1rem;
+    max-width: calc(100% - 2rem) !important;
+  }
+
+  .line-separate.is--work {
+    margin-top: 11rem;
+  }
+}
+
 /* ==========================================================================
    components/layout
    CTASection
