@@ -2221,15 +2221,6 @@
   }
 }
 
-/* Contact */
-
-@media (max-width: 767px) {
-  .typeform-wrapper-o5kxhiic {
-    border-radius: 1.25rem !important;
-    overflow: hidden !important;
-  }
-}
-
 /* Services marquee */
 .section_infinity {
   display: flex;

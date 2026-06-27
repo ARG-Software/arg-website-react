@@ -321,11 +321,6 @@ input[type='file']:focus-visible {
     padding-right: 1.5rem;
   }
 
-  .formtext.form-click {
-    padding: 0 0 6.125rem;
-    display: flex;
-  }
-
   .hero_list {
     height: 75%;
   }
@@ -889,26 +884,6 @@ figcaption {
 .heading-style-h1.show-portrait {
   display: none;
 }
-.heading-style-h1.form-header {
-  text-align: center;
-  flex-flow: column;
-  flex: 1;
-  justify-content: center;
-  align-self: auto;
-  display: flex;
-}
-.heading-style-h1.form-subheader {
-  text-align: center;
-  letter-spacing: var(--tracking-normal);
-  justify-content: center;
-  align-items: center;
-  padding-top: 5vh;
-  padding-left: 5vw;
-  padding-right: 5vw;
-  font-size: 1.6rem;
-  line-height: 1;
-  display: flex;
-}
 .padding-global {
   padding-left: 4.75rem;
   padding-right: 4.75rem;
@@ -1256,11 +1231,6 @@ figcaption {
   border-top-right-radius: 1.25rem;
   position: relative;
 }
-.submit-form {
-  z-index: 1;
-  background-color: #3898ec00;
-  padding: 0;
-}
 .heading_wrap {
   position: static;
 }
@@ -1570,21 +1540,6 @@ figcaption {
   font-size: 0.8rem;
 }
 
-.typeform-wrapper-o5kxhiic {
-  background-color: #ffffff0d;
-  border: 2px solid #ffffff0d;
-  border-radius: 1.25rem;
-  justify-content: center;
-  align-items: center;
-  height: 0;
-  min-height: 65vh;
-  width: 100%;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding: 0;
-  display: flex;
-  position: relative;
-}
 .div-block {
   padding-left: 0;
   padding-right: 0;
@@ -1653,30 +1608,6 @@ figcaption {
 .a {
   color: #0c002e;
 }
-.formtext {
-  flex: 1;
-  min-width: 100%;
-  display: flex;
-  position: absolute;
-  inset: 0% auto auto 0%;
-}
-.formtext.form-click {
-  z-index: 1001;
-  border: 0 #0000;
-  border-radius: 4.5rem;
-  flex-flow: column;
-  flex: 0 auto;
-  justify-content: center;
-  align-self: center;
-  align-items: center;
-  width: 100%;
-  min-width: auto;
-  height: 100%;
-  min-height: auto;
-  padding: 0;
-  display: flex;
-  position: relative;
-}
 .bold-text {
   font-size: 1.2rem;
   line-height: 1;
@@ -1693,15 +1624,6 @@ figcaption {
   min-height: 100%;
   display: block;
   position: absolute;
-}
-.background-video-2.formtext {
-  border: 2px solid #ffffff0d;
-  border-radius: 1.25rem;
-  flex: 1;
-  align-self: auto;
-  padding: 5rem 7rem;
-  display: block;
-  position: static;
 }
 .background-video-3 {
   width: 100%;
@@ -1823,10 +1745,6 @@ figcaption {
   .heading-style-h1.hide-mobile-portrait {
     text-align: center;
   }
-  .heading-style-h1.form-header {
-    text-align: center;
-    flex: 1;
-  }
   .padding-global {
     padding-left: 3rem;
     padding-right: 3rem;
@@ -1905,19 +1823,9 @@ figcaption {
     grid-row-gap: 5rem;
     flex-flow: wrap;
   }
-  .typeform-embed-o5kxhiic {
-    flex-flow: row;
-    padding-top: 0;
-  }
-  .typeform-wrapper-o5kxhiic {
-    padding: 0;
-  }
   .flowappz-cookie-consent {
     width: 50%;
     left: 3rem;
-  }
-  .formtext.form-click {
-    padding: 0;
   }
 }
 @media screen and (max-width: 767px) {
@@ -2073,9 +1981,6 @@ figcaption {
     flex: 0 auto;
     align-self: auto;
   }
-  .heading-style-h1.form-header {
-    flex: 1;
-  }
   .padding-global {
     padding-left: 2.25rem;
     padding-right: 2.25rem;
@@ -2203,26 +2108,8 @@ figcaption {
   .partners_logo_wrap {
     max-width: 5.5rem;
   }
-  .typeform-embed-o5kxhiic {
-    padding-top: 0;
-  }
-  .typeform-wrapper-o5kxhiic {
-    background-color: #ffffff0d;
-    border-style: none;
-    border-radius: 0;
-    height: 0;
-    min-height: 60vh;
-    width: 100%;
-  }
-
-  .formtext.form-click {
-    padding: 0;
-  }
   .text-span {
     font-size: 1.3rem;
-  }
-  .background-video-2.formtext {
-    padding: 0;
   }
 }
 @media screen and (max-width: 480px) {
@@ -2411,22 +2298,6 @@ figcaption {
     height: auto;
     margin-right: 1.5rem;
   }
-  .typeform-embed-o5kxhiic {
-    flex-flow: column;
-    align-items: flex-start;
-  }
-  .typeform-wrapper-o5kxhiic {
-    min-width: auto;
-    height: 0;
-    min-height: 60vh;
-    width: 100%;
-    padding: 0;
-    display: block;
-    overflow: hidden;
-  }
-  .typeform-wrapper-o5kxhiic.footer-space {
-    padding-left: 0;
-  }
   .svg {
     box-sizing: border-box;
     width: auto;
@@ -2462,15 +2333,8 @@ figcaption {
     display: block;
     right: 0;
   }
-  .formtext.form-click {
-    padding: 5rem 0 6.125rem;
-    display: flex;
-  }
   .text-span {
     font-size: 1.2rem;
-  }
-  .background-video-2.formtext {
-    padding: 0;
   }
 }
 #about-heading-grid {
