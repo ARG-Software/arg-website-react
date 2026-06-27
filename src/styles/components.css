@@ -259,6 +259,137 @@
 }
 
 /* ==========================================================================
+   components/cards
+   ProjectItem
+   ========================================================================== */
+
+.projects_list_logo {
+  background: none;
+  border: none;
+  cursor: default;
+  padding: 0;
+  position: relative;
+}
+
+.projects_logo_tooltip {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .projects_logo_tooltip {
+    display: block !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateX(-50%) translateY(4px) !important;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease !important;
+  }
+
+  .projects_item_stack {
+    display: none !important;
+  }
+
+  .projects_item_logo-wrap {
+    width: 100% !important;
+  }
+
+  .projects_item_list {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 0.5rem !important;
+    justify-content: center !important;
+  }
+
+  .projects_list_logo {
+    flex-grow: 1 !important;
+    flex-shrink: 1 !important;
+    max-width: 5.5rem !important;
+    width: auto !important;
+  }
+
+  .projects_logo_image {
+    height: auto !important;
+    object-fit: contain !important;
+    width: 100% !important;
+  }
+
+  .projects_logo-hint {
+    color: rgba(0, 0, 0, 0.4) !important;
+    font-size: 0.8125rem !important;
+    margin-bottom: 0 !important;
+    margin-top: 1.5rem !important;
+    text-align: center !important;
+  }
+
+  .projects_item_content.is-padding-bottom.is-white-bg {
+    padding-bottom: 1rem !important;
+  }
+
+  .projects_list_logo:active .projects_logo_tooltip {
+    opacity: 1 !important;
+    transform: translateX(-50%) translateY(0) !important;
+  }
+
+  .projects_item_list::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .projects_item_list:active {
+    animation-play-state: paused;
+  }
+
+  @keyframes logoScroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .projects_list_logo {
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+  }
+
+  .projects_list_logo:focus .projects_logo_tooltip,
+  .projects_list_logo:active .projects_logo_tooltip {
+    opacity: 1 !important;
+    transform: translateX(-50%) translateY(0) !important;
+  }
+
+  .projects_logo_tooltip {
+    background: #111 !important;
+    border-radius: 4px !important;
+    bottom: calc(100% + 6px) !important;
+    color: #fff !important;
+    font-size: 0.6875rem !important;
+    left: 50% !important;
+    opacity: 0 !important;
+    padding: 0.25rem 0.5rem !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    transform: translateX(-50%) translateY(4px) !important;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease !important;
+    white-space: nowrap !important;
+    z-index: 10 !important;
+  }
+
+  .projects_logo_tooltip::after {
+    border: 4px solid transparent !important;
+    border-top-color: #111 !important;
+    content: '' !important;
+    left: 50% !important;
+    position: absolute !important;
+    top: 100% !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+/* ==========================================================================
    components/layout
    Container
    ========================================================================== */
