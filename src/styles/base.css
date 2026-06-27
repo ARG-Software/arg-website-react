@@ -230,83 +230,11 @@ input[type='file']:focus-visible {
   padding-right: 0rem !important;
   padding-left: 0rem !important;
 }
-/* ============================================
-   ADDITIONS — Unique rules from doc2 + inline
-   Append this to the end of your base CSS (doc1)
-   ============================================ */
-
-.ambient-bg-video,
-.ambient-bg-video video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform-origin: center center;
-}
-.ambient-bg-video {
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-}
-
-.ambient-bg-video > video {
-  z-index: -100;
-  background-position: 50%;
-  background-size: cover;
-  margin: auto;
-  position: absolute;
-  inset: -100%;
-}
-
-.ambient-bg-video > video::-webkit-media-controls-start-playback-button {
-  -webkit-appearance: none;
-  display: none !important;
-}
-
-/* ── Mobile Nav: left-side panel (desktop only - mobile handled by Navbar JS) ── */
-/* Desktop menu styles removed - controlled by Navbar React component */
-
-@media screen and (max-width: 991px) {
-  .es-load-more-button-container {
-    padding-top: 2rem !important;
-  }
-
-}
-
-@media screen and (max-width: 480px) {
-  .es-load-more-button-container {
-    padding-top: 2rem !important;
-  }
-
-}
-
 @media screen and (max-width: 480px) {
   .padding-global {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
-
-  .bp-tag {
-    text-align: center;
-  }
-}
-
-.es-load-more-button-container {
-  padding-top: 5rem;
-}
-
-@media screen and (max-width: 990px) {
-  .pp-partner-body {
-    justify-content: flex-start !important;
-    width: 100%;
-  }
-}
-
-.text-no-wrap {
-  word-break: normal;
-  overflow-wrap: normal;
-  white-space: nowrap;
-  justify-content: flex-end;
-  overflow-wrap: break-word;
 }
 * {
   box-sizing: border-box;
@@ -1023,24 +951,6 @@ figcaption {
   margin-right: auto;
   display: block;
 }
-.container-medium.footer-container.padding-global {
-  border-color: #ffffff0d;
-  padding-left: 0;
-  padding-right: 0;
-  display: block;
-}
-
-.text-color-gradiant {
-  color: #000;
-  -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(90deg, #f0060d, #c924d7 49%, #920ef1 84%, #7904fd);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-.text-size-18 {
-  font-size: 1.125rem;
-}
-
 /* ===== ENHANCED UTILITIES ===== */
 
 .position-relative {
@@ -1167,15 +1077,6 @@ figcaption {
   align-items: stretch;
   height: 100%;
   display: flex;
-}
-.heading_line {
-  overflow: hidden;
-}
-.ambient-bg-video {
-  z-index: 1;
-  opacity: 0.11;
-  width: 100%;
-  height: 100%;
 }
 /* ==========================================================================
    SUBPAGE HERO - Unified hero for all subpages (Team, Partners, Blog, Blog Post, Projects)
@@ -1579,11 +1480,6 @@ figcaption {
   .heading-style-h1.show-tablet {
     text-align: center;
   }
-  .heading-style-h1.text-color-gradiant {
-    text-align: center;
-    flex: 1;
-    align-self: auto;
-  }
   .padding-global.is--cta-mobile {
     padding-left: 1rem;
     padding-right: 1rem;
@@ -1597,43 +1493,6 @@ figcaption {
   .button {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-  }
-  .container-medium.footer-container.padding-global {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .text-color-gradiant {
-    text-align: center;
-    font-size: 2rem;
-  }
-  .heading_line {
-    display: flex;
-  }
-}
-#about-heading-grid {
-  grid-area: span 1 / span 5 / span 1 / span 5;
-}
-#about-content-grid {
-  grid-area: 1/8/2/13;
-}
-#project-item-wrapper-grid {
-  grid-area: span 1 / span 1 / span 1 / span 1;
-}
-@media screen and (max-width: 766px) {
-  #about-heading-grid {
-    grid-column: span 6 / span 6;
-  }
-  #about-content-grid {
-    grid-column: 1/7;
-    grid-row-start: 2;
-  }
-}
-@media screen and (max-width: 480px) {
-  #about-heading-grid {
-    grid-column: span 1 / span 1;
-  }
-  #about-content-grid {
-    grid-area: 2/1/2/2;
   }
 }
 

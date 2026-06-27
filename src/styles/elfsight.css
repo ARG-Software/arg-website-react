@@ -2,6 +2,10 @@
   --eapps-feed-margin: 1.5rem !important;
 }
 
+.es-load-more-button-container {
+  padding-top: 5rem;
+}
+
 .arg-elfsight-card {
   border-radius: 0.75rem !important;
   margin-bottom: 1.5rem !important;
@@ -53,5 +57,17 @@
     max-block-size: clamp(11rem, 54vw, 18rem) !important;
     height: clamp(11rem, 54vw, 18rem) !important;
     max-height: clamp(11rem, 54vw, 18rem) !important;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .es-load-more-button-container {
+    padding-top: 2rem !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .es-load-more-button-container {
+    padding-top: 2rem !important;
   }
 }
