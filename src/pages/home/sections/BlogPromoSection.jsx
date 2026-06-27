@@ -95,10 +95,12 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
             >
               <div className="blog-promo_hero-content">
                 <div className="blog-promo_card-new-header">
-                  <h3 className="blog-promo_hero-title">{heroPost.title}</h3>
+                  <h3 className="blog-promo_card-new-title blog-promo_hero-title">
+                    {heroPost.title}
+                  </h3>
                   <p className="blog-promo_card-new-excerpt">{heroPost.excerpt}</p>
                 </div>
-                <div className="blog-promo_hero-meta">
+                <div className="blog-promo_card-new-footer blog-promo_hero-footer">
                   <Pill
                     className="blog-promo_card-new-tag"
                     variant="custom"
@@ -107,8 +109,8 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
                   >
                     {heroPost.tag}
                   </Pill>
-                  <div className="blog-promo_hero-meta-bottom">
-                    <span className="blog-promo_hero-date">{heroPost.date}</span>
+                  <div className="blog-promo_card-new-meta">
+                    <span className="blog-promo_card-new-date">{heroPost.date}</span>
                     <div className="arrow_icon-embed">{arrowSvg}</div>
                   </div>
                 </div>

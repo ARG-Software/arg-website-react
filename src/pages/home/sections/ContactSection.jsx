@@ -21,7 +21,7 @@ export function ContactSection({ className = '' }) {
             buttonLink="/files/portfolio.pdf"
             onPrimaryClick={() => trackCTA('portfolio', 'homepage_cta')}
             secondButtonTextNotHover="Start brief"
-            secondButtonTextHover="2 min brief"
+            secondButtonTextHover="2 min"
             secondButtonLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
             onSecondaryClick={() => trackCTA('typeform', 'homepage_contact')}
             animate={true}

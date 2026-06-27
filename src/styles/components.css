@@ -966,27 +966,31 @@
 
 .text-button {
   color: #000;
+  cursor: pointer;
+  display: inline-grid !important;
   font-size: var(--type-text-button);
+  grid-template-areas: 'stack';
+  line-height: var(--line-cta) !important;
   overflow: hidden !important;
   position: relative !important;
-  display: inline-block !important;
-  line-height: var(--line-cta) !important;
-  cursor: pointer;
 }
 
 .text-button .text-button_list {
-  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1) !important;
-  transform: translateY(0);
-  display: flex !important;
   align-items: center !important;
   gap: 0.5rem !important;
+  grid-area: stack;
+  display: flex !important;
+  justify-content: flex-end !important;
   line-height: var(--line-cta) !important;
+  transform: translateY(0);
+  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1) !important;
+  width: 100%;
 }
 
 .text-button .text-button_list.is-animated {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
+  left: auto !important;
+  position: static !important;
+  top: auto !important;
   transform: translateY(100%) !important;
 }
 
@@ -1675,7 +1679,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  align-self: flex-start;
+  margin-top: 3.5rem;
   text-align: center;
 }
 
@@ -2853,21 +2858,6 @@ textarea.ec-input {
   position: absolute;
   inset: 0;
   pointer-events: auto;
-}
-
-.project-title-link {
-  display: inline-grid !important;
-  grid-template-areas: 'stack';
-}
-
-.project-title-link .text-button_list {
-  grid-area: stack;
-}
-
-.project-title-link .text-button_list.is-animated {
-  position: static !important;
-  top: auto !important;
-  left: auto !important;
 }
 
 /* ==========================================================================
