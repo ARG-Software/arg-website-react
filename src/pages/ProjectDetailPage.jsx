@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { BaseCard, Navbar, Pill, SEO, SectionDivider, arrowSvg } from '../components';
+import { BaseCard, Navbar, Pill, SEO, arrowSvg } from '../components';
 import { ShuffleText } from '../components/widgets/ShuffleText';
 import { useScrollAnimations, useNextProjectSection, useTimeOnPage } from '../hooks';
 import { animateCountUp, getCountUpEnd } from '../hooks/useCountUp';
@@ -192,7 +192,7 @@ export default function ProjectDetailPage() {
                 <h3 className="prp-intro-subtitle" data-animate="fade-up">
                   {project.intro}
                 </h3>
-                <hr className="prp-intro-divider" data-animate="divider-expander-show" />
+                <hr className="prp-intro-divider hide-mobile" data-animate="divider-expander-show" />
                 {project.description && (
                   <p
                     className="prp-intro-description"
@@ -206,7 +206,6 @@ export default function ProjectDetailPage() {
             </div>
           </div>
           <div className="padding-bottom padding-80-40"></div>
-          <SectionDivider variant="default" />
         </section>
 
         {/* CHALLENGE — white */}
@@ -257,7 +256,6 @@ export default function ProjectDetailPage() {
             </div>
           </div>
           <div className="padding-bottom padding-80-40"></div>
-          <SectionDivider variant="default" />
         </section>
 
         {/* SOLUTION — white card */}
@@ -299,7 +297,6 @@ export default function ProjectDetailPage() {
             </div>
           </div>
           <div className="padding-bottom padding-80-40"></div>
-          <SectionDivider variant="default" />
         </section>
 
         {/* RESULTS — merged metrics + impact */}
