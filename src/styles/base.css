@@ -1969,10 +1969,6 @@ figcaption {
 }
 
 
-.projects_list_logo {
-  width: 100%;
-  max-width: 5rem;
-}
 .footer_tabs-content {
   margin-top: 3.625rem;
 }
@@ -2181,93 +2177,6 @@ figcaption {
   grid-auto-columns: 1fr;
   display: grid;
 }
-.projects_item {
-  aspect-ratio: 3/2;
-  border-radius: 0.5rem;
-  flex-direction: column;
-  width: 100%;
-  display: flex;
-  position: relative;
-  overflow: visible hidden;
-}
-.projects_item.is-medium {
-  height: 27.5vh;
-}
-.projects_item_display {
-  aspect-ratio: 3/2;
-  background-color: #ededed;
-  border-radius: 1rem;
-  width: 100%;
-  position: relative;
-}
-.projects_item_visual {
-  pointer-events: none;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-.projects_item_visual.is-showcase {
-  aspect-ratio: auto;
-  width: 100%;
-  max-width: 17.25rem;
-  height: auto;
-}
-.projects_visual_img {
-  aspect-ratio: 3/2;
-  position: absolute;
-  inset: 0%;
-}
-.projects_visual_img.is-thumbnail {
-  aspect-ratio: auto;
-}
-.projects_item_content {
-  flex-direction: column;
-  align-items: center;
-  padding-top: 4.75rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  display: flex;
-}
-.projects_item_content.background-color-white {
-  background-color: #fff;
-}
-.projects_item_content.is-padding-bottom {
-  padding-bottom: 4.75rem;
-}
-.projects_item_content.is-padding-bottom.is-white-bg {
-  background-color: #fff;
-}
-.test_content_visual {
-  aspect-ratio: 2/3;
-  width: 40%;
-}
-.projects_item_list {
-  grid-column-gap: 2.75rem;
-  grid-row-gap: 2.75rem;
-  justify-content: space-around;
-  align-items: center;
-  margin-top: 2rem;
-  display: flex;
-}
-.projects_item_wrap {
-  cursor: pointer;
-  flex-direction: column;
-  display: flex;
-  position: relative;
-}
-.projects_item_wrap.is-top-margin {
-  margin-top: 8.5rem;
-}
-.projects_item_description {
-  grid-column-gap: 0.75rem;
-  grid-row-gap: 0.75rem;
-  flex-direction: column;
-  align-items: flex-start;
-  padding-top: 1rem;
-  display: flex;
-}
-
 /* ===== ENHANCED UTILITIES ===== */
 
 .position-relative {
@@ -3518,12 +3427,6 @@ figcaption {
   .projects_list {
     grid-row-gap: 4.5rem;
     grid-template-columns: minmax(200px, 1fr);
-  }
-  .projects_item_content {
-    padding-top: 2.25rem;
-  }
-  .projects_item_wrap.is-top-margin {
-    margin-top: 0;
   }
   .hero_wrap {
     height: 100svh;
