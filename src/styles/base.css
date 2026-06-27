@@ -290,58 +290,7 @@ input[type='file']:focus-visible {
 /* ── Mobile Nav: left-side panel (desktop only - mobile handled by Navbar JS) ── */
 /* Desktop menu styles removed - controlled by Navbar React component */
 
-/* ── Hamburger to X ── */
-
-.nav-hamburger .menu_icon-line {
-  transition:
-    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.2s ease;
-}
-
-.nav-hamburger.is-open .menu_icon-line.is--top {
-  transform: translateY(250%) rotate(45deg);
-}
-
-.nav-hamburger.is-open .menu_icon-line.is--bottom {
-  transform: translateY(-250%) rotate(-45deg);
-}
-
-/* Hide nav elements until hero animation reveals them */
-.hero_wrap ~ .nav_wrap .nav_logo-wrapper,
-.hero_wrap ~ .nav_wrap .nav_buttons-wrapper,
-.nav_wrap .nav_logo-wrapper,
-.nav_wrap .nav_buttons-wrapper {
-  opacity: 0;
-  transform: translateY(-1rem);
-}
-
-.nav_wrap .nav_logo-wrapper.is-visible,
-.nav_wrap .nav_buttons-wrapper.is-visible {
-  transform: translate3d(0, 0, 0);
-}
-
-/* Always show hamburger button on all screen sizes */
-.nav-hamburger {
-  opacity: 1 !important;
-  transform: none !important;
-  display: flex !important;
-  visibility: visible !important;
-  position: relative !important;
-  z-index: 600 !important;
-}
-
-/* Menu layout wrapper — fully controlled by Navbar React component */
-
-.nav_logo_icon {
-  display: flex;
-}
-
 @media screen and (max-width: 991px) {
-  .nav_contain.container {
-    padding: 1rem;
-    display: block;
-  }
-
   .es-load-more-button-container {
     padding-top: 2rem !important;
   }
@@ -393,11 +342,6 @@ input[type='file']:focus-visible {
 /* Explicitly match hero container padding to page padding-global on desktop */
 
 @media screen and (max-width: 990px) {
-  .nav_contain.container {
-    padding-left: 2.25rem;
-    padding-right: 2.25rem;
-  }
-
   .hero_contain.container.padding-global {
     padding-left: 0rem !important;
     padding-right: 0rem !important;
@@ -415,24 +359,11 @@ input[type='file']:focus-visible {
   }
 }
 
-@media screen and (max-width: 990px) {
-  .nav_contain.container {
-    padding-left: 3rem;
-    padding-right: 3rem;
-    width: 100%;
-  }
-}
-
 @media screen and (max-width: 768px) {
   .hero_bottom_list {
     /* padding: 0;
     margin: 0 1rem; */
     margin-left: 2.25rem;
-  }
-
-  .nav_contain.container {
-    padding-left: 2.25rem;
-    padding-right: 2.25rem;
   }
 
 }
@@ -1186,74 +1117,6 @@ figcaption {
   display: block;
 }
 
-.nav_wrap {
-  z-index: 1050;
-  background-color: #0000;
-  width: 100%;
-  padding-top: 0;
-  position: absolute;
-  inset: 0% 0% auto;
-}
-.nav_wrap.padding-global {
-  padding-left: 0;
-  padding-right: 0;
-}
-.nav_logo-wrapper {
-  color: inherit;
-  text-decoration: none;
-  padding-left: 0;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  display: flex;
-  position: relative;
-  overflow: hidden;
-}
-.nav-component {
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-left: 0;
-  margin-right: 0;
-  display: flex;
-  position: relative;
-}
-.nav-hamburger {
-  cursor: pointer;
-  -webkit-tap-highlight-color: #0000;
-  tap-highlight-color: #0000;
-  -webkit-user-select: none;
-  user-select: none;
-  padding: 0;
-}
-.menu-icon {
-  grid-column-gap: 0.5rem;
-  grid-row-gap: 0.5rem;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  display: flex;
-}
-.menu-icon.z-index-2 {
-  padding-left: 0;
-  padding-right: 0;
-}
-.menu_icon-line {
-  background-color: #fff;
-  width: 2.0625rem;
-  height: 2px;
-}
-.menu_icon-line.is--top {
-  clear: none;
-  transform: rotate(0);
-}
-.nav_buttons-wrapper {
-  grid-column-gap: 2.125rem;
-  grid-row-gap: 2.125rem;
-  align-items: center;
-  display: flex;
-}
 .hero_list {
   flex-direction: column;
   grid-template-rows: auto auto;
@@ -1602,10 +1465,6 @@ figcaption {
   height: 100%;
   display: flex;
 }
-.nav_logo_icon {
-  color: #fff;
-  width: 3.875rem;
-}
 .hero_heading {
   flex-direction: column;
   align-items: flex-start;
@@ -1618,14 +1477,6 @@ figcaption {
 }
 .heading_line {
   overflow: hidden;
-}
-.nav_contain.container {
-  min-height: 0;
-  padding-left: 4.75rem;
-  padding-right: 4.75rem;
-}
-.nav_contain.container.padding-global {
-  justify-content: flex-start;
 }
 .hero_contain.container.padding-global {
   flex-direction: column;
@@ -1990,22 +1841,6 @@ figcaption {
     padding-top: 5rem;
     padding-bottom: 5rem;
   }
-  .nav_wrap {
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
-  .nav_wrap.padding-global {
-    background-color: #ffffff0d;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    position: relative;
-  }
-  .nav-component {
-    margin-right: 0;
-  }
-  .nav_logo_icon {
-    width: 3.5rem;
-  }
   .hero_list {
     max-height: 80%;
     display: flex;
@@ -2061,10 +1896,6 @@ figcaption {
   .header-animation.special.show-tablet,
   .header-animation.show-tablet-portrait {
     display: flex;
-  }
-  .nav_contain.container {
-    background-color: #ffffff0d;
-    padding: 0 3rem;
   }
   .hero_contain.container.padding-global {
     position: relative;
@@ -2288,20 +2119,6 @@ figcaption {
   .section_hero {
     padding-bottom: 3rem;
   }
-  .nav_wrap {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-  .nav-component {
-    display: flex;
-  }
-  .nav_buttons-wrapper {
-    grid-column-gap: 0.875rem;
-    grid-row-gap: 0.875rem;
-    flex: 0 auto;
-    order: 0;
-    justify-content: flex-start;
-  }
   .hero_list {
     height: 75%;
   }
@@ -2511,47 +2328,6 @@ figcaption {
     padding-left: 0;
     padding-right: 0;
   }
-  .nav_wrap {
-    padding-top: 1.5rem;
-    padding-bottom: 1rem;
-    padding-left: 5%;
-    padding-right: 5%;
-  }
-  .nav_wrap.padding-global {
-    margin-top: 0;
-    padding-top: 1.5rem;
-    padding-bottom: 0rem;
-  }
-  .nav_logo-wrapper {
-    flex: 0 auto;
-    justify-content: center;
-    align-self: center;
-    align-items: center;
-    margin-right: 0;
-    padding-left: 0;
-    display: flex;
-  }
-  .nav-component {
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .nav-hamburger {
-    justify-content: center;
-    align-items: center;
-    display: flex;
-  }
-  .menu-icon.z-index-2 {
-    padding-right: 0;
-  }
-  .menu_icon-line.is--top,
-  .menu_icon-line.is--bottom {
-    width: 1.75rem;
-  }
-  .nav_buttons-wrapper {
-    margin-left: 5vw;
-  }
   .hero_list {
     height: 50%;
   }
@@ -2593,24 +2369,11 @@ figcaption {
   .hero_wrap {
     height: 100svh;
   }
-  .nav_logo_icon {
-    flex: 0 auto;
-    width: 3.8rem;
-    padding-top: 0;
-  }
   .hero_heading.heading-style-h1 {
     padding-top: 0;
   }
   .heading_line {
     display: flex;
-  }
-  .nav_contain.container {
-    padding: 1rem;
-    display: block;
-  }
-  .nav_contain.container.padding-global {
-    padding-left: 0;
-    padding-right: 0;
   }
   .hero_contain.container.padding-global {
     justify-content: flex-end;
@@ -2738,11 +2501,6 @@ figcaption {
 }
 
 @media screen and (max-width: 480px) {
-  .nav_contain.container {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-
   .hero_bottom_list {
     padding: 0 1rem;
     margin: 0;
@@ -2775,14 +2533,6 @@ figcaption {
   }
 }
 @media screen and (max-width: 480px) {
-  .nav_contain.container {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-  .nav_wrap.padding-global {
-    margin-top: 0;
-    padding-top: 0;
-  }
   .hero_list {
     height: 75%;
   }
