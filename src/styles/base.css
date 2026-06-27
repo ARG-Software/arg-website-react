@@ -299,137 +299,6 @@ input[type='file']:focus-visible {
 /* ── Mobile Nav: left-side panel (desktop only - mobile handled by Navbar JS) ── */
 /* Desktop menu styles removed - controlled by Navbar React component */
 
-/* ── Nav button: slot-machine hover ── */
-
-.nav_buttons-wrapper .button-base .button-base_text_wrap {
-  height: 1.2em !important;
-  line-height: var(--line-cta) !important;
-  overflow: hidden !important;
-  position: relative !important;
-  text-align: center;
-}
-
-.nav_buttons-wrapper .button-base .button-base__button-text {
-  display: block !important;
-  line-height: var(--line-cta) !important;
-  text-align: center;
-  white-space: nowrap !important;
-  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1) !important;
-  transform: translateY(0) !important;
-}
-
-.nav_buttons-wrapper .button-base .button-base__button-text.is-animated {
-  position: absolute !important;
-  top: 0 !important;
-  left: 50% !important;
-  transform: translate(-50%, 100%) !important;
-  width: max-content !important;
-  text-align: center !important;
-}
-
-.nav_buttons-wrapper .button-base:hover .button-base__button-text:not(.is-animated) {
-  transform: translateY(-100%) !important;
-}
-
-.nav_buttons-wrapper .button-base:hover .button-base__button-text.is-animated {
-  transform: translate(-50%, 0) !important;
-}
-
-/* ── CTA buttons: slot-machine hover (Show me more, Let's start, etc) ── */
-
-.button-base:not(.nav_buttons-wrapper *) {
-  cursor: pointer;
-}
-
-.button-base:not(.nav_buttons-wrapper *) .button-base_text_wrap {
-  display: grid !important;
-  flex: 0 0 auto;
-  grid-template-areas: 'stack';
-  height: 1.2em !important;
-  line-height: var(--line-cta) !important;
-  min-width: max-content;
-  overflow: hidden !important;
-  place-items: center;
-  position: relative !important;
-  text-align: center;
-  width: max-content;
-}
-
-.button-base:not(.nav_buttons-wrapper *) .button-base__button-text {
-  align-items: center;
-  display: flex !important;
-  grid-area: stack;
-  justify-content: center;
-  line-height: var(--line-cta) !important;
-  min-width: max-content;
-  text-align: center;
-  white-space: nowrap !important;
-  width: max-content;
-  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1) !important;
-  transform: translateY(0) !important;
-  cursor: pointer;
-}
-
-.button-base:not(.nav_buttons-wrapper *) .button-base__button-text.is-animated {
-  left: auto !important;
-  position: static !important;
-  text-align: center !important;
-  top: auto !important;
-  transform: translateY(100%) !important;
-  width: max-content !important;
-}
-
-.button-base:not(.nav_buttons-wrapper *):hover .button-base__button-text:not(.is-animated) {
-  transform: translateY(-100%) !important;
-}
-
-.button-base:not(.nav_buttons-wrapper *):hover .button-base__button-text.is-animated {
-  transform: translateY(0) !important;
-}
-
-/* ── Text buttons (Share my ideas, I want a new software, etc): slot-machine ── */
-
-.text-button {
-  font-size: var(--type-text-button);
-  overflow: hidden !important;
-  position: relative !important;
-  display: inline-block !important;
-  line-height: var(--line-cta) !important;
-  cursor: pointer;
-}
-
-.text-button .text-button_list {
-  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1) !important;
-  transform: translateY(0);
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.5rem !important;
-  line-height: var(--line-cta) !important;
-}
-
-.text-button .text-button_list.is-animated {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  transform: translateY(100%) !important;
-}
-
-.text-button:hover .text-button_list:not(.is-animated) {
-  transform: translateY(-100%) !important;
-}
-
-.text-button:hover .text-button_list.is-animated {
-  transform: translateY(0) !important;
-}
-
-.bottom_buttons-wrapper .overflow-hidden {
-  overflow: hidden !important;
-}
-
-.hero_bottom_content:has(.text-button) {
-  overflow: hidden !important;
-}
-
 /* ── Hamburger to X ── */
 
 .nav-hamburger .menu_icon-line {
@@ -507,10 +376,6 @@ input[type='file']:focus-visible {
 }
 
 @media screen and (max-width: 480px) {
-  .button-contact .button-base__button-text {
-    white-space: nowrap !important;
-  }
-
   .padding-global {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -528,12 +393,6 @@ input[type='file']:focus-visible {
   .bp-tag {
     text-align: center;
   }
-}
-
-.nav_buttons-wrapper .button-base .button-base_text_wrap {
-  position: relative !important;
-  overflow: hidden !important;
-  height: auto !important;
 }
 
 .es-load-more-button-container {
@@ -1453,30 +1312,6 @@ figcaption {
   padding-top: 2.25rem;
   display: flex;
 }
-.text-button_list {
-  grid-column-gap: 0.5rem;
-  grid-row-gap: 0.5rem;
-  color: #fff;
-  align-items: center;
-  display: flex;
-}
-.text-button_list.is--black {
-  color: #000;
-}
-.text-button_list.show-tablet {
-  display: none;
-}
-.text-button_list.portfolio,
-.text-button_list.text-color-black {
-  color: #000;
-}
-.text-button_list.is-animated {
-  position: absolute;
-  inset: 200% auto auto 0%;
-}
-.text-button_list.is-dark {
-  color: #000;
-}
 .section_projects {
   padding-top: 11.25rem;
   padding-bottom: 16.25rem;
@@ -1588,26 +1423,6 @@ figcaption {
   padding: 1rem 1.375rem;
   font-size: 0.875rem;
 }
-.arrow_icon-embed {
-  justify-content: center;
-  align-items: center;
-  width: var(--size-text-button-icon);
-  height: var(--size-text-button-icon);
-  display: flex;
-  transform: rotate(-50deg);
-}
-.arrow_icon-embed.is--large {
-  width: 2rem;
-  height: 2rem;
-}
-.arrow_icon-embed.size-footer {
-  width: 0.75rem;
-  height: 0.75rem;
-}
-.arrow_icon-embed.large {
-  width: 1.125rem;
-  height: 1.5rem;
-}
 .projects_item_component {
   border-radius: 1.25rem;
   height: 21.5rem;
@@ -1626,52 +1441,6 @@ figcaption {
 }
 .nav_logo-embed {
   height: 2rem;
-}
-.button-base {
-  grid-column-gap: 0px;
-  grid-row-gap: 0px;
-  color: #fff;
-  white-space: nowrap;
-  cursor: pointer;
-  border: 2px solid #fff;
-  border-radius: var(--size-button-radius);
-  flex: 0 auto;
-  justify-content: center;
-  align-items: center;
-  padding: var(--size-button-padding-y) var(--size-button-padding-x);
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-button);
-  font-weight: 500;
-  line-height: var(--line-cta);
-  text-decoration: none;
-  display: flex;
-  position: relative;
-}
-.button-base.is-submit {
-  background-color: #0000;
-}
-.button-base.hiden {
-  display: flex;
-}
-
-.button-base.button-contact {
-  min-width: auto;
-  padding-left: var(--size-button-padding-x);
-  padding-right: var(--size-button-padding-x);
-}
-.button-base__button-text {
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}
-.button-base__button-text.is-animated {
-  text-align: center;
-  padding-right: 0;
-  font-size: var(--type-button);
-  font-weight: 500;
-  display: block;
-  position: absolute;
-  inset: 200% auto auto 0%;
 }
 .submit-form {
   z-index: 1;
@@ -1985,17 +1754,6 @@ figcaption {
 
 .heading {
   font-weight: 400;
-}
-.button-base_text_wrap {
-  flex: 1;
-  display: block;
-  position: relative;
-  overflow: hidden;
-}
-.text-button {
-  color: #000;
-  position: relative;
-  overflow: hidden;
 }
 .partners_logo_list {
   justify-content: space-between;
@@ -2329,9 +2087,6 @@ figcaption {
     padding-top: 1.5rem;
     display: flex;
   }
-  .text-button_list.show-tablet {
-    display: flex;
-  }
   .cta-wrapper {
     text-align: center;
     padding-left: 3rem;
@@ -2366,9 +2121,6 @@ figcaption {
 
   .module_logo-layout {
     flex-wrap: wrap;
-  }
-  .button-base.hiden {
-    display: none;
   }
   .heading_wrap {
     align-self: center;
@@ -2642,9 +2394,6 @@ figcaption {
     padding-top: 0.5rem;
     display: flex;
     position: static;
-  }
-  .text-button_list.show-tablet {
-    display: flex;
   }
   .section_projects {
     padding-top: 8.75rem;
@@ -2920,10 +2669,6 @@ figcaption {
   .footer_copywrite-text-mobile {
     align-self: auto;
   }
-  .arrow_icon-embed.large {
-    width: 0.75rem;
-    height: 0.75rem;
-  }
   .hero_wrap {
     height: 100svh;
   }
@@ -2961,9 +2706,6 @@ figcaption {
     grid-column-gap: 2rem;
     grid-row-gap: 2rem;
   }
-  .text-button_text {
-    font-size: var(--type-text-button);
-  }
   .partners_logo_list {
     grid-column-gap: 2rem;
     grid-row-gap: 2rem;
@@ -3000,9 +2742,6 @@ figcaption {
   }
   .typeform-wrapper-o5kxhiic.footer-space {
     padding-left: 0;
-  }
-  .button-base {
-    padding: 0.5rem 1.75rem;
   }
   .svg {
     box-sizing: border-box;
