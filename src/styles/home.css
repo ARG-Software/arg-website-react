@@ -528,6 +528,28 @@
 }
 
 /* Use cases */
+
+.projects_contain.container.padding-global {
+  display: block;
+  padding-bottom: 8rem;
+  padding-top: 8rem;
+}
+
+.projects_heading-wrapper {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8.875rem;
+  overflow: hidden;
+}
+
+.projects_heading {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .home-projects__heading-wrapper {
   gap: 2rem;
   overflow: visible;
@@ -543,6 +565,20 @@
   line-height: var(--line-body);
   margin: 1.5rem 0 0;
   max-width: 60rem;
+}
+
+@media screen and (max-width: 479px) {
+  .projects_contain.container.padding-global {
+    padding: 2.5rem 1rem;
+  }
+
+  .projects_heading-wrapper {
+    margin-bottom: 4rem;
+  }
+
+  .projects_heading.heading-style-h2 {
+    text-wrap: balance;
+  }
 }
 
 /* Shared homepage section header */
