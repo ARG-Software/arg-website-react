@@ -325,7 +325,7 @@ export default function ProjectDetailPage() {
                     <BaseCard
                       key={i}
                       className="prp-metric-card"
-                      variant="light"
+                      variant="dark"
                       padding="sm"
                       radius="sm"
                       hover="none"

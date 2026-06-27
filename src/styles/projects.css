@@ -539,7 +539,7 @@
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta-tight);
   line-height: var(--line-compact);
-  color: var(--prp-dark);
+  color: #fff;
   margin: 0;
   display: flex;
   align-items: flex-start;
