@@ -48,6 +48,7 @@ const primaryMenuItems = [
 const secondaryMenuItems = [
   { label: 'Testimonials', to: '/#testimonials' },
   { label: 'Meet our Team', to: '/#team' },
+  { label: 'Careers', to: '/careers/' },
   { label: 'FAQ', to: '/#faq' },
   { label: 'Social', to: '/#social' },
   { label: 'Contact', to: '/#contact' },
@@ -176,7 +177,7 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
           )}
 
           <div className="nav_overlay-ai-line">
-            <p>ARG AI — coming soon</p>
+            <p>ARG AI - Coming Soon</p>
             <span>In development</span>
           </div>
         </aside>

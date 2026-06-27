@@ -124,7 +124,9 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
                 <a href="/terms" className="footer-bottom__link">
                   Terms of Service
                 </a>
-                <span className="footer-bottom__copyright">2021-2026 @ Arg Software</span>
+                <span className="footer-bottom__copyright">
+                  © 2020-2026 Arg Software. All rights reserved.
+                </span>
               </div>
             </div>
           </div>

@@ -73,7 +73,7 @@ export function RelatedArticlesCarousel({
         <div>
           <span className="related-articles-carousel__kicker">Continue reading</span>
           <h2 id="related-articles-carousel-title">
-            More related articles from <span>ARG</span>
+            More from the <span>Arg Software</span> team
           </h2>
         </div>
       </div>
@@ -121,7 +121,7 @@ export function RelatedArticlesCarousel({
               <h3>{post.title}</h3>
               <p>{post.subtitle || post.excerpt}</p>
               <span className="related-article-card__meta">
-                {[post.date, post.readTime].filter(Boolean).join(' - ')}
+                {[post.date, post.readTime].filter(Boolean).join(' · ')}
               </span>
             </BaseCard>
           ))}

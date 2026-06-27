@@ -93,9 +93,9 @@ const WHY_US_PILLARS = [
     index: '02 - Domain',
     metric: '10k',
     unit: 'tx/sec, live',
-    title: 'The systems that fall over.',
+    title: 'The systems that cannot fall over.',
     description:
-      'Open-payment rails, real-time audio sync, exchange order flow. The work where it usually works is not a passing grade.',
+      'Open-payment rails, real-time audio sync, exchange order flow. The work where "usually works" is not good enough.',
   },
   {
     index: '03 - Craft',
@@ -103,13 +103,13 @@ const WHY_US_PILLARS = [
     unit: 'band-aids shipped',
     title: 'Gold standard, not trendy.',
     description:
-      'Battle-tested tools we have used in anger, not the ones with the loudest feed. Clean code, easy hand-off when we are done.',
+      'Battle-tested tools we have used under pressure, not the ones with the loudest feed. Clean code, clear ownership, easy hand-off when we are done.',
   },
 ];
 
 const TECH_STACK_INTRO = {
   title: 'The tools are not the point. The operating history is.',
-  text: 'This console is a quick map of the stack we trust when the system needs to stay observable, scalable, and easy to hand over after the hard part is done.',
+  text: 'This console maps the stack we trust when a system needs to stay observable, scalable, and easy to hand over after the hard part is done.',
 };
 
 export default function WorkingWithUsPage() {
@@ -120,7 +120,7 @@ export default function WorkingWithUsPage() {
     <>
       <SEO
         title="Working with Us"
-        description="Work with ARG Software to design architecture-first platforms for fintech, media, and high-growth technology teams."
+        description="Work with Arg Software when architecture, reliability, and senior execution matter from the first technical decision to production."
         path="/working-with-us/"
       />
       <div className="page-wrapper">
@@ -128,8 +128,8 @@ export default function WorkingWithUsPage() {
 
         <main className="main-wrapper background-color-dark">
           <PageHeader
-            title={['Work With', 'ARG Software']}
-            subtitle="Work with a small architecture-first team that designs the system before writing it, then stays close through production."
+            title={['Work With', 'Arg Software']}
+            subtitle="Work with a small architecture-first team that designs the system before writing it, then stays close when it reaches production."
             breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Working with Us' }]}
             sideItems={[
               { label: 'Why ARG', href: '#why-us' },
@@ -159,9 +159,9 @@ export default function WorkingWithUsPage() {
                   </div>
                   <aside className="cp-whyus-side">
                     <p>
-                      ARG is a small, opinionated engineering team. We pick the hard problems on
-                      purpose - the systems that have to be right the first time - and we go in
-                      architecture-first.
+                      ARG is a small, opinionated engineering team. We take on hard problems on
+                      purpose: systems where architecture, reliability, and ownership matter from
+                      day one.
                     </p>
                     <span>ARG Team</span>
                   </aside>

@@ -20,8 +20,8 @@ export default function NotFoundPage() {
       data-animate-default-stagger="120"
     >
       <SEO
-        title="Page Not Found | ARG Software"
-        description="The page you're looking for doesn't exist. Head back to ARG Software's homepage."
+        title="Page Not Found | Arg Software"
+        description="The page you're looking for doesn't exist. Head back to Arg Software's homepage."
         path="/404"
         noIndex
       />

@@ -10,7 +10,7 @@ export default function TermsPage() {
     <>
       <SEO
         title="Terms of Service"
-        description="ARG Software's terms of service — the conditions governing the use of our website and services."
+        description="Arg Software's terms of service — the conditions governing the use of our website and services."
         path="/terms/"
         noIndex
       />

@@ -46,8 +46,8 @@ export default function PartnersPage() {
   return (
     <>
       <SEO
-        title="Our Partners"
-        description="Meet the companies and organizations Arg Software partners with to deliver exceptional digital solutions across fintech, open payments, and financial inclusion."
+        title="Partners"
+        description="Meet the companies Arg Software has partnered with across fintech, open payments, music technology, Web3, consultancy, and industry platforms."
         path="/partners/"
       />
       <div className="page-wrapper pp-page">
@@ -55,11 +55,11 @@ export default function PartnersPage() {
 
         <main className="main-wrapper">
           <PageHeader
-            title={['They trusted us.', "It's your time now."]}
+            title={['Trusted by the teams', 'building what matters.']}
             breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Partners' }]}
             sideItems={[
               { label: 'Partners', href: '#partners', meta: String(clients.length) },
-              { label: 'Built on lasting partnerships', href: '#timeline' },
+              { label: 'Partnership timeline', href: '#timeline' },
               { label: 'Start a project', href: '#page-cta' },
             ]}
             size="small"
@@ -92,8 +92,8 @@ export default function PartnersPage() {
                   </div>
                   <div className="pc-header-desc" data-animate-order={categories.length}>
                     <p>
-                      ARG is proud to work with companies that have sustainable impact goals and
-                      share our passion for technical excellence and innovation.
+                      ARG works with teams building payment rails, music platforms, venture-backed
+                      products, and operational systems where reliability matters.
                     </p>
                   </div>
                 </div>
@@ -129,8 +129,8 @@ export default function PartnersPage() {
           <section className="page-cta-wrapper" id="page-cta">
             <SectionDivider variant="light" hideOnMobile={true} />
             <CTASection
-              title="Ready to elevate"
-              titleHighlight="your digital experience?"
+              title="Ready to build"
+              titleHighlight="something that lasts?"
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="pp-animate"

@@ -15,7 +15,7 @@
     "liveLink": "https://mojaloop.io/",
     
     "intro": "An open-source platform designed to foster financial inclusion on a global scale - connecting diverse financial systems and enabling seamless, secure digital transactions for underserved populations.",
-    "challenge": "Implementing Mojaloop's financial hub was not simply about building a platform-it was about making fundamentally different systems work together in environments where little is standardized.\n\nFrom a technical standpoint, the main challenge was integrating multiple independent systems-such as banks, mobile wallets, and payment providers-that were never designed to interoperate. Each operates with its own protocols, data formats, and constraints. Creating a unified and reliable transaction flow required a resilient architecture capable of ensuring consistency, security, and high performance, even under heavy load. This became even more complex in regions with unstable networks or limited bandwidth, where fault tolerance is essential.\n\nAt the same time, the implementation had to adapt to diverse regulatory environments. Every country brings its own legal requirements, compliance rules, and financial standards. Aligning the platform with these regulations-without fragmenting the system or limiting scalability-required careful design and continuous adjustment.\n\nBeyond technology and regulation, there was also an ecosystem challenge. The platform depends on collaboration between institutions that may not naturally align, such as banks, fintechs, and telecom operators. Encouraging these participants to adopt shared standards and integrate into a common infrastructure required building trust and coordinating across organizational boundaries.\n\nIn essence, the challenge was about orchestrating a complex and evolving system where technology, regulation, and collaboration all needed to align under constrained and fragmented conditions.",
+    "challenge": "Implementing Mojaloop's financial hub was not simply about building a platform - it was about making fundamentally different systems work together in environments where little is standardized.\n\nFrom a technical standpoint, the main challenge was integrating multiple independent systems - such as banks, mobile wallets, and payment providers - that were never designed to interoperate. Each operates with its own protocols, data formats, and constraints. Creating a unified and reliable transaction flow required a resilient architecture capable of ensuring consistency, security, and high performance, even under heavy load. This became even more complex in regions with unstable networks or limited bandwidth, where fault tolerance is essential.\n\nAt the same time, the implementation had to adapt to diverse regulatory environments. Every country brings its own legal requirements, compliance rules, and financial standards. Aligning the platform with these regulations - without fragmenting the system or limiting scalability - required careful design and continuous adjustment.\n\nBeyond technology and regulation, there was also an ecosystem challenge. The platform depends on collaboration between institutions that may not naturally align, such as banks, fintechs, and telecom operators. Encouraging these participants to adopt shared standards and integrate into a common infrastructure required building trust and coordinating across organizational boundaries.\n\nIn essence, the challenge was about orchestrating a complex and evolving system where technology, regulation, and collaboration all needed to align under constrained and fragmented conditions.",
     "solution": [
       "Upgraded the technology stack to ensure scalability, security, and performance - adopting the latest versions of programming languages, databases, and infrastructure components to accommodate growing transaction volumes",
       "Refined the architecture to be more modular and extensible using microservices, enabling agile development and scalability while maintaining interoperability standards",
@@ -32,7 +32,7 @@
       { "value": "6", "label": "Countries impacted" },
       { "value": "99.9", "label": "Uptime percentage" }
     ],
-    "stack": "Express, MongoDb, Kafka, Angular, Docker, Jest, Node"
+    "stack": "Express, MongoDB, Kafka, Angular, Docker, Jest, Node"
   },
   {
     "slug": "peoples-clearinghouse",
@@ -134,13 +134,13 @@
       { "value": "98", "label": "Compliance accuracy rate %" },
       { "value": "2000", "label": "Active business users" }
     ],
-    "stack": "TypeOrm, Express, React, Docker, Jest, MySQL, Node"
+    "stack": "TypeORM, Express, React, Docker, Jest, MySQL, Node"
   },
   {
     "slug": "sky-tracks",
     "title": "Sky Tracks",
     "subtitle": "Music Tech",
-    "client": "Skytracks",
+    "client": "SkyTracks",
     "timeline": "1 Year",
     "services": ["Backend", "Frontend", "CI/CD", "QA & Testing"],
     "imgSrc": "/images/projects/heroes/sky-tracks-hero-3200.webp",
@@ -166,13 +166,13 @@
       { "value": "20", "label": "Avg latency in ms" },
       { "value": "5000", "label": "Tracks created" }
     ],
-    "stack": "Knex, Tone.js, Tailwind, Kpa, Angular, Docker, Jest, Node"
+    "stack": "Knex, Tone.js, Tailwind, Koa, Angular, Docker, Jest, Node"
   },
   {
     "slug": "tv-cine",
     "title": "TV Cine",
     "subtitle": "Entertainment",
-    "client": "TvCine",
+    "client": "TV Cine",
     "timeline": "1 Year",
     "services": ["Backend", "Frontend", "CI/CD", "QA & Testing"],
     "imgSrc": "/images/projects/heroes/tv-cine-hero-3200.webp",
@@ -197,7 +197,7 @@
       { "value": "500", "label": "Content titles available" },
       { "value": "99.5", "label": "Platform availability %" }
     ],
-    "stack": "Vue.js, MongoDb, Entity Framework, .Net Core, Nuxt"
+    "stack": "Vue.js, MongoDB, Entity Framework, .NET Core, Nuxt"
   },
   {
     "slug": "royalty-flush",
@@ -224,11 +224,11 @@
     ],
     "impact": "Labels and artists gain clarity and confidence in their revenue flows, reducing disputes and improving trust across the board - streamlining workflows, maximizing revenue, and empowering data-driven decisions.",
     "metrics": [
-      { "value": "10", "label": "Million $ royalties processed" },
+      { "value": "10", "displayValue": "$10M+", "label": "Royalties processed" },
       { "value": "1000", "label": "Music catalogs managed" },
       { "value": "50", "label": "Platform integrations" }
     ],
-    "stack": ".Net Core, Entity Framework, Octopus Deploy, Docker, React, Hangfire, PostgreSQL, MediatR"
+    "stack": ".NET Core, Entity Framework, Octopus Deploy, Docker, React, Hangfire, PostgreSQL, MediatR"
   },
   {
     "slug": "vector",
@@ -244,8 +244,8 @@
     "mockupSrc": "/images/projects/mockups/vector-mockup-1080.webp",
     "mockupSrcSet": "/images/projects/mockups/vector-mockup-360.webp 360w, /images/projects/mockups/vector-mockup-500.webp 500w, /images/projects/mockups/vector-mockup-800.webp 800w, /images/projects/mockups/vector-mockup-1080.webp 1080w",
     "liveLink": "https://quantapes.com/",
-    "intro": "A high-frequency trading platform connecting user accounts on exchanges like Bybit and Coinbase - automating trades based on price signals and pre-defined strategies.",
-    "challenge": "Liminality Labs needed a high-frequency trading platform that could connect user accounts on exchanges like Bybit and Coinbase and automate trades based on price signals and pre-defined strategies.\n\nThe application arrived in a completely non-functional state. While the user interface was implemented, it was merely illustrative and lacked any connection to the backend. The backend itself was dysfunctional - creating frustration for the project owner and leaving the platform unable to execute a single trade.\n\nThe core challenge was not just fixing existing code, but rebuilding the entire system from the ground up - creating a reliable architecture capable of handling real-time strategy execution, secure exchange integrations, and automated crypto trades with precision and speed.",
+    "intro": "A high-frequency trading platform connecting user accounts on exchanges like Bybit and Coinbase - automating trades based on price signals and predefined strategies.",
+    "challenge": "Liminality Labs needed a high-frequency trading platform that could connect user accounts on exchanges like Bybit and Coinbase and automate trades based on price signals and predefined strategies.\n\nThe application arrived in a completely non-functional state. While the user interface was implemented, it was merely illustrative and lacked any connection to the backend. The backend itself was dysfunctional - creating frustration for the project owner and leaving the platform unable to execute a single trade.\n\nThe core challenge was not just fixing existing code, but rebuilding the entire system from the ground up - creating a reliable architecture capable of handling real-time strategy execution, secure exchange integrations, and automated crypto trades with precision and speed.",
     "solution": [
       "Rebuilt the entire backend from scratch with a new tech stack - creating a reliable architecture capable of handling real-time strategy execution and high-frequency trading operations",
       "Integrated secure exchange connections for Bybit and Coinbase - enabling automated crypto trades with proper authentication, rate limiting, and error handling",
@@ -256,10 +256,10 @@
     ],
     "impact": "Vector now provides a robust automation platform where users can subscribe to expert-built trading strategies that execute trades seamlessly - turning a broken application into a fully functional high-frequency trading system.",
     "metrics": [
-      { "value": "10", "label": "Avg execution time in ms" },
+      { "value": "10", "label": "Average execution time in ms" },
       { "value": "3", "label": "Exchange integrations" },
       { "value": "24", "label": "Hours of daily monitoring" }
     ],
-    "stack": "MikroOrm, Next, Kafka, PostgreSQL, Docker, Nx, Webpack, Nest.js"
+    "stack": "MikroORM, Next.js, Kafka, PostgreSQL, Docker, Nx, Webpack, NestJS"
   }
 ]

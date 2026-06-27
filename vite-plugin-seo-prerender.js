@@ -49,12 +49,12 @@ function injectCrawlableBlock(html, block) {
 const STATIC_PAGES = [
   {
     path: '/partners/',
-    title: 'Our Partners | Arg Software',
-    h1: 'Our Partners',
+    title: 'Partners | Arg Software',
+    h1: 'Partners',
     description:
-      'Meet the companies and organizations Arg Software partners with to deliver exceptional digital solutions across fintech, open payments, and financial inclusion.',
+      'Meet the companies Arg Software has partnered with across fintech, open payments, music technology, Web3, consultancy, and industry platforms.',
     paragraphs: [
-      'Arg Software partners with industry-leading organizations across fintech, open payments, music technology, and digital consultancy.',
+      'Arg Software partners with teams across fintech, open payments, music technology, Web3, consultancy, and industry platforms.',
       'Our partners include the Interledger Foundation, a global nonprofit building an open interoperable payment network enabling seamless currency-agnostic transactions for the 1.4 billion people excluded from traditional banking.',
       'We work with the Mojaloop Foundation, building open-source interoperable payment systems that bring affordable digital financial services to unbanked populations worldwide.',
       'Our technology partners include ThreeSigma, a research-driven blockchain and decentralised finance advisory firm, and SkyTracks, a cloud-based music production platform enabling real-time collaboration between musicians and audio engineers.',
@@ -81,9 +81,9 @@ const STATIC_PAGES = [
     title: 'Blog & Insights | Arg Software',
     h1: 'Blog & Insights',
     description:
-      'Technical articles, engineering insights, and best practices from the Arg Software team. Deep dives into architecture, TypeScript, .NET, DevOps, and more.',
+      'Technical articles from the Arg Software team on architecture, TypeScript, .NET, DevOps, AI tooling, and the engineering decisions behind reliable software.',
     paragraphs: [
-      'The Arg Software blog covers software engineering topics including clean architecture, TypeScript patterns, .NET development, DevOps, Kubernetes, and AI.',
+      'The Arg Software blog covers practical software engineering: architecture, TypeScript, .NET, DevOps, AI tooling, and the tradeoffs behind reliable production systems.',
       'We write practical guides on topics like enforcing clean architecture in TypeScript, CQRS without MediatR in .NET, dependency injection patterns in ASP.NET Core, and functional error handling with the Result pattern.',
       'Our DevOps blog posts cover running Docker natively on Windows with WSL2, local Kubernetes clusters with NestJS and PostgreSQL, and debugging microservices with Prometheus and OpenTelemetry.',
       'We also write about software engineering culture, including the art of pull requests, building scalable monorepos with Nx and NestJS, and the real impact of AI on software development teams.',
@@ -92,23 +92,23 @@ const STATIC_PAGES = [
   {
     path: '/careers/',
     title: 'Careers | Arg Software',
-    h1: 'Careers at ARG Software',
+    h1: 'Careers at Arg Software',
     description:
-      'Explore open roles at Arg Software and apply to join an architecture-first engineering team building complex production systems.',
+      'Arg Software is not hiring today. Learn what we look for in architecture-first engineers and how to reach the founders directly.',
     paragraphs: [
-      'Arg Software hires for meaningful ownership on production systems, with open roles across backend engineering, frontend engineering, DevOps, security, product, and data.',
-      'Every role is scoped for senior contributors who can design architecture-first systems, ship carefully, and stay close after production deploys.',
-      'Applications are reviewed directly by the founders, with a clear process and practical technical conversations instead of hiring theatre.',
+      'Arg Software is not hiring for a specific role today, but we still want to hear from engineers who think like us.',
+      'We stay intentionally small and selective. The right conversations are worth having before a role exists.',
+      'If you think you would fit at Arg Software, reach out directly to the founders with a short note about what you have built.',
     ],
   },
   {
     path: '/working-with-us/',
     title: 'Working with Us | Arg Software',
-    h1: 'Working with ARG Software',
+    h1: 'Working with Arg Software',
     description:
-      'Work with ARG Software to design architecture-first platforms for fintech, media, and high-growth technology teams.',
+      'Work with Arg Software when architecture, reliability, and senior execution matter from the first technical decision to production.',
     paragraphs: [
-      'Working with ARG Software means partnering with a small architecture-first engineering team that designs the system before writing it.',
+      'Working with Arg Software means partnering with a small architecture-first engineering team that designs the system before writing it and stays close when it reaches production.',
       'We build production-ready platforms for fintech, media, open payments, music technology, and high-growth technology companies.',
       'Our process emphasizes technical planning, observable systems, clean hand-off, and senior founder involvement from first conversation to production support.',
     ],
@@ -118,9 +118,9 @@ const STATIC_PAGES = [
     title: 'Privacy Policy | Arg Software',
     h1: 'Privacy Policy',
     description:
-      "ARG Software's privacy policy — how we collect, use, and protect your personal data.",
+      "Arg Software's privacy policy — how we collect, use, and protect your personal data.",
     paragraphs: [
-      'This privacy policy explains how ARG Software collects, uses, and protects your personal data when you visit our website or use our services.',
+      'This privacy policy explains how Arg Software collects, uses, and protects your personal data when you visit our website or use our services.',
       'We are committed to ensuring that your privacy is protected and that we comply with applicable data protection regulations including GDPR.',
     ],
   },
@@ -129,9 +129,9 @@ const STATIC_PAGES = [
     title: 'Terms of Service | Arg Software',
     h1: 'Terms of Service',
     description:
-      "ARG Software's terms of service — the conditions governing the use of our website and services.",
+      "Arg Software's terms of service — the conditions governing the use of our website and services.",
     paragraphs: [
-      'These terms of service outline the rules and regulations for the use of ARG Software\'s website and services.',
+      'These terms of service outline the rules and regulations for the use of Arg Software\'s website and services.',
       'By accessing this website, you accept these terms and conditions in full.',
     ],
   },
@@ -380,7 +380,10 @@ export default function seoPrerender() {
 
           const projectUrl = `${SITE_URL}/projects/${project.slug}/`;
           const title = `${project.title} - Case Study | Arg Software`;
-          const description = (project.challenge || '').replace(/\n+/g, ' ').slice(0, 160).trim();
+          const description = (project.intro || project.challenge || '')
+            .replace(/\n+/g, ' ')
+            .slice(0, 160)
+            .trim();
 
           let html = replaceMetaTags(baseHtml, {
             title,
@@ -405,8 +408,8 @@ export default function seoPrerender() {
 
       // ── 404 page ──────────────────────────────────────────────────────
       const notFoundHtml = replaceMetaTags(baseHtml, {
-        title: 'Page Not Found | ARG Software',
-        description: 'The page you\'re looking for doesn\'t exist. Head back to ARG Software\'s homepage.',
+        title: 'Page Not Found | Arg Software',
+        description: 'The page you\'re looking for doesn\'t exist. Head back to Arg Software\'s homepage.',
         url: `${SITE_URL}/404`,
         type: 'website',
       });
@@ -486,7 +489,7 @@ ${sitemapUrls.map(u => `  <url>
       const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>ARG Software Blog</title>
+    <title>Arg Software Blog</title>
     <link>${SITE_URL}/blog/</link>
     <description>Technical articles, engineering insights, and best practices from the Arg Software team.</description>
     <language>en</language>
@@ -515,13 +518,13 @@ ${rssItems}
 
       const atomXml = `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>ARG Software Blog</title>
+  <title>Arg Software Blog</title>
   <link href="${SITE_URL}/blog/" />
   <link href="${SITE_URL}/atom.xml" rel="self" type="application/atom+xml" />
   <updated>${new Date().toISOString()}</updated>
   <id>${SITE_URL}/blog/</id>
   <author>
-    <name>ARG Software</name>
+    <name>Arg Software</name>
   </author>
 ${atomEntries}
 </feed>`;

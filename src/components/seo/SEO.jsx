@@ -95,7 +95,7 @@ export function SEO({
         <link
           rel="alternate"
           type="application/rss+xml"
-          title="ARG Software - RSS Feed"
+          title="Arg Software - RSS Feed"
           href={`${SITE_URL}/rss.xml`}
         />
       )}
@@ -103,7 +103,7 @@ export function SEO({
         <link
           rel="alternate"
           type="application/atom+xml"
-          title="ARG Software - Atom Feed"
+          title="Arg Software - Atom Feed"
           href={`${SITE_URL}/atom.xml`}
         />
       )}

@@ -1,6 +1,6 @@
 // SEO constants
 export const SITE_URL = 'https://arg.software';
-export const SITE_NAME = 'ARG Software';
+export const SITE_NAME = 'Arg Software';
 export const DEFAULT_TITLE =
   'Custom Software Development for SaaS & Fintech Companies | Arg Software';
 export const DEFAULT_DESCRIPTION =

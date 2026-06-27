@@ -19,6 +19,10 @@ import '../styles/careers.css';
 const JOBS = CAREERS_DATA.jobs;
 const CAREER_TRAITS = CAREERS_DATA.careerTraits;
 const HIRING_STEPS = CAREERS_DATA.hiringSteps;
+const CAREERS_OPEN_ROLES_DESCRIPTION =
+  'Explore open roles at Arg Software and apply to join an architecture-first engineering team building complex production systems.';
+const CAREERS_NO_ROLES_DESCRIPTION =
+  'Arg Software is not hiring today. Learn what we look for in architecture-first engineers and how to reach the founders directly.';
 
 const FOUNDERS = [
   {
@@ -100,6 +104,7 @@ export default function CareersPage() {
   const applicationRef = useRef(null);
   const nameInputRef = useRef(null);
   const hasJobs = JOBS.length > 0;
+  const seoDescription = hasJobs ? CAREERS_OPEN_ROLES_DESCRIPTION : CAREERS_NO_ROLES_DESCRIPTION;
 
   useTimeOnPage('/careers/');
   useScrollAnimations();
@@ -145,21 +150,19 @@ export default function CareersPage() {
 
   return (
     <>
-      <SEO
-        title="Careers"
-        description="Explore open roles at ARG Software and apply to join an architecture-first engineering team building complex production systems."
-        path="/careers/"
-      />
+      <SEO title="Careers" description={seoDescription} path="/careers/" />
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper background-color-dark">
           <PageHeader
-            title={hasJobs ? ['Careers at ARG', 'Open Roles'] : ['Careers at ARG', 'No Open Roles']}
+            title={
+              hasJobs ? ['Careers at ARG', 'Open Roles'] : ['Careers at ARG', 'No Open Roles Today']
+            }
             subtitle={
               hasJobs
                 ? 'Every role is scoped for meaningful ownership on production systems. No hiring theatre, no filler seats.'
-                : 'We are not hiring today, but we still want to hear from people who think like us. The next opening is often written around someone we already know.'
+                : 'We are not hiring for a specific role today, but we still want to hear from engineers who think like us. The next opening is often shaped around someone we already know.'
             }
             breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Careers' }]}
             sideItems={
@@ -171,7 +174,7 @@ export default function CareersPage() {
                   ]
                 : [
                     { label: 'Who We Look For', href: '#who' },
-                    { label: 'Talk to Founders', href: '#founders' },
+                    { label: 'Talk to the Founders', href: '#founders' },
                     { label: 'Contact', href: '#contact' },
                   ]
             }
@@ -325,7 +328,7 @@ export default function CareersPage() {
                         </PillButton>
                         <span>
                           {submitted
-                            ? 'Application captured for testing.'
+                            ? 'Application received. We will review it and reply directly.'
                             : 'We reply to every application.'}
                         </span>
                       </div>
@@ -346,9 +349,9 @@ export default function CareersPage() {
                         <span className="text-color-gradiant">who we look for.</span>
                       </h2>
                       <p className="cp-section-subtitle">
-                        Roles open when a project calls for it. If any of this sounds like you,
-                        reach out - the next opening is usually written around someone we already
-                        know.
+                        We stay intentionally small and selective. If this sounds like the kind of
+                        team where you would do your best work, reach out early - the right
+                        conversations are worth having before a role exists.
                       </p>
                     </div>
                     <div className="cp-careers-traits-grid">
@@ -406,8 +409,8 @@ export default function CareersPage() {
 
           <section className="page-cta-wrapper background-color-dark" id="contact">
             <CTASection
-              title={hasJobs ? 'Ready to apply,' : "Didn't find a match,"}
-              titleHighlight={hasJobs ? 'show us your work.' : 'reach us anyway!'}
+              title={hasJobs ? 'Ready to apply,' : "Think you'd fit,"}
+              titleHighlight={hasJobs ? 'show us your work.' : 'reach out anyway.'}
               buttonTextNotHover={hasJobs ? 'Email careers' : 'Send us a message'}
               buttonTextHover="Let's talk"
               animationClass="cp-animate"

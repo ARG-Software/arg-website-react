@@ -27,6 +27,10 @@ export default function ProjectDetailPage() {
         alt: `${project.title} mockup`,
       }
     : null;
+  const seoDescription = (project?.intro || project?.challenge || '')
+    .replace(/\n+/g, ' ')
+    .slice(0, 160)
+    .trim();
   const projectLinks = useMemo(() => {
     if (!project) return [];
 
@@ -97,8 +101,8 @@ export default function ProjectDetailPage() {
       </Helmet>
       <SEO
         title={`${project.title} - Case Study`}
-        description={project.challenge.slice(0, 160)}
-        path={`/projects/${slug}`}
+        description={seoDescription}
+        path={`/projects/${slug}/`}
       />
       <div className="prp-page">
         <Navbar position="fixed" variant="dark" />

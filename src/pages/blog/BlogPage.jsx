@@ -90,7 +90,7 @@ export default function BlogPage() {
     <>
       <SEO
         title="Blog & Insights"
-        description="Technical blog posts, engineering insights, and best practices from the Arg Software team. Deep dives into architecture, TypeScript, .NET, DevOps, and more."
+        description="Technical articles from the Arg Software team on architecture, TypeScript, .NET, DevOps, AI tooling, and the engineering decisions behind reliable software."
         path="/blog/"
         rss
         atom
@@ -102,7 +102,7 @@ export default function BlogPage() {
         <main className="main-wrapper">
           <PageHeader
             title={['The thinking', 'behind the doing.']}
-            subtitle="Technical insights, engineering deep dives, and industry perspectives from our team"
+            subtitle="Technical essays, engineering deep dives, and field notes from the systems we build and the tradeoffs we make."
             breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Blog' }]}
             sideLabel="What we write about"
             sideText="Pragmatic architecture, TypeScript, .NET, DevOps, AI tooling, team practices, and the engineering decisions behind reliable software."
@@ -125,7 +125,7 @@ export default function BlogPage() {
                     <input
                       type="text"
                       className="blp-search-input"
-                      placeholder="Search by title, tag..."
+                      placeholder="Search by title or topic"
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
                       aria-label="Search blog posts"
@@ -144,7 +144,7 @@ export default function BlogPage() {
                   />
 
                   <span className="blp-count" data-animate-order="2">
-                    {resultCount} blog post{resultCount !== 1 ? 's' : ''}
+                    {resultCount} article{resultCount !== 1 ? 's' : ''}
                     {debouncedQuery && ` matching "${debouncedQuery}"`}
                     {selectedTags.length > 0 && ` in ${selectedTags.join(', ')}`}
                   </span>
@@ -154,7 +154,7 @@ export default function BlogPage() {
                   <p className="blp-empty">
                     {blogPosts.length === 0
                       ? 'No blog posts yet — check back soon.'
-                      : 'No posts found for the selected filters.'}
+                      : 'No articles found for those filters.'}
                   </p>
                 ) : (
                   <>

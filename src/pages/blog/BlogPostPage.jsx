@@ -327,12 +327,12 @@ export default function BlogPostPage() {
           image: BLOG_POST.image ? `https://arg.software${BLOG_POST.image}` : undefined,
           author: {
             '@type': 'Organization',
-            name: 'ARG Software',
+            name: 'Arg Software',
             url: 'https://arg.software',
           },
           publisher: {
             '@type': 'Organization',
-            name: 'ARG Software',
+            name: 'Arg Software',
             logo: {
               '@type': 'ImageObject',
               url: 'https://arg.software/images/og.jpg',
@@ -366,7 +366,7 @@ export default function BlogPostPage() {
               <span className="bp-header-meta__sep" aria-hidden="true" />
               <span>{BLOG_POST.readTime}</span>
               <span className="bp-header-meta__sep" aria-hidden="true" />
-              <span>ARG Software</span>
+              <span>Arg Software</span>
             </div>
           </PageHeader>
 
@@ -400,7 +400,7 @@ export default function BlogPostPage() {
                   <SocialShareButtons
                     items={feedItems}
                     className="bp-share-row bp-feed-row bp-feed-row--bottom"
-                    label="Feeds"
+                    label="Subscribe"
                     animate={true}
                     animationOrder={contentBlocks.length + 2}
                   />
@@ -434,12 +434,12 @@ export default function BlogPostPage() {
             <CTASection
               title="Like what you read?"
               titleHighlight="Subscribe to our newsletter"
-              subtitle="Stay updated with our latest insights and news."
-              buttonTextNotHover="Let's talk"
-              buttonTextHover="Send us a message"
+              subtitle="Get our latest engineering essays, field notes, and product thinking in your inbox."
+              buttonTextNotHover="Subscribe"
+              buttonTextHover="Join the list"
               animationClass="bp-animate"
               animate={true}
-              onPrimaryClick={() => trackCTA('send_message', 'blog_post_cta')}
+              onPrimaryClick={() => trackCTA('newsletter_subscribe', 'blog_post_cta')}
             />
           </section>
         </main>

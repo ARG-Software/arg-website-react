@@ -48,7 +48,7 @@
       "logoSmall": "/images/partners/threesigma-small.webp",
       "category": "Web3",
       "industry": "Blockchain & Web3",
-      "description": "A research-driven investment and advisory firm focused on blockchain ecosystems and decentralised finance, supporting crypto-native projects with deep technical and market expertise.",
+      "description": "A research-driven investment and advisory firm focused on blockchain ecosystems and decentralized finance, supporting crypto-native projects with deep technical and market expertise.",
       "link": "https://threesigma.xyz/",
       "timeline": {
         "startYear": 2021,
@@ -76,7 +76,7 @@
       "logoSmall": "/images/partners/mb-netzwerk-small.webp",
       "category": "Consultancy",
       "industry": "Digital Consultancy",
-      "description": "A German digital consultancy specialising in software solutions for tax documentation and business process automation, with a strong focus on GDPR compliance and enterprise-grade reliability.",
+      "description": "A German digital consultancy specializing in software solutions for tax documentation and business process automation, with a strong focus on GDPR compliance and enterprise-grade reliability.",
       "link": "https://www.dokutar.de/",
       "timeline": {
         "startYear": 2020,
@@ -130,7 +130,7 @@
       "logoSmall": "/images/partners/north-music-group-small.webp",
       "category": "Music",
       "industry": "Music Rights",
-      "description": "A music rights management company providing modern tools for catalogue management, royalty tracking, and licensing — making music ownership transparent and efficient for artists and publishers alike.",
+      "description": "A music rights management company providing modern tools for catalog management, royalty tracking, and licensing — making music ownership transparent and efficient for artists and publishers alike.",
       "timeline": {
         "startYear": 2024,
         "durationYears": 1
