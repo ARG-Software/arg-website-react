@@ -8,17 +8,25 @@ const faqData = [
     a: (
       <>
         <p>
-          Cost depends on the shape of the system: scope, risk, integrations, compliance,
-          performance, and how much uncertainty we need to remove before writing code.
+          Our typical rate is around 70 EUR/USD per hour, but we do not force every project into the
+          same pricing model.
         </p>
-        <p>Before estimating, we usually define:</p>
+        <p>
+          For ongoing or evolving work, hourly or monthly collaboration can make sense. For smaller,
+          well-defined projects, we can agree on an initial fee to start and a final payment on
+          delivery. For larger scopes, payments can be split by milestones or deliverables.
+        </p>
+        <p>Each case is reviewed individually. Before estimating, we usually define:</p>
         <ul>
           <li>The core workflows</li>
           <li>The technical risks</li>
           <li>The architecture direction</li>
           <li>A realistic delivery range</li>
         </ul>
-        <p>That keeps the conversation grounded and avoids optimistic guesses.</p>
+        <p>
+          Scope changes must be communicated clearly. If a change affects the current direction,
+          workload, timeline, or expected value, we review it together before continuing.
+        </p>
       </>
     ),
   },
