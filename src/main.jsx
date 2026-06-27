@@ -11,6 +11,7 @@ import { CookieConsent } from './components/index.js';
 import './styles/base.css';
 import './styles/home.css';
 import './styles/components.css';
+import './styles/legal.css';
 import './styles/effects.css';
 
 const PartnersPage = lazy(() => import('./pages/PartnersPage.jsx'));
