@@ -252,84 +252,6 @@ input[type='file']:focus-visible {
   padding-left: 0rem !important;
 }
 /* ============================================
-   Project Grid Layout
-   ============================================ */
-@media (min-width: 992px) {
-  .projects_item_wrap {
-    grid-row-start: var(--project-grid-row-start, auto) !important;
-  }
-
-  .projects_item_wrap:nth-child(6n + 1) {
-    grid-column: 1 / span 6 !important;
-    padding-top: 0;
-    aspect-ratio: 3 / 2 !important;
-  }
-
-  .projects_item_wrap:nth-child(6n + 1) .projects_item {
-    aspect-ratio: 3 / 2;
-  }
-
-  .projects_item_wrap:nth-child(6n + 2) {
-    grid-column: 1 / span 3 !important;
-    padding-top: 8.5rem;
-  }
-
-  .projects_item_wrap:nth-child(6n + 2) .projects_item {
-    aspect-ratio: 1 / 1;
-  }
-
-  .projects_item_wrap:nth-child(6n + 3) {
-    grid-column: 6 / span 4 !important;
-    padding-top: 0;
-  }
-
-  .projects_item_wrap:nth-child(6n + 3) .projects_item {
-    aspect-ratio: 4.3 / 4;
-  }
-
-  .projects_item_wrap:nth-child(6n + 4) {
-    grid-column: 5 / span 6 !important;
-    padding-top: 0rem;
-  }
-
-  .projects_item_wrap:nth-child(6n + 4) .projects_item {
-    aspect-ratio: 3 / 2;
-  }
-
-  .projects_item_wrap:nth-child(6n + 5) {
-    grid-column: 1 / span 3 !important;
-    padding-top: 0;
-  }
-
-  .projects_item_wrap:nth-child(6n + 5) .projects_item {
-    aspect-ratio: 4 / 5;
-  }
-
-  .projects_item_wrap:nth-child(6n) {
-    grid-column: 6 / span 5 !important;
-    padding-top: 20rem;
-  }
-
-  .projects_item_wrap:nth-child(6n) .projects_item {
-    aspect-ratio: 3 / 2;
-  }
-}
-
-/* ============================================
-   Project Card Hover Effect
-   ============================================ */
-
-@media (min-width: 992px) {
-  .projects_item_wrap .projects_item {
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .projects_item_wrap:hover .projects_item {
-    transform: scale(1.03);
-  }
-}
-
-/* ============================================
    CTA Section — Cursor Fix
    ============================================ */
 .section_cta,
@@ -2169,14 +2091,6 @@ figcaption {
 }
 .projects_wrap.background-color-white {
 }
-.projects_list {
-  grid-column-gap: 1rem;
-  grid-row-gap: 2rem;
-  grid-template-rows: auto;
-  grid-template-columns: minmax(200px, 1fr) 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-auto-columns: 1fr;
-  display: grid;
-}
 /* ===== ENHANCED UTILITIES ===== */
 
 .position-relative {
@@ -2810,18 +2724,6 @@ figcaption {
   .header-animation.show-tablet-portrait {
     display: flex;
   }
-  .projects_list {
-    grid-template-columns: repeat(1, 1fr) 1fr !important;
-  }
-  .projects_item {
-    aspect-ratio: 3/2 !important;
-  }
-  .projects_item_list {
-    flex-wrap: wrap;
-  }
-  .projects_item_wrap {
-    grid-column: 1/-1 !important;
-  }
   .nav_contain.container {
     background-color: #ffffff0d;
     padding: 0 3rem;
@@ -3423,10 +3325,6 @@ figcaption {
   .arrow_icon-embed.large {
     width: 0.75rem;
     height: 0.75rem;
-  }
-  .projects_list {
-    grid-row-gap: 4.5rem;
-    grid-template-columns: minmax(200px, 1fr);
   }
   .hero_wrap {
     height: 100svh;

@@ -1622,6 +1622,26 @@ textarea.ec-input {
   overflow: visible hidden;
 }
 
+@media (min-width: 992px) {
+  .projects_item_wrap .projects_item {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .projects_item_wrap:hover .projects_item {
+    transform: scale(1.03);
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .projects_item {
+    aspect-ratio: 3/2 !important;
+  }
+
+  .projects_item_list {
+    flex-wrap: wrap;
+  }
+}
+
 .projects_item.is-medium {
   height: 27.5vh;
 }
