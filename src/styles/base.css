@@ -22,23 +22,6 @@ html::-webkit-scrollbar-corner {
   background: transparent;
 }
 
-/* ===== ANIMATIONS ===== */
-@keyframes heroReveal {
-  from {
-    transform: translate3d(0, 120%, 0) rotate(8deg);
-    opacity: 0;
-  }
-  to {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-    opacity: 1;
-  }
-}
-
-.hero-reveal {
-  animation: heroReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  opacity: 0;
-}
-
 /* ===== FONTS ===== */
 @font-face {
   font-family: 'Neuemontreal';
@@ -539,12 +522,6 @@ figcaption {
   text-align: center;
   margin-top: 0.25rem;
 }
-.global-styles {
-  display: block;
-  position: fixed;
-  inset: 0% auto auto 0%;
-}
-
 .padding-xlarge {
   padding: 4rem;
 }
@@ -669,18 +646,6 @@ figcaption {
 .padding-bottom.padding-58 {
   padding-bottom: 3.625rem;
 }
-.icon-1x1-small {
-  color: #000;
-  flex: none;
-  width: 1rem;
-  height: 1rem;
-}
-.icon-1x1-small.socials-button {
-  color: #fff;
-  width: 1.5rem;
-  height: 1.5rem;
-  line-height: 1.5;
-}
 .overflow-auto {
   overflow: auto;
 }
@@ -688,11 +653,6 @@ figcaption {
   margin: 0;
   padding: 0;
 }
-.icon-1x1-large {
-  width: 2.5rem;
-  height: 2.5rem;
-}
-
 .z-index-2 {
   z-index: 2;
   position: relative;
@@ -734,13 +694,6 @@ figcaption {
   margin-left: auto;
   margin-right: auto;
 }
-.icon-height-small {
-  height: 1rem;
-}
-.icon-1x1-medium {
-  width: 2rem;
-  height: 2rem;
-}
 .heading-style-h1 {
   font-size: var(--type-cta-title);
   font-weight: 400;
@@ -774,9 +727,6 @@ figcaption {
 .overflow-hidden {
   order: 1;
   overflow: hidden;
-}
-.overflow-hidden.is-hero {
-  align-self: flex-start;
 }
 
 .text-size-tiny {
@@ -915,17 +865,11 @@ figcaption {
   margin-left: auto;
   margin-right: auto;
 }
-.icon-height-medium {
-  height: 2rem;
-}
 .text-style-allcaps {
   text-transform: uppercase;
 }
 .overflow-scroll {
   overflow: scroll;
-}
-.icon-height-large {
-  height: 3rem;
 }
 .text-align-center {
   text-align: center;
