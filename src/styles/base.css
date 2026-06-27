@@ -659,25 +659,6 @@ input[type='file']:focus-visible {
 
 /* Menu layout wrapper — fully controlled by Navbar React component */
 
-/* ── Divider spacing (consistent 5rem before dividers) ── */
-.section_blog .container-large {
-  padding-bottom: 5rem;
-}
-
-/* Tablet (max-width: 991px) */
-@media screen and (max-width: 991px) {
-  .section_blog .container-large {
-    padding-bottom: 3rem;
-  }
-}
-
-/* Mobile (max-width: 767px) */
-@media screen and (max-width: 767px) {
-  .section_blog .container-large {
-    padding-bottom: 2.5rem;
-  }
-}
-
 /* Partner logos — size + grayscale */
 .partners_marquee-set .partners_logo_wrap {
   min-width: 8rem;
@@ -2123,12 +2104,6 @@ figcaption {
   margin-bottom: 0;
 }
 
-.section_blog {
-  overflow: hidden;
-}
-.swiper_blog-component {
-  position: relative;
-}
 .swiper {
   width: 100%;
   overflow: visible;
@@ -2158,38 +2133,6 @@ figcaption {
 }
 .swiper-slide.is-slider-partners.is-no-radius {
   border-radius: 0;
-}
-.blog-component {
-  flex-direction: column;
-  display: flex;
-}
-.blog_header-wrapper {
-  grid-column-gap: 2rem;
-  grid-row-gap: 2rem;
-  justify-content: space-between;
-  align-items: flex-end;
-  display: flex;
-  overflow: hidden;
-}
-.swiper_image-wrapper {
-  aspect-ratio: 5.75/3.32;
-  pointer-events: none;
-  justify-content: flex-start;
-  align-items: flex-end;
-  width: 100%;
-  min-width: 35.875rem;
-  max-width: 35.875rem;
-  padding: 1rem 2rem;
-  display: flex;
-  position: relative;
-}
-.swiper-image {
-  pointer-events: none;
-  position: absolute;
-  inset: 0%;
-}
-.blog_descriprion-wrapper {
-  position: relative;
 }
 .footer {
   padding-left: 4.75rem;
@@ -3679,14 +3622,6 @@ figcaption {
     height: 0;
     position: relative;
     top: 10vh;
-  }
-
-  .blog-component {
-    grid-column-gap: 4.5rem;
-    grid-row-gap: 4.5rem;
-  }
-  .swiper_image-wrapper {
-    min-width: 30rem;
   }
 
   .cta-wrapper {
