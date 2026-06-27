@@ -24,9 +24,9 @@
   display: flex;
   flex-direction: column;
   font-family: inherit;
-  font-size: 3rem;
+  font-size: var(--type-about-title);
   font-weight: 500;
-  padding-top:1.5rem;
+  padding-top: 1.5rem;
   letter-spacing: -0.12rem;
   line-height: 1;
   max-width: 30rem;
@@ -35,8 +35,8 @@
 
 .home-about__lead {
   color: #5b596f;
-  font-size: 1.0625rem;
-  line-height: 1.75rem;
+  font-size: var(--type-section-subtitle);
+  line-height: var(--line-body);
   margin: 0 0 3rem;
   max-width: 30rem;
 }
@@ -59,10 +59,10 @@
 
 .home-about__value h3 {
   color: #0a0532;
-  font-size: 1.3125rem;
+  font-size: var(--type-card-title-small);
   font-weight: 500;
   letter-spacing: -0.02625rem;
-  line-height: 1.15;
+  line-height: var(--line-tight);
   margin: 0;
 }
 
@@ -83,8 +83,8 @@
 
 .home-about__value p {
   color: #5b596f;
-  font-size: 0.875rem;
-  line-height: 1.4rem;
+  font-size: var(--type-body-small);
+  line-height: var(--line-small);
   margin: 0;
   max-width: 31.5rem;
 }
@@ -106,8 +106,8 @@
 
 .home-projects__intro {
   color: #5b596f;
-  font-size: 1.0625rem;
-  line-height: 1.75rem;
+  font-size: var(--type-section-subtitle);
+  line-height: var(--line-body);
   margin: 1.5rem 0 0;
   max-width: 60rem;
 }
@@ -140,7 +140,7 @@
 
 .infinity_text {
   color: #0c002e;
-  font-size: 3.4375rem;
+  font-size: var(--type-marquee);
   margin: 0;
   white-space: nowrap;
 }
@@ -165,14 +165,6 @@
     column-gap: 4rem;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
-
-  .home-about__heading {
-    font-size: 3.25rem;
-  }
-
-  .infinity_text {
-    font-size: 2.5rem;
-  }
 }
 
 @media screen and (max-width: 47.9375rem) {
@@ -192,7 +184,6 @@
   }
 
   .home-about__heading {
-    font-size: 2.75rem;
     letter-spacing: -0.08rem;
   }
 
@@ -212,19 +203,5 @@
   .section_infinity {
     padding-bottom: 1.875rem;
     padding-top: 1.875rem;
-  }
-
-  .infinity_text {
-    font-size: 2rem;
-  }
-}
-
-@media screen and (max-width: 29.9375rem) {
-  .home-about__heading {
-    font-size: 2.5rem;
-  }
-
-  .infinity_text {
-    font-size: 1.5rem;
   }
 }

@@ -26,24 +26,24 @@
 }
 
 .pill--xs {
-  font-size: var(--type-kicker);
+  font-size: var(--type-pill-xs);
   letter-spacing: var(--tracking-kicker-wide);
   padding: 0.25rem 0.5rem;
 }
 
 .pill--sm {
-  font-size: var(--type-meta-small);
+  font-size: var(--type-pill-sm);
   letter-spacing: var(--tracking-ui);
   padding: 0.5rem 0.75rem;
 }
 
 .pill--md {
-  font-size: var(--type-ui);
+  font-size: var(--type-pill-md);
   padding: 0.875rem 1.35rem;
 }
 
 .pill--lg {
-  font-size: var(--type-body-small);
+  font-size: var(--type-pill-lg);
   padding: 1rem 1.5rem;
 }
 
@@ -253,15 +253,22 @@
   display: grid !important;
   flex: 0 0 auto;
   grid-template-areas: 'stack';
-  height: 1.4em !important;
+  height: 1.2em !important;
+  line-height: var(--line-cta) !important;
   min-width: max-content;
   overflow: hidden !important;
+  place-items: center;
   position: relative !important;
+  text-align: center;
   width: max-content;
 }
 
 .button-base:not(.nav_buttons-wrapper *) .button-base__button-text {
+  align-items: center;
+  display: flex !important;
   grid-area: stack;
+  justify-content: center;
+  line-height: var(--line-cta) !important;
   min-width: max-content;
   text-align: center;
   white-space: nowrap !important;
@@ -716,10 +723,14 @@
 
 .cta-wrapper .heading-style-h1 {
   color: #fff;
+  font-size: var(--type-cta-title);
+  line-height: var(--line-tight);
 }
 
 .cta-wrapper .cta-subtitle {
   color: rgba(255, 255, 255, 0.72);
+  font-size: var(--type-cta-subtitle);
+  line-height: var(--line-body);
 }
 
 .cta-buttons {
@@ -792,7 +803,7 @@
 .page-header h1 {
   color: #fff;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.5rem, 3vw, 3rem);
+  font-size: var(--type-page-title);
   font-weight: 400;
   letter-spacing: var(--tracking-heading);
   margin-bottom: 0;
@@ -813,7 +824,7 @@
 }
 
 .page-header--article h1 {
-  font-size: clamp(1.75rem, 2.6vw, 2.875rem);
+  font-size: var(--type-page-title-article);
   line-height: 1.08;
   max-width: 78rem;
 }
@@ -823,15 +834,15 @@
 }
 
 .page-header--article .page-header__subtitle {
-  font-size: clamp(0.9375rem, 1vw, 1.125rem);
+  font-size: var(--type-section-subtitle);
   margin-top: 1.25rem;
   max-width: 54rem;
 }
 
 .page-header__subtitle {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 1.125rem;
-  line-height: 1.5;
+  font-size: var(--type-section-subtitle);
+  line-height: var(--line-compact);
   margin-bottom: 0;
   margin-top: 1.5rem;
   max-width: 42rem;
@@ -847,7 +858,7 @@
   color: rgba(255, 255, 255, 0.42);
   display: flex;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.75rem;
+  font-size: var(--type-meta);
   gap: 0.625rem;
   letter-spacing: var(--tracking-meta);
   margin-bottom: 1.25rem;
@@ -901,7 +912,7 @@
 .page-header__side-index,
 .page-header__side-meta {
   color: rgba(255, 255, 255, 0.42);
-  font-size: 0.75rem;
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-ui);
 }
 
@@ -919,14 +930,14 @@
 
 .page-header__side-item-label {
   flex: 1;
-  font-size: 1rem;
-  line-height: 1.3;
+  font-size: var(--type-body);
+  line-height: var(--line-compact);
 }
 
 .page-header__side-text {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: var(--type-body);
+  line-height: var(--line-small);
   margin: 0;
 }
 
@@ -957,11 +968,11 @@
   }
 
   .page-header h1 {
-    font-size: 2rem;
+    font-size: var(--type-page-title);
   }
 
   .page-header--article h1 {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-size: var(--type-page-title-article);
   }
 
   .page-header__side {
@@ -986,16 +997,15 @@
   }
 
   .page-header h1 {
-    font-size: 1.75rem;
     margin-top: 1.5rem;
   }
 
   .page-header--article h1 {
-    font-size: clamp(1.5rem, 6vw, 2rem);
+    font-size: var(--type-page-title-article);
   }
 
   .page-header__subtitle {
-    font-size: 1rem;
+    font-size: var(--type-section-subtitle);
     margin-top: 1.25rem;
   }
 }
@@ -1012,15 +1022,6 @@
     padding-top: 4rem;
   }
 
-  .page-header h1 {
-    font-size: clamp(1.25rem, 2.5vw, 2rem);
-  }
-}
-
-@media screen and (max-width: 320px) {
-  .page-header h1 {
-    font-size: clamp(1rem, 2vw, 1.5rem);
-  }
 }
 
 /* ==========================================================================
@@ -1449,7 +1450,7 @@
 .nav_overlay-left-label {
   flex: 0 0 auto;
   color: rgba(255, 255, 255, 0.46);
-  font-size: 0.625rem;
+  font-size: var(--type-kicker);
   letter-spacing: 0.2em;
   line-height: 1;
 }
@@ -1466,7 +1467,7 @@
 
 .nav_overlay-article-tag {
   color: rgba(255, 255, 255, 0.46);
-  font-size: 0.625rem;
+  font-size: var(--type-kicker);
   letter-spacing: 0.18em;
   line-height: 1.4;
 }
@@ -1476,10 +1477,10 @@
   margin: 0;
   color: #ffffff;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.125rem, 1.65vw, 1.375rem);
+  font-size: var(--type-card-title-small);
   font-weight: 500;
   letter-spacing: -0.025em;
-  line-height: 1.28;
+  line-height: var(--line-title);
   text-wrap: pretty;
   transition: opacity 0.18s ease;
 }
@@ -1494,14 +1495,14 @@
   gap: 0.875rem;
   color: rgba(255, 255, 255, 0.46);
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.8125rem;
-  line-height: 1.2;
+  font-size: var(--type-ui);
+  line-height: var(--line-cta);
 }
 
 .nav_overlay-article-arrow {
   margin-left: auto;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
+  font-size: var(--type-body);
   transition: transform 0.2s ease;
 }
 
@@ -1602,7 +1603,7 @@
   background: transparent;
   color: rgba(15, 10, 48, 0.38);
   font-family: Consolas, 'Courier New', monospace;
-  font-size: 0.6875rem;
+  font-size: var(--type-kicker);
   font-weight: 500;
   letter-spacing: 0.16em;
   line-height: 1;
@@ -1624,7 +1625,7 @@
   border-radius: 50%;
   color: #0f0a30;
   font-family: Neuemontreal, sans-serif;
-  font-size: 1.125rem;
+  font-size: var(--type-body-large);
   line-height: 1;
   transition:
     background 0.18s ease,
@@ -1675,7 +1676,7 @@
   padding: 0.125rem 0;
   color: #0f0a30;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.375rem, 2.8vw, 2.375rem);
+  font-size: var(--type-content-heading);
   font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 1.05;
@@ -1702,7 +1703,7 @@
   border: 1px solid rgba(15, 10, 48, 0.18);
   border-radius: 999px;
   color: rgba(15, 10, 48, 0.38);
-  font-size: 0.625rem;
+  font-size: var(--type-kicker);
   font-weight: 600;
   letter-spacing: 0.12em;
   line-height: 1;
@@ -1728,7 +1729,7 @@
 }
 
 .nav_overlay-project-pill {
-  font-size: 0.75rem;
+  font-size: var(--type-pill-sm);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1761,7 +1762,7 @@
   padding: 0.1875rem 0;
   color: rgba(15, 10, 48, 0.38);
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.875rem;
+  font-size: var(--type-ui);
   font-weight: 500;
   text-decoration: none;
   transition: color 0.18s ease;
@@ -1783,7 +1784,7 @@
 .nav_overlay-footer > span {
   color: rgba(15, 10, 48, 0.38);
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.875rem;
+  font-size: var(--type-ui);
   font-weight: 500;
 }
 
@@ -1796,7 +1797,7 @@
   background: #0f0a30;
   color: #ffffff;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.875rem;
+  font-size: var(--type-button);
   font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1;
