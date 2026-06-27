@@ -63,33 +63,29 @@ export function HeroSection() {
             <div className="hero_bottom_content">
               <a
                 href="mailto:hello@arg.software?subject=I%20want%20to%20share%20my%20ideas"
-                className="text-button w-inline-block"
+                className="text-button"
                 onClick={() => trackMailto('share_ideas', 'hero')}
               >
                 <div className="text-button_list" data-animate="slide-up" data-animate-order="2">
                   <div className="text-button_text">Talk through an idea</div>
-                  <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                  <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
                 <div className="text-button_list is-animated">
                   <div className="text-button_text">Write to us</div>
-                  <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                  <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
               </a>
             </div>
             <div className="bottom_buttons-wrapper">
               <div className="overflow-hidden">
-                <a
-                  href="#contact"
-                  className="text-button w-inline-block"
-                  onClick={handleContactClick}
-                >
+                <a href="#contact" className="text-button" onClick={handleContactClick}>
                   <div className="text-button_list" data-animate="slide-up" data-animate-order="3">
                     <div className="text-button_text">Start a project</div>
-                    <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                    <div className="arrow_icon-embed">{arrowSvg}</div>
                   </div>
                   <div className="text-button_list is-animated">
                     <div className="text-button_text">Let's talk</div>
-                    <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                    <div className="arrow_icon-embed">{arrowSvg}</div>
                   </div>
                 </a>
               </div>
@@ -100,22 +96,9 @@ export function HeroSection() {
       </div>
       <div className="hero_visual">
         <canvas id="water-ripple-canvas" />
-        <div
-          data-autoplay="true"
-          data-loop="true"
-          data-wf-ignore="true"
-          className="ambient-bg-video w-background-video w-background-video-atom"
-        >
-          <video
-            id="hero-video"
-            autoPlay
-            loop
-            muted
-            playsInline
-            data-wf-ignore="true"
-            data-object-fit="cover"
-          >
-            <source src="videos/hero-video-opt.mp4" data-wf-ignore="true" />
+        <div data-autoplay="true" data-loop="true" className="ambient-bg-video">
+          <video id="hero-video" autoPlay loop muted playsInline>
+            <source src="videos/hero-video-opt.mp4" />
           </video>
         </div>
       </div>

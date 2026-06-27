@@ -192,7 +192,7 @@ export default function BlogPostPage() {
 
   if (!BLOG_POST) {
     return (
-      <div className="page-wrapper w-clearfix">
+      <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
         <main
           className="main-wrapper"
@@ -345,7 +345,7 @@ export default function BlogPostPage() {
         }}
       />
 
-      <div className="page-wrapper w-clearfix">
+      <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">

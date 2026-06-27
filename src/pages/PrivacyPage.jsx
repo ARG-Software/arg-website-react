@@ -14,7 +14,7 @@ export default function PrivacyPage() {
         path="/privacy/"
         noIndex
       />
-      <div className="page-wrapper w-clearfix">
+      <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">
           <PageHeader

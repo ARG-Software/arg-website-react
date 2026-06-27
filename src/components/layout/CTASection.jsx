@@ -91,7 +91,7 @@ export function CTASection({
               href={buttonLink}
               target="_blank"
               rel="noopener noreferrer"
-              className={`button-base button-contact w-inline-block ${animationClass} pp-d2`}
+              className={`button-base button-contact ${animationClass} pp-d2`}
               {...animationAttrs(3)}
               onClick={onPrimaryClick}
             >
@@ -105,7 +105,7 @@ export function CTASection({
                 href={secondButtonLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`button-base button-contact w-inline-block ${animationClass} pp-d2`}
+                className={`button-base button-contact ${animationClass} pp-d2`}
                 {...animationAttrs(4)}
                 onClick={onSecondaryClick}
               >

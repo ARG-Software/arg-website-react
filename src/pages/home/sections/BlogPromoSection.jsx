@@ -37,7 +37,7 @@ function BlogCard({ blogPost, animationOrder }) {
         </Pill>
         <div className="blog-promo_card-new-meta">
           <span className="blog-promo_card-new-date">{blogPost.date}</span>
-          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+          <div className="arrow_icon-embed">{arrowSvg}</div>
         </div>
       </div>
     </AppLink>
@@ -109,7 +109,7 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
                   </Pill>
                   <div className="blog-promo_hero-meta-bottom">
                     <span className="blog-promo_hero-date">{heroPost.date}</span>
-                    <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                    <div className="arrow_icon-embed">{arrowSvg}</div>
                   </div>
                 </div>
               </div>
@@ -117,14 +117,14 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
             {displayBlogGridRow(gridPosts, 3)}
 
             <div className="blog-promo_footer" data-animate-order="10">
-              <AppLink to="/blog" className="text-button w-inline-block">
+              <AppLink to="/blog" className="text-button">
                 <div className="text-button_list">
                   <div className="text-button_text text-no-wrap">Read blog</div>
-                  <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                  <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
                 <div className="text-button_list is-animated">
                   <div className="text-button_text text-no-wrap">Browse posts</div>
-                  <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                  <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
               </AppLink>
             </div>

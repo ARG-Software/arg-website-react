@@ -69,7 +69,7 @@ export function ProjectItem({
     <div
       id="project-item-wrapper-grid"
       role="listitem"
-      className="projects_item_wrap w-dyn-item"
+      className="projects_item_wrap"
       style={
         Number.isInteger(gridRowStart)
           ? { '--project-grid-row-start': String(gridRowStart) }
@@ -117,13 +117,13 @@ export function ProjectItem({
           <p className="test_item_paragraph text-align-center is-bold">{solutionBold}</p>
           <p className="test_item_paragraph text-align-center">{solutionText}</p>
           <div className="padding-bottom padding-30"></div>
-          <div className="projects_item_logo-wrap w-dyn-list">
-            <div role="list" className="projects_item_list w-dyn-items">
+          <div className="projects_item_logo-wrap">
+            <div role="list" className="projects_item_list">
               {logos?.map((logo, i) => (
                 <button
                   key={i}
                   role="listitem"
-                  className="projects_list_logo w-dyn-item"
+                  className="projects_list_logo"
                   type="button"
                   aria-label={logo.name}
                 >
@@ -157,7 +157,7 @@ export function ProjectItem({
           >
             <img
               ref={coverImageRef}
-              data-wf-drag="false"
+              draggable={false}
               loading="lazy"
               decoding="async"
               alt=""
@@ -175,17 +175,17 @@ export function ProjectItem({
         <AppLink
           to={`/projects/${slug}`}
           aria-label={title}
-          className="text-button project-title-link w-inline-block"
+          className="text-button project-title-link"
           onClick={() => onProjectClick?.(slug)}
           getTransitionOptions={getProjectImageTransition}
         >
           <div className="text-button_list is-dark">
             <h3 className="heading-style-h3">{title}</h3>
-            <div className="arrow_icon-embed large w-embed">{arrowSvg}</div>
+            <div className="arrow_icon-embed large">{arrowSvg}</div>
           </div>
           <div className="text-button_list is-animated is-dark">
             <h3 className="heading-style-h3">I want to know more</h3>
-            <div className="arrow_icon-embed large w-embed">{arrowSvg}</div>
+            <div className="arrow_icon-embed large">{arrowSvg}</div>
           </div>
         </AppLink>
         <div className="subtitle-projects">{subtitle}</div>

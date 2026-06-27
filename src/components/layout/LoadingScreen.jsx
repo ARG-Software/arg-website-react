@@ -99,22 +99,9 @@ export function LoadingScreen({ onComplete }) {
       data-animate-default-stagger="200"
     >
       <div className="ls-bg" ref={bgRef}>
-        <div
-          data-autoplay="true"
-          data-loop="true"
-          data-wf-ignore="true"
-          className="ambient-bg-video ls-bg-video w-background-video w-background-video-atom"
-        >
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted
-            playsInline
-            data-wf-ignore="true"
-            data-object-fit="cover"
-          >
-            <source src="videos/loading.mp4" data-wf-ignore="true" />
+        <div data-autoplay="true" data-loop="true" className="ambient-bg-video ls-bg-video">
+          <video ref={videoRef} autoPlay loop muted playsInline>
+            <source src="videos/loading.mp4" />
           </video>
         </div>
         <div className="ls-hello-row" data-animate-order="0">

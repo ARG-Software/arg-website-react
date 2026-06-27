@@ -69,16 +69,16 @@ export function AboutSection({ className = '' }) {
               data-animate="fade-up"
               data-animate-order="3"
               href="#contact"
-              className="home-about__cta text-button w-inline-block"
+              className="home-about__cta text-button"
               onClick={handleContactClick}
             >
               <div className="text-button_list is-dark">
                 <div className="text-button_text">Build with ARG</div>
-                <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                <div className="arrow_icon-embed">{arrowSvg}</div>
               </div>
               <div className="text-button_list is-animated is-dark">
                 <div className="text-button_text">Start a project</div>
-                <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                <div className="arrow_icon-embed">{arrowSvg}</div>
               </div>
             </a>
           </div>

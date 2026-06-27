@@ -206,9 +206,7 @@ export function SocialSection({ className = '' }) {
               </div>
             </div>
             <div className="swiper_blog-component" data-animate-order="1">
-              <div className="w-embed w-script">
-                <div className="elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b"></div>
-              </div>
+              <div className="elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b"></div>
             </div>
           </div>
         </div>

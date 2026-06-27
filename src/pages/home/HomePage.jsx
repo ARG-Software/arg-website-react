@@ -28,7 +28,7 @@ export default function HomePage() {
   return (
     <>
       <SEO path="/" />
-      <div className="page-wrapper w-clearfix home-page">
+      <div className="page-wrapper home-page">
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">
           <HeroSection />
@@ -75,14 +75,14 @@ export default function HomePage() {
                 justifyContent: 'flex-end',
               }}
             >
-              <AppLink to="/partners" className="text-button w-inline-block meet-up-align">
+              <AppLink to="/partners" className="text-button meet-up-align">
                 <div className="text-button_list is-dark">
                   <div className="text-button_text">View partners</div>
-                  <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                  <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
                 <div className="text-button_list is-animated is-dark">
                   <div className="text-button_text meet-text">Who trusts us</div>
-                  <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                  <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
               </AppLink>
             </div>

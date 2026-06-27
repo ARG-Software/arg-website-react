@@ -5,7 +5,6 @@
   .pp-page .nav_wrap .nav_contain { background: transparent !important; }
   .pp-page .nav_contain { background: transparent !important; }
   .pp-page .container { background: transparent !important; }
-  .pp-page .w-nav-overlay { display: none !important; }
   .pp-page .nav-component {
     display: flex !important;
     align-items: center !important;

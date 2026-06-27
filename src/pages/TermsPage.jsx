@@ -14,7 +14,7 @@ export default function TermsPage() {
         path="/terms/"
         noIndex
       />
-      <div className="page-wrapper w-clearfix">
+      <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">
           <PageHeader

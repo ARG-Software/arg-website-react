@@ -123,7 +123,7 @@ export default function WorkingWithUsPage() {
         description="Work with ARG Software to design architecture-first platforms for fintech, media, and high-growth technology teams."
         path="/working-with-us/"
       />
-      <div className="page-wrapper w-clearfix">
+      <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper background-color-dark">

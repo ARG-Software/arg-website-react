@@ -107,7 +107,7 @@ export function Timeline({
           <div className="pt-row">
             <a
               href={ctaLink}
-              className="button-base button-contact w-inline-block pt-row-cta-card"
+              className="button-base button-contact pt-row-cta-card"
               style={{ gridColumn: `${finalYearStartColumn} / -1` }}
               {...ctaAttrs}
               onClick={onCtaClick}
@@ -146,7 +146,7 @@ export function Timeline({
         })}
         <a
           href={ctaLink}
-          className="button-base button-contact w-inline-block pt-mobile-cta"
+          className="button-base button-contact pt-mobile-cta"
           {...ctaAttrs}
           onClick={onCtaClick}
           {...cardAttrs(timelineRows.length + 1)}

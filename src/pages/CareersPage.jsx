@@ -150,7 +150,7 @@ export default function CareersPage() {
         description="Explore open roles at ARG Software and apply to join an architecture-first engineering team building complex production systems."
         path="/careers/"
       />
-      <div className="page-wrapper w-clearfix">
+      <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper background-color-dark">

@@ -133,7 +133,7 @@ export function Navbar({ variant = 'transparent', position: _position = 'absolut
   return (
     <>
       <div
-        className="nav_wrap padding-global w-nav"
+        className="nav_wrap padding-global"
         data-animate-scope
         data-animate-default-stagger="300"
         data-animation="default"
@@ -150,7 +150,7 @@ export function Navbar({ variant = 'transparent', position: _position = 'absolut
             <AppLink
               to="/"
               aria-label="Arg Software"
-              className="nav_logo-wrapper w-nav-brand"
+              className="nav_logo-wrapper"
               data-animate="fade-up"
               data-animate-trigger="load"
               data-animate-order="0"
@@ -170,7 +170,7 @@ export function Navbar({ variant = 'transparent', position: _position = 'absolut
                 href="https://zcal.co/argsoftware/project"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="button-base w-inline-block"
+                className="button-base"
                 onClick={() => trackCTA('book_meeting', 'navbar')}
               >
                 <div className="button-base_text_wrap">
@@ -178,10 +178,7 @@ export function Navbar({ variant = 'transparent', position: _position = 'absolut
                   <div className="button-base__button-text is-animated">No commitment</div>
                 </div>
               </a>
-              <div
-                className={`nav-hamburger w-nav-button${menuOpen ? ' is-open' : ''}`}
-                onClick={toggleMenu}
-              >
+              <div className={`nav-hamburger${menuOpen ? ' is-open' : ''}`} onClick={toggleMenu}>
                 <div className="menu-icon z-index-2">
                   <div className="menu_icon-line is--top"></div>
                   <div className="menu_icon-line is--bottom"></div>

@@ -54,7 +54,7 @@ const secondaryMenuItems = [
 ];
 
 function ArrowIcon({ className = '' }) {
-  return <span className={`arrow_icon-embed w-embed ${className}`.trim()}>{arrowSvg}</span>;
+  return <span className={`arrow_icon-embed ${className}`.trim()}>{arrowSvg}</span>;
 }
 
 export function NavMenu({ isOpen, isClosing, onClose }) {

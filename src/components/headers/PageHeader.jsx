@@ -77,7 +77,7 @@ export function PageHeader({
         <span className="page-header__side-index">{String(index + 1).padStart(2, '0')}</span>
         <span className="page-header__side-item-label">{item.label}</span>
         {item.meta && <span className="page-header__side-meta">{item.meta}</span>}
-        <span className="page-header__side-arrow arrow_icon-embed w-embed" aria-hidden="true">
+        <span className="page-header__side-arrow arrow_icon-embed" aria-hidden="true">
           {arrowSvg}
         </span>
       </>

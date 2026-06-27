@@ -96,7 +96,7 @@ export default function BlogPage() {
         atom
       />
 
-      <div className="page-wrapper w-clearfix">
+      <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">
@@ -185,7 +185,7 @@ export default function BlogPage() {
                         </div>
                         <div className="blp-row-action">
                           <span className="blp-row-readtime">{article.readTime}</span>
-                          <div className="arrow_icon-embed w-embed">{arrowSvg}</div>
+                          <div className="arrow_icon-embed">{arrowSvg}</div>
                         </div>
                       </AppLink>
                     ))}

@@ -32,8 +32,8 @@ export function ProjectsSection({ projects, className = '' }) {
             <div>Use Cases</div>
           </div>
         </div>
-        <div className="projects_list_wrap w-dyn-list">
-          <div role="list" className="projects_list w-dyn-items">
+        <div className="projects_list_wrap">
+          <div role="list" className="projects_list">
             {projects.map((project, i) => {
               const patternIndex = i % PROJECT_GRID_PATTERN_ROWS.length;
               const patternCycle = Math.floor(i / PROJECT_GRID_PATTERN_ROWS.length);

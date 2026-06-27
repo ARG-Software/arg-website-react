@@ -50,7 +50,7 @@ export default function PartnersPage() {
         description="Meet the companies and organizations Arg Software partners with to deliver exceptional digital solutions across fintech, open payments, and financial inclusion."
         path="/partners/"
       />
-      <div className="page-wrapper w-clearfix pp-page">
+      <div className="page-wrapper pp-page">
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper">

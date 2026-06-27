@@ -318,7 +318,7 @@ export function FAQSection({ className = '' }) {
               <div key={i} className="faq_item" data-animate-order={i}>
                 <button className="faq_question" aria-expanded="false">
                   <span className="faq_question_text">{item.q}</span>
-                  <div className="faq_icon arrow_icon-embed w-embed">{arrowSvg}</div>
+                  <div className="faq_icon arrow_icon-embed">{arrowSvg}</div>
                 </button>
                 <div className="faq_answer">
                   <div className="faq_answer_inner">{item.a}</div>
