@@ -6,6 +6,10 @@
   --size-section-pill-padding-x: 1.25rem;
 }
 
+.count-up_wrap {
+  display: flex;
+}
+
 @media screen and (max-width: 61.9375rem) {
   :root {
     --type-section-pill: var(--type-pill-md);

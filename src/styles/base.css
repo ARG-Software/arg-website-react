@@ -1200,29 +1200,6 @@ figcaption {
   display: flex;
   position: static;
 }
-.count-up_wrap {
-  display: flex;
-}
-.test-click-item {
-  height: 22rem;
-  overflow: hidden;
-}
-.test-wrap {
-  grid-column-gap: 5px;
-  grid-row-gap: 5px;
-  flex-direction: column;
-  align-items: flex-start;
-  height: 100vh;
-  padding-left: 10rem;
-  padding-right: 10rem;
-  display: flex;
-}
-.projects-click-item {
-  height: 22rem;
-  overflow: hidden;
-}
-.projects_wrap.background-color-white {
-}
 /* ===== ENHANCED UTILITIES ===== */
 
 .position-relative {
