@@ -192,7 +192,10 @@ export default function ProjectDetailPage() {
                 <h3 className="prp-intro-subtitle" data-animate="fade-up">
                   {project.intro}
                 </h3>
-                <hr className="prp-intro-divider hide-mobile" data-animate="divider-expander-show" />
+                <hr
+                  className="prp-intro-divider hide-mobile"
+                  data-animate="divider-expander-show"
+                />
                 {project.description && (
                   <p
                     className="prp-intro-description"
