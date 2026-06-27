@@ -122,89 +122,91 @@ export default function ProjectDetailPage() {
         <section className="prp-intro padding-section-large">
           <div className="prp-grid-container">
             <div className="prp-intro-grid">
-              <div className="prp-intro-sidebar">
-                <h1 className="prp-intro-title" data-animate="title-reveal">
-                  {project.title}
-                </h1>
-                {projectLinks.length > 0 && (
-                  <div className="prp-intro-links" data-animate="fade-up" data-animate-delay="100">
-                    {projectLinks.map(link => (
-                      <a
-                        key={link.href}
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="prp-intro-live-link"
-                        onClick={() => trackCTA(link.trackType ?? 'view_live', `project_${slug}`)}
-                      >
-                        <span>{link.label}</span>
-                        {arrowSvg}
-                      </a>
-                    ))}
-                  </div>
-                )}
-                <div className="prp-meta-list" data-animate-scope data-animate-stagger="80">
-                  <div className="prp-meta-item" data-animate="fade-up" data-animate-order="0">
-                    <span className="prp-meta-label">Category</span>
-                    <span className="prp-meta-value">{project.subtitle}</span>
-                  </div>
-                  <div className="prp-meta-item" data-animate="fade-up" data-animate-order="1">
-                    <span className="prp-meta-label">Client</span>
-                    <span className="prp-meta-value">{project.client}</span>
-                  </div>
-                  <div className="prp-meta-item" data-animate="fade-up" data-animate-order="2">
-                    <span className="prp-meta-label">Services</span>
-                    <div className="prp-meta-services">
-                      {project.services.map((service, i) => (
-                        <Pill
-                          key={i}
-                          className="prp-meta-service-tag"
-                          variant="outline"
-                          size="xs"
-                          data-animate="tag-pop"
-                          data-animate-order={i}
+              <div className="prp-intro-top">
+                <div className="prp-intro-heading-group">
+                  <h1 className="prp-intro-title" data-animate="title-reveal">
+                    {project.title}
+                  </h1>
+                  {projectLinks.length > 0 && (
+                    <div
+                      className="prp-intro-links"
+                      data-animate="fade-up"
+                      data-animate-delay="100"
+                    >
+                      {projectLinks.map(link => (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="prp-intro-live-link"
+                          onClick={() => trackCTA(link.trackType ?? 'view_live', `project_${slug}`)}
                         >
-                          {service}
-                        </Pill>
+                          <span>{link.label}</span>
+                          {arrowSvg}
+                        </a>
                       ))}
                     </div>
-                  </div>
-                  <div className="prp-meta-item" data-animate="fade-up" data-animate-order="3">
-                    <span className="prp-meta-label">Technology</span>
-                    <div className="prp-meta-services">
-                      {stackItems.map((tech, i) => (
-                        <Pill
-                          key={i}
-                          className="prp-stack-tag prp-stack-tag--inline"
-                          variant="light"
-                          size="sm"
-                          data-animate="tag-pop"
-                          data-animate-order={i + 4}
-                        >
-                          {tech}
-                        </Pill>
-                      ))}
-                    </div>
-                  </div>
+                  )}
+                </div>
+                <div className="prp-intro-content">
+                  <h3 className="prp-intro-subtitle" data-animate="fade-up">
+                    {project.intro}
+                  </h3>
+                  {project.description && (
+                    <p
+                      className="prp-intro-description"
+                      data-animate="fade-up"
+                      data-animate-delay="200"
+                    >
+                      {project.description}
+                    </p>
+                  )}
                 </div>
               </div>
-              <div className="prp-intro-content">
-                <h3 className="prp-intro-subtitle" data-animate="fade-up">
-                  {project.intro}
-                </h3>
-                <hr
-                  className="prp-intro-divider hide-mobile"
-                  data-animate="divider-expander-show"
-                />
-                {project.description && (
-                  <p
-                    className="prp-intro-description"
-                    data-animate="fade-up"
-                    data-animate-delay="200"
-                  >
-                    {project.description}
-                  </p>
-                )}
+              <div className="prp-meta-list" data-animate-scope data-animate-stagger="80">
+                <div className="prp-meta-item" data-animate="fade-up" data-animate-order="0">
+                  <span className="prp-meta-label">Category</span>
+                  <span className="prp-meta-value">{project.subtitle}</span>
+                </div>
+                <div className="prp-meta-item" data-animate="fade-up" data-animate-order="1">
+                  <span className="prp-meta-label">Client</span>
+                  <span className="prp-meta-value">{project.client}</span>
+                </div>
+                <div className="prp-meta-item" data-animate="fade-up" data-animate-order="2">
+                  <span className="prp-meta-label">Services</span>
+                  <div className="prp-meta-services">
+                    {project.services.map((service, i) => (
+                      <Pill
+                        key={i}
+                        className="prp-meta-service-tag"
+                        variant="outline"
+                        size="xs"
+                        data-animate="tag-pop"
+                        data-animate-order={i}
+                      >
+                        {service}
+                      </Pill>
+                    ))}
+                  </div>
+                </div>
+                <div className="prp-meta-item" data-animate="fade-up" data-animate-order="3">
+                  <span className="prp-meta-label">Technology</span>
+                  <div className="prp-meta-services">
+                    {stackItems.map((tech, i) => (
+                      <Pill
+                        key={i}
+                        className="prp-stack-tag prp-stack-tag--inline"
+                        variant="light"
+                        size="sm"
+                        data-animate="tag-pop"
+                        data-animate-order={i + 4}
+                      >
+                        {tech}
+                      </Pill>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -323,7 +325,7 @@ export default function ProjectDetailPage() {
                     <BaseCard
                       key={i}
                       className="prp-metric-card"
-                      variant="dark"
+                      variant="light"
                       padding="sm"
                       radius="sm"
                       hover="none"

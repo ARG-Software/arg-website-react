@@ -6,9 +6,9 @@
   --prp-dark: #0c002e;
   --prp-light: #ededed;
   --prp-dark-fg: #ffffff;
-  --prp-light-fg: #111111;
+  --prp-light-fg: var(--prp-dark);
   --prp-muted-light: rgba(255, 255, 255, 0.5);
-  --prp-muted-dark: #474747;
+  --prp-muted-dark: var(--prp-dark);
   --prp-border-light: rgba(255, 255, 255, 0.1);
   --prp-border-dark: rgba(0, 0, 0, 0.1);
   --prp-max-width: 120rem;
@@ -91,22 +91,21 @@
 
 .prp-intro-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: var(--prp-grid-gutter);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(3rem, 6vw, 5rem);
 }
 
-.prp-intro-sidebar {
-  grid-column: 2 / span 3;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+.prp-intro-top {
+  grid-column: 2 / span 10;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(3rem, 6vw, 6rem);
+  align-items: start;
 }
 
+.prp-intro-heading-group,
 .prp-intro-content {
-  grid-column: 7 / span 5;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  min-width: 0;
 }
 
 .prp-intro-title {
@@ -117,6 +116,12 @@
   line-height: 1.1;
   margin: 0;
   color: var(--prp-light-fg);
+}
+
+.prp-intro-heading-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
 }
 
 .prp-intro-live-link {
@@ -149,27 +154,27 @@
   gap: 0.875rem;
 }
 
+.prp-intro-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-top: 0.375rem;
+}
+
 .prp-intro-subtitle {
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-size: clamp(0.75rem, 2.5vw, 1.25rem);
   font-weight: 500;
   letter-spacing: var(--tracking-heading);
   line-height: 1.3;
-  color: var(--prp-light-fg);
+  color: var(--prp-dark);
   margin: 0;
-}
-
-.prp-intro-divider {
-  width: 100%;
-  border: none;
-  border-top: 0.0625rem solid var(--prp-border-dark);
-  margin: 1.5rem 0;
 }
 
 .prp-intro-description {
   font-size: var(--type-body);
   line-height: var(--line-body);
-  color: var(--prp-muted-dark);
+  color: var(--prp-dark);
   margin: 0;
 }
 
@@ -177,9 +182,12 @@
    Metadata List
    ============================================ */
 .prp-meta-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  grid-column: 2 / span 10;
+  display: grid;
+  grid-template-columns: 0.7fr 0.7fr 1.3fr 1.6fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  border-top: 0.0625rem solid var(--prp-border-dark);
+  padding-top: 2.25rem;
 }
 
 .prp-meta-item {
@@ -315,7 +323,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
-  color: var(--prp-muted-light);
+  color: var(--prp-dark);
   margin: 0;
 }
 
@@ -326,7 +334,7 @@
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;
-  color: var(--prp-dark-fg);
+  color: var(--prp-dark);
 }
 
 .prp-section-text {
@@ -334,11 +342,6 @@
   line-height: var(--line-body);
   color: var(--prp-muted-dark);
   margin: 0;
-}
-
-.prp-challenge .prp-section-label,
-.prp-challenge .prp-section-heading {
-  color: var(--prp-light-fg);
 }
 
 /* ============================================
@@ -536,7 +539,7 @@
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta-tight);
   line-height: var(--line-compact);
-  color: #fff;
+  color: var(--prp-dark);
   margin: 0;
   display: flex;
   align-items: flex-start;
@@ -586,13 +589,17 @@
    Responsive
    ============================================ */
 @media (max-width: 1023px) {
-  .prp-intro-sidebar {
-    grid-column: 2 / span 5;
+  .prp-intro-top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
   }
 
   .prp-intro-content {
-    grid-column: 2 / span 10;
-    margin-top: 2rem;
+    padding-top: 0;
+  }
+
+  .prp-meta-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .prp-challenge-image {
@@ -637,8 +644,6 @@
     padding-bottom: 4rem;
   }
 
-  .prp-intro-sidebar,
-  .prp-intro-content,
   .prp-challenge-image,
   .prp-challenge-content,
   .prp-solution-content,
@@ -650,6 +655,25 @@
 
   .prp-intro-title {
     font-size: clamp(1.75rem, 6vw, 2.5rem);
+  }
+
+  .prp-intro-grid {
+    gap: 2.5rem;
+  }
+
+  .prp-intro-top,
+  .prp-meta-list {
+    grid-column: 1 / span 12;
+  }
+
+  .prp-intro-heading-group {
+    gap: 1.25rem;
+  }
+
+  .prp-meta-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    padding-top: 2rem;
   }
 
   .prp-section-heading,
