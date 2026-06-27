@@ -1777,6 +1777,22 @@
    CTASection
    ========================================================================== */
 
+.heading_wrap {
+  position: static;
+}
+
+.header-animation {
+  overflow: hidden;
+}
+
+.text-color-gradiant-2 {
+  color: #000;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(90deg, #f0060d, #c924d7 49%, #7904fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 .section_cta {
 }
 
