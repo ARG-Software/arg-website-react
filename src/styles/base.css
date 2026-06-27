@@ -768,31 +768,6 @@ input[type='file']:focus-visible {
   }
 }
 
-/* ── Social section header (now in JSX) ── */
-.social-section_header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 3.5rem;
-  align-items: flex-start;
-}
-
-.social-section_header h2 {
-  margin: 0;
-}
-
-.social-section_header .subtitle_tag-wrapper {
-  margin-bottom: 0.25rem;
-}
-
-@media screen and (max-width: 767px) {
-  .social-section_header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
-  }
-}
-
 /* Partner logos — size + grayscale */
 .partners_marquee-set .partners_logo_wrap {
   min-width: 8rem;

@@ -147,6 +147,32 @@
   max-width: 60rem;
 }
 
+/* Shared homepage section header */
+
+.social-section_header {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3.5rem;
+}
+
+.social-section_header h2 {
+  margin: 0;
+}
+
+.social-section_header .subtitle_tag-wrapper {
+  margin-bottom: 0.25rem;
+}
+
+@media screen and (max-width: 767px) {
+  .social-section_header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+}
+
 /* Testimonials */
 .testimonials-item_quote {
   font-size: var(--type-testimonials-quote);
