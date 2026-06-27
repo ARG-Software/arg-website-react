@@ -16,18 +16,29 @@ export function ProjectsSection({ projects, className = '' }) {
       data-animate-default-stagger="120"
     >
       <div className="projects_contain container padding-global">
-        <div className="projects_heading-wrapper">
-          <h2
-            className="projects_heading heading-style-h2"
-            data-animate={ANIMATION_PRESETS.fadeUp}
-            data-animate-order="0"
-          >
-            Proof in production, not promises.
-          </h2>
+        <div className="projects_heading-wrapper home-projects__heading-wrapper">
+          <div className="home-projects__heading-copy">
+            <h2
+              className="projects_heading heading-style-h2"
+              data-animate={ANIMATION_PRESETS.fadeUp}
+              data-animate-order="0"
+            >
+              Proof in production, not promises.
+            </h2>
+            <p
+              className="home-projects__intro"
+              data-animate={ANIMATION_PRESETS.fadeUp}
+              data-animate-order="1"
+            >
+              This is a public selection, not the full archive. Many engagements stay private by
+              design; these are the projects we can discuss within client privacy and NDA
+              agreements.
+            </p>
+          </div>
           <div
             className="subtitle_tag-wrapper"
             data-animate={ANIMATION_PRESETS.fadeUp}
-            data-animate-order="1"
+            data-animate-order="2"
           >
             <div>Use Cases</div>
           </div>
@@ -45,7 +56,7 @@ export function ProjectsSection({ projects, className = '' }) {
                   key={project.slug}
                   animate={true}
                   animationPreset={ANIMATION_PRESETS.slideInRight}
-                  animationOrder={i + 2}
+                  animationOrder={i + 3}
                   {...project}
                   gridRowStart={gridRowStart}
                   onProjectClick={slug =>

@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
+import AppLink from '../../../components/navigation/AppLink';
 import { CounterWidget } from '../../../components/widgets/CounterWidget';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
+import { arrowSvg } from '../../../components/icons/SocialIcons';
 
 const STATS = [
   {
@@ -225,6 +227,18 @@ export function WorkStatsSection({ className = '' }) {
                   conversations, clear trade-offs, fast answers, and the discipline to say no when a
                   shortcut will cost you later.
                 </p>
+                <div className="home-work__cta" data-animate="fade-up" data-animate-order="4">
+                  <AppLink to="/working-with-us/" className="text-button">
+                    <div className="text-button_list is-dark">
+                      <div className="text-button_text text-no-wrap">How we work</div>
+                      <div className="arrow_icon-embed">{arrowSvg}</div>
+                    </div>
+                    <div className="text-button_list is-animated is-dark">
+                      <div className="text-button_text text-no-wrap">See the model</div>
+                      <div className="arrow_icon-embed">{arrowSvg}</div>
+                    </div>
+                  </AppLink>
+                </div>
               </div>
               <div className="padding-bottom padding-80-76"></div>
               <div className="work_items-wrapper" data-animate-scope data-animate-trigger="scroll">
