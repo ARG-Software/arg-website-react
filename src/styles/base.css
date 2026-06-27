@@ -2250,17 +2250,6 @@ figcaption {
   margin-bottom: 0;
 }
 
-/* CTA spacing wrapper for page-level CTAs */
-.page-cta-wrapper {
-  margin-bottom: 5rem;
-}
-
-@media screen and (max-width: 767px) {
-  .page-cta-wrapper {
-    margin-bottom: 3rem;
-  }
-}
-
 .section_blog {
   overflow: hidden;
 }

@@ -871,6 +871,10 @@
 .section_cta {
 }
 
+.page-cta-wrapper {
+  margin-bottom: 5rem;
+}
+
 .cta-wrapper {
   align-items: center;
   background:
@@ -933,6 +937,12 @@
 
 .cta-wrapper .button-base:hover {
   border-color: #fff;
+}
+
+@media screen and (max-width: 767px) {
+  .page-cta-wrapper {
+    margin-bottom: 3rem;
+  }
 }
 
 /* ==========================================================================
