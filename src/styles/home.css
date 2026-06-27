@@ -318,6 +318,16 @@
 
 /* Partners */
 
+.partners_logo {
+  overflow: clip;
+}
+
+.partners_logo_wrap {
+  height: 100%;
+  max-width: 6.25rem;
+  width: 100%;
+}
+
 .partners_marquee-outer {
   margin: 0 auto;
   max-width: 84rem;
@@ -430,6 +440,10 @@
 }
 
 @media screen and (max-width: 767px) {
+  .partners_logo_wrap {
+    max-width: 5.5rem;
+  }
+
   .partners_marquee-set {
     gap: 4rem;
     padding-right: 4rem;
@@ -454,6 +468,15 @@
 @media screen and (max-width: 480px) {
   .partners_contain.container.padding-global {
     justify-content: flex-start !important;
+  }
+
+  .partners_logo {
+    width: 99%;
+  }
+
+  .partners_logo_wrap {
+    max-width: 5.5rem;
+    width: 100%;
   }
 }
 

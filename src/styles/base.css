@@ -1372,23 +1372,6 @@ figcaption {
 .heading {
   font-weight: 400;
 }
-.partners_logo_list {
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  display: flex;
-}
-.partners_logo {
-  overflow: clip;
-}
-.partners_logo_wrap {
-  width: 100%;
-  max-width: 6.25rem;
-  height: 100%;
-}
-.partners_logo_wrap.is-small {
-  max-width: 2.5rem;
-}
 .page-project-grid-css {
   display: none;
 }
@@ -1604,9 +1587,6 @@ figcaption {
     display: inline;
   }
 
-  .module_logo-layout {
-    flex-wrap: wrap;
-  }
   .heading_wrap {
     align-self: center;
     display: block;
@@ -1615,11 +1595,6 @@ figcaption {
   .header-animation.special.show-tablet,
   .header-animation.show-tablet-portrait {
     display: flex;
-  }
-  .partners_logo_list {
-    grid-column-gap: 5rem;
-    grid-row-gap: 5rem;
-    flex-flow: wrap;
   }
 }
 @media screen and (max-width: 767px) {
@@ -1875,9 +1850,6 @@ figcaption {
     font-size: 0.875rem;
   }
 
-  .partners_logo_wrap {
-    max-width: 5.5rem;
-  }
   .text-span {
     font-size: 1.3rem;
   }
@@ -2008,33 +1980,6 @@ figcaption {
     align-self: auto;
   }
   .heading_line {
-    display: flex;
-  }
-  .partners_logo_list {
-    grid-column-gap: 2rem;
-    grid-row-gap: 2rem;
-    flex-flow: wrap;
-    justify-content: space-around;
-    align-items: center;
-    display: flex;
-  }
-  .partners_logo {
-    width: 99%;
-  }
-  .partners_logo_wrap {
-    width: 100%;
-    max-width: 5.5rem;
-  }
-  .partners_logo_wrap.is-small {
-    width: 80%;
-    max-width: 3rem;
-    height: auto;
-    margin-right: 1.5rem;
-  }
-  .svg {
-    box-sizing: border-box;
-    width: auto;
-    min-width: auto;
     display: flex;
   }
   .div-block {
