@@ -1054,6 +1054,259 @@
   }
 }
 
+.ec-card {
+  background: #ffffff;
+  border: 2px solid #0c002e;
+  border-radius: 18px;
+  bottom: 24px;
+  opacity: 0;
+  padding: 1.5px;
+  pointer-events: none;
+  position: fixed;
+  right: 24px;
+  transform: translateY(calc(100% + 40px));
+  transition:
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.35s ease;
+  width: 296px;
+  will-change: transform, opacity;
+  z-index: 9997;
+}
+
+.ec-card--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.ec-inner {
+  background: #ffffff;
+  border-radius: 16.5px;
+  padding: 24px 24px 20px;
+  position: relative;
+}
+
+.ec-close {
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  height: 22px;
+  justify-content: center;
+  opacity: 0.45;
+  padding: 0;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  transition: opacity 0.2s ease;
+  width: 22px;
+}
+
+.ec-close:hover {
+  opacity: 1;
+}
+
+.ec-close-icon {
+  color: #0c002e;
+  display: flex;
+  height: 14px;
+  width: 14px;
+}
+
+.ec-close-icon svg {
+  height: 14px;
+  width: 14px;
+}
+
+.ec-eyebrow {
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: var(--tracking-meta);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.ec-heading {
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 12px;
+  padding-right: 16px;
+}
+
+.ec-body {
+  color: rgba(12, 0, 46, 0.7);
+  font-family: Neuemontreal, sans-serif;
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 0 0 18px;
+}
+
+.ec-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ec-input {
+  background: #ffffff;
+  border: 1px solid rgba(12, 0, 46, 0.3);
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 13px;
+  outline: none;
+  padding: 10px 14px;
+  transition: border-color 0.2s ease;
+  width: 100%;
+}
+
+textarea.ec-input {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.ec-input::placeholder {
+  color: rgba(12, 0, 46, 0.4);
+}
+
+.ec-input:focus {
+  border-color: #0c002e;
+}
+
+.ec-optional-wrap {
+  position: relative;
+}
+
+.ec-input--optional {
+  padding-right: 58px;
+}
+
+.ec-optional-label {
+  color: rgba(12, 0, 46, 0.4);
+  font-family: Neuemontreal, sans-serif;
+  font-size: 10px;
+  letter-spacing: var(--tracking-badge);
+  pointer-events: none;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+}
+
+.ec-submit {
+  background: #261b44;
+  border: 1.5px solid #0c002e;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  height: 38px;
+  overflow: hidden;
+  padding: 0 14px;
+  position: relative;
+}
+
+.ec-submit:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.ec-submit:not(:disabled):hover .ec-submit-inner {
+  transform: translateY(-38px);
+}
+
+.ec-submit-inner {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ec-submit-text {
+  display: block;
+  flex-shrink: 0;
+  height: 38px;
+  line-height: 38px;
+  white-space: nowrap;
+}
+
+.ec-disclaimer {
+  color: rgba(12, 0, 46, 0.5);
+  font-family: Neuemontreal, sans-serif;
+  font-size: 11px;
+  margin: 10px 0 0;
+  text-align: center;
+}
+
+.ec-success {
+  padding: 8px 0 4px;
+  text-align: center;
+}
+
+.ec-success-check {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.ec-success-title {
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.ec-success-body {
+  color: rgba(12, 0, 46, 0.6);
+  font-family: Neuemontreal, sans-serif;
+  font-size: 13px;
+  margin: 0;
+}
+
+.ec-error {
+  padding: 8px 0 4px;
+  text-align: center;
+}
+
+.ec-error-message {
+  color: #d32f2f;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 13px;
+  margin: 0 0 14px;
+}
+
+.ec-error-retry {
+  background: #261b44;
+  border: 1.5px solid #0c002e;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  height: 38px;
+  padding: 0 14px;
+}
+
+.ec-error-retry:hover {
+  background: #0c002e;
+}
+
+@media (max-width: 768px) {
+  .ec-card {
+    display: none;
+  }
+}
+
 /* ==========================================================================
    components/headers
    PageHeader
