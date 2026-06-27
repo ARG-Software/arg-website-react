@@ -417,72 +417,6 @@ input[type='file']:focus-visible {
   transform: translate3d(0, 0%, 0);
 }
 
-/* ── Partners Marquee ── */
-.partners_marquee-outer {
-  position: relative;
-  max-width: 84rem;
-  margin: 0 auto;
-  width: 100%;
-  overflow: hidden;
-  padding: 6rem 4.75rem 5rem;
-}
-.partners_marquee-outer::before,
-.partners_marquee-outer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 6rem;
-  z-index: 2;
-  pointer-events: none;
-}
-.partners_marquee-outer::before {
-  left: 0;
-  background: linear-gradient(to right, #fff, transparent);
-}
-.partners_marquee-outer::after {
-  right: 0;
-  background: linear-gradient(to left, #fff, transparent);
-}
-
-.partners_marquee-track {
-  display: flex;
-  align-items: center;
-  width: max-content;
-  min-height: 4rem;
-}
-
-.partners_marquee-set {
-  display: flex;
-  align-items: center;
-  gap: 6rem;
-  padding-right: 6rem;
-  flex-shrink: 0;
-}
-.partners_marquee-set .partners_logo_wrap {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.partners_marquee-set .partners_logo {
-  height: 3rem;
-  width: auto;
-  object-fit: contain;
-}
-
-
-
-@media screen and (max-width: 767px) {
-  .partners_marquee-set {
-    gap: 3rem;
-    padding-right: 3rem;
-  }
-  .partners_marquee-outer::before,
-  .partners_marquee-outer::after {
-    width: 3rem;
-  }
-}
-
 /* ── Mobile Nav: left-side panel (desktop only - mobile handled by Navbar JS) ── */
 /* Desktop menu styles removed - controlled by Navbar React component */
 
@@ -659,77 +593,8 @@ input[type='file']:focus-visible {
 
 /* Menu layout wrapper — fully controlled by Navbar React component */
 
-/* Partner logos — size + grayscale */
-.partners_marquee-set .partners_logo_wrap {
-  min-width: 8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.partners_marquee-set .partners_logo {
-  height: 3.5rem;
-  max-width: 9rem;
-  width: auto;
-  object-fit: contain;
-  filter: grayscale(1) opacity(0.5);
-  transition: filter 0.4s ease;
-}
-
-.partners_marquee-set .partners_logo:hover {
-  filter: grayscale(1) brightness(0.75) opacity(0.5);
-}
-
-/* Reduce gap before "See all partners" */
-.partners_contain.container.padding-global {
-  padding-top: 1rem !important;
-  padding-bottom: 1.5rem !important;
-}
-
-@media screen and (max-width: 991px) {
-  .partners_marquee-outer {
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
-}
-
-@media screen and (max-width: 767px) {
-  .partners_marquee-set .partners_logo {
-    height: 2.5rem;
-    max-width: 6rem;
-  }
-  .partners_marquee-set {
-    gap: 4rem;
-    padding-right: 4rem;
-  }
-  .partners_marquee-outer::before,
-  .partners_marquee-outer::after {
-    width: 3rem;
-  }
-  .partners_marquee-outer {
-    padding-left: 2.25rem;
-    padding-right: 2.25rem;
-  }
-}
-
 .nav_logo_icon {
   display: flex;
-}
-
-@media (max-width: 768px) {
-  .meet-up-align {
-    margin-right: 0;
-  }
-}
-
-.meet-text {
-  margin-left: 2rem;
-}
-
-@media (max-width: 768px) {
-  .meet-text {
-    margin-left: 0;
-  }
 }
 
 @media screen and (max-width: 991px) {
@@ -748,10 +613,6 @@ input[type='file']:focus-visible {
 }
 
 @media screen and (max-width: 480px) {
-  .partners_contain.container.padding-global {
-    justify-content: flex-start !important;
-  }
-
   .es-load-more-button-container {
     padding-top: 2rem !important;
   }
@@ -843,10 +704,6 @@ input[type='file']:focus-visible {
     padding-right: 0;
     padding-left: 0;
   }
-  .partners_contain.container.padding-global {
-    justify-content: flex-start !important;
-  }
-
   .line-separate.is--testimonials {
     max-width: 100% !important;
     width: 100% !important;
@@ -903,10 +760,6 @@ input[type='file']:focus-visible {
 }
 
 @media screen and (max-width: 768px) {
-  .partners_contain.container.padding-global {
-    justify-content: flex-start !important;
-  }
-
   .about_heading {
     padding-right: 0;
     padding-left: 0;
@@ -2718,13 +2571,6 @@ figcaption {
   align-items: flex-start;
   display: flex;
 }
-.partners_wrap.background-color-white {
-}
-.partners_contain.container.padding-global {
-  padding-top: 7.5rem;
-  padding-bottom: 7.5rem;
-  display: block;
-}
 .about_contain.container.padding-global {
   padding-top: 8rem;
   padding-bottom: 8rem;
@@ -3995,7 +3841,6 @@ figcaption {
   .text-button_text {
     font-size: var(--type-text-button);
   }
-  .partners_contain.container.padding-global,
   .about_contain.container.padding-global {
     padding: 2.5rem 1rem;
   }
@@ -4235,10 +4080,6 @@ figcaption {
   }
   .hero_heading.heading-style-h1 {
     padding-top: 0 !important;
-  }
-  .partners_marquee-outer {
-    padding-left: 2.25rem;
-    padding-right: 2.25rem;
   }
   .padding-section-xlarge {
     padding-top: 2.5rem;
