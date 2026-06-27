@@ -879,6 +879,52 @@
 .section_cta {
 }
 
+.section_cta,
+.section_cta * {
+  cursor: auto;
+}
+
+.section_cta .button-base,
+.section_cta .formtext.form-click,
+.section_cta a {
+  cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+  .section_cta .heading_wrap {
+    text-align: center !important;
+    align-items: center !important;
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  .section_cta .header-animation {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100%;
+  }
+
+  .section_cta .header-animation h2 {
+    text-align: center !important;
+    width: 100%;
+  }
+
+  .section_cta .cta-content .button-base {
+    align-self: center !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .section_cta .button-base {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .section_cta .button-base .button-base__button-text {
+    white-space: normal !important;
+  }
+}
+
 .page-cta-wrapper {
   margin-bottom: 5rem;
 }
