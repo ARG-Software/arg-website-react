@@ -747,9 +747,6 @@ figcaption {
   letter-spacing: var(--tracking-display);
   line-height: var(--line-tight);
 }
-.heading-style-h1.show-portrait {
-  display: none;
-}
 .padding-global {
   padding-left: 4.75rem;
   padding-right: 4.75rem;
@@ -1198,9 +1195,6 @@ figcaption {
     width: 100%;
     max-width: none;
   }
-  .heading-style-h1.hide-mobile-portrait {
-    text-align: center;
-  }
   .padding-global {
     padding-left: 3rem;
     padding-right: 3rem;
@@ -1364,11 +1358,6 @@ figcaption {
   .hide-mobile-landscape {
     display: none;
   }
-  .heading-style-h1.hide-mobile-portrait {
-    text-align: center;
-    flex: 0 auto;
-    align-self: auto;
-  }
   .padding-global {
     padding-left: 2.25rem;
     padding-right: 2.25rem;
@@ -1396,15 +1385,9 @@ figcaption {
     padding-top: 5rem;
     padding-bottom: 5rem;
   }
-  .button {
-    padding: 0.5rem 1rem;
-  }
   .padding-section-medium {
     padding-top: 4rem;
     padding-bottom: 4rem;
-  }
-  .text-size-16-14 {
-    font-size: 0.875rem;
   }
 }
 @media screen and (max-width: 480px) {
@@ -1470,29 +1453,12 @@ figcaption {
   .padding-bottom.padding-104 {
     padding-bottom: 3rem;
   }
-  .max-width-full-mobile-portrait {
-    width: 100%;
-    max-width: none;
-  }
-  .heading-style-h1.show-portrait {
-    display: block;
-  }
-  .heading-style-h1.show-tablet {
-    text-align: center;
-  }
   .padding-global.is--cta-mobile {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  .hide-mobile-portrait {
-    display: none;
-  }
   .text-align-center {
     text-align: left;
-  }
-  .button {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
   }
 }
 
