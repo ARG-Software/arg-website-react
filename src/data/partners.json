@@ -10,8 +10,8 @@
       "description": "A global nonprofit building an open, interoperable payment network through the Interledger Protocol — enabling seamless, currency-agnostic transactions that bring digital financial services to the 1.4 billion people currently excluded from traditional banking.",
       "link": "https://interledger.org/",
       "timeline": {
-        "startYear": 2019,
-        "ongoing": true
+        "startYear": 2024,
+        "durationYears": 2
       }
     },
     {
@@ -23,8 +23,8 @@
       "description": "A social sector technology platform servicing community banks and credit unions in rural Mexico. Working with AMUCSS and the Interledger Foundation, it is building cross-border remittance infrastructure to connect 140 community banks to the global payments network — reducing fees and wait times for migrant families.",
       "link": "https://lacamara.mx/",
       "timeline": {
-        "startYear": 2020,
-        "durationYears": 3
+        "startYear": 2024,
+        "durationYears": 2
       }
     },
     {
@@ -37,8 +37,8 @@
       "description": "An open-source foundation championing inclusive financial infrastructure. Mojaloop builds interoperable payment systems that bring affordable, accessible digital financial services to unbanked populations worldwide.",
       "link": "https://mojaloop.io/",
       "timeline": {
-        "startYear": 2019,
-        "ongoing": true
+        "startYear": 2021,
+        "durationYears": 3
       }
     },
     {
@@ -51,8 +51,8 @@
       "description": "A research-driven investment and advisory firm focused on blockchain ecosystems and decentralized finance, supporting crypto-native projects with deep technical and market expertise.",
       "link": "https://threesigma.xyz/",
       "timeline": {
-        "startYear": 2021,
-        "durationYears": 4
+        "startYear": 2022,
+        "durationYears": 2
       }
     },
     {
@@ -65,8 +65,8 @@
       "description": "A hands-on venture studio that conceives, builds, and scales digital products — blending product strategy, design, and engineering to take ideas from zero to market.",
       "link": "https://angry.ventures/",
       "timeline": {
-        "startYear": 2021,
-        "durationYears": 4
+        "startYear": 2020,
+        "durationYears": 1
       }
     },
     {
@@ -87,13 +87,14 @@
       "name": "SEFA",
       "slug": "sefa",
       "logo": "/images/partners/sefa.svg",
+      "logoSmall": "/images/partners/sefa-small.svg",
       "category": "Industry",
       "industry": "Foodservice Industry",
       "description": "A nationwide network in the foodservice industry that connects supply and equipment dealers with manufacturers, providing collective buying power, marketing support, and training services to strengthen market presence and business operations.",
       "link": "https://www.sefa.com/",
       "timeline": {
-        "startYear": 2023,
-        "durationYears": 2
+        "startYear": 2020,
+        "durationYears": 1
       }
     },
     {
@@ -106,8 +107,8 @@
       "description": "A hospitality management platform that helps property owners and tourism businesses streamline their operations — from bookings and scheduling to guest communication and day-to-day management.",
       "link": "https://hostelier.weebly.com/",
       "timeline": {
-        "startYear": 2023,
-        "durationYears": 2
+        "startYear": 2020,
+        "ongoing": true
       }
     },
     {
@@ -119,8 +120,9 @@
       "description": "A cloud-based music production platform enabling real-time collaboration between musicians, producers, and audio engineers — anywhere in the world, with professional-grade tools built directly into the browser.",
       "link": "https://skytracks.io/",
       "timeline": {
-        "startYear": 2024,
-        "durationYears": 1
+        "startYear": 2020,
+        "durationYears": 1,
+        "durationMonths": 6
       }
     },
     {
@@ -132,8 +134,9 @@
       "industry": "Music Rights",
       "description": "A music rights management company providing modern tools for catalog management, royalty tracking, and licensing — making music ownership transparent and efficient for artists and publishers alike.",
       "timeline": {
-        "startYear": 2024,
-        "durationYears": 1
+        "startYear": 2020,
+        "durationYears": 2,
+        "durationMonths": 6
       }
     }
   ]

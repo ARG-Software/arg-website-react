@@ -6,6 +6,11 @@ import {
   getTimelineYearColumns,
 } from '../../utils/timeline';
 
+function formatTimelineTooltip(row) {
+  const range = row.ongoing ? `Since ${row.startYear}` : formatTimelineRange(row);
+  return `${formatTimelineDuration(row.durationMonths, row.ongoing)} · ${range}`;
+}
+
 export function Timeline({
   heading,
   clients = [],
@@ -79,17 +84,19 @@ export function Timeline({
           {timelineRows.map((row, i) => {
             const startCol = row.visibleStartMonthIndex - timelineStartMonthIndex + 1;
             const span = row.visibleEndMonthIndex - row.visibleStartMonthIndex + 1;
+            const tooltip = formatTimelineTooltip(row);
+            const clientNames = row.clients.map(client => client.name).join(', ');
 
             return (
               <div key={row.key} className="pt-row">
                 <div
-                  className="pt-row-card"
+                  className="pt-row-card tooltip-anchor"
                   style={{ gridColumn: `${startCol} / span ${span}` }}
+                  data-tooltip={tooltip}
+                  role="group"
+                  aria-label={`${clientNames}: ${tooltip}`}
                   {...rowAttrs(i + 3)}
                 >
-                  <span className="pt-duration">
-                    {formatTimelineDuration(row.durationMonths, row.ongoing)}
-                  </span>
                   <div className="pt-row-logos">
                     {row.clients.map(p => (
                       <img
