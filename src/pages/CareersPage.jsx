@@ -362,8 +362,10 @@ export default function CareersPage() {
                           data-animate="fade-up"
                           data-animate-order={index + 1}
                         >
-                          <span>{String(index + 1).padStart(2, '0')}</span>
-                          <div>
+                          <span className="cp-careers-trait-number">
+                            <i>{String(index + 1).padStart(2, '0')}</i>
+                          </span>
+                          <div className="cp-careers-trait-content">
                             <h3>{trait.title}</h3>
                             <p>{trait.body}</p>
                           </div>

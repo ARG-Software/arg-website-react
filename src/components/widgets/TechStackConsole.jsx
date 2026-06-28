@@ -1,6 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import consoleData from '../../data/techStackConsole.json';
 
+const STACK_OVERVIEW_EXCLUDED_COMMANDS = new Set(['/all', '/principles']);
+
+const STACK_GROUP_LABELS = {
+  '/ai': 'AI',
+  '/backend': 'Backend',
+  '/databases': 'Data',
+  '/frontend': 'Frontend',
+  '/infra': 'Infrastructure',
+  '/languages': 'Languages',
+  '/observe': 'Observability',
+};
+
 export function TechStackConsole({
   className = '',
   animate = false,
@@ -9,6 +21,7 @@ export function TechStackConsole({
 }) {
   const [input, setInput] = useState('');
   const [entries, setEntries] = useState([]);
+  const inputRef = useRef(null);
   const logRef = useRef(null);
 
   useEffect(() => {
@@ -35,6 +48,10 @@ export function TechStackConsole({
     runCommand(input);
   };
 
+  const handleConsoleClick = () => {
+    inputRef.current?.focus();
+  };
+
   const animationAttrs = animate
     ? {
         'data-animate': animationPreset,
@@ -46,6 +63,7 @@ export function TechStackConsole({
     <div
       className={`tech-stack-console ${className}`.trim()}
       aria-label={consoleData.ariaLabel}
+      onClick={handleConsoleClick}
       {...animationAttrs}
     >
       <div className="tech-stack-console__header">
@@ -66,15 +84,19 @@ export function TechStackConsole({
 
       <form className="tech-stack-console__input-row" onSubmit={handleSubmit}>
         <span className="tech-stack-console__prompt">{consoleData.prompt}</span>
-        <input
-          type="text"
-          value={input}
-          onChange={event => setInput(event.target.value)}
-          placeholder={consoleData.inputPlaceholder}
-          spellCheck="false"
-          autoCapitalize="off"
-          aria-label="Run stack console command"
-        />
+        <div className="tech-stack-console__input-field">
+          {!input && <span className="tech-stack-console__cursor" aria-hidden="true" />}
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={event => setInput(event.target.value)}
+            placeholder={consoleData.inputPlaceholder}
+            spellCheck="false"
+            autoCapitalize="off"
+            aria-label="Run stack console command"
+          />
+        </div>
       </form>
     </div>
   );
@@ -116,6 +138,23 @@ function renderOutput(entry) {
     return <p className="tech-stack-console__error">command not found: try /help</p>;
   }
 
+  if (entry.groups) {
+    return (
+      <div className="tech-stack-console__stack-grid">
+        {entry.groups.map(group => (
+          <section key={group.label} className="tech-stack-console__stack-group">
+            <h4>{group.label}</h4>
+            <div className="tech-stack-console__stack-tags">
+              {group.lines.map(line => (
+                <span key={line}>{line}</span>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <ul className="tech-stack-console__output-list">
       {entry.lines.map(line => (
@@ -127,6 +166,7 @@ function renderOutput(entry) {
 
 function buildEntry(command) {
   if (command === '/help') return { command, type: 'help' };
+  if (command === '/all') return { command, groups: buildStackGroups() };
 
   const definition = consoleData.commands[command];
   if (!definition) return { command, type: 'unknown' };
@@ -136,6 +176,24 @@ function buildEntry(command) {
     lines: definition.lines,
     type: 'output',
   };
+}
+
+function buildStackGroups() {
+  return Object.entries(consoleData.commands)
+    .filter(([command, definition]) => {
+      return !STACK_OVERVIEW_EXCLUDED_COMMANDS.has(command) && Array.isArray(definition.lines);
+    })
+    .map(([command, definition]) => ({
+      label: STACK_GROUP_LABELS[command] || formatCommandLabel(command),
+      lines: definition.lines,
+    }));
+}
+
+function formatCommandLabel(command) {
+  return command
+    .replace(/^\//, '')
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, letter => letter.toUpperCase());
 }
 
 function normalizeCommand(rawCommand) {

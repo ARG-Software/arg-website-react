@@ -5,29 +5,40 @@
   "prompt": "arg@stack:~$",
   "inputPlaceholder": "type /help to check the commands",
   "commands": {
+    "/all": {
+      "description": "show all available stack categories and tools"
+    },
     "/languages": {
       "description": "shows production languages we use daily",
-      "lines": ["TypeScript", "C# / .NET", "Node", "Python"]
+      "lines": ["TypeScript", "JavaScript", "C#", "Python"]
     },
     "/databases": {
       "description": "shows storage, cache, and streaming tools",
-      "lines": ["Postgres", "Redis", "Kafka", "ClickHouse", "MongoDB"]
+      "lines": ["Postgres", "MongoDB", "MySQL", "SQLite", "SQL Server"]
     },
     "/frontend": {
       "description": "shows web and real-time UI tools",
-      "lines": ["React", "Next.js", "TanStack Query", "GSAP"]
+      "lines": ["React", "Next.js", "Angular", "Vue"]
+    },
+    "/backend": {
+      "description": "shows server and API tools",
+      "lines": ["Node.js", "Express", "NestJS", "ASP.NET Core", "Kafka", "RabbitMQ", "gRPC", "REST"]
     },
     "/infra": {
       "description": "shows ship, run, and rollback tooling",
-      "lines": ["Docker", "Kubernetes", "Terraform", "GitHub Actions", "AWS"]
+      "lines": ["Nx", "Docker", "Kubernetes", "GitHub Actions", "CircleCI", "Octopus Deploy", "Azure", "Hetzner Cloud", "Supabase", "Vercel", "Netlify"]
     },
     "/observe": {
       "description": "shows observability tooling",
       "lines": ["OpenTelemetry", "Grafana", "Sentry", "Prometheus"]
     },
+    "/ai": {
+      "description": "shows AI and automation tooling",
+      "lines": ["Hugging Face", "LangChain", "OpenAI", "Claude", "ClaudeCode", "OpenCode", "Ollama"]
+    },
     "/principles": {
       "description": "shows the operating principles behind the stack",
-      "lines": ["architecture-first", "no patchwork", "gold standard", "handoff-ready"]
+      "lines": ["Clean Architecture", "Domain-Driven Design", "Continuous Delivery", "Continuous Integration", "SOLID Principles", "Event-Driven Architecture", "Microservices"]
     }
   },
   "systemCommands": {

@@ -3101,6 +3101,50 @@ textarea.ec-input {
   font-family: inherit;
 }
 
+.tech-stack-console__stack-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 0.75rem;
+}
+
+.tech-stack-console__stack-group {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.875rem;
+  padding: 0.875rem;
+}
+
+.tech-stack-console__stack-group h4 {
+  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-meta-small);
+  font-weight: 500;
+  letter-spacing: var(--tracking-meta-wide);
+  line-height: 1;
+  margin: 0 0 0.625rem;
+  text-transform: uppercase;
+}
+
+.tech-stack-console__stack-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.tech-stack-console__stack-tags span {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: var(--type-meta-small);
+  line-height: 1;
+  padding: 0.4rem 0.55rem;
+}
+
 .tech-stack-console__error {
   color: #ff7a90;
   margin: 0;
@@ -3110,6 +3154,28 @@ textarea.ec-input {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex: 0 0 auto;
   padding: 1rem 1.5rem;
+}
+
+.tech-stack-console__input-field {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  min-width: 8rem;
+}
+
+.tech-stack-console__cursor {
+  animation: techConsoleCursorBlink 0.7s steps(2, start) infinite;
+  background: #fff;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 1em;
+  margin-right: 0.375rem;
+  opacity: 0.9;
+  width: 0.125rem;
+}
+
+.tech-stack-console__input-field:focus-within .tech-stack-console__cursor {
+  display: none;
 }
 
 .tech-stack-console__input-row input {
@@ -3125,6 +3191,12 @@ textarea.ec-input {
 
 .tech-stack-console__input-row input::placeholder {
   color: rgba(255, 255, 255, 0.38);
+}
+
+@keyframes techConsoleCursorBlink {
+  50% {
+    opacity: 0;
+  }
 }
 
 @media screen and (max-width: 767px) {
@@ -3150,6 +3222,10 @@ textarea.ec-input {
   .tech-stack-console__command-list li {
     grid-template-columns: 1fr;
     gap: 0.125rem;
+  }
+
+  .tech-stack-console__stack-grid {
+    grid-template-columns: 1fr;
   }
 }
 

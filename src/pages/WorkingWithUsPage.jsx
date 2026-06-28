@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
 import {
@@ -42,19 +43,16 @@ const INTERNAL_VALUES = [
 
 const FIT_CHECKS = [
   {
-    index: '01',
     title: 'High-stakes architecture',
     description:
       'You are making decisions that will shape the product for years: platform design, migrations, integrations, or a system that needs to scale without becoming fragile.',
   },
   {
-    index: '02',
     title: 'Production reliability',
     description:
       'The system is already live, or close to it, and performance, observability, recovery, or operational confidence matters more than another feature sprint.',
   },
   {
-    index: '03',
     title: 'Senior execution',
     description:
       'You do not need a large vendor layer. You need people who can reason about the product, write the code, and stay accountable when it reaches production.',
@@ -112,9 +110,41 @@ const TECH_STACK_INTRO = {
   text: 'This console maps the stack we trust when a system needs to stay observable, scalable, and easy to hand over after the hard part is done.',
 };
 
+const CONVERSATION_STEP_INTERVAL_MS = 6000;
+
 export default function WorkingWithUsPage() {
+  const [activeConversationStep, setActiveConversationStep] = useState(0);
+  const [isConversationTimelinePaused, setIsConversationTimelinePaused] = useState(false);
+
   useTimeOnPage('/working-with-us/');
   useScrollAnimations();
+
+  useEffect(() => {
+    if (isConversationTimelinePaused || CONVERSATION_STEPS.length < 2) return undefined;
+
+    const intervalId = window.setInterval(() => {
+      setActiveConversationStep(currentStep => (currentStep + 1) % CONVERSATION_STEPS.length);
+    }, CONVERSATION_STEP_INTERVAL_MS);
+
+    return () => window.clearInterval(intervalId);
+  }, [isConversationTimelinePaused]);
+
+  const conversationProgress =
+    CONVERSATION_STEPS.length > 1
+      ? `${(activeConversationStep / (CONVERSATION_STEPS.length - 1)) * 100}%`
+      : '0%';
+
+  const activateConversationStep = index => {
+    setIsConversationTimelinePaused(true);
+    setActiveConversationStep(index);
+  };
+
+  const handleConversationStepKeyDown = (event, index) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    event.preventDefault();
+    activateConversationStep(index);
+  };
 
   return (
     <>
@@ -260,9 +290,8 @@ export default function WorkingWithUsPage() {
                     <div className="cp-fit-columns">
                       {FIT_CHECKS.map(item => (
                         <article key={item.title} className="cp-fit-column">
-                          <span className="cp-fit-accent" aria-hidden="true" />
-                          <div className="cp-fit-column-heading">
-                            <span>{item.index}</span>
+                          <div className="cp-fit-column-title">
+                            <span className="cp-fit-accent" aria-hidden="true" />
                             <h4>{item.title}</h4>
                           </div>
                           <p>{item.description}</p>
@@ -276,12 +305,30 @@ export default function WorkingWithUsPage() {
                     aria-label="How it starts"
                   >
                     <SectionTicker label="How it starts" className="cp-fit-ticker" />
-                    <div className="cp-fit-stepper">
-                      <span className="cp-fit-stepper-line" aria-hidden="true" />
+                    <div
+                      className="cp-fit-timeline"
+                      style={{ '--cp-fit-progress': conversationProgress }}
+                      onMouseLeave={() => setIsConversationTimelinePaused(false)}
+                    >
+                      <span className="cp-fit-timeline-rail" aria-hidden="true">
+                        <span className="cp-fit-timeline-fill" />
+                      </span>
                       {CONVERSATION_STEPS.map((step, index) => (
-                        <article key={step.title} className="cp-fit-step">
-                          <span className="cp-fit-step-number">
-                            {String(index + 1).padStart(2, '0')}
+                        <article
+                          key={step.title}
+                          className={`cp-fit-step ${activeConversationStep === index ? 'is-active' : ''}`}
+                          role="button"
+                          tabIndex={0}
+                          aria-current={activeConversationStep === index ? 'step' : undefined}
+                          onMouseEnter={() => activateConversationStep(index)}
+                          onClick={() => activateConversationStep(index)}
+                          onKeyDown={event => handleConversationStepKeyDown(event, index)}
+                        >
+                          <span className="cp-fit-step-node" aria-hidden="true">
+                            <span className="cp-fit-step-ring" />
+                            <span className="cp-fit-step-dot">
+                              {String(index + 1).padStart(2, '0')}
+                            </span>
                           </span>
                           <h4>{step.title}</h4>
                           <p>{step.description}</p>
