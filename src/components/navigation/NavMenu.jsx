@@ -2,12 +2,11 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { gsap } from 'gsap';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
-import { trackCTA, trackEvent } from '../../hooks/useAnalytics';
+import { trackEvent } from '../../hooks/useAnalytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { arrowSvg } from '../icons/SocialIcons';
 import { PillButton } from '../pills/Pill';
 import projects from '../../data/projects.json';
-import { getProjectBookingLink } from '../../services/externalLinks';
 
 const primaryMenuItems = [
   {
@@ -55,14 +54,22 @@ const secondaryMenuItems = [
   { label: 'Contact', to: '/#contact' },
 ];
 
+const USE_CASES_PANEL_ID = 'nav-overlay-use-cases';
+
 function ArrowIcon({ className = '' }) {
   return <span className={`arrow_icon-embed ${className}`.trim()}>{arrowSvg}</span>;
 }
 
 export function NavMenu({ isOpen, isClosing, onClose }) {
   const [latestPost, setLatestPost] = useState(null);
+  const [isUseCasesOpen, setIsUseCasesOpen] = useState(false);
   const wrapperRef = useRef(null);
   const containerRef = useRef(null);
+
+  const handleClose = useCallback(() => {
+    setIsUseCasesOpen(false);
+    onClose();
+  }, [onClose]);
 
   // Set initial hidden state (GSAP owns opacity/visibility from here on)
   useEffect(() => {
@@ -121,13 +128,16 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
   useEffect(() => {
     if (!isOpen) return;
     const handleEscape = e => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') handleClose();
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
+  }, [isOpen, handleClose]);
 
-  const handleLinkClick = useCallback(() => onClose(), [onClose]);
+  const handleLinkClick = handleClose;
+  const handleUseCasesToggle = useCallback(() => {
+    setIsUseCasesOpen(current => !current);
+  }, []);
 
   const latestDate = latestPost
     ? new Date(latestPost.date).toLocaleDateString('en-US', {
@@ -140,7 +150,7 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
     <div
       ref={wrapperRef}
       className={`nav_overlay-wrapper${isOpen ? ' active' : ''}`}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         ref={containerRef}
@@ -194,7 +204,7 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
               <Logo />
             </AppLink>
 
-            <button className="nav_overlay-close" onClick={onClose} aria-label="Close menu">
+            <button className="nav_overlay-close" onClick={handleClose} aria-label="Close menu">
               <span>Close</span>
               <span className="nav_overlay-close-icon" aria-hidden="true">
                 ×
@@ -209,7 +219,18 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
                   <AppLink to={item.to} className="nav_overlay-nav-label" onClick={handleLinkClick}>
                     {item.label}
                   </AppLink>
-                  {item.detailTo && (
+                  {item.projectLinks ? (
+                    <button
+                      type="button"
+                      className="nav_overlay-nav-detail nav_overlay-nav-detail--strong"
+                      aria-expanded={isUseCasesOpen}
+                      aria-controls={USE_CASES_PANEL_ID}
+                      onClick={handleUseCasesToggle}
+                    >
+                      Use case pages
+                      <span aria-hidden="true">{isUseCasesOpen ? '↑' : '↓'}</span>
+                    </button>
+                  ) : item.detailTo ? (
                     <AppLink
                       to={item.detailTo}
                       className="nav_overlay-nav-detail nav_overlay-nav-detail--strong"
@@ -218,11 +239,16 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
                       {item.detailLabel}
                       <span aria-hidden="true">↗</span>
                     </AppLink>
-                  )}
+                  ) : null}
                 </div>
 
                 {item.projectLinks && (
-                  <div className="nav_overlay-project-pills" aria-label="Use case pages">
+                  <div
+                    id={USE_CASES_PANEL_ID}
+                    className="nav_overlay-project-pills"
+                    aria-label="Use case pages"
+                    hidden={!isUseCasesOpen}
+                  >
                     {item.projectLinks.map(project => (
                       <PillButton
                         as={AppLink}
@@ -250,25 +276,6 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
               </AppLink>
             ))}
           </div>
-
-          <footer className="nav_overlay-footer">
-            <a
-              href={getProjectBookingLink()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nav_overlay-book"
-              onClick={() => {
-                trackCTA('book_meeting', 'overlay_menu');
-                handleLinkClick();
-              }}
-            >
-              <span className="nav_overlay-book-text-wrap">
-                <span className="nav_overlay-book-text">Have a project in mind?</span>
-                <span className="nav_overlay-book-text is-animated">Book a meeting</span>
-              </span>
-              <ArrowIcon className="nav_overlay-book-arrow" />
-            </a>
-          </footer>
         </main>
       </div>
     </div>
