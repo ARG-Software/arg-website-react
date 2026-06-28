@@ -388,97 +388,6 @@
   line-height: var(--line-small);
   margin: 0;
 }
-.cp-application-form {
-  background: #0c002e;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 1.25rem;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  gap: 1.125rem;
-  padding: 2rem;
-}
-.cp-application-form h3 {
-  color: #fff;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
-  font-weight: 400;
-  letter-spacing: var(--tracking-card-title);
-  margin: 0 0 0.375rem;
-}
-.cp-application-form p {
-  color: rgba(255, 255, 255, 0.68);
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
-  line-height: var(--line-small);
-  margin: 0;
-}
-.cp-application-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-.cp-application-form label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.cp-application-form label > span {
-  color: rgba(255, 255, 255, 0.62);
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
-  letter-spacing: var(--tracking-meta-wide);
-  text-transform: uppercase;
-}
-.cp-application-form input,
-.cp-application-form select,
-.cp-application-form textarea {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  border-radius: 0.75rem;
-  color: #fff;
-  font: inherit;
-  padding: 0.875rem 1rem;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-.cp-application-form input::placeholder,
-.cp-application-form textarea::placeholder {
-  color: rgba(255, 255, 255, 0.54);
-}
-.cp-application-form select option {
-  background: #0c002e;
-  color: #fff;
-}
-.cp-application-form textarea {
-  min-height: 8rem;
-  resize: vertical;
-}
-.cp-application-form input:focus,
-.cp-application-form select:focus,
-.cp-application-form textarea:focus {
-  border-color: #c924d7;
-  box-shadow: 0 0 0 3px rgba(201, 36, 215, 0.24);
-  outline: none;
-}
-.cp-application-submit .pill {
-  border-color: rgba(255, 255, 255, 0.72);
-}
-.cp-application-submit {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 0.25rem;
-}
-.cp-application-submit span {
-  color: rgba(255, 255, 255, 0.62);
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
-  letter-spacing: var(--tracking-ui);
-}
-
 /* Careers Empty State */
 .cp-careers-traits-grid {
   display: grid;
@@ -973,8 +882,7 @@
   .cp-fit-step p {
     max-width: none;
   }
-  .cp-careers-process-grid,
-  .cp-application-grid {
+  .cp-careers-process-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -1026,13 +934,9 @@
   .cp-founder-focus {
     grid-template-columns: 1fr;
   }
-  .cp-application-form {
-    padding: 1.5rem;
-  }
 }
 @media screen and (max-width: 479px) {
-  .cp-career-job-card,
-  .cp-application-form {
+  .cp-career-job-card {
     padding: 1.25rem;
   }
   .cp-careers-trait {

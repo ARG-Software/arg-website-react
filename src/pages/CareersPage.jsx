@@ -4,6 +4,8 @@ import { trackCTA, trackEvent } from '../hooks/useAnalytics';
 import {
   Navbar,
   BaseCard,
+  FormCard,
+  FormSubmitButton,
   Pill,
   PillButton,
   Footer,
@@ -252,17 +254,23 @@ export default function CareersPage() {
                       </div>
                     </div>
 
-                    <form
-                      className="cp-application-form"
+                    <FormCard
+                      title="Apply for a role"
+                      description="Reviewed by founders directly - no recruiter in the middle."
                       onSubmit={handleSubmit}
                       data-animate-order="1"
+                      submit={
+                        <>
+                          <FormSubmitButton>Send application</FormSubmitButton>
+                          <span>
+                            {submitted
+                              ? 'Application received. We will review it and reply directly.'
+                              : 'We reply to every application.'}
+                          </span>
+                        </>
+                      }
                     >
-                      <div>
-                        <h3>Apply for a role</h3>
-                        <p>Reviewed by founders directly - no recruiter in the middle.</p>
-                      </div>
-
-                      <div className="cp-application-grid">
+                      <div className="form-card__grid">
                         <label>
                           <span>Full name</span>
                           <input
@@ -327,18 +335,7 @@ export default function CareersPage() {
                         <span>CV / portfolio</span>
                         <input type="file" name="cv" accept=".pdf,.doc,.docx" />
                       </label>
-
-                      <div className="cp-application-submit">
-                        <PillButton variant="dark" size="md" type="submit">
-                          Send application
-                        </PillButton>
-                        <span>
-                          {submitted
-                            ? 'Application received. We will review it and reply directly.'
-                            : 'We reply to every application.'}
-                        </span>
-                      </div>
-                    </form>
+                    </FormCard>
                   </div>
                 </section>
               </>

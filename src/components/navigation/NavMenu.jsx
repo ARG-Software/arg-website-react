@@ -51,7 +51,7 @@ const secondaryMenuItems = [
   { label: 'Careers', to: '/careers/' },
   { label: 'FAQ', to: '/#faq' },
   { label: 'Social', to: '/#social' },
-  { label: 'Contact', to: '/#contact' },
+  { label: 'Contact', to: '/contact/' },
 ];
 
 const USE_CASES_PANEL_ID = 'nav-overlay-use-cases';

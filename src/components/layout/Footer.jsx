@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { label: 'Blog', path: '/blog' },
   { label: 'Careers', path: '/careers' },
   { label: 'Working with Us', path: '/working-with-us' },
+  { label: 'Contact', path: '/contact' },
   { label: 'Partners', path: '/partners' },
   { label: 'Use Cases', path: '/projects' },
 ];

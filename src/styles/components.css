@@ -334,6 +334,157 @@
 }
 
 /* ==========================================================================
+   components/forms
+   FormCard
+   ========================================================================== */
+
+.form-card {
+  background: #ffffff;
+  border: 1px solid rgba(12, 0, 46, 0.1);
+  border-radius: 1.25rem;
+  box-shadow: 0 1.25rem 3rem -2.25rem rgba(12, 0, 46, 0.26);
+  color: #0c002e;
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+  padding: 2rem;
+}
+
+.form-card__header h3 {
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-card-title);
+  font-weight: 400;
+  letter-spacing: var(--tracking-card-title);
+  margin: 0 0 0.375rem;
+}
+
+.form-card__header p {
+  color: #555;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-body-small);
+  line-height: var(--line-small);
+  margin: 0;
+}
+
+.form-card__hidden {
+  left: -9999px;
+  position: absolute;
+}
+
+.form-card__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-card label > span {
+  color: rgba(12, 0, 46, 0.58);
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-meta-small);
+  letter-spacing: var(--tracking-meta-wide);
+  text-transform: uppercase;
+}
+
+.form-card input,
+.form-card select,
+.form-card textarea {
+  background: #f3f3f7;
+  border: 1px solid rgba(12, 0, 46, 0.12);
+  border-radius: 0.75rem;
+  color: #0c002e;
+  font: inherit;
+  padding: 0.875rem 1rem;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.form-card input::placeholder,
+.form-card textarea::placeholder {
+  color: rgba(12, 0, 46, 0.42);
+}
+
+.form-card select option {
+  background: #ffffff;
+  color: #0c002e;
+}
+
+.form-card textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.form-card input:focus,
+.form-card select:focus,
+.form-card textarea:focus {
+  background: #ffffff;
+  border-color: rgba(12, 0, 46, 0.42);
+  box-shadow: 0 0 0 3px rgba(12, 0, 46, 0.08);
+  outline: none;
+}
+
+.form-card__submit-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+.form-card__submit-row > span,
+.form-card__submit-row > p {
+  color: rgba(12, 0, 46, 0.58);
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-meta-small);
+  letter-spacing: var(--tracking-ui);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.form-card__submit-button.button-base {
+  background: #0c002e;
+  border-color: #0c002e;
+  color: #ffffff;
+  gap: 0.625rem;
+}
+
+.form-card__submit-button .arrow_icon-embed {
+  flex: 0 0 auto;
+  height: var(--size-text-button-icon);
+  width: var(--size-text-button-icon);
+}
+
+@media screen and (max-width: 767px) {
+  .form-card {
+    padding: 1.5rem;
+  }
+
+  .form-card__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-card__submit-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .form-card {
+    padding: 1.25rem;
+  }
+}
+
+/* ==========================================================================
    components/tooltip
    ========================================================================== */
 

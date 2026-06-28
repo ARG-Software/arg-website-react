@@ -4,6 +4,7 @@ export const EXTERNAL_LINK_KEYS = Object.freeze({
   PROJECT_BOOKING: 'calendar.project',
   NEWSLETTER_SUBSCRIBE: 'newsletter.subscribe',
   PROJECT_BRIEF_FORM: 'forms.projectBrief',
+  CONTACT_SUBMIT_FORM: 'forms.contactSubmit',
   LEAD_CAPTURE_FORM: 'forms.leadCapture',
   PORTFOLIO: 'assets.portfolio',
   RSS_FEED: 'feeds.rss',
@@ -55,6 +56,10 @@ export function getNewsletterSubscribeLink() {
 
 export function getProjectBriefFormLink() {
   return getExternalLink(EXTERNAL_LINK_KEYS.PROJECT_BRIEF_FORM);
+}
+
+export function getContactSubmitEndpoint() {
+  return getExternalLink(EXTERNAL_LINK_KEYS.CONTACT_SUBMIT_FORM);
 }
 
 export function getLeadCaptureEndpoint() {

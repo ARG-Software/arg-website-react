@@ -22,7 +22,7 @@ const NAV_LINKS = [
   { href: '/projects/', label: 'Projects' },
   { href: '/careers/', label: 'Careers' },
   { href: '/working-with-us/', label: 'Working with Us' },
-  { href: '/#contact', label: 'Contact' },
+  { href: '/contact/', label: 'Contact' },
 ];
 
 function buildCrawlableBlock(h1Text, { extraLinks = [], description = '', subtitle = '', paragraphs = [] } = {}) {
@@ -111,6 +111,18 @@ const STATIC_PAGES = [
       'Working with Arg Software means partnering with a small architecture-first engineering team that designs the system before writing it and stays close when it reaches production.',
       'We build production-ready platforms for fintech, media, open payments, music technology, and high-growth technology companies.',
       'Our process emphasizes technical planning, observable systems, clean hand-off, and senior founder involvement from first conversation to production support.',
+    ],
+  },
+  {
+    path: '/contact/',
+    title: 'Contact | Arg Software',
+    h1: 'Contact Arg Software',
+    description:
+      'Contact Arg Software with a clear project brief. Tell us what you are building, what is risky, and where senior engineering help is needed.',
+    paragraphs: [
+      'Contact Arg Software to start a conversation about architecture, reliability, senior execution, or a complex software product that needs a clear technical path.',
+      'Send a short brief with your name, email, company, and the context that matters. A technical person will review it and suggest the next useful step.',
+      'Arg Software works with fintech, media, open payments, music technology, and high-growth technology teams that need production-ready systems.',
     ],
   },
   {

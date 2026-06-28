@@ -15,6 +15,7 @@ export { EmailCapture } from './overlays/EmailCapture';
 export { Drawer } from './overlays/Drawer';
 export { FilterGrid } from './grids/FilterGrid';
 export { Timeline } from './grids/Timeline';
+export { FormCard, FormSubmitButton } from './forms/FormCard';
 export { Marquee } from './layout/Marquee';
 export { Navbar } from './navigation/Navbar';
 export { Breadcrumb } from './navigation/Breadcrumb';
