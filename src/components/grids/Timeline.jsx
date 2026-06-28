@@ -15,7 +15,7 @@ export function Timeline({
   heading,
   clients = [],
   yearStart = 2020,
-  ctaText = 'Your Project',
+  ctaText = 'Your Time',
   ctaButtonText = 'Start Now',
   ctaLink = '#page-cta',
   onCtaClick,
@@ -111,7 +111,7 @@ export function Timeline({
               </div>
             );
           })}
-          <div className="pt-row">
+          <div className="pt-row pt-row-cta">
             <a
               href={ctaLink}
               className="button-base button-contact pt-row-cta-card"

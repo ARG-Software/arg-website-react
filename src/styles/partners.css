@@ -217,7 +217,7 @@
 }
 
 .pc-drawer-header {
-  display: flex;
+  display: block;
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
@@ -242,7 +242,7 @@
   font-weight: 400;
   line-height: var(--line-title);
   color: #0c002e;
-  margin: 0;
+  margin-bottom: 1.5rem;
 }
 
 .pc-drawer-desc {
@@ -383,7 +383,7 @@
 .pt-row-logos {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   gap: 0.75rem;
   flex-wrap: nowrap;
   min-width: 0;
@@ -409,6 +409,10 @@
 .pt-row-cta-card {
   justify-self: start;
   align-self: center;
+}
+
+.pt-row-cta {
+  margin-top: 1.5rem;
 }
 
 .pt-row-cta-card:hover {

@@ -1017,6 +1017,8 @@
 }
 
 .text-button {
+  --text-button-align: flex-start;
+
   color: #000;
   cursor: pointer;
   display: inline-grid !important;
@@ -1027,12 +1029,20 @@
   position: relative !important;
 }
 
+.text-button--align-center {
+  --text-button-align: center;
+}
+
+.text-button--align-end {
+  --text-button-align: flex-end;
+}
+
 .text-button .text-button_list {
   align-items: center !important;
   gap: 0.5rem !important;
   grid-area: stack;
   display: flex !important;
-  justify-content: flex-end !important;
+  justify-content: var(--text-button-align) !important;
   line-height: var(--line-cta) !important;
   transform: translateY(0);
   transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1) !important;

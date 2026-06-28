@@ -425,6 +425,10 @@
   .partners_contain.container.padding-global {
     justify-content: flex-start !important;
   }
+
+  .partners_contain .text-button--align-end {
+    --text-button-align: flex-start;
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -2006,6 +2010,10 @@
     justify-content: flex-start;
     padding-left: 0;
     padding-top: 2rem;
+  }
+
+  .blog-promo_footer .text-button--align-end {
+    --text-button-align: flex-start;
   }
 
   .section_blog-promo .container-large {
