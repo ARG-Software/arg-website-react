@@ -147,7 +147,9 @@ export default function ProjectDetailPage() {
                           onClick={() => trackCTA(link.trackType ?? 'view_live', `project_${slug}`)}
                         >
                           <span>{link.label}</span>
-                          {arrowSvg}
+                          <span className="arrow_icon-embed" aria-hidden="true">
+                            {arrowSvg}
+                          </span>
                         </a>
                       ))}
                     </div>
@@ -281,7 +283,10 @@ export default function ProjectDetailPage() {
                 <ul className="prp-solution-list" data-animate-scope data-animate-stagger="100">
                   {project.solution.map((item, i) => (
                     <li key={i} data-animate="solution-item" data-animate-order={i}>
-                      {item}
+                      <span className="prp-solution-item-arrow arrow_icon-embed" aria-hidden="true">
+                        {arrowSvg}
+                      </span>
+                      <span>{item}</span>
                     </li>
                   ))}
                 </ul>

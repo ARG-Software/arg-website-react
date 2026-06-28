@@ -277,10 +277,6 @@
   color: #474747;
 }
 
-.pc-drawer-link-arrow:hover svg {
-  transform: rotate(-50deg) translateX(2px);
-}
-
 @keyframes pcFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }

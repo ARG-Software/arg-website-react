@@ -140,10 +140,6 @@
 .blp-article-row:hover .blp-row-title {
   opacity: 0.6;
 }
-.blp-article-row:hover .blp-row-action .arrow_icon-embed {
-  transform: translate(4px, -4px);
-}
-
 .blp-row-meta {
   grid-column: span 2;
   grid-row: 1;

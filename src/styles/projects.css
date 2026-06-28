@@ -135,11 +135,6 @@
   text-decoration: none;
   padding-bottom: 0.15rem;
   border-bottom: 0.09375rem solid var(--prp-light-fg);
-  transition: gap 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.prp-intro-live-link:hover {
-  gap: 1rem;
 }
 
 .prp-intro-live-link svg {
@@ -427,12 +422,12 @@
   background: rgba(0, 0, 0, 0.03);
 }
 
-.prp-solution-list li::before {
-  content: '\2192';
-  color: #c924d7;
-  font-weight: 700;
+.prp-solution-item-arrow {
+  color: var(--prp-dark);
   flex-shrink: 0;
+  height: 1rem;
   margin-top: 0.1em;
+  width: 1rem;
 }
 
 /* ============================================
@@ -467,7 +462,7 @@
 
 .prp-results-heading {
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-content-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 700;
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
@@ -476,9 +471,9 @@
 }
 
 .prp-results-text {
-  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-size: clamp(1rem, 1.4vw, 1.1875rem);
   font-weight: 500;
-  line-height: var(--line-small);
+  line-height: var(--line-body);
   color: var(--prp-muted-dark);
   margin: 0;
   max-width: 40ch;
@@ -683,7 +678,7 @@
   }
 
   .prp-results-text {
-    font-size: clamp(1.125rem, 4vw, 1.5rem);
+    font-size: clamp(1rem, 4vw, 1.125rem);
   }
 
   .prp-results-cards {

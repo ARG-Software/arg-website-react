@@ -2618,10 +2618,6 @@ textarea.ec-input {
   width: 0.875rem;
 }
 
-.page-header__side-list a:hover .page-header__side-arrow {
-  transform: rotate(-50deg) translateX(3px);
-}
-
 .page-header__side-item-label {
   flex: 1;
   font-size: var(--type-body);
@@ -3709,10 +3705,6 @@ textarea.ec-input {
   transition: transform 0.2s ease;
 }
 
-.nav_overlay-project-pill:hover .nav_overlay-project-pill-arrow {
-  transform: rotate(-50deg) translateX(3px);
-}
-
 .nav_overlay-secondary {
   display: flex;
   flex: 0 0 auto;
@@ -3801,10 +3793,6 @@ textarea.ec-input {
   width: 1rem;
   height: 1rem;
   transition: transform 0.2s ease;
-}
-
-.nav_overlay-book:hover .nav_overlay-book-arrow {
-  transform: translateX(4px);
 }
 
 @media (max-width: 860px) {

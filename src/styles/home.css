@@ -1928,14 +1928,7 @@
 }
 
 .blog-promo_card-new:hover .arrow_icon-embed {
-  animation: blog-promo-arrow-pulse 0.6s ease-in-out;
   color: rgba(255, 255, 255, 0.7);
-}
-
-@keyframes blog-promo-arrow-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
 }
 
 .blog-promo_hero {
