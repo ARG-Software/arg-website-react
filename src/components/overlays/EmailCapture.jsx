@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { closeSvg } from '../icons/SocialIcons';
 import { trackEvent } from '../../hooks/useAnalytics';
-import { SESSION_KEY, ALREADY_SUBSCRIBED_KEY, BASIN_ENDPOINT } from '../../constants';
+import { SESSION_KEY, ALREADY_SUBSCRIBED_KEY } from '../../constants';
+import { getLeadCaptureEndpoint } from '../../services/externalLinks';
 
 export function EmailCapture() {
   const [visible, setVisible] = useState(false);
@@ -69,7 +70,7 @@ export function EmailCapture() {
     formData.append('message', message);
 
     try {
-      const response = await fetch(BASIN_ENDPOINT, {
+      const response = await fetch(getLeadCaptureEndpoint(), {
         method: 'POST',
         body: formData,
         // If you need JSON response, Basin can return JSON (see Basin docs)

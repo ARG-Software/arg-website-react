@@ -7,6 +7,7 @@ import { loadBlogPostsMetadata } from '../../utils/blog';
 import { arrowSvg } from '../icons/SocialIcons';
 import { PillButton } from '../pills/Pill';
 import projects from '../../data/projects.json';
+import { getProjectBookingLink } from '../../services/externalLinks';
 
 const primaryMenuItems = [
   {
@@ -211,7 +212,7 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
                   {item.detailTo && (
                     <AppLink
                       to={item.detailTo}
-                      className="nav_overlay-nav-detail"
+                      className="nav_overlay-nav-detail nav_overlay-nav-detail--strong"
                       onClick={handleLinkClick}
                     >
                       {item.detailLabel}
@@ -227,8 +228,8 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
                         as={AppLink}
                         key={project.to}
                         to={project.to}
-                        className="nav_overlay-project-pill"
-                        variant="dark"
+                        className="nav_overlay-project-pill nav_overlay-project-pill--subtle"
+                        variant="outline"
                         size="xs"
                         onClick={handleLinkClick}
                         iconAfter={<ArrowIcon className="nav_overlay-project-pill-arrow" />}
@@ -251,9 +252,8 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
           </div>
 
           <footer className="nav_overlay-footer">
-            <span>Have a project in mind?</span>
             <a
-              href="https://zcal.co/argsoftware/project"
+              href={getProjectBookingLink()}
               target="_blank"
               rel="noopener noreferrer"
               className="nav_overlay-book"
@@ -262,7 +262,10 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
                 handleLinkClick();
               }}
             >
-              Book a meeting
+              <span className="nav_overlay-book-text-wrap">
+                <span className="nav_overlay-book-text">Have a project in mind?</span>
+                <span className="nav_overlay-book-text is-animated">Book a meeting</span>
+              </span>
               <ArrowIcon className="nav_overlay-book-arrow" />
             </a>
           </footer>

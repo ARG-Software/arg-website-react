@@ -1,12 +1,13 @@
 import React from 'react';
 import { linkedinSvg } from '../../../components/icons/SocialIcons';
 import { trackSocial } from '../../../hooks/useAnalytics';
+import { getPersonLinkedInLink, PERSON_KEYS } from '../../../services/externalLinks';
 
 const teamMembers = [
   {
     name: 'Jose Antunes',
     role: 'Co-founder, Software Engineer',
-    linkedin: 'https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/',
+    linkedin: getPersonLinkedInLink(PERSON_KEYS.JOSE),
     imgSrc:
       'https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9.jpg',
     imgSrcSet:
@@ -16,7 +17,7 @@ const teamMembers = [
   {
     name: 'Rui Rocha',
     role: 'Co-founder, Software Engineer',
-    linkedin: 'https://www.linkedin.com/in/ruirochawork/',
+    linkedin: getPersonLinkedInLink(PERSON_KEYS.RUI),
     imgSrc:
       'https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1).jpg',
     imgSrcSet:

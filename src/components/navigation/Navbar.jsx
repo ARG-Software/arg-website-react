@@ -5,6 +5,7 @@ import { trackCTA } from '../../hooks/useAnalytics';
 import { LenisContext } from '../../providers/LenisProvider';
 import { NAV_SCROLL_THRESHOLD } from '../../constants';
 import { NavMenu } from './NavMenu';
+import { getProjectBookingLink } from '../../services/externalLinks';
 
 export function Navbar({ variant = 'transparent', position: _position = 'absolute' }) {
   const isCompact = variant === 'dark';
@@ -167,7 +168,7 @@ export function Navbar({ variant = 'transparent', position: _position = 'absolut
               data-animate-order="1"
             >
               <a
-                href="https://zcal.co/argsoftware/project"
+                href={getProjectBookingLink()}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="button-base"

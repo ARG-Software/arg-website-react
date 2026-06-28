@@ -13,6 +13,7 @@ import {
   PageHeader,
 } from '../components';
 import data from '../data/partners.json';
+import { getProjectBookingLink, getProjectBriefFormLink } from '../services/externalLinks';
 import '../styles/partners.css';
 
 const { categories, clients } = data;
@@ -116,7 +117,7 @@ export default function PartnersPage() {
               <Timeline
                 heading="Built on lasting partnerships"
                 clients={clients}
-                ctaLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
+                ctaLink={getProjectBriefFormLink()}
                 onCtaClick={() => trackCTA('typeform', 'partners_timeline')}
                 animate={true}
                 rowPreset="slide-from-left"
@@ -135,7 +136,7 @@ export default function PartnersPage() {
               buttonTextHover="Let's meet"
               animationClass="pp-animate"
               animate={true}
-              buttonLink="https://zcal.co/argsoftware/project"
+              buttonLink={getProjectBookingLink()}
               onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
           </section>

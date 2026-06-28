@@ -6,6 +6,7 @@ import {
   DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
 } from '../../constants';
+import { EXTERNAL_LINK_KEYS, getFeedLink } from '../../services/externalLinks';
 
 /**
  * Reusable SEO component that injects per-page meta tags via react-helmet-async.
@@ -96,7 +97,7 @@ export function SEO({
           rel="alternate"
           type="application/rss+xml"
           title="Arg Software - RSS Feed"
-          href={`${SITE_URL}/rss.xml`}
+          href={`${SITE_URL}${getFeedLink(EXTERNAL_LINK_KEYS.RSS_FEED)}`}
         />
       )}
       {atom && (
@@ -104,7 +105,7 @@ export function SEO({
           rel="alternate"
           type="application/atom+xml"
           title="Arg Software - Atom Feed"
-          href={`${SITE_URL}/atom.xml`}
+          href={`${SITE_URL}${getFeedLink(EXTERNAL_LINK_KEYS.ATOM_FEED)}`}
         />
       )}
     </Helmet>

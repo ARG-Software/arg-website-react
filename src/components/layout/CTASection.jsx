@@ -1,10 +1,12 @@
+import { getProjectBookingLink } from '../../services/externalLinks';
+
 export function CTASection({
   title = 'Ready to build',
   titleHighlight = 'with us?',
   subtitle,
   buttonTextNotHover = 'Book a Meeting',
   buttonTextHover = "Let's meet",
-  buttonLink = 'https://zcal.co/argsoftware/project',
+  buttonLink = getProjectBookingLink(),
   onPrimaryClick,
   showSplitTitle = true,
   showTitleHighlight = true,

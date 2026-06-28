@@ -14,6 +14,12 @@ import {
   FounderCard,
 } from '../components';
 import CAREERS_DATA from '../data/jobs.json';
+import {
+  EMAIL_KEYS,
+  getMailtoLink,
+  getPersonLinkedInLink,
+  PERSON_KEYS,
+} from '../services/externalLinks';
 import '../styles/careers.css';
 
 const JOBS = CAREERS_DATA.jobs;
@@ -31,8 +37,8 @@ const FOUNDERS = [
     role: 'Co-founder - Software Engineer',
     focus: 'Backend - Systems - Data - AI',
     replyTime: '~ 36 hours',
-    emailHref: 'mailto:jfantunes@arg.software?subject=Career%20Inquiry%20-%20Jose%20Antunes',
-    linkedin: 'https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/',
+    emailHref: getMailtoLink(EMAIL_KEYS.JOSE, 'Career Inquiry - Jose Antunes'),
+    linkedin: getPersonLinkedInLink(PERSON_KEYS.JOSE),
   },
   {
     name: 'Rui Rocha',
@@ -40,8 +46,8 @@ const FOUNDERS = [
     role: 'Co-founder - Software Engineer',
     focus: 'Frontend - Mobile - AI',
     replyTime: '~ 36 hours',
-    emailHref: 'mailto:rui.rocha@arg.software?subject=Career%20Inquiry%20-%20Rui%20Rocha',
-    linkedin: 'https://www.linkedin.com/in/ruirochawork/',
+    emailHref: getMailtoLink(EMAIL_KEYS.RUI, 'Career Inquiry - Rui Rocha'),
+    linkedin: getPersonLinkedInLink(PERSON_KEYS.RUI),
   },
 ];
 
@@ -417,7 +423,7 @@ export default function CareersPage() {
               buttonTextHover="Let's talk"
               animationClass="cp-animate"
               animate={true}
-              buttonLink="mailto:hr@arg.software?subject=Career%20Inquiry"
+              buttonLink={getMailtoLink(EMAIL_KEYS.HR, 'Career Inquiry')}
               onPrimaryClick={() => trackCTA('career_inquiry', 'careers_cta')}
             />
           </section>

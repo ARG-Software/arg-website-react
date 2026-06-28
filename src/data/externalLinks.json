@@ -1,0 +1,44 @@
+{
+  "calendar": {
+    "project": "https://zcal.co/argsoftware/project"
+  },
+  "newsletter": {
+    "subscribe": "https://usebasin.com/f/61c6847a0a35"
+  },
+  "forms": {
+    "projectBrief": "https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC",
+    "leadCapture": "https://usebasin.com/f/61c6847a0a35"
+  },
+  "emails": {
+    "info": "info@arg.software",
+    "hello": "hello@arg.software",
+    "hr": "hr@arg.software",
+    "jose": "jfantunes@arg.software",
+    "rui": "rui.rocha@arg.software"
+  },
+  "socials": {
+    "github": "https://github.com/ARG-Software",
+    "linkedin": "https://www.linkedin.com/company/arg-software",
+    "medium": "https://medium.com/@arg-software"
+  },
+  "people": {
+    "jose": {
+      "linkedin": "https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/"
+    },
+    "rui": {
+      "linkedin": "https://www.linkedin.com/in/ruirochawork/"
+    }
+  },
+  "feeds": {
+    "rss": "/rss.xml",
+    "atom": "/atom.xml"
+  },
+  "share": {
+    "bluesky": "https://bsky.app/intent/compose",
+    "linkedin": "https://www.linkedin.com/sharing/share-offsite/",
+    "twitter": "https://twitter.com/intent/tweet"
+  },
+  "assets": {
+    "portfolio": "/files/portfolio.pdf"
+  }
+}

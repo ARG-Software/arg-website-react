@@ -4,6 +4,7 @@ import { trackEvent, trackMailto } from '../../../hooks/useAnalytics';
 import { TransitionContext } from '../../../providers/TransitionProvider';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 import { useWaterRipple } from '../../../hooks/useWaterRipple';
+import { EMAIL_KEYS, getMailtoLink } from '../../../services/externalLinks';
 
 export function HeroSection() {
   useWaterRipple('water-ripple-canvas');
@@ -62,7 +63,7 @@ export function HeroSection() {
             </div>
             <div className="hero_bottom_content">
               <a
-                href="mailto:hello@arg.software?subject=I%20want%20to%20share%20my%20ideas"
+                href={getMailtoLink(EMAIL_KEYS.HELLO, 'I want to share my ideas')}
                 className="text-button"
                 onClick={() => trackMailto('share_ideas', 'hero')}
               >

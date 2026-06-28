@@ -1,6 +1,9 @@
 import { Navbar, Footer, CTASection, SEO, PageHeader } from '../components';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
+import { EMAIL_KEYS, getEmailAddress, getMailtoLink } from '../services/externalLinks';
+
+const CONTACT_EMAIL = getEmailAddress(EMAIL_KEYS.INFO);
 
 export default function PrivacyPage() {
   useTimeOnPage('/privacy/');
@@ -161,7 +164,7 @@ export default function PrivacyPage() {
                     </ul>
                     <p>
                       To exercise any of these rights, contact us at{' '}
-                      <a href="mailto:info@arg.software">info@arg.software</a>. We will respond
+                      <a href={getMailtoLink(EMAIL_KEYS.INFO)}>{CONTACT_EMAIL}</a>. We will respond
                       within the timeframe required by applicable law.
                     </p>
                   </div>
@@ -208,7 +211,7 @@ export default function PrivacyPage() {
                       <br />
                       Funchal and Porto, Portugal
                       <br />
-                      Email: <a href="mailto:info@arg.software">info@arg.software</a>
+                      Email: <a href={getMailtoLink(EMAIL_KEYS.INFO)}>{CONTACT_EMAIL}</a>
                     </p>
                     <p>
                       <i>Last updated: April 2026</i>
@@ -224,7 +227,7 @@ export default function PrivacyPage() {
               titleHighlight="with us?"
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
-              buttonLink="mailto:info@arg.software?subject=Privacy%20Inquiry"
+              buttonLink={getMailtoLink(EMAIL_KEYS.INFO, 'Privacy Inquiry')}
               animationClass="legal-animate"
               animate={true}
               onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}

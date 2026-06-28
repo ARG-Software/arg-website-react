@@ -50,6 +50,14 @@ import {
   parseDateToIso,
   splitArticleTitle,
 } from '../../utils/blog';
+import {
+  EXTERNAL_LINK_KEYS,
+  getBlueskyShareLink,
+  getFeedLink,
+  getLinkedInShareLink,
+  getNewsletterSubscribeLink,
+  getTwitterShareLink,
+} from '../../services/externalLinks';
 import '../../styles/blog.css';
 
 // ─── Load all blog posts with full content ──────────────────────────────────
@@ -258,7 +266,7 @@ export default function BlogPostPage() {
       icon: 'bluesky',
       label: 'Bluesky',
       ariaLabel: 'Share on Bluesky',
-      href: `https://bsky.app/intent/compose?text=${encodeURIComponent(`${BLOG_POST.title} ${shareUrl}`)}`,
+      href: getBlueskyShareLink(BLOG_POST.title, shareUrl),
       onClick: () => trackBlogPostShare('bluesky', slug),
     },
     {
@@ -266,7 +274,7 @@ export default function BlogPostPage() {
       icon: 'linkedin',
       label: 'LinkedIn',
       ariaLabel: 'Share on LinkedIn',
-      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+      href: getLinkedInShareLink(shareUrl),
       onClick: () => trackBlogPostShare('linkedin', slug),
     },
     {
@@ -274,7 +282,7 @@ export default function BlogPostPage() {
       icon: 'twitter',
       label: 'X',
       ariaLabel: 'Share on X',
-      href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(BLOG_POST.title)}&url=${encodeURIComponent(shareUrl)}`,
+      href: getTwitterShareLink(BLOG_POST.title, shareUrl),
       onClick: () => trackBlogPostShare('twitter', slug),
     },
     {
@@ -292,7 +300,7 @@ export default function BlogPostPage() {
       icon: 'rss',
       label: 'RSS',
       ariaLabel: 'Subscribe with RSS',
-      href: '/rss.xml',
+      href: getFeedLink(EXTERNAL_LINK_KEYS.RSS_FEED),
       onClick: () => trackEvent('blog_subscribe_click', { feed_type: 'rss' }),
     },
     {
@@ -300,7 +308,7 @@ export default function BlogPostPage() {
       icon: 'atom',
       label: 'Atom',
       ariaLabel: 'Subscribe with Atom',
-      href: '/atom.xml',
+      href: getFeedLink(EXTERNAL_LINK_KEYS.ATOM_FEED),
       onClick: () => trackEvent('blog_subscribe_click', { feed_type: 'atom' }),
     },
   ];
@@ -437,6 +445,7 @@ export default function BlogPostPage() {
               subtitle="Get our latest engineering essays, field notes, and product thinking in your inbox."
               buttonTextNotHover="Subscribe"
               buttonTextHover="Join the list"
+              buttonLink={getNewsletterSubscribeLink()}
               animationClass="bp-animate"
               animate={true}
               onPrimaryClick={() => trackCTA('newsletter_subscribe', 'blog_post_cta')}

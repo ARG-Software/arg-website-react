@@ -3,6 +3,7 @@ import AppLink from '../components/navigation/AppLink';
 import { useNotFoundPageScene } from '../hooks/useNotFoundPageScene';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
+import { getProjectBookingLink } from '../services/externalLinks';
 
 import '../styles/404.css';
 
@@ -48,7 +49,7 @@ export default function NotFoundPage() {
             Return home
           </AppLink>
           <a
-            href="https://zcal.co/argsoftware/project"
+            href={getProjectBookingLink()}
             target="_blank"
             rel="noopener noreferrer"
             className="button-base"

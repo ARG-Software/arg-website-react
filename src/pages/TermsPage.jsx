@@ -1,6 +1,9 @@
 import { Navbar, Footer, CTASection, SEO, PageHeader } from '../components';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
+import { EMAIL_KEYS, getEmailAddress, getMailtoLink } from '../services/externalLinks';
+
+const CONTACT_EMAIL = getEmailAddress(EMAIL_KEYS.INFO);
 
 export default function TermsPage() {
   useTimeOnPage('/terms/');
@@ -192,7 +195,7 @@ export default function TermsPage() {
                       <br />
                       Funchal and Porto, Portugal
                       <br />
-                      Email: <a href="mailto:info@arg.software">info@arg.software</a>
+                      Email: <a href={getMailtoLink(EMAIL_KEYS.INFO)}>{CONTACT_EMAIL}</a>
                     </p>
                     <p>
                       <i>Last updated: April 2026</i>
@@ -210,7 +213,7 @@ export default function TermsPage() {
               buttonTextHover="Let's meet"
               animationClass="legal-animate"
               animate={true}
-              buttonLink="mailto:info@arg.software?subject=Terms%20Inquiry"
+              buttonLink={getMailtoLink(EMAIL_KEYS.INFO, 'Terms Inquiry')}
               onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
             />
           </div>

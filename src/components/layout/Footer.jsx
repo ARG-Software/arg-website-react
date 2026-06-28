@@ -3,6 +3,12 @@ import { trackSocial } from '../../hooks/useAnalytics';
 import { MarkNameWhite } from '../icons/MarkNameWhite';
 import AppLink from '../navigation/AppLink';
 import SERVICES from '../../data/services.json';
+import {
+  EMAIL_KEYS,
+  getCompanySocialLinks,
+  getEmailAddress,
+  getMailtoLink,
+} from '../../services/externalLinks';
 
 const NAV_LINKS = [
   { label: 'Blog', path: '/blog' },
@@ -12,13 +18,10 @@ const NAV_LINKS = [
   { label: 'Use Cases', path: '/projects' },
 ];
 
-const SOCIAL_LINKS = [
-  { label: 'GitHub', href: 'https://github.com/ARG-Software', event: 'github' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/arg-software', event: 'linkedin' },
-  { label: 'Medium', href: 'https://medium.com/@arg-software', event: 'medium' },
-];
-
 export function Footer({ animate = true, animationPreset = 'fade-up', animationStagger = 80 }) {
+  const socialLinks = getCompanySocialLinks();
+  const contactEmail = getEmailAddress(EMAIL_KEYS.INFO);
+
   const scopeAttrs = animate
     ? {
         'data-animate-scope': true,
@@ -83,7 +86,7 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
                 <div className="footer-nav-col">
                   <div className="footer-col-title">Socials</div>
                   <div className="footer-col-list">
-                    {SOCIAL_LINKS.map(link => (
+                    {socialLinks.map(link => (
                       <a
                         key={link.event}
                         href={link.href}
@@ -104,7 +107,7 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
                   <div className="footer-col-list">
                     <span className="footer-col-text">Porto and Funchal, Portugal</span>
                     <span className="footer-col-text">
-                      <a href="mailto:info@arg.software">info@arg.software</a>
+                      <a href={getMailtoLink(EMAIL_KEYS.INFO)}>{contactEmail}</a>
                     </span>
                   </div>
                 </div>

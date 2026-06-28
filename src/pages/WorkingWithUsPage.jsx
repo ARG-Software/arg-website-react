@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
+import { EMAIL_KEYS, getMailtoLink } from '../services/externalLinks';
 import {
   Navbar,
   BaseCard,
@@ -349,7 +350,7 @@ export default function WorkingWithUsPage() {
               buttonTextHover="Let's meet"
               animationClass="cp-animate"
               animate={true}
-              buttonLink="mailto:info@arg.software?subject=Working%20with%20ARG"
+              buttonLink={getMailtoLink(EMAIL_KEYS.INFO, 'Working with ARG')}
               onPrimaryClick={() => trackCTA('working_with_us_message', 'working_with_us_cta')}
             />
           </section>

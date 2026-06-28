@@ -1,5 +1,6 @@
 import { CTASection } from '../../../components/layout/CTASection';
 import { trackCTA } from '../../../hooks/useAnalytics';
+import { getPortfolioLink, getProjectBriefFormLink } from '../../../services/externalLinks';
 
 export function ContactSection({ className = '' }) {
   return (
@@ -18,11 +19,11 @@ export function ContactSection({ className = '' }) {
             titleHighlight="Let's solve it"
             buttonTextNotHover="Portfolio"
             buttonTextHover="See proof"
-            buttonLink="/files/portfolio.pdf"
+            buttonLink={getPortfolioLink()}
             onPrimaryClick={() => trackCTA('portfolio', 'homepage_cta')}
             secondButtonTextNotHover="Start brief"
             secondButtonTextHover="2 min"
-            secondButtonLink="https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC"
+            secondButtonLink={getProjectBriefFormLink()}
             onSecondaryClick={() => trackCTA('typeform', 'homepage_contact')}
             animate={true}
             animationStagger={120}
