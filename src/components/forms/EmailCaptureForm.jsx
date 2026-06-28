@@ -1,41 +1,65 @@
 import { useState, useEffect } from 'react';
 import { closeSvg } from '../icons/SocialIcons';
 import { trackEvent } from '../../hooks/useAnalytics';
-import { SESSION_KEY, ALREADY_SUBSCRIBED_KEY } from '../../constants';
-import { getLeadCaptureEndpoint } from '../../services/externalLinks';
+import { ALREADY_SUBSCRIBED_KEY, NEVER_SHOW_LEAD_CAPTURE_KEY, SESSION_KEY } from '../../constants';
+import { useWeb3Form } from '../../hooks';
 
-export function EmailCapture() {
+const LEAD_CAPTURE_DELAY_MS = 15000;
+
+export function EmailCaptureForm() {
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [status, setStatus] = useState('idle'); // 'idle', 'submitting', 'success', 'error'
+  const [neverShowAgain, setNeverShowAgain] = useState(false);
+  const { status, isSubmitting, submitForm, resetStatus } = useWeb3Form({
+    subject: 'New ARG lead capture',
+    source: 'lead_capture_widget',
+    formName: 'lead_capture',
+    resetOnSuccess: false,
+    successMessage: 'Lead received.',
+    onSubmit: () => trackEvent('lead_capture', { action: 'submit' }),
+    onSuccess: () => {
+      trackEvent('lead_capture', { action: 'success' });
+      localStorage.setItem(ALREADY_SUBSCRIBED_KEY, '1');
+    },
+    onError: () => trackEvent('lead_capture', { action: 'error' }),
+  });
 
   useEffect(() => {
     if (sessionStorage.getItem(SESSION_KEY)) return;
     if (localStorage.getItem(ALREADY_SUBSCRIBED_KEY)) return;
+    if (localStorage.getItem(NEVER_SHOW_LEAD_CAPTURE_KEY)) return;
+    if (window.location.pathname.replace(/\/+$/, '') === '/contact') return;
 
     let triggered = false;
+    let timerElapsed = false;
+    let isContactSectionVisible = false;
 
     const show = () => {
       if (triggered) return;
+      if (isContactSectionVisible) return;
       triggered = true;
       trackEvent('lead_capture', { action: 'impression' });
       setVisible(true);
     };
 
-    const target = document.getElementById('cases');
+    const timer = setTimeout(() => {
+      timerElapsed = true;
+      show();
+    }, LEAD_CAPTURE_DELAY_MS);
+
+    const target = document.getElementById('contact');
 
     if (!target) {
-      // fallback if section isn't in the DOM yet
-      const timer = setTimeout(show, 3000);
       return () => clearTimeout(timer);
     }
 
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting) {
+        isContactSectionVisible = entries.some(entry => entry.isIntersecting);
+
+        if (timerElapsed && !isContactSectionVisible) {
           show();
-          observer.disconnect();
         }
       },
       { threshold: 0.15 }
@@ -43,55 +67,34 @@ export function EmailCapture() {
 
     observer.observe(target);
 
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
   }, []);
 
   function dismiss() {
-    trackEvent('lead_capture', { action: 'dismiss' });
+    if (neverShowAgain) {
+      localStorage.setItem(NEVER_SHOW_LEAD_CAPTURE_KEY, '1');
+      trackEvent('lead_capture', { action: 'never_show_again' });
+    } else {
+      trackEvent('lead_capture', { action: 'dismiss' });
+    }
+
     sessionStorage.setItem(SESSION_KEY, '1');
     setVisible(false);
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (!email || status === 'loading') return;
+    if (!email || isSubmitting) return;
 
-    // Validate message if provided (minimum 3 words)
     if (message.trim() && message.trim().split(/\s+/).length < 3) {
       alert('Please provide at least 3 words for your message, or leave it blank.');
       return;
     }
 
-    setStatus('loading');
-    trackEvent('lead_capture', { action: 'submit' });
-
-    const formData = new FormData();
-    formData.append('email', email);
-    formData.append('message', message);
-
-    try {
-      const response = await fetch(getLeadCaptureEndpoint(), {
-        method: 'POST',
-        body: formData,
-        // If you need JSON response, Basin can return JSON (see Basin docs)
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-
-      await response.json(); // Basin returns JSON if you accept it
-
-      if (response.ok) {
-        setStatus('success');
-        trackEvent('lead_capture', { action: 'success' });
-        localStorage.setItem(ALREADY_SUBSCRIBED_KEY, '1');
-      } else {
-        setStatus('error');
-        trackEvent('lead_capture', { action: 'error' });
-      }
-    } catch {
-      setStatus('error');
-    }
+    await submitForm(event.currentTarget);
   }
 
   return (
@@ -139,7 +142,7 @@ export function EmailCapture() {
         ) : status === 'error' ? (
           <div className="ec-error">
             <p className="ec-error-message">Something went wrong. Please try again.</p>
-            <button className="ec-error-retry" onClick={() => setStatus('idle')}>
+            <button className="ec-error-retry" onClick={resetStatus}>
               Try Again
             </button>
           </div>
@@ -159,39 +162,59 @@ export function EmailCapture() {
 
             <p className="ec-body">
               Drop your email (and optionally a message) and we'll reply with honest feedback on how
-              we can help — no pitch, just a real look at your needs.
+              we can help - no pitch, just a real look at your needs.
             </p>
 
             <form className="ec-form" onSubmit={handleSubmit}>
-              <input
-                className="ec-input"
-                autoComplete="email"
-                type="email"
-                name="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={event => setEmail(event.target.value)}
-                required
-                validate="^[^\s@]+@[^\s@]+\.[^\s@]+$"
-              />
-              <div className="ec-optional-wrap">
-                <textarea
-                  className="ec-input ec-input--optional"
-                  name="message"
-                  placeholder="Tell us about your project or request (optional)"
-                  value={message}
-                  onChange={event => setMessage(event.target.value)}
-                  rows="3"
+              <div className="ec-field">
+                <label className="ec-label" htmlFor="lead-capture-email">
+                  Email
+                </label>
+                <input
+                  id="lead-capture-email"
+                  className="ec-input"
+                  autoComplete="email"
+                  type="email"
+                  name="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={event => setEmail(event.target.value)}
+                  required
+                  pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
                 />
-                <span className="ec-optional-label">Optional</span>
               </div>
-              <button className="ec-submit" type="submit" disabled={status === 'loading'}>
+              <div className="ec-field">
+                <label className="ec-label" htmlFor="lead-capture-message">
+                  Project context
+                </label>
+                <div className="ec-optional-wrap">
+                  <textarea
+                    id="lead-capture-message"
+                    className="ec-input ec-input--optional"
+                    name="message"
+                    placeholder="Tell us about your project or request"
+                    value={message}
+                    onChange={event => setMessage(event.target.value)}
+                    rows="3"
+                  />
+                  <span className="ec-optional-label">Optional</span>
+                </div>
+              </div>
+              <label className="ec-never-show">
+                <input
+                  type="checkbox"
+                  checked={neverShowAgain}
+                  onChange={event => setNeverShowAgain(event.target.checked)}
+                />
+                <span>Do not show this again</span>
+              </label>
+              <button className="ec-submit" type="submit" disabled={isSubmitting}>
                 <span className="ec-submit-inner">
                   <span className="ec-submit-text">
-                    {status === 'loading' ? 'Sending…' : 'Send it over'}
+                    {isSubmitting ? 'Sending...' : 'Send it over'}
                   </span>
                   <span className="ec-submit-text">
-                    {status === 'loading' ? 'Sending…' : 'Get feedback'}
+                    {isSubmitting ? 'Sending...' : 'Get feedback'}
                   </span>
                 </span>
               </button>

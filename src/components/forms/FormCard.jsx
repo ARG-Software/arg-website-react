@@ -24,13 +24,14 @@ export function FormSubmitButton({
   hoverText = children,
   className = '',
   type = 'submit',
+  disabled = false,
 }) {
   const buttonClassName = ['button-base', 'button-contact', 'form-card__submit-button', className]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <button className={buttonClassName} type={type}>
+    <button className={buttonClassName} type={type} disabled={disabled}>
       <span className="button-base_text_wrap">
         <span className="button-base__button-text">{children}</span>
         <span className="button-base__button-text is-animated">{hoverText}</span>

@@ -1,10 +1,9 @@
-import { Footer, FormCard, FormSubmitButton, Navbar, PageHeader, SEO } from '../components';
+import { ContactForm, Footer, Navbar, PageHeader, SEO } from '../components';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA, trackEvent, trackMailto, trackSocial } from '../hooks/useAnalytics';
 import {
   EMAIL_KEYS,
   getCompanySocialLinks,
-  getContactSubmitEndpoint,
   getEmailAddress,
   getMailtoLink,
   getProjectBookingLink,
@@ -26,6 +25,41 @@ const CONTACT_METHODS = [
   },
 ];
 
+const CONTACT_FIELDS = [
+  {
+    name: 'name',
+    label: 'Name',
+    type: 'text',
+    autoComplete: 'name',
+    placeholder: 'Jane Rivera',
+    required: true,
+    layout: 'half',
+  },
+  {
+    name: 'email',
+    label: 'Email',
+    type: 'email',
+    autoComplete: 'email',
+    placeholder: 'jane@company.com',
+    required: true,
+    layout: 'half',
+  },
+  {
+    name: 'company',
+    label: 'Company',
+    type: 'text',
+    autoComplete: 'organization',
+    placeholder: 'Optional',
+  },
+  {
+    name: 'message',
+    label: 'Message',
+    type: 'textarea',
+    placeholder: 'What are you building? What is hard, urgent, or uncertain?',
+    required: true,
+  },
+];
+
 export default function ContactPage() {
   const socialLinks = getCompanySocialLinks();
 
@@ -36,11 +70,19 @@ export default function ContactPage() {
     trackEvent('contact_form_submit', { source: 'contact_page' });
   };
 
+  const handleSuccess = () => {
+    trackEvent('contact_form_success', { source: 'contact_page' });
+  };
+
+  const handleError = () => {
+    trackEvent('contact_form_error', { source: 'contact_page' });
+  };
+
   return (
     <>
       <SEO
         title="Contact"
-        description="Contact Arg Software with a clear project brief. Tell us what you are building, what is risky, and where senior engineering help is needed."
+        description="Contact Arg Software with a clear project brief. Tell us what you are building, what feels risky, and where senior engineering help is needed."
         path="/contact/"
       />
       <div className="page-wrapper">
@@ -49,7 +91,7 @@ export default function ContactPage() {
         <main className="main-wrapper contact-page background-color-dark">
           <PageHeader
             title={['Everything starts', 'with a clear brief']}
-            subtitle="Tell us what you are building, what is risky, and where senior engineering help is needed."
+            subtitle="Tell us what you are building, what feels risky, and where senior engineering help is needed."
             breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Contact' }]}
             sideItems={[
               { label: 'Send a brief', href: '#brief' },
@@ -69,86 +111,31 @@ export default function ContactPage() {
                 <div className="contact-brief__grid">
                   <div className="contact-brief__intro" data-animate="slide-from-left">
                     <span className="contact-kicker contact-kicker--dark">
-                      Hello, nice to meet you.
+                      Hello. Nice to meet you.
                     </span>
                     <h2>Send the short version.</h2>
                     <p>
-                      No long questionnaire. A name, a way to reply, and the context that matters.
-                      If there is a fit, we will ask the precise technical questions next.
+                      No long questionnaire. Just your name, a way to reply, and the context that
+                      matters. If it looks like a fit, we will ask the precise technical questions
+                      next.
                     </p>
                   </div>
 
                   <div className="contact-form-panel" data-animate="fade-up">
-                    <FormCard
+                    <ContactForm
                       title="Send a brief"
-                      description="Reviewed by senior engineers directly - no sales handoff."
-                      action={getContactSubmitEndpoint()}
-                      method="POST"
+                      description="Reviewed directly by senior engineers. No sales handoff."
+                      fields={CONTACT_FIELDS}
+                      submitLabel="Send brief"
+                      helperText="We read every word. Keep it direct and concise so we can respond faster."
+                      subject="New ARG contact brief"
+                      source="contact_page"
+                      formName="contact_page_brief"
+                      successMessage="Brief received. We will review it and reply directly."
                       onSubmit={handleSubmit}
-                      submit={
-                        <>
-                          <FormSubmitButton>Send brief</FormSubmitButton>
-                          <p>
-                            We read every word. Keep it direct and concise, it helps us respond
-                            faster.
-                          </p>
-                        </>
-                      }
-                    >
-                      <input type="hidden" name="_subject" value="New ARG contact brief" />
-                      <input type="hidden" name="source" value="contact_page" />
-                      <div className="form-card__hidden" aria-hidden="true">
-                        <label htmlFor="contact-website">Website</label>
-                        <input id="contact-website" type="text" name="_gotcha" tabIndex={-1} />
-                      </div>
-
-                      <div className="form-card__grid">
-                        <label>
-                          <span>Name</span>
-                          <input
-                            id="contact-name"
-                            name="name"
-                            type="text"
-                            autoComplete="name"
-                            placeholder="Jane Rivera"
-                            required
-                          />
-                        </label>
-
-                        <label>
-                          <span>Email</span>
-                          <input
-                            id="contact-email"
-                            name="email"
-                            type="email"
-                            autoComplete="email"
-                            placeholder="jane@company.com"
-                            required
-                          />
-                        </label>
-                      </div>
-
-                      <label>
-                        <span>Company, if any</span>
-                        <input
-                          id="contact-company"
-                          name="company"
-                          type="text"
-                          autoComplete="organization"
-                          placeholder="Where you are building from"
-                        />
-                      </label>
-
-                      <label>
-                        <span>Message</span>
-                        <textarea
-                          id="contact-message"
-                          name="message"
-                          placeholder="What are you building? What is hard, urgent, or uncertain?"
-                          required
-                        />
-                      </label>
-                    </FormCard>
+                      onSuccess={handleSuccess}
+                      onError={handleError}
+                    />
                   </div>
                 </div>
               </div>
@@ -165,8 +152,13 @@ export default function ContactPage() {
               <div className="container-large">
                 <div className="contact-direct__grid">
                   <div className="contact-direct__headline" data-animate="fade-up">
-                    <span className="contact-kicker contact-kicker--dark">Prefer direct?</span>
-                    <h2>Use the channel that fits the context.</h2>
+                    <span className="contact-kicker contact-kicker--dark">
+                      Prefer a direct route?
+                    </span>
+                    <h2>
+                      Email us directly or book time if a live conversation will save
+                      back-and-forth.
+                    </h2>
                   </div>
 
                   <div className="contact-direct__cards">

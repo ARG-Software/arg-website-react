@@ -4,8 +4,8 @@ export const EXTERNAL_LINK_KEYS = Object.freeze({
   PROJECT_BOOKING: 'calendar.project',
   NEWSLETTER_SUBSCRIBE: 'newsletter.subscribe',
   PROJECT_BRIEF_FORM: 'forms.projectBrief',
-  CONTACT_SUBMIT_FORM: 'forms.contactSubmit',
-  LEAD_CAPTURE_FORM: 'forms.leadCapture',
+  WEB3_FORMS_ENDPOINT: 'forms.web3.endpoint',
+  WEB3_FORMS_ACCESS_KEY: 'forms.web3.accessKey',
   PORTFOLIO: 'assets.portfolio',
   RSS_FEED: 'feeds.rss',
   ATOM_FEED: 'feeds.atom',
@@ -58,12 +58,12 @@ export function getProjectBriefFormLink() {
   return getExternalLink(EXTERNAL_LINK_KEYS.PROJECT_BRIEF_FORM);
 }
 
-export function getContactSubmitEndpoint() {
-  return getExternalLink(EXTERNAL_LINK_KEYS.CONTACT_SUBMIT_FORM);
+export function getWeb3FormsEndpoint() {
+  return getExternalLink(EXTERNAL_LINK_KEYS.WEB3_FORMS_ENDPOINT);
 }
 
-export function getLeadCaptureEndpoint() {
-  return getExternalLink(EXTERNAL_LINK_KEYS.LEAD_CAPTURE_FORM);
+export function getWeb3FormsAccessKey() {
+  return getExternalLink(EXTERNAL_LINK_KEYS.WEB3_FORMS_ACCESS_KEY);
 }
 
 export function getPortfolioLink() {

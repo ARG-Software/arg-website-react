@@ -4,8 +4,7 @@ import { trackCTA, trackEvent } from '../hooks/useAnalytics';
 import {
   Navbar,
   BaseCard,
-  FormCard,
-  FormSubmitButton,
+  ContactForm,
   Pill,
   PillButton,
   Footer,
@@ -108,7 +107,6 @@ function CareerJobCard({ job, index, onApply }) {
 
 export default function CareersPage() {
   const [form, setForm] = useState(EMPTY_FORM);
-  const [submitted, setSubmitted] = useState(false);
   const applicationRef = useRef(null);
   const nameInputRef = useRef(null);
   const hasJobs = JOBS.length > 0;
@@ -118,9 +116,67 @@ export default function CareersPage() {
   useScrollAnimations();
 
   const selectedJob = JOBS.find(job => job.id === form.role);
+  const applicationFields = [
+    {
+      name: 'name',
+      label: 'Full name',
+      type: 'text',
+      value: form.name,
+      onChange: handleInputChange,
+      placeholder: 'Your name',
+      required: true,
+      layout: 'half',
+      ref: nameInputRef,
+    },
+    {
+      name: 'email',
+      label: 'Email',
+      type: 'email',
+      value: form.email,
+      onChange: handleInputChange,
+      placeholder: 'you@example.com',
+      required: true,
+      layout: 'half',
+    },
+    {
+      name: 'role',
+      label: 'Role',
+      type: 'select',
+      value: form.role,
+      onChange: handleInputChange,
+      required: true,
+      options: [
+        { value: '', label: 'Select a role' },
+        ...JOBS.map(job => ({ value: job.id, label: job.title })),
+      ],
+    },
+    {
+      name: 'linkedin',
+      label: 'LinkedIn or portfolio - optional',
+      type: 'url',
+      value: form.linkedin,
+      onChange: handleInputChange,
+      placeholder: 'https://linkedin.com/in/yourprofile',
+    },
+    {
+      name: 'message',
+      label: 'Why ARG? What have you built?',
+      type: 'textarea',
+      value: form.message,
+      onChange: handleInputChange,
+      placeholder: 'A few lines about your work, what you value in a team, and why now...',
+      rows: 5,
+      required: true,
+    },
+    {
+      name: 'cv',
+      label: 'CV / portfolio',
+      type: 'file',
+      accept: '.pdf,.doc,.docx',
+    },
+  ];
 
   const handleApplyClick = job => {
-    setSubmitted(false);
     setForm(current => ({ ...current, role: job.id }));
     trackEvent('career_role_apply_click', {
       job_id: job.id,
@@ -133,19 +189,31 @@ export default function CareersPage() {
     });
   };
 
-  const handleInputChange = event => {
+  function handleInputChange(event) {
     const { name, value } = event.target;
-    setSubmitted(false);
     setForm(current => ({ ...current, [name]: value }));
-  };
+  }
 
-  const handleSubmit = event => {
-    event.preventDefault();
+  const handleSubmit = () => {
     trackEvent('career_application_submit', {
       job_id: form.role || 'general',
       job_title: selectedJob?.title || 'General application',
     });
-    setSubmitted(true);
+  };
+
+  const handleApplicationSuccess = () => {
+    trackEvent('career_application_success', {
+      job_id: form.role || 'general',
+      job_title: selectedJob?.title || 'General application',
+    });
+    setForm(EMPTY_FORM);
+  };
+
+  const handleApplicationError = () => {
+    trackEvent('career_application_error', {
+      job_id: form.role || 'general',
+      job_title: selectedJob?.title || 'General application',
+    });
   };
 
   const handleFounderEmail = founderName => {
@@ -254,88 +322,21 @@ export default function CareersPage() {
                       </div>
                     </div>
 
-                    <FormCard
+                    <ContactForm
                       title="Apply for a role"
                       description="Reviewed by founders directly - no recruiter in the middle."
+                      fields={applicationFields}
+                      submitLabel="Send application"
+                      helperText="We reply to every application."
+                      subject="New ARG career application"
+                      source="careers_page"
+                      formName="career_application"
+                      successMessage="Application received. We will review it and reply directly."
                       onSubmit={handleSubmit}
+                      onSuccess={handleApplicationSuccess}
+                      onError={handleApplicationError}
                       data-animate-order="1"
-                      submit={
-                        <>
-                          <FormSubmitButton>Send application</FormSubmitButton>
-                          <span>
-                            {submitted
-                              ? 'Application received. We will review it and reply directly.'
-                              : 'We reply to every application.'}
-                          </span>
-                        </>
-                      }
-                    >
-                      <div className="form-card__grid">
-                        <label>
-                          <span>Full name</span>
-                          <input
-                            ref={nameInputRef}
-                            type="text"
-                            name="name"
-                            value={form.name}
-                            onChange={handleInputChange}
-                            placeholder="Your name"
-                            required
-                          />
-                        </label>
-                        <label>
-                          <span>Email</span>
-                          <input
-                            type="email"
-                            name="email"
-                            value={form.email}
-                            onChange={handleInputChange}
-                            placeholder="you@example.com"
-                            required
-                          />
-                        </label>
-                      </div>
-
-                      <label>
-                        <span>Role</span>
-                        <select name="role" value={form.role} onChange={handleInputChange} required>
-                          <option value="">Select a role</option>
-                          {JOBS.map(job => (
-                            <option key={job.id} value={job.id}>
-                              {job.title}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-
-                      <label>
-                        <span>LinkedIn or portfolio - optional</span>
-                        <input
-                          type="url"
-                          name="linkedin"
-                          value={form.linkedin}
-                          onChange={handleInputChange}
-                          placeholder="https://linkedin.com/in/yourprofile"
-                        />
-                      </label>
-
-                      <label>
-                        <span>Why ARG? What have you built?</span>
-                        <textarea
-                          name="message"
-                          value={form.message}
-                          onChange={handleInputChange}
-                          placeholder="A few lines about your work, what you value in a team, and why now..."
-                          rows={5}
-                          required
-                        />
-                      </label>
-
-                      <label>
-                        <span>CV / portfolio</span>
-                        <input type="file" name="cv" accept=".pdf,.doc,.docx" />
-                      </label>
-                    </FormCard>
+                    />
                   </div>
                 </section>
               </>

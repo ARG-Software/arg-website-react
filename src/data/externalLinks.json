@@ -3,12 +3,14 @@
     "project": "https://zcal.co/argsoftware/project"
   },
   "newsletter": {
-    "subscribe": "https://usebasin.com/f/61c6847a0a35"
+    "subscribe": "https://magic.beehiiv.com/v1/f053b9c3-2011-436a-bd9a-58296f949242"
   },
   "forms": {
     "projectBrief": "https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC",
-    "contactSubmit": "https://usebasin.com/f/61c6847a0a35",
-    "leadCapture": "https://usebasin.com/f/61c6847a0a35"
+    "web3": {
+      "endpoint": "https://api.web3forms.com/submit",
+      "accessKey": "64440476-6752-463a-a2f3-56c028cf8be0"
+    }
   },
   "emails": {
     "info": "info@arg.software",

@@ -118,10 +118,10 @@ const STATIC_PAGES = [
     title: 'Contact | Arg Software',
     h1: 'Contact Arg Software',
     description:
-      'Contact Arg Software with a clear project brief. Tell us what you are building, what is risky, and where senior engineering help is needed.',
+      'Contact Arg Software with a clear project brief. Tell us what you are building, what feels risky, and where senior engineering help is needed.',
     paragraphs: [
       'Contact Arg Software to start a conversation about architecture, reliability, senior execution, or a complex software product that needs a clear technical path.',
-      'Send a short brief with your name, email, company, and the context that matters. A technical person will review it and suggest the next useful step.',
+      'Send a short brief with your name, email, company, and the context that matters. A senior engineer will review it and suggest the next useful step.',
       'Arg Software works with fintech, media, open payments, music technology, and high-growth technology teams that need production-ready systems.',
     ],
   },
