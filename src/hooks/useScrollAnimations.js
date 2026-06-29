@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { animateCountUp, getCountUpEnd } from './useCountUp';
 import { ANIMATION_PRESETS, ATTRIBUTE_PRESETS } from '../animations/attribute-presets';
 import { DEFAULT_THRESHOLD, DEFAULT_ROOT_MARGIN } from '../constants/ui.js';
 import { isMobile } from '../utils/helpers';
+import { LoadingContext } from '../providers/LoadingProvider';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -294,6 +295,9 @@ export function useScrollAnimations(config = {}) {
 
   const observerRef = useRef(null);
   const mountedRef = useRef(true);
+  const pendingLoadRef = useRef([]);
+
+  const done = useContext(LoadingContext);
 
   useEffect(() => {
     if (!enabled) return;
@@ -362,11 +366,15 @@ export function useScrollAnimations(config = {}) {
         });
       });
 
-      // Animate load-triggered elements immediately
-      loadElements.forEach(({ element, preset, presetName, orderIndex }) => {
-        applyInitialState(element, preset, presetName);
-        animateElement(element, preset, presetName, orderIndex);
-      });
+      // Animate load-triggered elements — defer if loading screen is active
+      if (done) {
+        loadElements.forEach(({ element, preset, presetName, orderIndex }) => {
+          applyInitialState(element, preset, presetName);
+          animateElement(element, preset, presetName, orderIndex);
+        });
+      } else {
+        pendingLoadRef.current = loadElements;
+      }
 
       // Create observer for scroll-triggered elements
       const observer = new IntersectionObserver(
@@ -452,4 +460,16 @@ export function useScrollAnimations(config = {}) {
       gsapTriggers.forEach(t => t.kill());
     };
   }, [enabled, mobileBehavior]);
+
+  // When loading screen completes, process any deferred load-triggered animations
+  useEffect(() => {
+    if (!done || !pendingLoadRef.current.length) return;
+
+    const elements = pendingLoadRef.current;
+    pendingLoadRef.current = [];
+    elements.forEach(({ element, preset, presetName, orderIndex }) => {
+      applyInitialState(element, preset, presetName);
+      animateElement(element, preset, presetName, orderIndex);
+    });
+  }, [done]);
 }
