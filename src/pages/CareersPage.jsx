@@ -20,7 +20,7 @@ import {
   getMailtoLink,
   getPersonLinkedInLink,
   PERSON_KEYS,
-} from '../services/externalLinks';
+} from '../services/linksservice';
 import '../styles/careers.css';
 
 const JOBS = CAREERS_DATA.jobs;
@@ -331,7 +331,6 @@ export default function CareersPage() {
                       subject="New ARG career application"
                       source="careers_page"
                       formName="career_application"
-                      successMessage="Application received. We will review it and reply directly."
                       onSubmit={handleSubmit}
                       onSuccess={handleApplicationSuccess}
                       onError={handleApplicationError}

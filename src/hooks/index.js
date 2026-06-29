@@ -10,3 +10,4 @@ export { useNotFoundPageScene } from './useNotFoundPageScene';
 export { useNextProjectSection } from './useNextProjectSection';
 export { useTimeOnPage } from './useTimeOnPage';
 export { useWeb3Form } from './useWeb3Form';
+export { useLeadCaptureVisibility } from './useLeadCaptureVisibility';

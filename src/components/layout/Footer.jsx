@@ -8,7 +8,7 @@ import {
   getCompanySocialLinks,
   getEmailAddress,
   getMailtoLink,
-} from '../../services/externalLinks';
+} from '../../services/linksservice';
 
 const NAV_LINKS = [
   { label: 'Blog', path: '/blog' },

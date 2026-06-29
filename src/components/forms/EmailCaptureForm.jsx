@@ -1,16 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { closeSvg } from '../icons/SocialIcons';
 import { trackEvent } from '../../hooks/useAnalytics';
-import { ALREADY_SUBSCRIBED_KEY, NEVER_SHOW_LEAD_CAPTURE_KEY, SESSION_KEY } from '../../constants';
-import { useWeb3Form } from '../../hooks';
-
-const LEAD_CAPTURE_DELAY_MS = 15000;
+import { ALREADY_SUBSCRIBED_KEY } from '../../constants';
+import { useLeadCaptureVisibility, useWeb3Form } from '../../hooks';
 
 export function EmailCaptureForm() {
-  const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [neverShowAgain, setNeverShowAgain] = useState(false);
+  const [messageError, setMessageError] = useState('');
+  const leadCapture = useLeadCaptureVisibility();
   const { status, isSubmitting, submitForm, resetStatus } = useWeb3Form({
     subject: 'New ARG lead capture',
     source: 'lead_capture_widget',
@@ -25,64 +24,8 @@ export function EmailCaptureForm() {
     onError: () => trackEvent('lead_capture', { action: 'error' }),
   });
 
-  useEffect(() => {
-    if (sessionStorage.getItem(SESSION_KEY)) return;
-    if (localStorage.getItem(ALREADY_SUBSCRIBED_KEY)) return;
-    if (localStorage.getItem(NEVER_SHOW_LEAD_CAPTURE_KEY)) return;
-    if (window.location.pathname.replace(/\/+$/, '') === '/contact') return;
-
-    let triggered = false;
-    let timerElapsed = false;
-    let isContactSectionVisible = false;
-
-    const show = () => {
-      if (triggered) return;
-      if (isContactSectionVisible) return;
-      triggered = true;
-      trackEvent('lead_capture', { action: 'impression' });
-      setVisible(true);
-    };
-
-    const timer = setTimeout(() => {
-      timerElapsed = true;
-      show();
-    }, LEAD_CAPTURE_DELAY_MS);
-
-    const target = document.getElementById('contact');
-
-    if (!target) {
-      return () => clearTimeout(timer);
-    }
-
-    const observer = new IntersectionObserver(
-      entries => {
-        isContactSectionVisible = entries.some(entry => entry.isIntersecting);
-
-        if (timerElapsed && !isContactSectionVisible) {
-          show();
-        }
-      },
-      { threshold: 0.15 }
-    );
-
-    observer.observe(target);
-
-    return () => {
-      clearTimeout(timer);
-      observer.disconnect();
-    };
-  }, []);
-
   function dismiss() {
-    if (neverShowAgain) {
-      localStorage.setItem(NEVER_SHOW_LEAD_CAPTURE_KEY, '1');
-      trackEvent('lead_capture', { action: 'never_show_again' });
-    } else {
-      trackEvent('lead_capture', { action: 'dismiss' });
-    }
-
-    sessionStorage.setItem(SESSION_KEY, '1');
-    setVisible(false);
+    leadCapture.dismiss({ neverShowAgain });
   }
 
   async function handleSubmit(event) {
@@ -90,19 +33,20 @@ export function EmailCaptureForm() {
     if (!email || isSubmitting) return;
 
     if (message.trim() && message.trim().split(/\s+/).length < 3) {
-      alert('Please provide at least 3 words for your message, or leave it blank.');
+      setMessageError('Please use at least 3 words for context, or leave it blank.');
       return;
     }
+    setMessageError('');
 
     await submitForm(event.currentTarget);
   }
 
   return (
     <div
-      className={`ec-card${visible ? ' ec-card--visible' : ''}`}
+      className={`ec-card${leadCapture.visible ? ' ec-card--visible' : ''}`}
       role="dialog"
       aria-label="Get a free assessment from ARG"
-      aria-hidden={!visible}
+      aria-hidden={!leadCapture.visible}
     >
       <div className="ec-inner">
         {status === 'success' ? (
@@ -194,11 +138,15 @@ export function EmailCaptureForm() {
                     name="message"
                     placeholder="Tell us about your project or request"
                     value={message}
-                    onChange={event => setMessage(event.target.value)}
+                    onChange={event => {
+                      setMessage(event.target.value);
+                      if (messageError) setMessageError('');
+                    }}
                     rows="3"
                   />
                   <span className="ec-optional-label">Optional</span>
                 </div>
+                {messageError && <span className="ec-field-error">{messageError}</span>}
               </div>
               <label className="ec-never-show">
                 <input
@@ -208,6 +156,10 @@ export function EmailCaptureForm() {
                 />
                 <span>Do not show this again</span>
               </label>
+              <div className="form-card__hidden" aria-hidden="true">
+                <label htmlFor="lead-capture-botcheck">Do not fill this field</label>
+                <input id="lead-capture-botcheck" type="checkbox" name="botcheck" tabIndex={-1} />
+              </div>
               <button className="ec-submit" type="submit" disabled={isSubmitting}>
                 <span className="ec-submit-inner">
                   <span className="ec-submit-text">

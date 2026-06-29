@@ -1,7 +1,7 @@
 import { Navbar, Footer, CTASection, SEO, PageHeader } from '../components';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
-import { EMAIL_KEYS, getEmailAddress, getMailtoLink } from '../services/externalLinks';
+import { EMAIL_KEYS, getEmailAddress, getMailtoLink } from '../services/linksservice';
 
 const CONTACT_EMAIL = getEmailAddress(EMAIL_KEYS.INFO);
 

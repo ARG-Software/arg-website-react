@@ -57,7 +57,7 @@ import {
   getLinkedInShareLink,
   getNewsletterSubscribeLink,
   getTwitterShareLink,
-} from '../../services/externalLinks';
+} from '../../services/linksservice';
 import '../../styles/blog.css';
 
 // ─── Load all blog posts with full content ──────────────────────────────────

@@ -1,4 +1,8 @@
-import { getProjectBookingLink } from '../../services/externalLinks';
+import { getProjectBookingLink } from '../../services/linksservice';
+
+function isExternal(href) {
+  return /^https?:\/\//.test(href) || href.startsWith('mailto:');
+}
 
 export function CTASection({
   title = 'Ready to build',
@@ -91,8 +95,7 @@ export function CTASection({
           <div className="cta-buttons">
             <a
               href={buttonLink}
-              target="_blank"
-              rel="noopener noreferrer"
+              {...(isExternal(buttonLink) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               className={`button-base button-contact ${animationClass} pp-d2`}
               {...animationAttrs(3)}
               onClick={onPrimaryClick}
@@ -105,8 +108,9 @@ export function CTASection({
             {secondButtonLink && (
               <a
                 href={secondButtonLink}
-                target="_blank"
-                rel="noopener noreferrer"
+                {...(isExternal(secondButtonLink)
+                  ? { target: '_blank', rel: 'noopener noreferrer' }
+                  : {})}
                 className={`button-base button-contact ${animationClass} pp-d2`}
                 {...animationAttrs(4)}
                 onClick={onSecondaryClick}

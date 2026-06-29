@@ -257,6 +257,18 @@ export function WorkStatsSection({ className = '' }) {
                   />
                 ))}
               </div>
+              <div className="home-work__footer" data-animate="fade-up" data-animate-order="5">
+                <AppLink to="/working-with-us/" className="text-button text-button--align-end">
+                  <div className="text-button_list is-dark">
+                    <div className="text-button_text text-no-wrap">How we work</div>
+                    <div className="arrow_icon-embed">{arrowSvg}</div>
+                  </div>
+                  <div className="text-button_list is-animated is-dark">
+                    <div className="text-button_text text-no-wrap">See the model</div>
+                    <div className="arrow_icon-embed">{arrowSvg}</div>
+                  </div>
+                </AppLink>
+              </div>
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ import {
   DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
 } from '../../constants';
-import { EXTERNAL_LINK_KEYS, getFeedLink } from '../../services/externalLinks';
+import { EXTERNAL_LINK_KEYS, getFeedLink } from '../../services/linksservice';
 
 /**
  * Reusable SEO component that injects per-page meta tags via react-helmet-async.

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getWeb3FormsAccessKey, getWeb3FormsEndpoint } from '../services/externalLinks';
+import { getWeb3FormsAccessKey, getWeb3FormsEndpoint } from '../services/linksservice';
 
 const STATUS = Object.freeze({
   IDLE: 'idle',

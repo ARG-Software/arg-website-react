@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { loadBlogPosts } from '../../utils/blog';
 import { useScrollAnimations } from '../../hooks';
-import { SEO, Navbar, Footer, EmailCaptureForm, Marquee, SectionDivider } from '../../components';
+import { SEO, Navbar, Footer, Marquee, SectionDivider } from '../../components';
 import AppLink from '../../components/navigation/AppLink';
 import { arrowSvg } from '../../components/icons/SocialIcons';
 import { HOMEPAGE_BLOG_POSTS_COUNT } from '../../constants';
@@ -123,7 +123,6 @@ export default function HomePage() {
         </main>
         <Footer />
       </div>
-      <EmailCaptureForm />
     </>
   );
 }

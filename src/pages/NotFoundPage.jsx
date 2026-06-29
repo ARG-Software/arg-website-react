@@ -3,7 +3,7 @@ import AppLink from '../components/navigation/AppLink';
 import { useNotFoundPageScene } from '../hooks/useNotFoundPageScene';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../hooks/useAnalytics';
-import { getProjectBookingLink } from '../services/externalLinks';
+import { getProjectBookingLink } from '../services/linksservice';
 
 import '../styles/404.css';
 

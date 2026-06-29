@@ -13,7 +13,7 @@ import {
   PageHeader,
 } from '../components';
 import data from '../data/partners.json';
-import { getProjectBookingLink, getProjectBriefFormLink } from '../services/externalLinks';
+import { getProjectBookingLink, getProjectBriefFormLink } from '../services/linksservice';
 import '../styles/partners.css';
 
 const { categories, clients } = data;
@@ -118,7 +118,7 @@ export default function PartnersPage() {
                 heading="Built on lasting partnerships"
                 clients={clients}
                 ctaLink={getProjectBriefFormLink()}
-                onCtaClick={() => trackCTA('typeform', 'partners_timeline')}
+                onCtaClick={() => trackCTA('contact_brief', 'partners_timeline')}
                 animate={true}
                 rowPreset="slide-from-left"
                 cardPreset="fade-up"

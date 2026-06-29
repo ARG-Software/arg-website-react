@@ -53,7 +53,7 @@ html.ls-active {
   bottom: clamp(1.25rem, 3vh, 2.5rem);
   left: clamp(1.25rem, 3vw, 3rem);
   z-index: 1;
-  font-size: clamp(2.5rem, 9vw, 7.5rem);
+  font-size: clamp(1.5rem, 5vw, 3rem);
   line-height: 1;
   letter-spacing: var(--tracking-display);
   text-transform: lowercase;
@@ -88,7 +88,7 @@ html.ls-active {
   bottom: clamp(1.25rem, 3vh, 2.5rem);
   right: clamp(1.25rem, 3vw, 3rem);
   z-index: 1;
-  font-size: clamp(2.5rem, 9vw, 7.5rem);
+  font-size: clamp(1.5rem, 5vw, 3rem);
   line-height: 1;
   letter-spacing: var(--tracking-display);
   font-weight: 400;

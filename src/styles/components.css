@@ -2517,6 +2517,13 @@ textarea.ec-input {
   user-select: none;
 }
 
+.ec-field-error {
+  color: #d32f2f;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
 .ec-never-show {
   align-items: center;
   color: rgba(12, 0, 46, 0.68);
@@ -2524,6 +2531,7 @@ textarea.ec-input {
   display: flex;
   font-family: Neuemontreal, sans-serif;
   font-size: 11px;
+  font-weight: 600;
   gap: 8px;
   line-height: 1.3;
 }
@@ -2540,6 +2548,7 @@ textarea.ec-input {
   background: #261b44;
   border: 1.5px solid #0c002e;
   border-radius: 8px;
+  color: #ffffff;
   cursor: pointer;
   font-family: Neuemontreal, sans-serif;
   font-size: 13px;
@@ -2566,6 +2575,7 @@ textarea.ec-input {
 }
 
 .ec-submit-text {
+  color: inherit;
   display: block;
   flex-shrink: 0;
   height: 38px;
@@ -3634,21 +3644,10 @@ textarea.ec-input {
   line-height: var(--line-cta);
 }
 
-.nav_overlay-article-arrow {
-  margin-left: auto;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: var(--type-body);
-  transition: transform 0.2s ease;
-}
-
-.nav_overlay-article-link:hover .nav_overlay-article-arrow {
-  transform: translate(3px, -3px);
-}
-
 .nav_overlay-article-image-wrap {
   display: block;
-  flex: 0 0 auto;
-  height: clamp(10rem, 24vh, 17rem);
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
   border-radius: 0.875rem;
   background: rgba(255, 255, 255, 0.03);

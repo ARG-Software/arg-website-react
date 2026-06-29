@@ -1960,6 +1960,12 @@
   padding-top: 2.5rem;
 }
 
+.home-work__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 2.5rem;
+}
+
 .section_blog-promo .container-large {
   padding-bottom: 5rem;
 }
@@ -2006,6 +2012,16 @@
   }
 
   .blog-promo_footer .text-button--align-end {
+    --text-button-align: flex-start;
+  }
+
+  .home-work__footer {
+    justify-content: flex-start;
+    padding-left: 0;
+    padding-top: 2rem;
+  }
+
+  .home-work__footer .text-button--align-end {
     --text-button-align: flex-start;
   }
 

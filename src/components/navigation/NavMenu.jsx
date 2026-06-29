@@ -174,9 +174,6 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
               <h3>{latestPost.title}</h3>
               <div className="nav_overlay-article-meta">
                 {latestPost.readTime && <span>{latestPost.readTime}</span>}
-                <span className="nav_overlay-article-arrow" aria-hidden="true">
-                  ↗
-                </span>
               </div>
 
               {latestPost.image && (

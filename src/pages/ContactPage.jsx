@@ -7,7 +7,7 @@ import {
   getEmailAddress,
   getMailtoLink,
   getProjectBookingLink,
-} from '../services/externalLinks';
+} from '../services/linksservice';
 import '../styles/contact.css';
 
 const CONTACT_METHODS = [
@@ -127,11 +127,11 @@ export default function ContactPage() {
                       description="Reviewed directly by senior engineers. No sales handoff."
                       fields={CONTACT_FIELDS}
                       submitLabel="Send brief"
+                      submitHoverLabel="See you soon"
                       helperText="We read every word. Keep it direct and concise so we can respond faster."
                       subject="New ARG contact brief"
                       source="contact_page"
                       formName="contact_page_brief"
-                      successMessage="Brief received. We will review it and reply directly."
                       onSubmit={handleSubmit}
                       onSuccess={handleSuccess}
                       onError={handleError}

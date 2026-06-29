@@ -1,7 +1,7 @@
 import React from 'react';
 import { linkedinSvg } from '../../../components/icons/SocialIcons';
 import { trackSocial } from '../../../hooks/useAnalytics';
-import { getPersonLinkedInLink, PERSON_KEYS } from '../../../services/externalLinks';
+import { getPersonLinkedInLink, PERSON_KEYS } from '../../../services/linksservice';
 
 const teamMembers = [
   {

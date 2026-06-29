@@ -1,6 +1,6 @@
 import { CTASection } from '../../../components/layout/CTASection';
 import { trackCTA } from '../../../hooks/useAnalytics';
-import { getPortfolioLink, getProjectBriefFormLink } from '../../../services/externalLinks';
+import { getPortfolioLink, getProjectBriefFormLink } from '../../../services/linksservice';
 
 export function ContactSection({ className = '' }) {
   return (
@@ -24,7 +24,7 @@ export function ContactSection({ className = '' }) {
             secondButtonTextNotHover="Start brief"
             secondButtonTextHover="2 min"
             secondButtonLink={getProjectBriefFormLink()}
-            onSecondaryClick={() => trackCTA('typeform', 'homepage_contact')}
+            onSecondaryClick={() => trackCTA('contact_brief', 'homepage_contact')}
             animate={true}
             animationStagger={120}
           />

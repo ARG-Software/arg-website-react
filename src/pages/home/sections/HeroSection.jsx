@@ -4,7 +4,7 @@ import { trackEvent, trackMailto } from '../../../hooks/useAnalytics';
 import { TransitionContext } from '../../../providers/TransitionProvider';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 import { useWaterRipple } from '../../../hooks/useWaterRipple';
-import { EMAIL_KEYS, getMailtoLink } from '../../../services/externalLinks';
+import { EMAIL_KEYS, getMailtoLink } from '../../../services/linksservice';
 
 export function HeroSection() {
   useWaterRipple('water-ripple-canvas');

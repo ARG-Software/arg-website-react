@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import '../../styles/loadingscreen.css';
 
 const COLORS = ['#F0060D', '#C924D7', '#7904FD'];
-const VIDEO_VISIBLE_DURATION = 10;
+const VIDEO_VISIBLE_DURATION = 12;
 const INTRO_DURATION = 1.65;
 const COUNTER_DURATION = VIDEO_VISIBLE_DURATION - INTRO_DURATION;
 
@@ -101,7 +101,7 @@ export function LoadingScreen({ onComplete }) {
       <div className="ls-bg" ref={bgRef}>
         <div data-autoplay="true" data-loop="true" className="ambient-bg-video ls-bg-video">
           <video ref={videoRef} autoPlay loop muted playsInline>
-            <source src="videos/loading.mp4" />
+            <source src="videos/intro.mp4" />
           </video>
         </div>
         <div className="ls-hello-row" data-animate-order="0">
