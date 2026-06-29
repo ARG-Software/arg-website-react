@@ -449,6 +449,7 @@ export default function seoPrerender() {
       sitemapUrls.push({ loc: `${SITE_URL}/blog/`, priority: '0.9', changefreq: 'weekly' });
       sitemapUrls.push({ loc: `${SITE_URL}/privacy/`, priority: '0.3', changefreq: 'yearly' });
       sitemapUrls.push({ loc: `${SITE_URL}/terms/`, priority: '0.3', changefreq: 'yearly' });
+      sitemapUrls.push({ loc: `${SITE_URL}/contact/`, priority: '0.8', changefreq: 'monthly' });
 
       // Blog posts
       for (const meta of blogPostMetas) {
