@@ -373,6 +373,9 @@ export function useScrollAnimations(config = {}) {
           animateElement(element, preset, presetName, orderIndex);
         });
       } else {
+        loadElements.forEach(({ element, preset, presetName }) => {
+          applyInitialState(element, preset, presetName);
+        });
         pendingLoadRef.current = loadElements;
       }
 
@@ -468,7 +471,6 @@ export function useScrollAnimations(config = {}) {
     const elements = pendingLoadRef.current;
     pendingLoadRef.current = [];
     elements.forEach(({ element, preset, presetName, orderIndex }) => {
-      applyInitialState(element, preset, presetName);
       animateElement(element, preset, presetName, orderIndex);
     });
   }, [done]);
