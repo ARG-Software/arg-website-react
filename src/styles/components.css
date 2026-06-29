@@ -3602,7 +3602,8 @@ textarea.ec-input {
 
 .nav_overlay-article-link {
   display: flex;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-height: 0;
   flex-direction: column;
   gap: 0.875rem;
   margin-top: 1.25rem;
