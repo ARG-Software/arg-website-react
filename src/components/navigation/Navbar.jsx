@@ -7,7 +7,7 @@ import { NAV_SCROLL_THRESHOLD } from '../../constants';
 import { NavMenu } from './NavMenu';
 import { getProjectBookingLink } from '../../services/linksservice';
 
-export function Navbar({ variant = 'transparent', position: _position = 'absolute' }) {
+export function Navbar({ variant = 'transparent', position = 'absolute' }) {
   const isCompact = variant === 'dark';
   const lenis = useContext(LenisContext);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -112,7 +112,7 @@ export function Navbar({ variant = 'transparent', position: _position = 'absolut
     : { background: 'transparent', borderBottom: 'none' };
 
   const navStyle = {
-    position: isScrolled ? 'fixed' : 'absolute',
+    position: isScrolled ? 'fixed' : position,
     top: 0,
     left: 0,
     right: 0,

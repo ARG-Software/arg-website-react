@@ -186,6 +186,11 @@ function sortBlogPostsNewestFirst(a, b) {
   return (a.title || a.slug || '').localeCompare(b.title || b.slug || '');
 }
 
+function replaceOrInsertHeadTag(html, pattern, replacement) {
+  if (pattern.test(html)) return html.replace(pattern, replacement);
+  return html.replace('</head>', `  ${replacement}\n</head>`);
+}
+
 /**
  * Replace the OG / Twitter / title / description / canonical meta tags
  * in the built index.html with page-specific values.
@@ -215,9 +220,10 @@ function replaceMetaTags(html, { title, description, url, image, type = 'website
   );
 
   // Replace canonical
-  result = result.replace(
+  result = replaceOrInsertHeadTag(
+    result,
     /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/,
-    `<link rel="canonical" href="${escapeHtml(url)}" />`,
+    `<link rel="canonical" href="${escapeHtml(url)}" />`
   );
 
   // Replace OG tags

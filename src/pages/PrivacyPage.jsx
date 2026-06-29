@@ -15,7 +15,6 @@ export default function PrivacyPage() {
         title="Privacy Policy"
         description="Arg Software's privacy policy — how we collect, use, and protect your personal data."
         path="/privacy/"
-        noIndex
       />
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
