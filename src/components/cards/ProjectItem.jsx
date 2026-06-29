@@ -149,7 +149,7 @@ export function ProjectItem({
         </div>
         <div className="projects_item_cover-img">
           <AppLink
-            to={`/projects/${slug}`}
+            to={`/projects/${slug}/`}
             aria-label={`View ${title} case study`}
             className="projects_item_cover-link"
             onClick={() => onProjectClick?.(slug)}
@@ -173,7 +173,7 @@ export function ProjectItem({
       </div>
       <div className="projects_item_description">
         <AppLink
-          to={`/projects/${slug}`}
+          to={`/projects/${slug}/`}
           aria-label={title}
           className="text-button project-title-link"
           onClick={() => onProjectClick?.(slug)}

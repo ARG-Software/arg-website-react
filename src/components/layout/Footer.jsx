@@ -11,12 +11,12 @@ import {
 } from '../../services/linksservice';
 
 const NAV_LINKS = [
-  { label: 'Blog', path: '/blog' },
-  { label: 'Careers', path: '/careers' },
-  { label: 'Working with Us', path: '/working-with-us' },
-  { label: 'Contact', path: '/contact' },
-  { label: 'Partners', path: '/partners' },
-  { label: 'Use Cases', path: '/projects' },
+  { label: 'Blog', path: '/blog/' },
+  { label: 'Careers', path: '/careers/' },
+  { label: 'Working with Us', path: '/working-with-us/' },
+  { label: 'Contact', path: '/contact/' },
+  { label: 'Partners', path: '/partners/' },
+  { label: 'Use Cases', path: '/projects/' },
 ];
 
 export function Footer({ animate = true, animationPreset = 'fade-up', animationStagger = 80 }) {
@@ -122,10 +122,10 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
 
               {/* Bottom bar */}
               <div className="footer-bottom" data-animate-order={animate ? '3' : undefined}>
-                <a href="/privacy" className="footer-bottom__link">
+                <a href="/privacy/" className="footer-bottom__link">
                   Privacy Policy
                 </a>
-                <a href="/terms" className="footer-bottom__link">
+                <a href="/terms/" className="footer-bottom__link">
                   Terms of Service
                 </a>
                 <span className="footer-bottom__copyright">

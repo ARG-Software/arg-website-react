@@ -336,7 +336,7 @@ export default function BlogPostPage() {
           author: {
             '@type': 'Organization',
             name: 'Arg Software',
-            url: 'https://arg.software',
+            url: 'https://arg.software/',
           },
           publisher: {
             '@type': 'Organization',

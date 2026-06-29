@@ -75,7 +75,7 @@ export default function HomePage() {
                 justifyContent: 'flex-end',
               }}
             >
-              <AppLink to="/partners" className="text-button text-button--align-end meet-up-align">
+              <AppLink to="/partners/" className="text-button text-button--align-end meet-up-align">
                 <div className="text-button_list is-dark">
                   <div className="text-button_text">View partners</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>

@@ -119,7 +119,7 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
             {displayBlogGridRow(gridPosts, 3)}
 
             <div className="blog-promo_footer" data-animate-order="10">
-              <AppLink to="/blog" className="text-button text-button--align-end">
+              <AppLink to="/blog/" className="text-button text-button--align-end">
                 <div className="text-button_list">
                   <div className="text-button_text text-no-wrap">Read blog</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>

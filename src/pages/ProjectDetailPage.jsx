@@ -52,7 +52,7 @@ export default function ProjectDetailPage() {
 
   useEffect(() => {
     if (!project) {
-      navigate(`/projects/${PROJECTS[0].slug}`, { replace: true });
+      navigate(`/projects/${PROJECTS[0].slug}/`, { replace: true });
     }
   }, [project, navigate]);
 

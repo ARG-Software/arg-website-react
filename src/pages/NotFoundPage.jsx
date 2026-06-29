@@ -8,7 +8,7 @@ import { getProjectBookingLink } from '../services/linksservice';
 import '../styles/404.css';
 
 export default function NotFoundPage() {
-  useTimeOnPage('/404');
+  useTimeOnPage('/404/');
   useNotFoundPageScene();
   useScrollAnimations();
 
@@ -23,7 +23,7 @@ export default function NotFoundPage() {
       <SEO
         title="Page Not Found | Arg Software"
         description="The page you're looking for doesn't exist. Head back to Arg Software's homepage."
-        path="/404"
+        path="/404/"
         noIndex
       />
 
