@@ -82,7 +82,8 @@ const CONVERSATION_STEPS = [
 const WHY_US_PILLARS = [
   {
     index: '01 - Method',
-    metric: '100%',
+    metricValue: 100,
+    metricSuffix: '%',
     unit: 'of projects',
     title: 'Diagram first. Then code.',
     description:
@@ -90,7 +91,8 @@ const WHY_US_PILLARS = [
   },
   {
     index: '02 - Domain',
-    metric: '10k',
+    metricValue: 10,
+    metricSuffix: 'k',
     unit: 'tx/sec, live',
     title: 'The systems that cannot fall over.',
     description:
@@ -98,7 +100,7 @@ const WHY_US_PILLARS = [
   },
   {
     index: '03 - Craft',
-    metric: '0',
+    metricValue: 0,
     unit: 'band-aids shipped',
     title: 'Gold standard, not trendy.',
     description:
@@ -207,7 +209,20 @@ export default function WorkingWithUsPage() {
                     >
                       <span className="cp-whyus-pillar-index">{pillar.index}</span>
                       <div className="cp-whyus-kpi">
-                        <span>{pillar.metric}</span>
+                        {pillar.metricValue > 0 ? (
+                          <span data-animate="width-countup">
+                            <span
+                              fs-numbercount-element="number"
+                              fs-numbercount-start="0"
+                              fs-numbercount-end={pillar.metricValue}
+                            >
+                              0
+                            </span>
+                            {pillar.metricSuffix}
+                          </span>
+                        ) : (
+                          <span>0{pillar.metricSuffix}</span>
+                        )}
                         <small>{pillar.unit}</small>
                       </div>
                       <h3>{pillar.title}</h3>

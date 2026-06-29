@@ -428,6 +428,7 @@
   height: 1rem;
   margin-top: 0.1em;
   width: 1rem;
+  align-self: anchor-center;
 }
 
 /* ============================================

@@ -4,7 +4,6 @@ import { Helmet } from 'react-helmet-async';
 import { BaseCard, Navbar, Pill, SEO, arrowSvg } from '../components';
 import { ShuffleText } from '../components/widgets/ShuffleText';
 import { useScrollAnimations, useNextProjectSection, useTimeOnPage } from '../hooks';
-import { animateCountUp, getCountUpEnd } from '../hooks/useCountUp';
 import { trackCTA } from '../utils/analytics';
 import PROJECTS from '../data/projects.json';
 import '../styles/projects.css';
@@ -58,31 +57,6 @@ export default function ProjectDetailPage() {
   }, [project, navigate]);
 
   useNextProjectSection(nextSectionRef, progressRef, nextProject);
-
-  // Count-up observer for metric numbers
-  useEffect(() => {
-    const numbers = document.querySelectorAll('.prp-metric-number');
-    if (!numbers.length) return;
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const el = entry.target;
-            const end = getCountUpEnd(el);
-            if (end !== null) {
-              animateCountUp(el, end, 2000);
-            }
-            observer.unobserve(el);
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    numbers.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, [slug]);
 
   if (!project) {
     return null;
@@ -341,7 +315,7 @@ export default function ProjectDetailPage() {
                       animate={true}
                       animationOrder={i}
                     >
-                      <div className="prp-metric-card-number">
+                      <div className="prp-metric-card-number" data-animate="width-countup">
                         {metric.displayValue ? (
                           <span className="prp-metric-number">{metric.displayValue}</span>
                         ) : (
