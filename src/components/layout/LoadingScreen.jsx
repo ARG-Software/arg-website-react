@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { isMobile } from '../../utils/helpers';
+import { arrowSvg } from '../icons/SocialIcons';
+import { PillButton } from '../pills/Pill';
 import '../../styles/loadingscreen.css';
 
 const COLORS = ['#F0060D', '#C924D7', '#7904FD'];
@@ -49,6 +51,39 @@ export function LoadingScreen({ onComplete }) {
     return mobile ? shuffled.slice(0, 8) : shuffled;
   }, []);
 
+  const masterTlRef = useRef(null);
+
+  const handleSkip = useCallback(() => {
+    if (masterTlRef.current) {
+      masterTlRef.current.kill();
+    }
+    if (counterRef.current) {
+      counterRef.current.textContent = '100%';
+    }
+    const skipTl = gsap.timeline({ onComplete: () => onComplete?.() });
+    skipTl
+      .set(bgRef.current, { opacity: 1 })
+      .fromTo(
+        panelsRef.current[0],
+        { yPercent: 200 },
+        { yPercent: 0, duration: 0.8, ease: 'expo.out' }
+      )
+      .fromTo(
+        panelsRef.current[1],
+        { yPercent: 200 },
+        { yPercent: 0, duration: 0.8, ease: 'expo.out' },
+        '<0.12'
+      )
+      .fromTo(
+        panelsRef.current[2],
+        { yPercent: 200 },
+        { yPercent: 0, duration: 0.8, ease: 'expo.out' },
+        '<'
+      )
+      .set(bgRef.current, { opacity: 0 })
+      .to(panelsRef.current, { yPercent: -100, duration: 0.8, ease: 'expo.out' });
+  }, [onComplete]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setDots(prev => (prev % 3) + 1);
@@ -78,6 +113,7 @@ export function LoadingScreen({ onComplete }) {
     }
 
     const masterTl = gsap.timeline({ onComplete: () => onComplete?.() });
+    masterTlRef.current = masterTl;
 
     masterTl.fromTo(
       letterRefs.current,
@@ -125,11 +161,17 @@ export function LoadingScreen({ onComplete }) {
       .set(bgRef.current, { opacity: 0 })
       .to(panelsRef.current, { yPercent: -100, duration: 1, ease: 'expo.out' });
 
+    const handleKeyDown = e => {
+      if (e.key === 'Escape') handleSkip();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
     return () => {
       document.documentElement.classList.remove('ls-active');
+      document.removeEventListener('keydown', handleKeyDown);
       masterTl.kill();
     };
-  }, [onComplete]);
+  }, [onComplete, handleSkip]);
 
   return (
     <div
@@ -153,6 +195,20 @@ export function LoadingScreen({ onComplete }) {
             </span>
           ))}
         </div>
+        <PillButton
+          variant="glass"
+          active
+          size="sm"
+          className="ls-skip"
+          onClick={handleSkip}
+          iconAfter={
+            <span className="arrow_icon-embed ls-skip-arrow" aria-hidden="true">
+              {arrowSvg}
+            </span>
+          }
+        >
+          Skip Intro
+        </PillButton>
         <div className="ls-label">
           <span className="ls-letter-wrap" data-animate-order="1">
             <span className="ls-letter">scaling</span>
