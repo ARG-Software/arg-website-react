@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
-import { trackEvent, trackPageView } from '../hooks/useAnalytics';
+import { trackEvent, trackPageView } from '../utils/analytics';
 import { useHashScroll } from '../hooks/useHashScroll';
 import { LenisContext } from './LenisProvider';
 import { PAGE_TRANSITION_DURATION_MS } from '../constants';

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA, trackEvent } from '../hooks/useAnalytics';
+import { trackCTA, trackEvent } from '../utils/analytics';
 import {
   Navbar,
   Footer,

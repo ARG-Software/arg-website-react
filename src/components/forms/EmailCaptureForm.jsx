@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { closeSvg } from '../icons/SocialIcons';
-import { trackEvent } from '../../hooks/useAnalytics';
+import { trackEvent } from '../../utils/analytics';
 import { ALREADY_SUBSCRIBED_KEY } from '../../constants';
 import { useLeadCaptureVisibility, useWeb3Form } from '../../hooks';
 

@@ -1,5 +1,5 @@
 import { CTASection } from '../../../components/layout/CTASection';
-import { trackCTA } from '../../../hooks/useAnalytics';
+import { trackCTA } from '../../../utils/analytics';
 import { getPortfolioLink, getProjectBriefFormLink } from '../../../services/linksservice';
 
 export function ContactSection({ className = '' }) {

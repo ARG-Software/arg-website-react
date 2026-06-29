@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useRef, useCallback } from 'react';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
-import { trackCTA } from '../../hooks/useAnalytics';
+import { trackCTA } from '../../utils/analytics';
 import { LenisContext } from '../../providers/LenisProvider';
 import { NAV_SCROLL_THRESHOLD } from '../../constants';
 import { NavMenu } from './NavMenu';

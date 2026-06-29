@@ -1,6 +1,6 @@
 import { ContactForm, Footer, Navbar, PageHeader, SEO } from '../components';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA, trackEvent, trackMailto, trackSocial } from '../hooks/useAnalytics';
+import { trackCTA, trackEvent, trackMailto, trackSocial } from '../utils/analytics';
 import {
   EMAIL_KEYS,
   getCompanySocialLinks,

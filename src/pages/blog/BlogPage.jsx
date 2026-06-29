@@ -11,7 +11,7 @@ import {
   TagFilterPills,
 } from '../../components';
 import { useScrollAnimations, useBlogSearch, useTimeOnPage } from '../../hooks';
-import { trackBlogPostClick, trackCTA, trackEvent } from '../../hooks/useAnalytics';
+import { trackBlogPostClick, trackCTA, trackEvent } from '../../utils/analytics';
 
 import { getBlogTags, loadBlogPostsMetadata } from '../../utils/blog';
 import { BLOG_POSTS_PER_PAGE } from '../../constants';

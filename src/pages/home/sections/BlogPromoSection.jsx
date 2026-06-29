@@ -1,7 +1,7 @@
 import AppLink from '../../../components/navigation/AppLink';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { Pill } from '../../../components/pills/Pill';
-import { trackBlogPostClick } from '../../../hooks/useAnalytics';
+import { trackBlogPostClick } from '../../../utils/analytics';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 
 function getTagColorStyle(tag) {

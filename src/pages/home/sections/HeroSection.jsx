@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
-import { trackEvent, trackMailto } from '../../../hooks/useAnalytics';
+import { trackEvent, trackMailto } from '../../../utils/analytics';
 import { TransitionContext } from '../../../providers/TransitionProvider';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 import { useWaterRipple } from '../../../hooks/useWaterRipple';

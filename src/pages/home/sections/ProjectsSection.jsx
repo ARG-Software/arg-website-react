@@ -1,6 +1,6 @@
 import { ProjectItem } from '../../../components/cards/ProjectItem';
 import { ANIMATION_PRESETS } from '../../../animations/attribute-presets';
-import { trackEvent, trackOutbound } from '../../../hooks/useAnalytics';
+import { trackEvent, trackOutbound } from '../../../utils/analytics';
 
 const PROJECT_GRID_PATTERN_ROWS = [1, 2, 2, 3, 4, 4];
 const PROJECT_GRID_ROW_STRIDE = 7;

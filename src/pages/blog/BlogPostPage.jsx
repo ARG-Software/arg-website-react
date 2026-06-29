@@ -42,7 +42,7 @@ import {
 } from '../../components';
 import { useScrollAnimations, useTimeOnPage } from '../../hooks';
 import { TransitionContext } from '../../providers/TransitionProvider';
-import { trackBlogPostShare, trackCTA, trackEvent } from '../../hooks/useAnalytics';
+import { trackBlogPostShare, trackCTA, trackEvent } from '../../utils/analytics';
 import {
   getHeadingId,
   getRelatedPosts,

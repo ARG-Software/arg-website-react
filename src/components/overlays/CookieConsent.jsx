@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { trackConsent } from '../../hooks/useAnalytics';
+import { trackConsent } from '../../utils/analytics';
 import { STORAGE_KEY } from '../../constants';
 
 function updateConsent(granted) {

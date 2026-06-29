@@ -5,7 +5,7 @@ import {
   LEAD_CAPTURE_DISMISSED_CONTEXT_KEY,
   NEVER_SHOW_LEAD_CAPTURE_KEY,
 } from '../constants';
-import { trackEvent } from './useAnalytics';
+import { trackEvent } from '../utils/analytics';
 
 const DEFAULT_DELAY_MS = 15000;
 const MIN_VISIBLE_RATIO = 0.15;

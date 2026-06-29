@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useContext } from 'react';
 import { TransitionContext } from '../providers/TransitionProvider';
-import { trackEvent } from './useAnalytics';
+import { trackEvent } from '../utils/analytics';
 
 gsap.registerPlugin(ScrollTrigger);
 

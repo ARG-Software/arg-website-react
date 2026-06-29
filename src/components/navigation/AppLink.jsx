@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { trackEvent } from '../../hooks/useAnalytics';
+import { trackEvent } from '../../utils/analytics';
 import { TransitionContext } from '../../providers/TransitionProvider';
 
 function isModifiedClick(event) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA } from '../hooks/useAnalytics';
+import { trackCTA } from '../utils/analytics';
 import { getProjectBriefFormLink } from '../services/linksservice';
 import {
   Navbar,

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { gsap } from 'gsap';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
-import { trackEvent } from '../../hooks/useAnalytics';
+import { trackEvent } from '../../utils/analytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { arrowSvg } from '../icons/SocialIcons';
 import { PillButton } from '../pills/Pill';

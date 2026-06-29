@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { TransitionContext } from '../../../providers/TransitionProvider';
-import { trackEvent } from '../../../hooks/useAnalytics';
+import { trackEvent } from '../../../utils/analytics';
 
 const aboutValues = [
   {

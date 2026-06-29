@@ -5,7 +5,7 @@ import { BaseCard, Navbar, Pill, SEO, arrowSvg } from '../components';
 import { ShuffleText } from '../components/widgets/ShuffleText';
 import { useScrollAnimations, useNextProjectSection, useTimeOnPage } from '../hooks';
 import { animateCountUp, getCountUpEnd } from '../hooks/useCountUp';
-import { trackCTA } from '../hooks/useAnalytics';
+import { trackCTA } from '../utils/analytics';
 import PROJECTS from '../data/projects.json';
 import '../styles/projects.css';
 
