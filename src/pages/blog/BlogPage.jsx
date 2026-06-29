@@ -168,7 +168,6 @@ export default function BlogPage() {
                         onClick={() => trackBlogPostClick(article.slug, article.title, 'blog_list')}
                       >
                         <div className="blp-row-meta">
-                          <span className="blp-row-tag">{article.tag}</span>
                           {article.image && (
                             <img
                               src={article.image}
@@ -177,11 +176,12 @@ export default function BlogPage() {
                               loading={i === 0 ? 'eager' : 'lazy'}
                             />
                           )}
+                          <span className="blp-row-tag">{article.tag}</span>
                           <span className="blp-row-date">{article.date}</span>
                         </div>
                         <div className="blp-row-body">
                           <h2 className="blp-row-title">{article.title}</h2>
-                          <p className="blp-row-excerpt">{article.excerpt}</p>
+                          <p className="blp-row-excerpt">{article.subtitle}</p>
                         </div>
                         <div className="blp-row-action">
                           <span className="blp-row-readtime">{article.readTime}</span>

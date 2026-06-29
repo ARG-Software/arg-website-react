@@ -680,7 +680,7 @@ const importFromRss = async feedUrl => {
 (async () => {
   stripNumericFilenamePrefixes();
   const cleanedAuthorSections = cleanExistingAuthorSections();
-  const result = SOURCE_ARG === '--json' ? await importFromMediumJson() : await importFromRss(SOURCE_ARG || DEFAULT_FEED_URL);
+  const result = SOURCE_ARG.includes('/feed/') ? await importFromRss(SOURCE_ARG || DEFAULT_FEED_URL) : await importFromMediumJson();
 
   console.log(
     JSON.stringify(
