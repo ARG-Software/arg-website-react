@@ -1,11 +1,38 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { isMobile } from '../../utils/helpers';
 import '../../styles/loadingscreen.css';
 
 const COLORS = ['#F0060D', '#C924D7', '#7904FD'];
 const VIDEO_VISIBLE_DURATION = 12;
 const INTRO_DURATION = 1.65;
 const COUNTER_DURATION = VIDEO_VISIBLE_DURATION - INTRO_DURATION;
+
+const GREETINGS = [
+  'Olá',
+  'Hola',
+  'Bonjour',
+  'Hello',
+  '你好',
+  'こんにちは',
+  'Ciao',
+  'Hallo',
+  'مرحبا',
+  'नमस्ते',
+  'Hoi',
+  'Hej',
+  'Merhaba',
+  'Cześć',
+];
+
+function shuffle(arr) {
+  const result = [...arr];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 
 export function LoadingScreen({ onComplete }) {
   const bgRef = useRef(null);
@@ -14,6 +41,13 @@ export function LoadingScreen({ onComplete }) {
   const counterRef = useRef(null);
   const panelsRef = useRef([]);
   const [dots, setDots] = useState(1);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const visibleGreetings = useMemo(() => {
+    const shuffled = shuffle(GREETINGS);
+    const mobile = isMobile();
+    return mobile ? shuffled.slice(0, 8) : shuffled;
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -21,6 +55,14 @@ export function LoadingScreen({ onComplete }) {
     }, 300);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const pillInterval = Math.round((VIDEO_VISIBLE_DURATION * 1000) / visibleGreetings.length);
+    const interval = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % visibleGreetings.length);
+    }, pillInterval);
+    return () => clearInterval(interval);
+  }, [visibleGreetings]);
 
   useEffect(() => {
     document.documentElement.classList.add('ls-active');
@@ -105,14 +147,11 @@ export function LoadingScreen({ onComplete }) {
           </video>
         </div>
         <div className="ls-hello-row" data-animate-order="0">
-          <span className="ls-hello">Olá</span>
-          <span className="ls-hello">Hola</span>
-          <span className="ls-hello">Bonjour</span>
-          <span className="ls-hello">Hello</span>
-          <span className="ls-hello">你好</span>
-          <span className="ls-hello">こんにちは</span>
-          <span className="ls-hello">Ciao</span>
-          <span className="ls-hello">Hallo</span>
+          {visibleGreetings.map((word, i) => (
+            <span key={word} className={`ls-hello${i === activeIndex ? ' is-active' : ''}`}>
+              {word}
+            </span>
+          ))}
         </div>
         <div className="ls-label">
           <span className="ls-letter-wrap" data-animate-order="1">

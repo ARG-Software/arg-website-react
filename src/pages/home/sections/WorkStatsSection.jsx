@@ -3,6 +3,7 @@ import AppLink from '../../../components/navigation/AppLink';
 import { CounterWidget } from '../../../components/widgets/CounterWidget';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
+import { isMobile } from '../../../utils/helpers';
 
 const STATS = [
   {
@@ -30,7 +31,7 @@ const STATS = [
 export function WorkStatsSection({ className = '' }) {
   // Inlined useImageHoverEffects hook
   useEffect(() => {
-    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    const mobile = isMobile();
     const items = document.querySelectorAll('.work_items-wrapper .work-item');
     const cleanupFns = [];
 
@@ -42,7 +43,7 @@ export function WorkStatsSection({ className = '' }) {
 
       item.style.position = 'relative';
 
-      if (isMobile) {
+      if (mobile) {
         // Mobile: always visible, right-aligned
         wrapper.classList.remove('work_image-wrapper');
         wrapper.classList.add('work_image-mobile');

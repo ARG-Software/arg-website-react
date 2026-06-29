@@ -2,18 +2,13 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { animateCountUp, getCountUpEnd } from './useCountUp';
-import {
-  ANIMATION_PRESETS,
-  ATTRIBUTE_PRESETS,
-  DEFAULT_THRESHOLD,
-  DEFAULT_ROOT_MARGIN,
-  MOBILE_BREAKPOINT,
-} from '../animations/attribute-presets';
+import { ANIMATION_PRESETS, ATTRIBUTE_PRESETS } from '../animations/attribute-presets';
+import { DEFAULT_THRESHOLD, DEFAULT_ROOT_MARGIN } from '../constants/ui.js';
+import { isMobile } from '../utils/helpers';
 
 gsap.registerPlugin(ScrollTrigger);
 
 // Utility functions
-const isMobile = () => window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
 
 // Get maximum transition duration from transition string (e.g., "opacity 0.8s ease, transform 0.8s ease")
 const getMaxTransitionDuration = transitionString => {

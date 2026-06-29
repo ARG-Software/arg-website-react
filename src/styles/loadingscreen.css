@@ -37,14 +37,22 @@ html.ls-active {
 .ls-hello {
   display: inline-flex;
   align-items: center;
-  padding: 0.35rem 1rem;
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  padding: 7px 16px;
+  border: 1px solid transparent;
   border-radius: 999px;
-  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
-  font-weight: 600;
-  letter-spacing: var(--tracking-badge);
-  color: #ffffff;
+  font-size: 14px;
+  font-weight: 450;
+  letter-spacing: 0.01em;
+  color: rgba(242, 238, 251, 0.55);
   white-space: nowrap;
+  transition: color 0.5s ease, border-color 0.5s ease, background-color 0.5s ease;
+}
+
+.ls-hello.is-active {
+  color: #f2eefb;
+  border-color: rgba(242, 238, 251, 0.16);
+  background: rgba(242, 238, 251, 0.04);
+  font-weight: 500;
 }
 
 /* Large "Loading" text — responsive font size */
@@ -109,4 +117,10 @@ html.ls-active {
   right: 0;
   bottom: 0;
   will-change: transform;
+}
+
+@media (max-width: 600px) {
+  .ls-hello-row {
+    gap: 8px;
+  }
 }

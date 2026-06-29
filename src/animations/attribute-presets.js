@@ -1,7 +1,7 @@
 // Attribute-based animation presets
-export const DEFAULT_THRESHOLD = 0.15;
-export const DEFAULT_ROOT_MARGIN = '0px 0px -10% 0px';
-export const MOBILE_BREAKPOINT = 767; // px
+import { DEFAULT_THRESHOLD, DEFAULT_ROOT_MARGIN, MOBILE_BREAKPOINT } from '../constants/ui.js';
+
+export { DEFAULT_THRESHOLD, DEFAULT_ROOT_MARGIN, MOBILE_BREAKPOINT };
 
 export const ANIMATION_PRESETS = {
   fadeUp: 'fade-up',

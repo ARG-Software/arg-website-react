@@ -1,3 +1,5 @@
+import { MOBILE_BREAKPOINT } from '../constants/ui.js';
+
 /**
  * Convert a string to a URL-friendly slug.
  * Example: "Hello World!" → "hello-world"
@@ -53,4 +55,12 @@ export function truncateText(text = '', maxLength = 200) {
 export function normalizePathname(pathname) {
   if (!pathname || pathname === '/') return '/';
   return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+}
+
+/**
+ * Check if the current viewport is at or below the mobile breakpoint.
+ * @returns {boolean}
+ */
+export function isMobile() {
+  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
 }
