@@ -61,7 +61,7 @@ const stripCode = value =>
 
 const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1FFFF}\u{2702}-\u{27B0}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}\u{24C2}-\u{1F251}\u{2694}-\u{2696}\u{2699}\u{2708}-\u{270D}\u{2764}\u{221E}\u{267E}\u{2B50}\u{2B55}\u{3030}\u{303D}\u{3297}\u{3299}]/gu;
 
-const stripEmojis = value => String(value || '').replace(EMOJI_RE, '').replace(/\s{2,}/g, ' ').trim();
+const stripEmojis = value => String(value || '').replace(EMOJI_RE, '').replace(/[^\S\n]+/g, ' ').trim();
 
 const sanitizeText = value =>
   stripTags(value)
