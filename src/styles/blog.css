@@ -363,7 +363,7 @@
 }
 
 .page-header--article.bp-article-page-header h1 {
-  font-size: clamp(2.125rem, 3.7vw, 3.75rem);
+  font-size: clamp(1.75rem, 3vw, 3rem);
   max-width: 78rem;
 }
 
@@ -472,7 +472,7 @@
   gap: 0.875rem;
   letter-spacing: -0.035em;
   line-height: 1.12;
-  margin: clamp(3.75rem, 7vw, 5.5rem) 0 1.25rem;
+  margin: clamp(2rem, 4vw, 3rem) 0 1.25rem;
 }
 
 .bp-h2::before {
