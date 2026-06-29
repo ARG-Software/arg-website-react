@@ -374,7 +374,9 @@ export function useScrollAnimations(config = {}) {
         });
       } else {
         loadElements.forEach(({ element, preset, presetName }) => {
-          applyInitialState(element, preset, presetName);
+          if (!element.closest('.ls-overlay')) {
+            applyInitialState(element, preset, presetName);
+          }
         });
         pendingLoadRef.current = loadElements;
       }
@@ -471,7 +473,9 @@ export function useScrollAnimations(config = {}) {
     const elements = pendingLoadRef.current;
     pendingLoadRef.current = [];
     elements.forEach(({ element, preset, presetName, orderIndex }) => {
-      animateElement(element, preset, presetName, orderIndex);
+      if (!element.closest('.ls-overlay')) {
+        animateElement(element, preset, presetName, orderIndex);
+      }
     });
   }, [done]);
 }
