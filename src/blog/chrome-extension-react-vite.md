@@ -3,8 +3,8 @@ seoTitle: Build a Chrome Extension with React & Vite
 slug: chrome-extension-react-vite
 tag: Browser Extensions
 title: Building a Chrome Extension with React and Vite: A Modern Developer's Guide
-subtitle: The landscape of web development has evolved, and modern frontend tools, such as Vite⚡ and React ⚛, have transformed the way we build…
-intro: The landscape of web development has evolved, and modern frontend tools, such as Vite⚡ and React ⚛, have transformed the way we build…
+subtitle: Learn to build Chrome extensions using React, TypeScript, and Vite - a step-by-step guide with content scripts, background services, and messaging examples.
+intro: Learn to build Chrome extensions using React, TypeScript, and Vite - a step-by-step guide with content scripts, background services, and messaging examples.
 date: June 30, 2025
 readTime: 9 min read
 mediumUrl: https://arg-software.medium.com/building-a-chrome-extension-with-react-and-vite-a-modern-developers-guide-83f98ee937ed

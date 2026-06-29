@@ -3,8 +3,8 @@ seoTitle: Clinejection: GitHub Supply Chain Attack
 slug: clinejection-github-issue-supply-chain-attack
 tag: AI
 title: "Clinejection: How a Simple GitHub Issue Could Have Hijacked 5 Million Developer Machines"
-subtitle: Imagine waking up to find that your favorite AI coding assistant — the one you trust with your entire codebase — has been updated with…
-intro: Imagine waking up to find that your favorite AI coding assistant — the one you trust with your entire codebase — has been updated with…
+subtitle: How a prompt injection in Cline’s AI triage hijacked GitHub CI/CD to threaten 5M users. Learn the mechanics of cache poisoning and AI agent security risks.
+intro: How a prompt injection in Cline’s AI triage hijacked GitHub CI/CD to threaten 5M users. Learn the mechanics of cache poisoning and AI agent security risks.
 date: February 19, 2026
 readTime: 6 min read
 mediumUrl: https://arg-software.medium.com/clinejection-how-a-simple-github-issue-could-have-hijacked-5-million-developer-machines-6dfafd6939b5

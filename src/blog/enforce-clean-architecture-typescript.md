@@ -3,8 +3,8 @@ seoTitle: Enforce Clean Architecture in TypeScript
 slug: enforce-clean-architecture-typescript
 tag: Architecture
 title: How to Actually Enforce Clean Architecture in TypeScript
-subtitle: Using tests to keep your architecture clean - and your codebase from falling apart
-intro: Using tests to keep your architecture clean - and your codebase from falling apart
+subtitle: Stop relying on PR reviews to enforce architecture. Learn how to use architecture tests to automatically catch violations in your TypeScript codebase.
+intro: Stop relying on PR reviews to enforce architecture. Learn how to use architecture tests to automatically catch violations in your TypeScript codebase.
 date: March 15, 2026
 readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/the-rules-are-in-the-readme-the-readme-is-a-lie-ce6597218a29

@@ -3,8 +3,8 @@ seoTitle: TypeScript Error Handling: Result Pattern
 slug: functional-error-handling-typescript-result-pattern
 tag: Architecture
 title: Functional Error Handling in TypeScript with the Result Pattern
-subtitle: Transform your error handling from chaotic exceptions to predictable, type-safe code
-intro: Transform your error handling from chaotic exceptions to predictable, type-safe code
+subtitle: Stop throwing exceptions! Learn the Result pattern for cleaner, faster error handling. Complete guide with code examples
+intro: Stop throwing exceptions! Learn the Result pattern for cleaner, faster error handling. Complete guide with code examples
 date: September 26, 2025
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/functional-error-handling-in-typescript-with-the-result-pattern-5b96a5abb6d3

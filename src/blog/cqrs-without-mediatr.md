@@ -3,8 +3,8 @@ seoTitle: CQRS in .NET Without MediatR
 slug: cqrs-without-mediatr
 tag: Refactoring
 title: .NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think
-subtitle: You’ve been paying a framework tax for years. Here’s how to stop — and build something reliable in an afternoon.
-intro: You’ve been paying a framework tax for years. Here’s how to stop — and build something reliable in an afternoon.
+subtitle: MediatR went commercial. Learn how to build a clean .NET CQRS architecture from scratch using interfaces, dispatchers, and decorators — no library needed.
+intro: MediatR went commercial. Learn how to build a clean .NET CQRS architecture from scratch using interfaces, dispatchers, and decorators — no library needed.
 date: February 23, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/net-cqrs-architecture-without-mediatr-your-exit-plan-is-simpler-than-you-think-3c8f99077a03
