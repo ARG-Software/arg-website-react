@@ -3,12 +3,11 @@ seoTitle: Stop Worrying, Embrace the Chaos
 slug: stop-worrying-embrace-chaos
 tag: Culture
 title: How I Learned to Stop Worrying and Embrace the Chaos (Spoiler: I Didn't)
-subtitle: Fifteen years in this industry taught me one thing: we’re exceptional at creating expensive problems disguised as innovative solutions.
-intro: Fifteen years in this industry taught me one thing: we’re exceptional at creating expensive problems disguised as innovative solutions.
+subtitle: Stack Overflow is dying. Juniors aren’t hired. Tech debt is everywhere.
+intro: Stack Overflow is dying. Juniors aren’t hired. Tech debt is everywhere.
 date: February 6, 2026
 readTime: 5 min read
 mediumUrl: https://arg-software.medium.com/how-i-learned-to-stop-worrying-and-embrace-the-chaos-spoiler-i-didnt-54533117938c
-excerpt: Fifteen years in this industry taught me one thing: we're exceptional at creating expensive problems disguised as innovative solutions. And no, before you ask, I'm not talking about AI. Or rather, I'm not just talking about AI.
 ---
 
 ![How I learned to stop worrying](/images/blog/how-i-learned-to-stop-worrying/how-i-learned-to-stop-worrying-header.webp)

@@ -3,11 +3,10 @@ seoTitle: The Most Important Decision in Web3 Isn’t What You Put On-Chain — 
 slug: the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont
 tag: AI
 title: The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t
-subtitle: Many teams run into the same issue.
-intro: Many teams run into the same issue.
+subtitle: Learn how to decide what belongs on-chain or off-chain in Web3 architecture to balance trust, cost, latency, UX, and verifiability.
+intro: Learn how to decide what belongs on-chain or off-chain in Web3 architecture to balance trust, cost, latency, UX, and verifiability.
 date: May 5, 2026
 readTime: 9 min read
-excerpt: Every Web3 product lives at the boundary between speed and trust. Draw it wrong, and everything else becomes a
 ---
 ![The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont-header.webp)
 

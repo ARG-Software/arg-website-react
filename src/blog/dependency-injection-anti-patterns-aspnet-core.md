@@ -3,12 +3,11 @@ seoTitle: DI Anti-Patterns in ASP.NET Core
 slug: dependency-injection-anti-patterns-aspnet-core
 tag: Architecture
 title: Dependency Injection Anti-Patterns Killing Your ASP.NET Core Apps
-subtitle: Avoid common DI mistakes in ASP.NET Core. Dependency injection anti-patterns that cause memory leaks, slowdowns & runtime crashes—and how to fix them.
-intro: Avoid common DI mistakes in ASP.NET Core. Dependency injection anti-patterns that cause memory leaks, slowdowns & runtime crashes—and how to fix them.
+subtitle: Avoid common DI mistakes in ASP.NET Core. Dependency injection anti-patterns that cause memory leaks, slowdowns & runtime crashes.
+intro: Avoid common DI mistakes in ASP.NET Core. Dependency injection anti-patterns that cause memory leaks, slowdowns & runtime crashes.
 date: September 19, 2025
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/dependency-injection-anti-patterns-killing-your-asp-net-core-apps-502f08d85d95
-excerpt: After optimizing several enterprise .NET applications, we've witnessed the same dependency injection mistakes repeatedly sabotage otherwise well-architected systems. These silent performance killers don't just slow down your application — they transform your codebase into a maintenance nightmare that can bring down production systems.
 ---
 
 ![Dependency Injection Anti Patterns](/images/blog/dependency-injection-anti-patterns/dependency-injection-anti-patterns-header.webp)

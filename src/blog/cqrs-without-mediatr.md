@@ -3,12 +3,11 @@ seoTitle: CQRS in .NET Without MediatR
 slug: cqrs-without-mediatr
 tag: Refactoring
 title: .NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think
-subtitle: MediatR went commercial. Learn how to build a clean .NET CQRS architecture from scratch using interfaces, dispatchers, and decorators — no library needed.
-intro: MediatR went commercial. Learn how to build a clean .NET CQRS architecture from scratch using interfaces, dispatchers, and decorators — no library needed.
+subtitle: MediatR went commercial. Learn how to build a clean .NET CQRS architecture from scratch using interfaces, dispatchers, and decorators.
+intro: MediatR went commercial. Learn how to build a clean .NET CQRS architecture from scratch using interfaces, dispatchers, and decorators.
 date: February 23, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/net-cqrs-architecture-without-mediatr-your-exit-plan-is-simpler-than-you-think-3c8f99077a03
-excerpt: CQRS is a pattern. MediatR is a library. They're not the same, and conflating them has been quietly making codebases more opaque than they need to be. Now that MediatR is moving to a commercial licensing model, here is how to build a clean, fully-owned replacement in an afternoon.
 ---
 
 ![.NET CQRS Architecture without MediatR](/images/blog/net-cqrs-architecture-without-mediatr/net-cqrs-architecture-without-mediatr-header.webp)

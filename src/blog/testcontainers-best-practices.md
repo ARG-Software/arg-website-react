@@ -2,12 +2,11 @@
 slug: testcontainers-best-practices-nestjs
 tag: Testing
 title: Testcontainers Best Practices for NestJS Integration Testing
-subtitle: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don’t follow the right…
-intro: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don’t follow the right…
+subtitle: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don’t do it right.
+intro: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don’t do it right.
 date: March 10, 2026
 readTime: 9 min read
 mediumUrl: https://arg-software.medium.com/testcontainers-best-practices-for-nestjs-integration-testing
-excerpt: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don't follow the right patterns. We've seen teams struggle with flaky tests, slow test suites, and configuration headaches that could have been avoided with better practices from the start.
 ---
 
 ![Testcontainers Best Practices for NestJS Integration Testing](/images/blog/testcontainers-best-practices-nestjs/testcontainers-best-practices-nestjs-header.webp)

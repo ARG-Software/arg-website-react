@@ -78,6 +78,9 @@
 /favicon-*.png
   Cache-Control: public, max-age=31536000, immutable
 
+/404.html
+  X-Robots-Tag: noindex
+
 # Fonts — long cache
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable

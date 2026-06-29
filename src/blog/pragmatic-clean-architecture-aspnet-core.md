@@ -3,12 +3,11 @@ seoTitle: Pragmatic Clean Architecture in ASP.NET Core
 slug: pragmatic-clean-architecture-aspnet-core
 tag: Architecture
 title: Taming the Chaos: A Developer's Guide to Pragmatic Clean Architecture in ASP.NET Core
-subtitle: Build maintainable code without overengineering. Practical examples for developers seeking cleaner, maintainable, and testable solutions.
-intro: Build maintainable code without overengineering. Practical examples for developers seeking cleaner, maintainable, and testable solutions.
+subtitle: Build maintainable code without overengineering. Practical examples for developers seeking cleaner, testable and maintainable solution.
+intro: Build maintainable code without overengineering. Practical examples for developers seeking cleaner, testable and maintainable solution.
 date: May 3, 2025
 readTime: 15 min read
 mediumUrl: https://arg-software.medium.com/taming-the-chaos-a-developers-guide-to-pragmatic-clean-architecture-in-net-%EF%B8%8F-c0b05de359a7
-excerpt: As applications grow, logic gets duplicated, domain rules leak into controllers, and infrastructure dependencies become tightly coupled with core logic. Pragmatic Clean Architecture addresses this by introducing clear boundaries between layers and enforcing strict separation of concerns.
 ---
 
 ![Taming the Chaos](/images/blog/taming-the-chaos/taming-the-chaos-header.webp)

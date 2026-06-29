@@ -8,7 +8,6 @@ intro: Upgrade Angular from v5 to v19 with ease! Learn the step-by-step migratio
 date: April 21, 2025
 readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/upgrading-angular-legacy-project-version-5-to-19-0216c5dd389a
-excerpt: At ARG, we recently completed a frontend migration for a client project originally built with Angular version 5. Here are the key challenges we faced and how we solved them.
 ---
 
 ![Upgrading Angular Legacy Code](/images/blog/angular-migration/upgrading-angular-legacy.webp)

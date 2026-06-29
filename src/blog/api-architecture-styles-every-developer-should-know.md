@@ -8,7 +8,6 @@ intro: Discover the pros and cons of REST, gRPC, GraphQL, WebSocket, SOAP, and M
 date: November 6, 2025
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/api-architecture-styles-every-developer-should-know-74bd544820fb
-excerpt: Choosing the wrong API style can significantly delay your project. We've seen teams waste countless hours refactoring because they picked an architecture that didn't fit their needs. Let us save you from that pain.
 ---
 
 Choosing the wrong API style can significantly delay your project. We've seen teams waste countless hours refactoring because they picked an architecture that didn't fit their needs.

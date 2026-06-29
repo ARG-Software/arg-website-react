@@ -317,7 +317,7 @@ export default function BlogPostPage() {
     <>
       <SEO
         title={BLOG_POST.seoTitle}
-        description={BLOG_POST.excerpt || BLOG_POST.subtitle}
+        description={BLOG_POST.subtitle}
         path={`/blog/${BLOG_POST.slug}/`}
         type="article"
         publishedTime={parseDateToIso(BLOG_POST.date)}
@@ -330,7 +330,7 @@ export default function BlogPostPage() {
           '@context': 'https://schema.org',
           '@type': 'Article',
           headline: BLOG_POST.title,
-          description: BLOG_POST.excerpt || BLOG_POST.subtitle,
+          description: BLOG_POST.subtitle,
           datePublished: parseDateToIso(BLOG_POST.date),
           image: BLOG_POST.image ? `https://arg.software${BLOG_POST.image}` : undefined,
           author: {

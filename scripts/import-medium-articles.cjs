@@ -360,18 +360,13 @@ const convertHtmlToMarkdown = html => {
   return stripAuthorSectionFromMarkdown(text.replace(/\n{3,}/g, '\n\n').trim());
 };
 
-const createExcerpt = markdown =>
+const createArticleDescription = markdown =>
   markdown
     .replace(/^!\[[^\]]*\]\([^)]*\)\s*/m, '')
     .split(/\n\n/)
     .find(block => block && !block.startsWith('#') && !block.startsWith('```') && !block.startsWith('>'))
     ?.replace(/^[-*]\s+/gm, '')
-    .replace(/\s+/g, ' ')
-    .slice(0, 220)
-    .replace(/\s+\S*$/, '') || '';
-
-const createSubtitle = excerpt =>
-  excerpt.length > 150 ? `${excerpt.slice(0, 147).replace(/\s+\S*$/, '')}...` : excerpt;
+    .replace(/\s+/g, ' ') || '';
 
 const stripMediumJsonPrefix = text => {
   if (!text.startsWith(MEDIUM_JSON_PREFIX)) return text;
@@ -516,7 +511,7 @@ const convertPostToMarkdown = async (post, articleSlug, title) => {
   return stripAuthorSectionFromMarkdown(blocks.join('\n\n').replace(/\n{3,}/g, '\n\n').trim());
 };
 
-const writePost = (post, markdown, subtitle, excerpt) => {
+const writePost = (post, markdown, subtitle) => {
   const title = sanitizeTitle(post.title);
   const slug = slugify(title);
   const categories = getPostCategories(post);
@@ -532,7 +527,6 @@ const writePost = (post, markdown, subtitle, excerpt) => {
     `date: ${formatDate(post.firstPublishedAt || post.latestPublishedAt || post.createdAt)}`,
     `readTime: ${estimateReadTime(markdown)}`,
     `mediumUrl: ${getPostUrl(post)}`,
-    `excerpt: ${escapeFrontmatter(excerpt)}`,
     '---',
     '',
   ].join('\n');
@@ -548,8 +542,7 @@ const writeRssPost = async item => {
   const html = cleanMediumHtml(item.html);
   const withLocalImages = await localizeImages(html, slug, title);
   const markdown = convertHtmlToMarkdown(withLocalImages);
-  const excerpt = createExcerpt(markdown);
-  const subtitle = item.description || createSubtitle(excerpt);
+  const subtitle = item.description || createArticleDescription(markdown);
   const tag = getTag(title, item.categories);
   const frontmatter = [
     '---',
@@ -562,7 +555,6 @@ const writeRssPost = async item => {
     `date: ${formatDate(item.pubDate)}`,
     `readTime: ${estimateReadTime(markdown)}`,
     `mediumUrl: ${item.link}`,
-    `excerpt: ${escapeFrontmatter(excerpt)}`,
     '---',
     '',
   ].join('\n');
@@ -595,6 +587,36 @@ const replaceFrontmatterFields = (raw, fields) => {
 
   const nextFrontmatter = ['---', ...nextLines, '---'].join(newline);
   return `${nextFrontmatter}${raw.slice(match[0].length)}`;
+};
+
+const removeFrontmatterFields = (raw, fieldNames) => {
+  const newline = raw.includes('\r\n') ? '\r\n' : '\n';
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!match) return raw;
+
+  const fieldSet = new Set(fieldNames);
+  const nextLines = match[1].split(/\r?\n/).filter(line => {
+    const colon = line.indexOf(':');
+    if (colon === -1) return true;
+    return !fieldSet.has(line.slice(0, colon).trim());
+  });
+
+  const nextFrontmatter = ['---', ...nextLines, '---'].join(newline);
+  return `${nextFrontmatter}${raw.slice(match[0].length)}`;
+};
+
+const cleanExistingExcerptFields = () => {
+  const cleaned = [];
+
+  readExistingPosts().forEach(post => {
+    const nextRaw = removeFrontmatterFields(post.raw, ['excerpt']);
+    if (nextRaw === post.raw) return;
+
+    fs.writeFileSync(post.fullPath, nextRaw, 'utf8');
+    cleaned.push(post.file);
+  });
+
+  return cleaned;
 };
 
 const findExistingPost = (existingPosts, post) => {
@@ -649,15 +671,14 @@ const importFromMediumJson = async () => {
     const title = sanitizeTitle(post.title);
     const slug = slugify(title);
     const markdown = await convertPostToMarkdown(post, slug, title);
-    const excerpt = createExcerpt(markdown);
-    const subtitle = getCuratedDescription(post) || createSubtitle(excerpt);
+    const subtitle = getCuratedDescription(post) || createArticleDescription(markdown);
 
     if (!markdown) {
       skipped.push({ id: post.id, title, reason: 'empty markdown after conversion' });
       continue;
     }
 
-    imported.push(writePost(post, markdown, subtitle, excerpt));
+    imported.push(writePost(post, markdown, subtitle));
   }
 
   return { source: 'medium-json', discovered: streamPosts.length, imported, updated, skipped };
@@ -680,6 +701,7 @@ const importFromRss = async feedUrl => {
 (async () => {
   stripNumericFilenamePrefixes();
   const cleanedAuthorSections = cleanExistingAuthorSections();
+  const cleanedExcerptFields = cleanExistingExcerptFields();
   const result = SOURCE_ARG.includes('/feed/') ? await importFromRss(SOURCE_ARG || DEFAULT_FEED_URL) : await importFromMediumJson();
 
   console.log(
@@ -687,6 +709,7 @@ const importFromRss = async feedUrl => {
       {
         ...result,
         cleanedAuthorSections,
+        cleanedExcerptFields,
         imported: result.imported.length,
         importedPosts: result.imported,
         updated: result.updated.length,

@@ -3,12 +3,11 @@ seoTitle: Debug Microservices with Prometheus & OTel
 slug: debug-microservices-prometheus-opentelemetry
 tag: DevOps
 title: How We Debug Slow Microservices in Minutes (Not Hours): A Prometheus + OpenTelemetry Guide
-subtitle: From “checkout is broken” to root cause in minutes using metrics, traces, and logs. The exact Prometheus + OpenTelemetry setup we use in production.
-intro: From “checkout is broken” to root cause in minutes using metrics, traces, and logs. The exact Prometheus + OpenTelemetry setup we use in production.
+subtitle: From “checkout is broken” to root cause in minutes using metrics, traces, and logs. The exact Prometheus+OpenTelemetry setup we use in…
+intro: From “checkout is broken” to root cause in minutes using metrics, traces, and logs. The exact Prometheus+OpenTelemetry setup we use in…
 date: February 2, 2026
 readTime: 14 min read
 mediumUrl: https://arg-software.medium.com/how-we-debug-slow-microservices-in-18-minutes-not-4-hours-a-prometheus-opentelemetry-guide-0d7b551d1722
-excerpt: Monitoring tells you something broke. Observability tells you why. And that distinction is the difference between an 18-minute fix and a 4-hour war room.
 ---
 
 ![How we debug slow Microservices](/images/blog/how-we-debug-slow-microservices/how-we-debug-slow-microservices-header.webp)

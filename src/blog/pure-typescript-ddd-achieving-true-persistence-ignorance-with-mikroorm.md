@@ -3,11 +3,10 @@ seoTitle: Pure TypeScript DDD: Achieving True Persistence Ignorance with MikroOR
 slug: pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm
 tag: Architecture
 title: Pure TypeScript DDD: Achieving True Persistence Ignorance with MikroORM
-subtitle: How to decouple your Domain Model from the database layer to build scalable, testable, and future-proof enterprise systems.
-intro: How to decouple your Domain Model from the database layer to build scalable, testable, and future-proof enterprise systems.
+subtitle: Decouple your business logic from your database. Discover how to build pure TypeScript DDD applications using MikroORM
+intro: Decouple your business logic from your database. Discover how to build pure TypeScript DDD applications using MikroORM
 date: April 13, 2026
 readTime: 9 min read
-excerpt: You’ve read the books. You’ve studied Domain-Driven Design (DDD). You’ve carefully crafted a src/domain folder in your TypeScript project, ready to isolate your core business logic from the messy outside
 ---
 ### How to decouple your Domain Model from the database layer to build scalable, testable, and future-proof enterprise systems.
 

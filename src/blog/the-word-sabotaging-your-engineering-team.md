@@ -3,12 +3,11 @@ seoTitle: The Word Sabotaging Your Engineering Team
 slug: the-word-sabotaging-your-engineering-team
 tag: Culture
 title: The Four-Letter Word That's Sabotaging Your Engineering Team
-subtitle: Stop using 'just' in engineering discussions. This four-letter word creates a false sense of simplicity, pressures teams, and leads to missed deadlines.
-intro: Stop using 'just' in engineering discussions. This four-letter word creates a false sense of simplicity, pressures teams, and leads to missed deadlines.
+subtitle: Stop using ‘just’ in engineering discussions. This four-letter word creates a false sense of simplicity and pressures teams.
+intro: Stop using ‘just’ in engineering discussions. This four-letter word creates a false sense of simplicity and pressures teams.
 date: June 18, 2025
 readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/the-four-letter-word-thats-sabotaging-your-engineering-team-adc398aed5ef
-excerpt: There's one small word that's quietly sneaking into engineering conversations and distorting perception of complexity. It shows up in meetings, code reviews, and Slack threads, making complex work sound effortless — and setting teams up for confusion, underestimation, and burnout.
 ---
 
 ![The four letter word sabotage](/images/blog/the-four-letter-word/the-four-letter-word-header.webp)

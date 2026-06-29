@@ -354,7 +354,7 @@ export default function seoPrerender() {
 
         const articleUrl = `${SITE_URL}/blog/${meta.slug}/`;
         const title = `${meta.seoTitle || meta.title || meta.slug} | Arg Software`;
-        const description = meta.excerpt || meta.subtitle || '';
+        const description = meta.subtitle || '';
 
         let extra = '';
         if (meta.date) {
@@ -378,8 +378,7 @@ export default function seoPrerender() {
         });
 
         html = injectCrawlableBlock(html, buildCrawlableBlock(meta.title || meta.slug, {
-          description: meta.excerpt || '',
-          subtitle: meta.subtitle || '',
+          description: meta.subtitle || '',
           extraLinks: [{ href: '/blog/', label: 'Blog' }],
         }));
 
@@ -428,13 +427,13 @@ export default function seoPrerender() {
       const notFoundHtml = replaceMetaTags(baseHtml, {
         title: 'Page Not Found | Arg Software',
         description: 'The page you\'re looking for doesn\'t exist. Head back to Arg Software\'s homepage.',
-        url: `${SITE_URL}/404`,
+        url: `${SITE_URL}/`,
         type: 'website',
       });
       // Replace robots meta tag with noindex for 404 page
       const notFoundHtmlNoIndex = notFoundHtml.replace(
         /<meta\s+name="robots"\s+content="[^"]*"\s*\/?>/,
-        '<meta name="robots" content="noindex, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />'
+        '<meta name="robots" content="noindex, nofollow" />'
       );
       const notFoundCrawlable = buildCrawlableBlock('Page not found', {
         description: 'The page you\'re looking for has moved, been deleted, or never existed. Let\'s get you back on track.',
@@ -494,7 +493,7 @@ ${sitemapUrls.map(u => `  <url>
       const rssItems = blogPostMetas.map(meta => {
         const itemUrl = `${SITE_URL}/blog/${meta.slug}/`;
         const pubDate = meta.date ? new Date(meta.date).toUTCString() : new Date().toUTCString();
-        const desc = escapeHtml(meta.excerpt || meta.subtitle || '');
+        const desc = escapeHtml(meta.subtitle || '');
         const title = escapeHtml(meta.seoTitle || meta.title || meta.slug);
         return `    <item>
       <title>${title}</title>
@@ -524,7 +523,7 @@ ${rssItems}
       const atomEntries = blogPostMetas.map(meta => {
         const itemUrl = `${SITE_URL}/blog/${meta.slug}/`;
         const updated = meta.date ? new Date(meta.date).toISOString() : new Date().toISOString();
-        const summary = escapeHtml(meta.excerpt || meta.subtitle || '');
+        const summary = escapeHtml(meta.subtitle || '');
         const title = escapeHtml(meta.seoTitle || meta.title || meta.slug);
         return `  <entry>
     <title>${title}</title>

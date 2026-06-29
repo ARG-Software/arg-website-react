@@ -119,7 +119,7 @@ export function RelatedArticlesCarousel({
                 {post.tag}
               </Pill>
               <h3>{post.title}</h3>
-              <p>{post.subtitle || post.excerpt}</p>
+              <p>{post.subtitle}</p>
               <span className="related-article-card__meta">
                 {[post.date, post.readTime].filter(Boolean).join(' · ')}
               </span>

@@ -8,7 +8,6 @@ intro: A step-by-step guide to running containerized applications locally with t
 date: May 14, 2025
 readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/from-zero-to-hero-mastering-local-kubernetes-with-nestjs-and-postgresql-in-minutes-4f3718c09004
-excerpt: As Kubernetes becomes the industry standard for deploying modern cloud-native applications, mastering its local development workflows is essential. We'll walk you through deploying a NestJS logging API with PostgreSQL inside a lightweight Kubernetes cluster using k3d.
 ---
 
 ![From Zero to Hero](/images/blog/from-zero-to-hero/from-zero-to-hero-header.webp)

@@ -3,11 +3,10 @@ seoTitle: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript
 slug: stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps
 tag: Refactoring
 title: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps
-subtitle: Legacy TypeScript codebases don't become unsafe suddenly. They start to become unsafe one any at a time.
-intro: Legacy TypeScript codebases don't become unsafe suddenly. They start to become unsafe one any at a time.
+subtitle: any is spreading through your legacy codebase. A risk-based migration plan covering unknown, Zod validation, strict mode, and ESLint
+intro: any is spreading through your legacy codebase. A risk-based migration plan covering unknown, Zod validation, strict mode, and ESLint
 date: May 27, 2026
 readTime: 7 min read
-excerpt: Legacy TypeScript codebases don't become unsafe suddenly. They start to become unsafe one any at a
 ---
 ![Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps](/images/blog/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps-header.webp)
 

@@ -3,12 +3,11 @@ seoTitle: Circuit Breaker Pattern in ASP.NET Core
 slug: circuit-breaker-pattern-aspnet-core
 tag: Architecture
 title: Stop Your ASP.NET Core App from Crashing: The Circuit Breaker Pattern Explained
-subtitle: Learn how the Circuit Breaker pattern in ASP.NET Core stops failing services from crashing your app. Fail fast, recover quickly, and keep users happy.
-intro: Learn how the Circuit Breaker pattern in ASP.NET Core stops failing services from crashing your app. Fail fast, recover quickly, and keep users happy.
+subtitle: Learn how the Circuit Breaker pattern in ASP.NET Core stops failing services from crashing your app. Fail fast, recover quickly.
+intro: Learn how the Circuit Breaker pattern in ASP.NET Core stops failing services from crashing your app. Fail fast, recover quickly.
 date: October 24, 2025
 readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/%EF%B8%8F-stop-your-asp-net-core-app-from-crashing-the-circuit-breaker-pattern-explained-9b5a4ba9f0c7
-excerpt: You're running an e-commerce platform. Everything's going along nicely until your payment gateway starts having a bad day. Suddenly, every checkout request hangs for 30 seconds before timing out. Here's how the Circuit Breaker pattern prevents this nightmare.
 ---
 
 ![Stop your ASP Net Core App from crashing](/images/blog/stop-your-asp-net-core-app-from-crashing/stop-your-asp-net-core-app-from-crashing-header.webp)

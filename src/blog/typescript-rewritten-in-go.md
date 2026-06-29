@@ -3,12 +3,11 @@ seoTitle: TypeScript 7 Rewritten in Go: What to Do
 slug: typescript-7-rewritten-in-go
 tag: Architecture
 title: TypeScript 7.0 Is Being Rewritten in Go. Here's Why You Should Care (and What to Do Today)
-subtitle: The end of an era for JavaScript’s most beloved compiler - and the beginning of 10x faster builds
-intro: The end of an era for JavaScript’s most beloved compiler - and the beginning of 10x faster builds
+subtitle: TypeScript 7 is rewritten in Go for 10x faster builds. TypeScript 6.0 prepares your codebase. Install tsgo preview, and start preparing.
+intro: TypeScript 7 is rewritten in Go for 10x faster builds. TypeScript 6.0 prepares your codebase. Install tsgo preview, and start preparing.
 date: March 24, 2026
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/typescript-7-rewritten-in-go
-excerpt: TypeScript 6.0 RC is the last JavaScript-based release ever. Starting with TypeScript 7.0, the compiler is being rewritten in Go — with 10x faster type checking on large codebases. Here's what's changing, what breaks, and exactly what you need to do today.
 ---
 
 ![TypeScript 7.0 rewritten in Go](/images/blog/typescript-7-rewritten-in-go/typescript-7-rewritten-in-go-header.webp)

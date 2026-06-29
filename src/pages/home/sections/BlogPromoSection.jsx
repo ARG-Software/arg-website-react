@@ -29,7 +29,7 @@ function BlogCard({ blogPost, animationOrder }) {
     >
       <div className="blog-promo_card-new-header">
         <h4 className="blog-promo_card-new-title">{blogPost.title}</h4>
-        <p className="blog-promo_card-new-excerpt">{blogPost.excerpt}</p>
+        <p className="blog-promo_card-new-excerpt">{blogPost.subtitle}</p>
       </div>
       <div className="blog-promo_card-new-footer">
         <Pill className="blog-promo_card-new-tag" variant="custom" size="xs" style={tagStyle}>
@@ -98,7 +98,7 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
                   <h3 className="blog-promo_card-new-title blog-promo_hero-title">
                     {heroPost.title}
                   </h3>
-                  <p className="blog-promo_card-new-excerpt">{heroPost.excerpt}</p>
+                  <p className="blog-promo_card-new-excerpt">{heroPost.subtitle}</p>
                 </div>
                 <div className="blog-promo_card-new-footer blog-promo_hero-footer">
                   <Pill

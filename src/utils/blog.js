@@ -31,7 +31,6 @@ export function extractMetadata(meta, body) {
     date: meta.date || '',
     readTime: meta.readTime || '',
     mediumUrl: meta.mediumUrl || '',
-    excerpt: meta.excerpt || '',
     image,
   };
 }
@@ -256,7 +255,6 @@ export function parseBlogPostMarkdown(raw) {
     date: meta.date || '',
     readTime: meta.readTime || '',
     mediumUrl: meta.mediumUrl || '',
-    excerpt: meta.excerpt || '',
   };
 }
 

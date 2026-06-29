@@ -3,12 +3,11 @@ seoTitle: TypeScript Error Handling: Result Pattern
 slug: functional-error-handling-typescript-result-pattern
 tag: Architecture
 title: Functional Error Handling in TypeScript with the Result Pattern
-subtitle: Stop throwing exceptions! Learn the Result pattern for cleaner, faster error handling. Complete guide with code examples
-intro: Stop throwing exceptions! Learn the Result pattern for cleaner, faster error handling. Complete guide with code examples
+subtitle: Stop throwing exceptions! Learn the Result pattern for cleaner, faster error handling. Complete guide with code examples.
+intro: Stop throwing exceptions! Learn the Result pattern for cleaner, faster error handling. Complete guide with code examples.
 date: September 26, 2025
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/functional-error-handling-in-typescript-with-the-result-pattern-5b96a5abb6d3
-excerpt: Many developers default to throwing exceptions for error handling, but this approach has significant drawbacks that can make your codebase a nightmare to maintain. The Result pattern offers a better way.
 ---
 
 ![Functional Error Handling in Typescript](/images/blog/functional-error-handling-in-typescript/functional-error-handling-in-typescript-header.webp)

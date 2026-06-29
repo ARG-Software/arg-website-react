@@ -3,12 +3,11 @@ seoTitle: TypeScript DI Without a Framework
 slug: typescript-dependency-injection-without-framework
 tag: Architecture
 title: TypeScript Dependency Injection Without the Framework (And Why You Might Prefer It)
-subtitle: You’ve seen the decorators. You’ve wrestled with reflect-metadata. You've written @Injectable() on a hundred classes and trusted the…
-intro: You’ve seen the decorators. You’ve wrestled with reflect-metadata. You've written @Injectable() on a hundred classes and trusted the…
+subtitle: Learn to build a type-safe DI container in TypeScript from scratch — no NestJS, no decorators, no reflect-metadata. Just pure TypeScript.
+intro: Learn to build a type-safe DI container in TypeScript from scratch — no NestJS, no decorators, no reflect-metadata. Just pure TypeScript.
 date: March 3, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/typescript-dependency-injection-without-the-framework-and-why-you-might-prefer-it-8e78d77b6735
-excerpt: This article walks through building a fully functional dependency injection system in TypeScript — no decorators, no reflect-metadata, no NestJS, no InversifyJS. Just the language itself. By the end, you'll understand DI deeply enough that reaching for a framework becomes a conscious choice, not a default.
 ---
 
 ![Typescript Dependency Injection without the Framework](/images/blog/typescript-dependency-injection-without-the-framework/typescript-dependency-injection-without-the-framework-header.webp)

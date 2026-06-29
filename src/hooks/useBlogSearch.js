@@ -19,7 +19,7 @@ export function useBlogSearch(posts, { debounceMs = 200, selectedTags = [] } = {
         (!q.trim() ||
           post.title.toLowerCase().includes(q) ||
           post.tag.toLowerCase().includes(q) ||
-          post.excerpt.toLowerCase().includes(q))
+          post.subtitle.toLowerCase().includes(q))
     );
   }, [posts, debouncedQuery, selectedTags]);
 

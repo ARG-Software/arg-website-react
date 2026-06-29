@@ -3,11 +3,10 @@ seoTitle: The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep
 slug: the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn
 tag: Architecture
 title: The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (and Which to Burn)
-subtitle: There is a growing movement in the .NET community right now, and it is fueled by pure exhaustion. Developers are tired. They are tired of…
-intro: There is a growing movement in the .NET community right now, and it is fueled by pure exhaustion. Developers are tired. They are tired of…
+subtitle: Stop over-engineering your .NET apps. Learn which Clean Architecture abstractions protect your domain and which just slow you down.
+intro: Stop over-engineering your .NET apps. Learn which Clean Architecture abstractions protect your domain and which just slow you down.
 date: June 6, 2026
 readTime: 8 min read
-excerpt: There is a growing movement in the .NET community right now, and it is fueled by pure exhaustion. Developers are tired. They are tired of opening a pull request to add a single database column, only to realize they have
 ---
 ![The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (and Which to Burn)](/images/blog/the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn/the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn-header.webp)
 

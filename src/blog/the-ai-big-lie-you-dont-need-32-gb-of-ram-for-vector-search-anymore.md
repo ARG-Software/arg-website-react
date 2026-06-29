@@ -3,11 +3,10 @@ seoTitle: The AI Big Lie: You Don’t Need 32 GB of RAM for Vector Search Anymor
 slug: the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore
 tag: AI
 title: The AI Big Lie: You Don’t Need 32 GB of RAM for Vector Search Anymore
-subtitle: The Local AI RAM Crisis 💸
-intro: The Local AI RAM Crisis 💸
+subtitle: Learn how Google’s TurboQuant and TurboVec compress vectors by 8x, letting developers run high-speed local AI search without the costs.
+intro: Learn how Google’s TurboQuant and TurboVec compress vectors by 8x, letting developers run high-speed local AI search without the costs.
 date: June 10, 2026
 readTime: 6 min read
-excerpt: The enterprise AI landscape is currently misleading developers about hardware requirements. If you want to build Retrieval-Augmented Generation (RAG) or semantic search into your applications, the industry-standard
 ---
 ![The AI Big Lie: You Don’t Need 32 GB of RAM for Vector Search Anymore](/images/blog/the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore/the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore-header.webp)
 
