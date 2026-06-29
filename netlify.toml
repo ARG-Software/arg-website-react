@@ -8,9 +8,6 @@
 [[plugins]]
   package = "@netlify/plugin-lighthouse"
 
-[[plugins]]
-  package = "./netlify/plugins/restore-sitemap"
-
 [dev]
   command = "npm run dev"
   port = 3000
