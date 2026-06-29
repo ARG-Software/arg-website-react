@@ -59,6 +59,10 @@ const stripCode = value =>
     .replace(/\n[ \t]+/g, '\n')
     .trim();
 
+const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1FFFF}\u{2702}-\u{27B0}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}\u{24C2}-\u{1F251}\u{2694}-\u{2696}\u{2699}\u{2708}-\u{270D}\u{2764}\u{221E}\u{267E}\u{2B50}\u{2B55}\u{3030}\u{303D}\u{3297}\u{3299}]/gu;
+
+const stripEmojis = value => String(value || '').replace(EMOJI_RE, '').replace(/\s{2,}/g, ' ').trim();
+
 const sanitizeText = value =>
   stripTags(value)
     .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
@@ -67,7 +71,7 @@ const sanitizeText = value =>
 
 const sanitizeTitle = value =>
   sanitizeText(value)
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+    .replace(EMOJI_RE, '')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -521,24 +525,25 @@ const writePost = (post, markdown, subtitle, excerpt) => {
   const slug = slugify(title);
   const categories = getPostCategories(post);
   const tag = getTag(title, categories);
+  const cleanMarkdown = stripEmojis(markdown);
   const frontmatter = [
     '---',
-    `seoTitle: ${escapeFrontmatter(post.seoTitle || title)}`,
+    `seoTitle: ${escapeFrontmatter(stripEmojis(post.seoTitle || title))}`,
     `slug: ${slug}`,
     `tag: ${tag}`,
     `title: ${escapeFrontmatter(title)}`,
-    `subtitle: ${escapeFrontmatter(subtitle)}`,
-    `intro: ${escapeFrontmatter(subtitle)}`,
+    `subtitle: ${escapeFrontmatter(stripEmojis(subtitle))}`,
+    `intro: ${escapeFrontmatter(stripEmojis(subtitle))}`,
     `date: ${formatDate(post.firstPublishedAt || post.latestPublishedAt || post.createdAt)}`,
-    `readTime: ${estimateReadTime(markdown)}`,
+    `readTime: ${estimateReadTime(cleanMarkdown)}`,
     `mediumUrl: ${getPostUrl(post)}`,
-    `excerpt: ${escapeFrontmatter(excerpt)}`,
+    `excerpt: ${escapeFrontmatter(stripEmojis(excerpt))}`,
     '---',
     '',
   ].join('\n');
   const outputPath = path.join(BLOG_DIR, `${slug}.md`);
 
-  fs.writeFileSync(outputPath, `${frontmatter}${markdown}\n`, 'utf8');
+  fs.writeFileSync(outputPath, `${frontmatter}${cleanMarkdown}\n`, 'utf8');
   return { title, slug, outputPath };
 };
 
@@ -548,7 +553,8 @@ const writeRssPost = async item => {
   const html = cleanMediumHtml(item.html);
   const withLocalImages = await localizeImages(html, slug, title);
   const markdown = convertHtmlToMarkdown(withLocalImages);
-  const excerpt = createExcerpt(markdown);
+  const cleanMarkdown = stripEmojis(markdown);
+  const excerpt = createExcerpt(cleanMarkdown);
   const subtitle = item.description || createSubtitle(excerpt);
   const tag = getTag(title, item.categories);
   const frontmatter = [
@@ -557,18 +563,18 @@ const writeRssPost = async item => {
     `slug: ${slug}`,
     `tag: ${tag}`,
     `title: ${escapeFrontmatter(title)}`,
-    `subtitle: ${escapeFrontmatter(subtitle)}`,
-    `intro: ${escapeFrontmatter(subtitle)}`,
+    `subtitle: ${escapeFrontmatter(stripEmojis(subtitle))}`,
+    `intro: ${escapeFrontmatter(stripEmojis(subtitle))}`,
     `date: ${formatDate(item.pubDate)}`,
-    `readTime: ${estimateReadTime(markdown)}`,
+    `readTime: ${estimateReadTime(cleanMarkdown)}`,
     `mediumUrl: ${item.link}`,
-    `excerpt: ${escapeFrontmatter(excerpt)}`,
+    `excerpt: ${escapeFrontmatter(stripEmojis(excerpt))}`,
     '---',
     '',
   ].join('\n');
   const outputPath = path.join(BLOG_DIR, `${slug}.md`);
 
-  fs.writeFileSync(outputPath, `${frontmatter}${markdown}\n`, 'utf8');
+  fs.writeFileSync(outputPath, `${frontmatter}${cleanMarkdown}\n`, 'utf8');
   return { title, slug, outputPath };
 };
 
