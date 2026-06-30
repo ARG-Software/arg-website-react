@@ -124,13 +124,13 @@ export function useNextProjectSection(sectionRef, progressRef, nextProject) {
         onUpdate: self => {
           if (triggeredRef.current) return;
           gsap.set(progressBar, { scaleX: self.progress });
-          if (allowAutoNextRef.current && self.progress >= 0.98) {
+          if (self.progress >= 0.98) {
             navigateToNextProject();
           }
         },
         onLeave: () => {
           if (triggeredRef.current) return;
-          if (allowAutoNextRef.current) navigateToNextProject();
+          navigateToNextProject();
         },
         onLeaveBack: () => {
           triggeredRef.current = false;
