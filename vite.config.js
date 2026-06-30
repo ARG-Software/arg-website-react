@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
-import seoPrerender from './vite-plugin-seo-prerender.js';
+import seoPrerender from './plugins/seo-prerender/index.js';
 
 
 export default defineConfig({
