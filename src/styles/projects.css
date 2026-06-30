@@ -15,6 +15,7 @@
   --prp-grid-margin: 2.5rem;
   --prp-grid-gutter: 1rem;
   background-color: var(--prp-light);
+  overflow-x: hidden;
 }
 
 .prp-grid-container {
@@ -48,11 +49,11 @@
 
 @media (max-width: 767px) {
   .prp-grid-container {
-    width: calc(100vw - 1.25rem * 2);
+    width: calc(100% - 1.25rem * 2);
   }
 
   .prp-page .nav_contain.container {
-    width: calc(100vw - 1.25rem * 2);
+    width: calc(100% - 1.25rem * 2);
   }
 
   .prp-page .nav-component {
