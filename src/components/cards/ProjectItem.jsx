@@ -48,6 +48,8 @@ export function ProjectItem({
         : [];
 
   const getProjectImageTransition = () => {
+    if (typeof window !== 'undefined' && isMobile()) return undefined;
+
     const image = coverImageRef.current;
     if (!image) return undefined;
 
