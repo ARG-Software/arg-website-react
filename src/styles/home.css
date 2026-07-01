@@ -1355,6 +1355,13 @@
 }
 
 @media screen and (max-width: 767px) {
+  #workstats-subtitle-grid,
+  #team-subtitle-grid {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 767px) {
   .team-component {
     grid-template-columns: 1fr;
   }
