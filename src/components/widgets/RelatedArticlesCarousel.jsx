@@ -3,7 +3,9 @@ import { BaseCard } from '../cards/BaseCard';
 import AppLink from '../navigation/AppLink';
 import { Pill } from '../pills/Pill';
 
-const VISIBLE_COUNT = 3;
+const MOBILE_BREAKPOINT_PX = 767;
+const DESKTOP_VISIBLE_COUNT = 2;
+const MOBILE_VISIBLE_COUNT = 1;
 const TRANSITION_DELAY_MS = 360;
 
 export function RelatedArticlesCarousel({
@@ -15,7 +17,20 @@ export function RelatedArticlesCarousel({
 }) {
   const [startIndex, setStartIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
   const transitionTimer = useRef(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT_PX}px)`);
+    const syncMobile = () => setIsMobileView(mediaQuery.matches);
+    syncMobile();
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', syncMobile);
+      return () => mediaQuery.removeEventListener('change', syncMobile);
+    }
+    mediaQuery.addListener(syncMobile);
+    return () => mediaQuery.removeListener(syncMobile);
+  }, []);
 
   useEffect(
     () => () => {
@@ -26,7 +41,10 @@ export function RelatedArticlesCarousel({
 
   if (!posts.length) return null;
 
-  const visibleCount = Math.min(VISIBLE_COUNT, posts.length);
+  const visibleCount = Math.min(
+    isMobileView ? MOBILE_VISIBLE_COUNT : DESKTOP_VISIBLE_COUNT,
+    posts.length
+  );
   const maxStartIndex = Math.max(0, posts.length - visibleCount);
   const canGoPrevious = startIndex > 0;
   const canGoNext = startIndex < maxStartIndex;
@@ -38,7 +56,7 @@ export function RelatedArticlesCarousel({
   const navigate = direction => {
     if (isTransitioning) return;
 
-    const nextIndex = Math.min(maxStartIndex, Math.max(0, startIndex + direction * VISIBLE_COUNT));
+    const nextIndex = Math.min(maxStartIndex, Math.max(0, startIndex + direction * visibleCount));
 
     if (nextIndex === startIndex) return;
 
@@ -60,6 +78,8 @@ export function RelatedArticlesCarousel({
       }
     : {};
 
+  const showControls = posts.length > visibleCount;
+
   return (
     <div
       className="related-articles-carousel"
@@ -70,75 +90,72 @@ export function RelatedArticlesCarousel({
         className="related-articles-carousel__head"
         data-animate-order={animate ? '0' : undefined}
       >
-        <div>
+        <div className="related-articles-carousel__heading">
           <span className="related-articles-carousel__kicker">Continue reading</span>
           <h2 id="related-articles-carousel-title">
-            More from the <span>Arg Software</span> team
+            More from <span>ARG</span>
           </h2>
         </div>
-      </div>
-
-      <div className="related-articles-carousel__stage">
-        {posts.length > visibleCount && (
-          <button
-            type="button"
-            className="related-articles-carousel__arrow related-articles-carousel__arrow--prev"
-            aria-label="Show previous related articles"
-            disabled={!canGoPrevious}
-            onClick={() => navigate(-1)}
+        {showControls && (
+          <div
+            className="related-articles-carousel__controls"
             data-animate-order={animate ? '1' : undefined}
           >
-            ←
-          </button>
-        )}
-
-        <div
-          className={`related-articles-carousel__track${isTransitioning ? ' is-transitioning' : ''}`}
-          aria-live="polite"
-        >
-          {visiblePosts.map((post, index) => (
-            <BaseCard
-              as={AppLink}
-              key={post.slug}
-              to={`/blog/${post.slug}/`}
-              className="related-article-card"
-              variant="glass"
-              padding="sm"
-              radius="lg"
-              hover="none"
-              animate={animate}
-              animationOrder={index + 2}
-              trackEvent="blog_related_click"
-              trackData={{
-                blog_post_slug: post.slug,
-                source_slug: sourceSlug,
-                location: 'blog_related_carousel',
-              }}
+            <button
+              type="button"
+              className="related-articles-carousel__arrow related-articles-carousel__arrow--prev"
+              aria-label="Show previous related articles"
+              disabled={!canGoPrevious}
+              onClick={() => navigate(-1)}
             >
-              <Pill className="related-article-card__tag" variant="muted" size="xs">
-                {post.tag}
-              </Pill>
-              <h3>{post.title}</h3>
-              <p>{post.subtitle}</p>
-              <span className="related-article-card__meta">
-                {[post.date, post.readTime].filter(Boolean).join(' · ')}
-              </span>
-            </BaseCard>
-          ))}
-        </div>
-
-        {posts.length > visibleCount && (
-          <button
-            type="button"
-            className="related-articles-carousel__arrow related-articles-carousel__arrow--next"
-            aria-label="Show next related articles"
-            disabled={!canGoNext}
-            onClick={() => navigate(1)}
-            data-animate-order={animate ? String(visiblePosts.length + 2) : undefined}
-          >
-            →
-          </button>
+              ←
+            </button>
+            <button
+              type="button"
+              className="related-articles-carousel__arrow related-articles-carousel__arrow--next"
+              aria-label="Show next related articles"
+              disabled={!canGoNext}
+              onClick={() => navigate(1)}
+            >
+              →
+            </button>
+          </div>
         )}
+      </div>
+
+      <div
+        className={`related-articles-carousel__track${isTransitioning ? ' is-transitioning' : ''}`}
+        aria-live="polite"
+      >
+        {visiblePosts.map((post, index) => (
+          <BaseCard
+            as={AppLink}
+            key={post.slug}
+            to={`/blog/${post.slug}/`}
+            className="related-article-card"
+            variant="glass"
+            padding="sm"
+            radius="lg"
+            hover="none"
+            animate={animate}
+            animationOrder={index + 2}
+            trackEvent="blog_related_click"
+            trackData={{
+              blog_post_slug: post.slug,
+              source_slug: sourceSlug,
+              location: 'blog_related_carousel',
+            }}
+          >
+            <Pill className="related-article-card__tag" variant="muted" size="xs">
+              {post.tag}
+            </Pill>
+            <h3>{post.title}</h3>
+            <p>{post.subtitle}</p>
+            <span className="related-article-card__meta">
+              {[post.date, post.readTime].filter(Boolean).join(' · ')}
+            </span>
+          </BaseCard>
+        ))}
       </div>
     </div>
   );

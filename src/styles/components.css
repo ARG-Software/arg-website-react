@@ -1593,6 +1593,10 @@
   margin-bottom: 2rem;
 }
 
+.related-articles-carousel__heading {
+  min-width: 0;
+}
+
 .related-articles-carousel__kicker {
   color: rgba(255, 255, 255, 0.52);
   display: block;
@@ -1607,11 +1611,12 @@
 .related-articles-carousel h2 {
   color: #fff;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-size: clamp(1.75rem, 4vw, 3rem);
   font-weight: 400;
   letter-spacing: -0.035em;
   line-height: 1.05;
   margin: 0;
+  white-space: normal;
 }
 
 .related-articles-carousel h2 span {
@@ -1621,9 +1626,11 @@
   color: transparent;
 }
 
-.related-articles-carousel__stage {
-  min-height: 20rem;
-  position: relative;
+.related-articles-carousel__controls {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 0.75rem;
 }
 
 .related-articles-carousel__arrow {
@@ -1640,11 +1647,7 @@
   height: 3rem;
   justify-content: center;
   line-height: 1;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   width: 3rem;
-  z-index: 3;
   transition:
     background-color 0.2s ease,
     transform 0.2s ease;
@@ -1652,7 +1655,7 @@
 
 .related-articles-carousel__arrow:hover {
   background: #f5f2ff;
-  transform: translateY(calc(-50% - 1px));
+  transform: translateY(-1px);
 }
 
 .related-articles-carousel__arrow:disabled {
@@ -1661,18 +1664,10 @@
   pointer-events: none;
 }
 
-.related-articles-carousel__arrow--prev {
-  left: -4rem;
-}
-
-.related-articles-carousel__arrow--next {
-  right: -4rem;
-}
-
 .related-articles-carousel__track {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   min-height: 20rem;
   opacity: 1;
   transform: translateY(0);
@@ -1744,33 +1739,24 @@
   text-transform: uppercase;
 }
 
-@media screen and (max-width: 900px) {
-  .related-articles-carousel__stage,
-  .related-articles-carousel__track {
-    min-height: 17rem;
-  }
-
-  .related-articles-carousel__track {
-    grid-template-columns: 1fr;
-  }
-
-  .related-articles-carousel__arrow--prev {
-    left: -0.875rem;
-  }
-
-  .related-articles-carousel__arrow--next {
-    right: -0.875rem;
-  }
-
-  .related-article-card {
-    min-height: 17rem;
-  }
-}
-
 @media screen and (max-width: 767px) {
   .related-articles-carousel__head {
     align-items: flex-start;
     flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .related-articles-carousel__controls {
+    align-self: flex-end;
+  }
+
+  .related-articles-carousel__track {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 17rem;
+  }
+
+  .related-article-card {
+    min-height: 17rem;
   }
 }
 
