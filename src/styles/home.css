@@ -998,6 +998,7 @@
   .work_items-wrapper {
     grid-column-gap: 4rem;
     grid-row-gap: 4rem;
+    margin-bottom: 2rem;
   }
 
   .work_image-wrapper {

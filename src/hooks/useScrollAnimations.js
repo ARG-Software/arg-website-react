@@ -464,7 +464,7 @@ export function useScrollAnimations(config = {}) {
       }
       gsapTriggers.forEach(t => t.kill());
     };
-  }, [enabled, mobileBehavior]);
+  }, [enabled, mobileBehavior, done]);
 
   // When loading screen completes, process any deferred load-triggered animations
   useEffect(() => {

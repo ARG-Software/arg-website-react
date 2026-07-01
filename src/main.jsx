@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { LoadingProvider } from './providers/LoadingProvider.jsx';
 import { RAFProvider } from './providers/RAFProvider.jsx';
@@ -8,23 +8,25 @@ import HomePage from './pages/home/HomePage.jsx';
 import { LenisProvider } from './providers/LenisProvider.jsx';
 import { TransitionProvider } from './providers/TransitionProvider.jsx';
 import { CookieConsent, EmailCaptureForm } from './components/index.js';
+import { ErrorBoundary } from './components/layout/ErrorBoundary.jsx';
+import { lazyWithRetry } from './utils/lazyWithRetry.js';
 import './styles/base.css';
 import './styles/home.css';
 import './styles/components.css';
 import './styles/legal.css';
 import './styles/effects.css';
 
-const PartnersPage = lazy(() => import('./pages/PartnersPage.jsx'));
-const ProjectsPage = lazy(() => import('./pages/ProjectsPage.jsx'));
-const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage.jsx'));
-const CareersPage = lazy(() => import('./pages/CareersPage.jsx'));
-const WorkingWithUsPage = lazy(() => import('./pages/WorkingWithUsPage.jsx'));
-const ContactPage = lazy(() => import('./pages/ContactPage.jsx'));
-const BlogPage = lazy(() => import('./pages/blog/BlogPage.jsx'));
-const BlogPostPage = lazy(() => import('./pages/blog/BlogPostPage.jsx'));
-const PrivacyPage = lazy(() => import('./pages/PrivacyPage.jsx'));
-const TermsPage = lazy(() => import('./pages/TermsPage.jsx'));
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'));
+const PartnersPage = lazyWithRetry(() => import('./pages/PartnersPage.jsx'));
+const ProjectsPage = lazyWithRetry(() => import('./pages/ProjectsPage.jsx'));
+const ProjectDetailPage = lazyWithRetry(() => import('./pages/ProjectDetailPage.jsx'));
+const CareersPage = lazyWithRetry(() => import('./pages/CareersPage.jsx'));
+const WorkingWithUsPage = lazyWithRetry(() => import('./pages/WorkingWithUsPage.jsx'));
+const ContactPage = lazyWithRetry(() => import('./pages/ContactPage.jsx'));
+const BlogPage = lazyWithRetry(() => import('./pages/blog/BlogPage.jsx'));
+const BlogPostPage = lazyWithRetry(() => import('./pages/blog/BlogPostPage.jsx'));
+const PrivacyPage = lazyWithRetry(() => import('./pages/PrivacyPage.jsx'));
+const TermsPage = lazyWithRetry(() => import('./pages/TermsPage.jsx'));
+const NotFoundPage = lazyWithRetry(() => import('./pages/NotFoundPage.jsx'));
 
 function BlogPostPageWrapper() {
   const { slug } = useParams();
@@ -43,32 +45,34 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <RAFProvider>
           <LenisProvider>
             <TransitionProvider>
-              <Suspense fallback={null}>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/partners" element={<PartnersPage />} />
-                  <Route path="/partners/" element={<PartnersPage />} />
-                  <Route path="/projects" element={<ProjectsPage />} />
-                  <Route path="/projects/" element={<ProjectsPage />} />
-                  <Route path="/projects/:slug" element={<ProjectDetailPageWrapper />} />
-                  <Route path="/projects/:slug/" element={<ProjectDetailPageWrapper />} />
-                  <Route path="/careers" element={<CareersPage />} />
-                  <Route path="/careers/" element={<CareersPage />} />
-                  <Route path="/working-with-us" element={<WorkingWithUsPage />} />
-                  <Route path="/working-with-us/" element={<WorkingWithUsPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/contact/" element={<ContactPage />} />
-                  <Route path="/blog" element={<BlogPage />} />
-                  <Route path="/blog/" element={<BlogPage />} />
-                  <Route path="/blog/:slug" element={<BlogPostPageWrapper />} />
-                  <Route path="/blog/:slug/" element={<BlogPostPageWrapper />} />
-                  <Route path="/privacy" element={<PrivacyPage />} />
-                  <Route path="/privacy/" element={<PrivacyPage />} />
-                  <Route path="/terms" element={<TermsPage />} />
-                  <Route path="/terms/" element={<TermsPage />} />
-                  <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-              </Suspense>
+              <ErrorBoundary>
+                <Suspense fallback={null}>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/partners" element={<PartnersPage />} />
+                    <Route path="/partners/" element={<PartnersPage />} />
+                    <Route path="/projects" element={<ProjectsPage />} />
+                    <Route path="/projects/" element={<ProjectsPage />} />
+                    <Route path="/projects/:slug" element={<ProjectDetailPageWrapper />} />
+                    <Route path="/projects/:slug/" element={<ProjectDetailPageWrapper />} />
+                    <Route path="/careers" element={<CareersPage />} />
+                    <Route path="/careers/" element={<CareersPage />} />
+                    <Route path="/working-with-us" element={<WorkingWithUsPage />} />
+                    <Route path="/working-with-us/" element={<WorkingWithUsPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/contact/" element={<ContactPage />} />
+                    <Route path="/blog" element={<BlogPage />} />
+                    <Route path="/blog/" element={<BlogPage />} />
+                    <Route path="/blog/:slug" element={<BlogPostPageWrapper />} />
+                    <Route path="/blog/:slug/" element={<BlogPostPageWrapper />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="/privacy/" element={<PrivacyPage />} />
+                    <Route path="/terms" element={<TermsPage />} />
+                    <Route path="/terms/" element={<TermsPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+                </Suspense>
+              </ErrorBoundary>
             </TransitionProvider>
           </LenisProvider>
         </RAFProvider>
