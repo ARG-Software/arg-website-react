@@ -690,7 +690,6 @@
   .prp-intro-title,
   .prp-intro-subtitle,
   .prp-intro-description,
-  .prp-intro-live-link,
   .prp-intro-links {
     width: 100%;
     max-width: calc(100vw - 2.5rem);
@@ -700,14 +699,27 @@
     word-break: normal;
   }
 
+  .prp-intro-live-link {
+    width: auto;
+    max-width: calc(100vw - 2.5rem);
+    align-self: flex-start;
+  }
+
   .prp-intro-heading-group {
     gap: 1.25rem;
   }
 
   .prp-meta-list {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 2rem;
     padding-top: 2rem;
+  }
+
+  .prp-meta-item--services,
+  .prp-meta-item--technology {
+    grid-column: 1 / -1;
   }
 
   .prp-section-heading,

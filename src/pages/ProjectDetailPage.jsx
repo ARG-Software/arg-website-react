@@ -153,7 +153,11 @@ export default function ProjectDetailPage() {
                   <span className="prp-meta-label">Client</span>
                   <span className="prp-meta-value">{project.client}</span>
                 </div>
-                <div className="prp-meta-item" data-animate="fade-up" data-animate-order="2">
+                <div
+                  className="prp-meta-item prp-meta-item--services"
+                  data-animate="fade-up"
+                  data-animate-order="2"
+                >
                   <span className="prp-meta-label">Services</span>
                   <div className="prp-meta-services">
                     {project.services.map((service, i) => (
@@ -170,7 +174,11 @@ export default function ProjectDetailPage() {
                     ))}
                   </div>
                 </div>
-                <div className="prp-meta-item" data-animate="fade-up" data-animate-order="3">
+                <div
+                  className="prp-meta-item prp-meta-item--technology"
+                  data-animate="fade-up"
+                  data-animate-order="3"
+                >
                   <span className="prp-meta-label">Technology</span>
                   <div className="prp-meta-services">
                     {stackItems.map((tech, i) => (
