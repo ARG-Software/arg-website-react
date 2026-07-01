@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { trackConsent } from '../../utils/analytics';
 import { STORAGE_KEY } from '../../constants';
@@ -15,49 +15,32 @@ function updateConsent(granted) {
   }
 }
 
+function getStoredConsent() {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(STORAGE_KEY);
+}
+
 export function CookieConsent() {
-  const [visible, setVisible] = useState(false);
+  const [consent, setConsent] = useState(getStoredConsent);
   const location = useLocation();
   const loadingDone = useContext(LoadingContext);
   const isHomepage = location.pathname === '/';
-
-  useEffect(() => {
-    if (!isHomepage) {
-      setVisible(false);
-      return;
-    }
-
-    if (!loadingDone) return;
-
-    const stored = localStorage.getItem(STORAGE_KEY);
-
-    if (stored === 'granted') {
-      updateConsent(true);
-      return;
-    }
-
-    if (stored === 'denied') {
-      return;
-    }
-
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setVisible(true);
-  }, [isHomepage, loadingDone]);
-
-  if (!visible) return null;
+  const shouldShow = isHomepage && loadingDone && consent !== 'granted' && consent !== 'denied';
 
   function handleAccept(type) {
     localStorage.setItem(STORAGE_KEY, 'granted');
     updateConsent(true);
     trackConsent(type);
-    setVisible(false);
+    setConsent('granted');
   }
+
+  if (!shouldShow) return null;
 
   return (
     <div id="arg-cookie-banner" role="dialog" aria-label="Cookie consent">
       <p>
-        We use analytics cookies to understand how visitors use our site and improve it. No
-        personal data is sold or shared with third parties.
+        We use analytics cookies to understand how visitors use our site and improve it. No personal
+        data is sold or shared with third parties.
       </p>
       <div className="arg-cookie-actions">
         <button
@@ -76,4 +59,3 @@ export function CookieConsent() {
     </div>
   );
 }
-
