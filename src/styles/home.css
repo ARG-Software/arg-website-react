@@ -952,7 +952,7 @@
 
 @media screen and (max-width: 991px) {
   .section_work .container-medium {
-    padding-bottom: 3rem;
+    padding-bottom: 1.5rem;
   }
 
   .work-component {
@@ -979,11 +979,17 @@
     left: 0.8rem;
     top: 6.25rem;
   }
+
+  .section_work .subtitle_tag-wrapper,
+  .section_team .subtitle_tag-wrapper {
+    display: inline-flex;
+    margin-bottom: 1.25rem;
+  }
 }
 
 @media screen and (max-width: 767px) {
   .section_work .container-medium {
-    padding-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
   }
 
   .work-component {
@@ -1355,13 +1361,6 @@
 }
 
 @media screen and (max-width: 767px) {
-  #workstats-subtitle-grid,
-  #team-subtitle-grid {
-    display: none;
-  }
-}
-
-@media screen and (max-width: 767px) {
   .team-component {
     grid-template-columns: 1fr;
   }
@@ -1420,8 +1419,8 @@
 
 @media screen and (max-width: 991px) {
   .section_testimonials {
-    padding-bottom: 7.5rem;
-    padding-top: 7.5rem;
+    padding-bottom: 3rem;
+    padding-top: 3rem;
   }
 
   .testimonials-component {
