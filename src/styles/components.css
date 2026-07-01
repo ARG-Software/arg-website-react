@@ -2796,9 +2796,8 @@ textarea.ec-input {
   background-color: #0c002e;
   display: flex;
   flex-direction: column;
-  height: 50vh;
+  min-height: clamp(18rem, 34vh, 28rem);
   margin-top: var(--navbar-height-desktop);
-  min-height: 15rem;
   position: relative;
 }
 
@@ -2810,10 +2809,10 @@ textarea.ec-input {
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 26rem);
   margin: 0 auto;
   max-width: 89rem;
-  padding-bottom: 4.5rem;
+  padding-bottom: 3.5rem;
   padding-left: 4.75rem;
   padding-right: 4.75rem;
-  padding-top: 5rem;
+  padding-top: 3rem;
   width: 100%;
   z-index: 1;
 }
@@ -2823,19 +2822,19 @@ textarea.ec-input {
 }
 
 .page-header--large {
-  height: 56vh;
+  min-height: clamp(20rem, 38vh, 30rem);
 }
 
 .page-header--large .page-header__inner {
-  padding-bottom: 4.75rem;
+  padding-bottom: 3.75rem;
 }
 
 .page-header--small .page-header__inner {
-  padding-bottom: 4.5rem;
+  padding-bottom: 3.5rem;
 }
 
 .page-header--small {
-  height: 40vh;
+  min-height: clamp(16rem, 28vh, 22rem);
 }
 
 .page-header h1 {
@@ -2845,7 +2844,7 @@ textarea.ec-input {
   font-weight: 400;
   letter-spacing: var(--tracking-heading);
   margin-bottom: 0;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .page-header__heading-line {
@@ -2977,28 +2976,25 @@ textarea.ec-input {
 
 @media screen and (max-width: 991px) {
   .page-header {
-    height: auto;
-    min-height: 22rem;
+    min-height: 18rem;
     padding-top: var(--navbar-height-tablet);
   }
 
   .page-header--large {
-    height: auto;
-    min-height: 24rem;
+    min-height: 20rem;
   }
 
   .page-header--small {
-    height: auto;
-    min-height: 22rem;
+    min-height: 18rem;
   }
 
   .page-header__inner {
     gap: 3rem;
     grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
-    padding-bottom: 4rem;
+    padding-bottom: 3rem;
     padding-left: 3rem;
     padding-right: 3rem;
-    padding-top: 4rem;
+    padding-top: 2.5rem;
   }
 
   .page-header h1 {
@@ -3016,7 +3012,6 @@ textarea.ec-input {
 
 @media screen and (max-width: 767px) {
   .page-header {
-    height: auto;
     min-height: unset;
   }
 
@@ -3024,14 +3019,14 @@ textarea.ec-input {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding-bottom: 4rem;
+    padding-bottom: 2.5rem;
     padding-left: 2.25rem;
     padding-right: 2.25rem;
-    padding-top: 5rem;
+    padding-top: 2rem;
   }
 
   .page-header h1 {
-    margin-top: 1.5rem;
+    margin-top: 0.75rem;
   }
 
   .page-header--article h1 {
@@ -3040,20 +3035,20 @@ textarea.ec-input {
 
   .page-header__subtitle {
     font-size: var(--type-section-subtitle);
-    margin-top: 1.25rem;
+    margin-top: 1rem;
   }
 }
 
 @media screen and (max-width: 480px) {
   .page-header {
-    height: auto;
     min-height: unset;
   }
 
   .page-header__inner {
     padding-left: 1rem;
     padding-right: 1rem;
-    padding-top: 4rem;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
   }
 
 }
