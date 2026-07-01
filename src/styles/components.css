@@ -2283,6 +2283,36 @@
   .section_cta .cta-content .button-base {
     align-self: center !important;
   }
+
+  .cta-wrapper {
+    min-height: auto;
+  }
+
+  .cta-content {
+    padding: 3rem 1.5rem;
+  }
+
+  .cta-wrapper .heading-style-h1 {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .cta-wrapper .cta-subtitle {
+    font-size: 0.9375rem;
+    max-width: 28rem;
+  }
+
+  .cta-buttons {
+    gap: 0.75rem;
+  }
+
+  .cta-wrapper .button-base {
+    height: 2.75rem;
+  }
+
+  .section_cta .padding-bottom.padding-80-40,
+  .section_cta .padding-bottom.padding-48 {
+    padding-bottom: 1.25rem !important;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -2293,6 +2323,28 @@
 
   .section_cta .button-base .button-base__button-text {
     white-space: normal !important;
+  }
+
+  .cta-content {
+    padding: 2.5rem 1rem;
+  }
+
+  .cta-wrapper .heading-style-h1 {
+    font-size: clamp(1.8rem, 11vw, 2.5rem);
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .cta-buttons .button-base {
+    width: 100%;
+  }
+
+  .cta-wrapper .button-base {
+    height: 2.5rem;
   }
 }
 
