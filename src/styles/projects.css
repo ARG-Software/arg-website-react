@@ -709,6 +709,10 @@
     gap: 1.25rem;
   }
 
+  .prp-intro-links {
+    margin-bottom: 1rem;
+  }
+
   .prp-meta-list {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
