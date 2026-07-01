@@ -1326,12 +1326,12 @@ figcaption {
     font-size: var(--type-meta);
   }
   .padding-section-large {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
   .padding-section-medium {
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
 }
 @media screen and (max-width: 480px) {
@@ -1425,13 +1425,13 @@ figcaption {
     padding-top: 0 !important;
   }
   .padding-section-xlarge {
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
 }
 @media screen and (max-width: 480px) {
   .padding-section-xlarge {
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
 }
