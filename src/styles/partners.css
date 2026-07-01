@@ -487,15 +487,9 @@
   }
 
   .pc-filters {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 0.5rem;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .pc-filters::-webkit-scrollbar {
-    display: none;
+    overflow-x: visible;
+    flex-wrap: wrap;
+    padding-bottom: 0;
   }
 
   /* ── Timeline → Mobile ── */
@@ -513,6 +507,36 @@
   .pc-header {
     gap: 1.5rem;
     margin-bottom: 2.5rem;
+  }
+
+  .pc-filter-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  /* ── Page header spacing ── */
+  .pp-page .page-header {
+    padding-top: var(--navbar-height-tablet);
+  }
+
+  .pp-page .page-header__inner {
+    padding-top: 1.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .pp-page .page-header h1 {
+    margin-top: 0.75rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .pp-page .page-header__inner {
+    padding-top: 1.25rem;
+    padding-bottom: 2rem;
+  }
+
+  .pp-page .page-header h1 {
+    margin-top: 0.5rem;
   }
 
   .pc-client-grid {
