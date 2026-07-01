@@ -1,0 +1,81 @@
+{
+  "latest": {
+    "label": "Latest",
+    "aiTitle": "ARG AI — coming soon",
+    "aiTag": "In development",
+    "aiTagTone": "amber"
+  },
+  "primary": [
+    {
+      "label": "Partners",
+      "to": "/partners/",
+      "description": "Partner overview & directory",
+      "openInPage": true
+    },
+    {
+      "label": "Services",
+      "to": "/#services",
+      "description": "Everything we offer",
+      "openInPage": false
+    },
+    {
+      "label": "Use Cases",
+      "to": "/#cases",
+      "description": "All projects & case studies",
+      "openInPage": false
+    },
+    {
+      "label": "Working with Us",
+      "to": "/working-with-us/",
+      "description": "The full engagement model",
+      "openInPage": true
+    },
+    {
+      "label": "Blog",
+      "to": "/blog/",
+      "description": "Every article",
+      "openInPage": true
+    },
+    {
+      "label": "About",
+      "to": "/#about",
+      "description": "The team & story",
+      "openInPage": false
+    }
+  ],
+  "selectedWork": {
+    "label": "Selected work",
+    "viewAllLabel": "All projects",
+    "viewAllTo": "/#cases",
+    "desktopCount": 4,
+    "mobileCount": 3,
+    "rotationSeed": "daily",
+    "projectLabels": {
+      "mojaloop": "Fintech rails",
+      "peoples-clearinghouse": "Payments network",
+      "dokutar": "Compliance tech",
+      "sky-tracks": "Music tech",
+      "tv-cine": "Media platform",
+      "royalty-flush": "Rights platform",
+      "vector": "Trading platform"
+    }
+  },
+  "company": {
+    "label": "Company",
+    "items": [
+      { "label": "Careers", "to": "/careers/", "openInPage": true },
+      { "label": "Contact", "to": "/contact/", "openInPage": true },
+      { "label": "FAQ", "to": "/#faq", "openInPage": false },
+      { "label": "Testimonials", "to": "/#testimonials", "openInPage": false },
+      { "label": "Meet our Team", "to": "/#team", "openInPage": false },
+      { "label": "Social", "to": "/#social", "openInPage": false }
+    ]
+  },
+  "cta": {
+    "label": "Book a meeting",
+    "to": "calendar.project",
+    "eventName": "book_meeting",
+    "location": "nav_menu",
+    "tagline": "Have a project in mind?"
+  }
+}
