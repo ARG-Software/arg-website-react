@@ -1419,6 +1419,7 @@
 
   .testimonials-component {
     grid-column-gap: 4.375rem;
+    grid-row-gap: 3.5rem;
   }
 
   .testimonials-item_dot {
@@ -1428,7 +1429,15 @@
 }
 
 @media screen and (max-width: 479px) {
+  .testimonials-component {
+    grid-row-gap: 2.5rem;
+  }
+
   .testimonials-item {
+    padding-bottom: 2.5rem;
+  }
+
+  .testimonials-item:last-child {
     padding-bottom: 0;
   }
 }
