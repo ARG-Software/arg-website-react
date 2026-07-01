@@ -53,6 +53,7 @@ export function useNextProjectSection(sectionRef, progressRef, nextProject) {
 
     const navigateToNextProject = () => {
       if (triggeredRef.current) return;
+      if (!allowAutoNextRef.current) return;
       triggeredRef.current = true;
       scrollTriggerRef.current?.kill();
       trackEvent('project_next_auto', { to_project: nextSlug });
