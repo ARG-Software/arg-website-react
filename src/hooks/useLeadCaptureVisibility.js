@@ -6,6 +6,7 @@ import {
   NEVER_SHOW_LEAD_CAPTURE_KEY,
   MOBILE_BREAKPOINT,
 } from '../constants';
+import { isMobile } from '../utils/helpers';
 import { trackEvent } from '../utils/analytics';
 
 const DEFAULT_DELAY_MS = 15000;
@@ -22,11 +23,6 @@ function normalizePath(pathname) {
 
 function isContactPath(pathname) {
   return normalizePath(pathname) === CONTACT_PATH;
-}
-
-function isMobileViewport() {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
 }
 
 function isSuppressedPermanently() {
@@ -90,7 +86,7 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
   const [visibleContext, setVisibleContext] = useState(null);
   const [currentContext, setCurrentContext] = useState(null);
   const [dismissedContextKey, setDismissedContextKey] = useState(getDismissedContextKey);
-  const [mobileViewport, setMobileViewport] = useState(isMobileViewport);
+  const [mobileViewport, setMobileViewport] = useState(isMobile);
   const isVisible =
     visibleContext?.path === normalizedPath && !isContactPath(location.pathname) && !mobileViewport;
 
