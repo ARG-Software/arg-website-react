@@ -1990,6 +1990,7 @@
   color: #fff;
   padding-top: 3.5rem;
   padding-bottom: 2.5rem;
+  overflow-x: hidden;
 }
 
 .footer-main .container.padding-global {
@@ -2157,7 +2158,14 @@
   }
 
   .footer-nav-row {
-    gap: 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.75rem;
+    width: 100%;
+  }
+
+  .footer-nav-col {
+    width: 100%;
   }
 
   .footer-left {
