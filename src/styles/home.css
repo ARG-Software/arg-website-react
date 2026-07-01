@@ -982,8 +982,18 @@
 
   .section_work .subtitle_tag-wrapper,
   .section_team .subtitle_tag-wrapper {
-    display: inline-flex;
-    margin-bottom: 1.25rem;
+    display: block;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #000;
+    font-family: Neuemontreal, sans-serif;
+    font-size: var(--type-meta);
+    font-weight: 500;
+    letter-spacing: var(--tracking-kicker-wide);
+    margin-bottom: 0.75rem;
+    padding: 0;
+    text-transform: uppercase;
   }
 }
 
