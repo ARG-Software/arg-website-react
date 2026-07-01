@@ -44,16 +44,10 @@ export function TeamSection({ className = '' }) {
             </div>
             <div className="team-content">
               <div className="team_header-wrapper">
-                <div className="overflow-hidden">
-                  <div className="heading_wrap">
-                    <h2
-                      className="home-section-title"
-                      data-animate="fade-up"
-                      data-animate-order="1"
-                    >
-                      Built by Engineers
-                    </h2>
-                  </div>
+                <div className="heading_wrap">
+                  <h2 className="home-section-title" data-animate="fade-up" data-animate-order="1">
+                    Built by Engineers
+                  </h2>
                 </div>
                 <div className="padding-bottom padding-30-44"></div>
                 <p className="text-color-grey" data-animate-order="2">

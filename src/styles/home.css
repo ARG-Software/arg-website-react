@@ -881,7 +881,7 @@
 }
 
 .work_header-wrapper {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .work_items-wrapper {
