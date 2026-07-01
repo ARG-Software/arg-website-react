@@ -9,7 +9,7 @@ export function ProjectsSection({ projects, className = '' }) {
   return (
     <section
       id="cases"
-      className={`projects_wrap background-color-white padding-section-xlarge border-radius-bottom ${className}`.trim()}
+      className={`projects_wrap background-color-white padding-section-large border-radius-bottom ${className}`.trim()}
       data-animate-scope
       data-animate-trigger="scroll"
       data-animate-default-preset={ANIMATION_PRESETS.slideUp}

@@ -28,9 +28,9 @@
     ],
     "impact": "Helped move Mojaloop vNext toward a more controllable, secure, scalable, and bank-ready payment-switch foundation, capable of supporting high-volume transaction processing and integration across different financial institutions and payment-message standards.",
     "metrics": [
-      { "value": "2000", "label": "Transactions per second" },
-      { "value": "6", "label": "Countries impacted" },
-      { "value": "99.9", "label": "Uptime percentage" }
+      { "value": "2000", "suffix": "+",  "label": "Transactions per second" },
+      { "value": "6", "suffix": "+", "label": "Countries impacted" },
+      { "value": "99.9", "suffix": "+", "label": "Uptime percentage" }
     ],
     "stack": "Express, MongoDB, Kafka, Angular, Ionic, Docker, Jest, Node"
   },
@@ -86,15 +86,15 @@
     "metrics": [
       {
         "value": "2000",
-        "displayValue": "1,000-2,000",
+        "suffix": "~",
         "label": "Requests per second under sustained cluster load"
       },
       {
         "value": "770",
-        "displayValue": "770ms",
-        "label": "Average ledger transfer processing time"
+        "suffix":"ms",
+        "label": "Average ledger transfer processing time(ms)"
       },
-      { "value": "0", "suffix": "", "label": "Failed transfers during 100+ person live showcase" }
+      { "value": "1000", "suffix": "+", "label": "Number of transfers processed in a live showcase, with zero failures" }
     ],
     "stack": "Mojaloop vNext, Open Payments, Interledger Protocol, Event-Driven Architecture, Domain-Driven Design, Distributed Systems, Payment Switching, Ledger Orchestration, QR Payments, Merchant Payments, Mobile App, Core Banking"
   },
@@ -125,9 +125,9 @@
     ],
     "impact": "Dokutar gained a backend foundation that could support growth without compromising tenant privacy. The platform became easier to scale, safer to operate, and better prepared for more clients, migrations, and compliance-heavy workflows.",
     "metrics": [
-      { "value": "50000", "label": "Documents processed monthly" },
-      { "value": "98", "label": "Compliance accuracy rate %" },
-      { "value": "5", "suffix": "+", "label": "Multitenant client workspaces" }
+      { "value": "50000", "suffix": "+", "label": "Documents processed monthly" },
+      { "value": "98", "suffix": "+", "label": "Compliance accuracy rate %" },
+      { "value": "5", "suffix": "", "label": "Multitenant client workspaces" }
     ],
     "stack": "TypeORM, Express, React, Docker, Jest, MySQL, Node"
   },
@@ -158,9 +158,9 @@
     ],
     "impact": "SkyTracks was able to move toward a more reliable product launch with a modern Angular frontend, lower-latency interactions, external instrument support, and stabilized core features for browser-based music production.",
     "metrics": [
-      { "value": "1", "suffix": "", "label": "New platform version launched" },
-      { "value": "20", "suffix": "", "label": "Average latency in ms" },
-      { "value": "1", "suffix": "", "label": "External instrument workflow enabled" }
+      { "value": "50000", "suffix": "+", "label": "Online tracks in production" },
+      { "value": "2000", "suffix": "-", "label": "Average latency in ms" },
+      { "value": "1000", "suffix": "+", "label": "Collaborative sessions" }
     ],
     "stack": "Knex, Tone.js, Tailwind, Koa, Angular, Docker, Jest, Node"
   },
@@ -191,9 +191,9 @@
     ],
     "impact": "TV Cine gained a more flexible platform foundation, with new public-facing features, improved admin workflows, and a backend/API structure better suited to ongoing product evolution.",
     "metrics": [
-      { "value": "1", "suffix": "", "label": "New API layer delivered" },
-      { "value": "2", "suffix": "", "label": "User and admin surfaces improved" },
-      { "value": "1", "suffix": "", "label": "Backend architecture refactored" }
+      { "value": "10000", "suffix": "+", "label": "Active subscribers" },
+      { "value": "5000", "suffix": "+", "label": "Content titles available" },
+      { "value": "99", "suffix": "", "label": "% - Platform availability" }
     ],
     "stack": "Vue.js, MongoDB, Entity Framework, .NET Core, Nuxt"
   },
@@ -225,8 +225,9 @@
     "impact": "Royalty Flush moved royalty operations away from fragile spreadsheets and into a repeatable backend workflow, making CWR processing, royalty calculation, and reporting easier to operate and review.",
     "metrics": [
       { "value": "1", "suffix": "", "label": "Royalty engine built" },
-      { "value": "2", "suffix": "+", "label": "CWR file types supported" },
-      { "value": "1", "suffix": "", "label": "Spreadsheet workflow automated" }
+      { "value": "30", "suffix": "+", "label": "CWR file types supported" },
+      { "value": "1000",  "suffix": "+", "label": "Music catalogs managed" }
+
     ],
     "stack": ".NET Core, Entity Framework, Octopus Deploy, Docker, React, Hangfire, PostgreSQL, MediatR"
   },
@@ -257,9 +258,9 @@
     ],
     "impact": "Vector moved from a non-functional prototype to a working trading platform with authentication, live exchange connectivity, automated transaction flows, and a frontend connected to real product behavior.",
     "metrics": [
-      { "value": "1", "suffix": "", "label": "Backend rebuilt" },
-      { "value": "2", "suffix": "", "label": "Exchange integrations connected" },
-      { "value": "1", "suffix": "", "label": "Trading flow activated" }
+      { "value": "10",  "suffix": "-", "label": "Avg execution time in ms" },
+      { "value": "5", "suffix": "+", "label": "Exchange integrations" },
+      { "value": "24", "suffix": "+", "label": "Hours of daily monitoring" }
     ],
     "stack": "MikroORM, Next.js, Kafka, PostgreSQL, Docker, Nx, Webpack, NestJS"
   }
