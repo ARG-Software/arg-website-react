@@ -4,6 +4,7 @@ import {
   ALREADY_SUBSCRIBED_KEY,
   LEAD_CAPTURE_DISMISSED_CONTEXT_KEY,
   NEVER_SHOW_LEAD_CAPTURE_KEY,
+  MOBILE_BREAKPOINT,
 } from '../constants';
 import { trackEvent } from '../utils/analytics';
 
@@ -21,6 +22,11 @@ function normalizePath(pathname) {
 
 function isContactPath(pathname) {
   return normalizePath(pathname) === CONTACT_PATH;
+}
+
+function isMobileViewport() {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
 }
 
 function isSuppressedPermanently() {
@@ -84,10 +90,25 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
   const [visibleContext, setVisibleContext] = useState(null);
   const [currentContext, setCurrentContext] = useState(null);
   const [dismissedContextKey, setDismissedContextKey] = useState(getDismissedContextKey);
-  const isVisible = visibleContext?.path === normalizedPath && !isContactPath(location.pathname);
+  const [mobileViewport, setMobileViewport] = useState(isMobileViewport);
+  const isVisible =
+    visibleContext?.path === normalizedPath && !isContactPath(location.pathname) && !mobileViewport;
 
   useEffect(() => {
-    if (isContactPath(location.pathname) || isSuppressedPermanently()) return;
+    if (typeof window === 'undefined') return undefined;
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+    const onChange = event => {
+      setMobileViewport(event.matches);
+      if (event.matches) {
+        setVisibleContext(current => (current ? null : current));
+      }
+    };
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    if (isContactPath(location.pathname) || isSuppressedPermanently() || mobileViewport) return;
 
     let observer;
     let retryTimer;
@@ -137,10 +158,10 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
       clearTimeout(retryTimer);
       observer?.disconnect();
     };
-  }, [location.pathname, normalizedPath]);
+  }, [location.pathname, normalizedPath, mobileViewport]);
 
   useEffect(() => {
-    if (!currentContext || isVisible || isSuppressedPermanently()) return;
+    if (!currentContext || isVisible || isSuppressedPermanently() || mobileViewport) return;
     if (currentContext.path !== normalizedPath) return;
     if (currentContext.key === dismissedContextKey) return;
 
@@ -154,7 +175,7 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
     }, delayMs);
 
     return () => clearTimeout(timer);
-  }, [currentContext, delayMs, dismissedContextKey, isVisible, normalizedPath]);
+  }, [currentContext, delayMs, dismissedContextKey, isVisible, normalizedPath, mobileViewport]);
 
   function dismiss({ neverShowAgain = false } = {}) {
     const dismissedContext = visibleContext || currentContext;
