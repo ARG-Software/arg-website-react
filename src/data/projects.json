@@ -5,7 +5,7 @@
     "subtitle": "Fintech",
     "client": "Mojaloop",
     "timeline": "Ongoing",
-    "services": ["Core Platform Rebuild", "Payments Architecture", "Backend", "QA & Testing"],
+    "services": ["Core Platform Rebuild", "Payments Architecture", "Backend", "Frontend Implementation", "Mobile App Development", "QA & Testing"],
     "imgSrc": "/images/projects/heroes/mojaloop-hero-3200.webp",
     "imgSrcSet": "/images/projects/heroes/mojaloop-hero-640.webp 640w, /images/projects/heroes/mojaloop-hero-828.webp 828w, /images/projects/heroes/mojaloop-hero-1280.webp 1280w, /images/projects/heroes/mojaloop-hero-1600.webp 1600w, /images/projects/heroes/mojaloop-hero-1920.webp 1920w, /images/projects/heroes/mojaloop-hero-2560.webp 2560w, /images/projects/heroes/mojaloop-hero-3200.webp 3200w",
     "thumbnailSrc": "/images/projects/heroes/mojaloop-thumb-1600.webp",
@@ -13,7 +13,7 @@
     "mockupSrc": "/images/projects/mockups/mojaloop-mockup-800.webp",
     "mockupSrcSet": "/images/projects/mockups/mojaloop-mockup-360.webp 360w, /images/projects/mockups/mojaloop-mockup-500.webp 500w, /images/projects/mockups/mojaloop-mockup-800.webp 800w",
     "liveLink": "https://mojaloop.io/",
-    
+
     "intro": "A ground-up rebuild of Mojaloop vNext, the open-source payment switch built for interoperable, high-volume transactions across banks, wallets, payment providers, and financial institutions.",
     "description": "ARG joined the core Mojaloop vNext team to help rebuild the open-source payment switch from the ground up. The previous implementation was no longer fit for the intended transaction flow, scale, and bank adoption path, so the work focused on redesigning the architecture around microservices, zero-trust service boundaries, controlled core dependencies, and compatibility with multiple ISO/payment-message standards.",
     "challenge": "Mojaloop vNext needed to move beyond an implementation that was blocking the intended payment flow and limiting the path toward reliable bank adoption.\n\nThe goal was not to patch the old system, but to rebuild the open-source switch around clearer service boundaries, controlled core logic, and transaction flows that could support mass usage.\n\nThe platform also needed to interoperate with different financial institutions and payment-message standards, including ISO-based requirements, so banks and payment providers could integrate it without forcing every participant into the same internal model.",
@@ -32,7 +32,7 @@
       { "value": "6", "label": "Countries impacted" },
       { "value": "99.9", "label": "Uptime percentage" }
     ],
-    "stack": "Express, MongoDB, Kafka, Angular, Docker, Jest, Node"
+    "stack": "Express, MongoDB, Kafka, Angular, Ionic, Docker, Jest, Node"
   },
   {
     "slug": "peoples-clearinghouse",
@@ -40,7 +40,7 @@
     "subtitle": "Fintech & Financial Inclusion",
     "client": "AMUCSS / People's Clearinghouse",
     "timeline": "3 Years",
-    "services": ["Backend", "Payments Architecture", "Interoperability", "Live Demo Support"],
+    "services": ["Backend", "Frontend Implementation", "Mobile App Development", "Payments Architecture", "Interoperability", "Live Demo Support"],
     "imgSrc": "/images/projects/heroes/peoples-clearinghouse-hero-1600.webp",
     "imgSrcSet": "/images/projects/heroes/peoples-clearinghouse-hero-640.webp 640w, /images/projects/heroes/peoples-clearinghouse-hero-828.webp 828w, /images/projects/heroes/peoples-clearinghouse-hero-1280.webp 1280w, /images/projects/heroes/peoples-clearinghouse-hero-1600.webp 1600w",
     "thumbnailSrc": "/images/projects/heroes/peoples-clearinghouse-thumb-1080.webp",
