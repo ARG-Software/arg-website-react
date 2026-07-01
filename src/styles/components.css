@@ -1628,9 +1628,11 @@
 
 .related-articles-carousel__controls {
   align-items: center;
-  display: inline-flex;
+  display: flex;
   flex: 0 0 auto;
   gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
 }
 
 .related-articles-carousel__arrow {
@@ -1744,10 +1746,6 @@
     align-items: flex-start;
     flex-direction: column;
     gap: 1.25rem;
-  }
-
-  .related-articles-carousel__controls {
-    align-self: flex-end;
   }
 
   .related-articles-carousel__track {

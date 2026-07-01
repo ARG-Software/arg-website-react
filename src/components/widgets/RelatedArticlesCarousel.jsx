@@ -96,31 +96,6 @@ export function RelatedArticlesCarousel({
             More from <span>ARG</span>
           </h2>
         </div>
-        {showControls && (
-          <div
-            className="related-articles-carousel__controls"
-            data-animate-order={animate ? '1' : undefined}
-          >
-            <button
-              type="button"
-              className="related-articles-carousel__arrow related-articles-carousel__arrow--prev"
-              aria-label="Show previous related articles"
-              disabled={!canGoPrevious}
-              onClick={() => navigate(-1)}
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              className="related-articles-carousel__arrow related-articles-carousel__arrow--next"
-              aria-label="Show next related articles"
-              disabled={!canGoNext}
-              onClick={() => navigate(1)}
-            >
-              →
-            </button>
-          </div>
-        )}
       </div>
 
       <div
@@ -157,6 +132,32 @@ export function RelatedArticlesCarousel({
           </BaseCard>
         ))}
       </div>
+
+      {showControls && (
+        <div
+          className="related-articles-carousel__controls"
+          data-animate-order={animate ? '1' : undefined}
+        >
+          <button
+            type="button"
+            className="related-articles-carousel__arrow related-articles-carousel__arrow--prev"
+            aria-label="Show previous related articles"
+            disabled={!canGoPrevious}
+            onClick={() => navigate(-1)}
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            className="related-articles-carousel__arrow related-articles-carousel__arrow--next"
+            aria-label="Show next related articles"
+            disabled={!canGoNext}
+            onClick={() => navigate(1)}
+          >
+            →
+          </button>
+        </div>
+      )}
     </div>
   );
 }
