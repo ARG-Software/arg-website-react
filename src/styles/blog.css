@@ -722,4 +722,8 @@
     font-size: clamp(1.65rem, 8vw, 2.25rem);
   }
 
+  .article-sidebar,
+  .bp-sidebar-right {
+    display: none;
+  }
 }
