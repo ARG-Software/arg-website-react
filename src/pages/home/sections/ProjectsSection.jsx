@@ -57,6 +57,8 @@ export function ProjectsSection({ projects, className = '' }) {
                   animate={true}
                   animationPreset={ANIMATION_PRESETS.slideInRight}
                   animationOrder={i + 3}
+                  mobileAnimationPreset={ANIMATION_PRESETS.fadeUp}
+                  mobileAnimationOrder={i + 3}
                   {...project}
                   gridRowStart={gridRowStart}
                   onProjectClick={slug =>

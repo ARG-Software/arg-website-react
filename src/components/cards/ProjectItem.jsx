@@ -23,6 +23,8 @@ export function ProjectItem({
   animate = false,
   animationPreset = 'fade-up',
   animationOrder,
+  mobileAnimationPreset,
+  mobileAnimationOrder,
   gridRowStart,
   onProjectClick,
   onProjectLinkClick,
@@ -32,7 +34,12 @@ export function ProjectItem({
   const isMobileViewport =
     typeof window !== 'undefined' &&
     window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
-  const shouldAnimate = animate && !isMobileViewport;
+  const effectivePreset = isMobileViewport
+    ? (mobileAnimationPreset ?? animationPreset)
+    : animationPreset;
+  const effectiveOrder = isMobileViewport
+    ? (mobileAnimationOrder ?? animationOrder)
+    : animationOrder;
   const coverSrcSet = thumbnailSrcSet || imgSrcSet;
   const solutionText = Array.isArray(solution) ? solution[0] : solution;
   const projectLinks =
@@ -63,10 +70,10 @@ export function ProjectItem({
     };
   };
 
-  const animationAttrs = shouldAnimate
+  const animationAttrs = animate
     ? {
-        'data-animate': animationPreset,
-        ...(animationOrder !== undefined ? { 'data-animate-order': String(animationOrder) } : {}),
+        'data-animate': effectivePreset,
+        ...(effectiveOrder !== undefined ? { 'data-animate-order': String(effectiveOrder) } : {}),
       }
     : {};
 
