@@ -205,7 +205,7 @@ export function WorkStatsSection({ className = '' }) {
         <div className="container-medium">
           <div className="work-component">
             <div id="workstats-subtitle-grid" data-animate-order="0">
-              <div className="subtitle_tag-wrapper">Working With Us</div>
+              <div className="subtitle_tag-wrapper hide-mobile-landscape">Working With Us</div>
             </div>
             <div className="work-content">
               <div className="work_header-wrapper">

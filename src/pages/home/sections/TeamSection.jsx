@@ -40,7 +40,7 @@ export function TeamSection({ className = '' }) {
         <div className="container-medium">
           <div className="team-component">
             <div id="team-subtitle-grid" data-animate-order="0">
-              <div className="subtitle_tag-wrapper">Meet Our Team</div>
+              <div className="subtitle_tag-wrapper hide-mobile-landscape">Meet Our Team</div>
             </div>
             <div className="team-content">
               <div className="team_header-wrapper">
