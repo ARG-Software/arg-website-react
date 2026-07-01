@@ -669,12 +669,24 @@
   }
 
   .prp-intro-grid {
+    grid-template-columns: minmax(0, 1fr);
     gap: 2.5rem;
   }
 
   .prp-intro-top,
   .prp-meta-list {
     grid-column: 1 / span 12;
+  }
+
+  .prp-intro-heading-group,
+  .prp-intro-content,
+  .prp-intro-title,
+  .prp-intro-subtitle,
+  .prp-intro-description,
+  .prp-intro-live-link,
+  .prp-intro-links {
+    max-width: 100%;
+    min-width: 0;
   }
 
   .prp-intro-heading-group {
