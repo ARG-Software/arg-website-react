@@ -135,5 +135,19 @@ html.ls-active {
 @media (max-width: 600px) {
   .ls-hello-row {
     gap: 8px;
+    left: 1rem;
+    right: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .ls-skip {
+    top: auto;
+    right: 1rem;
+    bottom: calc(clamp(1.25rem, 3vh, 2.5rem) + 2.5rem);
+  }
+
+  .ls-hello {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
   }
 }
