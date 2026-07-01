@@ -4,10 +4,24 @@ function isExternal(href) {
   return /^https?:\/\//.test(href) || href.startsWith('mailto:');
 }
 
+function ResponsiveText({ children, mobileText }) {
+  if (!mobileText) return children;
+
+  return (
+    <>
+      <span className="cta-copy cta-copy--desktop">{children}</span>
+      <span className="cta-copy cta-copy--mobile">{mobileText}</span>
+    </>
+  );
+}
+
 export function CTASection({
   title = 'Ready to build',
   titleHighlight = 'with us?',
   subtitle,
+  mobileTitle,
+  mobileTitleHighlight,
+  mobileSubtitle,
   buttonTextNotHover = 'Book a Meeting',
   buttonTextHover = "Let's meet",
   buttonLink = getProjectBookingLink(),
@@ -55,7 +69,7 @@ export function CTASection({
               <>
                 <div className="header-animation">
                   <h2 className={`heading-style-h1 ${animationClass}`} {...animationAttrs(0)}>
-                    {title}
+                    <ResponsiveText mobileText={mobileTitle}>{title}</ResponsiveText>
                   </h2>
                 </div>
                 {showTitleHighlight && (
@@ -71,7 +85,9 @@ export function CTASection({
                         backgroundClip: 'text',
                       }}
                     >
-                      {titleHighlight}
+                      <ResponsiveText mobileText={mobileTitleHighlight}>
+                        {titleHighlight}
+                      </ResponsiveText>
                     </h2>
                   </div>
                 )}
@@ -79,7 +95,7 @@ export function CTASection({
             ) : (
               <div className="header-animation">
                 <h2 className={`heading-style-h1 ${animationClass}`} {...animationAttrs(0)}>
-                  {title}
+                  <ResponsiveText mobileText={mobileTitle}>{title}</ResponsiveText>
                 </h2>
               </div>
             )}
@@ -87,7 +103,7 @@ export function CTASection({
           {subtitle && (
             <div className="padding-bottom padding-48">
               <p className="cta-subtitle" {...animationAttrs(2)}>
-                {subtitle}
+                <ResponsiveText mobileText={mobileSubtitle}>{subtitle}</ResponsiveText>
               </p>
             </div>
           )}

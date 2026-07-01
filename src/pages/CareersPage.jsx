@@ -416,6 +416,8 @@ export default function CareersPage() {
             <CTASection
               title={hasJobs ? 'Ready to apply,' : "Think you'd fit,"}
               titleHighlight={hasJobs ? 'show us your work.' : 'reach out anyway.'}
+              mobileTitle={hasJobs ? 'Ready to apply?' : "Think you'd fit?"}
+              mobileTitleHighlight={hasJobs ? 'Show us your work.' : 'Reach out.'}
               buttonTextNotHover={hasJobs ? 'Email careers' : 'Send us a message'}
               buttonTextHover="Let's talk"
               animationClass="cp-animate"

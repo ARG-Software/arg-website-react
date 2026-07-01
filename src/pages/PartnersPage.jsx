@@ -132,6 +132,7 @@ export default function PartnersPage() {
             <CTASection
               title="Ready to build"
               titleHighlight="something that lasts?"
+              mobileTitleHighlight="with us?"
               buttonTextNotHover="Book a Meeting"
               buttonTextHover="Let's meet"
               animationClass="pp-animate"

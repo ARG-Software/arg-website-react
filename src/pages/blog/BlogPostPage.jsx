@@ -442,7 +442,9 @@ export default function BlogPostPage() {
             <CTASection
               title="Like what you read?"
               titleHighlight="Subscribe to our newsletter"
+              mobileTitleHighlight="Join our newsletter"
               subtitle="Get our latest engineering essays, field notes, and product thinking in your inbox."
+              mobileSubtitle="Engineering essays and field notes, straight to your inbox."
               buttonTextNotHover="Subscribe"
               buttonTextHover="Join the list"
               buttonLink={getNewsletterSubscribeLink()}
