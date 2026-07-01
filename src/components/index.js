@@ -21,6 +21,7 @@ export { Marquee } from './layout/Marquee';
 export { Navbar } from './navigation/Navbar';
 export { Breadcrumb } from './navigation/Breadcrumb';
 export { ArticleSidebar } from './navigation/ArticleSidebar';
+export { Pagination } from './navigation/Pagination';
 export { Footer } from './layout/Footer';
 export { CTASection } from './layout/CTASection';
 export { SectionDivider } from './layout/SectionDivider';

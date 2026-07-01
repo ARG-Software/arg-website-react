@@ -8,6 +8,7 @@ import {
   arrowSvg,
   SEO,
   PageHeader,
+  Pagination,
   TagFilterPills,
 } from '../../components';
 import { useScrollAnimations, useBlogSearch, useTimeOnPage } from '../../hooks';
@@ -193,41 +194,14 @@ export default function BlogPage() {
                     ))}
 
                     {totalPages > 1 && (
-                      <nav
-                        className="blp-pagination"
-                        aria-label="Blog pagination"
-                        data-animate-order={paginatedPosts.length + 3}
-                      >
-                        <button
-                          className="blp-pagination-arrow"
-                          onClick={() => goToPage(page - 1)}
-                          disabled={page === 1}
-                          aria-label="Previous page"
-                        >
-                          {arrowSvg}
-                        </button>
-
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                          <button
-                            key={p}
-                            className={`blp-pagination-num${p === page ? ' is-active' : ''}`}
-                            onClick={() => goToPage(p)}
-                            aria-label={`Page ${p}`}
-                            aria-current={p === page ? 'page' : undefined}
-                          >
-                            {p}
-                          </button>
-                        ))}
-
-                        <button
-                          className="blp-pagination-arrow blp-pagination-arrow--next"
-                          onClick={() => goToPage(page + 1)}
-                          disabled={page === totalPages}
-                          aria-label="Next page"
-                        >
-                          {arrowSvg}
-                        </button>
-                      </nav>
+                      <Pagination
+                        page={page}
+                        totalPages={totalPages}
+                        onPageChange={goToPage}
+                        arrowIcon={arrowSvg}
+                        ariaLabel="Blog pagination"
+                        animateOrder={paginatedPosts.length + 3}
+                      />
                     )}
                   </>
                 )}
