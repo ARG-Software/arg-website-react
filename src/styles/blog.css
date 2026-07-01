@@ -405,21 +405,6 @@
 
 /* ===== BLOG POST PAGE STYLES (bp-*) ===== */
 
-.page-header--article.bp-article-page-header .page-header__inner {
-  padding-bottom: clamp(2.5rem, 5vw, 4rem);
-  padding-top: clamp(3.5rem, 5vw, 4.5rem);
-}
-
-.page-header--article.bp-article-page-header h1 {
-  font-size: clamp(1.75rem, 3vw, 3rem);
-  max-width: 78rem;
-}
-
-.page-header--article.bp-article-page-header .page-header__subtitle {
-  font-size: clamp(0.9375rem, 1.3vw, 1.0625rem);
-  max-width: 44rem;
-}
-
 .bp-header-meta {
   align-items: center;
   color: rgba(255, 255, 255, 0.52);
@@ -748,9 +733,6 @@
 }
 
 @media screen and (max-width: 767px) {
-  .page-header--article.bp-article-page-header h1 {
-    font-size: clamp(2.1rem, 11vw, 3.5rem);
-  }
 
   .bp-hero-figure {
     border-radius: 0.875rem;
