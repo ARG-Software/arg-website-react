@@ -403,14 +403,14 @@ export default function BlogPostPage() {
                     items={shareItems}
                     className="bp-share-row bp-share-row--bottom"
                     animate={true}
-                    animationOrder={contentBlocks.length + 1}
+                    animationOrder={1}
                   />
                   <SocialShareButtons
                     items={feedItems}
                     className="bp-share-row bp-feed-row bp-feed-row--bottom"
                     label="Subscribe"
                     animate={true}
-                    animationOrder={contentBlocks.length + 2}
+                    animationOrder={2}
                   />
                 </article>
 
