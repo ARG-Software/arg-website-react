@@ -49,6 +49,11 @@ export default function BlogPage() {
   const paginatedPosts = filteredPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
   const blogTags = getBlogTags(blogPosts);
 
+  const tagCounts = blogPosts.reduce((acc, post) => {
+    if (post.tag) acc[post.tag] = (acc[post.tag] || 0) + 1;
+    return acc;
+  }, {});
+
   function toggleTag(tag) {
     const isSelected = selectedTags.includes(tag);
 
@@ -60,9 +65,10 @@ export default function BlogPage() {
     trackEvent(isSelected ? 'blog_tag_filter_remove' : 'blog_tag_filter_add', { tag });
   }
 
-  function removeTag(tag) {
-    setSelectedTags(currentTags => currentTags.filter(currentTag => currentTag !== tag));
-    trackEvent('blog_tag_filter_remove', { tag });
+  function clearTags() {
+    if (selectedTags.length === 0) return;
+    setSelectedTags([]);
+    trackEvent('blog_tag_filter_clear', { previous: selectedTags });
   }
 
   // Reset to page 1 when filters change
@@ -134,20 +140,16 @@ export default function BlogPage() {
 
                   <TagFilterPills
                     className="blp-topic-filter"
-                    placeholder="Filter by topic"
+                    label="Filter by topic"
                     tags={blogTags}
+                    tagCounts={tagCounts}
+                    totalCount={blogPosts.length}
                     selectedTags={selectedTags}
                     onToggle={toggleTag}
-                    onRemove={removeTag}
+                    onClear={clearTags}
                     animate={true}
                     animationOrder={1}
                   />
-
-                  <span className="blp-count" data-animate-order="2">
-                    {resultCount} article{resultCount !== 1 ? 's' : ''}
-                    {debouncedQuery && ` matching "${debouncedQuery}"`}
-                    {selectedTags.length > 0 && ` in ${selectedTags.join(', ')}`}
-                  </span>
                 </div>
 
                 {filteredPosts.length === 0 ? (
