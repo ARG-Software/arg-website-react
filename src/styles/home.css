@@ -160,6 +160,16 @@
 @media screen and (max-width: 767px) {
   .hero_list {
     height: 75%;
+    justify-content: center;
+  }
+
+  .hero_heading.heading-style-h1 {
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero_heading .heading_line {
+    text-align: center;
   }
 
   .hero_bottom_wrap {
@@ -182,6 +192,16 @@
 @media screen and (max-width: 480px) {
   .hero_list {
     height: 75%;
+    justify-content: center;
+  }
+
+  .hero_heading.heading-style-h1 {
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero_heading .heading_line {
+    text-align: center;
   }
 
   .hero_bottom_wrap {
