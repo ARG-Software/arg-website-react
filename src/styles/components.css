@@ -2412,25 +2412,6 @@
    CookieConsent
    ========================================================================== */
 
-.arg-cookie-backdrop {
-  animation: arg-cookie-fade-in 0.3s ease-out;
-  background: rgba(0, 0, 0, 0.5);
-  cursor: default;
-  inset: 0;
-  pointer-events: auto;
-  position: fixed;
-  z-index: 9998;
-}
-
-@keyframes arg-cookie-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 #arg-cookie-banner {
   align-items: center;
   animation: arg-cookie-slide-up 0.3s ease-out;
