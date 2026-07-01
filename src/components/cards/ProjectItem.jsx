@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { arrowSvg } from '../icons/SocialIcons';
 import AppLink from '../navigation/AppLink';
+import { MOBILE_BREAKPOINT } from '../../constants/ui';
 
 export function ProjectItem({
   slug,
@@ -28,6 +29,10 @@ export function ProjectItem({
 }) {
   const coverImageRef = useRef(null);
   const coverSrc = thumbnailSrc || imgSrc;
+  const isMobileViewport =
+    typeof window !== 'undefined' &&
+    window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
+  const shouldAnimate = animate && !isMobileViewport;
   const coverSrcSet = thumbnailSrcSet || imgSrcSet;
   const solutionText = Array.isArray(solution) ? solution[0] : solution;
   const projectLinks =
@@ -58,7 +63,7 @@ export function ProjectItem({
     };
   };
 
-  const animationAttrs = animate
+  const animationAttrs = shouldAnimate
     ? {
         'data-animate': animationPreset,
         ...(animationOrder !== undefined ? { 'data-animate-order': String(animationOrder) } : {}),
