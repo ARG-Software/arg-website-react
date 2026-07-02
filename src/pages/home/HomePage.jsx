@@ -6,7 +6,7 @@ import AppLink from '../../components/navigation/AppLink';
 import { arrowSvg } from '../../components/icons/SocialIcons';
 import { HOMEPAGE_BLOG_POSTS_COUNT } from '../../constants';
 import { HeroSection } from './sections/HeroSection';
-import { AboutSection } from './sections/AboutSection';
+import { StudioOverviewSection } from './sections/StudioOverviewSection';
 import { ServicesSection } from './sections/ServicesSection';
 import { ProjectsSection } from './sections/ProjectsSection';
 import { TestimonialsSection } from './sections/TestimonialsSection';
@@ -90,7 +90,7 @@ export default function HomePage() {
             <SectionDivider variant="default" hideOnMobile={false} />
           </section>
 
-          <AboutSection />
+          <StudioOverviewSection />
 
           <div
             className="section_infinity background-color-gray overflow-hidden"

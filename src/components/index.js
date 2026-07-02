@@ -14,6 +14,7 @@ export { CookieConsent } from './overlays/CookieConsent';
 export { Drawer } from './overlays/Drawer';
 export { FilterGrid } from './grids/FilterGrid';
 export { Timeline } from './grids/Timeline';
+export { StepProgressTimeline } from './grids/StepProgressTimeline';
 export { ContactForm } from './forms/ContactForm';
 export { EmailCaptureForm } from './forms/EmailCaptureForm';
 export { FormCard, FormSubmitButton } from './forms/FormCard';

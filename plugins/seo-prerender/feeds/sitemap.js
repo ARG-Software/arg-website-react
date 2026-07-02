@@ -10,6 +10,11 @@ export function generateSitemap({ distDir, blogPostMetas }) {
   sitemapUrls.push({ loc: `${SITE_URL}/partners/`, priority: '0.8', changefreq: 'monthly' });
   sitemapUrls.push({ loc: `${SITE_URL}/careers/`, priority: '0.9', changefreq: 'weekly' });
   sitemapUrls.push({
+    loc: `${SITE_URL}/about-us/`,
+    priority: '0.8',
+    changefreq: 'monthly',
+  });
+  sitemapUrls.push({
     loc: `${SITE_URL}/working-with-us/`,
     priority: '0.8',
     changefreq: 'monthly',

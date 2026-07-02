@@ -1,0 +1,220 @@
+/* Step Progress Timeline — shared between Working With Us and About Us.
+   Provides a horizontal (desktop) / vertical (mobile) interactive bar with
+   auto-advance, hover/click activation, and an animated progress fill. */
+
+.step-progress-timeline,
+.cp-fit-timeline {
+  --step-progress: 0%;
+  column-gap: clamp(1.5rem, 4vw, 4rem);
+  display: grid;
+  grid-template-columns: repeat(var(--step-count, 4), minmax(0, 1fr));
+  position: relative;
+}
+
+.step-progress-timeline__rail,
+.cp-fit-timeline-rail {
+  background: rgba(12, 0, 46, 0.12);
+  display: block;
+  height: 1px;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: 1.75rem;
+}
+
+.step-progress-timeline__fill,
+.cp-fit-timeline-fill {
+  background: #0c002e;
+  display: block;
+  height: 100%;
+  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  width: var(--step-progress);
+}
+
+.step-progress-timeline__step,
+.cp-fit-step {
+  cursor: pointer;
+  display: block;
+  min-width: 0;
+  padding-right: clamp(1.25rem, 3vw, 2rem);
+  position: relative;
+}
+
+.step-progress-timeline__step:focus-visible,
+.cp-fit-step:focus-visible {
+  outline: 0;
+}
+
+.step-progress-timeline__step:focus-visible .step-progress-timeline__dot,
+.cp-fit-step:focus-visible .cp-fit-step-dot {
+  box-shadow: 0 0 0 0.25rem rgba(121, 4, 253, 0.16);
+}
+
+.step-progress-timeline__node,
+.cp-fit-step-node {
+  display: block;
+  height: 3.5rem;
+  margin-bottom: 1.875rem;
+  position: relative;
+  width: 3.5rem;
+}
+
+.step-progress-timeline__dot,
+.cp-fit-step-dot {
+  align-items: center;
+  background: #fff;
+  border: 1px solid rgba(12, 0, 46, 0.16);
+  border-radius: 999px;
+  color: rgba(12, 0, 46, 0.44);
+  display: flex;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-meta-small);
+  height: 100%;
+  justify-content: center;
+  letter-spacing: var(--tracking-meta-wide);
+  line-height: 1;
+  position: absolute;
+  transition:
+    background 0.4s ease,
+    border-color 0.4s ease,
+    color 0.4s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 100%;
+  z-index: 2;
+}
+
+.step-progress-timeline__ring,
+.cp-fit-step-ring {
+  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  bottom: -0.8125rem;
+  display: block;
+  height: 1px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 0;
+  z-index: 1;
+}
+
+.step-progress-timeline__step:hover .step-progress-timeline__dot,
+.step-progress-timeline__step:focus-visible .step-progress-timeline__dot,
+.cp-fit-step:hover .cp-fit-step-dot,
+.cp-fit-step:focus-visible .cp-fit-step-dot {
+  border-color: #0c002e;
+  color: #0c002e;
+}
+
+.step-progress-timeline__step.is-active .step-progress-timeline__dot,
+.cp-fit-step.is-active .cp-fit-step-dot {
+  background: #0c002e;
+  border-color: #0c002e;
+  box-shadow: 0 0.8rem 1.5rem -1rem rgba(12, 0, 46, 0.55);
+  color: #fff;
+}
+
+.step-progress-timeline__step.is-active .step-progress-timeline__ring,
+.cp-fit-step.is-active .cp-fit-step-ring {
+  width: 1.125rem;
+}
+
+.step-progress-timeline__step h4,
+.cp-fit-step h4 {
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-card-title);
+  font-weight: 400;
+  letter-spacing: var(--tracking-card-title);
+  line-height: var(--line-tight);
+  margin: 0 0 0.75rem;
+  transition: color 0.4s ease;
+}
+
+.step-progress-timeline__step p,
+.cp-fit-step p {
+  color: #716f82;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-body-small);
+  line-height: var(--line-small);
+  margin: 0;
+  max-width: 30ch;
+  transition: color 0.4s ease;
+}
+
+.step-progress-timeline__step.is-active h4,
+.cp-fit-step.is-active h4 {
+  color: #0c002e;
+}
+
+.step-progress-timeline__step.is-active p,
+.cp-fit-step.is-active p {
+  color: #555;
+}
+
+@media screen and (max-width: 991px) {
+  .step-progress-timeline,
+  .cp-fit-timeline {
+    grid-template-columns: 1fr;
+    padding-left: 0;
+    row-gap: 0;
+  }
+
+  .step-progress-timeline__rail,
+  .cp-fit-timeline-rail {
+    bottom: 0.25rem;
+    height: auto;
+    left: 1.75rem;
+    right: auto;
+    top: 0;
+    width: 2px;
+  }
+
+  .step-progress-timeline__fill,
+  .cp-fit-timeline-fill {
+    height: var(--step-progress);
+    transition: height 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 100%;
+  }
+
+  .step-progress-timeline__step,
+  .cp-fit-step {
+    column-gap: 1.375rem;
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    padding: 0 0 2.5rem;
+  }
+
+  .step-progress-timeline__step:last-child,
+  .cp-fit-step:last-child {
+    padding-bottom: 0;
+  }
+
+  .step-progress-timeline__node,
+  .cp-fit-step-node {
+    grid-row: 1 / 3;
+    margin-bottom: 0;
+  }
+
+  .step-progress-timeline__ring,
+  .cp-fit-step-ring {
+    bottom: auto;
+    height: 0;
+    left: auto;
+    right: -0.8125rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+  }
+
+  .step-progress-timeline__step.is-active .step-progress-timeline__ring,
+  .cp-fit-step.is-active .cp-fit-step-ring {
+    height: 1.125rem;
+    width: 1px;
+  }
+
+  .step-progress-timeline__step p,
+  .cp-fit-step p {
+    max-width: none;
+  }
+}

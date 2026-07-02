@@ -1,0 +1,185 @@
+{
+  "seo": {
+    "title": "About Us",
+    "description": "ARG Software is a small architecture-first studio founded by José Antunes and Rui Rocha, built on technical trust, shared standards, and software that lasts."
+  },
+  "hero": {
+    "title": ["A way of working,", "before a company."],
+    "subtitle": "ARG Software is an architecture-first studio founded by José Antunes and Rui Rocha after years of working together across engineering, telecom, product, architecture, and international projects."
+  },
+  "origin": {
+    "title": "ARG was built on technical trust and shared standards.",
+    "paragraphs": [
+      "ARG Software was born from a long-standing professional relationship and a common belief: great software is not created by adding more people to a project, but by bringing the right people together.",
+      "Before becoming a company, ARG was already a way of working: precise, reliable, pragmatic, and deeply focused on quality. The company came later. The standard came first."
+    ]
+  },
+  "timeline": {
+    "title": "Where it started, and how ARG became a company.",
+    "intro": "The story is not a pitch-deck origin. It is a working relationship tested across teams, clients, and production systems before ARG became official.",
+    "steps": [
+      {
+        "id": "2013-jose",
+        "title": "2013",
+        "description": "José starts",
+        "label": "José starts",
+        "headline": "José begins his engineering path.",
+        "details": [
+          {
+            "label": "José",
+            "text": "Studies Computer Science and later completes a Master’s degree in Software Architecture at the University of Porto. His work moves across backend, frontend, mobile, full-stack development, and technical leadership."
+          }
+        ]
+      },
+      {
+        "id": "2013-rui",
+        "title": "2013",
+        "description": "Rui starts",
+        "label": "Rui starts",
+        "headline": "Rui begins through hands-on delivery.",
+        "details": [
+          {
+            "label": "Rui",
+            "text": "Studies Computer Engineering at ISEP and starts through freelance work, including projects with government-related entities before moving into telecommunications."
+          }
+        ]
+      },
+      {
+        "id": "2014-2016",
+        "title": "2014-2016",
+        "description": "Telecom",
+        "label": "Paths cross",
+        "headline": "Telecommunications puts them in the same rooms.",
+        "details": [
+          {
+            "label": "Together",
+            "text": "José and Rui work together in telecom, contributing to software used by reference brands such as Vodafone, Orange, and others. The shared experience creates trust, complementary skills, and a clear alignment on how software should be built."
+          }
+        ]
+      },
+      {
+        "id": "2016",
+        "title": "2016",
+        "description": "Leadership",
+        "label": "Leadership takes shape",
+        "headline": "Both step into stronger ownership roles.",
+        "details": [
+          {
+            "label": "José",
+            "text": "Becomes Team Lead on a Horizon 2020-funded project in Porto, strengthening his path toward software architecture and engineering leadership."
+          },
+          {
+            "label": "Rui",
+            "text": "Helps create a programming studio, developing projects for clients around the world and for well-known national brands."
+          }
+        ]
+      },
+      {
+        "id": "2018",
+        "title": "2018",
+        "description": "Back together",
+        "label": "Back together",
+        "headline": "The collaboration restarts by choice.",
+        "details": [
+          {
+            "label": "Together",
+            "text": "After growing through different but connected paths, José and Rui begin working together again as freelancers, bringing back the same synergy that had already proven valuable years earlier."
+          }
+        ]
+      },
+      {
+        "id": "2020",
+        "title": "2020",
+        "description": "ARG Software",
+        "label": "ARG Software",
+        "headline": "The way of working becomes ARG Software.",
+        "details": [
+          {
+            "label": "ARG",
+            "text": "ARG is created to formalize what already existed: a shared engineering culture, a high standard for delivery, and the ambition to help companies build software that can grow with their business."
+          }
+        ]
+      }
+    ]
+  },
+  "founders": {
+    "title": "Two paths. One engineering standard.",
+    "intro": "Different journeys into software, held to the same bar. Neither leads alone; both carry the work.",
+    "people": [
+      {
+        "id": "jose",
+        "initials": "JA",
+        "name": "José Antunes",
+        "role": "Co-founder - Software Engineer",
+        "bio": "Computer Science and an M.Sc. in Software Architecture from the University of Porto. Worked across backend, frontend, mobile, full-stack development, architecture, and technical leadership.",
+        "focus": "Architecture, scalable systems, and technical leadership",
+        "tags": ["Backend", "Architecture", "Cloud", "Tech leadership"]
+      },
+      {
+        "id": "rui",
+        "initials": "RR",
+        "name": "Rui Rocha",
+        "role": "Co-founder - Software Engineer",
+        "bio": "Computer Engineering from ISEP. Built his path through freelance work, telecom, product delivery, and a programming studio serving international clients and national brands.",
+        "focus": "Product-minded delivery, frontend, mobile, and execution",
+        "tags": ["Frontend", "Mobile", "Product", "Delivery"]
+      }
+    ]
+  },
+  "company": {
+    "title": "From collaboration to company.",
+    "paragraphs": [
+      "ARG was created in 2020 to formalize a way of working that already existed between the founders: direct communication, technical discipline, clear ownership, and a high standard for delivery.",
+      "The goal was never to become a large vendor. It was to help companies build software that can grow with the business, using the right team for the problem instead of adding people for the sake of scale."
+    ],
+    "points": [
+      {
+        "title": "Technical trust",
+        "description": "Earned across shared projects, production pressure, and years of working together."
+      },
+      {
+        "title": "Complementary skills",
+        "description": "Architecture, product thinking, delivery, and engineering execution covering each other’s blind spots."
+      },
+      {
+        "title": "A shared definition of done",
+        "description": "Reliable software, clear communication, maintainable systems, and ownership beyond handoff."
+      }
+    ]
+  },
+  "beliefs": {
+    "title": "What we believe.",
+    "intro": "Long-term quality beats short-term volume. ARG is intentionally selective about the work we take and the people we bring into it.",
+    "principles": [
+      {
+        "title": "Quality over quantity",
+        "description": "Great software is not made by adding bodies. We assemble the right capability for the work in front of us."
+      },
+      {
+        "title": "Trusted collaborators",
+        "description": "We work with people we trust, people who care about the craft, and people who know how to take ownership."
+      },
+      {
+        "title": "Software built to last",
+        "description": "Technical discipline, clear communication, and maintainability matter because production systems outlive the first release."
+      }
+    ]
+  },
+  "collaborators": {
+    "title": "We grow by trust, not headcount.",
+    "paragraphs": [
+      "ARG is more than two founders. Around the partnership is a network of excellent collaborators: people we have worked with, trust, and bring in when the work calls for their expertise.",
+      "The team combines backend systems, frontend applications, mobile development, cloud infrastructure, software architecture, product development, and technical leadership. More importantly, it combines people who know how to work together."
+    ],
+    "disciplines": [
+      "Backend",
+      "Frontend",
+      "Mobile",
+      "Cloud",
+      "Architecture",
+      "Product",
+      "AI",
+      "Technical leadership"
+    ]
+  }
+}

@@ -8,6 +8,7 @@ export const NAV_LINKS = [
   { href: '/partners/', label: 'Partners' },
   { href: '/projects/', label: 'Projects' },
   { href: '/careers/', label: 'Careers' },
+  { href: '/about-us/', label: 'About Us' },
   { href: '/working-with-us/', label: 'Working with Us' },
   { href: '/contact/', label: 'Contact' },
 ];
@@ -62,6 +63,18 @@ export const STATIC_PAGES = [
       'Working with Arg Software means partnering with a small architecture-first engineering team that designs the system before writing it and stays close when it reaches production.',
       'We build production-ready platforms for fintech, media, open payments, music technology, and high-growth technology companies.',
       'Our process emphasizes technical planning, observable systems, clean hand-off, and senior founder involvement from first conversation to production support.',
+    ],
+  },
+  {
+    path: '/about-us/',
+    title: 'About Us | Arg Software',
+    h1: 'About Arg Software',
+    description:
+      'Arg Software is a small architecture-first studio built by two engineers with a long, tested working relationship. Quality over headcount, software built to last.',
+    paragraphs: [
+      'Arg Software started as a way of working between two engineers before it became a company in 2020.',
+      'Jose Antunes and Rui Rocha spent years apart and together across engineering, telecom, product, architecture, and international projects. Arg is the result: a partnership tested in production, not assembled for a pitch.',
+      'We grow by trust, not headcount. Around the partnership is a small network of collaborators we have worked with and trust, assembled for the work in front of us rather than scaled for its own sake.',
     ],
   },
   {

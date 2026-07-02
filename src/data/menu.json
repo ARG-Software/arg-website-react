@@ -37,10 +37,10 @@
       "openInPage": true
     },
     {
-      "label": "About",
-      "to": "/#about",
+      "label": "About Us",
+      "to": "/about-us/",
       "description": "The team & story",
-      "openInPage": false
+      "openInPage": true
     }
   ],
   "selectedWork": {

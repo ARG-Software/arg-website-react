@@ -13,6 +13,7 @@ import {
 const NAV_LINKS = [
   { label: 'Blog', path: '/blog/' },
   { label: 'Careers', path: '/careers/' },
+  { label: 'About Us', path: '/about-us/' },
   { label: 'Working with Us', path: '/working-with-us/' },
   { label: 'Contact', path: '/contact/' },
   { label: 'Partners', path: '/partners/' },

@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useScrollAnimations, useTimeOnPage } from '../hooks';
 import { trackCTA } from '../utils/analytics';
 import { getProjectBriefFormLink } from '../services/linksservice';
@@ -12,8 +11,10 @@ import {
   SEO,
   PageHeader,
   TechStackConsole,
+  StepProgressTimeline,
 } from '../components';
 import '../styles/careers.css';
+import '../styles/step-progress-timeline.css';
 
 const INTERNAL_VALUES = [
   {
@@ -116,38 +117,8 @@ const TECH_STACK_INTRO = {
 const CONVERSATION_STEP_INTERVAL_MS = 6000;
 
 export default function WorkingWithUsPage() {
-  const [activeConversationStep, setActiveConversationStep] = useState(0);
-  const [isConversationTimelinePaused, setIsConversationTimelinePaused] = useState(false);
-
   useTimeOnPage('/working-with-us/');
   useScrollAnimations();
-
-  useEffect(() => {
-    if (isConversationTimelinePaused || CONVERSATION_STEPS.length < 2) return undefined;
-
-    const intervalId = window.setInterval(() => {
-      setActiveConversationStep(currentStep => (currentStep + 1) % CONVERSATION_STEPS.length);
-    }, CONVERSATION_STEP_INTERVAL_MS);
-
-    return () => window.clearInterval(intervalId);
-  }, [isConversationTimelinePaused]);
-
-  const conversationProgress =
-    CONVERSATION_STEPS.length > 1
-      ? `${(activeConversationStep / (CONVERSATION_STEPS.length - 1)) * 100}%`
-      : '0%';
-
-  const activateConversationStep = index => {
-    setIsConversationTimelinePaused(true);
-    setActiveConversationStep(index);
-  };
-
-  const handleConversationStepKeyDown = (event, index) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-
-    event.preventDefault();
-    activateConversationStep(index);
-  };
 
   return (
     <>
@@ -321,36 +292,16 @@ export default function WorkingWithUsPage() {
                     aria-label="How it starts"
                   >
                     <SectionTicker label="How it starts" className="cp-fit-ticker" />
-                    <div
+                    <StepProgressTimeline
                       className="cp-fit-timeline"
-                      style={{ '--cp-fit-progress': conversationProgress }}
-                      onMouseLeave={() => setIsConversationTimelinePaused(false)}
-                    >
-                      <span className="cp-fit-timeline-rail" aria-hidden="true">
-                        <span className="cp-fit-timeline-fill" />
-                      </span>
-                      {CONVERSATION_STEPS.map((step, index) => (
-                        <article
-                          key={step.title}
-                          className={`cp-fit-step ${activeConversationStep === index ? 'is-active' : ''}`}
-                          role="button"
-                          tabIndex={0}
-                          aria-current={activeConversationStep === index ? 'step' : undefined}
-                          onMouseEnter={() => activateConversationStep(index)}
-                          onClick={() => activateConversationStep(index)}
-                          onKeyDown={event => handleConversationStepKeyDown(event, index)}
-                        >
-                          <span className="cp-fit-step-node" aria-hidden="true">
-                            <span className="cp-fit-step-ring" />
-                            <span className="cp-fit-step-dot">
-                              {String(index + 1).padStart(2, '0')}
-                            </span>
-                          </span>
-                          <h4>{step.title}</h4>
-                          <p>{step.description}</p>
-                        </article>
-                      ))}
-                    </div>
+                      items={CONVERSATION_STEPS.map(step => ({
+                        id: step.title,
+                        title: step.title,
+                        description: step.description,
+                      }))}
+                      intervalMs={CONVERSATION_STEP_INTERVAL_MS}
+                      ariaLabel="How it starts"
+                    />
                   </section>
                 </div>
               </div>

@@ -21,6 +21,7 @@ const ProjectsPage = lazyWithRetry(() => import('./pages/ProjectsPage.jsx'));
 const ProjectDetailPage = lazyWithRetry(() => import('./pages/ProjectDetailPage.jsx'));
 const CareersPage = lazyWithRetry(() => import('./pages/CareersPage.jsx'));
 const WorkingWithUsPage = lazyWithRetry(() => import('./pages/WorkingWithUsPage.jsx'));
+const AboutUsPage = lazyWithRetry(() => import('./pages/AboutUsPage.jsx'));
 const ContactPage = lazyWithRetry(() => import('./pages/ContactPage.jsx'));
 const BlogPage = lazyWithRetry(() => import('./pages/blog/BlogPage.jsx'));
 const BlogPostPage = lazyWithRetry(() => import('./pages/blog/BlogPostPage.jsx'));
@@ -59,6 +60,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     <Route path="/careers/" element={<CareersPage />} />
                     <Route path="/working-with-us" element={<WorkingWithUsPage />} />
                     <Route path="/working-with-us/" element={<WorkingWithUsPage />} />
+                    <Route path="/about-us" element={<AboutUsPage />} />
+                    <Route path="/about-us/" element={<AboutUsPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/contact/" element={<ContactPage />} />
                     <Route path="/blog" element={<BlogPage />} />
