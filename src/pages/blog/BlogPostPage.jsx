@@ -35,11 +35,14 @@ import {
   Footer,
   SEO,
   PageHeader,
+  BaseCard,
   CTASection,
   SocialShareButtons,
   ArticleSidebar,
-  RelatedArticlesCarousel,
+  SimpleCarousel,
+  Pill,
 } from '../../components';
+import AppLink from '../../components/navigation/AppLink';
 import { useScrollAnimations, useTimeOnPage } from '../../hooks';
 import { TransitionContext } from '../../providers/TransitionProvider';
 import { trackBlogPostShare, trackCTA, trackEvent } from '../../utils/analytics';
@@ -429,12 +432,62 @@ export default function BlogPostPage() {
 
           <section className="bp-related-section padding-section-large">
             <div className="container container--section padding-global">
-              <RelatedArticlesCarousel
-                key={slug}
-                posts={relatedPosts}
-                sourceSlug={slug}
-                animate={true}
-              />
+              {relatedPosts.length > 0 && (
+                <div
+                  className="related-articles-carousel"
+                  data-animate-scope
+                  data-animate-default-preset="fade-up"
+                  data-animate-default-stagger="120"
+                >
+                  <div className="related-articles-carousel__head" data-animate-order="0">
+                    <div className="related-articles-carousel__heading">
+                      <span className="related-articles-carousel__kicker">Continue reading</span>
+                      <h2 id="related-articles-carousel-title">
+                        More from <span>ARG</span>
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div data-animate-order="1">
+                    <SimpleCarousel
+                      key={slug}
+                      className="related-articles-carousel__carousel"
+                      items={relatedPosts}
+                      getItemKey={post => post.slug}
+                      ariaLabel="Related articles"
+                      prevAriaLabel="Show previous related article"
+                      nextAriaLabel="Show next related article"
+                      showIndicator={false}
+                      renderItem={post => (
+                        <BaseCard
+                          as={AppLink}
+                          to={`/blog/${post.slug}/`}
+                          className="related-article-card"
+                          variant="glass"
+                          padding="sm"
+                          radius="lg"
+                          hover="none"
+                          trackEvent="blog_related_click"
+                          trackData={{
+                            blog_post_slug: post.slug,
+                            source_slug: slug,
+                            location: 'blog_related_carousel',
+                          }}
+                        >
+                          <Pill className="related-article-card__tag" variant="muted" size="xs">
+                            {post.tag}
+                          </Pill>
+                          <h3>{post.title}</h3>
+                          <p>{post.subtitle}</p>
+                          <span className="related-article-card__meta">
+                            {[post.date, post.readTime].filter(Boolean).join(' · ')}
+                          </span>
+                        </BaseCard>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 

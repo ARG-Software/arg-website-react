@@ -1577,8 +1577,94 @@
 }
 
 /* ==========================================================================
-   components/widgets
-   RelatedArticlesCarousel
+   components/navigation
+   SimpleCarousel (generic)
+   ========================================================================== */
+
+.simple-carousel {
+  width: 100%;
+}
+
+.simple-carousel__controls {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.simple-carousel__arrow {
+  align-items: center;
+  background: #fff;
+  border: 1px solid rgba(12, 0, 46, 0.12);
+  border-radius: 50%;
+  box-shadow: 0 20px 48px -28px rgba(12, 0, 46, 0.55);
+  color: #0c002e;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 1.25rem;
+  height: 3rem;
+  justify-content: center;
+  line-height: 1;
+  width: 3rem;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.simple-carousel__arrow:hover {
+  background: #f5f2ff;
+  transform: translateY(-1px);
+}
+
+.simple-carousel__arrow:disabled {
+  cursor: default;
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+.simple-carousel__track {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.48s ease,
+    transform 0.48s ease;
+}
+
+.simple-carousel__track.is-transitioning {
+  opacity: 0;
+  transform: translateY(0.125rem);
+}
+
+.simple-carousel__slide {
+  display: flex;
+  min-width: 0;
+}
+
+.simple-carousel__indicator {
+  color: rgba(12, 0, 46, 0.6);
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-meta-small);
+  letter-spacing: var(--tracking-meta);
+  margin: 0.75rem 0 0;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+@media screen and (max-width: 480px) {
+  .simple-carousel__arrow {
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+}
+
+/* ==========================================================================
+   Blog related articles (page-specific bits)
    ========================================================================== */
 
 .related-articles-carousel {
@@ -1627,68 +1713,12 @@
   color: transparent;
 }
 
-.related-articles-carousel__controls {
-  align-items: center;
-  display: flex;
-  flex: 0 0 auto;
-  gap: 0.75rem;
-  justify-content: center;
-  margin-top: 1.5rem;
-}
-
-.related-articles-carousel__arrow {
-  align-items: center;
-  background: #fff;
-  border: 1px solid rgba(12, 0, 46, 0.12);
-  border-radius: 50%;
-  box-shadow: 0 20px 48px -28px rgba(12, 0, 46, 0.55);
-  color: #0c002e;
-  cursor: pointer;
-  display: inline-flex;
-  font-family: Neuemontreal, sans-serif;
-  font-size: 1.25rem;
-  height: 3rem;
-  justify-content: center;
-  line-height: 1;
-  width: 3rem;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.related-articles-carousel__arrow:hover {
-  background: #f5f2ff;
-  transform: translateY(-1px);
-}
-
-.related-articles-carousel__arrow:disabled {
-  cursor: default;
-  opacity: 0.28;
-  pointer-events: none;
-}
-
-.related-articles-carousel__track {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  min-height: 20rem;
-  opacity: 1;
-  transform: translateY(0);
-  transition:
-    opacity 0.48s ease,
-    transform 0.48s ease;
-}
-
-.related-articles-carousel__track.is-transitioning {
-  opacity: 0;
-  transform: translateY(0.125rem);
-}
-
 .related-article-card {
   color: #0c002e;
   display: flex;
   flex-direction: column;
   min-height: 20rem;
+  width: 100%;
 }
 
 .related-article-card:hover {
@@ -1750,20 +1780,8 @@
     gap: 1.25rem;
   }
 
-  .related-articles-carousel__track {
-    grid-template-columns: minmax(0, 1fr);
-    min-height: 17rem;
-  }
-
   .related-article-card {
     min-height: 17rem;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .related-articles-carousel__arrow {
-    height: 2.5rem;
-    width: 2.5rem;
   }
 }
 
@@ -1976,7 +1994,7 @@
   color: #fff;
   padding-top: 3.5rem;
   padding-bottom: 2.5rem;
-  overflow-x: hidden;
+  overflow: clip;
 }
 
 .footer-main .container.padding-global {

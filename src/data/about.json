@@ -19,84 +19,157 @@
     "intro": "The story is not a pitch-deck origin. It is a working relationship tested across teams, clients, and production systems before ARG became official.",
     "steps": [
       {
-        "id": "2013-jose",
-        "title": "2013",
-        "description": "José starts",
-        "label": "José starts",
-        "headline": "José begins his engineering path.",
+        "id": "2012-2013-foundations",
+        "period": "2012-13",
+        "kicker": "Foundations",
+        "headline": "Production work before ARG had a name.",
+        "summary": "Both founders entered software through practical delivery, not abstract theory alone. The first years were already about real users, data-heavy products, public-facing systems, and business rules that had to work outside a demo.",
+        "highlights": [
+          "José worked on InfoPortugal products, including VisitPortugal and real-time Traffic/GIS systems.",
+          "Rui built a financial management system by translating complex calculation sheets into a richer web application.",
+          "Both paths started with product work where interfaces, data models, deployment, and maintainability all mattered."
+        ],
+        "whyItMattered": "ARG's later standard comes from this kind of work: software has to survive real users, existing processes, and long-term ownership.",
         "details": [
           {
             "label": "José",
-            "text": "Studies Computer Science and later completes a Master’s degree in Software Architecture at the University of Porto. His work moves across backend, frontend, mobile, full-stack development, and technical leadership."
-          }
-        ]
-      },
-      {
-        "id": "2013-rui",
-        "title": "2013",
-        "description": "Rui starts",
-        "label": "Rui starts",
-        "headline": "Rui begins through hands-on delivery.",
-        "details": [
-          {
-            "label": "Rui",
-            "text": "Studies Computer Engineering at ISEP and starts through freelance work, including projects with government-related entities before moving into telecommunications."
-          }
-        ]
-      },
-      {
-        "id": "2014-2016",
-        "title": "2014-2016",
-        "description": "Telecom",
-        "label": "Paths cross",
-        "headline": "Telecommunications puts them in the same rooms.",
-        "details": [
-          {
-            "label": "Together",
-            "text": "José and Rui work together in telecom, contributing to software used by reference brands such as Vodafone, Orange, and others. The shared experience creates trust, complementary skills, and a clear alignment on how software should be built."
-          }
-        ]
-      },
-      {
-        "id": "2016",
-        "title": "2016",
-        "description": "Leadership",
-        "label": "Leadership takes shape",
-        "headline": "Both step into stronger ownership roles.",
-        "details": [
-          {
-            "label": "José",
-            "text": "Becomes Team Lead on a Horizon 2020-funded project in Porto, strengthening his path toward software architecture and engineering leadership."
+            "tone": "jose",
+            "text": "Built early experience across backend, web, mobile, maps, and public-facing platforms while completing Computer Science and Software Architecture studies at the University of Porto."
           },
           {
             "label": "Rui",
-            "text": "Helps create a programming studio, developing projects for clients around the world and for well-known national brands."
+            "tone": "rui",
+            "text": "Moved from education into hands-on product delivery, including financial workflows, Salesforce-based systems, and client-facing application work."
           }
         ]
       },
       {
-        "id": "2018",
-        "title": "2018",
-        "description": "Back together",
-        "label": "Back together",
-        "headline": "The collaboration restarts by choice.",
+        "id": "2014-2016-telecom",
+        "period": "2014-16",
+        "kicker": "Telecom",
+        "headline": "Telecom put them in the same engineering culture.",
+        "summary": "At Celfinet, José and Rui worked around telecom software, dashboards, GIS systems, and internal tools where reliability and code quality were not optional. This is where the working relationship started to take shape.",
+        "highlights": [
+          "Worked on software connected to telecom operators and network-performance products",
+          "Built and maintained dashboard, GIS, reporting, backoffice, and internal tooling across Angular, React, .NET, OpenLayers, GeoServer, and related stacks.",
+          "Operated in teams using code reviews, pair programming, testing, continuous integration, and refactoring of legacy systems."
+        ],
+        "whyItMattered": "This period created the technical trust behind ARG: shared standards, direct feedback, and the ability to work under production pressure without lowering the bar.",
         "details": [
           {
             "label": "Together",
-            "text": "After growing through different but connected paths, José and Rui begin working together again as freelancers, bringing back the same synergy that had already proven valuable years earlier."
+            "tone": "arg",
+            "text": "Their paths crossed in demanding telecom work, where the quality of architecture, frontend execution, backend design, and operational tooling all affected delivery."
           }
         ]
       },
       {
-        "id": "2020",
-        "title": "2020",
-        "description": "ARG Software",
-        "label": "ARG Software",
-        "headline": "The way of working becomes ARG Software.",
+        "id": "2016-2018-leadership-delivery",
+        "period": "2016-18",
+        "kicker": "Leadership and delivery",
+        "headline": "Ownership became part of the job, not a title.",
+        "summary": "After the telecom years, both founders moved into roles with more responsibility. José took stronger architecture and technical leadership positions; Rui expanded through agency and studio-style delivery, APIs, QA, deployment, and client-facing execution.",
+        "highlights": [
+          "José worked on EQS Digital and the UNO industrial platform, taking responsibility for architecture, refactoring, coaching, code review, Scrum practices, and DDD/SOLID-oriented backend design.",
+          "Rui worked through PICUS Digital Web Agency, implementing frontend designs, creating APIs, adding unit, integration, and end-to-end test coverage.",
+          "Both paths reinforced the same habit: senior engineers should own the shape of the system, not just their assigned tickets."
+        ],
+        "whyItMattered": "ARG's delivery model depends on senior ownership. These years shaped the expectation that architecture, implementation, QA, CI/CD, and communication belong together.",
+        "details": [
+          {
+            "label": "José",
+            "tone": "jose",
+            "text": "Moved deeper into architecture and leadership, including ERP/industrial software work, team coaching, code review, Scrum guidance, and backend architecture patterns."
+          },
+          {
+            "label": "Rui",
+            "tone": "rui",
+            "text": "Built and shipped agency/studio projects across frontend, APIs, QA automation, deployment, and operational maintenance."
+          }
+        ]
+      },
+      {
+        "id": "2018-2020-international",
+        "period": "2018-20",
+        "kicker": "International work",
+        "headline": "Remote product engineering across markets.",
+        "summary": "The founders kept growing through independent and international work. José focused on architecture-heavy platforms in the United States and Germany; Rui worked through freelance and product roles connected to scalable web applications and operational workflows.",
+        "highlights": [
+          "José worked with North Music Group in Los Angeles on backend architecture, DDD/CQRS, Scrum coaching, CI/CD, and scalable music-industry software.",
+          "José also worked on Micron Manufacturing, an IoT production-management application with architecture, refactoring, CI/CD, and test practices.",
+          "Rui worked as a freelancer on scalable web applications and on Quindi's Portugal 2020 project-management platform, focused on finance/deadline approval workflows."
+        ],
+        "whyItMattered": "This period made ARG's remote-first operating model practical. The team learned how to align across time zones, domains, and technical stacks while keeping delivery accountable.",
+        "details": [
+          {
+            "label": "José",
+            "tone": "jose",
+            "text": "Worked on architecture-heavy international systems for music technology and manufacturing, with backend design, distributed delivery, and CI/CD responsibility."
+          },
+          {
+            "label": "Rui",
+            "tone": "rui",
+            "text": "Worked on scalable web applications and project-management software, carrying frontend, backend, requirements, and business-workflow implementation."
+          }
+        ]
+      },
+      {
+        "id": "2020-2021-arg-start",
+        "period": "2020-21",
+        "kicker": "ARG takes shape",
+        "headline": "The collaboration became a company through real client work.",
+        "summary": "ARG was not formed around a slide deck. It grew out of active client delivery, shared standards, and the decision to formalize a way of working that was already producing results.",
+        "highlights": [
+          "ARG began around software architecture, full-stack delivery, scalable systems, and direct founder involvement.",
+          "Early ARG work included Dokutar, a cloud-based documentation and compliance-oriented product for German companies.",
+          "The stack already reflected the studio's range: Node.js, TypeScript, React, Angular, .NET, PostgreSQL, MySQL, MongoDB, Docker, AWS, CI/CD, and testing."
+        ],
+        "whyItMattered": "This is where ARG's positioning became concrete: small senior teams, architecture-first delivery, and software built to keep evolving after the first release.",
         "details": [
           {
             "label": "ARG",
-            "text": "ARG is created to formalize what already existed: a shared engineering culture, a high standard for delivery, and the ambition to help companies build software that can grow with their business."
+            "tone": "arg",
+            "text": "The company formalized a proven collaboration model: direct communication, technical discipline, pragmatic delivery, and responsibility beyond handoff."
+          }
+        ]
+      },
+      {
+        "id": "2021-2022-studio-momentum",
+        "period": "2021-22",
+        "kicker": "Studio momentum",
+        "headline": "ARG moved from formation to a broader portfolio.",
+        "summary": "The studio expanded across music technology, financial technology, documentation products, and food-service software, while keeping the same pattern: senior delivery, architecture, code review, CI/CD, and maintainability.",
+        "highlights": [
+          "Skytracks, based in Canada, brought cloud-based music production work across Node.js, Koa, RxJS, Angular, Jest, Docker, queues, and MySQL.",
+          "Mojaloop, worldwide open source initiative, added open-source payment infrastructure work involving TypeScript, Express, Kafka, Angular, Docker, MongoDB, Elasticsearch, and Kibana.",
+          "Leeroy, a company based in Stockholm, bringing a PWA for food service, using React, Storybook, Framer Motion, GraphQL, Fastify, MongoDB, Redis, AWS, Docker, Argo CD, GitHub Actions, and Datadog."
+        ],
+        "whyItMattered": "This period showed that ARG's model could transfer across domains without becoming generic: the work changed, but the engineering standard stayed the same.",
+        "details": [
+          {
+            "label": "ARG",
+            "tone": "arg",
+            "text": "ARG proved its studio model across client products that required backend systems, frontend applications, distributed workflows, and disciplined delivery practices."
+          }
+        ]
+      },
+      {
+        "id": "present",
+        "period": "Now",
+        "kicker": "Selective growth",
+        "headline": "Growth through trust, not headcount.",
+        "summary": "ARG today is a small software studio built around senior ownership and carefully selected collaborators. The company does not scale by adding people for optics; it scales by assembling trusted capability around the problem.",
+        "highlights": [
+          "Current and past ARG clients include AngryVentures, Hopupon, Hostelier, MB-Netzwerk, Mojaloop Foundation, North Music Group, SEFA, SkyTracks, and others.",
+          "The work spans payment infrastructure, music technology, travel, hospitality, documentation, SaaS products, backend systems, frontend applications, cloud infrastructure, and AI-enabled product thinking.",
+          "The operating model remains consistent: architecture, code review, testing, CI/CD, direct communication, and accountability from discovery to production."
+        ],
+        "whyItMattered": "This is the company ARG intentionally became: selective, technical, direct, and built around people trusted to own the work properly.",
+        "details": [
+          {
+            "label": "ARG",
+            "tone": "arg",
+            "text": "ARG consolidates its presence in the market by selectively bringing in excellent collaborators, keeping the non-negotiable commitment that quality always wins over quantity."
           }
         ]
       }

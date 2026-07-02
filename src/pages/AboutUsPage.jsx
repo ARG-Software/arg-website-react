@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA, trackEvent } from '../utils/analytics';
+import { useHashScroll, useScrollAnimations, useTimeOnPage } from '../hooks';
+import { trackCTA } from '../utils/analytics';
 import { getProjectBriefFormLink } from '../services/linksservice';
 import {
   Navbar,
@@ -11,44 +10,26 @@ import {
   SEO,
   PageHeader,
   Pill,
-  StepProgressTimeline,
+  VerticalTimeline,
 } from '../components';
 import ABOUT_DATA from '../data/about.json';
 import '../styles/about.css';
-import '../styles/step-progress-timeline.css';
 
-const STORY_STEP_INTERVAL_MS = 6500;
-
-function getStoryDetailTone(label) {
-  const normalizedLabel = label
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-  if (normalizedLabel.includes('jose')) return 'jose';
-  if (normalizedLabel.includes('rui')) return 'rui';
-  if (normalizedLabel.includes('together') || normalizedLabel.includes('arg')) return 'together';
-  return 'default';
-}
-
-function StoryDetail({ detail }) {
-  return (
-    <div className={`about-strand about-strand--${getStoryDetailTone(detail.label)}`}>
-      <span className="about-strand__who">{detail.label}</span>
-      <span className="about-strand__txt">{detail.text}</span>
-    </div>
-  );
-}
+const TIMELINE_MOBILE_CARD_ID = 'about-timeline-mobile-card';
 
 export default function AboutUsPage() {
-  const [activeStepIndex, setActiveStepIndex] = useState(0);
-  const activeStep = ABOUT_DATA.timeline.steps[activeStepIndex] ?? ABOUT_DATA.timeline.steps[0];
-
   useTimeOnPage('/about-us/');
   useScrollAnimations();
+  const { scrollToHashWhenReady } = useHashScroll();
 
-  const handleStoryStepChange = (item, index) => {
-    setActiveStepIndex(index);
-    trackEvent('about_story_step_activate', { step_id: item.id });
+  const handleTimelineMobileChange = () => {
+    scrollToHashWhenReady(TIMELINE_MOBILE_CARD_ID, {
+      initialDelay: 0,
+      maxRetries: 8,
+      offset: -96,
+      retryDelay: 50,
+      updateUrl: false,
+    });
   };
 
   return (
@@ -110,37 +91,13 @@ export default function AboutUsPage() {
                   <p className="about-section-intro">{ABOUT_DATA.timeline.intro}</p>
                 </header>
 
-                <div
-                  className="about-story-timeline"
-                  data-animate-order="1"
-                  style={{ '--step-count': ABOUT_DATA.timeline.steps.length }}
-                >
-                  <StepProgressTimeline
-                    items={ABOUT_DATA.timeline.steps.map(step => ({
-                      id: step.id,
-                      title: step.title,
-                      description: step.description,
-                    }))}
-                    intervalMs={STORY_STEP_INTERVAL_MS}
+                <div className="about-story-timeline">
+                  <VerticalTimeline
+                    items={ABOUT_DATA.timeline.steps}
                     ariaLabel="ARG story timeline"
-                    className="about-story-bar"
-                    onActiveChange={handleStoryStepChange}
+                    mobileScrollTargetId={TIMELINE_MOBILE_CARD_ID}
+                    onMobileChange={handleTimelineMobileChange}
                   />
-                </div>
-
-                <div className="about-story-panel" data-animate-order="2" key={activeStep.id}>
-                  <div className="about-story-panel__year">
-                    <div className="about-story-panel__year-value">{activeStep.title}</div>
-                    <div className="about-story-panel__year-label">{activeStep.label}</div>
-                  </div>
-                  <div className="about-story-panel__detail">
-                    <h3 className="about-story-panel__headline">{activeStep.headline}</h3>
-                    <div className="about-story-panel__strands">
-                      {activeStep.details.map(detail => (
-                        <StoryDetail key={`${activeStep.id}-${detail.label}`} detail={detail} />
-                      ))}
-                    </div>
-                  </div>
                 </div>
               </div>
               <div className="padding-bottom padding-80-40"></div>
