@@ -2,7 +2,6 @@ import { createContext, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useRAF } from '../hooks/useRAF';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -10,8 +9,11 @@ export const LenisContext = createContext(null);
 
 /**
  * LenisProvider - Provides Lenis smooth-scrolling instance via React Context.
- * Handles its own resize logic: reacts to route changes and body mutations.
- * Wires Lenis scroll events directly into ScrollTrigger.update.
+ * Uses Lenis's own requestAnimationFrame loop (autoRaf: true) to keep scroll
+ * updates isolated from the app's shared animation loop.
+ *
+ * Resize/refresh is triggered only on route changes; dynamic sections should
+ * call ScrollTrigger.refresh() locally when they need it.
  */
 export function LenisProvider({ children, lerp = 0.1, wheelMultiplier = 0.9, syncTouch = false }) {
   const [lenis, setLenis] = useState(null);
@@ -20,9 +22,6 @@ export function LenisProvider({ children, lerp = 0.1, wheelMultiplier = 0.9, syn
 
   useEffect(() => {
     let cancelled = false;
-    let mutationObserver = null;
-    let resizeObserver = null;
-    let resizeTimer = null;
 
     const initLenis = async () => {
       try {
@@ -30,7 +29,7 @@ export function LenisProvider({ children, lerp = 0.1, wheelMultiplier = 0.9, syn
         if (cancelled) return;
 
         const instance = new Lenis({
-          autoRaf: false,
+          autoRaf: true,
           smoothWheel: true,
           lerp,
           wheelMultiplier,
@@ -47,22 +46,6 @@ export function LenisProvider({ children, lerp = 0.1, wheelMultiplier = 0.9, syn
         setLenis(instance);
 
         instance.on('scroll', ScrollTrigger.update);
-
-        const resizeAndRefresh = () => {
-          instance.resize();
-          ScrollTrigger.refresh();
-        };
-
-        const debouncedRefresh = () => {
-          clearTimeout(resizeTimer);
-          resizeTimer = setTimeout(resizeAndRefresh, 200);
-        };
-
-        mutationObserver = new MutationObserver(debouncedRefresh);
-        mutationObserver.observe(document.body, { childList: true, subtree: true });
-
-        resizeObserver = new ResizeObserver(debouncedRefresh);
-        resizeObserver.observe(document.body);
       } catch (error) {
         console.error('Failed to initialize Lenis:', error);
       }
@@ -72,9 +55,6 @@ export function LenisProvider({ children, lerp = 0.1, wheelMultiplier = 0.9, syn
 
     return () => {
       cancelled = true;
-      mutationObserver?.disconnect();
-      resizeObserver?.disconnect();
-      clearTimeout(resizeTimer);
       if (instanceRef.current) {
         instanceRef.current.destroy();
         instanceRef.current = null;
@@ -85,21 +65,27 @@ export function LenisProvider({ children, lerp = 0.1, wheelMultiplier = 0.9, syn
   }, []);
 
   useEffect(() => {
-    if (!instanceRef.current) return;
-    instanceRef.current.resize();
-    ScrollTrigger.refresh();
-    const delayedTimer = setTimeout(() => {
-      instanceRef.current?.resize();
-      ScrollTrigger.refresh();
-    }, 1200);
-    return () => clearTimeout(delayedTimer);
-  }, [location.pathname]);
+    const instance = instanceRef.current;
+    if (!instance) return undefined;
 
-  useRAF((_delta, elapsed) => {
-    if (instanceRef.current) {
-      instanceRef.current.raf(elapsed * 1000);
-    }
-  }, []);
+    let rafId = null;
+    let retryTimer = null;
+
+    const refresh = () => {
+      instance.resize();
+      ScrollTrigger.refresh();
+    };
+
+    rafId = requestAnimationFrame(() => {
+      refresh();
+      retryTimer = setTimeout(refresh, 800);
+    });
+
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      if (retryTimer !== null) clearTimeout(retryTimer);
+    };
+  }, [location.pathname]);
 
   return <LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>;
 }
