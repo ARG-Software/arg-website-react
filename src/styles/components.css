@@ -4208,6 +4208,7 @@ textarea.ec-input {
 
   .nav-menu__ribbon {
     display: flex;
+    flex: 1 0 auto;
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
@@ -4237,10 +4238,11 @@ textarea.ec-input {
   }
 
   .nav-menu__cta {
+    margin-top: auto;
     min-width: 0;
-    width: 100%;
+    width: fit-content;
     padding: 0.875rem 1.25rem;
-    font-size: 1rem;
+    font-size: 0.75rem;
   }
 }
 
