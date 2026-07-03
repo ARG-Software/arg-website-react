@@ -31,7 +31,7 @@ html.ls-active {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  max-width: calc(100vw - clamp(2.5rem, 6vw, 6rem));
+  max-width: calc(100vw - clamp(2.5rem, 6vw, 6rem) - 12rem);
 }
 
 .ls-hello {
@@ -132,7 +132,7 @@ html.ls-active {
   will-change: transform;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .ls-hello-row {
     gap: 8px;
     left: 1rem;
