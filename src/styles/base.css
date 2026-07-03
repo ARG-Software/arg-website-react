@@ -336,7 +336,7 @@ label {
 
   /* Typography roles */
   --type-display: clamp(3.25rem, 7vw, 7.5rem);
-  --type-hero-title: 4rem;
+  --type-hero-title: clamp(3.25rem, 5.2vw, 4rem);
   --type-about-title: 3rem;
   --type-marquee: clamp(1.5rem, 4vw, 3.4375rem);
   --type-page-title: clamp(1.75rem, 3vw, 3rem);
@@ -408,21 +408,21 @@ label {
 
 @media screen and (max-width: 61.9375rem) {
   :root {
-    --type-hero-title: 3.5rem;
+    --type-hero-title: clamp(2.5rem, 6.4vw, 3.5rem);
     --type-about-title: 3.25rem;
   }
 }
 
 @media screen and (max-width: 47.9375rem) {
   :root {
-    --type-hero-title: 2.5rem;
+    --type-hero-title: clamp(2rem, 7.8vw, 2.5rem);
     --type-about-title: 2.75rem;
   }
 }
 
 @media screen and (max-width: 29.9375rem) {
   :root {
-    --type-hero-title: 2rem;
+    --type-hero-title: clamp(1.875rem, 8.5vw, 2rem);
     --type-about-title: 2.5rem;
   }
 }
