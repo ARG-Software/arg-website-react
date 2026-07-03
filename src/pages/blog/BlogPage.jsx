@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
-import AppLink from '../../components/navigation/AppLink';
-import {
-  Navbar,
-  Footer,
-  CTASection,
-  SectionDivider,
-  arrowSvg,
-  SEO,
-  PageHeader,
-  Pagination,
-  TagFilterPills,
-} from '../../components';
-import { useScrollAnimations, useBlogSearch, useTimeOnPage } from '../../hooks';
-import { trackBlogPostClick, trackCTA, trackEvent } from '../../utils/analytics';
+import AppLink from '@components/navigation/AppLink';
+import { Navbar } from '@components/navigation/Navbar';
+import { Footer } from '@components/layout/Footer';
+import { CTASection } from '@components/layout/CTASection';
+import { SectionDivider } from '@components/layout/SectionDivider';
+import { arrowSvg } from '@components/icons/SocialIcons';
+import { SEO } from '@components/seo/SEO';
+import { PageHeader } from '@components/headers/PageHeader';
+import { Pagination } from '@components/navigation/Pagination';
+import { TagFilterPills } from '@components/filters/TagFilterPills';
+import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { useBlogSearch } from '@hooks/useBlogSearch';
+import { useTimeOnPage } from '@hooks/useTimeOnPage';
+import { trackBlogPostClick, trackCTA, trackEvent } from '@utils/analytics';
 
-import { getBlogTags, loadBlogPostsMetadata } from '../../utils/blog';
-import { BLOG_POSTS_PER_PAGE } from '../../constants';
+import { getBlogTags, loadBlogPostsMetadata } from '@utils/blog';
+import { BLOG_POSTS_PER_PAGE } from '@constants/config';
 import '../../styles/blog.css';
 
 const searchSvg = (

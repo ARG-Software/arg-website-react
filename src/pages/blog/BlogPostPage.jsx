@@ -30,29 +30,28 @@ hljs.registerLanguage('typescript', typescript);
 hljs.registerLanguage('xml', xml);
 hljs.registerLanguage('yaml', yaml);
 hljs.registerAliases(['promql'], { languageName: 'sql' });
-import {
-  Navbar,
-  Footer,
-  SEO,
-  PageHeader,
-  BaseCard,
-  CTASection,
-  SocialShareButtons,
-  ArticleSidebar,
-  SimpleCarousel,
-  Pill,
-} from '../../components';
-import AppLink from '../../components/navigation/AppLink';
-import { useScrollAnimations, useTimeOnPage } from '../../hooks';
+import { Navbar } from '@components/navigation/Navbar';
+import { Footer } from '@components/layout/Footer';
+import { SEO } from '@components/seo/SEO';
+import { PageHeader } from '@components/headers/PageHeader';
+import { BaseCard } from '@components/cards/BaseCard';
+import { CTASection } from '@components/layout/CTASection';
+import { SocialShareButtons } from '@components/actions/SocialShareButtons';
+import { ArticleSidebar } from '@components/navigation/ArticleSidebar';
+import { SimpleCarousel } from '@components/navigation/SimpleCarousel';
+import { Pill } from '@components/pills/Pill';
+import AppLink from '@components/navigation/AppLink';
+import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { TransitionContext } from '../../providers/TransitionProvider';
-import { trackBlogPostShare, trackCTA, trackEvent } from '../../utils/analytics';
+import { trackBlogPostShare, trackCTA, trackEvent } from '@utils/analytics';
 import {
   getHeadingId,
   getRelatedPosts,
   loadBlogPostsWithContent,
   parseDateToIso,
   splitArticleTitle,
-} from '../../utils/blog';
+} from '@utils/blog';
 import {
   EXTERNAL_LINK_KEYS,
   getBlueskyShareLink,
@@ -60,8 +59,8 @@ import {
   getLinkedInShareLink,
   getNewsletterSubscribeLink,
   getTwitterShareLink,
-} from '../../services/linksservice';
-import { buildArticleSchema } from '../../utils/structuredData';
+} from '@services/linksservice';
+import { buildArticleSchema } from '@utils/structuredData';
 import '../../styles/blog.css';
 
 // ─── Load all blog posts with full content ──────────────────────────────────

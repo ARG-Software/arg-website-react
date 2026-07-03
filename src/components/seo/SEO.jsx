@@ -5,7 +5,7 @@ import {
   DEFAULT_TITLE,
   DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
-} from '../../constants';
+} from '@constants/seo';
 import { EXTERNAL_LINK_KEYS, getFeedLink } from '../../services/linksservice';
 import { buildPageSchemas, stringifyJsonLd } from '../../utils/structuredData';
 

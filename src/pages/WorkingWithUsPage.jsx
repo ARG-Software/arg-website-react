@@ -1,18 +1,17 @@
-import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA } from '../utils/analytics';
+import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { useTimeOnPage } from '@hooks/useTimeOnPage';
+import { trackCTA } from '@utils/analytics';
 import { getProjectBriefFormLink } from '../services/linksservice';
-import {
-  Navbar,
-  BaseCard,
-  Footer,
-  CTASection,
-  SectionDivider,
-  SectionTicker,
-  SEO,
-  PageHeader,
-  TechStackConsole,
-  StepProgressTimeline,
-} from '../components';
+import { Navbar } from '@components/navigation/Navbar';
+import { BaseCard } from '@components/cards/BaseCard';
+import { Footer } from '@components/layout/Footer';
+import { CTASection } from '@components/layout/CTASection';
+import { SectionDivider } from '@components/layout/SectionDivider';
+import { SectionTicker } from '@components/layout/SectionTicker';
+import { SEO } from '@components/seo/SEO';
+import { PageHeader } from '@components/headers/PageHeader';
+import { TechStackConsole } from '@components/widgets/TechStackConsole';
+import { StepProgressTimeline } from '@components/grids/StepProgressTimeline';
 import '../styles/careers.css';
 import '../styles/step-progress-timeline.css';
 

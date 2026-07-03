@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import { trackEvent, trackPageView } from '../utils/analytics';
 import { useHashScroll } from '../hooks/useHashScroll';
 import { LenisContext } from './LenisProvider';
-import { PAGE_TRANSITION_DURATION_MS } from '../constants';
+import { PAGE_TRANSITION_DURATION_MS } from '@constants/config';
 import { PageTransitionOverlay } from '../components/layout/PageTransitionOverlay';
 import { normalizePathname } from '../utils/helpers';
 

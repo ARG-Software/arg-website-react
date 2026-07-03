@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { trackConsent } from '../../utils/analytics';
-import { STORAGE_KEY } from '../../constants';
+import { STORAGE_KEY } from '@constants/ui';
 import { LoadingContext } from '../../providers/LoadingProvider';
 
 function updateConsent(granted) {

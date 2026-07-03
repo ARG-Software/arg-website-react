@@ -5,7 +5,7 @@ import {
   LEAD_CAPTURE_DISMISSED_CONTEXT_KEY,
   NEVER_SHOW_LEAD_CAPTURE_KEY,
   MOBILE_BREAKPOINT,
-} from '../constants';
+} from '@constants/ui';
 import { isMobile } from '../utils/helpers';
 import { trackEvent } from '../utils/analytics';
 

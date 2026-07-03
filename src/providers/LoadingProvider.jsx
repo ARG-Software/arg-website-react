@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
-import { LoadingScreen } from '../components';
+import { LoadingScreen } from '@components/layout/LoadingScreen';
 import PROJECTS from '../data/projects.json';
 
 export const LoadingContext = createContext(true);

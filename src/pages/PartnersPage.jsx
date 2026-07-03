@@ -1,17 +1,16 @@
 import { useState, useCallback } from 'react';
-import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA, trackEvent } from '../utils/analytics';
-import {
-  Navbar,
-  Footer,
-  CTASection,
-  SectionDivider,
-  SEO,
-  Drawer,
-  FilterGrid,
-  Timeline,
-  PageHeader,
-} from '../components';
+import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { useTimeOnPage } from '@hooks/useTimeOnPage';
+import { trackCTA, trackEvent } from '@utils/analytics';
+import { Navbar } from '@components/navigation/Navbar';
+import { Footer } from '@components/layout/Footer';
+import { CTASection } from '@components/layout/CTASection';
+import { SectionDivider } from '@components/layout/SectionDivider';
+import { SEO } from '@components/seo/SEO';
+import { Drawer } from '@components/overlays/Drawer';
+import { FilterGrid } from '@components/grids/FilterGrid';
+import { Timeline } from '@components/grids/Timeline';
+import { PageHeader } from '@components/headers/PageHeader';
 import data from '../data/partners.json';
 import { getProjectBookingLink, getProjectBriefFormLink } from '../services/linksservice';
 import '../styles/partners.css';

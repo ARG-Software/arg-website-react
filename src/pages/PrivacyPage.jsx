@@ -1,6 +1,11 @@
-import { Navbar, Footer, CTASection, SEO, PageHeader } from '../components';
-import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA } from '../utils/analytics';
+import { Navbar } from '@components/navigation/Navbar';
+import { Footer } from '@components/layout/Footer';
+import { CTASection } from '@components/layout/CTASection';
+import { SEO } from '@components/seo/SEO';
+import { PageHeader } from '@components/headers/PageHeader';
+import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { useTimeOnPage } from '@hooks/useTimeOnPage';
+import { trackCTA } from '@utils/analytics';
 import { EMAIL_KEYS, getEmailAddress, getMailtoLink } from '../services/linksservice';
 
 const CONTACT_EMAIL = getEmailAddress(EMAIL_KEYS.INFO);

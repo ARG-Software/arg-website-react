@@ -1,4 +1,4 @@
-import { useWeb3Form } from '../../hooks';
+import { useWeb3Form } from '@hooks/useWeb3Form';
 import { FormCard, FormSubmitButton } from './FormCard';
 
 function getFieldId(formName, field) {

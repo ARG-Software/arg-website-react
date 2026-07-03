@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { fileURLToPath, URL } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import seoPrerender from './plugins/seo-prerender/index.js';
@@ -6,6 +7,18 @@ import seoPrerender from './plugins/seo-prerender/index.js';
 
 export default defineConfig({
   assetsInclude: ['**/*.md'],
+  resolve: {
+    alias: {
+      '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
+      '@hooks': fileURLToPath(new URL('./src/hooks', import.meta.url)),
+      '@constants': fileURLToPath(new URL('./src/constants', import.meta.url)),
+      '@providers': fileURLToPath(new URL('./src/providers', import.meta.url)),
+      '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
+      '@services': fileURLToPath(new URL('./src/services', import.meta.url)),
+      '@data': fileURLToPath(new URL('./src/data', import.meta.url)),
+      '@styles': fileURLToPath(new URL('./src/styles', import.meta.url)),
+    },
+  },
   plugins: [
     react(),
     ViteImageOptimizer({

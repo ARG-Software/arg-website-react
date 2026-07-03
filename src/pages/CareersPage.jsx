@@ -1,19 +1,17 @@
 import { useRef, useState } from 'react';
-import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA, trackEvent } from '../utils/analytics';
-import {
-  Navbar,
-  BaseCard,
-  ContactForm,
-  Pill,
-  PillButton,
-  Footer,
-  CTASection,
-  SectionDivider,
-  SEO,
-  PageHeader,
-  FounderCard,
-} from '../components';
+import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { useTimeOnPage } from '@hooks/useTimeOnPage';
+import { trackCTA, trackEvent } from '@utils/analytics';
+import { Navbar } from '@components/navigation/Navbar';
+import { BaseCard } from '@components/cards/BaseCard';
+import { ContactForm } from '@components/forms/ContactForm';
+import { Pill, PillButton } from '@components/pills/Pill';
+import { Footer } from '@components/layout/Footer';
+import { CTASection } from '@components/layout/CTASection';
+import { SectionDivider } from '@components/layout/SectionDivider';
+import { SEO } from '@components/seo/SEO';
+import { PageHeader } from '@components/headers/PageHeader';
+import { FounderCard } from '@components/cards/FounderCard';
 import CAREERS_DATA from '../data/jobs.json';
 import {
   EMAIL_KEYS,

@@ -1,8 +1,10 @@
-import { Logo, SEO } from '../components';
-import AppLink from '../components/navigation/AppLink';
-import { useNotFoundPageScene } from '../hooks/useNotFoundPageScene';
-import { useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA } from '../utils/analytics';
+import { Logo } from '@components/icons/Logo';
+import { SEO } from '@components/seo/SEO';
+import AppLink from '@components/navigation/AppLink';
+import { useNotFoundPageScene } from '@hooks/useNotFoundPageScene';
+import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { useTimeOnPage } from '@hooks/useTimeOnPage';
+import { trackCTA } from '@utils/analytics';
 import { getProjectBookingLink } from '../services/linksservice';
 
 import '../styles/404.css';

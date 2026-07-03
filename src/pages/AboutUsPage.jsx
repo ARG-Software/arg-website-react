@@ -1,17 +1,17 @@
-import { useHashScroll, useScrollAnimations, useTimeOnPage } from '../hooks';
-import { trackCTA } from '../utils/analytics';
+import { useHashScroll } from '@hooks/useHashScroll';
+import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { useTimeOnPage } from '@hooks/useTimeOnPage';
+import { trackCTA } from '@utils/analytics';
 import { getProjectBriefFormLink } from '../services/linksservice';
-import {
-  Navbar,
-  BaseCard,
-  Footer,
-  CTASection,
-  SectionDivider,
-  SEO,
-  PageHeader,
-  Pill,
-  VerticalTimeline,
-} from '../components';
+import { Navbar } from '@components/navigation/Navbar';
+import { BaseCard } from '@components/cards/BaseCard';
+import { Footer } from '@components/layout/Footer';
+import { CTASection } from '@components/layout/CTASection';
+import { SectionDivider } from '@components/layout/SectionDivider';
+import { SEO } from '@components/seo/SEO';
+import { PageHeader } from '@components/headers/PageHeader';
+import { Pill } from '@components/pills/Pill';
+import { VerticalTimeline } from '@components/grids/VerticalTimeline';
 import ABOUT_DATA from '../data/about.json';
 import '../styles/about.css';
 

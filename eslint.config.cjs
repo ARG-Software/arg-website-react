@@ -36,6 +36,25 @@ module.exports = [
        'react/no-unknown-property': ['error', { ignore: ['fs-numbercount-element', 'fs-numbercount-start', 'fs-numbercount-end', 'validate'] }],
        'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
        'prettier/prettier': ['error', { singleQuote: true, semi: true }],
+       'no-restricted-imports': [
+         'error',
+         {
+           paths: [
+             {
+               name: '@hooks',
+               message: 'Import from the leaf module, e.g. @hooks/useScrollAnimations.',
+             },
+             {
+               name: '@components',
+               message: 'Import from the leaf module, e.g. @components/navigation/Navbar.',
+             },
+             {
+               name: '@constants',
+               message: 'Import from the leaf module, e.g. @constants/config.',
+             },
+           ],
+         },
+       ],
     },
     settings: {
       react: {

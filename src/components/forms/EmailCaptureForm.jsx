@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { closeSvg } from '../icons/SocialIcons';
 import { trackEvent } from '../../utils/analytics';
-import { ALREADY_SUBSCRIBED_KEY } from '../../constants';
-import { useLeadCaptureVisibility, useWeb3Form } from '../../hooks';
+import { ALREADY_SUBSCRIBED_KEY } from '@constants/ui';
+import { useLeadCaptureVisibility } from '@hooks/useLeadCaptureVisibility';
+import { useWeb3Form } from '@hooks/useWeb3Form';
 
 export function EmailCaptureForm() {
   const [email, setEmail] = useState('');

@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { BaseCard, Navbar, Pill, SEO, arrowSvg } from '../components';
-import { ShuffleText } from '../components/widgets/ShuffleText';
-import { useScrollAnimations, useNextProjectSection, useTimeOnPage } from '../hooks';
-import { trackCTA } from '../utils/analytics';
+import { BaseCard } from '@components/cards/BaseCard';
+import { Navbar } from '@components/navigation/Navbar';
+import { Pill } from '@components/pills/Pill';
+import { SEO } from '@components/seo/SEO';
+import { arrowSvg } from '@components/icons/SocialIcons';
+import { ShuffleText } from '@components/widgets/ShuffleText';
+import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { useNextProjectSection } from '@hooks/useNextProjectSection';
+import { useTimeOnPage } from '@hooks/useTimeOnPage';
+import { trackCTA } from '@utils/analytics';
 import PROJECTS from '../data/projects.json';
 import '../styles/projects.css';
 
