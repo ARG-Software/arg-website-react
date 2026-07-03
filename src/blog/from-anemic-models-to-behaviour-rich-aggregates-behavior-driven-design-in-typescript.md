@@ -24,7 +24,23 @@ Let’s talk about how to change that, in TypeScript.
 Here’s a scenario you’ve almost certainly encountered. You open a service file and it’s doing… everything:
 
 ```typescript
-// orderService.ts async function placeOrder( customerId: string, items: OrderItemDto[] ): Promise { const customer = await db.customers.findById(customerId); if (!customer) throw new Error("Customer not found"); const order: Order = { customerId, items: [], total: 0 }; for (const dto of items) { const stock = await inventoryService.getStock(dto.productId); if (stock sum + i.lineTotal, 0); if (customer.creditUsed + order.total > customer.creditLimit) { throw new Error("Credit limit exceeded"); } await db.orders.save(order); }
+// orderService.ts
+async function placeOrder(
+  customerId: string,
+  items: OrderItemDto[]
+): Promise {
+  const customer = await db.customers.findById(customerId);
+  if (!customer) throw new Error("Customer not found");
+  
+  const order: Order = { customerId, items: [], total: 0 };
+  for (const dto of items) {
+    const stock = await inventoryService.getStock(dto.productId);
+    if (stock  sum + i.lineTotal, 0);
+  if (customer.creditUsed + order.total > customer.creditLimit) {
+    throw new Error("Credit limit exceeded");
+  }
+  await db.orders.save(order);
+}
 ```
 
 Looks reasonable at first glance. But let’s count what this function actually knows about:
@@ -48,7 +64,12 @@ This is the anemic model trap.
 It’s not laziness, it’s gravity. Services are where things happen, so that’s where logic ends up. Domain objects, meanwhile, are often plain interfaces or simple classes with no behavior:
 
 ```typescript
-// Order is just a shape — it holds data but makes no decisions interface Order { customerId: string; items: OrderItem[]; total: number; }
+// Order is just a shape — it holds data but makes no decisions
+interface Order {
+  customerId: string;
+  items: OrderItem[];
+  total: number;
+}
 ```
 
 When your domain objects are empty vessels, of course all the logic flows elsewhere. The fix isn’t just structural, it’s philosophical. Your domain objects should protect their own rules.
@@ -57,22 +78,76 @@ When your domain objects are empty vessels, of course all the logic flows elsewh
 
 Let’s pull the logic back where it belongs, step by step, without a big-bang rewrite.
 
-## Step 1 - Make the Aggregate Build Itself 🏗
+### Step 1 - Make the Aggregate Build Itself 🏗
 
 Instead of the service constructing an order from scratch, give the Order class a static factory method. That method becomes the gatekeeper.
 
 ```typescript
-// order.ts export class Order { private _items: OrderItem[] = []; private _total: number = 0; private constructor(public readonly customerId: string) {} static async create( customer: Customer, lines: Array, pricingService: PricingService, inventoryService: InventoryService ): Promise { const order = new Order(customer.id); for (const { productId, quantity } of lines) { const stock = await inventoryService.getStock(productId); if (stock < quantity) { throw new Error(`Product ${productId} is out of stock`); } const unitPrice = await pricingService.getPrice(productId); order.addItem(productId, quantity, unitPrice, customer.isVip); } order.ensureCreditWithinLimit(customer); return order; } // ... }
+// order.ts
+export class Order {
+  private _items: OrderItem[] = [];
+  private _total: number = 0;
+
+  private constructor(public readonly customerId: string) {}
+  
+  static async create(
+    customer: Customer,
+    lines: Array,
+    pricingService: PricingService,
+    inventoryService: InventoryService
+  ): Promise {
+    const order = new Order(customer.id);
+    for (const { productId, quantity } of lines) {
+      const stock = await inventoryService.getStock(productId);
+      if (stock < quantity) {
+        throw new Error(`Product ${productId} is out of stock`);
+      }
+      const unitPrice = await pricingService.getPrice(productId);
+      order.addItem(productId, quantity, unitPrice, customer.isVip);
+    }
+    order.ensureCreditWithinLimit(customer);
+    return order;
+  }
+  // ...
+}
 ```
 
 Now creation fails fast the moment any business rule is violated, and the service doesn’t have to know any of the details. 🎯
 
-## Step 2 - Guard the Internal State 🔒
+### Step 2 - Guard the Internal State 🔒
 
 The aggregate now owns what goes inside it. No one outside can shove items in directly:
 
-```csharp
-// order.ts (continued) get items(): ReadonlyArray { return this._items; } get total(): number { return this._total; } private addItem( productId: string, quantity: number, unitPrice: number, isVip: boolean ): void { if (quantity sum + item.lineTotal, 0); } private ensureCreditWithinLimit(customer: Customer): void { if (customer.creditUsed + this._total > customer.creditLimit) { throw new Error("This order would exceed the customer's credit limit"); } }
+```typescript
+// order.ts (continued)
+get items(): ReadonlyArray<OrderItem> {
+  return this._items;
+}
+
+get total(): number {
+  return this._total;
+}
+private addItem(
+  productId: string,
+  quantity: number,
+  unitPrice: number,
+  isVip: boolean
+): void {
+  if (quantity <= 0) {
+    throw new Error("Quantity must be a positive number");
+  }
+  const finalPrice = isVip ? unitPrice * 0.95 : unitPrice;
+  this._items.push({ productId, quantity, unitPrice: finalPrice, lineTotal: finalPrice * quantity });
+  this.recalculateTotal();
+}
+private recalculateTotal(): void {
+  this._total = this._items.reduce((sum, item) => sum + item.lineTotal, 0);
+}
+private ensureCreditWithinLimit(customer: Customer): void {
+  if (customer.creditUsed + this._total > customer.creditLimit) {
+    throw new Error("This order would exceed the customer's credit limit");
+  }
+}
 ```
 
 Notice what happened: 👇
@@ -85,12 +160,22 @@ Notice what happened: 👇
 
 This is encapsulation doing real work, not just hiding fields.
 
-## Step 3 - Let the Service Be Boring 😴
+### Step 3 - Let the Service Be Boring 😴
 
 Once the aggregate handles its own invariants, the application service becomes almost embarrassingly simple:
 
 ```typescript
-// orderService.ts (after) async function placeOrder( customerId: string, lines: Array ): Promise { const customer = await db.customers.findById(customerId); if (!customer) throw new Error("Customer not found"); const order = await Order.create(customer, lines, pricingService, inventoryService); await db.orders.save(order); }
+// orderService.ts (after)
+async function placeOrder(
+  customerId: string,
+  lines: Array
+): Promise {
+  const customer = await db.customers.findById(customerId);
+  if (!customer) throw new Error("Customer not found");
+  
+  const order = await Order.create(customer, lines, pricingService, inventoryService);
+  await db.orders.save(order);
+}
 ```
 
 That’s it. The service went from 40+ lines to about 8. And crucially, it contains zero business logic. It fetches, creates, and persists. That’s pure orchestration. ✨
@@ -101,21 +186,30 @@ That’s it. The service went from 40+ lines to about 8. And crucially, it conta
 
 ## ✅ What You Actually Gained
 
-## 🧪 Tests that don’t need a database
+### 🧪 Tests that don’t need a database
 
 Before, testing the VIP discount meant wiring up a fake DB, a fake inventory service, and a fake pricing service. Now:
 
 ```typescript
-it("applies a 5% discount for VIP customers", async () => { const vipCustomer = { id: "c1", isVip: true, creditUsed: 0, creditLimit: 1000 }; const order = await Order.create( vipCustomer, [{ productId: "p1", quantity: 2 }], { getPrice: async () => 100 }, { getStock: async () => 10 } ); expect(order.items[0].unitPrice).toBe(95); // 5% off });
+it("applies a 5% discount for VIP customers", async () => {
+  const vipCustomer = { id: "c1", isVip: true, creditUsed: 0, creditLimit: 1000 };
+  const order = await Order.create(
+    vipCustomer,
+    [{ productId: "p1", quantity: 2 }],
+    { getPrice: async () => 100 },
+    { getStock: async () => 10 }
+  );
+  expect(order.items[0].unitPrice).toBe(95); // 5% off
+});
 ```
 
 Fast. Focused. No infrastructure needed. 🚀
 
-## Rules live where the data lives
+### Rules live where the data lives
 
 The “Tell, Don’t Ask” principle - instead of the service asking the order how much it costs and then checking the credit limit itself, it tells the order to enforce the credit rule. The data and its constraints stay together.
 
-## 🔍 The domain becomes readable
+### 🔍 The domain becomes readable
 
 Six months from now, a new engineer will open Order.ts and find all the business rules for an order in one place. No hunting through service files or guessing where the VIP logic ended up.
 

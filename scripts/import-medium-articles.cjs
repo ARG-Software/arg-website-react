@@ -52,12 +52,17 @@ const stripTags = value =>
     .trim();
 
 const stripCode = value =>
-  decodeEntities(String(value || '').replace(/<br\s*\/?\s*>/gi, '\n'))
+  decodeEntities(
+    String(value || '')
+      .replace(/<br\s*\/?\s*>/gi, '\n')
+      .replace(/<mark[^>]*>([\s\S]*?)<\/mark>/gi, '$1')
+      .replace(/<[^>]+>/g, '')
+  )
+    .replace(/\u00a0/g, ' ')
     .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
     .replace(/\r/g, '')
-    .replace(/[ \t]+\n/g, '\n')
-    .replace(/\n[ \t]+/g, '\n')
-    .trim();
+    .trim()
+    .replace(/^\n+|\n+$/g, '');
 
 const sanitizeText = value =>
   stripTags(value)
@@ -115,8 +120,11 @@ const inferLang = code => {
   const text = code.trim();
 
   if (/^\{|"compilerOptions"|"rules"/.test(text)) return 'json';
-  if (/\b(import|export|type|interface|function|const|let|async function)\b/.test(text)) return 'typescript';
-  if (/\b(public|private|Task<|IActionResult|ControllerBase|DbContext|namespace|class)\b/.test(text)) return 'csharp';
+  const isTypeScript = /\b(import|export|type|interface|function|const|let|async function|ReadonlyArray<|Array<|: Promise<|: void\b|isVip|OrderItem|customer\.isVip)/.test(
+    text
+  );
+  if (isTypeScript) return 'typescript';
+  if (/\b(public|private|Task<|IActionResult|ControllerBase|DbContext|namespace)\b/.test(text)) return 'csharp';
   if (/grep|npm|dotnet|docker|kubectl|#/.test(text)) return 'bash';
 
   return 'text';
@@ -462,6 +470,15 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title) => {
   let imageIndex = 0;
 
   for (const paragraph of paragraphs) {
+    if (paragraph.type === 8) {
+      const code = stripCode(paragraph.text);
+      if (code) {
+        const lang = inferLang(code);
+        blocks.push('```' + lang + '\n' + code + '\n```');
+      }
+      continue;
+    }
+
     const text = sanitizeText(paragraph.text);
     if (normalizeHeading(text) === 'about the author') break;
     if (normalizeTitle(text) === normalizeTitle(title)) continue;
@@ -474,11 +491,6 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title) => {
     }
 
     if (!text) continue;
-
-    if (paragraph.type === 8) {
-      blocks.push(`\`\`\`${inferLang(text)}\n${text}\n\`\`\``);
-      continue;
-    }
 
     if (paragraph.type === 9 || paragraph.type === 10) {
       blocks.push(`- ${text}`);
