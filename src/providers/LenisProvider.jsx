@@ -13,12 +13,7 @@ export const LenisContext = createContext(null);
  * Handles its own resize logic: reacts to route changes and body mutations.
  * Wires Lenis scroll events directly into ScrollTrigger.update.
  */
-export function LenisProvider({
-  children,
-  lerp = 0.1,
-  wheelMultiplier = 0.9,
-  smoothTouch = false,
-}) {
+export function LenisProvider({ children, lerp = 0.1, wheelMultiplier = 0.9, syncTouch = false }) {
   const [lenis, setLenis] = useState(null);
   const instanceRef = useRef(null);
   const location = useLocation();
@@ -35,11 +30,12 @@ export function LenisProvider({
         if (cancelled) return;
 
         const instance = new Lenis({
+          autoRaf: false,
+          smoothWheel: true,
           lerp,
           wheelMultiplier,
           gestureOrientation: 'vertical',
-          normalizeWheel: false,
-          smoothTouch,
+          syncTouch,
         });
 
         if (cancelled) {

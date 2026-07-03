@@ -143,6 +143,13 @@ export function TransitionProvider({ children }) {
     scrollToHashWhenReadyRef.current = scrollToHashWhenReady;
   }, [scrollToHashWhenReady]);
 
+  useEffect(() => {
+    return () => {
+      if (lenisRef.current) lenisRef.current.start();
+      document.documentElement.classList.remove('lenis-stopped');
+    };
+  }, []);
+
   // Initialize currentPath on first load
   useEffect(() => {
     if (currentPath === '') {
@@ -235,7 +242,18 @@ export function TransitionProvider({ children }) {
       setImageTransition(transitionOptions?.sourceImage ?? null);
 
       // stop scroll if you use Lenis
-      if (lenis) lenis.stop();
+      if (lenis) {
+        lenis.stop();
+        document.documentElement.classList.add('lenis-stopped');
+        // Safety net: if the route-change reveal path never runs, restart Lenis
+        // after the worst-case transition window so the page can never be stuck.
+        const safetyUnlockMs =
+          getTransitionTimings(variant).cover + getTransitionTimings(variant).reveal + 4000;
+        window.setTimeout(() => {
+          if (lenisRef.current) lenisRef.current.start();
+          document.documentElement.classList.remove('lenis-stopped');
+        }, safetyUnlockMs);
+      }
 
       const startCover = () => {
         setPhase('covering');

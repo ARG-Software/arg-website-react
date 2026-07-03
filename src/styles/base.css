@@ -65,6 +65,12 @@ html.lenis body {
   pointer-events: none;
 }
 
+html.lenis.lenis-stopped,
+html.lenis.lenis-stopped body {
+  overflow: clip;
+  touch-action: none;
+}
+
 /* ============================================
    Global Styles
    ============================================ */
