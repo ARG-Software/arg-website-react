@@ -82,24 +82,6 @@ export function StudioOverviewSection({ className = '' }) {
                 <div className="arrow_icon-embed">{arrowSvg}</div>
               </div>
             </a>
-
-            <div className="home-overview__more" data-animate-order="4">
-              <AppLink
-                to="/about-us/"
-                className="text-button"
-                trackEvent="home_overview_about_click"
-                trackData={{ source_path: '/' }}
-              >
-                <div className="text-button_list is-dark">
-                  <div className="text-button_text">Learn more about ARG</div>
-                  <div className="arrow_icon-embed">{arrowSvg}</div>
-                </div>
-                <div className="text-button_list is-animated is-dark">
-                  <div className="text-button_text">Read the full story</div>
-                  <div className="arrow_icon-embed">{arrowSvg}</div>
-                </div>
-              </AppLink>
-            </div>
           </div>
 
           <div className="home-overview__values" aria-label="ARG engineering principles">
@@ -116,6 +98,24 @@ export function StudioOverviewSection({ className = '' }) {
                 <p>{value.description}</p>
               </article>
             ))}
+
+            <div className="home-overview__more" data-animate-order={overviewValues.length + 5}>
+              <AppLink
+                to="/about-us/"
+                className="text-button"
+                trackEvent="home_overview_about_click"
+                trackData={{ source_path: '/' }}
+              >
+                <div className="text-button_list is-dark">
+                  <div className="text-button_text">Learn more about ARG</div>
+                  <div className="arrow_icon-embed">{arrowSvg}</div>
+                </div>
+                <div className="text-button_list is-animated is-dark">
+                  <div className="text-button_text">Read the full story</div>
+                  <div className="arrow_icon-embed">{arrowSvg}</div>
+                </div>
+              </AppLink>
+            </div>
           </div>
         </div>
       </div>

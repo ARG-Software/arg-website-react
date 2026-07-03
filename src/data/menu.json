@@ -1,7 +1,7 @@
 {
   "latest": {
     "label": "Latest",
-    "aiTitle": "ARG AI — coming soon",
+    "aiTitle": "ARG AI · Coming soon",
     "aiTag": "In development",
     "aiTagTone": "amber"
   },
@@ -37,7 +37,7 @@
       "openInPage": true
     },
     {
-      "label": "About Us",
+      "label": "About",
       "to": "/about-us/",
       "description": "The team & story",
       "openInPage": true
@@ -45,9 +45,9 @@
   ],
   "selectedWork": {
     "label": "Selected work",
-    "viewAllLabel": "All projects",
+    "viewAllLabel": "All work",
     "viewAllTo": "/#cases",
-    "desktopCount": 4,
+    "desktopCount": 3,
     "mobileCount": 3,
     "rotationSeed": "daily",
     "projectLabels": {
@@ -65,9 +65,9 @@
     "items": [
       { "label": "Careers", "to": "/careers/", "openInPage": true },
       { "label": "Contact", "to": "/contact/", "openInPage": true },
+      { "label": "Team", "to": "/#team", "openInPage": false },
       { "label": "FAQ", "to": "/#faq", "openInPage": false },
       { "label": "Testimonials", "to": "/#testimonials", "openInPage": false },
-      { "label": "Meet our Team", "to": "/#team", "openInPage": false },
       { "label": "Social", "to": "/#social", "openInPage": false }
     ]
   },
