@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import hljs from 'highlight.js/lib/core';
 import bash from 'highlight.js/lib/languages/bash';
@@ -67,6 +67,65 @@ import '../../styles/blog.css';
 
 const BLOG_POSTS = loadBlogPostsWithContent();
 
+// ─── Code block with line numbers + copy button + scoped highlighting ─────────
+
+const CodeBlock = ({ code, lang }) => {
+  const codeRef = useRef(null);
+  const [copyState, setCopyState] = useState('idle');
+  const lines = code.split('\n');
+  const lineNumbers = lines.map((_, index) => index + 1);
+
+  useEffect(() => {
+    if (!codeRef.current || lang === 'plaintext') return;
+    codeRef.current.removeAttribute('data-highlighted');
+    delete codeRef.current.dataset.highlighted;
+    hljs.highlightElement(codeRef.current);
+  }, [code, lang]);
+
+  const handleCopy = async () => {
+    if (!navigator.clipboard?.writeText) {
+      setCopyState('unavailable');
+      setTimeout(() => setCopyState('idle'), 1800);
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopyState('copied');
+      setTimeout(() => setCopyState('idle'), 1800);
+    } catch {
+      setCopyState('unavailable');
+      setTimeout(() => setCopyState('idle'), 1800);
+    }
+  };
+
+  const copyLabel =
+    copyState === 'copied' ? 'Copied' : copyState === 'unavailable' ? 'Copy unavailable' : 'Copy';
+  const codeClassName = lang === 'plaintext' ? 'nohighlight' : `language-${lang}`;
+
+  return (
+    <div className="bp-code-wrap">
+      <div className="bp-code-bar">
+        <span className="bp-code-lang">{lang === 'plaintext' ? 'text' : lang}</span>
+        <button type="button" className="bp-code-copy" onClick={handleCopy} aria-label={copyLabel}>
+          {copyLabel}
+        </button>
+      </div>
+      <pre className="bp-code-pre">
+        <div className="bp-code-gutter" aria-hidden="true">
+          {lineNumbers.map(number => (
+            <span key={number} className="bp-code-line-num">
+              {number}
+            </span>
+          ))}
+        </div>
+        <code ref={codeRef} className={`bp-code-code ${codeClassName}`}>
+          {code}
+        </code>
+      </pre>
+    </div>
+  );
+};
+
 // ─── Block renderer ───────────────────────────────────────────────────────────
 
 const renderBlock = (block, i) => {
@@ -111,19 +170,8 @@ const renderBlock = (block, i) => {
           {block.text}
         </blockquote>
       );
-    case 'code': {
-      const codeClassName = block.lang === 'plaintext' ? 'nohighlight' : `language-${block.lang}`;
-      return (
-        <div key={i} className="bp-code-wrap">
-          <div className="bp-code-bar">
-            <span className="bp-code-lang">{block.lang === 'plaintext' ? 'text' : block.lang}</span>
-          </div>
-          <pre>
-            <code className={codeClassName}>{block.text}</code>
-          </pre>
-        </div>
-      );
-    }
+    case 'code':
+      return <CodeBlock key={i} code={block.text} lang={block.lang} />;
     case 'list':
       return (
         <ul key={i} className="bp-list">
@@ -194,10 +242,6 @@ export default function BlogPostPage() {
       }
     }
   }, [scrollToHash, slug]); // Re-run when article changes
-
-  useEffect(() => {
-    hljs.highlightAll();
-  }, [slug]);
 
   useTimeOnPage(`/blog/${slug}/`);
 

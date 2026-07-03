@@ -111,6 +111,7 @@ module.exports = {
               /w-clearfix/,
               /w-embed/,
               /w-background/,
+              /hljs/,
             ],
           },
         })]

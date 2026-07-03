@@ -28,14 +28,29 @@ Here’s a scenario you’ve almost certainly encountered. You open a service fi
 async function placeOrder(
   customerId: string,
   items: OrderItemDto[]
-): Promise {
+): Promise<void> {
   const customer = await db.customers.findById(customerId);
   if (!customer) throw new Error("Customer not found");
-  
+
   const order: Order = { customerId, items: [], total: 0 };
   for (const dto of items) {
     const stock = await inventoryService.getStock(dto.productId);
-    if (stock  sum + i.lineTotal, 0);
+    if (stock < dto.quantity) {
+      throw new Error("Item out of stock");
+    }
+    const price = await pricingService.getPrice(dto.productId);
+    let lineTotal = price * dto.quantity;
+    if (customer.isVip) {
+      lineTotal *= 0.95; // 5% VIP discount
+    }
+    order.items.push({
+      productId: dto.productId,
+      quantity: dto.quantity,
+      unitPrice: price,
+      lineTotal,
+    });
+  }
+  order.total = order.items.reduce((sum, i) => sum + i.lineTotal, 0);
   if (customer.creditUsed + order.total > customer.creditLimit) {
     throw new Error("Credit limit exceeded");
   }
@@ -89,13 +104,13 @@ export class Order {
   private _total: number = 0;
 
   private constructor(public readonly customerId: string) {}
-  
+
   static async create(
     customer: Customer,
-    lines: Array,
+    lines: Array<{ productId: string; quantity: number }>,
     pricingService: PricingService,
     inventoryService: InventoryService
-  ): Promise {
+  ): Promise<Order> {
     const order = new Order(customer.id);
     for (const { productId, quantity } of lines) {
       const stock = await inventoryService.getStock(productId);
@@ -168,11 +183,11 @@ Once the aggregate handles its own invariants, the application service becomes a
 // orderService.ts (after)
 async function placeOrder(
   customerId: string,
-  lines: Array
-): Promise {
+  lines: Array<{ productId: string; quantity: number }>
+): Promise<void> {
   const customer = await db.customers.findById(customerId);
   if (!customer) throw new Error("Customer not found");
-  
+
   const order = await Order.create(customer, lines, pricingService, inventoryService);
   await db.orders.save(order);
 }
