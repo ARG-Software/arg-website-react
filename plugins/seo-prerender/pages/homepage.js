@@ -1,7 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
+import { injectStructuredData } from '../html-utils.js';
 import { getHomepageExtraLinks } from '../links.js';
+import { homepageFaqItems } from '../../../src/data/faq.js';
+import { buildFAQPageSchema } from '../../../src/utils/structuredData.js';
 
 export function writeHomepage({ distDir, baseHtml }) {
   const block = buildCrawlableBlock('Building digital solutions that grow with you', {
@@ -17,5 +20,6 @@ export function writeHomepage({ distDir, baseHtml }) {
   });
 
   const indexPath = path.join(distDir, 'index.html');
-  fs.writeFileSync(indexPath, injectCrawlableBlock(baseHtml, block));
+  const html = injectStructuredData(baseHtml, buildFAQPageSchema(homepageFaqItems));
+  fs.writeFileSync(indexPath, injectCrawlableBlock(html, block));
 }

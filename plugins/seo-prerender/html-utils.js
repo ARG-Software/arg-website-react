@@ -1,4 +1,5 @@
 import { SITE_URL } from './constants.js';
+import { renderJsonLdScripts } from '../../src/utils/structuredData.js';
 
 export function escapeHtml(str) {
   return str
@@ -15,7 +16,16 @@ export function replaceOrInsertHeadTag(html, pattern, replacement) {
 
 export function replaceMetaTags(
   html,
-  { title, description, url, image, type = 'website', extra = '' }
+  {
+    title,
+    description,
+    url,
+    image,
+    type = 'website',
+    extra = '',
+    jsonLd,
+    includeGlobalJsonLd = true,
+  }
 ) {
   const ogImage = image
     ? image.startsWith('http')
@@ -83,5 +93,13 @@ export function replaceMetaTags(
     result = result.replace('</head>', `  ${extra}\n</head>`);
   }
 
+  result = injectStructuredData(result, jsonLd, { includeGlobal: includeGlobalJsonLd });
+
   return result;
+}
+
+export function injectStructuredData(html, jsonLd, options) {
+  const scripts = renderJsonLdScripts(jsonLd, options);
+  if (!scripts) return html;
+  return html.replace('</head>', `  ${scripts}\n</head>`);
 }

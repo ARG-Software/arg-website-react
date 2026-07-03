@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
+import { homepageFaqItems } from '../../../data/faq';
 import { trackFAQOpen } from '../../../utils/analytics';
 
 const faqData = [
   {
-    q: 'How much does custom software development cost?',
+    ...homepageFaqItems[0],
     a: (
       <>
         <p>
@@ -31,7 +32,7 @@ const faqData = [
     ),
   },
   {
-    q: 'How long does it take to build an MVP?',
+    ...homepageFaqItems[1],
     a: (
       <>
         <p>Most focused MVPs take 8 to 14 weeks, depending on:</p>
@@ -49,7 +50,7 @@ const faqData = [
     ),
   },
   {
-    q: 'Do you work with clients outside the USA and Europe?',
+    ...homepageFaqItems[2],
     a: (
       <>
         <p>
@@ -67,7 +68,7 @@ const faqData = [
     ),
   },
   {
-    q: 'Do you work with startups or established companies?',
+    ...homepageFaqItems[3],
     a: (
       <>
         <p>Both. We support:</p>
@@ -82,7 +83,7 @@ const faqData = [
     ),
   },
   {
-    q: 'What technologies do you use?',
+    ...homepageFaqItems[4],
     a: (
       <>
         <p>
@@ -101,7 +102,7 @@ const faqData = [
     ),
   },
   {
-    q: 'How do you ensure scalability and code quality?',
+    ...homepageFaqItems[5],
     a: (
       <>
         <p>Quality starts before implementation. We make the important decisions explicit:</p>
@@ -118,7 +119,7 @@ const faqData = [
     ),
   },
   {
-    q: 'Can you scale our product after launch?',
+    ...homepageFaqItems[6],
     a: (
       <>
         <p>Yes. Some of our most valuable work happens after launch:</p>
@@ -134,7 +135,7 @@ const faqData = [
     ),
   },
   {
-    q: 'Do you provide dedicated development teams?',
+    ...homepageFaqItems[7],
     a: (
       <>
         <p>Yes. Depending on the need, we can provide:</p>
@@ -148,7 +149,7 @@ const faqData = [
     ),
   },
   {
-    q: 'What is your development process?',
+    ...homepageFaqItems[8],
     a: (
       <>
         <p>Our process is intentionally simple:</p>
@@ -164,7 +165,7 @@ const faqData = [
     ),
   },
   {
-    q: 'How do we get started?',
+    ...homepageFaqItems[9],
     a: (
       <>
         <p>Send us the context first. We look for the shape of the problem:</p>

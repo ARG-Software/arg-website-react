@@ -5,6 +5,7 @@ import { SEO, Navbar, Footer, Marquee, SectionDivider } from '../../components';
 import AppLink from '../../components/navigation/AppLink';
 import { arrowSvg } from '../../components/icons/SocialIcons';
 import { HOMEPAGE_BLOG_POSTS_COUNT } from '../../constants';
+import { buildFAQPageSchema } from '../../utils/structuredData';
 import { HeroSection } from './sections/HeroSection';
 import { StudioOverviewSection } from './sections/StudioOverviewSection';
 import { ServicesSection } from './sections/ServicesSection';
@@ -19,6 +20,7 @@ import { ContactSection } from './sections/ContactSection';
 import PROJECTS from '../../data/projects.json';
 import PARTNERS from '../../data/partners.json';
 import SERVICES from '../../data/services.json';
+import { homepageFaqItems } from '../../data/faq';
 
 export default function HomePage() {
   const [blogPosts] = useState(() => loadBlogPosts().slice(0, HOMEPAGE_BLOG_POSTS_COUNT));
@@ -27,7 +29,7 @@ export default function HomePage() {
 
   return (
     <>
-      <SEO path="/" />
+      <SEO path="/" jsonLd={buildFAQPageSchema(homepageFaqItems)} />
       <div className="page-wrapper home-page">
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">

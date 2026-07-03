@@ -10,6 +10,7 @@ export function writeNotFoundPage({ distDir, baseHtml, generated }) {
     description: "The page you're looking for doesn't exist. Head back to Arg Software's homepage.",
     url: `${SITE_URL}/`,
     type: 'website',
+    includeGlobalJsonLd: false,
   });
 
   html = html.replace(

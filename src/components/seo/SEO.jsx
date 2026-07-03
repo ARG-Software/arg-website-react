@@ -7,6 +7,7 @@ import {
   DEFAULT_OG_IMAGE,
 } from '../../constants';
 import { EXTERNAL_LINK_KEYS, getFeedLink } from '../../services/linksservice';
+import { buildPageSchemas, stringifyJsonLd } from '../../utils/structuredData';
 
 /**
  * Reusable SEO component that injects per-page meta tags via react-helmet-async.
@@ -24,7 +25,8 @@ import { EXTERNAL_LINK_KEYS, getFeedLink } from '../../services/linksservice';
  * @param {string}  [props.section]       – Article section/category
  * @param {boolean} [props.rss]           – If true, injects <link rel="alternate" type="application/rss+xml">
  * @param {boolean} [props.atom]          – If true, injects <link rel="alternate" type="application/atom+xml">
- * @param {object}  [props.jsonLd]        – JSON-LD structured data object
+ * @param {object|object[]} [props.jsonLd] – Page-specific JSON-LD structured data
+ * @param {boolean} [props.globalJsonLd]  – If false, skips global Organization/WebSite schema
  */
 export function SEO({
   title,
@@ -40,11 +42,13 @@ export function SEO({
   rss = false,
   atom = false,
   jsonLd,
+  globalJsonLd = true,
 }) {
   const pageTitle = title ? (noSuffix ? title : `${title} | Arg Software`) : DEFAULT_TITLE;
 
   const pageDescription = description || DEFAULT_DESCRIPTION;
   const canonicalUrl = `${SITE_URL}${path}`;
+  const schemas = buildPageSchemas(jsonLd, { includeGlobal: globalJsonLd && !noIndex });
 
   // Ensure image is absolute
   const ogImage = image
@@ -89,7 +93,11 @@ export function SEO({
       {type === 'article' && section && <meta property="article:section" content={section} />}
 
       {/* JSON-LD Structured Data */}
-      {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
+      {schemas.map((schema, index) => (
+        <script key={`${schema['@type'] || 'schema'}-${index}`} type="application/ld+json">
+          {stringifyJsonLd(schema)}
+        </script>
+      ))}
 
       {/* Feed auto-discovery */}
       {rss && (

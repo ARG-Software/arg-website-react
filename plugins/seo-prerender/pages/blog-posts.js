@@ -3,6 +3,7 @@ import path from 'node:path';
 import { SITE_URL } from '../constants.js';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { replaceMetaTags, escapeHtml } from '../html-utils.js';
+import { buildArticleSchema } from '../../../src/utils/structuredData.js';
 
 export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) {
   let count = generated;
@@ -40,6 +41,7 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
       image,
       type: 'article',
       extra,
+      jsonLd: buildArticleSchema({ ...meta, image }),
     });
 
     html = injectCrawlableBlock(

@@ -1,8 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export function useBlogSearch(posts, { debounceMs = 200, selectedTags = [] } = {}) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const initialQuery = searchParams.get('q')?.trim() || '';
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(searchQuery), debounceMs);

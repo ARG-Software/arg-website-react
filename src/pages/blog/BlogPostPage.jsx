@@ -61,6 +61,7 @@ import {
   getNewsletterSubscribeLink,
   getTwitterShareLink,
 } from '../../services/linksservice';
+import { buildArticleSchema } from '../../utils/structuredData';
 import '../../styles/blog.css';
 
 // ─── Load all blog posts with full content ──────────────────────────────────
@@ -329,31 +330,7 @@ export default function BlogPostPage() {
         image={BLOG_POST.image}
         rss
         atom
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'Article',
-          headline: BLOG_POST.title,
-          description: BLOG_POST.subtitle,
-          datePublished: parseDateToIso(BLOG_POST.date),
-          image: BLOG_POST.image ? `https://arg.software${BLOG_POST.image}` : undefined,
-          author: {
-            '@type': 'Organization',
-            name: 'Arg Software',
-            url: 'https://arg.software/',
-          },
-          publisher: {
-            '@type': 'Organization',
-            name: 'Arg Software',
-            logo: {
-              '@type': 'ImageObject',
-              url: 'https://arg.software/images/og.jpg',
-            },
-          },
-          mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': `https://arg.software/blog/${BLOG_POST.slug}/`,
-          },
-        }}
+        jsonLd={buildArticleSchema(BLOG_POST)}
       />
 
       <div className="page-wrapper">
