@@ -1,35 +1,5 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import hljs from 'highlight.js/lib/core';
-import bash from 'highlight.js/lib/languages/bash';
-import csharp from 'highlight.js/lib/languages/csharp';
-import graphql from 'highlight.js/lib/languages/graphql';
-import http from 'highlight.js/lib/languages/http';
-import ini from 'highlight.js/lib/languages/ini';
-import javascript from 'highlight.js/lib/languages/javascript';
-import json from 'highlight.js/lib/languages/json';
-import powershell from 'highlight.js/lib/languages/powershell';
-import protobuf from 'highlight.js/lib/languages/protobuf';
-import sql from 'highlight.js/lib/languages/sql';
-import typescript from 'highlight.js/lib/languages/typescript';
-import xml from 'highlight.js/lib/languages/xml';
-import yaml from 'highlight.js/lib/languages/yaml';
-hljs.registerLanguage('bash', bash);
-hljs.registerLanguage('csharp', csharp);
-hljs.registerLanguage('graphql', graphql);
-hljs.registerLanguage('html', xml);
-hljs.registerLanguage('http', http);
-hljs.registerLanguage('ini', ini);
-hljs.registerLanguage('javascript', javascript);
-hljs.registerLanguage('json', json);
-hljs.registerLanguage('powershell', powershell);
-hljs.registerLanguage('protobuf', protobuf);
-hljs.registerLanguage('sql', sql);
-hljs.registerLanguage('tsx', typescript);
-hljs.registerLanguage('typescript', typescript);
-hljs.registerLanguage('xml', xml);
-hljs.registerLanguage('yaml', yaml);
-hljs.registerAliases(['promql'], { languageName: 'sql' });
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
 import { SEO } from '@components/seo/SEO';
@@ -46,8 +16,11 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { TransitionContext } from '../../providers/TransitionProvider';
 import { trackBlogPostShare, trackCTA, trackEvent } from '@utils/analytics';
 import {
+  getCodeLanguageLabel,
+  getCodeLineNumbers,
   getHeadingId,
   getRelatedPosts,
+  highlightCode,
   loadBlogPostsWithContent,
   parseDateToIso,
   splitArticleTitle,
@@ -70,17 +43,10 @@ const BLOG_POSTS = loadBlogPostsWithContent();
 // ─── Code block with line numbers + copy button + scoped highlighting ─────────
 
 const CodeBlock = ({ code, lang }) => {
-  const codeRef = useRef(null);
   const [copyState, setCopyState] = useState('idle');
-  const lines = code.split('\n');
-  const lineNumbers = lines.map((_, index) => index + 1);
-
-  useEffect(() => {
-    if (!codeRef.current || lang === 'plaintext') return;
-    codeRef.current.removeAttribute('data-highlighted');
-    delete codeRef.current.dataset.highlighted;
-    hljs.highlightElement(codeRef.current);
-  }, [code, lang]);
+  const lineNumbers = getCodeLineNumbers(code);
+  const highlighted = highlightCode(code, lang);
+  const codeClassName = lang === 'plaintext' ? 'nohighlight' : `language-${lang}`;
 
   const handleCopy = async () => {
     if (!navigator.clipboard?.writeText) {
@@ -100,12 +66,11 @@ const CodeBlock = ({ code, lang }) => {
 
   const copyLabel =
     copyState === 'copied' ? 'Copied' : copyState === 'unavailable' ? 'Copy unavailable' : 'Copy';
-  const codeClassName = lang === 'plaintext' ? 'nohighlight' : `language-${lang}`;
 
   return (
     <div className="bp-code-wrap">
       <div className="bp-code-bar">
-        <span className="bp-code-lang">{lang === 'plaintext' ? 'text' : lang}</span>
+        <span className="bp-code-lang">{getCodeLanguageLabel(lang)}</span>
         <button type="button" className="bp-code-copy" onClick={handleCopy} aria-label={copyLabel}>
           {copyLabel}
         </button>
@@ -119,7 +84,10 @@ const CodeBlock = ({ code, lang }) => {
           ))}
         </pre>
         <pre className="bp-code-pre">
-          <code ref={codeRef} className={`bp-code-code ${codeClassName}`}>{`\n${code}\n`}</code>
+          <code
+            className={`bp-code-code ${codeClassName}`}
+            dangerouslySetInnerHTML={{ __html: highlighted }}
+          />
         </pre>
       </div>
     </div>
