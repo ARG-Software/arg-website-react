@@ -9,6 +9,10 @@
 /full-llm.txt /llms-full.txt 301
 /full-llms.txt /llms-full.txt 301
 
+# Homepage canonicalization
+
+/index.html / 301!
+
 # Trailing-slash canonicalization — fixes Ahrefs "3XX in sitemap" errors
 /partners         /partners/             301
 /careers          /careers/              301
@@ -17,17 +21,19 @@
 /contact          /contact/              301
 /privacy          /privacy/              301
 /terms            /terms/                301
-/projects         /projects/             301
+/projects         /projects/mojaloop/    301!
+/projects/        /projects/mojaloop/    301!
 /blog             /blog/                 301
-/projects/*       /projects/:splat/      301
-/blog/*           /blog/:splat/          301
+/projects/:slug   /projects/:slug/       301
+/blog/:slug       /blog/:slug/           301
 
 # Legacy URL redirects (prevents 404 from old article paths)
 
-/articles/*    /blog/:splat    301
-/clients/*     /partners/:splat   301
-/team          /partners          301
-/team/*        /partners/:splat   301
+/articles/:slug   /blog/:slug/   301
+/articles/:slug/  /blog/:slug/   301
+/clients/*     /partners/       301
+/team          /partners/       301
+/team/*        /partners/       301
 
 # Everything else → 404 page with correct HTTP status
 

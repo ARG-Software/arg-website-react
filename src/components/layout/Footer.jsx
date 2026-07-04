@@ -17,7 +17,7 @@ const NAV_LINKS = [
   { label: 'Working with Us', path: '/working-with-us/' },
   { label: 'Contact', path: '/contact/' },
   { label: 'Partners', path: '/partners/' },
-  { label: 'Use Cases', path: '/projects/' },
+  { label: 'Use Cases', path: '/#cases' },
 ];
 
 export function Footer({ animate = true, animationPreset = 'fade-up', animationStagger = 80 }) {

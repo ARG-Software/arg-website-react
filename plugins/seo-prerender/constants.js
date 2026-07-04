@@ -6,7 +6,7 @@ export const NAV_LINKS = [
   { href: '/#cases', label: 'Our Work' },
   { href: '/blog/', label: 'Blog' },
   { href: '/partners/', label: 'Partners' },
-  { href: '/projects/', label: 'Projects' },
+  { href: '/#cases', label: 'Use Cases' },
   { href: '/careers/', label: 'Careers' },
   { href: '/about-us/', label: 'About Us' },
   { href: '/working-with-us/', label: 'Working with Us' },
