@@ -110,18 +110,18 @@ const CodeBlock = ({ code, lang }) => {
           {copyLabel}
         </button>
       </div>
-      <pre className="bp-code-pre">
-        <div className="bp-code-gutter" aria-hidden="true">
+      <div className="bp-code-scroll">
+        <pre className="bp-code-gutter" aria-hidden="true">
           {lineNumbers.map(number => (
             <span key={number} className="bp-code-line-num">
               {number}
             </span>
           ))}
-        </div>
-        <code ref={codeRef} className={`bp-code-code ${codeClassName}`}>
-          {code}
-        </code>
-      </pre>
+        </pre>
+        <pre className="bp-code-pre">
+          <code ref={codeRef} className={`bp-code-code ${codeClassName}`}>{`\n${code}\n`}</code>
+        </pre>
+      </div>
     </div>
   );
 };

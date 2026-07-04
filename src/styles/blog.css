@@ -605,13 +605,19 @@
   color: #fff;
 }
 
+.bp-code-scroll {
+  display: flex;
+  align-items: stretch;
+  background: #1a1a2e;
+  overflow-x: auto;
+}
+
 .bp-code-wrap pre {
   background: #1a1a2e !important;
   color: #d7deea;
   font-size: 0.8125rem;
   line-height: 1.75;
   margin: 0;
-  overflow-x: auto;
   padding: 1.5rem 1.25rem;
 }
 
@@ -623,31 +629,38 @@
   padding: 0 !important;
 }
 
-.bp-code-pre {
-  display: flex;
-  align-items: stretch;
-  white-space: pre;
-}
-
 .bp-code-gutter {
   color: rgba(215, 222, 234, 0.3);
   flex-shrink: 0;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-size: 0.8125rem;
   line-height: 1.75;
-  padding: 1.5rem 0.75rem 1.5rem 1.25rem;
+  margin: 0 !important;
+  padding: 1.5rem 0.75rem 1.5rem 1.25rem !important;
   text-align: right;
   user-select: none;
+  white-space: pre;
 }
 
 .bp-code-gutter .bp-code-line-num {
   display: block;
 }
 
-.bp-code-code {
+.bp-code-pre {
   flex: 1;
   min-width: 0;
+  margin: 0 !important;
   padding: 1.5rem 1.25rem !important;
+  overflow: visible !important;
+  white-space: pre;
+}
+
+.bp-code-code {
+  background: transparent !important;
+  color: #d7deea;
+  display: block;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  padding: 0 !important;
 }
 
 .hljs {
