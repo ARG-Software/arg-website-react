@@ -156,7 +156,7 @@ dotnet add package Swashbuckle.AspNetCore
 
 ### Step 1: Configure Services
 
-```text
+```csharp
 using Asp.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -188,7 +188,7 @@ var app = builder.Build();
 
 ### Step 2: Define a Version Set
 
-```text
+```csharp
 var apiVersionSet = app.NewApiVersionSet()
 .HasApiVersion(new ApiVersion(1, 0))
 .HasApiVersion(new ApiVersion(2, 0))
@@ -236,7 +236,7 @@ Same route. Different response shape. Both versions coexist.
 
 ### Step 5: Run the App
 
-```text
+```csharp
 app.UseSwagger();
 app.UseSwaggerUI();
 app.Run();
@@ -312,7 +312,7 @@ group.MapGet("", GetAllV2);
 
 Then:
 
-```text
+```csharp
 app.MapProductEndpointsV1(apiVersionSet);
 app.MapProductEndpointsV2(apiVersionSet);
 ```
@@ -321,7 +321,7 @@ Clean, modular, and easy to remove old versions later.
 
 ## Deprecating a Version
 
-```text
+```csharp
 var apiVersionSet = app.NewApiVersionSet()
 .HasDeprecatedApiVersion(new ApiVersion(1, 0))
 .HasApiVersion(new ApiVersion(2, 0))
@@ -349,11 +349,11 @@ Keep in mind:
 
 In some cases, deprecation isn’t enough. Security issues may require forcing clients to upgrade sooner than planned.
 
-Versioning protects clients from breaking changes — but it shouldn’t protect insecure behavior.
+Versioning protects clients from breaking changes —but it shouldn’t protect insecure behavior.
 
 ## Adding a Sunset Policy
 
-```text
+```csharp
 app.Use(async (context, next) =>
 {
 await next();
@@ -372,7 +372,7 @@ This gives clients a clear, machine-readable deadline.
 
 ## Swagger per Version
 
-```text
+```csharp
 builder.Services.AddSwaggerGen(options =>
 {
 options.SwaggerDoc("v1", new OpenApiInfo
@@ -401,13 +401,13 @@ This avoids confusion and makes version selection explicit.
 
 ## Header Versioning (Alternative)
 
-```text
+```csharp
 options.ApiVersionReader = new HeaderApiVersionReader("X-Api-Version");
 ```
 
 Example request:
 
-```text
+```http
 GET /api/products
 X-Api-Version: 2.0
 ```

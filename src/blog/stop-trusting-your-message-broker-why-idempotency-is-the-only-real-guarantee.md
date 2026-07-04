@@ -54,7 +54,7 @@ Why it’s safe: If you run this once, SET status = 'CANCELLED',the order is can
 
 Why it’s risky: If your system hiccups and runs this code twice, SET retry_count = retry_count + 1,your counter will be wrong. You wanted to add 1 to the count, but you accidentally added 2.
 
-```text
+```csharp
 // Idempotent: setting a status is safe to repeat
 await db.ExecuteAsync(
 "UPDATE orders SET status = @status WHERE id = @id",
@@ -81,7 +81,7 @@ Instead of sending a “do this math” event, send an event that defines the ne
 
 Your handler now performs a Conditional Update:
 
-```text
+```sql
 -- The database only executes this if the record is currently at version 4.
 -- If the retry happens again, the version is already 5, so it does nothing.
 UPDATE orders

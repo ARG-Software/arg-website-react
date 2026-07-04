@@ -9,6 +9,7 @@ const MEDIUM_STREAM_URL = `https://medium.com/_/api/users/${MEDIUM_USER_ID}/prof
 const STREAM_SOURCES = ['latest', 'overview'];
 const BLOG_DIR = path.resolve('src/blog');
 const IMAGE_ROOT = path.resolve('public/images/blog');
+const ARTICLES_LINKS_FILE = path.resolve('external/articlelinks.txt');
 const SOURCE_ARG = process.argv[2] || '';
 
 const BROWSER_HEADERS = {
@@ -116,16 +117,57 @@ const getTag = (title, categories = []) => {
   return 'Architecture';
 };
 
-const inferLang = code => {
-  const text = code.trim();
+const inferLang = (code, hint) => {
+  const text = String(code || '').trim();
 
-  if (/^\{|"compilerOptions"|"rules"/.test(text)) return 'json';
-  const isTypeScript = /\b(import|export|type|interface|function|const|let|async function|ReadonlyArray<|Array<|: Promise<|: void\b|isVip|OrderItem|customer\.isVip)/.test(
-    text
-  );
-  if (isTypeScript) return 'typescript';
-  if (/\b(public|private|Task<|IActionResult|ControllerBase|DbContext|namespace)\b/.test(text)) return 'csharp';
-  if (/grep|npm|dotnet|docker|kubectl|#/.test(text)) return 'bash';
+  if (hint) {
+    const normalized = String(hint).toLowerCase();
+    const alias = {
+      ts: 'typescript',
+      tsx: 'typescript',
+      js: 'javascript',
+      py: 'python',
+      sh: 'bash',
+      shell: 'bash',
+      yml: 'yaml',
+      http: 'http',
+      txt: 'text',
+      plain: 'text',
+    };
+    if (alias[normalized]) return alias[normalized];
+    if (['typescript', 'javascript', 'csharp', 'cs', 'c#', 'bash', 'sh', 'json', 'yaml', 'sql', 'http', 'xml', 'html', 'ini', 'protobuf', 'graphql', 'powershell', 'http'].includes(normalized)) {
+      return normalized === 'cs' || normalized === 'c#' ? 'csharp' : normalized;
+    }
+  }
+
+  if (!text) return 'text';
+
+  if (/^\s*[\[{]/.test(text) && /["'][\w-]+["']\s*:/.test(text)) return 'json';
+  if (/^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+\//m.test(text) || /^HTTP\/\d/m.test(text)) return 'http';
+  if (/^\s*(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\b/im.test(text)) return 'sql';
+  if (/^\s*[\w.-]+:\s+.+/m.test(text) && /\n\s+[\w.-]+:/.test(text)) return 'yaml';
+  if (/^\s*(FROM|RUN|COPY|WORKDIR|ENV|CMD|EXPOSE|ENTRYPOINT|ARG|VOLUME)\b/m.test(text) && /\n/.test(text)) return 'dockerfile';
+
+  if (
+    /\b(using\s+[A-Z][\w.]+;|WebApplication\.CreateBuilder|builder\.Services|AddApiVersioning|AddSwaggerGen|ApiVersion\(|OpenApiInfo|MapGet\(|MapPost\(|public\s+(static\s+class|record|async\s+Task|class|sealed\s+class)|namespace\s+|IEndpointRouteBuilder|Results\.Ok|HttpStatusCode|\[Fact\]|IServiceProvider|GetOrCreate|GetServices<I)/
+      .test(text)
+  ) {
+    return 'csharp';
+  }
+
+  if (
+    /\b(import\s+[\w*]+\s+from|export\s+(default\s+)?(class|const|function|interface|type)|interface\s+\w+\s*\{|type\s+\w+\s*=|const\s+\w+\s*=|let\s+\w+\s*=|async\s+function|Promise<|ReadonlyArray<|Array<|it\(['"]|describe\(['"]|expect\()/
+      .test(text)
+  ) {
+    return 'typescript';
+  }
+
+  if (
+    /^\s*(npm|npx|pnpm|yarn|dotnet|docker|kubectl|curl|grep|git|ollama|mkdir|cd|wsl|sudo|apt|helm|tail|cat|chmod|chown|cp|mv|rm|tar|export|echo|set)\b/m.test(text) ||
+    /^\s*#\s+/m.test(text)
+  ) {
+    return 'bash';
+  }
 
   return 'text';
 };
@@ -404,6 +446,31 @@ const toQueryString = params => {
   return query.toString();
 };
 
+const readArticleLinksFile = filePath => {
+  if (!fs.existsSync(filePath)) return [];
+  return fs
+    .readFileSync(filePath, 'utf8')
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(line => line && !line.startsWith('#'));
+};
+
+const writeArticleLinksFile = (filePath, urls) => {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  const unique = [...new Set(urls.filter(Boolean))].sort();
+  fs.writeFileSync(filePath, `${unique.join('\n')}\n`, 'utf8');
+  return unique;
+};
+
+const mergeArticleLinks = (existingUrls, discoveredUrls) => {
+  const set = new Set(existingUrls);
+  discoveredUrls.filter(Boolean).forEach(url => set.add(url));
+  return [...set].sort();
+};
+
+const buildUrlFromPost = post =>
+  post.mediumUrl || post.webCanonicalUrl || post.canonicalUrl || (post.id ? `https://medium.com/p/${post.id}` : '');
+
 const collectStreamPosts = async source => {
   let next = { limit: 10, source };
   const posts = new Map();
@@ -436,10 +503,8 @@ const collectMediumPosts = async () => {
 const fetchFullPost = async postId => {
   const data = await fetchMediumJson(`https://medium.com/p/${postId}?format=json`);
   return data.payload?.value;
-};
-
-const getPostUrl = post =>
-  post.mediumUrl || post.webCanonicalUrl || post.canonicalUrl || `https://medium.com/p/${post.id}`;
+};const getPostUrl = post =>
+  post.sourceUrl || post.mediumUrl || post.webCanonicalUrl || post.canonicalUrl || `https://medium.com/p/${post.id}`;
 
 const getPostCategories = post => (post.virtuals?.tags || []).map(tag => tag.name || tag.slug).filter(Boolean);
 
@@ -473,7 +538,7 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title) => {
     if (paragraph.type === 8) {
       const code = stripCode(paragraph.text);
       if (code) {
-        const lang = inferLang(code);
+        const lang = inferLang(code, paragraph.metadata?.language);
         blocks.push('```' + lang + '\n' + code + '\n```');
       }
       continue;
@@ -661,6 +726,7 @@ const importFromMediumJson = async () => {
   const imported = [];
   const updated = [];
   const skipped = [];
+  const discoveredUrls = new Set();
 
   for (const streamPost of streamPosts) {
     const post = await fetchFullPost(streamPost.id);
@@ -668,6 +734,9 @@ const importFromMediumJson = async () => {
       skipped.push({ id: streamPost.id, title: streamPost.title, reason: 'missing full post payload' });
       continue;
     }
+
+    const canonical = buildUrlFromPost(post);
+    if (canonical) discoveredUrls.add(canonical);
 
     const existingPost = findExistingPost(existingPosts, post);
     if (existingPost) {
@@ -693,7 +762,66 @@ const importFromMediumJson = async () => {
     imported.push(writePost(post, markdown, subtitle));
   }
 
-  return { source: 'medium-json', discovered: streamPosts.length, imported, updated, skipped };
+  return { source: 'medium-json', discovered: streamPosts.length, discoveredUrls: [...discoveredUrls], imported, updated, skipped };
+};
+
+const importFromLinksFile = async filePath => {
+  const urls = readArticleLinksFile(filePath);
+  if (!urls.length) {
+    return { source: 'links-file', file: filePath, discovered: 0, imported: [], updated: [], skipped: [] };
+  }
+
+  const existingPosts = readExistingPosts();
+  const imported = [];
+  const updated = [];
+  const skipped = [];
+
+  for (const url of urls) {
+    const postId = extractMediumId(url);
+    if (!postId) {
+      skipped.push({ url, reason: 'no post id in url' });
+      continue;
+    }
+
+    let post;
+    try {
+      post = await fetchFullPost(postId);
+    } catch (error) {
+      skipped.push({ url, reason: `fetch failed: ${error.message}` });
+      continue;
+    }
+    if (!post) {
+      skipped.push({ url, reason: 'missing full post payload' });
+      continue;
+    }
+
+    post.sourceUrl = url;
+
+    const existingPost = findExistingPost(existingPosts, post);
+    if (existingPost) {
+      if (refreshExistingPostMetadata(existingPost, post)) updated.push({ id: post.id, file: existingPost.file, title: sanitizeTitle(post.title) });
+      continue;
+    }
+
+    if (isPartialLockedPost(post)) {
+      skipped.push({ id: post.id, title: sanitizeTitle(post.title), reason: 'locked post only exposes partial preview content' });
+      continue;
+    }
+
+    const title = sanitizeTitle(post.title);
+    const slug = slugify(title);
+    const markdown = await convertPostToMarkdown(post, slug, title);
+    const subtitle = getCuratedDescription(post) || createArticleDescription(markdown);
+
+    if (!markdown) {
+      skipped.push({ id: post.id, title, reason: 'empty markdown after conversion' });
+      continue;
+    }
+
+    imported.push(writePost(post, markdown, subtitle));
+  }
+
+  return { source: 'links-file', file: filePath, discovered: urls.length, imported, updated, skipped };
 };
 
 const importFromRss = async feedUrl => {
@@ -714,7 +842,24 @@ const importFromRss = async feedUrl => {
   stripNumericFilenamePrefixes();
   const cleanedAuthorSections = cleanExistingAuthorSections();
   const cleanedExcerptFields = cleanExistingExcerptFields();
-  const result = SOURCE_ARG.includes('/feed/') ? await importFromRss(SOURCE_ARG || DEFAULT_FEED_URL) : await importFromMediumJson();
+
+  let result;
+  if (SOURCE_ARG.includes('/feed/')) {
+    result = await importFromRss(SOURCE_ARG || DEFAULT_FEED_URL);
+  } else {
+    const discovery = await importFromMediumJson();
+    const existingLinks = readArticleLinksFile(ARTICLES_LINKS_FILE);
+    const merged = mergeArticleLinks(existingLinks, discovery.discoveredUrls || []);
+    writeArticleLinksFile(ARTICLES_LINKS_FILE, merged);
+    result = await importFromLinksFile(ARTICLES_LINKS_FILE);
+    result.discoveredUrls = merged.length;
+    result.discovery = {
+      discovered: discovery.discovered,
+      imported: discovery.imported.length,
+      updated: discovery.updated.length,
+      skipped: discovery.skipped.length,
+    };
+  }
 
   console.log(
     JSON.stringify(
