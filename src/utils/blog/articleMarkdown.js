@@ -1,3 +1,5 @@
+import { sortBlogPostsNewestFirst } from './articleSorting.js';
+
 const FRONTMATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---/;
 
 export function parseFrontmatter(raw) {
@@ -210,17 +212,20 @@ const mdModules = import.meta.glob('../../blog/*.md', {
 export function loadBlogPosts() {
   return Object.values(mdModules)
     .map(raw => parseBlogPostMarkdown(raw))
-    .filter(article => article.slug);
+    .filter(article => article.slug)
+    .sort(sortBlogPostsNewestFirst);
 }
 
 export function loadBlogPostsMetadata() {
   return Object.values(mdModules)
     .map(raw => parseBlogPostMetadata(raw))
-    .filter(article => article.slug);
+    .filter(article => article.slug)
+    .sort(sortBlogPostsNewestFirst);
 }
 
 export function loadBlogPostsWithContent() {
   return Object.values(mdModules)
     .map(raw => parseBlogPostWithContent(raw))
-    .filter(article => article.slug);
+    .filter(article => article.slug)
+    .sort(sortBlogPostsNewestFirst);
 }
