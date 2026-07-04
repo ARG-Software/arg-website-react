@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { SimpleCarousel } from '../navigation/SimpleCarousel';
+import { useEffect, useRef, useState } from 'react';
+
+const TRANSITION_DELAY_MS = 360;
 
 function TimelineCard({ item }) {
   return (
@@ -91,17 +92,79 @@ function DesktopVerticalTimeline({ items, activeIndex, onSelect }) {
 }
 
 function MobileVerticalTimeline({ items, ariaLabel, scrollTargetId, onChange }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const transitionTimer = useRef(null);
+
+  useEffect(
+    () => () => {
+      if (transitionTimer.current) {
+        clearTimeout(transitionTimer.current);
+        transitionTimer.current = null;
+      }
+    },
+    []
+  );
+
+  if (items.length === 0) return null;
+
+  const safeIndex = activeIndex >= items.length ? 0 : activeIndex;
+  const activeItem = items[safeIndex];
+  const canGoPrevious = safeIndex > 0;
+  const canGoNext = safeIndex < items.length - 1;
+  const showControls = items.length > 1;
+
+  const navigate = direction => {
+    if (isTransitioning) return;
+    const nextIndex = Math.min(items.length - 1, Math.max(0, safeIndex + direction));
+    if (nextIndex === safeIndex) return;
+
+    setIsTransitioning(true);
+    if (transitionTimer.current) clearTimeout(transitionTimer.current);
+    transitionTimer.current = setTimeout(() => {
+      setActiveIndex(nextIndex);
+      setIsTransitioning(false);
+      if (typeof onChange === 'function') {
+        onChange({ index: nextIndex, item: items[nextIndex], direction });
+      }
+    }, TRANSITION_DELAY_MS);
+  };
+
+  const trackKey = activeItem.id ?? activeItem.period ?? safeIndex;
+
   return (
-    <div id={scrollTargetId} className="vertical-timeline__mobile">
-      <SimpleCarousel
-        items={items}
-        getItemKey={item => item.id ?? item.period}
-        ariaLabel={ariaLabel}
-        prevAriaLabel="Show previous timeline step"
-        nextAriaLabel="Show next timeline step"
-        onChange={onChange}
-        renderItem={item => <TimelineCard item={item} />}
-      />
+    <div id={scrollTargetId} className="vertical-timeline__mobile" aria-label={ariaLabel}>
+      <div
+        className={`vertical-timeline__track${isTransitioning ? ' is-transitioning' : ''}`}
+        aria-live="polite"
+      >
+        <div key={trackKey} className="vertical-timeline__slide is-active">
+          <TimelineCard item={activeItem} />
+        </div>
+      </div>
+
+      {showControls && (
+        <div className="vertical-timeline__controls">
+          <button
+            type="button"
+            className="vertical-timeline__arrow vertical-timeline__arrow--prev"
+            aria-label="Show previous timeline step"
+            disabled={!canGoPrevious}
+            onClick={() => navigate(-1)}
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            className="vertical-timeline__arrow vertical-timeline__arrow--next"
+            aria-label="Show next timeline step"
+            disabled={!canGoNext}
+            onClick={() => navigate(1)}
+          >
+            →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

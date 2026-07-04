@@ -94,7 +94,11 @@
   margin-top: 1.5rem;
 }
 .blp-article-row:hover .blp-row-title {
-  opacity: 0.6;
+  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 .blp-row-meta {
   grid-column: span 2;
@@ -134,7 +138,15 @@
   line-height: var(--line-title);
   margin: 0 0 1rem;
   font-family: Neuemontreal, sans-serif;
-  transition: opacity 0.25s;
+  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: filter 0.25s ease;
+}
+
+.blp-article-row:hover .blp-row-title {
+  filter: brightness(1.1);
 }
 .blp-row-excerpt {
   font-size: var(--type-body-small);
@@ -755,15 +767,14 @@
     display: block !important;
   }
 
-  .bp-content,
-  .bp-sidebar-right {
+  .bp-content {
     margin-inline: auto;
     max-width: 58rem;
   }
 
+  .article-sidebar,
   .bp-sidebar-right {
-    margin-top: 4rem;
-    position: static;
+    display: none;
   }
 }
 
@@ -780,10 +791,5 @@
   .bp-h2 {
     align-items: flex-start;
     font-size: clamp(1.65rem, 8vw, 2.25rem);
-  }
-
-  .article-sidebar,
-  .bp-sidebar-right {
-    display: none;
   }
 }

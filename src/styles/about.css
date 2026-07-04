@@ -601,8 +601,68 @@
     display: block;
   }
 
-  .vertical-timeline__mobile .simple-carousel__track {
+  .vertical-timeline__track {
     min-height: 28rem;
+    transition:
+      opacity 0.48s ease,
+      transform 0.48s ease;
+  }
+
+  .vertical-timeline__track.is-transitioning {
+    opacity: 0;
+    transform: translateY(0.125rem);
+  }
+
+  .vertical-timeline__slide {
+    display: flex;
+    min-width: 0;
+  }
+
+  .vertical-timeline__controls {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+
+  .vertical-timeline__arrow {
+    align-items: center;
+    background: #fff;
+    border: 1px solid rgba(12, 0, 46, 0.12);
+    border-radius: 50%;
+    box-shadow: 0 20px 48px -28px rgba(12, 0, 46, 0.55);
+    color: #0c002e;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: Neuemontreal, sans-serif;
+    font-size: 1.25rem;
+    height: 3rem;
+    justify-content: center;
+    line-height: 1;
+    width: 3rem;
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .vertical-timeline__arrow:hover {
+    background: #f5f2ff;
+    transform: translateY(-1px);
+  }
+
+  .vertical-timeline__arrow:disabled {
+    cursor: default;
+    opacity: 0.28;
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 480px) {
+    .vertical-timeline__arrow {
+      height: 2.5rem;
+      width: 2.5rem;
+    }
   }
 
   .vertical-timeline__card {

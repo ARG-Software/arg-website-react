@@ -4,6 +4,25 @@ const DEFAULT_TRANSITION_DELAY_MS = 360;
 const DEFAULT_ARIA_LABEL = 'Carousel';
 const DEFAULT_PREV_ARIA_LABEL = 'Show previous items';
 const DEFAULT_NEXT_ARIA_LABEL = 'Show next items';
+const MOBILE_MEDIA_QUERY = '(max-width: 767px)';
+const TABLET_MEDIA_QUERY = '(max-width: 991px)';
+
+function getBreakpoint(isMobile, isTablet) {
+  if (isMobile) return 'mobile';
+  if (isTablet) return 'tablet';
+  return 'desktop';
+}
+
+function getEffectivePageSize(itemsPerPage, tabletItemsPerPage, mobileItemsPerPage, breakpoint) {
+  const desktop = Math.max(1, Math.floor(itemsPerPage) || 1);
+  if (breakpoint === 'mobile') {
+    return mobileItemsPerPage == null ? desktop : Math.max(1, Math.floor(mobileItemsPerPage) || 1);
+  }
+  if (breakpoint === 'tablet') {
+    return tabletItemsPerPage == null ? desktop : Math.max(1, Math.floor(tabletItemsPerPage) || 1);
+  }
+  return desktop;
+}
 
 export function SimpleCarousel({
   items = [],
@@ -11,6 +30,9 @@ export function SimpleCarousel({
   getItemKey,
   initialIndex = 0,
   transitionDelayMs = DEFAULT_TRANSITION_DELAY_MS,
+  itemsPerPage = 1,
+  tabletItemsPerPage,
+  mobileItemsPerPage,
   className = '',
   ariaLabel = DEFAULT_ARIA_LABEL,
   prevAriaLabel = DEFAULT_PREV_ARIA_LABEL,
@@ -20,7 +42,33 @@ export function SimpleCarousel({
 }) {
   const [activeIndex, setActiveIndex] = useState(() => Math.max(0, initialIndex));
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [breakpoint, setBreakpoint] = useState('desktop');
   const transitionTimer = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return undefined;
+    const mobileMql = window.matchMedia(MOBILE_MEDIA_QUERY);
+    const tabletMql = window.matchMedia(TABLET_MEDIA_QUERY);
+    const update = () => {
+      setBreakpoint(getBreakpoint(mobileMql.matches, tabletMql.matches && !mobileMql.matches));
+    };
+    update();
+    const handleChange = () => update();
+    if (typeof mobileMql.addEventListener === 'function') {
+      mobileMql.addEventListener('change', handleChange);
+      tabletMql.addEventListener('change', handleChange);
+      return () => {
+        mobileMql.removeEventListener('change', handleChange);
+        tabletMql.removeEventListener('change', handleChange);
+      };
+    }
+    mobileMql.addListener(handleChange);
+    tabletMql.addListener(handleChange);
+    return () => {
+      mobileMql.removeListener(handleChange);
+      tabletMql.removeListener(handleChange);
+    };
+  }, []);
 
   useEffect(
     () => () => {
@@ -34,17 +82,26 @@ export function SimpleCarousel({
 
   if (!items.length || typeof renderItem !== 'function') return null;
 
-  const safeIndex = activeIndex >= items.length ? 0 : activeIndex;
-  const activeItem = items[safeIndex];
-  const canGoPrevious = safeIndex > 0;
-  const canGoNext = safeIndex < items.length - 1;
+  const perPage = getEffectivePageSize(
+    itemsPerPage,
+    tabletItemsPerPage,
+    mobileItemsPerPage,
+    breakpoint
+  );
+  const safePerPage = Math.max(1, Math.min(items.length, perPage));
+  const pageCount = Math.max(1, Math.ceil(items.length / safePerPage));
+  const safePageIndex = activeIndex >= pageCount ? 0 : activeIndex;
+  const pageStart = safePageIndex * safePerPage;
+  const pageItems = items.slice(pageStart, pageStart + safePerPage);
+  const canGoPrevious = safePageIndex > 0;
+  const canGoNext = safePageIndex < pageCount - 1;
 
   const navigate = direction => {
     if (isTransitioning) return;
 
-    const nextIndex = Math.min(items.length - 1, Math.max(0, safeIndex + direction));
+    const nextIndex = Math.min(pageCount - 1, Math.max(0, safePageIndex + direction));
 
-    if (nextIndex === safeIndex) return;
+    if (nextIndex === safePageIndex) return;
 
     setIsTransitioning(true);
     if (transitionTimer.current) clearTimeout(transitionTimer.current);
@@ -54,15 +111,17 @@ export function SimpleCarousel({
         setIsTransitioning(false);
 
         if (typeof onChange === 'function') {
-          onChange({ index: nextIndex, item: items[nextIndex], direction });
+          onChange({ index: nextIndex, item: items[nextIndex * safePerPage], direction });
         }
       });
     }, transitionDelayMs);
   };
 
   const wrapperClassName = ['simple-carousel', className].filter(Boolean).join(' ');
-  const showControls = items.length > 1;
-  const key = typeof getItemKey === 'function' ? getItemKey(activeItem, safeIndex) : safeIndex;
+  const showControls = pageCount > 1;
+  const trackKey = pageItems.map((item, i) =>
+    typeof getItemKey === 'function' ? getItemKey(item, pageStart + i) : pageStart + i
+  );
 
   return (
     <div
@@ -75,8 +134,12 @@ export function SimpleCarousel({
         className={`simple-carousel__track${isTransitioning ? ' is-transitioning' : ''}`}
         aria-live="polite"
       >
-        <div key={key} className="simple-carousel__slide is-active">
-          {renderItem(activeItem, safeIndex)}
+        <div key={trackKey.join('|')} className="simple-carousel__slide is-active">
+          {pageItems.map((item, i) => (
+            <div key={trackKey[i]} className="simple-carousel__page-item">
+              {renderItem(item, pageStart + i)}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -105,7 +168,7 @@ export function SimpleCarousel({
 
       {showControls && showIndicator && (
         <p className="simple-carousel__indicator" aria-hidden="true">
-          {safeIndex + 1} of {items.length}
+          {safePageIndex + 1} of {pageCount}
         </p>
       )}
     </div>

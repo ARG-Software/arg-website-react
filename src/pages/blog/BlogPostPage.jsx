@@ -436,11 +436,14 @@ export default function BlogPostPage() {
                     </div>
                   </div>
 
-                  <div data-animate-order="1">
+                  <div className="related-articles-carousel__viewport" data-animate-order="1">
                     <SimpleCarousel
                       key={slug}
                       className="related-articles-carousel__carousel"
                       items={relatedPosts}
+                      itemsPerPage={3}
+                      tabletItemsPerPage={2}
+                      mobileItemsPerPage={1}
                       getItemKey={post => post.slug}
                       ariaLabel="Related articles"
                       prevAriaLabel="Show previous related article"
