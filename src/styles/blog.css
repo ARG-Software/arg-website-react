@@ -94,11 +94,7 @@
   margin-top: 1.5rem;
 }
 .blp-article-row:hover .blp-row-title {
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: #0c002e;
 }
 .blp-row-meta {
   grid-column: span 2;
@@ -133,20 +129,12 @@
 }
 .blp-row-title {
   font-size: var(--type-card-title);
-  font-weight: 400;
-  color: #000;
+  font-weight: 700;
+  color: #0c002e;
   line-height: var(--line-title);
   margin: 0 0 1rem;
   font-family: Neuemontreal, sans-serif;
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  transition: filter 0.25s ease;
-}
-
-.blp-article-row:hover .blp-row-title {
-  filter: brightness(1.1);
+  transition: color 0.2s ease;
 }
 .blp-row-excerpt {
   font-size: var(--type-body-small);
