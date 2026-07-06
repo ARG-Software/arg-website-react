@@ -13,6 +13,7 @@
   transition: visibility 0ms linear 1680ms;
 }
 
+.pt-overlay.preparing,
 .pt-overlay.covering,
 .pt-overlay.revealing {
   opacity: 1;

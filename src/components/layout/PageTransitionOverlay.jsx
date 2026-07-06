@@ -5,6 +5,7 @@ const SHADES = Array.from({ length: SHADE_COUNT }, (_, index) => index);
 
 const PHASE_CLASSES = {
   idle: '',
+  preparing: 'preparing',
   covering: 'covering',
   revealing: 'revealing',
 };

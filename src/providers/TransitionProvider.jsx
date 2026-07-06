@@ -128,7 +128,7 @@ export function TransitionProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    const isTransitioning = phase === 'covering' || phase === 'revealing';
+    const isTransitioning = phase === 'preparing' || phase === 'covering' || phase === 'revealing';
     document.documentElement.classList.toggle('is-page-transitioning', isTransitioning);
 
     return () => {
@@ -256,12 +256,21 @@ export function TransitionProvider({ children }) {
       }
 
       const startCover = () => {
-        setPhase('covering');
+        setPhase('preparing');
 
-        const { cover } = getTransitionTimings(variant);
-        window.setTimeout(() => {
-          navigate(targetLocation.hash ? targetPath : to, getNavigateOptions(transitionOptions));
-        }, cover);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setPhase('covering');
+
+            const { cover } = getTransitionTimings(variant);
+            window.setTimeout(() => {
+              navigate(
+                targetLocation.hash ? targetPath : to,
+                getNavigateOptions(transitionOptions)
+              );
+            }, cover);
+          });
+        });
       };
 
       if (variant === 'project-image') {
@@ -371,7 +380,7 @@ export function TransitionProvider({ children }) {
     phase,
     scrollToHash,
     scrollToPage: scrollToReturnTarget,
-    transitioning: phase === 'covering' || phase === 'revealing',
+    transitioning: phase === 'preparing' || phase === 'covering' || phase === 'revealing',
   };
 
   return (
