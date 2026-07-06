@@ -10,6 +10,7 @@ const STREAM_SOURCES = ['latest', 'overview'];
 const BLOG_DIR = path.resolve('src/blog');
 const IMAGE_ROOT = path.resolve('public/images/blog');
 const ARTICLES_LINKS_FILE = path.resolve('external/articlelinks.txt');
+const DRAFT_ARTICLES_LINKS_FILE = path.resolve('external/draft-articlelinks.txt');
 const SOURCE_ARG = process.argv[2] || '';
 
 const BROWSER_HEADERS = {
@@ -221,7 +222,7 @@ const parseFrontmatter = raw => {
 };
 
 const extractMediumId = value => {
-  const match = String(value || '').match(/(?:-|\/)([0-9a-f]{12})(?:\?|$)/i);
+  const match = String(value || '').match(/(?:-|\/)([0-9a-f]{12})(?=[/?#]|$)/i);
   return match ? match[1] : '';
 };
 
@@ -455,6 +456,58 @@ const readArticleLinksFile = filePath => {
     .filter(line => line && !line.startsWith('#'));
 };
 
+const readArticleLinksFileEntries = filePath => {
+  if (!fs.existsSync(filePath)) return [];
+
+  return fs.readFileSync(filePath, 'utf8').split(/\r?\n/).map(line => {
+    const value = line.trim();
+
+    return {
+      line,
+      value,
+      isLink: Boolean(value && !value.startsWith('#')),
+    };
+  });
+};
+
+const writeRemainingDraftArticleLinks = (filePath, entries, processedUrls) => {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+
+  const processed = new Set(processedUrls);
+  const remainingEntries = entries.filter(entry => !(entry.isLink && processed.has(entry.value)));
+  while (remainingEntries.length && !remainingEntries[remainingEntries.length - 1].line.trim()) {
+    remainingEntries.pop();
+  }
+
+  const contents = remainingEntries.length ? `${remainingEntries.map(entry => entry.line).join('\n')}\n` : '';
+  fs.writeFileSync(filePath, contents, 'utf8');
+
+  return remainingEntries.filter(entry => entry.isLink).map(entry => entry.value);
+};
+
+const isMediumArticleLink = value => {
+  try {
+    const url = new URL(value);
+    return url.hostname.endsWith('medium.com') && Boolean(extractMediumId(value));
+  } catch (_error) {
+    return false;
+  }
+};
+
+const hasMediumShareToken = value => {
+  try {
+    return new URL(value).searchParams.has('sk');
+  } catch (_error) {
+    return false;
+  }
+};
+
+const buildMediumJsonUrlFromShareLink = value => {
+  const url = new URL(value);
+  url.searchParams.set('format', 'json');
+  return url.toString();
+};
+
 const writeArticleLinksFile = (filePath, urls) => {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   const unique = [...new Set(urls.filter(Boolean))].sort();
@@ -503,7 +556,21 @@ const collectMediumPosts = async () => {
 const fetchFullPost = async postId => {
   const data = await fetchMediumJson(`https://medium.com/p/${postId}?format=json`);
   return data.payload?.value;
-};const getPostUrl = post =>
+};
+
+const fetchFullPostFromShareLink = async url => {
+  const postId = extractMediumId(url);
+
+  if (!hasMediumShareToken(url)) {
+    return fetchFullPost(postId);
+  }
+
+  const data = await fetchMediumJson(buildMediumJsonUrlFromShareLink(url));
+
+  return data.payload?.value || data.payload?.references?.Post?.[postId];
+};
+
+const getPostUrl = post =>
   post.sourceUrl || post.mediumUrl || post.webCanonicalUrl || post.canonicalUrl || `https://medium.com/p/${post.id}`;
 
 const getPostCategories = post => (post.virtuals?.tags || []).map(tag => tag.name || tag.slug).filter(Boolean);
@@ -824,6 +891,97 @@ const importFromLinksFile = async filePath => {
   return { source: 'links-file', file: filePath, discovered: urls.length, imported, updated, skipped };
 };
 
+const importFromDraftShareLinksFile = async filePath => {
+  const entries = readArticleLinksFileEntries(filePath);
+  const urls = entries.filter(entry => entry.isLink).map(entry => entry.value);
+
+  if (!urls.length) {
+    return {
+      source: 'draft-share-links-file',
+      file: filePath,
+      discovered: 0,
+      imported: [],
+      updated: [],
+      skipped: [],
+      removedDraftLinks: 0,
+      remainingDraftLinks: 0,
+    };
+  }
+
+  const existingPosts = readExistingPosts();
+  const imported = [];
+  const updated = [];
+  const skipped = [];
+  const processedUrls = [];
+
+  for (const url of urls) {
+    if (!isMediumArticleLink(url)) {
+      skipped.push({ url, reason: 'draft imports require a medium.com article link with a post id' });
+      continue;
+    }
+
+    const postId = extractMediumId(url);
+    if (!postId) {
+      skipped.push({ url, reason: 'no post id in url' });
+      continue;
+    }
+
+    let post;
+    try {
+      post = await fetchFullPostFromShareLink(url);
+    } catch (error) {
+      skipped.push({ url, reason: `fetch failed: ${error.message}` });
+      continue;
+    }
+
+    if (!post) {
+      skipped.push({ url, reason: 'missing full post payload' });
+      continue;
+    }
+
+    post.sourceUrl = url;
+
+    const existingPost = findExistingPost(existingPosts, post);
+    if (existingPost) {
+      const changed = refreshExistingPostMetadata(existingPost, post);
+      updated.push({ id: post.id, file: existingPost.file, title: sanitizeTitle(post.title), changed });
+      processedUrls.push(url);
+      continue;
+    }
+
+    if (isPartialLockedPost(post)) {
+      skipped.push({ id: post.id, title: sanitizeTitle(post.title), reason: 'locked post only exposes partial preview content' });
+      continue;
+    }
+
+    const title = sanitizeTitle(post.title);
+    const slug = slugify(title);
+    const markdown = await convertPostToMarkdown(post, slug, title);
+    const subtitle = getCuratedDescription(post) || createArticleDescription(markdown);
+
+    if (!markdown) {
+      skipped.push({ id: post.id, title, reason: 'empty markdown after conversion' });
+      continue;
+    }
+
+    imported.push(writePost(post, markdown, subtitle));
+    processedUrls.push(url);
+  }
+
+  const remainingDraftLinks = writeRemainingDraftArticleLinks(filePath, entries, processedUrls);
+
+  return {
+    source: 'draft-share-links-file',
+    file: filePath,
+    discovered: urls.length,
+    imported,
+    updated,
+    skipped,
+    removedDraftLinks: processedUrls.length,
+    remainingDraftLinks: remainingDraftLinks.length,
+  };
+};
+
 const importFromRss = async feedUrl => {
   const xml = await fetchText(feedUrl, { ...BROWSER_HEADERS, accept: 'application/rss+xml, application/xml, text/xml, */*' });
   const items = parseFeed(xml);
@@ -844,7 +1002,9 @@ const importFromRss = async feedUrl => {
   const cleanedExcerptFields = cleanExistingExcerptFields();
 
   let result;
-  if (SOURCE_ARG.includes('/feed/')) {
+  if (SOURCE_ARG === '--drafts') {
+    result = await importFromDraftShareLinksFile(DRAFT_ARTICLES_LINKS_FILE);
+  } else if (SOURCE_ARG.includes('/feed/')) {
     result = await importFromRss(SOURCE_ARG || DEFAULT_FEED_URL);
   } else {
     const discovery = await importFromMediumJson();

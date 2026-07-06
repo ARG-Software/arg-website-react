@@ -1,0 +1,3 @@
+# Add one Medium draft/article link per line.
+# Share links with an sk token and readable Medium article URLs are supported.
+# Successfully imported or updated links are removed automatically.
