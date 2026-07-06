@@ -1,0 +1,42 @@
+PEOPLE'S CLEARINGHOUSE
+
+Industry: Fintech & Financial Inclusion
+Client: AMUCSS / People's Clearinghouse (lacamara.mx)
+Timeline: 3 Years
+Services: Backend, Frontend Implementation, Mobile App Development, Payments Architecture, Interoperability, Live Demo Support
+
+THE CHALLENGE
+
+Mexico's community banking sector connects millions of people in rural areas to financial services — but those institutions have been running on infrastructure that can't interoperate with the broader payment network. People's Clearinghouse set out to change that: a community-owned payments ecosystem built on Mojaloop vNext, capable of linking community banks, savings coops, and rural merchants to national-scale payment switching. The platform needed to perform under real pressure — handling 1,000–2,000 requests per second while keeping transfers sub-second — and it needed to survive the most public test imaginable: a live demo at Interledger Summit 2025 in Mexico City, followed by real merchants selling real goods to attendees through the app.
+
+WHAT ARG DELIVERED
+
+ARG extended years of Mojaloop vNext expertise into a purpose-built clearinghouse for Mexico's social financial sector. The work spanned the full stack — from payment API engineering to mobile app flows to live demo preparation.
+
+- Built PCH-specific switch and participant flows for community banks, savings coops, and regulated payment institutions
+- Load-tested payment APIs under sustained cluster conditions, processing ~1,000–2,000 requests per second with linear scalability
+- Tuned lookup and quote workflows to ~200–300ms end-to-end, with ledger transfers averaging ~770ms
+- Validated reliability through multi-million request test runs with zero functional errors
+- Developed mobile app paths for account transfers, QR merchant payments, confirmations, and full transaction visibility
+- Prepared the live demo environment used for the main-stage Interledger Summit presentation
+- Supported the community showcase where rural merchants sold goods to attendees through the app using fictional money
+- Hardened the end-to-end request path so ~100 first-time summit users could transact without a single transfer failure
+
+THE RESULTS
+
+At Interledger Summit 2025, People's Clearinghouse proved it works — on stage, in front of a live audience, and in the hands of rural merchants selling coffee and traditional goods through the app. Zero transfer failures across ~1,000+ live transactions.
+
+Key Metrics:
+- Requests per second (sustained): ~2,000
+- Average ledger transfer time: ~770ms
+- Live showcase transfers (zero failures): 1,000+
+
+Behind the scenes, the APIs proved they can support national-scale transaction switching — the foundation Mexico's community banking network needs to move from pilot to production.
+
+TECHNOLOGIES USED
+
+Mojaloop vNext, Open Payments, Interledger Protocol, Event-Driven Architecture, Domain-Driven Design, Distributed Systems, Payment Switching, Ledger Orchestration, QR Payments, Merchant Payments, Mobile App, Core Banking
+
+---
+
+Building payment infrastructure for underserved markets? Let's talk: https://arg.software/contact

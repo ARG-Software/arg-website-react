@@ -1,0 +1,43 @@
+# Dokutar
+
+**Industry:** Compliance Tech
+**Client:** mb-netzwerk — [dokutar.de](https://www.dokutar.de)
+**Timeline:** 2 Years
+**Services:** Backend Redesign, Database Migration, Multitenancy, Security
+
+---
+
+## The Challenge
+
+Dokutar is a compliance platform that helps German businesses manage tax documentation and regulatory workflows. The product was working — but it had outgrown its technical foundation. Built across Node and WordPress, the platform was struggling to scale its client base, couldn't guarantee the tenant isolation that compliance-sensitive data demands, and was hitting architectural limits that made every new client a risk. For a platform handling sensitive tax and process documentation, shared infrastructure without proper separation wasn't just a tech debt problem — it was a business liability.
+
+## What ARG Delivered
+
+ARG stepped in to rebuild the backend from the ground up — not a patch, but a structural redesign that gave Dokutar the foundation it needed to grow safely.
+
+- Redesigned the backend architecture to move beyond the original Node and WordPress stack
+- Reworked the database model for tenant-aware workflows, safer data access, and scalable growth
+- Planned and executed the full migration from the legacy setup into the new foundation
+- Implemented true multitenancy with clear client separation — not just shared infrastructure, but isolated data boundaries
+- Reinforced security controls to eliminate cross-tenant data exposure risk
+- Built the technical foundation for compliance-heavy workflows, auditability, and future product expansion
+
+## The Results
+
+Dokutar now operates on a backend built to scale. The platform processes over 50,000 documents monthly across 5 multitenant client workspaces, maintaining a 98%+ compliance accuracy rate.
+
+| Metric | Value |
+|---|---|
+| Documents processed monthly | 50,000+ |
+| Compliance accuracy rate | 98%+ |
+| Multitenant client workspaces | 5 |
+
+More importantly, every new client no longer introduces risk — it's just another tenant on a platform designed for growth.
+
+## Technologies Used
+
+TypeORM, Express, React, Docker, Jest, MySQL, Node
+
+---
+
+*Need a platform that scales without compromising security? [Let's talk →](https://arg.software/contact)*

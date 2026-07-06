@@ -1,0 +1,43 @@
+# TV Cine
+
+**Industry:** Entertainment
+**Client:** TV Cine — [tvcine.pt](https://www.tvcine.pt/)
+**Timeline:** 1 Year
+**Services:** Frontend Refactor, API Design, Backoffice Systems, Feature Delivery
+
+---
+
+## The Challenge
+
+TV Cine is a premium Portuguese entertainment platform with a growing subscriber base and an expanding content catalog. The product was live and functional — but the original Strapi-based backend was starting to cap what the platform could do. New user-facing features needed a more flexible API, the admin team needed better backoffice tooling, and the Vue frontend needed work that matched the premium experience subscribers expected. The platform needed to evolve without breaking what was already working.
+
+## What ARG Delivered
+
+ARG expanded TV Cine's capabilities across the full stack — new public-facing features, stronger admin workflows, and a backend architecture built for what comes next.
+
+- Implemented new user-facing product features across the TV Cine web experience
+- Reworked Vue frontend components and flows to support updated functionality
+- Refactored backend logic that had been constrained by the original Strapi implementation
+- Designed and built a new API layer exposing richer functionality to both admins and end users
+- Improved backoffice workflows so internal teams can manage content and operations more efficiently
+- Supported QA and release work across frontend, backend, and admin-facing features
+
+## The Results
+
+TV Cine now serves over 10,000 active subscribers across a catalog of 5,000+ content titles, with 99% platform availability.
+
+| Metric | Value |
+|---|---|
+| Active subscribers | 10,000+ |
+| Content titles available | 5,000+ |
+| Platform availability | 99% |
+
+The platform gained the architectural flexibility to keep growing — new features no longer fight the backend, and the admin team has the tools to manage a premium content experience at scale.
+
+## Technologies Used
+
+Vue.js, MongoDB, Entity Framework, .NET Core, Nuxt
+
+---
+
+*Need to evolve your platform without rebuilding from scratch? [Let's talk →](https://arg.software/contact)*

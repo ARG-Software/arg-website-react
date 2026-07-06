@@ -1,0 +1,40 @@
+SKY TRACKS
+
+Industry: Music Tech
+Client: SkyTracks (skytracks.io)
+Timeline: 1 Year
+Services: Frontend Migration, Latency Optimization, Instrument Connectivity, QA & Testing
+
+THE CHALLENGE
+
+SkyTracks is a browser-based music production platform — the kind of product where latency isn't a nice-to-have problem, it's a dealbreaker. Musicians can't create if there's a noticeable lag between hitting a note and hearing it. Earlier implementations left key features unreliable, the frontend was stuck on an outdated framework, and the product couldn't connect to external instruments. SkyTracks needed to ship a version that actually worked — for real musicians, in real creative workflows, across real devices.
+
+WHAT ARG DELIVERED
+
+ARG helped SkyTracks rebuild the product experience from the frontend down — modernizing the interface, cutting latency, and making the platform feel like a real production tool.
+
+- Migrated the frontend to Angular and implemented the redesigned product interface from scratch
+- Reduced data latency across interactive music workflows to make the platform genuinely responsive
+- Connected external instruments so musicians could use hardware inputs inside the browser-based environment
+- Stabilized features that were incomplete or unreliable in previous versions
+- Reworked core music creation, editing, and playback flows for consistency across devices
+- Supported QA and release work needed to launch the new platform version
+
+THE RESULTS
+
+SkyTracks launched a version that musicians can actually use. The platform now hosts over 50,000 online tracks, runs under 2,000ms average latency, and has powered over 1,000 collaborative sessions.
+
+Key Metrics:
+- Online tracks in production: 50,000+
+- Average latency: <2,000ms
+- Collaborative sessions: 1,000+
+
+The platform moved from a promising concept to a working product — one that's fast enough for creative flow, stable enough for real use, and open enough to connect to the instruments musicians already own.
+
+TECHNOLOGIES USED
+
+Knex, Tone.js, Tailwind, Koa, Angular, Docker, Jest, Node
+
+---
+
+Building a real-time product where performance is everything? Let's talk: https://arg.software/contact

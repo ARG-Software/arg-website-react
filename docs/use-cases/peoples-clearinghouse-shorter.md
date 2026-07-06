@@ -1,0 +1,33 @@
+**Services:** Backend, Frontend Implementation, Mobile App Development, Payments Architecture, Interoperability, Live Demo Support
+
+---
+
+## The Challenge
+
+Mexico's community banking sector connects millions of rural people to financial services — but on infrastructure that can't interoperate with the broader payment network. People's Clearinghouse needed a community-owned payments ecosystem built on Mojaloop vNext, linking community banks, savings coops, and rural merchants to national-scale payment switching. The platform had to sustain 1,000–2,000 requests per second — and prove it live at Interledger Summit 2025 in Mexico City, where rural merchants sold real goods to attendees through the app.
+
+## What ARG Delivered
+
+ARG built the clearinghouse end-to-end — from payment API engineering to mobile app flows to live demo preparation.
+
+- Designed PCH-specific switch and participant flows for community banks, savings coops, and regulated payment institutions
+- Load-tested payment APIs at ~1,000–2,000 requests per second with linear scalability and zero functional errors across multi-million request runs
+- Tuned lookup and quote workflows to ~200–300ms, with ledger transfers averaging ~770ms
+- Built mobile app paths for transfers, QR merchant payments, and full transaction visibility
+- Prepared the main-stage Interledger Summit demo where rural merchants transacted with ~100 attendees — zero failures
+
+## The Results
+
+Zero transfer failures across ~1,000+ live transactions at Interledger Summit 2025 — on stage and in the hands of rural merchants selling goods through the app.
+
+| Metric | Value |
+|---|---|
+| Requests per second (sustained) | ~2,000 |
+| Average ledger transfer time | ~770ms |
+| Live showcase transfers (zero failures) | 1,000+ |
+
+The APIs proved they can support national-scale transaction switching — the foundation Mexico's community banking network needs to move from pilot to production.
+
+## Technologies Used
+
+Mojaloop vNext, Open Payments, Interledger Protocol, Payment Switching, Ledger Orchestration, QR Payments, Mobile App

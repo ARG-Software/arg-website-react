@@ -1,0 +1,43 @@
+# Royalty Flush
+
+**Industry:** Music Rights
+**Client:** North Music Group — [northmusicgroup.com](https://www.northmusicgroup.com/)
+**Timeline:** 1 Year
+**Services:** Royalty Engine, CWR Processing, Reporting, Backend
+
+---
+
+## The Challenge
+
+North Music Group was running royalty operations on Excel sheets and macros. It worked — until it didn't. As the catalog grew, the manual workflow became fragile, impossible to audit properly, and increasingly risky. CWR files needed ingestion, royalty obligations needed calculation, reports needed to be generated — and none of that should depend on someone remembering to run the right macro in the right spreadsheet. The business needed software that could replace the manual process with something repeatable, reviewable, and trustworthy.
+
+## What ARG Delivered
+
+ARG built the royalty engine that replaced the spreadsheets — a backend platform designed to handle the full royalty lifecycle without manual intervention.
+
+- Built a dedicated backend royalty engine to replace Excel-based processing entirely
+- Implemented CWR file ingestion supporting 30+ file types for diverse royalty input sources
+- Structured royalty data so obligations can be calculated and reviewed consistently
+- Designed reporting flows that make royalty outputs easy to inspect, share, and audit
+- Eliminated dependence on manual macros by moving repeatable logic into backend services
+- Supported QA around calculation flows, file handling, and reporting accuracy
+
+## The Results
+
+Royalty Flush now manages over 1,000 music catalogs through a single engine — processing CWR files, calculating obligations, and generating reports without a single spreadsheet in sight.
+
+| Metric | Value |
+|---|---|
+| Royalty engine built | 1 |
+| CWR file types supported | 30+ |
+| Music catalogs managed | 1,000+ |
+
+The shift from manual spreadsheets to a purpose-built engine didn't just reduce errors — it gave North Music Group the operational confidence to scale their catalog without scaling their risk.
+
+## Technologies Used
+
+.NET Core, Entity Framework, Octopus Deploy, Docker, React, Hangfire, PostgreSQL, MediatR
+
+---
+
+*Still running critical operations on spreadsheets? [Let's talk →](https://arg.software/contact)*
