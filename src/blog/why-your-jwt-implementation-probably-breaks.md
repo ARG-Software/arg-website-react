@@ -131,7 +131,7 @@ Some scenarios can’t tolerate any post-logout window:
 
 For these, you need immediate revocation. Which means… checking a database on every request.
 
-```text
+```
 public ClaimsPrincipal ValidateAccessToken(string token)
 {
     var handler = new JwtSecurityTokenHandler();
@@ -152,7 +152,7 @@ public ClaimsPrincipal ValidateAccessToken(string token)
 
 On logout, you add the token to Redis:
 
-```text
+```
 public void RevokeToken(string token)
 {
     var handler = new JwtSecurityTokenHandler();
@@ -185,7 +185,7 @@ ALTER TABLE users ADD COLUMN token_version INT NOT NULL DEFAULT 0;
 
 Every JWT includes this version:
 
-```text
+```
 public string IssueAccessToken(User user)
 {
     var tokenHandler = new JwtSecurityTokenHandler();
@@ -211,7 +211,7 @@ public string IssueAccessToken(User user)
 
 Validation checks it matches:
 
-```text
+```
 public ClaimsPrincipal ValidateAccessToken(string token)
 {
     var handler = new JwtSecurityTokenHandler();

@@ -48,9 +48,8 @@ function normalizeHeadingText(text) {
 
 function normalizeCodeLanguage(language) {
   const normalized = (language || '').trim().toLowerCase();
-  if (!normalized || normalized === 'text' || normalized === 'txt') {
-    return 'plaintext';
-  }
+  if (!normalized) return '';
+  if (normalized === 'text' || normalized === 'txt') return 'plaintext';
   return normalized;
 }
 

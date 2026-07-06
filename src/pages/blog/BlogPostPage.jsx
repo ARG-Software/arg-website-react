@@ -45,8 +45,9 @@ const BLOG_POSTS = loadBlogPostsWithContent();
 const CodeBlock = ({ code, lang }) => {
   const [copyState, setCopyState] = useState('idle');
   const lineNumbers = getCodeLineNumbers(code);
-  const highlighted = highlightCode(code, lang);
-  const codeClassName = lang === 'plaintext' ? 'nohighlight' : `language-${lang}`;
+  const { html, detectedLang } = highlightCode(code, lang);
+  const displayLang = lang || detectedLang;
+  const codeClassName = displayLang === 'plaintext' ? 'nohighlight' : `language-${displayLang}`;
 
   const handleCopy = async () => {
     if (!navigator.clipboard?.writeText) {
@@ -70,7 +71,7 @@ const CodeBlock = ({ code, lang }) => {
   return (
     <div className="bp-code-wrap">
       <div className="bp-code-bar">
-        <span className="bp-code-lang">{getCodeLanguageLabel(lang)}</span>
+        <span className="bp-code-lang">{getCodeLanguageLabel(displayLang)}</span>
         <button type="button" className="bp-code-copy" onClick={handleCopy} aria-label={copyLabel}>
           {copyLabel}
         </button>
@@ -86,7 +87,7 @@ const CodeBlock = ({ code, lang }) => {
         <pre className="bp-code-pre">
           <code
             className={`bp-code-code ${codeClassName}`}
-            dangerouslySetInnerHTML={{ __html: highlighted }}
+            dangerouslySetInnerHTML={{ __html: html }}
           />
         </pre>
       </div>

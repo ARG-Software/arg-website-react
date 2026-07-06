@@ -55,15 +55,19 @@ export function getCodeLineNumbers(code) {
 }
 
 export function getCodeLanguageLabel(lang) {
-  return lang === 'plaintext' ? 'text' : lang;
+  if (lang === 'plaintext') return 'text';
+  if (!lang) return 'code';
+  return lang;
 }
 
 export function highlightCode(code, lang) {
-  if (lang === 'plaintext' || !lang) {
-    return escapeHtml(code);
+  if (lang === 'plaintext') {
+    return { html: escapeHtml(code), detectedLang: 'plaintext' };
   }
-  if (hljs.getLanguage(lang)) {
-    return hljs.highlight(code, { language: lang, ignoreIllegals: true }).value;
+  if (lang && hljs.getLanguage(lang)) {
+    const result = hljs.highlight(code, { language: lang, ignoreIllegals: true });
+    return { html: result.value, detectedLang: lang };
   }
-  return hljs.highlightAuto(code).value;
+  const result = hljs.highlightAuto(code);
+  return { html: result.value, detectedLang: result.language || '' };
 }

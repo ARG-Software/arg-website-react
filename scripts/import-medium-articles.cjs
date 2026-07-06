@@ -118,59 +118,32 @@ const getTag = (title, categories = []) => {
   return 'Architecture';
 };
 
-const inferLang = (code, hint) => {
-  const text = String(code || '').trim();
+const inferLang = hint => {
+  if (!hint) return '';
 
-  if (hint) {
-    const normalized = String(hint).toLowerCase();
-    const alias = {
-      ts: 'typescript',
-      tsx: 'typescript',
-      js: 'javascript',
-      py: 'python',
-      sh: 'bash',
-      shell: 'bash',
-      yml: 'yaml',
-      http: 'http',
-      txt: 'text',
-      plain: 'text',
-    };
-    if (alias[normalized]) return alias[normalized];
-    if (['typescript', 'javascript', 'csharp', 'cs', 'c#', 'bash', 'sh', 'json', 'yaml', 'sql', 'http', 'xml', 'html', 'ini', 'protobuf', 'graphql', 'powershell', 'http'].includes(normalized)) {
-      return normalized === 'cs' || normalized === 'c#' ? 'csharp' : normalized;
-    }
+  const normalized = String(hint).toLowerCase();
+  const alias = {
+    ts: 'typescript',
+    tsx: 'typescript',
+    js: 'javascript',
+    py: 'python',
+    sh: 'bash',
+    shell: 'bash',
+    yml: 'yaml',
+    txt: 'text',
+    plain: 'text',
+  };
+  if (alias[normalized]) return alias[normalized];
+
+  const known = [
+    'typescript', 'javascript', 'csharp', 'cs', 'c#', 'bash', 'sh', 'json', 'yaml', 'sql',
+    'http', 'xml', 'html', 'ini', 'protobuf', 'graphql', 'powershell', 'text',
+  ];
+  if (known.includes(normalized)) {
+    return normalized === 'cs' || normalized === 'c#' ? 'csharp' : normalized;
   }
 
-  if (!text) return 'text';
-
-  if (/^\s*[\[{]/.test(text) && /["'][\w-]+["']\s*:/.test(text)) return 'json';
-  if (/^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+\//m.test(text) || /^HTTP\/\d/m.test(text)) return 'http';
-  if (/^\s*(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)\b/im.test(text)) return 'sql';
-  if (/^\s*[\w.-]+:\s+.+/m.test(text) && /\n\s+[\w.-]+:/.test(text)) return 'yaml';
-  if (/^\s*(FROM|RUN|COPY|WORKDIR|ENV|CMD|EXPOSE|ENTRYPOINT|ARG|VOLUME)\b/m.test(text) && /\n/.test(text)) return 'dockerfile';
-
-  if (
-    /\b(using\s+[A-Z][\w.]+;|WebApplication\.CreateBuilder|builder\.Services|AddApiVersioning|AddSwaggerGen|ApiVersion\(|OpenApiInfo|MapGet\(|MapPost\(|public\s+(static\s+class|record|async\s+Task|class|sealed\s+class)|namespace\s+|IEndpointRouteBuilder|Results\.Ok|HttpStatusCode|\[Fact\]|IServiceProvider|GetOrCreate|GetServices<I)/
-      .test(text)
-  ) {
-    return 'csharp';
-  }
-
-  if (
-    /\b(import\s+[\w*]+\s+from|export\s+(default\s+)?(class|const|function|interface|type)|interface\s+\w+\s*\{|type\s+\w+\s*=|const\s+\w+\s*=|let\s+\w+\s*=|async\s+function|Promise<|ReadonlyArray<|Array<|it\(['"]|describe\(['"]|expect\()/
-      .test(text)
-  ) {
-    return 'typescript';
-  }
-
-  if (
-    /^\s*(npm|npx|pnpm|yarn|dotnet|docker|kubectl|curl|grep|git|ollama|mkdir|cd|wsl|sudo|apt|helm|tail|cat|chmod|chown|cp|mv|rm|tar|export|echo|set)\b/m.test(text) ||
-    /^\s*#\s+/m.test(text)
-  ) {
-    return 'bash';
-  }
-
-  return 'text';
+  return '';
 };
 
 const formatDate = value =>
@@ -375,7 +348,7 @@ const convertHtmlToMarkdown = html => {
 
   text = text.replace(/<pre[^>]*>([\s\S]*?)<\/pre>/gi, (_, codeHtml) => {
     const code = stripCode(codeHtml).replace(/\n{3,}/g, '\n\n');
-    const lang = inferLang(code);
+    const lang = inferLang();
     const token = `\n\n@@CODE_BLOCK_${codeBlocks.length}@@\n\n`;
     codeBlocks.push(`\`\`\`${lang}\n${code}\n\`\`\``);
     return token;
@@ -605,7 +578,7 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title) => {
     if (paragraph.type === 8) {
       const code = stripCode(paragraph.text);
       if (code) {
-        const lang = inferLang(code, paragraph.metadata?.language);
+        const lang = inferLang(paragraph.metadata?.language);
         blocks.push('```' + lang + '\n' + code + '\n```');
       }
       continue;
