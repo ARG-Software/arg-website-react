@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BaseCard } from '@components/cards/BaseCard';
+import { ImageGallery } from '@components/grids/ImageGallery';
 import { Navbar } from '@components/navigation/Navbar';
 import { Pill } from '@components/pills/Pill';
 import { SEO } from '@components/seo/SEO';
@@ -12,6 +13,7 @@ import { useNextProjectSection } from '@hooks/useNextProjectSection';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA } from '@utils/analytics';
 import PROJECTS from '../data/projects.json';
+import { getProjectGallery } from '../data/projectGallery';
 import '../styles/projects.css';
 
 export default function ProjectDetailPage() {
@@ -19,11 +21,16 @@ export default function ProjectDetailPage() {
   const navigate = useNavigate();
   const nextSectionRef = useRef(null);
   const progressRef = useRef(null);
+  const approachRef = useRef(null);
   useScrollAnimations();
 
   const projectIndex = PROJECTS.findIndex(p => p.slug === slug);
   const project = PROJECTS[projectIndex];
   const nextProject = PROJECTS[(projectIndex + 1) % PROJECTS.length];
+  const projectGallery = useMemo(
+    () => getProjectGallery(project?.slug, project?.title),
+    [project?.slug, project?.title]
+  );
   const stackItems = project?.stack.split(',').map(s => s.trim()) ?? [];
   const projectMockup = project?.mockupSrc
     ? {
@@ -63,6 +70,33 @@ export default function ProjectDetailPage() {
   }, [project, navigate]);
 
   useNextProjectSection(nextSectionRef, progressRef, nextProject);
+
+  useEffect(() => {
+    const grid = approachRef.current;
+    if (!grid || typeof ResizeObserver === 'undefined') return undefined;
+
+    const syncHeight = () => {
+      const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+      if (!isDesktop) return;
+      const content = grid.querySelector('.prp-solution-content');
+      const image = grid.querySelector('.prp-solution-image');
+      if (!content || !image) return;
+      const height = content.getBoundingClientRect().height;
+      if (height > 0) {
+        image.style.setProperty('--prp-gallery-target-height', `${height}px`);
+      }
+    };
+
+    syncHeight();
+    const observer = new ResizeObserver(syncHeight);
+    observer.observe(grid);
+    window.addEventListener('resize', syncHeight);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', syncHeight);
+    };
+  }, []);
 
   if (!project) {
     return null;
@@ -260,7 +294,7 @@ export default function ProjectDetailPage() {
         {/* SOLUTION — white card */}
         <section className="prp-solution padding-section-large">
           <div className="prp-grid-container">
-            <div className="prp-solution-grid">
+            <div className="prp-solution-grid" ref={approachRef}>
               <div className="prp-solution-content">
                 <span className="prp-solution-label" data-animate="slide-from-left">
                   The Approach
@@ -279,22 +313,8 @@ export default function ProjectDetailPage() {
                   ))}
                 </ul>
               </div>
-              <div
-                className="prp-solution-image"
-                data-animate="gsap-scale"
-                data-animate-from="1.12"
-                data-animate-to="1"
-              >
-                <img
-                  src={project.solutionImageSrc ?? project.imgSrc}
-                  srcSet={project.solutionImageSrcSet ?? project.imgSrcSet}
-                  sizes="(max-width: 767px) 100vw, 50vw"
-                  alt={project.title}
-                  loading="lazy"
-                  data-animate="fade-up"
-                  width="1200"
-                  height="675"
-                />
+              <div className="prp-solution-image" data-animate="fade-up">
+                <ImageGallery images={projectGallery} />
               </div>
             </div>
           </div>
