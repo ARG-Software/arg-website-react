@@ -11,7 +11,7 @@ Live at **[arg.software](https://arg.software)**
 | Layer | Technology |
 |---|---|
 | **Framework** | React 18 + React Router 7 (SPA) |
-| **Build** | Vite 5 |
+| **Build** | Vite 7 |
 | **Styling** | Vanilla CSS (no Tailwind/CSS-in-JS) |
 | **Animations** | GSAP 3 + Lenis smooth scroll |
 | **3D** | Three.js (404 page, sphere backgrounds) |
@@ -36,33 +36,54 @@ npm run preview      # Preview production build
 
 ```
 ├── index.html                    # HTML shell with OG/JSON-LD/GA4
-├── vite.config.js                # Vite + plugins config
-├── vite-plugin-seo-prerender.js  # Custom SEO prerender + sitemap/RSS/Atom
-├── public/                       # Static assets (fonts, images, redirects)
+├── vite.config.js                # Vite + plugins config, path aliases
+├── plugins/
+│   └── seo-prerender/            # Custom SEO prerender + sitemap/RSS/Atom
+├── scripts/
+│   └── import-medium-articles.cjs # Medium blog post importer
+├── public/                       # Static assets (fonts, images, redirects, LLM metadata)
 └── src/
     ├── main.jsx                  # App entry, provider tree, route definitions
-    ├── components/               # Reusable components (barrel export in index.js)
-    │   ├── cards/                # ProjectItem
-    │   ├── grids/                # FilterGrid, StatsGrid, Timeline
-    │   ├── hero/                 # PageHeader
-    │   ├── icons/                # Logo, Mark, SocialIcons, ValueIcons
-    │   ├── layout/               # CTASection, Footer, LoadingScreen, Marquee, SectionDivider
-    │   ├── navigation/           # AppLink, Navbar, NavMenu, Breadcrumb
-    │   ├── overlays/             # CookieConsent, Drawer, EmailCapture
+    ├── animations/               # GSAP animation presets
+    ├── blog/                     # 34 Markdown blog posts with YAML frontmatter
+    ├── components/
+    │   ├── accordions/           # Accordion components
+    │   ├── actions/              # SocialShareButtons
+    │   ├── blog/                 # Blog-specific components
+    │   ├── cards/                # BaseCard, FounderCard, ProjectItem
+    │   ├── careers/              # Careers-specific components
+    │   ├── filters/              # TagFilterPills
+    │   ├── forms/                # ContactForm, EmailCaptureForm, FormCard
+    │   ├── grids/                # FilterGrid, ImageGallery, Timeline, VerticalTimeline, StepProgressTimeline
+    │   ├── headers/              # PageHeader
+    │   ├── icons/                # Logo, SocialIcons, AtomIcon, BlueskyIcon, etc.
+    │   ├── layout/               # CTASection, Footer, LoadingScreen, Marquee, SectionDivider, ErrorBoundary
+    │   ├── navigation/           # AppLink, Breadcrumb, Navbar, NavMenu, Pagination, ArticleSidebar
+    │   ├── overlays/             # CookieConsent, Drawer
+    │   ├── pills/                # Pill, PillButton
     │   ├── seo/                  # SEO component (react-helmet-async wrapper)
-    │   ├── tags/                 # TechStack
-    │   └── widgets/              # CounterWidget, ShuffleText
-    ├── pages/                    # Route pages
-    │   ├── home/                 # Homepage + 11 section components
+    │   └── widgets/              # CounterWidget, ShuffleText, TechStackConsole
+    ├── constants/                # Shared constants (config, UI thresholds)
+    ├── data/                     # JSON/JS data files (about, faq, jobs, menu, partners, projects, services, sitelinks)
+    ├── hooks/                    # Custom hooks (useScrollAnimations, useBlogSearch, useHashScroll, etc.)
+    ├── pages/
+    │   ├── home/                 # HomePage + section components
     │   ├── blog/                 # BlogPage (listing) + BlogPostPage (detail)
-    │   └── ...                   # Partners, Careers, Projects, Privacy, Terms, 404
-    ├── hooks/                    # Custom hooks (barrel export in index.js)
+    │   ├── AboutUsPage.jsx
+    │   ├── CareersPage.jsx
+    │   ├── ContactPage.jsx
+    │   ├── PartnersPage.jsx
+    │   ├── PrivacyPage.jsx
+    │   ├── ProjectDetailPage.jsx
+    │   ├── ProjectsPage.jsx
+    │   ├── TermsPage.jsx
+    │   ├── WorkingWithUsPage.jsx
+    │   └── NotFoundPage.jsx
     ├── providers/                # Context providers (Loading, RAF, Lenis, Transition)
-    ├── data/                     # JSON data (jobs, partners, projects)
-    ├── blog/                     # 24 Markdown blog posts
-    ├── styles/                   # CSS files per page/component
-    ├── utils/                    # Blog parser, helpers
-    └── constants/                # Shared constants
+    ├── services/                 # External link resolution (linksservice.js)
+    ├── styles/                   # CSS files (base, components, home, blog, projects, partners, careers, etc.)
+    ├── utils/                    # Analytics, blog parser, helpers, structured data, lazy retry
+    └── animations/               # Animation attribute presets
 ```
 
 ---
@@ -77,23 +98,49 @@ npm run preview      # Preview production build
 | `npm run lint` | ESLint check (no auto-fix) |
 | `npm run lint:fix` | ESLint auto-fix |
 | `npm run format` | Prettier format |
+| `npm run blog:import:medium` | Import published Medium articles into `src/blog/` |
+| `npm run blog:import:medium:drafts` | Import Medium drafts |
+
+---
+
+## Path Aliases
+
+Vite config defines these import aliases (see `vite.config.js`):
+
+| Alias | Resolves to |
+|---|---|
+| `@components` | `src/components` |
+| `@hooks` | `src/hooks` |
+| `@constants` | `src/constants` |
+| `@providers` | `src/providers` |
+| `@utils` | `src/utils` |
+| `@services` | `src/services` |
+| `@data` | `src/data` |
+| `@styles` | `src/styles` |
 
 ---
 
 ## SEO & Prerendering
 
-The site generates **36 static HTML files** at build time via a custom Vite plugin (`vite-plugin-seo-prerender.js`), one for every route. Each prerendered page includes correct `<title>`, `og:*`, and `twitter:*` tags for social media crawlers (Discord, Facebook, X, LinkedIn, etc.).
+The site generates **51 static HTML files** at build time via a custom Vite plugin (`plugins/seo-prerender/`):
+- 1 homepage
+- 8 static pages (Partners, Blog, Careers, Working with Us, About Us, Contact, Privacy, Terms)
+- 34 blog post pages
+- 7 project detail pages
+- 1 404 page
+
+Each prerendered page includes correct `<title>`, `og:*`, and `twitter:*` tags for social media crawlers.
 
 Also auto-generated at build time:
-- **sitemap.xml** — 36 URLs with priority and changefreq
-- **rss.xml** — RSS 2.0 feed of all 24 blog posts
-- **atom.xml** — Atom 1.0 feed of all 24 blog posts
+- **sitemap.xml** — all URLs with priority and changefreq
+- **rss.xml** — RSS 2.0 feed of all 34 blog posts
+- **atom.xml** — Atom 1.0 feed of all 34 blog posts
 
 ---
 
 ## Analytics
 
-All GA4 tracking is centralized in `src/hooks/useAnalytics.js`. Tracked events include:
+All GA4 tracking is centralized in `src/utils/analytics.js`. Tracked events include:
 - **Page views** (SPA route changes)
 - **CTA clicks** (booking, typeform, portfolio)
 - **Outbound link clicks** (external sites)
@@ -101,7 +148,7 @@ All GA4 tracking is centralized in `src/hooks/useAnalytics.js`. Tracked events i
 - **Blog interactions** (search, pagination, TOC, shares, related articles)
 - **Partners interactions** (filtering, drawer open, outbound)
 - **Careers interactions** (job accordion, apply)
-- **Navigation** (menu open/close, use cases toggle)
+- **Navigation** (menu open/close)
 - **Time on page** (≥5s threshold per page)
 - **Lead capture** (EmailCapture impression, dismiss, submit, success, error)
 - **Cookie consent** (accept/decline)
@@ -112,9 +159,12 @@ The `AppLink` component (SPA navigation) supports optional `trackEvent`/`trackDa
 
 ## Deployment
 
-The `dist/` directory is deployed to Netlify. Netlify redirects handled via `public/_redirects`:
-- `/team` → 301 redirect to `/partners`
-- SPA fallback: all routes without file extensions serve `index.html`
+The `dist/` directory is deployed to Netlify. Netlify redirects in `public/_redirects`:
+- **GA4 proxy**: `/g/js` → Google Tag Manager, `/g/collect` → Google Analytics
+- **LLM aliases**: `/llm.txt` → `/llms.txt`, `/full-llm.txt` → `/llms-full.txt`
+- **Trailing-slash canonicalization**: all routes redirect to trailing-slash variants
+- **Legacy redirects**: `/team` → `/partners/`, `/articles/:slug` → `/blog/:slug/`
+- **SPA fallback**: all unmatched routes serve `404.html`
 
 ---
 

@@ -14,11 +14,11 @@ and comprehensive Google Analytics 4 instrumentation.
 
 | Aspect | Detail |
 |---|---|
-| **Stack** | React 18, React Router 7, Vite 5, GSAP 3, Three.js, Lenis, vanilla CSS |
+| **Stack** | React 18, React Router 7, Vite 7, GSAP 3, Three.js, Lenis, vanilla CSS |
 | **Routing** | `react-router-dom` with both `/path` and `/path/` variants |
-| **SEO** | Custom Vite plugin prerenders 36 HTML files + generates sitemap/RSS/Atom |
+| **SEO** | Custom Vite plugin prerenders 51 HTML files + generates sitemap/RSS/Atom |
 | **Styling** | Plain CSS files (no CSS-in-JS, no Tailwind) — organized by page/component |
-| **Analytics** | GA4 via gtag — all tracking centralized in `useAnalytics.js` |
+| **Analytics** | GA4 via gtag — all tracking centralized in `src/utils/analytics.js` |
 | **Build** | `npm run build` → lint:fix → Vite → prerender → image optimization |
 | **Lint** | ESLint 9 with React + React Hooks + Prettier plugins |
 | **Test** | No automated test suite currently configured |
@@ -29,60 +29,75 @@ and comprehensive Google Analytics 4 instrumentation.
 
 ```
 ├── index.html              # HTML shell — OG meta, JSON-LD, GA4 bootstrap, font preloads
-├── vite.config.js          # Vite config — plugins, manualChunks, SPA fallback
-├── plugins/              # Vite build plugins
-│   └── seo-prerender/    # Custom build plugin — prerendered pages + sitemap/RSS/Atom (see § 5)
+├── vite.config.js          # Vite config — plugins, manualChunks, path aliases, SPA fallback
+├── plugins/
+│   └── seo-prerender/      # Custom build plugin — prerendered pages + sitemap/RSS/Atom (see § 5)
+├── scripts/
+│   └── import-medium-articles.cjs  # Medium blog post importer
 ├── package.json            # Dependencies & scripts
 ├── public/                 # Static assets served as-is
-│   ├── _redirects          # Netlify redirects (e.g. /team → 301 /partners)
+│   ├── _redirects          # Netlify redirects (GA4 proxy, LLM aliases, trailing-slash, legacy)
 │   ├── _headers            # Netlify headers
 │   ├── files/              # PDFs (portfolio.pdf)
 │   ├── fonts/              # Neue Montreal WOFF fonts
 │   ├── images/             # Blog images, partners, projects, homepage, og.jpg
-│   └── mobile/             # PWA icons
+│   ├── icons/              # PWA icons
+│   ├── llms.txt            # LLM metadata
+│   ├── llms-full.txt       # Full LLM metadata
+│   ├── robots.txt          # Crawler directives
+│   └── videos/             # Video assets
 └── src/
     ├── main.jsx            # React entry — providers shell, route table, lazy imports
-    ├── animations/         # GSAP animation helpers
-    ├── blog/               # 24 Markdown blog posts with YAML frontmatter
+    ├── animations/         # GSAP animation attribute presets
+    ├── blog/               # 34 Markdown blog posts with YAML frontmatter
     ├── components/
-    │   ├── index.js        # Barrel export for all reusable components
-    │   ├── cards/          # ProjectItem
-    │   ├── grids/          # FilterGrid, StatsGrid, Timeline
-    │   ├── hero/           # PageHeader
-    │   ├── icons/          # Logo, Mark, MarkName, SocialIcons, ValueIcons
-    │   ├── layout/         # CTASection, Footer, LoadingScreen, Marquee, SectionDivider
-    │   ├── navigation/     # AppLink, Breadcrumb, Navbar, NavMenu
-    │   ├── overlays/       # CookieConsent, Drawer, EmailCapture
-    │   ├── placeholders/   # PlaceholderVisual
+    │   ├── accordions/     # Accordion components
+    │   ├── actions/        # SocialShareButtons
+    │   ├── blog/           # Blog-specific components
+    │   ├── cards/          # BaseCard, FounderCard, ProjectItem
+    │   ├── careers/        # Careers-specific components
+    │   ├── filters/        # TagFilterPills
+    │   ├── forms/          # ContactForm, EmailCaptureForm, FormCard
+    │   ├── grids/          # FilterGrid, ImageGallery, Timeline, VerticalTimeline, StepProgressTimeline
+    │   ├── headers/        # PageHeader
+    │   ├── icons/          # Logo, SocialIcons, AtomIcon, BlueskyIcon, CopyIcon, etc.
+    │   ├── layout/         # CTASection, Footer, LoadingScreen, Marquee, SectionDivider, SectionTicker, ErrorBoundary, PageTransitionOverlay
+    │   ├── navigation/     # AppLink, Breadcrumb, Navbar, NavMenu, Pagination, SimpleCarousel, ArticleSidebar
+    │   ├── overlays/       # CookieConsent, Drawer
+    │   ├── pills/          # Pill, PillButton
     │   ├── seo/            # SEO (react-helmet-async wrapper)
-    │   ├── tags/           # TechStack
-    │   └── widgets/        # CounterWidget, ShuffleText
-    ├── constants/          # Shared constants (e.g. PAGE_TRANSITION_DURATION_MS)
-    ├── data/               # JSON data files
+    │   └── widgets/        # CounterWidget, ShuffleText, TechStackConsole
+    ├── constants/          # Shared constants (config, UI thresholds)
+    ├── data/               # JSON/JS data files
+    │   ├── about.json      # About page content
+    │   ├── faq.js          # FAQ items
     │   ├── jobs.json       # Open job listings
+    │   ├── menu.json       # NavMenu configuration
     │   ├── partners.json   # Partners/clients with timeline data
-    │   └── projects.json   # 6 project detail entries (slug, images, metrics, stack)
+    │   ├── projectGallery.js  # Project gallery images
+    │   ├── projects.json   # 7 project detail entries (slug, images, metrics, stack)
+    │   ├── services.json   # Services data
+    │   ├── sitelinks.json  # External links, emails, socials, share URLs
+    │   └── techStackConsole.json  # Tech stack console data
     ├── hooks/
-    │   ├── index.js        # Barrel export for all hooks
-    │   ├── useAnalytics.js # Centralized GA4 tracking — all track* functions
-    │   ├── useTimeOnPage.js# Hook — fires time_on_page event on unmount (≥5s threshold)
-    │   ├── useScrollAnimations.js  # Intersection Observer + GSAP scroll-triggered animations
-    │   ├── useLenis.js      # Smooth scroll integration
-    │   ├── useRAF.js        # requestAnimationFrame coordinator
-    │   ├── usePageTransition.js    # Page exit/enter transition logic
-    │   ├── useNextProjectSection.js# Scroll-to-next-project CTA behavior
-    │   ├── useBlogSearch.js # Blog list search + pagination + tag filtering
-    │   ├── useCountUp.js    # Animated number counter
-    │   ├── useNotFoundPageScene.js  # Three.js 3D scene for 404 page
+    │   ├── useBlogSearch.js       # Blog list search + pagination + tag filtering
+    │   ├── useCountUp.js          # Animated number counter
+    │   ├── useHashScroll.js       # Hash fragment scroll handling
+    │   ├── useLeadCaptureVisibility.js  # Email capture visibility tracking
+    │   ├── useNextProjectSection.js  # Scroll-to-next-project CTA behavior
+    │   ├── useNotFoundPageScene.js   # Three.js 3D scene for 404 page
+    │   ├── useRAF.js              # requestAnimationFrame coordinator
+    │   ├── useScrollAnimations.js # Intersection Observer + GSAP scroll-triggered animations
     │   ├── useThreeSphereBackground.js  # Three.js sphere background
-    │   ├── useWaterRipple.js    # Canvas water ripple effect
-    │   └── useCinematicZoomBlur.js  # Image zoom/blur effect
+    │   ├── useTimeOnPage.js       # Fires time_on_page event on unmount (≥5s threshold)
+    │   ├── useWaterRipple.js      # Canvas water ripple effect
+    │   └── useWeb3Form.js         # Web3Forms integration
     ├── pages/
     │   ├── home/
     │   │   ├── HomePage.jsx     # Main landing page — composes all sections
     │   │   └── sections/        # Homepage section components
     │   │       ├── HeroSection.jsx
-    │   │       ├── AboutSection.jsx
+    │   │       ├── StudioOverviewSection.jsx
     │   │       ├── ServicesSection.jsx
     │   │       ├── ProjectsSection.jsx
     │   │       ├── WorkStatsSection.jsx
@@ -95,30 +110,46 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── blog/
     │   │   ├── BlogPage.jsx      # Blog listing — search, pagination, tags
     │   │   └── BlogPostPage.jsx  # Single post — Markdown rendering, TOC, sidebar
-    │   ├── PartnersPage.jsx      # Partners listing — filter, drawer, timeline
+    │   ├── AboutUsPage.jsx       # About — origin, story timeline, founders, beliefs
     │   ├── CareersPage.jsx       # Job listing — accordion, apply links
+    │   ├── ContactPage.jsx       # Contact — form, direct links
+    │   ├── PartnersPage.jsx      # Partners listing — filter, drawer, timeline
+    │   ├── PrivacyPage.jsx
     │   ├── ProjectDetailPage.jsx # Single project — hero, metrics, solution, images
     │   ├── ProjectsPage.jsx      # Redirect to first project (not a listing page)
-    │   ├── PrivacyPage.jsx
     │   ├── TermsPage.jsx
+    │   ├── WorkingWithUsPage.jsx # How we work — fit checks, conversation steps
     │   └── NotFoundPage.jsx      # 404 with Three.js animated scene
     ├── providers/
     │   ├── LenisProvider.jsx     # Smooth scroll provider
     │   ├── LoadingProvider.jsx   # Site loading state
     │   ├── RAFProvider.jsx       # requestAnimationFrame context
     │   └── TransitionProvider.jsx# Page transition orchestrator
+    ├── services/
+    │   └── linksservice.js      # External link resolution, email, social, share URLs
     ├── styles/
-    │   ├── base.css              # Global styles (3947 lines — original Webflow CSS)
-    │   ├── components.css         # Shared component styles
-    │   ├── blog.css
-    │   ├── projects.css
-    │   ├── partners.css
-    │   ├── careers.css
-    │   ├── loadingscreen.css
-    │   └── 404.css
+    │   ├── base.css              # Global styles (original Webflow CSS)
+    │   ├── components.css        # Shared component styles
+    │   ├── home.css              # Homepage section styles
+    │   ├── blog.css              # Blog listing + post page styles
+    │   ├── projects.css          # Project detail page styles
+    │   ├── partners.css          # Partners page styles
+    │   ├── careers.css           # Careers + Working With Us styles
+    │   ├── about.css             # About page styles
+    │   ├── contact.css           # Contact page styles
+    │   ├── legal.css             # Privacy + Terms styles
+    │   ├── effects.css           # Animation effect styles
+    │   ├── elfsight.css          # Third-party widget styles
+    │   ├── loadingscreen.css     # Loading screen styles
+    │   ├── step-progress-timeline.css  # Step progress timeline styles
+    │   └── 404.css               # 404 page styles
     └── utils/
-        ├── blog.js               # Frontmatter parser, chunk splitter, metadata loader
-        └── helpers.js            # General utility functions
+        ├── analytics.js          # Centralized GA4 tracking — all track* functions
+        ├── blog/                 # Blog utilities (article helpers, markdown, sorting, highlight)
+        ├── helpers.js            # General utility functions (isMobile, etc.)
+        ├── lazyWithRetry.js      # Lazy loading with retry on chunk failure
+        ├── structuredData.js     # JSON-LD structured data builders
+        └── timeline.js           # Timeline data helpers
 ```
 
 ---
@@ -126,60 +157,81 @@ and comprehensive Google Analytics 4 instrumentation.
 ## 3. Architecture Patterns
 
 ### 3.1 Routing
-- All routes are defined in `src/main.jsx:42-61`
+- All routes are defined in `src/main.jsx`
 - Both `/path` and `/path/` variants exist for each route
 - Blog posts: `/blog/:slug/` renders `BlogPostPage` with `slug` from URL params
 - Project detail: `/projects/:slug/` renders `ProjectDetailPage`
 - `/projects` and `/projects/` redirect to first project via `ProjectsPage`
 - 404 catch-all: `<Route path="*" element={<NotFoundPage />} />`
+- Global overlays (`EmailCaptureForm`, `CookieConsent`) rendered outside `<Routes>`
 
 ### 3.2 Provider Stack (innermost → outermost)
 ```
 LoadingProvider → HelmetProvider → BrowserRouter →
   RAFProvider → LenisProvider → TransitionProvider →
-    <Routes>
+    ErrorBoundary → Suspense → <Routes>
 ```
 - `LoadingProvider`: global loading state
 - `HelmetProvider`: `<head>` tag management per page
 - `RAFProvider`: shared requestAnimationFrame loop
 - `LenisProvider`: smooth scrolling
 - `TransitionProvider`: page-to-page transition animations + `trackPageView`
+- `ErrorBoundary`: catches render errors
 
 ### 3.3 Page Transitions
 - `TransitionProvider` in `src/providers/TransitionProvider.jsx` handles all cross-page navigation
 - Uses a horizontal/vertical overlay animation via GSAP
 - Automatically calls `trackPageView()` on every SPA route change
 - Calls `window.scrollTo(0, 0)` or custom Lenis scroll on navigation
-- Exports `scrollToPage()` function via context for programmatic scroll
+- Exports `scrollToPage()` and `scrollToHash()` functions via context
 
 ### 3.4 Lazy Loading
-All pages except `HomePage` are lazy-loaded via `React.lazy()` in `main.jsx`:
+All pages except `HomePage` are lazy-loaded via `lazyWithRetry()` in `main.jsx`:
 ```js
-const PartnersPage = lazy(() => import('./pages/PartnersPage.jsx'));
-const BlogPage = lazy(() => import('./pages/blog/BlogPage.jsx'));
+const PartnersPage = lazyWithRetry(() => import('./pages/PartnersPage.jsx'));
+const BlogPage = lazyWithRetry(() => import('./pages/blog/BlogPage.jsx'));
 // ... etc
 ```
+`lazyWithRetry` (in `src/utils/lazyWithRetry.js`) wraps `React.lazy` with automatic retry on chunk load failure.
 
-### 3.5 Scroll Animations
+### 3.5 Path Aliases
+Vite config defines import aliases for cleaner imports:
+```js
+import { Navbar } from '@components/navigation/Navbar';
+import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { trackCTA } from '@utils/analytics';
+import { getProjectBookingLink } from '@services/linksservice';
+```
+Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`.
+
+### 3.6 Scroll Animations
 - `useScrollAnimations.js` — main animation hook
 - Uses `data-animate-scope`, `data-animate`, `data-animate-preset`, `data-animate-stagger`, etc.
-- Supported presets: `fade-up`, `slide-from-left`, `slide-from-right`, `zoom-in`
+- Supported presets: `fade-up`, `slide-from-left`, `slide-from-right`, `zoom-in`, `width-countup`, `overlay-reveal`, `gsap-scale`
 - Sets up IntersectionObserver + GSAP `fromTo` tweens
 - Cleans up inline `transform` after animation to prevent CSS hover conflicts
 
-### 3.6 Blog System
+### 3.7 Blog System
 - Posts are Markdown files in `src/blog/` with YAML frontmatter
-- Naming convention: `{number}-{slug}.md` (e.g. `1-angular-5-to-19-migration.md`)
-- Parsed at build time and runtime via `src/utils/blog.js`
+- Naming convention: `{slug}.md` (e.g. `angular-5-to-19-migration.md`)
+- Parsed at build time and runtime via `src/utils/blog/`
 - Metadata cached in `window.__BLOG_POSTS_METADATA__` after first load
 - Syntax highlighting via highlight.js on `BlogPostPage`
 - RSS/Atom feeds auto-generated by `plugins/seo-prerender/` at build time
+- Medium import: `npm run blog:import:medium` fetches from Medium feed
+
+### 3.8 External Links Service
+- `src/services/linksservice.js` centralizes all external URLs
+- Reads from `src/data/sitelinks.json`
+- Provides typed getters: `getProjectBookingLink()`, `getNewsletterSubscribeLink()`, `getProjectBriefFormLink()`, etc.
+- Also provides email, social, and share URL builders
+- Never hardcode external URLs in components — always use this service
 
 ---
 
 ## 4. Analytics
 
-### 4.1 Centralized Tracking (`src/hooks/useAnalytics.js`)
+### 4.1 Centralized Tracking (`src/utils/analytics.js`)
 All GA4 events go through this module. Never call `window.gtag()` directly.
 
 | Function | Event | Parameters |
@@ -219,28 +271,38 @@ All GA4 events go through this module. Never call `window.gtag()` directly.
 
 Custom Vite plugin that runs during `closeBundle`. Generates:
 
-1. **36 prerendered HTML files** — one per route, with correct `<title>`, `og:*`, `twitter:*`
-2. **sitemap.xml** — 36 URLs with priority and changefreq
-3. **rss.xml** — RSS 2.0 feed of all 24 blog posts
-4. **atom.xml** — Atom 1.0 feed of all 24 blog posts
+1. **51 prerendered HTML files** — one per route, with correct `<title>`, `og:*`, `twitter:*`
+2. **sitemap.xml** — all URLs with priority and changefreq
+3. **rss.xml** — RSS 2.0 feed of all 34 blog posts
+4. **atom.xml** — Atom 1.0 feed of all 34 blog posts
 5. **Crawlable nav blocks** — static `<nav>` with all site links for Ahrefs/crawlers
 6. **Project detail pages** — prerendered with per-project OG tags
 
 ### Key Config
 - `SITE_URL`: `https://arg.software`
-- `STATIC_PAGES`: Partners, Careers, Projects, Blog, Privacy, Terms, 404
-- `PROJECTS`: 6 projects loaded from `src/data/projects.json`
+- `STATIC_PAGES`: Partners, Blog, Careers, Working with Us, About Us, Contact, Privacy, Terms (8 pages)
+- `PROJECTS`: 7 projects loaded from `src/data/projects.json`
 - Sitemap priorities: blog `0.7`, projects `0.6`, pages `0.8`, privacy/terms `0.3`
 - Feeds only generated in production builds
+
+### Plugin Structure
+- `index.js` — main plugin entry
+- `constants.js` — site URL, nav links, static page definitions
+- `blog-loader.js` — loads and parses blog post frontmatter
+- `html-utils.js` — HTML manipulation helpers
+- `links.js` — link generation
+- `crawlable-block.js` — static nav block generator
+- `pages/` — per-page prerender writers
+- `feeds/` — sitemap, RSS, Atom generators
 
 ---
 
 ## 6. Component Conventions
 
-### 6.1 Barrel Exports
-- `src/components/index.js` exports all reusable components
-- `src/hooks/index.js` exports all hooks
-- Always use these barrel imports in page files
+### 6.1 Imports
+- No barrel exports — import directly from component files
+- Use path aliases: `import { Navbar } from '@components/navigation/Navbar'`
+- Page files import their own CSS: `import '../styles/blog.css'`
 
 ### 6.2 Naming
 - Components: PascalCase files, named exports preferred
@@ -255,8 +317,12 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - Pattern: prefix classes with page/component abbreviation
   - `pc-*` = Partners page components
   - `pt-*` = Partners timeline
+  - `bp-*` = Blog post page
+  - `blp-*` = Blog listing page
+  - `prp-*` = Project detail page
+  - `cp-*` = Careers page
   - `footer-*` = Footer
-  - `nav_*` = Navigation overlay
+  - `nav-menu__*` = Navigation menu
   - `section_*` = Layout sections
 
 ---
@@ -265,7 +331,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 
 ### 7.1 npm Packages
 - `react` + `react-dom` 18.2 — UI framework
-- `react-router-dom` 7.13 — SPA routing
+- `react-router-dom` 7.17 — SPA routing
 - `react-helmet-async` 3.0 — `<head>` tag management
 - `gsap` 3.14 — Scroll + page transition animations
 - `lenis` 1.3 — Smooth scrolling
@@ -273,21 +339,20 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - `highlight.js` 11.11 — Blog code syntax highlighting
 
 ### 7.2 External Services
-- **GA4**: `G-79TG4N6C2W` — loaded dynamically (skipped on localhost)
-- **Typeform**: `https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC` — contact form
-- **Zcal**: `https://zcal.co/argsoftware/project` — meeting booking
+- **GA4**: `G-79TG4N6C2W` — loaded dynamically (skipped on localhost), proxied via Netlify
+- **Web3Forms**: form submission endpoint (configured via `sitelinks.json`)
 - **Social**: GitHub, LinkedIn, Medium profiles
 
 ### 7.3 Build Plugins
 - `@vitejs/plugin-react` — JSX transform
-- `vite-plugin-image-optimizer` — auto JPEG/PNG/WebP optimization (~61% savings)
+- `vite-plugin-image-optimizer` — auto JPEG/PNG/WebP/SVG optimization
 - `plugins/seo-prerender/` — custom prerender + sitemap + feeds
-- `vite-plugin-purgecss` — CSS purge
 - `eslint` 9 + react + hooks + prettier plugins
 
 ### 7.4 Vite Config (`vite.config.js`)
 - Dev server: port 3000, auto-open browser
-- Manual chunks: `vendor` (React), `three`, `hljs`
+- Path aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`
+- Manual chunks: `vendor` (React/Router/Helmet), `three`, `gsap`, `hljs`
 - SPA fallback middleware for dev server
 - CSS preload injection plugin
 - Production: drops `console` and `debugger` statements
@@ -298,12 +363,11 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 
 ```
 npm run build
-  → eslint src --ext .js,.jsx --fix   (lint + auto-fix)
-  → vite build                         (bundle + minify)
-    → vite-plugin-image-optimizer      (optimize images ~61% savings)
-    → vite-plugin-purgecss             (purge unused CSS)
-    → seo-prerender plugin             (generate HTML files + sitemap + RSS + Atom)
-    → preload-css plugin               (inject CSS <link rel="preload">)
+  → eslint src plugins --ext .js,.jsx --fix   (lint + auto-fix)
+  → vite build                                 (bundle + minify)
+    → vite-plugin-image-optimizer              (optimize images)
+    → seo-prerender plugin                     (generate HTML files + sitemap + RSS + Atom)
+    → preload-css plugin                       (inject CSS <link rel="preload">)
 ```
 
 Build output: `dist/` directory ready for deployment.
@@ -315,12 +379,13 @@ Build output: `dist/` directory ready for deployment.
 ### Adding a New Page
 1. Create the page component in `src/pages/`
 2. Add route in `src/main.jsx` (with and without trailing slash)
-3. Lazy-load if not homepage
+3. Lazy-load with `lazyWithRetry()` if not homepage
 4. Add entry to `STATIC_PAGES` in `plugins/seo-prerender/constants.js` for prerendering + sitemap
-5. Add SEO metadata (title, description) in the page component
+5. Add trailing-slash redirect in `public/_redirects`
+6. Add SEO metadata (title, description) in the page component
 
 ### Adding a New Blog Post
-1. Create `src/blog/{number}-{slug}.md` with YAML frontmatter:
+1. Create `src/blog/{slug}.md` with YAML frontmatter:
    ```yaml
    ---
    slug: my-post-slug
@@ -333,8 +398,8 @@ Build output: `dist/` directory ready for deployment.
    image: /images/blog/.../header.webp
    ---
    ```
-2. Number the file to follow descending order (newest = highest number)
-3. Rebuild — sitemap, RSS, and Atom are auto-generated
+2. Rebuild — sitemap, RSS, and Atom are auto-generated
+3. Or use `npm run blog:import:medium` to import from Medium feed
 
 ### Making a Link with Analytics
 ```jsx
@@ -349,13 +414,23 @@ Build output: `dist/` directory ready for deployment.
 
 // External link with CTA tracking
 <a
-  href="https://zcal.co/argsoftware/project"
+  href={getProjectBookingLink()}
   target="_blank"
   rel="noopener noreferrer"
   onClick={() => trackCTA('book_meeting', 'navbar')}
 >
   Book a Meeting
 </a>
+```
+
+### Using External Links
+```jsx
+import { getProjectBookingLink, getMailtoLink, getCompanySocialLinks } from '@services/linksservice';
+
+// Never hardcode external URLs — always use the service
+const bookingUrl = getProjectBookingLink();
+const mailto = getMailtoLink('hello', 'Project inquiry');
+const socials = getCompanySocialLinks();
 ```
 
 ### Tracking Time on Page
@@ -369,7 +444,7 @@ export default function MyPage() {
 ### Animation Guidelines
 - Use `useScrollAnimations()` hook for scroll-triggered animations
 - Use `data-animate-scope` on parent, `data-animate="preset"` on children
-- Presets: `fade-up`, `slide-from-left`, `slide-from-right`, `zoom-in`
+- Presets: `fade-up`, `slide-from-left`, `slide-from-right`, `zoom-in`, `width-countup`
 - Stagger: `data-animate-default-stagger="100"` on scope parent
 - Order override: `data-animate-order="2"` on individual elements
 - Components like `FilterGrid`, `Timeline` accept optional `animate`/`preset`/`stagger` props
@@ -380,6 +455,7 @@ export default function MyPage() {
 
 ### Deprecated Code
 - `App.jsx` — Removed; routing is now in `main.jsx` directly.
+- Barrel exports (`src/components/index.js`, `src/hooks/index.js`) — Removed; use direct imports with aliases.
 
 ---
 
@@ -388,15 +464,18 @@ export default function MyPage() {
 | File | Purpose |
 |---|---|
 | `src/main.jsx` | App entry — provider stack, route definitions |
-| `src/hooks/useAnalytics.js` | All GA4 tracking functions |
+| `src/utils/analytics.js` | All GA4 tracking functions |
+| `src/services/linksservice.js` | External link resolution, emails, socials, share URLs |
 | `src/components/navigation/AppLink.jsx` | Enhanced Link with analytics props |
 | `src/providers/TransitionProvider.jsx` | Page transitions + scroll + page view tracking |
 | `plugins/seo-prerender/` | Build-time SEO — prerender, sitemap, RSS, Atom |
-| `vite.config.js` | Build config — plugins, chunks, SPA fallback |
+| `plugins/seo-prerender/constants.js` | Static pages, nav links, site URL |
+| `vite.config.js` | Build config — plugins, chunks, aliases, SPA fallback |
 | `index.html` | HTML shell — OG tags, JSON-LD, GA4 bootstrap, font preloads |
-| `src/data/projects.json` | Project data (6 projects) |
-| `src/utils/blog.js` | Blog frontmatter parser + metadata loader |
-| `src/components/index.js` | Component barrel exports |
-| `src/hooks/index.js` | Hook barrel exports |
+| `src/data/projects.json` | Project data (7 projects) |
+| `src/data/sitelinks.json` | All external URLs, emails, social links |
+| `src/utils/blog/` | Blog frontmatter parser + metadata loader |
+| `src/utils/lazyWithRetry.js` | Lazy loading with chunk retry |
 | `public/_redirects` | Netlify redirect rules |
 | `public/robots.txt` | Crawler directives |
+| `public/llms.txt` | LLM metadata |
