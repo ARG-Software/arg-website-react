@@ -61,7 +61,15 @@
 
 @media (min-width: 768px) {
   .blp-filter-bar {
-    grid-template-columns: minmax(0, 22rem);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .blp-search {
+    max-width: 22rem;
+  }
+
+  .blp-topic-filter .tag-filter__pills {
+    flex-wrap: wrap;
   }
 }
 
