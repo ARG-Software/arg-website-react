@@ -101,8 +101,13 @@
   border-top: 1px solid #e8e8e8;
   margin-top: 1.5rem;
 }
-.blp-article-row:hover .blp-row-title {
-  color: #0c002e;
+.blp-article-row:hover .blp-row-title,
+.blp-article-row:focus-visible .blp-row-title {
+  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 .blp-row-meta {
   grid-column: span 2;
