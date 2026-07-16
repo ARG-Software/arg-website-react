@@ -11,6 +11,7 @@ const BLOG_DIR = path.resolve('src/blog');
 const IMAGE_ROOT = path.resolve('public/images/blog');
 const ARTICLES_LINKS_FILE = path.resolve('external/articlelinks.txt');
 const DRAFT_ARTICLES_LINKS_FILE = path.resolve('external/draft-articlelinks.txt');
+const MEDIUM_BROWSER_PROFILE_DIR = path.resolve('.medium-browser-profile');
 const SOURCE_ARG = process.argv[2] || '';
 
 const BROWSER_HEADERS = {
@@ -18,6 +19,16 @@ const BROWSER_HEADERS = {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36 ARG Software blog importer',
   accept: 'application/json, text/plain, */*',
 };
+
+const waitForEnter = message =>
+  new Promise(resolve => {
+    process.stdout.write(message);
+    process.stdin.resume();
+    process.stdin.once('data', () => {
+      process.stdin.pause();
+      resolve();
+    });
+  });
 
 const decodeEntities = value =>
   String(value || '')
@@ -467,18 +478,138 @@ const isMediumArticleLink = value => {
   }
 };
 
-const hasMediumShareToken = value => {
-  try {
-    return new URL(value).searchParams.has('sk');
-  } catch (_error) {
-    return false;
-  }
-};
-
 const buildMediumJsonUrlFromShareLink = value => {
   const url = new URL(value);
   url.searchParams.set('format', 'json');
   return url.toString();
+};
+
+const getBrowserPathCandidates = () => {
+  const localAppData = process.env.LOCALAPPDATA;
+  const programFiles = process.env.ProgramFiles;
+  const programFilesX86 = process.env['ProgramFiles(x86)'];
+
+  return [
+    { name: 'Brave', path: process.env.MEDIUM_BROWSER_PATH },
+    { name: 'Brave', path: programFiles && path.join(programFiles, 'BraveSoftware/Brave-Browser/Application/brave.exe') },
+    { name: 'Brave', path: programFilesX86 && path.join(programFilesX86, 'BraveSoftware/Brave-Browser/Application/brave.exe') },
+    { name: 'Brave', path: localAppData && path.join(localAppData, 'BraveSoftware/Brave-Browser/Application/brave.exe') },
+    { name: 'Chrome', path: programFiles && path.join(programFiles, 'Google/Chrome/Application/chrome.exe') },
+    { name: 'Chrome', path: programFilesX86 && path.join(programFilesX86, 'Google/Chrome/Application/chrome.exe') },
+    { name: 'Chrome', path: localAppData && path.join(localAppData, 'Google/Chrome/Application/chrome.exe') },
+    { name: 'Brave', path: '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser' },
+    { name: 'Chrome', path: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' },
+    { name: 'Brave', path: '/usr/bin/brave-browser' },
+    { name: 'Chrome', path: '/usr/bin/google-chrome' },
+  ].filter(candidate => candidate.path);
+};
+
+const resolveMediumBrowser = () => {
+  if (process.env.MEDIUM_BROWSER_PATH && !fs.existsSync(process.env.MEDIUM_BROWSER_PATH)) {
+    throw new Error(`MEDIUM_BROWSER_PATH does not exist: ${process.env.MEDIUM_BROWSER_PATH}`);
+  }
+
+  const browser = getBrowserPathCandidates().find(candidate => fs.existsSync(candidate.path));
+  if (!browser) {
+    throw new Error('No supported browser found. Install Brave/Chrome or set MEDIUM_BROWSER_PATH to a Chromium-based browser executable.');
+  }
+
+  return browser;
+};
+
+const loadPlaywrightChromium = () => {
+  try {
+    return require('playwright-core').chromium;
+  } catch (_error) {
+    throw new Error('Draft imports require playwright-core. Run `npm install` before importing Medium drafts.');
+  }
+};
+
+const createMediumBrowserSession = async () => {
+  const browser = resolveMediumBrowser();
+  const chromium = loadPlaywrightChromium();
+
+  fs.mkdirSync(MEDIUM_BROWSER_PROFILE_DIR, { recursive: true });
+
+  const context = await chromium.launchPersistentContext(MEDIUM_BROWSER_PROFILE_DIR, {
+    executablePath: browser.path,
+    headless: false,
+    viewport: null,
+    args: ['--start-maximized'],
+  });
+  const page = context.pages()[0] || (await context.newPage());
+
+  console.log(`[medium-import] Draft browser: ${browser.name} (${browser.path})`);
+  console.log(`[medium-import] Browser profile: ${MEDIUM_BROWSER_PROFILE_DIR}`);
+
+  return { context, page };
+};
+
+const buildMediumBrowserJsonUrls = url => {
+  const postId = extractMediumId(url);
+  return [...new Set([buildMediumJsonUrlFromShareLink(url), postId && `https://medium.com/p/${postId}?format=json`].filter(Boolean))];
+};
+
+const fetchMediumJsonInBrowserPage = async (page, url) =>
+  page.evaluate(async fetchUrl => {
+    const response = await fetch(fetchUrl, {
+      credentials: 'include',
+      headers: { accept: 'application/json, text/plain, */*' },
+    });
+
+    return {
+      ok: response.ok,
+      status: response.status,
+      contentType: response.headers.get('content-type') || '',
+      text: await response.text(),
+    };
+  }, url);
+
+const parseMediumBrowserPost = (response, postId, url) => {
+  if (!response.ok) {
+    throw new Error(`fetch failed: ${response.status} ${url}`);
+  }
+
+  try {
+    const data = JSON.parse(stripMediumJsonPrefix(response.text));
+    return data.payload?.value || data.payload?.references?.Post?.[postId];
+  } catch (_error) {
+    throw new Error(`invalid Medium JSON from ${url} (${response.contentType || 'unknown content type'})`);
+  }
+};
+
+const fetchFullPostWithBrowser = async (session, url) => {
+  const postId = extractMediumId(url);
+  const jsonUrls = buildMediumBrowserJsonUrls(url);
+
+  await session.page.goto(url, { waitUntil: 'domcontentloaded', timeout: 90000 }).catch(error => {
+    console.warn(`[medium-import] Initial page load warning for ${url}: ${error.message}`);
+  });
+
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const errors = [];
+
+    for (const jsonUrl of jsonUrls) {
+      try {
+        const response = await fetchMediumJsonInBrowserPage(session.page, jsonUrl);
+        const post = parseMediumBrowserPost(response, postId, jsonUrl);
+        if (post) return post;
+        errors.push(`missing post payload from ${jsonUrl}`);
+      } catch (error) {
+        errors.push(error.message);
+      }
+    }
+
+    if (attempt === 1) {
+      console.log('[medium-import] Medium did not expose the draft JSON yet. If the browser shows login or a challenge, complete it there.');
+      await waitForEnter('[medium-import] Press Enter here to retry the draft import...');
+      continue;
+    }
+
+    throw new Error(errors.join('; '));
+  }
+
+  return null;
 };
 
 const writeArticleLinksFile = (filePath, urls) => {
@@ -529,18 +660,6 @@ const collectMediumPosts = async () => {
 const fetchFullPost = async postId => {
   const data = await fetchMediumJson(`https://medium.com/p/${postId}?format=json`);
   return data.payload?.value;
-};
-
-const fetchFullPostFromShareLink = async url => {
-  const postId = extractMediumId(url);
-
-  if (!hasMediumShareToken(url)) {
-    return fetchFullPost(postId);
-  }
-
-  const data = await fetchMediumJson(buildMediumJsonUrlFromShareLink(url));
-
-  return data.payload?.value || data.payload?.references?.Post?.[postId];
 };
 
 const getPostUrl = post =>
@@ -886,59 +1005,69 @@ const importFromDraftShareLinksFile = async filePath => {
   const updated = [];
   const skipped = [];
   const processedUrls = [];
+  let browserSession;
 
-  for (const url of urls) {
-    if (!isMediumArticleLink(url)) {
-      skipped.push({ url, reason: 'draft imports require a medium.com article link with a post id' });
-      continue;
-    }
+  const getBrowserSession = async () => {
+    if (!browserSession) browserSession = await createMediumBrowserSession();
+    return browserSession;
+  };
 
-    const postId = extractMediumId(url);
-    if (!postId) {
-      skipped.push({ url, reason: 'no post id in url' });
-      continue;
-    }
+  try {
+    for (const url of urls) {
+      if (!isMediumArticleLink(url)) {
+        skipped.push({ url, reason: 'draft imports require a medium.com article link with a post id' });
+        continue;
+      }
 
-    let post;
-    try {
-      post = await fetchFullPostFromShareLink(url);
-    } catch (error) {
-      skipped.push({ url, reason: `fetch failed: ${error.message}` });
-      continue;
-    }
+      const postId = extractMediumId(url);
+      if (!postId) {
+        skipped.push({ url, reason: 'no post id in url' });
+        continue;
+      }
 
-    if (!post) {
-      skipped.push({ url, reason: 'missing full post payload' });
-      continue;
-    }
+      let post;
+      try {
+        post = await fetchFullPostWithBrowser(await getBrowserSession(), url);
+      } catch (error) {
+        skipped.push({ url, reason: `browser fetch failed: ${error.message}` });
+        continue;
+      }
 
-    post.sourceUrl = url;
+      if (!post) {
+        skipped.push({ url, reason: 'missing full post payload' });
+        continue;
+      }
 
-    const existingPost = findExistingPost(existingPosts, post);
-    if (existingPost) {
-      const changed = refreshExistingPostMetadata(existingPost, post);
-      updated.push({ id: post.id, file: existingPost.file, title: sanitizeTitle(post.title), changed });
+      post.sourceUrl = url;
+
+      const existingPost = findExistingPost(existingPosts, post);
+      if (existingPost) {
+        const changed = refreshExistingPostMetadata(existingPost, post);
+        updated.push({ id: post.id, file: existingPost.file, title: sanitizeTitle(post.title), changed });
+        processedUrls.push(url);
+        continue;
+      }
+
+      if (isPartialLockedPost(post)) {
+        skipped.push({ id: post.id, title: sanitizeTitle(post.title), reason: 'locked post only exposes partial preview content' });
+        continue;
+      }
+
+      const title = sanitizeTitle(post.title);
+      const slug = slugify(title);
+      const markdown = await convertPostToMarkdown(post, slug, title);
+      const subtitle = getCuratedDescription(post) || createArticleDescription(markdown);
+
+      if (!markdown) {
+        skipped.push({ id: post.id, title, reason: 'empty markdown after conversion' });
+        continue;
+      }
+
+      imported.push(writePost(post, markdown, subtitle));
       processedUrls.push(url);
-      continue;
     }
-
-    if (isPartialLockedPost(post)) {
-      skipped.push({ id: post.id, title: sanitizeTitle(post.title), reason: 'locked post only exposes partial preview content' });
-      continue;
-    }
-
-    const title = sanitizeTitle(post.title);
-    const slug = slugify(title);
-    const markdown = await convertPostToMarkdown(post, slug, title);
-    const subtitle = getCuratedDescription(post) || createArticleDescription(markdown);
-
-    if (!markdown) {
-      skipped.push({ id: post.id, title, reason: 'empty markdown after conversion' });
-      continue;
-    }
-
-    imported.push(writePost(post, markdown, subtitle));
-    processedUrls.push(url);
+  } finally {
+    if (browserSession) await browserSession.context.close();
   }
 
   const remainingDraftLinks = writeRemainingDraftArticleLinks(filePath, entries, processedUrls);
