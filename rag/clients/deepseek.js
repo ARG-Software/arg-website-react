@@ -2,6 +2,8 @@ import { getDeepSeekConfig, getSiteConfig } from '../config/env.js';
 
 const DEEPSEEK_CHAT_URL = 'https://api.deepseek.com/chat/completions';
 
+const RAG_INTENT = 'rag_question';
+
 export async function generateAnswer({
   question,
   messages = [],
@@ -60,6 +62,31 @@ export async function rewriteQuestion({
   return data.choices?.[0]?.message?.content?.trim() || question;
 }
 
+export async function classifyQuestionIntent({
+  question,
+  messages = [],
+  config = { ...getDeepSeekConfig(), ...getSiteConfig() },
+}) {
+  const data = await createChatCompletion({
+    config,
+    temperature: 0,
+    errorPrefix: 'DeepSeek intent classification request failed',
+    messages: [
+      {
+        role: 'system',
+        content: buildIntentPrompt(config.companyName),
+      },
+      ...buildHistoryMessages(messages),
+      {
+        role: 'user',
+        content: question,
+      },
+    ],
+  });
+
+  return parseIntentResponse(data.choices?.[0]?.message?.content);
+}
+
 async function createChatCompletion({ config, messages, temperature, errorPrefix }) {
   const response = await fetch(DEEPSEEK_CHAT_URL, {
     method: 'POST',
@@ -93,6 +120,41 @@ function buildSystemPrompt(companyName) {
     'If the context is insufficient, say that you do not have enough information.',
     'Keep answers concise, factual, and useful to prospective clients or candidates.',
   ].join(' ');
+}
+
+function buildIntentPrompt(companyName) {
+  return [
+    `You route messages for ${companyName}'s public website assistant.`,
+    'Classify the latest user message as one of: small_talk, rag_question, unsupported.',
+    'small_talk means greetings, thanks, brief social replies, identity questions, or capability questions.',
+    `rag_question means questions about ${companyName}, its services, projects, partners, careers, blog posts, external profiles, contact options, legal pages, or follow-ups about prior ${companyName}-related answers.`,
+    `unsupported means unrelated requests, general coding help, personal advice, news, politics, or tasks not about ${companyName}.`,
+    'For small_talk and unsupported, include a short response in the same language as the latest user message.',
+    `For unsupported, politely redirect to ${companyName} website topics.`,
+    'For rag_question, use an empty response string.',
+    'Return only valid JSON with this exact shape: {"intent":"small_talk|rag_question|unsupported","response":"..."}.',
+  ].join(' ');
+}
+
+function parseIntentResponse(content) {
+  if (!content) {
+    return { intent: RAG_INTENT, response: '' };
+  }
+
+  try {
+    const parsed = JSON.parse(content);
+
+    if (!['small_talk', RAG_INTENT, 'unsupported'].includes(parsed.intent)) {
+      return { intent: RAG_INTENT, response: '' };
+    }
+
+    return {
+      intent: parsed.intent,
+      response: typeof parsed.response === 'string' ? parsed.response.trim() : '',
+    };
+  } catch {
+    return { intent: RAG_INTENT, response: '' };
+  }
 }
 
 function buildHistoryMessages(messages) {

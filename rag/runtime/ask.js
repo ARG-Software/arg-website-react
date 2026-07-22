@@ -1,4 +1,4 @@
-import { generateAnswer, rewriteQuestion } from '../clients/deepseek.js';
+import { classifyQuestionIntent, generateAnswer, rewriteQuestion } from '../clients/deepseek.js';
 import { embedText } from '../clients/gemini.js';
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
 import { getRagConfig } from '../config/env.js';
@@ -16,6 +16,20 @@ export async function askQuestion({
 } = {}) {
   const normalizedQuestion = normalizeQuestion(question);
   const normalizedMessages = normalizeMessages(messages);
+  const intent = await classifyQuestionIntent({
+    question: normalizedQuestion,
+    messages: normalizedMessages,
+    config,
+  });
+
+  if (intent.intent !== 'rag_question') {
+    return {
+      answer: intent.response || getFallbackIntentResponse(intent.intent, config.companyName),
+      citations: [],
+      contexts: [],
+    };
+  }
+
   const retrievalQuestion = await createRetrievalQuestion({
     question: normalizedQuestion,
     messages: normalizedMessages,
@@ -99,6 +113,14 @@ async function createRetrievalQuestion({ question, messages, config }) {
     messages,
     config,
   });
+}
+
+function getFallbackIntentResponse(intent, companyName) {
+  if (intent === 'small_talk') {
+    return `Hi. I'm ${companyName}'s website assistant. I can help with services, projects, careers, partners, blog posts, and contact options.`;
+  }
+
+  return `I'm focused on ${companyName} website information. I can help with services, projects, careers, partners, blog posts, and contact options.`;
 }
 
 function createCitations(contexts, siteUrl) {

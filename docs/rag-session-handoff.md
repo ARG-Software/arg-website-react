@@ -181,6 +181,9 @@ The function handles:
 - JSON body validation.
 - Question required / max 1000 characters.
 - Optional conversation history validation.
+- DeepSeek classifies each request as `small_talk`, `rag_question`, or `unsupported` before retrieval.
+- Small talk and unsupported requests return direct same-language responses without Gemini embeddings or Supabase retrieval.
+- Unsupported requests are politely redirected to ARG Software website topics.
 - DeepSeek rewrites/translates every question into a standalone English retrieval query before embedding.
 - Follow-up question reference resolution before retrieval when history is provided.
 - Answers are generated in the same language as the latest user question.
@@ -329,6 +332,8 @@ Required fields:
    - Retrieval-only smoke test passes.
    - Full generation smoke test passes with the current `DEEPSEEK_API_KEY`.
    - Optional conversation history is supported through `messages`.
+   - Bounded small talk is handled by DeepSeek intent classification before retrieval.
+   - Unsupported off-topic requests are redirected before retrieval.
    - Questions are rewritten/translated into standalone English retrieval queries before embedding.
    - Follow-up questions use conversation history to resolve references before retrieval.
    - Answers preserve the latest user question language while keeping names, URLs, and citation titles unchanged.
@@ -387,6 +392,8 @@ Verification already completed in this session:
 - `npm run rag:ask:test -- "Quels profils externes mentionnent ARG Software ?"` verifies French question translation for retrieval and French answer generation.
 - `npm run rag:ask:test -- "Que perfis externos mencionam a ARG Software?"` verifies Portuguese question translation for retrieval and Portuguese answer generation.
 - `npm run rag:ask:test -- --external-profile-history "Parle-moi du deuxième"` verifies French follow-up reference resolution and French answer generation.
+- `npm run rag:ask:test -- "bonjour"` verifies same-language small talk without citations.
+- `npm run rag:ask:test -- "write me a Python scraper"` verifies unsupported request redirection without citations.
 
 Useful commands:
 
@@ -402,4 +409,6 @@ npm run rag:ask:test -- --external-profile-history "Tell me more about the secon
 npm run rag:ask:test -- "Quels profils externes mentionnent ARG Software ?"
 npm run rag:ask:test -- "Que perfis externos mencionam a ARG Software?"
 npm run rag:ask:test -- --external-profile-history "Parle-moi du deuxième"
+npm run rag:ask:test -- "bonjour"
+npm run rag:ask:test -- "write me a Python scraper"
 ```
