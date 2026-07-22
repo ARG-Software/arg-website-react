@@ -151,11 +151,21 @@ Request body:
 ```json
 {
   "question": "What does ARG Software do?",
+  "messages": [
+    {
+      "role": "user",
+      "content": "What external profiles mention ARG Software?"
+    },
+    {
+      "role": "assistant",
+      "content": "DesignRush, GoodFirms, TechBehemoths, and LinkedIn."
+    }
+  ],
   "sourceTypes": ["homepage", "project"]
 }
 ```
 
-`sourceTypes` is optional. The function returns:
+`messages` and `sourceTypes` are optional. `messages` supports recent `user`/`assistant` turns for conversational follow-up questions. The function returns:
 
 ```json
 {
@@ -170,6 +180,8 @@ The function handles:
 - `POST` only.
 - JSON body validation.
 - Question required / max 1000 characters.
+- Optional conversation history validation.
+- Follow-up question rewriting before retrieval when history is provided.
 - Safe public error responses for server errors.
 
 Do not add Netlify ingestion endpoints unless the architecture changes again.
@@ -314,6 +326,8 @@ Required fields:
    - Netlify endpoint lives at `netlify/functions/ask.js`.
    - Retrieval-only smoke test passes.
    - Full generation smoke test passes with the current `DEEPSEEK_API_KEY`.
+   - Optional conversation history is supported through `messages`.
+   - Follow-up questions are rewritten into standalone retrieval queries before embedding.
 
 6. Add npm scripts for local/admin workflows: done.
    - `rag:ingest:internal`
@@ -352,6 +366,7 @@ Frontend UI and deployment environment setup were intentionally left for the end
 Recommended next work:
 
 - Add a frontend assistant UI that calls `POST /.netlify/functions/ask`.
+- Have the frontend send recent `user`/`assistant` turns through the optional `messages` array for follow-up questions.
 - Configure server-side Netlify environment variables before deploying the ask endpoint.
 - Optionally add more manually approved external URLs to `rag/config/external-sources.json` and rerun external ingestion.
 
@@ -364,6 +379,7 @@ Verification already completed in this session:
 - `npm run rag:ingest:external` ingests all five approved external sources: 90 chunks ingested, 0 failures.
 - `npm run rag:ask:test -- --retrieve-only "What external profiles mention ARG Software?"` returns external profile chunks from Supabase.
 - `npm run rag:ask:test -- "What external profiles mention ARG Software?"` returns a generated answer with citations from DesignRush, GoodFirms, TechBehemoths, and LinkedIn.
+- `npm run rag:ask:test -- --external-profile-history "Tell me more about the second one"` verifies conversational follow-up rewriting and answering.
 
 Useful commands:
 
@@ -375,4 +391,5 @@ npm run rag:ingest:external -- --dry-run
 npm run rag:ask:test --retrieve-only -- "What does ARG Software do?"
 npm run rag:ask:test -- "What does ARG Software do?"
 npm run rag:ask:test -- "What external profiles mention ARG Software?"
+npm run rag:ask:test -- --external-profile-history "Tell me more about the second one"
 ```

@@ -1,18 +1,28 @@
-import { generateAnswer } from '../clients/deepseek.js';
+import { generateAnswer, rewriteQuestion } from '../clients/deepseek.js';
 import { embedText } from '../clients/gemini.js';
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
 import { getRagConfig } from '../config/env.js';
 import { toEmbeddingLiteral } from '../ingestion/processing/upsert.js';
 
+const MAX_HISTORY_MESSAGES = 12;
+const MAX_HISTORY_MESSAGE_LENGTH = 2000;
+
 export async function askQuestion({
   question,
+  messages,
   sourceTypes,
   config = getRagConfig(),
   supabase = createSupabaseServiceClient(config),
 } = {}) {
   const normalizedQuestion = normalizeQuestion(question);
-  const contexts = await retrieveRelevantChunks({
+  const normalizedMessages = normalizeMessages(messages);
+  const retrievalQuestion = await createRetrievalQuestion({
     question: normalizedQuestion,
+    messages: normalizedMessages,
+    config,
+  });
+  const contexts = await retrieveRelevantChunks({
+    question: retrievalQuestion,
     sourceTypes,
     config,
     supabase,
@@ -29,6 +39,7 @@ export async function askQuestion({
 
   const answer = await generateAnswer({
     question: normalizedQuestion,
+    messages: normalizedMessages,
     contexts,
     config,
   });
@@ -42,12 +53,19 @@ export async function askQuestion({
 
 export async function retrieveRelevantChunks({
   question,
+  messages,
   sourceTypes,
   config = getRagConfig(),
   supabase = createSupabaseServiceClient(config),
 } = {}) {
   const normalizedQuestion = normalizeQuestion(question);
-  const embedding = await embedText(normalizedQuestion, config);
+  const normalizedMessages = normalizeMessages(messages);
+  const retrievalQuestion = await createRetrievalQuestion({
+    question: normalizedQuestion,
+    messages: normalizedMessages,
+    config,
+  });
+  const embedding = await embedText(retrievalQuestion, config);
   const { data, error } = await supabase.rpc('match_rag_chunks', {
     query_embedding: toEmbeddingLiteral(embedding),
     match_count: config.matchCount,
@@ -73,6 +91,18 @@ export async function retrieveRelevantChunks({
     sourceMetadata: row.source_metadata ?? {},
     chunkMetadata: row.chunk_metadata ?? {},
   }));
+}
+
+async function createRetrievalQuestion({ question, messages, config }) {
+  if (messages.length === 0) {
+    return question;
+  }
+
+  return rewriteQuestion({
+    question,
+    messages,
+    config,
+  });
 }
 
 function createCitations(contexts, siteUrl) {
@@ -127,6 +157,47 @@ function normalizeSourceTypes(sourceTypes) {
 
   const normalized = sourceTypes.map(sourceType => String(sourceType).trim()).filter(Boolean);
   return normalized.length > 0 ? normalized : null;
+}
+
+function normalizeMessages(messages) {
+  if (!messages) {
+    return [];
+  }
+
+  if (!Array.isArray(messages)) {
+    throw new Error('messages must be an array');
+  }
+
+  return messages.slice(-MAX_HISTORY_MESSAGES).map((message, index) => {
+    if (!message || typeof message !== 'object') {
+      throw new Error(`messages[${index}] must be an object`);
+    }
+
+    if (!['user', 'assistant'].includes(message.role)) {
+      throw new Error(`messages[${index}].role must be user or assistant`);
+    }
+
+    if (typeof message.content !== 'string') {
+      throw new Error(`messages[${index}].content must be a string`);
+    }
+
+    const content = message.content.trim();
+
+    if (!content) {
+      throw new Error(`messages[${index}].content is required`);
+    }
+
+    if (content.length > MAX_HISTORY_MESSAGE_LENGTH) {
+      throw new Error(
+        `messages[${index}].content must be ${MAX_HISTORY_MESSAGE_LENGTH} characters or fewer`
+      );
+    }
+
+    return {
+      role: message.role,
+      content,
+    };
+  });
 }
 
 function resolveUrl(url, siteUrl) {

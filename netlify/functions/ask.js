@@ -26,6 +26,7 @@ export async function handler(event) {
   try {
     const result = await askQuestion({
       question: payload.question,
+      messages: payload.messages,
       sourceTypes: payload.sourceTypes,
     });
 
@@ -60,6 +61,8 @@ function isClientError(error) {
   return (
     error.message === 'Question is required' ||
     error.message === 'Question must be 1000 characters or fewer' ||
-    error.message === 'sourceTypes must be an array'
+    error.message === 'sourceTypes must be an array' ||
+    error.message === 'messages must be an array' ||
+    /^messages\[\d+\]/.test(error.message)
   );
 }
