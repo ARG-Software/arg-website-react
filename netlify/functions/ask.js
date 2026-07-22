@@ -1,4 +1,4 @@
-import { askQuestion } from '../../rag/runtime/ask.js';
+import { RagValidationError, askQuestion } from '../../rag/runtime/ask.js';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -12,7 +12,7 @@ export async function handler(event) {
   }
 
   if (event.httpMethod !== 'POST') {
-    return createResponse(405, { error: 'Method not allowed' });
+    return createResponse(405, createErrorBody('method_not_allowed', 'Method not allowed'));
   }
 
   let payload;
@@ -20,7 +20,7 @@ export async function handler(event) {
   try {
     payload = JSON.parse(event.body || '{}');
   } catch {
-    return createResponse(400, { error: 'Invalid JSON body' });
+    return createResponse(400, createErrorBody('invalid_json', 'Invalid JSON body'));
   }
 
   try {
@@ -36,14 +36,26 @@ export async function handler(event) {
     });
   } catch (error) {
     const statusCode = isClientError(error) ? 400 : 500;
-    const message = statusCode === 400 ? error.message : 'Unable to answer the question';
+    const errorBody =
+      statusCode === 400
+        ? createErrorBody(error.code, error.message)
+        : createErrorBody('answer_failed', 'Unable to answer the question');
 
     if (statusCode === 500) {
       console.error(error);
     }
 
-    return createResponse(statusCode, { error: message });
+    return createResponse(statusCode, errorBody);
   }
+}
+
+function createErrorBody(code, message) {
+  return {
+    error: {
+      code,
+      message,
+    },
+  };
 }
 
 function createResponse(statusCode, body) {
@@ -58,11 +70,5 @@ function createResponse(statusCode, body) {
 }
 
 function isClientError(error) {
-  return (
-    error.message === 'Question is required' ||
-    error.message === 'Question must be 1000 characters or fewer' ||
-    error.message === 'sourceTypes must be an array' ||
-    error.message === 'messages must be an array' ||
-    /^messages\[\d+\]/.test(error.message)
-  );
+  return error instanceof RagValidationError;
 }

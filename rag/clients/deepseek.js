@@ -87,6 +87,66 @@ export async function classifyQuestionIntent({
   return parseIntentResponse(data.choices?.[0]?.message?.content);
 }
 
+export async function generateInsufficientContextAnswer({
+  question,
+  messages = [],
+  config = { ...getDeepSeekConfig(), ...getSiteConfig() },
+}) {
+  const data = await createChatCompletion({
+    config,
+    temperature: 0.2,
+    errorPrefix: 'DeepSeek insufficient context response request failed',
+    messages: [
+      {
+        role: 'system',
+        content: [
+          `You are the public website assistant for ${config.companyName}.`,
+          'Answer in the same language as the latest user question.',
+          'Say briefly that you do not have enough information in the available ARG Software context to answer.',
+          'Do not invent facts. Do not include citations.',
+        ].join(' '),
+      },
+      ...buildHistoryMessages(messages),
+      {
+        role: 'user',
+        content: question,
+      },
+    ],
+  });
+
+  return data.choices?.[0]?.message?.content?.trim() ?? '';
+}
+
+export async function generateIntentFallbackResponse({
+  question,
+  intent,
+  config = { ...getDeepSeekConfig(), ...getSiteConfig() },
+}) {
+  const data = await createChatCompletion({
+    config,
+    temperature: 0.2,
+    errorPrefix: 'DeepSeek intent fallback response request failed',
+    messages: [
+      {
+        role: 'system',
+        content: [
+          `You are the public website assistant for ${config.companyName}.`,
+          'Answer in the same language as the latest user question.',
+          intent === 'small_talk'
+            ? `Give a brief friendly response and mention you can help with ${config.companyName} website topics.`
+            : `Politely redirect the user to ${config.companyName} website topics such as services, projects, careers, partners, blog posts, or contact options.`,
+        ].join(' '),
+      },
+      {
+        role: 'user',
+        content: question,
+      },
+    ],
+  });
+
+  return data.choices?.[0]?.message?.content?.trim() ?? '';
+}
+
 async function createChatCompletion({ config, messages, temperature, errorPrefix }) {
   const response = await fetch(DEEPSEEK_CHAT_URL, {
     method: 'POST',

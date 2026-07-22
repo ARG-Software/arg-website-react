@@ -1,4 +1,10 @@
-import { classifyQuestionIntent, generateAnswer, rewriteQuestion } from '../clients/deepseek.js';
+import {
+  classifyQuestionIntent,
+  generateAnswer,
+  generateInsufficientContextAnswer,
+  generateIntentFallbackResponse,
+  rewriteQuestion,
+} from '../clients/deepseek.js';
 import { embedText } from '../clients/gemini.js';
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
 import { getRagConfig } from '../config/env.js';
@@ -6,6 +12,14 @@ import { toEmbeddingLiteral } from '../ingestion/processing/upsert.js';
 
 const MAX_HISTORY_MESSAGES = 12;
 const MAX_HISTORY_MESSAGE_LENGTH = 2000;
+
+export class RagValidationError extends Error {
+  constructor(code, message) {
+    super(message);
+    this.name = 'RagValidationError';
+    this.code = code;
+  }
+}
 
 export async function askQuestion({
   question,
@@ -23,8 +37,16 @@ export async function askQuestion({
   });
 
   if (intent.intent !== 'rag_question') {
+    const answer =
+      intent.response ||
+      (await generateIntentFallbackResponse({
+        question: normalizedQuestion,
+        intent: intent.intent,
+        config,
+      }));
+
     return {
-      answer: intent.response || getFallbackIntentResponse(intent.intent, config.companyName),
+      answer,
       citations: [],
       contexts: [],
     };
@@ -43,9 +65,14 @@ export async function askQuestion({
   });
 
   if (contexts.length === 0) {
+    const answer = await generateInsufficientContextAnswer({
+      question: normalizedQuestion,
+      messages: normalizedMessages,
+      config,
+    });
+
     return {
-      answer:
-        'I do not have enough information to answer that from the available ARG Software context.',
+      answer,
       citations: [],
       contexts: [],
     };
@@ -115,14 +142,6 @@ async function createRetrievalQuestion({ question, messages, config }) {
   });
 }
 
-function getFallbackIntentResponse(intent, companyName) {
-  if (intent === 'small_talk') {
-    return `Hi. I'm ${companyName}'s website assistant. I can help with services, projects, careers, partners, blog posts, and contact options.`;
-  }
-
-  return `I'm focused on ${companyName} website information. I can help with services, projects, careers, partners, blog posts, and contact options.`;
-}
-
 function createCitations(contexts, siteUrl) {
   const seen = new Set();
   const citations = [];
@@ -148,17 +167,17 @@ function createCitations(contexts, siteUrl) {
 
 function normalizeQuestion(question) {
   if (typeof question !== 'string') {
-    throw new Error('Question is required');
+    throw new RagValidationError('question_required', 'Question is required');
   }
 
   const normalizedQuestion = question.trim();
 
   if (!normalizedQuestion) {
-    throw new Error('Question is required');
+    throw new RagValidationError('question_required', 'Question is required');
   }
 
   if (normalizedQuestion.length > 1000) {
-    throw new Error('Question must be 1000 characters or fewer');
+    throw new RagValidationError('question_too_long', 'Question must be 1000 characters or fewer');
   }
 
   return normalizedQuestion;
@@ -170,7 +189,7 @@ function normalizeSourceTypes(sourceTypes) {
   }
 
   if (!Array.isArray(sourceTypes)) {
-    throw new Error('sourceTypes must be an array');
+    throw new RagValidationError('source_types_invalid', 'sourceTypes must be an array');
   }
 
   const normalized = sourceTypes.map(sourceType => String(sourceType).trim()).filter(Boolean);
@@ -183,30 +202,40 @@ function normalizeMessages(messages) {
   }
 
   if (!Array.isArray(messages)) {
-    throw new Error('messages must be an array');
+    throw new RagValidationError('messages_invalid', 'messages must be an array');
   }
 
   return messages.slice(-MAX_HISTORY_MESSAGES).map((message, index) => {
     if (!message || typeof message !== 'object') {
-      throw new Error(`messages[${index}] must be an object`);
+      throw new RagValidationError('message_invalid', `messages[${index}] must be an object`);
     }
 
     if (!['user', 'assistant'].includes(message.role)) {
-      throw new Error(`messages[${index}].role must be user or assistant`);
+      throw new RagValidationError(
+        'message_role_invalid',
+        `messages[${index}].role must be user or assistant`
+      );
     }
 
     if (typeof message.content !== 'string') {
-      throw new Error(`messages[${index}].content must be a string`);
+      throw new RagValidationError(
+        'message_content_invalid',
+        `messages[${index}].content must be a string`
+      );
     }
 
     const content = message.content.trim();
 
     if (!content) {
-      throw new Error(`messages[${index}].content is required`);
+      throw new RagValidationError(
+        'message_content_required',
+        `messages[${index}].content is required`
+      );
     }
 
     if (content.length > MAX_HISTORY_MESSAGE_LENGTH) {
-      throw new Error(
+      throw new RagValidationError(
+        'message_content_too_long',
         `messages[${index}].content must be ${MAX_HISTORY_MESSAGE_LENGTH} characters or fewer`
       );
     }

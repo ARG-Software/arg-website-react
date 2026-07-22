@@ -181,13 +181,39 @@ The function handles:
 - JSON body validation.
 - Question required / max 1000 characters.
 - Optional conversation history validation.
+- Client validation errors return stable error codes under `error.code`; frontend should localize validation/UI errors from those codes.
 - DeepSeek classifies each request as `small_talk`, `rag_question`, or `unsupported` before retrieval.
 - Small talk and unsupported requests return direct same-language responses without Gemini embeddings or Supabase retrieval.
 - Unsupported requests are politely redirected to ARG Software website topics.
 - DeepSeek rewrites/translates every question into a standalone English retrieval query before embedding.
 - Follow-up question reference resolution before retrieval when history is provided.
 - Answers are generated in the same language as the latest user question.
+- Valid questions with no retrieved context use a DeepSeek-generated same-language insufficient-context response.
 - Safe public error responses for server errors.
+
+Validation error response shape:
+
+```json
+{
+  "error": {
+    "code": "question_required",
+    "message": "Question is required"
+  }
+}
+```
+
+Known validation error codes:
+
+- `invalid_json`
+- `question_required`
+- `question_too_long`
+- `source_types_invalid`
+- `messages_invalid`
+- `message_invalid`
+- `message_role_invalid`
+- `message_content_invalid`
+- `message_content_required`
+- `message_content_too_long`
 
 Do not add Netlify ingestion endpoints unless the architecture changes again.
 
@@ -337,6 +363,8 @@ Required fields:
    - Questions are rewritten/translated into standalone English retrieval queries before embedding.
    - Follow-up questions use conversation history to resolve references before retrieval.
    - Answers preserve the latest user question language while keeping names, URLs, and citation titles unchanged.
+   - Valid no-context responses are generated in the latest user question language.
+   - API validation errors use stable `error.code` values for frontend localization instead of returning raw messages as the localization contract.
 
 6. Add npm scripts for local/admin workflows: done.
    - `rag:ingest:internal`
@@ -394,6 +422,8 @@ Verification already completed in this session:
 - `npm run rag:ask:test -- --external-profile-history "Parle-moi du deuxième"` verifies French follow-up reference resolution and French answer generation.
 - `npm run rag:ask:test -- "bonjour"` verifies same-language small talk without citations.
 - `npm run rag:ask:test -- "write me a Python scraper"` verifies unsupported request redirection without citations.
+- Local Netlify handler smoke test with an empty JSON body returns `error.code: question_required`.
+- Direct `askQuestion` no-context smoke test returns a French insufficient-context response with zero citations.
 
 Useful commands:
 
