@@ -9,20 +9,21 @@ Target architecture:
 - Gemini for embeddings.
 - Supabase + pgvector for storage/retrieval.
 - DeepSeek for final answer generation.
-- Netlify Functions for API endpoints.
-- Separate ingestion flows for internal and external sources.
+- Netlify Functions for the public `ask` API endpoint only.
+- Local/admin ingestion scripts for internal and external sources.
 
 ## Decisions Made
 
 - Use one embedding provider/model only to avoid mixed vector spaces.
 - Use Gemini embeddings and DeepSeek generation.
 - Use Supabase for database/vector search only.
-- Use Netlify Functions instead of Supabase Edge Functions.
+- Use Netlify Functions instead of Supabase Edge Functions for runtime API calls.
 - Manage Supabase schema through repo migrations.
 - Do not expose API keys in frontend code.
 - Ingest internal and external sources separately.
 - Prefer canonical JSON/Markdown/PDF sources over scraping JSX/components.
 - Start external scraping from a manual allowlist, not an open crawler.
+- Run ingestion locally/admin-side, not as Netlify Functions.
 
 ## Environment Variables
 
@@ -38,8 +39,6 @@ GEMINI_EMBEDDING_MODEL=text-embedding-004
 
 DEEPSEEK_API_KEY=
 DEEPSEEK_MODEL=deepseek-v4-flash
-
-RAG_INGEST_SECRET=
 ```
 
 Optional later:
@@ -54,6 +53,10 @@ RAG_SIMILARITY_THRESHOLD=0.72
 ```
 
 ## Completed Refactor
+
+Committed as:
+
+- `b89d325 refactor(content): extract canonical site data`
 
 Created canonical data files for content that RAG can ingest directly:
 
@@ -94,9 +97,12 @@ Verification completed:
 ## Important Notes
 
 - `.env` is already ignored by git.
-- `.env.example` appeared as untracked during the previous session and was not modified intentionally.
+- `.env.example` is trackable by `.gitignore` and was included in the canonical-data refactor commit.
 - `public/files/portfolio.pdf` exists and should be included in internal ingestion.
 - The first RAG implementation should ingest internal data without scraping rendered React.
+- Ingestion should run via local/admin scripts, not deployed Netlify Functions.
+- `@supabase/supabase-js` should remain in production `dependencies` for the deployed `ask` function.
+- `dotenv`, `cheerio`, and `pdf-parse` should remain in `devDependencies` because they support local/admin ingestion scripts.
 
 ## Internal Ingestion Sources
 
@@ -120,19 +126,22 @@ Do not ingest:
 - UI animation/config-only data.
 - 404 page copy.
 
-## Planned Endpoints
+## Planned Runtime Endpoint
 
-Use Netlify Functions:
+Use Netlify Functions only for asking questions:
 
-- `POST /.netlify/functions/ingest-internal`
-- `POST /.netlify/functions/ingest-external`
 - `POST /.netlify/functions/ask`
 
-Ingestion endpoints should require:
+Do not add Netlify ingestion endpoints unless the architecture changes again.
 
-```http
-Authorization: Bearer ${RAG_INGEST_SECRET}
-```
+## Planned Local Ingestion Scripts
+
+Use local/admin scripts for ingestion:
+
+- internal ingestion for JSON/Markdown/PDF.
+- external ingestion for allowlisted URLs.
+
+These scripts should use local/server env vars and must not expose service-role or AI provider keys to frontend code.
 
 ## Planned Database Schema
 
@@ -187,11 +196,12 @@ External ingestion should:
 
 ## Next Implementation Steps
 
-1. Add dependencies:
-   - `@supabase/supabase-js`
-   - `dotenv`
-   - PDF text extraction package, likely `pdf-parse` or equivalent.
-   - HTML extraction package, likely `cheerio`.
+1. Add dependencies: done, but not committed yet.
+   - `@supabase/supabase-js@^2.58.0` in `dependencies`.
+   - `dotenv@^17.4.2` in `devDependencies`.
+   - `pdf-parse@^2.4.5` in `devDependencies`.
+   - `cheerio@^1.2.0` in `devDependencies`.
+   - Supabase was pinned to `^2.58.0` because newer `2.110.x` releases declare a Node 22 engine floor while Netlify is configured for Node 20.
 
 2. Add Supabase files:
    - `supabase/config.toml`
@@ -209,9 +219,10 @@ External ingestion should:
    - PDF extraction helper.
    - external HTML extraction helper.
 
-4. Add ingestion functions:
+4. Add ingestion scripts:
    - internal ingestion for JSON/Markdown/PDF.
    - external ingestion for allowlisted URLs.
+   - do not implement these as Netlify Functions.
 
 5. Add ask function:
    - embed user question with Gemini.
@@ -240,7 +251,13 @@ Tables should support:
 
 ## Continue From Here
 
-Start by checking the current worktree, then implement the Supabase migration and shared RAG modules.
+Current worktree after this handoff update should contain uncommitted changes in:
+
+- `package.json`
+- `package-lock.json`
+- `docs/rag-session-handoff.md`
+
+Start by checking the current worktree, then commit the dependency/handoff update if desired. After that, implement the Supabase migration and shared RAG modules.
 
 Useful commands:
 
