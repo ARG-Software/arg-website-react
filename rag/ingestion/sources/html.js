@@ -14,7 +14,12 @@ export async function extractHtmlText(html) {
 }
 
 export async function loadExternalHtmlSource({ url, title, trusted = true }) {
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'User-Agent': 'Mozilla/5.0 (compatible; ARGSoftwareRAG/1.0; +https://arg.software)',
+    },
+  });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch external source ${url}: ${response.status}`);

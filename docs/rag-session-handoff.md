@@ -108,7 +108,7 @@ Verification completed:
 - `dotenv`, `cheerio`, and `pdf-parse` should remain in `devDependencies` because they support local/admin ingestion scripts.
 - RAG config JSON files live under `rag/config/`.
 - Supabase CLI helper lives under `supabase/scripts.js`, not under `rag/`.
-- The current `.env` has an invalid placeholder/incorrect `DEEPSEEK_API_KEY`; full answer generation reaches DeepSeek but fails with `401` until that key is fixed.
+- The current `.env` has a valid `DEEPSEEK_API_KEY`; full answer generation has been verified locally.
 
 ## Internal Ingestion Sources
 
@@ -188,7 +188,7 @@ Implemented scripts:
 - `npm run rag:ingest:internal`
 - `npm run rag:ingest:external`
 - Both support `--dry-run`.
-- External allowlist is currently empty at `rag/config/external-sources.json`.
+- External allowlist lives at `rag/config/external-sources.json` and currently includes five approved sources.
 
 ## Database Schema
 
@@ -217,9 +217,17 @@ Recommended source types:
 
 ## External Sources
 
-Add a curated allowlist file, for example:
+Use the curated allowlist file:
 
 - `rag/config/external-sources.json`
+
+Current approved sources:
+
+- `https://www.designrush.com/agency/profile/arg-software`
+- `https://www.goodfirms.co/company/arg-software`
+- `https://techbehemoths.com/company/arg-software`
+- `https://www.linkedin.com/company/arg-software/`
+- `https://github.com/marmelo/tech-companies-in-portugal/blob/master/README.md`
 
 Suggested format:
 
@@ -296,7 +304,7 @@ Required fields:
    - Gemini embedding requests are throttled with `GEMINI_EMBEDDING_REQUEST_DELAY_MS=750` to stay under free-tier RPM limits.
    - Internal ingestion has been run successfully: 60 sources and 412 chunks in Supabase.
 
-5. Add ask function: done, not committed yet in the current working tree.
+5. Add ask function: done and committed.
    - embed user question with Gemini.
    - call Supabase RPC.
    - send retrieved context to DeepSeek.
@@ -305,7 +313,7 @@ Required fields:
    - Local test script lives at `rag/runtime/scripts/testAsk.js`.
    - Netlify endpoint lives at `netlify/functions/ask.js`.
    - Retrieval-only smoke test passes.
-   - Full generation is blocked by invalid `DEEPSEEK_API_KEY` in the current environment.
+   - Full generation smoke test passes with the current `DEEPSEEK_API_KEY`.
 
 6. Add npm scripts for local/admin workflows: done.
    - `rag:ingest:internal`
@@ -315,7 +323,7 @@ Required fields:
    - `supabase:push`
    - Supabase scripts use `supabase/scripts.js` so `.env` values are loaded automatically.
 
-7. Move RAG config files and Supabase helper: done, not committed yet in the current working tree.
+7. Move RAG config files and Supabase helper: done and committed.
    - `rag/config/external-sources.json`
    - `rag/config/internal-pdfs.json`
    - `supabase/scripts.js`
@@ -339,35 +347,23 @@ Tables should support:
 
 ## Continue From Here
 
-Current worktree is expected to contain uncommitted RAG runtime/config/Supabase helper changes.
+Frontend UI and deployment environment setup were intentionally left for the end.
 
-Expected changed/untracked paths:
+Recommended next work:
 
-- `docs/rag-session-handoff.md`
-- `package.json`
-- `netlify/functions/ask.js`
-- `rag/runtime/ask.js`
-- `rag/runtime/scripts/testAsk.js`
-- `rag/config/external-sources.json`
-- `rag/config/internal-pdfs.json`
-- `rag/ingestion/scripts/ingestExternal.js`
-- `rag/ingestion/sources/internal.js`
-- `supabase/scripts.js`
-- deleted old files: `rag/external-sources.json`, `rag/internal-pdfs.json`, `rag/scripts/supabase.js`
-
-Start by checking the current worktree, then either commit these changes or continue wiring a frontend UI to call the ask endpoint.
-
-Known blocker:
-
-- Full answer generation fails until `DEEPSEEK_API_KEY` is replaced with a valid key.
+- Add a frontend assistant UI that calls `POST /.netlify/functions/ask`.
+- Configure server-side Netlify environment variables before deploying the ask endpoint.
+- Optionally add more manually approved external URLs to `rag/config/external-sources.json` and rerun external ingestion.
 
 Verification already completed in this session:
 
 - `npm run lint` passes.
 - `npm run build` passes with a longer timeout because image optimization produces large output.
-- `npm run rag:ingest:external -- --dry-run` reads the moved allowlist config and exits cleanly because the allowlist is empty.
 - `npm run rag:ask:test --retrieve-only -- "What does ARG Software do?"` returns 6 chunks from Supabase.
-- `npm run rag:ask:test -- "What does ARG Software do?"` reaches DeepSeek and fails with `401` due to invalid `DEEPSEEK_API_KEY`.
+- `npm run rag:ingest:external -- --dry-run` validates all five approved external sources: 90 chunks planned, 0 failures.
+- `npm run rag:ingest:external` ingests all five approved external sources: 90 chunks ingested, 0 failures.
+- `npm run rag:ask:test -- --retrieve-only "What external profiles mention ARG Software?"` returns external profile chunks from Supabase.
+- `npm run rag:ask:test -- "What external profiles mention ARG Software?"` returns a generated answer with citations from DesignRush, GoodFirms, TechBehemoths, and LinkedIn.
 
 Useful commands:
 
@@ -378,4 +374,5 @@ npm run build
 npm run rag:ingest:external -- --dry-run
 npm run rag:ask:test --retrieve-only -- "What does ARG Software do?"
 npm run rag:ask:test -- "What does ARG Software do?"
+npm run rag:ask:test -- "What external profiles mention ARG Software?"
 ```
