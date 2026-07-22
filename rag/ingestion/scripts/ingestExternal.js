@@ -49,11 +49,11 @@ if (failures.length > 0) {
 }
 
 async function loadAllowlist() {
-  const filePath = path.join(process.cwd(), 'rag/external-sources.json');
+  const filePath = path.join(process.cwd(), 'rag/config/external-sources.json');
   const sources = JSON.parse(await readFile(filePath, 'utf8'));
 
   if (!Array.isArray(sources)) {
-    throw new Error('rag/external-sources.json must contain an array');
+    throw new Error('rag/config/external-sources.json must contain an array');
   }
 
   return sources.map(validateAllowlistItem);

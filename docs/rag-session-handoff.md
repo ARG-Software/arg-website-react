@@ -32,6 +32,7 @@ Expected local/server env vars:
 ```env
 SUPABASE_URL=
 SUPABASE_PROJECT_REF=
+SUPABASE_ACCESS_TOKEN=
 SUPABASE_SERVICE_ROLE_KEY=
 
 GEMINI_API_KEY=
@@ -105,6 +106,9 @@ Verification completed:
 - Ingestion should run via local/admin scripts, not deployed Netlify Functions.
 - `@supabase/supabase-js` should remain in production `dependencies` for the deployed `ask` function.
 - `dotenv`, `cheerio`, and `pdf-parse` should remain in `devDependencies` because they support local/admin ingestion scripts.
+- RAG config JSON files live under `rag/config/`.
+- Supabase CLI helper lives under `supabase/scripts.js`, not under `rag/`.
+- The current `.env` has an invalid placeholder/incorrect `DEEPSEEK_API_KEY`; full answer generation reaches DeepSeek but fails with `401` until that key is fixed.
 
 ## Internal Ingestion Sources
 
@@ -120,7 +124,7 @@ Use these for the internal ingestion endpoint/script:
 - `src/data/workingWithUs.json`
 - `src/data/faq.json`
 - `src/blog/*.md`
-- PDFs listed in `rag/internal-pdfs.json`.
+- PDFs listed in `rag/config/internal-pdfs.json`.
 
 Default internal PDFs:
 
@@ -132,15 +136,45 @@ Do not ingest:
 - UI animation/config-only data.
 - 404 page copy.
 
-## Planned Runtime Endpoint
+## Runtime Endpoint
 
-Use Netlify Functions only for asking questions:
+Netlify Functions are used only for asking questions:
 
 - `POST /.netlify/functions/ask`
 
+Implemented at:
+
+- `netlify/functions/ask.js`
+
+Request body:
+
+```json
+{
+  "question": "What does ARG Software do?",
+  "sourceTypes": ["homepage", "project"]
+}
+```
+
+`sourceTypes` is optional. The function returns:
+
+```json
+{
+  "answer": "...",
+  "citations": []
+}
+```
+
+The function handles:
+
+- `OPTIONS` preflight.
+- `POST` only.
+- JSON body validation.
+- Question required / max 1000 characters.
+- Safe public error responses for server errors.
+
 Do not add Netlify ingestion endpoints unless the architecture changes again.
 
-## Planned Local Ingestion Scripts
+## Local Ingestion Scripts
 
 Use local/admin scripts for ingestion:
 
@@ -149,9 +183,16 @@ Use local/admin scripts for ingestion:
 
 These scripts should use local/server env vars and must not expose service-role or AI provider keys to frontend code.
 
-## Planned Database Schema
+Implemented scripts:
 
-Create Supabase migration under `supabase/migrations/`.
+- `npm run rag:ingest:internal`
+- `npm run rag:ingest:external`
+- Both support `--dry-run`.
+- External allowlist is currently empty at `rag/config/external-sources.json`.
+
+## Database Schema
+
+Supabase migration exists under `supabase/migrations/`.
 
 Expected objects:
 
@@ -174,11 +215,11 @@ Recommended source types:
 - `portfolio_pdf`
 - `external_page`
 
-## Planned External Sources
+## External Sources
 
 Add a curated allowlist file, for example:
 
-- `rag/external-sources.json`
+- `rag/config/external-sources.json`
 
 Suggested format:
 
@@ -204,7 +245,7 @@ External ingestion should:
 
 Add repeatable internal PDF ingestion sources to:
 
-- `rag/internal-pdfs.json`
+- `rag/config/internal-pdfs.json`
 
 Required fields:
 
@@ -249,17 +290,22 @@ Required fields:
    - do not implement these as Netlify Functions.
    - `projects.json` is split into one `project` source per project.
    - `partners.json` is split into one `partner` source per partner.
-   - Internal PDFs are read from `rag/internal-pdfs.json`.
+   - Internal PDFs are read from `rag/config/internal-pdfs.json`.
    - Both ingestion scripts support `--dry-run`.
    - Gemini embeddings use `gemini-embedding-2` with `GEMINI_EMBEDDING_DIMENSIONS=768`.
    - Gemini embedding requests are throttled with `GEMINI_EMBEDDING_REQUEST_DELAY_MS=750` to stay under free-tier RPM limits.
    - Internal ingestion has been run successfully: 60 sources and 412 chunks in Supabase.
 
-5. Add ask function:
+5. Add ask function: done, not committed yet in the current working tree.
    - embed user question with Gemini.
    - call Supabase RPC.
    - send retrieved context to DeepSeek.
    - return answer plus citations.
+   - Shared runtime lives at `rag/runtime/ask.js`.
+   - Local test script lives at `rag/runtime/scripts/testAsk.js`.
+   - Netlify endpoint lives at `netlify/functions/ask.js`.
+   - Retrieval-only smoke test passes.
+   - Full generation is blocked by invalid `DEEPSEEK_API_KEY` in the current environment.
 
 6. Add npm scripts for local/admin workflows: done.
    - `rag:ingest:internal`
@@ -267,7 +313,17 @@ Required fields:
    - `rag:ask:test`
    - `supabase:link`
    - `supabase:push`
-   - Supabase scripts use `rag/scripts/supabase.js` so `.env` values are loaded automatically.
+   - Supabase scripts use `supabase/scripts.js` so `.env` values are loaded automatically.
+
+7. Move RAG config files and Supabase helper: done, not committed yet in the current working tree.
+   - `rag/config/external-sources.json`
+   - `rag/config/internal-pdfs.json`
+   - `supabase/scripts.js`
+   - Old paths removed: `rag/external-sources.json`, `rag/internal-pdfs.json`, `rag/scripts/supabase.js`.
+   - `supabase/scripts.js` loads `.env` directly with `dotenv`; it does not import from `rag/`.
+
+8. Update lint coverage: done.
+   - `package.json` now lints `src`, `plugins`, `rag`, `supabase/scripts.js`, and `netlify/functions`.
 
 ## Suggested First SQL Shape
 
@@ -283,9 +339,35 @@ Tables should support:
 
 ## Continue From Here
 
-Current worktree after this handoff update should be clean.
+Current worktree is expected to contain uncommitted RAG runtime/config/Supabase helper changes.
 
-Start by checking the current worktree, then implement retrieval testing and the ask function.
+Expected changed/untracked paths:
+
+- `docs/rag-session-handoff.md`
+- `package.json`
+- `netlify/functions/ask.js`
+- `rag/runtime/ask.js`
+- `rag/runtime/scripts/testAsk.js`
+- `rag/config/external-sources.json`
+- `rag/config/internal-pdfs.json`
+- `rag/ingestion/scripts/ingestExternal.js`
+- `rag/ingestion/sources/internal.js`
+- `supabase/scripts.js`
+- deleted old files: `rag/external-sources.json`, `rag/internal-pdfs.json`, `rag/scripts/supabase.js`
+
+Start by checking the current worktree, then either commit these changes or continue wiring a frontend UI to call the ask endpoint.
+
+Known blocker:
+
+- Full answer generation fails until `DEEPSEEK_API_KEY` is replaced with a valid key.
+
+Verification already completed in this session:
+
+- `npm run lint` passes.
+- `npm run build` passes with a longer timeout because image optimization produces large output.
+- `npm run rag:ingest:external -- --dry-run` reads the moved allowlist config and exits cleanly because the allowlist is empty.
+- `npm run rag:ask:test --retrieve-only -- "What does ARG Software do?"` returns 6 chunks from Supabase.
+- `npm run rag:ask:test -- "What does ARG Software do?"` reaches DeepSeek and fails with `401` due to invalid `DEEPSEEK_API_KEY`.
 
 Useful commands:
 
@@ -293,4 +375,7 @@ Useful commands:
 git status --short
 npm run lint
 npm run build
+npm run rag:ingest:external -- --dry-run
+npm run rag:ask:test --retrieve-only -- "What does ARG Software do?"
+npm run rag:ask:test -- "What does ARG Software do?"
 ```

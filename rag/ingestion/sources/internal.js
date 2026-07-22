@@ -132,11 +132,11 @@ async function loadBlogSources(rootDir) {
 }
 
 async function loadPdfSources(rootDir) {
-  const filePath = resolveRoot(rootDir, 'rag/internal-pdfs.json');
+  const filePath = resolveRoot(rootDir, 'rag/config/internal-pdfs.json');
   const pdfs = JSON.parse(await readFile(filePath, 'utf8'));
 
   if (!Array.isArray(pdfs)) {
-    throw new Error('rag/internal-pdfs.json must contain an array');
+    throw new Error('rag/config/internal-pdfs.json must contain an array');
   }
 
   return Promise.all(

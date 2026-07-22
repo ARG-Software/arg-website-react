@@ -1,13 +1,13 @@
 import { spawn } from 'node:child_process';
 
-import { loadLocalEnv } from '../config/loadLocalEnv.js';
+import { config } from 'dotenv';
 
-loadLocalEnv();
+config({ path: '.env', quiet: true });
 
 const command = process.argv[2];
 
 if (!command) {
-  throw new Error('Usage: node rag/scripts/supabase.js <link|push>');
+  throw new Error('Usage: node supabase/scripts.js <link|push>');
 }
 
 const argsByCommand = {

@@ -18,16 +18,16 @@
     "dev": "vite",
     "build": "npm run lint:fix && vite build",
     "preview": "vite preview",
-    "lint": "eslint src plugins --ext .js,.jsx",
-    "lint:fix": "eslint src plugins --ext .js,.jsx --fix",
+    "lint": "eslint src plugins rag supabase/scripts.js netlify/functions --ext .js,.jsx",
+    "lint:fix": "eslint src plugins rag supabase/scripts.js netlify/functions --ext .js,.jsx --fix",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "blog:import:medium": "node scripts/import-medium-articles.cjs",
     "blog:import:medium:drafts": "node scripts/import-medium-articles.cjs --drafts",
     "rag:ingest:internal": "node rag/ingestion/scripts/ingestInternal.js",
     "rag:ingest:external": "node rag/ingestion/scripts/ingestExternal.js",
     "rag:ask:test": "node rag/runtime/scripts/testAsk.js",
-    "supabase:link": "node rag/scripts/supabase.js link",
-    "supabase:push": "node rag/scripts/supabase.js push"
+    "supabase:link": "node supabase/scripts.js link",
+    "supabase:push": "node supabase/scripts.js push"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^8.0.0",
