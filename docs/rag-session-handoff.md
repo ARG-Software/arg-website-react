@@ -207,7 +207,8 @@ External ingestion should:
    - `supabase/config.toml`
    - `supabase/migrations/20260722000000_create_rag_schema.sql`
 
-3. Add shared RAG modules:
+3. Add shared RAG modules: done, but not committed yet.
+   - Files are grouped under `rag/config/`, `rag/clients/`, `rag/ingestion/processing/`, and `rag/ingestion/sources/`.
    - env validation.
    - Supabase server client.
    - Gemini embedding client.
@@ -253,12 +254,10 @@ Tables should support:
 
 Current worktree after this handoff update should contain uncommitted changes in:
 
-- `.env.example`
 - `docs/rag-session-handoff.md`
-- `supabase/config.toml`
-- `supabase/migrations/20260722000000_create_rag_schema.sql`
+- `rag/`
 
-Start by checking the current worktree, then implement the shared RAG modules.
+Start by checking the current worktree, then implement the ingestion scripts.
 
 Useful commands:
 
