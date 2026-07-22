@@ -196,16 +196,16 @@ External ingestion should:
 
 ## Next Implementation Steps
 
-1. Add dependencies: done, but not committed yet.
+1. Add dependencies: done and committed.
    - `@supabase/supabase-js@^2.58.0` in `dependencies`.
    - `dotenv@^17.4.2` in `devDependencies`.
    - `pdf-parse@^2.4.5` in `devDependencies`.
    - `cheerio@^1.2.0` in `devDependencies`.
    - Supabase was pinned to `^2.58.0` because newer `2.110.x` releases declare a Node 22 engine floor while Netlify is configured for Node 20.
 
-2. Add Supabase files:
+2. Add Supabase files: done and pushed to Supabase, but not committed yet.
    - `supabase/config.toml`
-   - first SQL migration for RAG schema.
+   - `supabase/migrations/20260722000000_create_rag_schema.sql`
 
 3. Add shared RAG modules:
    - env validation.
@@ -253,11 +253,12 @@ Tables should support:
 
 Current worktree after this handoff update should contain uncommitted changes in:
 
-- `package.json`
-- `package-lock.json`
+- `.env.example`
 - `docs/rag-session-handoff.md`
+- `supabase/config.toml`
+- `supabase/migrations/20260722000000_create_rag_schema.sql`
 
-Start by checking the current worktree, then commit the dependency/handoff update if desired. After that, implement the Supabase migration and shared RAG modules.
+Start by checking the current worktree, then implement the shared RAG modules.
 
 Useful commands:
 
