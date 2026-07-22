@@ -94,10 +94,6 @@ export async function retrieveRelevantChunks({
 }
 
 async function createRetrievalQuestion({ question, messages, config }) {
-  if (messages.length === 0) {
-    return question;
-  }
-
   return rewriteQuestion({
     question,
     messages,

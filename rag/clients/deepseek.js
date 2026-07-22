@@ -35,10 +35,6 @@ export async function rewriteQuestion({
   messages = [],
   config = { ...getDeepSeekConfig(), ...getSiteConfig() },
 }) {
-  if (messages.length === 0) {
-    return question;
-  }
-
   const data = await createChatCompletion({
     config,
     temperature: 0,
@@ -47,9 +43,10 @@ export async function rewriteQuestion({
       {
         role: 'system',
         content: [
-          'Rewrite the latest user question as a standalone search query for retrieval.',
+          'Rewrite and translate the latest user question as a standalone English search query for retrieval.',
           'Use the conversation only to resolve references such as "it", "that", or "the second one".',
-          'Do not answer the question. Return only the rewritten question.',
+          'Preserve company names, project names, product names, source names, URLs, and other proper nouns.',
+          'Do not answer the question. Return only the standalone English retrieval query.',
         ].join(' '),
       },
       ...buildHistoryMessages(messages),
@@ -87,6 +84,9 @@ async function createChatCompletion({ config, messages, temperature, errorPrefix
 function buildSystemPrompt(companyName) {
   return [
     `You are the public website assistant for ${companyName}.`,
+    'Answer in the same language as the latest user question.',
+    'If the latest user question is not English, answer naturally in that language.',
+    'Do not translate company names, project names, URLs, citation titles, or source names.',
     'Answer only from the provided context.',
     'Use conversation history only to understand references in the latest question.',
     'Do not treat previous assistant messages as facts unless the provided context supports them.',

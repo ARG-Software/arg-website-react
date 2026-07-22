@@ -181,7 +181,9 @@ The function handles:
 - JSON body validation.
 - Question required / max 1000 characters.
 - Optional conversation history validation.
-- Follow-up question rewriting before retrieval when history is provided.
+- DeepSeek rewrites/translates every question into a standalone English retrieval query before embedding.
+- Follow-up question reference resolution before retrieval when history is provided.
+- Answers are generated in the same language as the latest user question.
 - Safe public error responses for server errors.
 
 Do not add Netlify ingestion endpoints unless the architecture changes again.
@@ -327,7 +329,9 @@ Required fields:
    - Retrieval-only smoke test passes.
    - Full generation smoke test passes with the current `DEEPSEEK_API_KEY`.
    - Optional conversation history is supported through `messages`.
-   - Follow-up questions are rewritten into standalone retrieval queries before embedding.
+   - Questions are rewritten/translated into standalone English retrieval queries before embedding.
+   - Follow-up questions use conversation history to resolve references before retrieval.
+   - Answers preserve the latest user question language while keeping names, URLs, and citation titles unchanged.
 
 6. Add npm scripts for local/admin workflows: done.
    - `rag:ingest:internal`
@@ -380,6 +384,9 @@ Verification already completed in this session:
 - `npm run rag:ask:test -- --retrieve-only "What external profiles mention ARG Software?"` returns external profile chunks from Supabase.
 - `npm run rag:ask:test -- "What external profiles mention ARG Software?"` returns a generated answer with citations from DesignRush, GoodFirms, TechBehemoths, and LinkedIn.
 - `npm run rag:ask:test -- --external-profile-history "Tell me more about the second one"` verifies conversational follow-up rewriting and answering.
+- `npm run rag:ask:test -- "Quels profils externes mentionnent ARG Software ?"` verifies French question translation for retrieval and French answer generation.
+- `npm run rag:ask:test -- "Que perfis externos mencionam a ARG Software?"` verifies Portuguese question translation for retrieval and Portuguese answer generation.
+- `npm run rag:ask:test -- --external-profile-history "Parle-moi du deuxième"` verifies French follow-up reference resolution and French answer generation.
 
 Useful commands:
 
@@ -392,4 +399,7 @@ npm run rag:ask:test --retrieve-only -- "What does ARG Software do?"
 npm run rag:ask:test -- "What does ARG Software do?"
 npm run rag:ask:test -- "What external profiles mention ARG Software?"
 npm run rag:ask:test -- --external-profile-history "Tell me more about the second one"
+npm run rag:ask:test -- "Quels profils externes mentionnent ARG Software ?"
+npm run rag:ask:test -- "Que perfis externos mencionam a ARG Software?"
+npm run rag:ask:test -- --external-profile-history "Parle-moi du deuxième"
 ```
