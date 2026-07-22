@@ -1,190 +1,26 @@
 import React, { useEffect } from 'react';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
-import { homepageFaqItems } from '../../../data/faq';
 import { trackFAQOpen } from '../../../utils/analytics';
+import HOMEPAGE from '../../../data/homepage.json';
+import FAQ from '../../../data/faq.json';
 
-const faqData = [
-  {
-    ...homepageFaqItems[0],
-    a: (
-      <>
-        <p>
-          Our typical rate is around 70 EUR/USD per hour, but we do not force every project into the
-          same pricing model.
-        </p>
-        <p>
-          For ongoing or evolving work, hourly or monthly collaboration can make sense. For smaller,
-          well-defined projects, we can agree on an initial fee to start and a final payment on
-          delivery. For larger scopes, payments can be split by milestones or deliverables.
-        </p>
-        <p>Each case is reviewed individually. Before estimating, we usually define:</p>
-        <ul>
-          <li>The core workflows</li>
-          <li>The technical risks</li>
-          <li>The architecture direction</li>
-          <li>A realistic delivery range</li>
-        </ul>
-        <p>
-          Scope changes must be communicated clearly. If a change affects the current direction,
-          workload, timeline, or expected value, we review it together before continuing.
-        </p>
-      </>
-    ),
-  },
-  {
-    ...homepageFaqItems[1],
-    a: (
-      <>
-        <p>Most focused MVPs take 8 to 14 weeks, depending on:</p>
-        <ul>
-          <li>Feature complexity</li>
-          <li>Product clarity</li>
-          <li>Integration depth</li>
-          <li>Security or compliance needs</li>
-        </ul>
-        <p>
-          We move quickly, but we do not build throwaway foundations. The goal is a product you can
-          learn from and keep evolving.
-        </p>
-      </>
-    ),
-  },
-  {
-    ...homepageFaqItems[2],
-    a: (
-      <>
-        <p>
-          Yes. ARG works remotely with teams across regions. What matters is not location, but
-          whether the communication rhythm supports serious engineering work.
-        </p>
-        <ul>
-          <li>Clear written context</li>
-          <li>Direct technical conversations</li>
-          <li>Predictable async updates</li>
-          <li>Enough overlap for decisions</li>
-        </ul>
-        <p>If the problem is clear and the ownership is real, distance is not the blocker.</p>
-      </>
-    ),
-  },
-  {
-    ...homepageFaqItems[3],
-    a: (
-      <>
-        <p>Both. We support:</p>
-        <ul>
-          <li>Startups building launch-ready products</li>
-          <li>Companies modernizing fragile systems</li>
-          <li>Teams scaling performance or reliability</li>
-          <li>Organizations building internal platforms</li>
-        </ul>
-        <p>The common thread is technical ownership, not company size.</p>
-      </>
-    ),
-  },
-  {
-    ...homepageFaqItems[4],
-    a: (
-      <>
-        <p>
-          We choose technology for maintainability, team fit, and production requirements. The stack
-          is a tool, not the strategy.
-        </p>
-        <ul>
-          <li>Web: React, Next.js, TypeScript</li>
-          <li>Backend: Node.js, .NET, Java</li>
-          <li>Cloud: AWS, Azure, GCP</li>
-          <li>Mobile: React Native and Flutter</li>
-          <li>Databases: PostgreSQL, MongoDB</li>
-        </ul>
-        <p>The important part is choosing a system your team can operate after launch.</p>
-      </>
-    ),
-  },
-  {
-    ...homepageFaqItems[5],
-    a: (
-      <>
-        <p>Quality starts before implementation. We make the important decisions explicit:</p>
-        <ul>
-          <li>Architecture boundaries</li>
-          <li>Testing strategy</li>
-          <li>Code reviews</li>
-          <li>CI/CD and release flow</li>
-          <li>Observability and recovery paths</li>
-          <li>Security and data constraints</li>
-        </ul>
-        <p>We build software meant to evolve, not be rewritten after year one.</p>
-      </>
-    ),
-  },
-  {
-    ...homepageFaqItems[6],
-    a: (
-      <>
-        <p>Yes. Some of our most valuable work happens after launch:</p>
-        <ul>
-          <li>Performance optimization</li>
-          <li>Reliability improvements</li>
-          <li>Cloud and platform work</li>
-          <li>Feature evolution</li>
-          <li>Senior team extension</li>
-        </ul>
-        <p>We prefer long-term ownership over one-off handoffs.</p>
-      </>
-    ),
-  },
-  {
-    ...homepageFaqItems[7],
-    a: (
-      <>
-        <p>Yes. Depending on the need, we can provide:</p>
-        <ul>
-          <li>A focused product team</li>
-          <li>Senior engineers embedded with your team</li>
-          <li>Architecture or consulting support</li>
-        </ul>
-        <p>We adapt the model to the work, but keep the team senior and accountable.</p>
-      </>
-    ),
-  },
-  {
-    ...homepageFaqItems[8],
-    a: (
-      <>
-        <p>Our process is intentionally simple:</p>
-        <ul>
-          <li>Understand the context</li>
-          <li>Map the risks</li>
-          <li>Design the architecture</li>
-          <li>Build in short cycles</li>
-          <li>Launch and stay close</li>
-        </ul>
-        <p>You get visibility without process theatre.</p>
-      </>
-    ),
-  },
-  {
-    ...homepageFaqItems[9],
-    a: (
-      <>
-        <p>Send us the context first. We look for the shape of the problem:</p>
-        <ul>
-          <li>Your product goals</li>
-          <li>Technical constraints</li>
-          <li>Current risks</li>
-          <li>Timeline expectations</li>
-        </ul>
-        <p>
-          If there is a fit, the first conversation is technical. If there is not, we will say that
-          clearly.
-        </p>
-      </>
-    ),
-  },
-];
+const faqData = FAQ.items;
 
-export function FAQSection({ className = '' }) {
+function renderAnswerBlock(block, index) {
+  if (block.type === 'list') {
+    return (
+      <ul key={index}>
+        {block.items.map(item => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    );
+  }
+
+  return <p key={index}>{block.text}</p>;
+}
+
+export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faqData }) {
   // Inlined useFAQAnimations hook
   useEffect(() => {
     const items = document.querySelectorAll('.faq_item');
@@ -308,13 +144,13 @@ export function FAQSection({ className = '' }) {
           <div className="faq_header home-section-header">
             <div className="heading_wrap">
               <h2 className="home-section-title">
-                Common questions,
+                {content.title[0]}
                 <br />
-                honest answers.
+                {content.title[1]}
               </h2>
             </div>
             <div className="subtitle_tag-wrapper hide-mobile-landscape">
-              <div>FAQ</div>
+              <div>{content.eyebrow}</div>
             </div>
           </div>
           <div
@@ -323,14 +159,14 @@ export function FAQSection({ className = '' }) {
             data-animate-default-preset="fade-up"
             data-animate-default-stagger="150"
           >
-            {faqData.map((item, i) => (
+            {items.map((item, i) => (
               <div key={i} className="faq_item" data-animate-order={i}>
                 <button className="faq_question" aria-expanded="false">
                   <span className="faq_question_text">{item.q}</span>
                   <div className="faq_icon arrow_icon-embed">{arrowSvg}</div>
                 </button>
                 <div className="faq_answer">
-                  <div className="faq_answer_inner">{item.a}</div>
+                  <div className="faq_answer_inner">{item.answer.map(renderAnswerBlock)}</div>
                 </div>
               </div>
             ))}

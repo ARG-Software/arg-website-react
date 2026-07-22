@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import '../../../styles/elfsight.css';
+import HOMEPAGE from '../../../data/homepage.json';
 
 const ELFSIGHT_APP_SELECTOR = '.elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b';
 const ELFSIGHT_CARD_SELECTOR =
@@ -71,7 +72,7 @@ function normalizeElfsightFeed(container) {
   });
 }
 
-export function SocialSection({ className = '' }) {
+export function SocialSection({ className = '', content = HOMEPAGE.social }) {
   const observersRef = useRef([]);
 
   const handleLoadMoreClick = e => {
@@ -197,12 +198,10 @@ export function SocialSection({ className = '' }) {
           <div className="blog-component">
             <div className="home-section-header" data-animate-order="0">
               <div>
-                <h2 className="home-section-title home-section-title--light">
-                  What we share outside the site
-                </h2>
+                <h2 className="home-section-title home-section-title--light">{content.title}</h2>
               </div>
               <div className="subtitle_tag-wrapper is--white hide-mobile-landscape">
-                <div>Social</div>
+                <div>{content.eyebrow}</div>
               </div>
             </div>
             <div className="swiper_blog-component" data-animate-order="1">

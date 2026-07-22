@@ -1,0 +1,31 @@
+{
+  "seo": {
+    "title": "Partners",
+    "description": "Meet the companies Arg Software has partnered with across fintech, open payments, music technology, Web3, consultancy, and industry platforms."
+  },
+  "hero": {
+    "title": ["Trusted by the teams", "building what matters."],
+    "breadcrumbs": [{ "label": "Home", "path": "/" }, { "label": "Partners" }],
+    "sideItems": [
+      { "label": "Partners", "href": "#partners" },
+      { "label": "Partnership timeline", "href": "#timeline" },
+      { "label": "Start a project", "href": "#page-cta" }
+    ]
+  },
+  "clients": {
+    "intro": "ARG works with teams building payment rails, music platforms, venture-backed products, and operational systems where reliability matters."
+  },
+  "timeline": {
+    "heading": "Built on lasting partnerships"
+  },
+  "cta": {
+    "title": "Ready to build",
+    "titleHighlight": "something that lasts?",
+    "mobileTitleHighlight": "with us?",
+    "buttonTextNotHover": "Book a Meeting",
+    "buttonTextHover": "Let's meet"
+  },
+  "drawer": {
+    "visitLabel": "Visit website"
+  }
+}

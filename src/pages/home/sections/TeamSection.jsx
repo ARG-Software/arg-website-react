@@ -2,31 +2,18 @@ import React from 'react';
 import { linkedinSvg } from '../../../components/icons/SocialIcons';
 import { trackSocial } from '../../../utils/analytics';
 import { getPersonLinkedInLink, PERSON_KEYS } from '../../../services/linksservice';
+import HOMEPAGE from '../../../data/homepage.json';
 
-const teamMembers = [
-  {
-    name: 'Jose Antunes',
-    role: 'Co-founder, Software Engineer',
-    linkedin: getPersonLinkedInLink(PERSON_KEYS.JOSE),
-    imgSrc:
-      'https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9.jpg',
-    imgSrcSet:
-      'https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9-p-500.jpg 500w, https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9-p-800.jpg 800w, https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9.jpg 1024w',
-    imgAlt: 'JoseAntunes - ARG',
-  },
-  {
-    name: 'Rui Rocha',
-    role: 'Co-founder, Software Engineer',
-    linkedin: getPersonLinkedInLink(PERSON_KEYS.RUI),
-    imgSrc:
-      'https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1).jpg',
-    imgSrcSet:
-      'https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1)-p-500.jpg 500w, https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1)-p-800.jpg 800w, https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1).jpg 1024w',
-    imgAlt: 'RuiRocha - ARG',
-  },
-];
+function resolveTeamMembers(members) {
+  return members.map(member => ({
+    ...member,
+    linkedin: getPersonLinkedInLink(PERSON_KEYS[member.personKey]),
+  }));
+}
 
-export function TeamSection({ className = '' }) {
+export function TeamSection({ className = '', content = HOMEPAGE.team }) {
+  const teamMembers = resolveTeamMembers(content.members);
+
   return (
     <section
       id="team"
@@ -40,20 +27,18 @@ export function TeamSection({ className = '' }) {
         <div className="container-medium">
           <div className="team-component">
             <div id="team-subtitle-grid" data-animate-order="0">
-              <div className="subtitle_tag-wrapper hide-mobile-landscape">Meet Our Team</div>
+              <div className="subtitle_tag-wrapper hide-mobile-landscape">{content.eyebrow}</div>
             </div>
             <div className="team-content">
               <div className="team_header-wrapper">
                 <div className="heading_wrap">
                   <h2 className="home-section-title" data-animate="fade-up" data-animate-order="1">
-                    Built by Engineers
+                    {content.title}
                   </h2>
                 </div>
                 <div className="padding-bottom padding-30-44"></div>
                 <p className="text-color-grey" data-animate-order="2">
-                  ARG is led by senior engineers who stay close to the architecture, code, and
-                  production reality. You do not get layers of account management. You work with the
-                  people responsible for the technical decisions.
+                  {content.intro}
                 </p>
               </div>
               <div className="padding-bottom padding-80-74"></div>

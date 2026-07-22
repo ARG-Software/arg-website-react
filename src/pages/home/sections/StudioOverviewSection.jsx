@@ -4,23 +4,9 @@ import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { TransitionContext } from '../../../providers/TransitionProvider';
 import { trackEvent } from '../../../utils/analytics';
 
-const overviewValues = [
-  {
-    title: 'Solid architecture',
-    description: 'Built to scale - structural decisions that hold as load and complexity grow.',
-  },
-  {
-    title: 'Clean code',
-    description: 'Maintainable by design, so the next change is never the expensive one.',
-  },
-  {
-    title: 'True partnership',
-    description:
-      'From first sprint to future iterations - accountable in production, not a handoff.',
-  },
-];
+import HOMEPAGE from '../../../data/homepage.json';
 
-export function StudioOverviewSection({ className = '' }) {
+export function StudioOverviewSection({ className = '', content = HOMEPAGE.overview }) {
   const { scrollToHash } = useContext(TransitionContext);
 
   const handleContactClick = event => {
@@ -53,17 +39,15 @@ export function StudioOverviewSection({ className = '' }) {
           <div className="home-overview__intro">
             <h2 id="overview-heading-grid" className="home-overview__heading">
               <span className="heading_line" data-animate-order="0">
-                Custom software,
+                {content.title[0]}
               </span>
               <span className="heading_line text-color-gradiant" data-animate-order="1">
-                endless potential
+                {content.title[1]}
               </span>
             </h2>
 
             <p className="home-overview__lead" data-animate-order="2">
-              ARG builds digital products designed to grow with your business. From early MVPs to
-              systems that need to scale, we work as a long-term engineering partner, not a handoff
-              vendor.
+              {content.lead}
             </p>
 
             <a
@@ -74,18 +58,18 @@ export function StudioOverviewSection({ className = '' }) {
               onClick={handleContactClick}
             >
               <div className="text-button_list is-dark">
-                <div className="text-button_text">Build with ARG</div>
+                <div className="text-button_text">{content.cta.label}</div>
                 <div className="arrow_icon-embed">{arrowSvg}</div>
               </div>
               <div className="text-button_list is-animated is-dark">
-                <div className="text-button_text">Start a project</div>
+                <div className="text-button_text">{content.cta.hoverLabel}</div>
                 <div className="arrow_icon-embed">{arrowSvg}</div>
               </div>
             </a>
           </div>
 
           <div className="home-overview__values" aria-label="ARG engineering principles">
-            {overviewValues.map((value, index) => (
+            {content.values.map((value, index) => (
               <article
                 className="home-overview__value"
                 key={value.title}
@@ -99,7 +83,7 @@ export function StudioOverviewSection({ className = '' }) {
               </article>
             ))}
 
-            <div className="home-overview__more" data-animate-order={overviewValues.length + 5}>
+            <div className="home-overview__more" data-animate-order={content.values.length + 5}>
               <AppLink
                 to="/about-us/"
                 className="text-button"
@@ -107,11 +91,11 @@ export function StudioOverviewSection({ className = '' }) {
                 trackData={{ source_path: '/' }}
               >
                 <div className="text-button_list is-dark">
-                  <div className="text-button_text">Learn more about ARG</div>
+                  <div className="text-button_text">{content.aboutCta.label}</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
                 <div className="text-button_list is-animated is-dark">
-                  <div className="text-button_text">Read the full story</div>
+                  <div className="text-button_text">{content.aboutCta.hoverLabel}</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
               </AppLink>

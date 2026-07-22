@@ -1,8 +1,9 @@
 import { CTASection } from '../../../components/layout/CTASection';
 import { trackCTA } from '../../../utils/analytics';
 import { getPortfolioLink, getProjectBriefFormLink } from '../../../services/linksservice';
+import HOMEPAGE from '../../../data/homepage.json';
 
-export function ContactSection({ className = '' }) {
+export function ContactSection({ className = '', content = HOMEPAGE.contact }) {
   return (
     <section
       id="contact"
@@ -15,14 +16,14 @@ export function ContactSection({ className = '' }) {
           <CTASection
             wrapInSection={false}
             includePadding={false}
-            title="Hard problem?"
-            titleHighlight="Let's solve it"
-            buttonTextNotHover="Portfolio"
-            buttonTextHover="See proof"
+            title={content.title}
+            titleHighlight={content.titleHighlight}
+            buttonTextNotHover={content.buttonTextNotHover}
+            buttonTextHover={content.buttonTextHover}
             buttonLink={getPortfolioLink()}
             onPrimaryClick={() => trackCTA('portfolio', 'homepage_cta')}
-            secondButtonTextNotHover="Start brief"
-            secondButtonTextHover="2 min"
+            secondButtonTextNotHover={content.secondButtonTextNotHover}
+            secondButtonTextHover={content.secondButtonTextHover}
             secondButtonLink={getProjectBriefFormLink()}
             onSecondaryClick={() => trackCTA('contact_brief', 'homepage_contact')}
             animate={true}

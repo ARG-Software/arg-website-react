@@ -2,7 +2,7 @@ import { SectionDivider } from './SectionDivider';
 import { trackSocial } from '../../utils/analytics';
 import { MarkNameWhite } from '../icons/MarkNameWhite';
 import AppLink from '../navigation/AppLink';
-import SERVICES from '../../data/services.json';
+import SITE from '../../data/site.json';
 import {
   EMAIL_KEYS,
   getCompanySocialLinks,
@@ -47,7 +47,7 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
               <div className="footer-left__logo">
                 <MarkNameWhite />
               </div>
-              <div className="footer-left__tagline">Architecture-First Software Studio</div>
+              <div className="footer-left__tagline">{SITE.footer.tagline}</div>
             </div>
 
             {/* Panel 2 — Nav / Services / Contact / Social / CTA / Bottom */}
@@ -76,7 +76,7 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
                 <div className="footer-nav-col">
                   <div className="footer-col-title">Services</div>
                   <div className="footer-col-list">
-                    {SERVICES.services.map(item => (
+                    {SITE.footer.services.map(item => (
                       <span key={item} className="footer-col-text">
                         {item}
                       </span>

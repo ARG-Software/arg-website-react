@@ -3,6 +3,7 @@ import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { Pill } from '../../../components/pills/Pill';
 import { trackBlogPostClick } from '../../../utils/analytics';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
+import HOMEPAGE from '../../../data/homepage.json';
 
 function getTagColorStyle(tag) {
   let hash = 0;
@@ -54,7 +55,7 @@ function displayBlogGridRow(blogPosts = [], startOrder = 0) {
   );
 }
 
-export function BlogPromoSection({ blogPosts, className = '' }) {
+export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE.blogPromo }) {
   const heroPost = blogPosts[0];
   const gridPosts = blogPosts.slice(1, 7);
   const heroTagStyle = getTagColorStyle(heroPost.tag);
@@ -74,14 +75,14 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
             <div className="home-section-header">
               <div>
                 <h2 className="home-section-title home-section-title--light" data-animate-order="0">
-                  Engineering Field Notes
+                  {content.title}
                 </h2>
               </div>
               <div
                 className="subtitle_tag-wrapper is--white hide-mobile-landscape"
                 data-animate-order="1"
               >
-                <div>Blog</div>
+                <div>{content.eyebrow}</div>
               </div>
             </div>
             <AppLink
@@ -121,11 +122,11 @@ export function BlogPromoSection({ blogPosts, className = '' }) {
             <div className="blog-promo_footer" data-animate-order="10">
               <AppLink to="/blog/" className="text-button text-button--align-end">
                 <div className="text-button_list">
-                  <div className="text-button_text text-no-wrap">Read blog</div>
+                  <div className="text-button_text text-no-wrap">{content.cta.label}</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
                 <div className="text-button_list is-animated">
-                  <div className="text-button_text text-no-wrap">Browse posts</div>
+                  <div className="text-button_text text-no-wrap">{content.cta.hoverLabel}</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
               </AppLink>

@@ -1,0 +1,100 @@
+{
+  "seo": {
+    "title": "Careers",
+    "openRolesDescription": "Explore open roles at Arg Software and apply to join an architecture-first engineering team building complex production systems.",
+    "noRolesDescription": "Arg Software is not hiring today. Learn what we look for in architecture-first engineers and how to reach the founders directly."
+  },
+  "hero": {
+    "openRolesTitle": ["Careers at ARG", "Open Roles"],
+    "noRolesTitle": ["Careers at ARG", "No Open Roles Today"],
+    "openRolesSubtitle": "Every role is scoped for meaningful ownership on production systems. No hiring theatre, no filler seats.",
+    "noRolesSubtitle": "We are not hiring for a specific role today, but we still want to hear from engineers who think like us. The next opening is often shaped around someone we already know.",
+    "breadcrumbs": [{ "label": "Home", "path": "/" }, { "label": "Careers" }],
+    "openRolesSideItems": [
+      { "label": "Open Roles", "href": "#roles" },
+      { "label": "How to Apply", "href": "#apply" },
+      { "label": "Contact", "href": "#contact" }
+    ],
+    "noRolesSideItems": [
+      { "label": "Who We Look For", "href": "#who" },
+      { "label": "Talk to the Founders", "href": "#founders" },
+      { "label": "Contact", "href": "#contact" }
+    ]
+  },
+  "roles": {
+    "title": "The team is",
+    "titleHighlight": "growing.",
+    "subtitle": "Focused openings across engineering, infrastructure, product, security, and data. Each one is built for senior contributors with a direct feedback loop."
+  },
+  "hiring": {
+    "title": "How we",
+    "titleHighlight": "hire.",
+    "subtitle": "Four steps. No take-home puzzles, no ghost stages. We move fast when we find the right person."
+  },
+  "applicationForm": {
+    "title": "Apply for a role",
+    "description": "Reviewed by founders directly - no recruiter in the middle.",
+    "submitLabel": "Send application",
+    "helperText": "We reply to every application.",
+    "subject": "New ARG career application",
+    "fields": {
+      "name": { "label": "Full name", "placeholder": "Your name" },
+      "email": { "label": "Email", "placeholder": "you@example.com" },
+      "role": { "label": "Role", "placeholder": "Select a role" },
+      "linkedin": {
+        "label": "LinkedIn or portfolio - optional",
+        "placeholder": "https://linkedin.com/in/yourprofile"
+      },
+      "message": {
+        "label": "Why ARG? What have you built?",
+        "placeholder": "A few lines about your work, what you value in a team, and why now..."
+      },
+      "cv": { "label": "CV / portfolio" }
+    }
+  },
+  "who": {
+    "title": "Not hiring today. But here's",
+    "titleHighlight": "who we look for.",
+    "subtitle": "We stay intentionally small and selective. If this sounds like the kind of team where you would do your best work, reach out early - the right conversations are worth having before a role exists."
+  },
+  "founders": {
+    "title": "We're small.",
+    "titleHighlight": "Talk to a founder directly.",
+    "intro": "No recruiter wall, no ATS black hole. If you think you'd fit at ARG, the fastest way in is a short note to one of us.",
+    "cards": [
+      {
+        "name": "Jose Antunes",
+        "initials": "JA",
+        "role": "Co-founder - Software Engineer",
+        "focus": "Backend - Systems - Data - AI",
+        "replyTime": "~ 36 hours",
+        "personKey": "JOSE",
+        "emailKey": "JOSE",
+        "emailSubject": "Career Inquiry - Jose Antunes"
+      },
+      {
+        "name": "Rui Rocha",
+        "initials": "RR",
+        "role": "Co-founder - Software Engineer",
+        "focus": "Frontend - Mobile - AI",
+        "replyTime": "~ 36 hours",
+        "personKey": "RUI",
+        "emailKey": "RUI",
+        "emailSubject": "Career Inquiry - Rui Rocha"
+      }
+    ]
+  },
+  "cta": {
+    "openRolesTitle": "Ready to apply,",
+    "openRolesTitleHighlight": "show us your work.",
+    "openRolesMobileTitle": "Ready to apply?",
+    "openRolesMobileTitleHighlight": "Show us your work.",
+    "openRolesButtonText": "Email careers",
+    "noRolesTitle": "Think you'd fit,",
+    "noRolesTitleHighlight": "reach out anyway.",
+    "noRolesMobileTitle": "Think you'd fit?",
+    "noRolesMobileTitleHighlight": "Reach out.",
+    "noRolesButtonText": "Send us a message",
+    "buttonTextHover": "Let's talk"
+  }
+}

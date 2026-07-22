@@ -23,8 +23,8 @@ import { FAQSection } from './sections/FAQSection';
 import { ContactSection } from './sections/ContactSection';
 import PROJECTS from '../../data/projects.json';
 import PARTNERS from '../../data/partners.json';
-import SERVICES from '../../data/services.json';
-import { homepageFaqItems } from '../../data/faq';
+import HOMEPAGE from '../../data/homepage.json';
+import FAQ from '../../data/faq.json';
 
 export default function HomePage() {
   const [blogPosts] = useState(() => loadBlogPosts().slice(0, HOMEPAGE_BLOG_POSTS_COUNT));
@@ -33,11 +33,11 @@ export default function HomePage() {
 
   return (
     <>
-      <SEO path="/" jsonLd={buildFAQPageSchema(homepageFaqItems)} />
+      <SEO path="/" jsonLd={buildFAQPageSchema(FAQ.items)} />
       <div className="page-wrapper home-page">
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">
-          <HeroSection />
+          <HeroSection content={HOMEPAGE.hero} />
 
           <section
             id="partners"
@@ -83,11 +83,13 @@ export default function HomePage() {
             >
               <AppLink to="/partners/" className="text-button text-button--align-end meet-up-align">
                 <div className="text-button_list is-dark">
-                  <div className="text-button_text">View partners</div>
+                  <div className="text-button_text">{HOMEPAGE.partners.cta.label}</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
                 <div className="text-button_list is-animated is-dark">
-                  <div className="text-button_text meet-text">Who trusts us</div>
+                  <div className="text-button_text meet-text">
+                    {HOMEPAGE.partners.cta.hoverLabel}
+                  </div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
               </AppLink>
@@ -105,7 +107,7 @@ export default function HomePage() {
           >
             <Marquee repetitions={2} trackClassName="infinity_list">
               <p className="infinity_text" data-animate="fade-up">
-                {SERVICES.infinityBand.map(service => (
+                {HOMEPAGE.infinityBand.map(service => (
                   <span className="infinity_item" key={service}>
                     <span className="infinity_label">{service}</span>
                     <span className="infinity_dot" aria-hidden="true">
@@ -117,15 +119,15 @@ export default function HomePage() {
             </Marquee>
           </div>
 
-          <ServicesSection />
-          <ProjectsSection projects={PROJECTS} />
-          <TestimonialsSection />
-          <WorkStatsSection />
-          <TeamSection />
-          <BlogPromoSection blogPosts={blogPosts} />
-          <SocialSection />
-          <FAQSection />
-          <ContactSection />
+          <ServicesSection content={HOMEPAGE.services} />
+          <ProjectsSection projects={PROJECTS} content={HOMEPAGE.projects} />
+          <TestimonialsSection testimonials={HOMEPAGE.testimonials} />
+          <WorkStatsSection content={HOMEPAGE.workStats} />
+          <TeamSection content={HOMEPAGE.team} />
+          <BlogPromoSection blogPosts={blogPosts} content={HOMEPAGE.blogPromo} />
+          <SocialSection content={HOMEPAGE.social} />
+          <FAQSection content={HOMEPAGE.faq} items={FAQ.items} />
+          <ContactSection content={HOMEPAGE.contact} />
         </main>
         <Footer />
       </div>

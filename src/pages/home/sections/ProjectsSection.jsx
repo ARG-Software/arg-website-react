@@ -1,11 +1,12 @@
 import { ProjectItem } from '../../../components/cards/ProjectItem';
 import { ANIMATION_PRESETS } from '../../../animations/attribute-presets';
 import { trackEvent, trackOutbound } from '../../../utils/analytics';
+import HOMEPAGE from '../../../data/homepage.json';
 
 const PROJECT_GRID_PATTERN_ROWS = [1, 2, 2, 3, 4, 4];
 const PROJECT_GRID_ROW_STRIDE = 7;
 
-export function ProjectsSection({ projects, className = '' }) {
+export function ProjectsSection({ projects, className = '', content = HOMEPAGE.projects }) {
   return (
     <section
       id="cases"
@@ -23,16 +24,14 @@ export function ProjectsSection({ projects, className = '' }) {
               data-animate={ANIMATION_PRESETS.fadeUp}
               data-animate-order="0"
             >
-              Proof in production, not promises.
+              {content.title}
             </h2>
             <p
               className="home-projects__intro"
               data-animate={ANIMATION_PRESETS.fadeUp}
               data-animate-order="1"
             >
-              This is a public selection, not the full archive. Many engagements stay private by
-              design; these are the projects we can discuss within client privacy and NDA
-              agreements.
+              {content.intro}
             </p>
           </div>
           <div
@@ -40,7 +39,7 @@ export function ProjectsSection({ projects, className = '' }) {
             data-animate={ANIMATION_PRESETS.fadeUp}
             data-animate-order="2"
           >
-            <div>Use Cases</div>
+            <div>{content.tag}</div>
           </div>
         </div>
         <div className="projects_list_wrap">

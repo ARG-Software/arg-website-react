@@ -12,106 +12,9 @@ import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { TechStackConsole } from '@components/widgets/TechStackConsole';
 import { StepProgressTimeline } from '@components/grids/StepProgressTimeline';
+import WORKING_WITH_US from '../data/workingWithUs.json';
 import '../styles/careers.css';
 import '../styles/step-progress-timeline.css';
-
-const INTERNAL_VALUES = [
-  {
-    title: 'Architecture first',
-    description:
-      "The system is designed before it's written. If we can't explain it clearly, we don't build it yet.",
-    antiValue: 'ship fast, fix later',
-  },
-  {
-    title: 'No patchwork',
-    description:
-      "If a fix needs a workaround, we refactor the abstraction. Band-aids compound; we'd rather pay the cost now.",
-    antiValue: 'good enough for now',
-  },
-  {
-    title: 'Production on a Tuesday',
-    description:
-      'We deploy when we can stay close. We own what we ship: bugs, performance, and the unexpected page.',
-    antiValue: 'merge Friday, ghost the weekend',
-  },
-  {
-    title: 'Direct, kind, no politics',
-    description:
-      'Honest in code review, honest in retro. Small team means every personality compounds.',
-    antiValue: "let's circle back offline",
-  },
-];
-
-const FIT_CHECKS = [
-  {
-    title: 'High-stakes architecture',
-    description:
-      'You are making decisions that will shape the product for years: platform design, migrations, integrations, or a system that needs to scale without becoming fragile.',
-  },
-  {
-    title: 'Production reliability',
-    description:
-      'The system is already live, or close to it, and performance, observability, recovery, or operational confidence matters more than another feature sprint.',
-  },
-  {
-    title: 'Senior execution',
-    description:
-      'You do not need a large vendor layer. You need people who can reason about the product, write the code, and stay accountable when it reaches production.',
-  },
-];
-
-const CONVERSATION_STEPS = [
-  {
-    title: 'Send context',
-    description: 'Share the product, constraint, or technical risk you need to solve.',
-  },
-  {
-    title: 'We review the problem',
-    description: 'We look for fit before suggesting calls, proposals, or unnecessary process.',
-  },
-  {
-    title: 'You speak with someone technical',
-    description: 'The first conversation is with someone who can reason about the system.',
-  },
-  {
-    title: 'We suggest the next move',
-    description: 'You leave with a clear recommendation, even if that means ARG is not the fit.',
-  },
-];
-
-const WHY_US_PILLARS = [
-  {
-    index: '01 - Method',
-    metricValue: 100,
-    metricSuffix: '%',
-    unit: 'of projects',
-    title: 'Diagram first. Then code.',
-    description:
-      'Every engagement opens with a written technical plan you can argue with. Two days on architecture beats two weeks unpicking a wrong call.',
-  },
-  {
-    index: '02 - Domain',
-    metricValue: 10,
-    metricSuffix: 'k',
-    unit: 'tx/sec, live',
-    title: 'The systems that cannot fall over.',
-    description:
-      'Open-payment rails, real-time audio sync, exchange order flow. The work where "usually works" is not good enough.',
-  },
-  {
-    index: '03 - Craft',
-    metricValue: 0,
-    unit: 'band-aids shipped',
-    title: 'Gold standard, not trendy.',
-    description:
-      'Battle-tested tools we have used under pressure, not the ones with the loudest feed. Clean code, clear ownership, easy hand-off when we are done.',
-  },
-];
-
-const TECH_STACK_INTRO = {
-  title: 'The tools are not the point. The operating history is.',
-  text: 'This console maps the stack we trust when a system needs to stay observable, scalable, and easy to hand over after the hard part is done.',
-};
 
 const CONVERSATION_STEP_INTERVAL_MS = 6000;
 
@@ -122,8 +25,8 @@ export default function WorkingWithUsPage() {
   return (
     <>
       <SEO
-        title="Working with Us"
-        description="Work with Arg Software when architecture, reliability, and senior execution matter from the first technical decision to production."
+        title={WORKING_WITH_US.seo.title}
+        description={WORKING_WITH_US.seo.description}
         path="/working-with-us/"
       />
       <div className="page-wrapper">
@@ -131,15 +34,10 @@ export default function WorkingWithUsPage() {
 
         <main className="main-wrapper background-color-dark">
           <PageHeader
-            title={['Work With', 'Arg Software']}
-            subtitle="Work with a small architecture-first team that designs the system before writing it, then stays close when it reaches production."
-            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Working with Us' }]}
-            sideItems={[
-              { label: 'Why ARG', href: '#why-us' },
-              { label: 'How we work', href: '#values' },
-              { label: 'Fit check', href: '#fit-check' },
-              { label: 'Start a conversation', href: '#contact' },
-            ]}
+            title={WORKING_WITH_US.hero.title}
+            subtitle={WORKING_WITH_US.hero.subtitle}
+            breadcrumbs={WORKING_WITH_US.hero.breadcrumbs}
+            sideItems={WORKING_WITH_US.hero.sideItems}
             size="small"
           />
 
@@ -156,22 +54,20 @@ export default function WorkingWithUsPage() {
                 <header className="cp-whyus-header" data-animate-order="0">
                   <div>
                     <h2 className="cp-whyus-title">
-                      We don't do <span className="cp-whyus-strike">patchwork.</span> We design the
-                      system <span>before we write it.</span>
+                      {WORKING_WITH_US.whyUs.title.beforeStrike}{' '}
+                      <span className="cp-whyus-strike">{WORKING_WITH_US.whyUs.title.strike}</span>{' '}
+                      {WORKING_WITH_US.whyUs.title.middle}{' '}
+                      <span>{WORKING_WITH_US.whyUs.title.highlight}</span>
                     </h2>
                   </div>
                   <aside className="cp-whyus-side">
-                    <p>
-                      ARG is a small, opinionated engineering team. We take on hard problems on
-                      purpose: systems where architecture, reliability, and ownership matter from
-                      day one.
-                    </p>
-                    <span>ARG Team</span>
+                    <p>{WORKING_WITH_US.whyUs.aside.text}</p>
+                    <span>{WORKING_WITH_US.whyUs.aside.label}</span>
                   </aside>
                 </header>
 
                 <div className="cp-whyus-pillars">
-                  {WHY_US_PILLARS.map((pillar, index) => (
+                  {WORKING_WITH_US.whyUs.pillars.map((pillar, index) => (
                     <article
                       key={pillar.index}
                       className="cp-whyus-pillar"
@@ -203,12 +99,17 @@ export default function WorkingWithUsPage() {
 
                 <div className="cp-tech-intro" data-animate-order="4">
                   <div>
-                    <h3>{TECH_STACK_INTRO.title}</h3>
-                    <p>{TECH_STACK_INTRO.text}</p>
+                    <h3>{WORKING_WITH_US.whyUs.techStackIntro.title}</h3>
+                    <p>{WORKING_WITH_US.whyUs.techStackIntro.text}</p>
                   </div>
                 </div>
 
-                <TechStackConsole className="cp-whyus-console" animate={true} animationOrder={5} />
+                <TechStackConsole
+                  className="cp-whyus-console"
+                  data={WORKING_WITH_US.whyUs.techStackConsole}
+                  animate={true}
+                  animationOrder={5}
+                />
               </div>
               <div className="padding-bottom padding-80-40"></div>
               <SectionDivider variant="default" hideOnMobile={false} />
@@ -221,15 +122,12 @@ export default function WorkingWithUsPage() {
               <div className="container padding-global cp-values-inner">
                 <div className="cp-section-header" data-animate-order="0">
                   <h2 className="cp-section-title">
-                    <span className="cp-line">Four things we actually mean.</span>
+                    <span className="cp-line">{WORKING_WITH_US.values.title}</span>
                   </h2>
-                  <p className="cp-section-subtitle">
-                    Most companies list values that could belong to anyone. Ours are operational:
-                    they decide what we ship, what we refuse, and who fits on the team.
-                  </p>
+                  <p className="cp-section-subtitle">{WORKING_WITH_US.values.subtitle}</p>
                 </div>
                 <div className="cp-values-grid">
-                  {INTERNAL_VALUES.map((value, index) => (
+                  {WORKING_WITH_US.values.items.map((value, index) => (
                     <BaseCard
                       key={value.title}
                       className="cp-value-card"
@@ -260,21 +158,21 @@ export default function WorkingWithUsPage() {
                 <div className="cp-fit-header" data-animate-order="0">
                   <div>
                     <h2>
-                      Not every project needs ARG. <span>The hard ones usually do.</span>
+                      {WORKING_WITH_US.fitCheck.title}{' '}
+                      <span>{WORKING_WITH_US.fitCheck.titleHighlight}</span>
                     </h2>
-                    <p>
-                      Before we talk scope, we look for the shape of the problem: where the risk is,
-                      what needs to stay reliable, and whether a small senior team can make a real
-                      difference.
-                    </p>
+                    <p>{WORKING_WITH_US.fitCheck.intro}</p>
                   </div>
                 </div>
 
                 <div className="cp-fit-panel" data-animate-order="1">
                   <section className="cp-fit-block" aria-label="Where ARG fits">
-                    <SectionTicker label="Where ARG fits" className="cp-fit-ticker" />
+                    <SectionTicker
+                      label={WORKING_WITH_US.fitCheck.fitTicker}
+                      className="cp-fit-ticker"
+                    />
                     <div className="cp-fit-columns">
-                      {FIT_CHECKS.map(item => (
+                      {WORKING_WITH_US.fitCheck.checks.map(item => (
                         <article key={item.title} className="cp-fit-column">
                           <div className="cp-fit-column-title">
                             <span className="cp-fit-accent" aria-hidden="true" />
@@ -288,18 +186,21 @@ export default function WorkingWithUsPage() {
 
                   <section
                     className="cp-fit-block cp-fit-block--process"
-                    aria-label="How it starts"
+                    aria-label={WORKING_WITH_US.fitCheck.processAriaLabel}
                   >
-                    <SectionTicker label="How it starts" className="cp-fit-ticker" />
+                    <SectionTicker
+                      label={WORKING_WITH_US.fitCheck.processTicker}
+                      className="cp-fit-ticker"
+                    />
                     <StepProgressTimeline
                       className="cp-fit-timeline"
-                      items={CONVERSATION_STEPS.map(step => ({
+                      items={WORKING_WITH_US.fitCheck.conversationSteps.map(step => ({
                         id: step.title,
                         title: step.title,
                         description: step.description,
                       }))}
                       intervalMs={CONVERSATION_STEP_INTERVAL_MS}
-                      ariaLabel="How it starts"
+                      ariaLabel={WORKING_WITH_US.fitCheck.processAriaLabel}
                     />
                   </section>
                 </div>
@@ -309,10 +210,10 @@ export default function WorkingWithUsPage() {
 
           <section className="page-cta-wrapper background-color-dark" id="contact">
             <CTASection
-              title="Ready to work"
-              titleHighlight="with us?"
-              buttonTextNotHover="Send us a message"
-              buttonTextHover="Let's meet"
+              title={WORKING_WITH_US.cta.title}
+              titleHighlight={WORKING_WITH_US.cta.titleHighlight}
+              buttonTextNotHover={WORKING_WITH_US.cta.buttonTextNotHover}
+              buttonTextHover={WORKING_WITH_US.cta.buttonTextHover}
               animationClass="cp-animate"
               animate={true}
               buttonLink={getProjectBriefFormLink()}

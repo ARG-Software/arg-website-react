@@ -4,31 +4,9 @@ import { CounterWidget } from '../../../components/widgets/CounterWidget';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { isMobile } from '../../../utils/helpers';
+import HOMEPAGE from '../../../data/homepage.json';
 
-const STATS = [
-  {
-    value: '1000',
-    label: 'Deploys into production, usually not on Friday',
-    imageSrc: '/images/homepage/stats-deploys.webp',
-  },
-  {
-    value: '2000',
-    label: 'Finance transactions per second',
-    imageSrc: '/images/homepage/stats-tps.webp',
-  },
-  {
-    value: '25',
-    label: 'Years of senior engineering experience',
-    imageSrc: '/images/homepage/stats-experience.webp',
-  },
-  {
-    value: '6',
-    label: 'Impacted countries',
-    imageSrc: '/images/homepage/stats-countries.webp',
-  },
-];
-
-export function WorkStatsSection({ className = '' }) {
+export function WorkStatsSection({ className = '', content = HOMEPAGE.workStats }) {
   // Inlined useImageHoverEffects hook
   useEffect(() => {
     const mobile = isMobile();
@@ -205,35 +183,30 @@ export function WorkStatsSection({ className = '' }) {
         <div className="container-medium">
           <div className="work-component">
             <div id="workstats-subtitle-grid" data-animate-order="0">
-              <div className="subtitle_tag-wrapper hide-mobile-landscape">Working With Us</div>
+              <div className="subtitle_tag-wrapper hide-mobile-landscape">{content.eyebrow}</div>
             </div>
             <div className="work-content">
               <div className="work_header-wrapper">
                 <div className="heading_wrap">
                   <h2 data-animate="fade-up" data-animate-order="1" className="home-section-title">
-                    Senior Ownership
+                    {content.title}
                   </h2>
                 </div>
                 <div className="padding-bottom padding-30-44"></div>
                 <p className="text-color-grey" data-animate="fade-up" data-animate-order="2">
-                  ARG works best when the problem is complex, the stakes are real, and the system
-                  has to last. We keep the team small, senior, and close to the work: understand the
-                  risk, design the path, ship the code, and stay accountable when it reaches
-                  production.
+                  {content.paragraphs[0]}
                 </p>
                 <p className="text-color-grey" data-animate="fade-up" data-animate-order="3">
-                  No vendor theatre, no endless status loops. You get direct technical
-                  conversations, clear trade-offs, fast answers, and the discipline to say no when a
-                  shortcut will cost you later.
+                  {content.paragraphs[1]}
                 </p>
                 <div className="home-work__cta" data-animate="fade-up" data-animate-order="4">
                   <AppLink to="/working-with-us/" className="text-button">
                     <div className="text-button_list is-dark">
-                      <div className="text-button_text text-no-wrap">How we work</div>
+                      <div className="text-button_text text-no-wrap">{content.cta.label}</div>
                       <div className="arrow_icon-embed">{arrowSvg}</div>
                     </div>
                     <div className="text-button_list is-animated is-dark">
-                      <div className="text-button_text text-no-wrap">See the model</div>
+                      <div className="text-button_text text-no-wrap">{content.cta.hoverLabel}</div>
                       <div className="arrow_icon-embed">{arrowSvg}</div>
                     </div>
                   </AppLink>
@@ -241,7 +214,7 @@ export function WorkStatsSection({ className = '' }) {
               </div>
               <div className="padding-bottom padding-80-76"></div>
               <div className="work_items-wrapper" data-animate-scope data-animate-trigger="scroll">
-                {STATS.map((stat, index) => (
+                {content.stats.map((stat, index) => (
                   <CounterWidget
                     key={index}
                     value={stat.value}
@@ -255,11 +228,11 @@ export function WorkStatsSection({ className = '' }) {
               <div className="home-work__footer" data-animate="fade-up" data-animate-order="5">
                 <AppLink to="/working-with-us/" className="text-button text-button--align-end">
                   <div className="text-button_list is-dark">
-                    <div className="text-button_text text-no-wrap">How we work</div>
+                    <div className="text-button_text text-no-wrap">{content.cta.label}</div>
                     <div className="arrow_icon-embed">{arrowSvg}</div>
                   </div>
                   <div className="text-button_list is-animated is-dark">
-                    <div className="text-button_text text-no-wrap">See the model</div>
+                    <div className="text-button_text text-no-wrap">{content.cta.hoverLabel}</div>
                     <div className="arrow_icon-embed">{arrowSvg}</div>
                   </div>
                 </AppLink>

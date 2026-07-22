@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import consoleData from '../../data/techStackConsole.json';
+import WORKING_WITH_US from '../../data/workingWithUs.json';
 
 const STACK_OVERVIEW_EXCLUDED_COMMANDS = new Set(['/all', '/principles']);
 
@@ -15,6 +15,7 @@ const STACK_GROUP_LABELS = {
 
 export function TechStackConsole({
   className = '',
+  data = WORKING_WITH_US.whyUs.techStackConsole,
   animate = false,
   animationPreset = 'fade-up',
   animationOrder,
@@ -39,7 +40,7 @@ export function TechStackConsole({
       return;
     }
 
-    setEntries(currentEntries => [...currentEntries, buildEntry(command)]);
+    setEntries(currentEntries => [...currentEntries, buildEntry(command, data)]);
     setInput('');
   };
 
@@ -62,7 +63,7 @@ export function TechStackConsole({
   return (
     <div
       className={`tech-stack-console ${className}`.trim()}
-      aria-label={consoleData.ariaLabel}
+      aria-label={data.ariaLabel}
       onClick={handleConsoleClick}
       {...animationAttrs}
     >
@@ -72,18 +73,18 @@ export function TechStackConsole({
           <span></span>
           <span></span>
         </span>
-        <span className="tech-stack-console__path">{consoleData.path}</span>
-        <span className="tech-stack-console__meta">{consoleData.meta}</span>
+        <span className="tech-stack-console__path">{data.path}</span>
+        <span className="tech-stack-console__meta">{data.meta}</span>
       </div>
 
       <div className="tech-stack-console__screen" ref={logRef} aria-live="polite">
         {entries.map((entry, index) => (
-          <ConsoleEntry key={`${entry.command}-${index}`} entry={entry} />
+          <ConsoleEntry key={`${entry.command}-${index}`} entry={entry} data={data} />
         ))}
       </div>
 
       <form className="tech-stack-console__input-row" onSubmit={handleSubmit}>
-        <span className="tech-stack-console__prompt">{consoleData.prompt}</span>
+        <span className="tech-stack-console__prompt">{data.prompt}</span>
         <div className="tech-stack-console__input-field">
           {!input && <span className="tech-stack-console__cursor" aria-hidden="true" />}
           <input
@@ -91,7 +92,7 @@ export function TechStackConsole({
             type="text"
             value={input}
             onChange={event => setInput(event.target.value)}
-            placeholder={consoleData.inputPlaceholder}
+            placeholder={data.inputPlaceholder}
             spellCheck="false"
             autoCapitalize="off"
             aria-label="Run stack console command"
@@ -102,29 +103,29 @@ export function TechStackConsole({
   );
 }
 
-function ConsoleEntry({ entry }) {
+function ConsoleEntry({ entry, data }) {
   return (
     <div className="tech-stack-console__entry">
       <div className="tech-stack-console__command-line">
-        <span className="tech-stack-console__prompt">{consoleData.prompt}</span>
+        <span className="tech-stack-console__prompt">{data.prompt}</span>
         <span>{entry.command}</span>
       </div>
-      {renderOutput(entry)}
+      {renderOutput(entry, data)}
     </div>
   );
 }
 
-function renderOutput(entry) {
+function renderOutput(entry, data) {
   if (entry.type === 'help') {
     return (
       <ul className="tech-stack-console__command-list">
-        {Object.entries(consoleData.commands).map(([command, definition]) => (
+        {Object.entries(data.commands).map(([command, definition]) => (
           <li key={command}>
             <code>{command}</code>
             <span>{definition.description}</span>
           </li>
         ))}
-        {Object.entries(consoleData.systemCommands).map(([command, description]) => (
+        {Object.entries(data.systemCommands).map(([command, description]) => (
           <li key={command}>
             <code>{command}</code>
             <span>{description}</span>
@@ -164,11 +165,11 @@ function renderOutput(entry) {
   );
 }
 
-function buildEntry(command) {
+function buildEntry(command, data) {
   if (command === '/help') return { command, type: 'help' };
-  if (command === '/all') return { command, groups: buildStackGroups() };
+  if (command === '/all') return { command, groups: buildStackGroups(data) };
 
-  const definition = consoleData.commands[command];
+  const definition = data.commands[command];
   if (!definition) return { command, type: 'unknown' };
 
   return {
@@ -178,8 +179,8 @@ function buildEntry(command) {
   };
 }
 
-function buildStackGroups() {
-  return Object.entries(consoleData.commands)
+function buildStackGroups(data) {
+  return Object.entries(data.commands)
     .filter(([command, definition]) => {
       return !STACK_OVERVIEW_EXCLUDED_COMMANDS.has(command) && Array.isArray(definition.lines);
     })

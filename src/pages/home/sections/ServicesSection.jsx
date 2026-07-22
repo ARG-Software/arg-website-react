@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import { useThreeSphereBackground } from '../../../hooks/useThreeSphereBackground';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
-import SERVICES from '../../../data/services.json';
+import HOMEPAGE from '../../../data/homepage.json';
 
-export function ServicesSection({ className = '' }) {
+export function ServicesSection({ className = '', content = HOMEPAGE.services }) {
   const containerRef = useRef(null);
 
   useThreeSphereBackground('spheres-canvas');
@@ -25,7 +25,7 @@ export function ServicesSection({ className = '' }) {
             </div>
           </div>
           <div className="services_list">
-            {SERVICES.details.map((service, index) => (
+            {content.details.map((service, index) => (
               <div
                 key={index}
                 className="services_item"

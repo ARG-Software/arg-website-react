@@ -1,0 +1,202 @@
+{
+  "hero": {
+    "title": ["Building systems", "that endure as you scale"],
+    "subtitle": "Software architecture beyond the MVP",
+    "mailCta": {
+      "label": "Talk through an idea",
+      "hoverLabel": "Write to us",
+      "subject": "I want to share my ideas"
+    },
+    "contactCta": {
+      "label": "Start a project",
+      "hoverLabel": "Let's talk"
+    }
+  },
+  "partners": {
+    "cta": {
+      "label": "View partners",
+      "hoverLabel": "Who trusts us"
+    }
+  },
+  "infinityBand": [
+    "Dedicated Teams",
+    "Staff Augmentation",
+    "Technical Consulting",
+    "MVP Delivery",
+    "AI Automation",
+    "Software Architecture",
+    "Cloud Platforms",
+    "Product Engineering"
+  ],
+  "overview": {
+    "title": ["Custom software,", "endless potential"],
+    "lead": "ARG builds digital products designed to grow with your business. From early MVPs to systems that need to scale, we work as a long-term engineering partner, not a handoff vendor.",
+    "cta": {
+      "label": "Build with ARG",
+      "hoverLabel": "Start a project"
+    },
+    "aboutCta": {
+      "label": "Learn more about ARG",
+      "hoverLabel": "Read the full story"
+    },
+    "values": [
+      {
+        "title": "Solid architecture",
+        "description": "Built to scale - structural decisions that hold as load and complexity grow."
+      },
+      {
+        "title": "Clean code",
+        "description": "Maintainable by design, so the next change is never the expensive one."
+      },
+      {
+        "title": "True partnership",
+        "description": "From first sprint to future iterations - accountable in production, not a handoff."
+      }
+    ]
+  },
+  "services": {
+    "details": [
+      {
+        "number": "01",
+        "heading": "Dedicated Product Teams",
+        "tags": ["Product Engineering", "Long-Term Delivery"],
+        "content": "A focused ARG team working as your software delivery partner. We bring senior engineers, product thinking, architecture discipline, and delivery ownership to build, ship, and evolve products over time."
+      },
+      {
+        "number": "02",
+        "heading": "Staff Augmentation",
+        "tags": ["Senior Engineers", "Team Extension"],
+        "content": "Add experienced engineers to your existing team without lowering the bar. We help companies increase delivery capacity, fill technical gaps, and move faster while keeping quality, communication, and ownership high."
+      },
+      {
+        "number": "03",
+        "heading": "Technical Consulting",
+        "tags": ["Architecture", "Audits", "Strategy"],
+        "content": "Bring us in when the technical decisions matter. We help with architecture reviews, scalability planning, modernization, delivery strategy, AI adoption, and complex product or platform decisions."
+      },
+      {
+        "number": "04",
+        "heading": "MVP + Product Delivery",
+        "tags": ["MVP", "Launch", "Iteration"],
+        "content": "We take ideas from concept to launch with the right balance of speed and engineering judgment. The result is not a throwaway prototype, but a product foundation ready to learn, adapt, and grow."
+      },
+      {
+        "number": "05",
+        "heading": "AI + Automation",
+        "tags": ["AI", "Integrations", "Workflows"],
+        "content": "We embrace AI where it creates real leverage. From intelligent product features to system integrations, internal automation, and developer workflows, we use AI and automation to reduce friction, connect tools, and help teams move faster."
+      },
+      {
+        "number": "06",
+        "heading": "Cloud + Platform Engineering",
+        "tags": ["Cloud", "DevOps", "Reliability"],
+        "content": "We build the technical foundation behind reliable software: cloud infrastructure, CI/CD, observability, environments, deployments, and platform practices that help teams ship with confidence."
+      }
+    ]
+  },
+  "projects": {
+    "title": "Proof in production, not promises.",
+    "intro": "This is a public selection, not the full archive. Many engagements stay private by design; these are the projects we can discuss within client privacy and NDA agreements.",
+    "tag": "Use Cases"
+  },
+  "testimonials": [
+    {
+      "quote": "It was a pleasure to work with! Good communication, solid work, and helped us deliver our new version of the product in a timely fashion.",
+      "author": "Marc-Andre Mignault, Project Manager at Skytracks"
+    },
+    {
+      "quote": "ARG Software were great to work with from the first day. We needed a MVP for our tourism management company and they provided all the technical solutions we required, optimizing and improving our day-to-day operations. I definitely recommend ARG Software's team for their effort and great work. Thank you so much!",
+      "author": "Andre Mendo, CEO at Hostelier"
+    },
+    {
+      "quote": "Jose and Rui delivered good work and I enjoyed working with them. They transformed a legacy API from PHP to TypeScript, where their architectural skills in building an object-oriented backend were really handy. They were quick in extending their knowledge and competence in TypeScript-based projects to successfully complete the project. It is likely that we will hire them in the future for projects.",
+      "author": "Hendrik, CTO at Dokutar"
+    },
+    {
+      "quote": "ARG did great! Was awesome to work with and always quick to respond. Great attitude despite project requirements changing. Also helped out in a few tight spots with last-minute requests - highly recommend working with ARG!",
+      "author": "Austin Klise, CEO at Klise Consulting",
+      "isLast": true
+    }
+  ],
+  "workStats": {
+    "eyebrow": "Working With Us",
+    "title": "Senior Ownership",
+    "paragraphs": [
+      "ARG works best when the problem is complex, the stakes are real, and the system has to last. We keep the team small, senior, and close to the work: understand the risk, design the path, ship the code, and stay accountable when it reaches production.",
+      "No vendor theatre, no endless status loops. You get direct technical conversations, clear trade-offs, fast answers, and the discipline to say no when a shortcut will cost you later."
+    ],
+    "cta": {
+      "label": "How we work",
+      "hoverLabel": "See the model"
+    },
+    "stats": [
+      {
+        "value": "1000",
+        "label": "Deploys into production, usually not on Friday",
+        "imageSrc": "/images/homepage/stats-deploys.webp"
+      },
+      {
+        "value": "2000",
+        "label": "Finance transactions per second",
+        "imageSrc": "/images/homepage/stats-tps.webp"
+      },
+      {
+        "value": "25",
+        "label": "Years of senior engineering experience",
+        "imageSrc": "/images/homepage/stats-experience.webp"
+      },
+      {
+        "value": "6",
+        "label": "Impacted countries",
+        "imageSrc": "/images/homepage/stats-countries.webp"
+      }
+    ]
+  },
+  "team": {
+    "eyebrow": "Meet Our Team",
+    "title": "Built by Engineers",
+    "intro": "ARG is led by senior engineers who stay close to the architecture, code, and production reality. You do not get layers of account management. You work with the people responsible for the technical decisions.",
+    "members": [
+      {
+        "name": "Jose Antunes",
+        "role": "Co-founder, Software Engineer",
+        "personKey": "JOSE",
+        "imgSrc": "https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9.jpg",
+        "imgSrcSet": "https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9-p-500.jpg 500w, https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9-p-800.jpg 800w, https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0cf402fc001db7242fa_Z%C3%A9.jpg 1024w",
+        "imgAlt": "JoseAntunes - ARG"
+      },
+      {
+        "name": "Rui Rocha",
+        "role": "Co-founder, Software Engineer",
+        "personKey": "RUI",
+        "imgSrc": "https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1).jpg",
+        "imgSrcSet": "https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1)-p-500.jpg 500w, https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1)-p-800.jpg 800w, https://cdn.prod.website-files.com/6722756494e163093c832895/6954b0dd01311900973ce362_Rocha%20(1).jpg 1024w",
+        "imgAlt": "RuiRocha - ARG"
+      }
+    ]
+  },
+  "blogPromo": {
+    "title": "Engineering Field Notes",
+    "eyebrow": "Blog",
+    "cta": {
+      "label": "Read blog",
+      "hoverLabel": "Browse posts"
+    }
+  },
+  "social": {
+    "title": "What we share outside the site",
+    "eyebrow": "Social"
+  },
+  "faq": {
+    "title": ["Common questions,", "honest answers."],
+    "eyebrow": "FAQ"
+  },
+  "contact": {
+    "title": "Hard problem?",
+    "titleHighlight": "Let's solve it",
+    "buttonTextNotHover": "Portfolio",
+    "buttonTextHover": "See proof",
+    "secondButtonTextNotHover": "Start brief",
+    "secondButtonTextHover": "2 min"
+  }
+}

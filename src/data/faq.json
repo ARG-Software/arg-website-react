@@ -1,0 +1,106 @@
+{
+  "items": [
+    {
+      "id": "pricing",
+      "q": "How much does custom software development cost?",
+      "schemaAnswer": "Our typical rate is around 70 EUR/USD per hour, but pricing depends on the project. Ongoing work can be hourly or monthly, smaller scoped projects can use an initial fee and final delivery payment, and larger scopes can be split by milestones. Before estimating, we define workflows, technical risks, architecture direction, and a realistic delivery range.",
+      "answer": [
+        { "type": "paragraph", "text": "Our typical rate is around 70 EUR/USD per hour, but we do not force every project into the same pricing model." },
+        { "type": "paragraph", "text": "For ongoing or evolving work, hourly or monthly collaboration can make sense. For smaller, well-defined projects, we can agree on an initial fee to start and a final payment on delivery. For larger scopes, payments can be split by milestones or deliverables." },
+        { "type": "paragraph", "text": "Each case is reviewed individually. Before estimating, we usually define:" },
+        { "type": "list", "items": ["The core workflows", "The technical risks", "The architecture direction", "A realistic delivery range"] },
+        { "type": "paragraph", "text": "Scope changes must be communicated clearly. If a change affects the current direction, workload, timeline, or expected value, we review it together before continuing." }
+      ]
+    },
+    {
+      "id": "timeline",
+      "q": "How long does it take to build an MVP?",
+      "schemaAnswer": "Most focused MVPs take 8 to 14 weeks, depending on feature complexity, product clarity, integration depth, and security or compliance needs. We move quickly without creating throwaway foundations.",
+      "answer": [
+        { "type": "paragraph", "text": "Most focused MVPs take 8 to 14 weeks, depending on:" },
+        { "type": "list", "items": ["Feature complexity", "Product clarity", "Integration depth", "Security or compliance needs"] },
+        { "type": "paragraph", "text": "We move quickly, but we do not build throwaway foundations. The goal is a product you can learn from and keep evolving." }
+      ]
+    },
+    {
+      "id": "remote-work",
+      "q": "Do you work with clients outside the USA and Europe?",
+      "schemaAnswer": "Yes. ARG works remotely with teams across regions. What matters is clear written context, direct technical conversations, predictable async updates, and enough overlap for decisions.",
+      "answer": [
+        { "type": "paragraph", "text": "Yes. ARG works remotely with teams across regions. What matters is not location, but whether the communication rhythm supports serious engineering work." },
+        { "type": "list", "items": ["Clear written context", "Direct technical conversations", "Predictable async updates", "Enough overlap for decisions"] },
+        { "type": "paragraph", "text": "If the problem is clear and the ownership is real, distance is not the blocker." }
+      ]
+    },
+    {
+      "id": "clients",
+      "q": "Do you work with startups or established companies?",
+      "schemaAnswer": "Both. We support startups building launch-ready products, companies modernizing fragile systems, teams scaling performance or reliability, and organizations building internal platforms. The common thread is technical ownership, not company size.",
+      "answer": [
+        { "type": "paragraph", "text": "Both. We support:" },
+        { "type": "list", "items": ["Startups building launch-ready products", "Companies modernizing fragile systems", "Teams scaling performance or reliability", "Organizations building internal platforms"] },
+        { "type": "paragraph", "text": "The common thread is technical ownership, not company size." }
+      ]
+    },
+    {
+      "id": "technology",
+      "q": "What technologies do you use?",
+      "schemaAnswer": "We choose technology for maintainability, team fit, and production requirements. Common choices include React, Next.js, TypeScript, Node.js, .NET, Java, AWS, Azure, GCP, React Native, Flutter, PostgreSQL, and MongoDB.",
+      "answer": [
+        { "type": "paragraph", "text": "We choose technology for maintainability, team fit, and production requirements. The stack is a tool, not the strategy." },
+        { "type": "list", "items": ["Web: React, Next.js, TypeScript", "Backend: Node.js, .NET, Java", "Cloud: AWS, Azure, GCP", "Mobile: React Native and Flutter", "Databases: PostgreSQL, MongoDB"] },
+        { "type": "paragraph", "text": "The important part is choosing a system your team can operate after launch." }
+      ]
+    },
+    {
+      "id": "quality",
+      "q": "How do you ensure scalability and code quality?",
+      "schemaAnswer": "Quality starts before implementation. We make architecture boundaries, testing strategy, code reviews, CI/CD, observability, recovery paths, security, and data constraints explicit so the software can evolve instead of being rewritten after year one.",
+      "answer": [
+        { "type": "paragraph", "text": "Quality starts before implementation. We make the important decisions explicit:" },
+        { "type": "list", "items": ["Architecture boundaries", "Testing strategy", "Code reviews", "CI/CD and release flow", "Observability and recovery paths", "Security and data constraints"] },
+        { "type": "paragraph", "text": "We build software meant to evolve, not be rewritten after year one." }
+      ]
+    },
+    {
+      "id": "post-launch",
+      "q": "Can you scale our product after launch?",
+      "schemaAnswer": "Yes. After launch we help with performance optimization, reliability improvements, cloud and platform work, feature evolution, and senior team extension. We prefer long-term ownership over one-off handoffs.",
+      "answer": [
+        { "type": "paragraph", "text": "Yes. Some of our most valuable work happens after launch:" },
+        { "type": "list", "items": ["Performance optimization", "Reliability improvements", "Cloud and platform work", "Feature evolution", "Senior team extension"] },
+        { "type": "paragraph", "text": "We prefer long-term ownership over one-off handoffs." }
+      ]
+    },
+    {
+      "id": "team-model",
+      "q": "Do you provide dedicated development teams?",
+      "schemaAnswer": "Yes. Depending on the need, we can provide a focused product team, senior engineers embedded with your team, or architecture and consulting support. We adapt the model to the work while keeping the team senior and accountable.",
+      "answer": [
+        { "type": "paragraph", "text": "Yes. Depending on the need, we can provide:" },
+        { "type": "list", "items": ["A focused product team", "Senior engineers embedded with your team", "Architecture or consulting support"] },
+        { "type": "paragraph", "text": "We adapt the model to the work, but keep the team senior and accountable." }
+      ]
+    },
+    {
+      "id": "process",
+      "q": "What is your development process?",
+      "schemaAnswer": "Our process is intentionally simple: understand the context, map the risks, design the architecture, build in short cycles, launch, and stay close. You get visibility without process theatre.",
+      "answer": [
+        { "type": "paragraph", "text": "Our process is intentionally simple:" },
+        { "type": "list", "items": ["Understand the context", "Map the risks", "Design the architecture", "Build in short cycles", "Launch and stay close"] },
+        { "type": "paragraph", "text": "You get visibility without process theatre." }
+      ]
+    },
+    {
+      "id": "getting-started",
+      "q": "How do we get started?",
+      "schemaAnswer": "Send us the context first: your product goals, technical constraints, current risks, and timeline expectations. If there is a fit, the first conversation is technical. If there is not, we will say that clearly.",
+      "answer": [
+        { "type": "paragraph", "text": "Send us the context first. We look for the shape of the problem:" },
+        { "type": "list", "items": ["Your product goals", "Technical constraints", "Current risks", "Timeline expectations"] },
+        { "type": "paragraph", "text": "If there is a fit, the first conversation is technical. If there is not, we will say that clearly." }
+      ]
+    }
+  ]
+}

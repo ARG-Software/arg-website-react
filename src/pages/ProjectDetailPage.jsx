@@ -12,8 +12,8 @@ import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useNextProjectSection } from '@hooks/useNextProjectSection';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA } from '@utils/analytics';
+import { getProjectGallery } from '@constants/projectGallery';
 import PROJECTS from '../data/projects.json';
-import { getProjectGallery } from '../data/projectGallery';
 import '../styles/projects.css';
 
 export default function ProjectDetailPage() {

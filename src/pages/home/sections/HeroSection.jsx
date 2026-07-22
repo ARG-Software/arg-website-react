@@ -6,7 +6,7 @@ import { SectionDivider } from '../../../components/layout/SectionDivider';
 import { useWaterRipple } from '../../../hooks/useWaterRipple';
 import { EMAIL_KEYS, getMailtoLink } from '../../../services/linksservice';
 
-export function HeroSection() {
+export function HeroSection({ content }) {
   useWaterRipple('water-ripple-canvas');
   const { scrollToHash } = useContext(TransitionContext);
 
@@ -38,10 +38,10 @@ export function HeroSection() {
         <div className="hero_list" data-animate="fade-up">
           <h1 className="hero_heading heading-style-h1">
             <div className="heading_line" data-animate-order="4">
-              <div className="heading_text">Building systems</div>
+              <div className="heading_text">{content.title[0]}</div>
             </div>
             <div className="heading_line" data-animate-order="5">
-              <div className="text-color-gradiant">that endure as you scale</div>
+              <div className="text-color-gradiant">{content.title[1]}</div>
             </div>
           </h1>
         </div>
@@ -57,22 +57,22 @@ export function HeroSection() {
             <div className="hero_bottom_info">
               <div className="hero_bottom_content">
                 <p className="hero_bottom_paragraph" data-animate="slide-up" data-animate-order="1">
-                  Software architecture beyond the MVP
+                  {content.subtitle}
                 </p>
               </div>
             </div>
             <div className="hero_bottom_content">
               <a
-                href={getMailtoLink(EMAIL_KEYS.HELLO, 'I want to share my ideas')}
+                href={getMailtoLink(EMAIL_KEYS.HELLO, content.mailCta.subject)}
                 className="text-button"
                 onClick={() => trackMailto('share_ideas', 'hero')}
               >
                 <div className="text-button_list" data-animate="slide-up" data-animate-order="2">
-                  <div className="text-button_text">Talk through an idea</div>
+                  <div className="text-button_text">{content.mailCta.label}</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
                 <div className="text-button_list is-animated">
-                  <div className="text-button_text">Write to us</div>
+                  <div className="text-button_text">{content.mailCta.hoverLabel}</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
               </a>
@@ -81,11 +81,11 @@ export function HeroSection() {
               <div className="overflow-hidden">
                 <a href="#contact" className="text-button" onClick={handleContactClick}>
                   <div className="text-button_list" data-animate="slide-up" data-animate-order="3">
-                    <div className="text-button_text">Start a project</div>
+                    <div className="text-button_text">{content.contactCta.label}</div>
                     <div className="arrow_icon-embed">{arrowSvg}</div>
                   </div>
                   <div className="text-button_list is-animated">
-                    <div className="text-button_text">Let's talk</div>
+                    <div className="text-button_text">{content.contactCta.hoverLabel}</div>
                     <div className="arrow_icon-embed">{arrowSvg}</div>
                   </div>
                 </a>

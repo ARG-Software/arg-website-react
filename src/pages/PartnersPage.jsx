@@ -12,6 +12,7 @@ import { FilterGrid } from '@components/grids/FilterGrid';
 import { Timeline } from '@components/grids/Timeline';
 import { PageHeader } from '@components/headers/PageHeader';
 import data from '../data/partners.json';
+import PARTNERS_PAGE from '../data/partnersPage.json';
 import { getProjectBookingLink, getProjectBriefFormLink } from '../services/linksservice';
 import '../styles/partners.css';
 
@@ -46,8 +47,8 @@ export default function PartnersPage() {
   return (
     <>
       <SEO
-        title="Partners"
-        description="Meet the companies Arg Software has partnered with across fintech, open payments, music technology, Web3, consultancy, and industry platforms."
+        title={PARTNERS_PAGE.seo.title}
+        description={PARTNERS_PAGE.seo.description}
         path="/partners/"
       />
       <div className="page-wrapper pp-page">
@@ -55,13 +56,11 @@ export default function PartnersPage() {
 
         <main className="main-wrapper">
           <PageHeader
-            title={['Trusted by the teams', 'building what matters.']}
-            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Partners' }]}
-            sideItems={[
-              { label: 'Partners', href: '#partners', meta: String(clients.length) },
-              { label: 'Partnership timeline', href: '#timeline' },
-              { label: 'Start a project', href: '#page-cta' },
-            ]}
+            title={PARTNERS_PAGE.hero.title}
+            breadcrumbs={PARTNERS_PAGE.hero.breadcrumbs}
+            sideItems={PARTNERS_PAGE.hero.sideItems.map((item, index) =>
+              index === 0 ? { ...item, meta: String(clients.length) } : item
+            )}
             size="small"
           />
 
@@ -91,10 +90,7 @@ export default function PartnersPage() {
                     </div>
                   </div>
                   <div className="pc-header-desc" data-animate-order={categories.length}>
-                    <p>
-                      ARG works with teams building payment rails, music platforms, venture-backed
-                      products, and operational systems where reliability matters.
-                    </p>
+                    <p>{PARTNERS_PAGE.clients.intro}</p>
                   </div>
                 </div>
 
@@ -114,7 +110,7 @@ export default function PartnersPage() {
 
             <section id="timeline" className="pt-timeline-section padding-section-large">
               <Timeline
-                heading="Built on lasting partnerships"
+                heading={PARTNERS_PAGE.timeline.heading}
                 clients={clients}
                 ctaLink={getProjectBriefFormLink()}
                 onCtaClick={() => trackCTA('contact_brief', 'partners_timeline')}
@@ -129,11 +125,11 @@ export default function PartnersPage() {
           <section className="page-cta-wrapper" id="page-cta">
             <SectionDivider variant="light" hideOnMobile={true} />
             <CTASection
-              title="Ready to build"
-              titleHighlight="something that lasts?"
-              mobileTitleHighlight="with us?"
-              buttonTextNotHover="Book a Meeting"
-              buttonTextHover="Let's meet"
+              title={PARTNERS_PAGE.cta.title}
+              titleHighlight={PARTNERS_PAGE.cta.titleHighlight}
+              mobileTitleHighlight={PARTNERS_PAGE.cta.mobileTitleHighlight}
+              buttonTextNotHover={PARTNERS_PAGE.cta.buttonTextNotHover}
+              buttonTextHover={PARTNERS_PAGE.cta.buttonTextHover}
               animationClass="pp-animate"
               animate={true}
               buttonLink={getProjectBookingLink()}
@@ -170,7 +166,7 @@ export default function PartnersPage() {
                     })
                   }
                 >
-                  <span>Visit website</span>
+                  <span>{PARTNERS_PAGE.drawer.visitLabel}</span>
                   <svg
                     width="16"
                     height="16"

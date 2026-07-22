@@ -13,6 +13,7 @@ import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { FounderCard } from '@components/cards/FounderCard';
 import CAREERS_DATA from '../data/jobs.json';
+import CAREERS_PAGE from '../data/careersPage.json';
 import {
   EMAIL_KEYS,
   getMailtoLink,
@@ -24,31 +25,12 @@ import '../styles/careers.css';
 const JOBS = CAREERS_DATA.jobs;
 const CAREER_TRAITS = CAREERS_DATA.careerTraits;
 const HIRING_STEPS = CAREERS_DATA.hiringSteps;
-const CAREERS_OPEN_ROLES_DESCRIPTION =
-  'Explore open roles at Arg Software and apply to join an architecture-first engineering team building complex production systems.';
-const CAREERS_NO_ROLES_DESCRIPTION =
-  'Arg Software is not hiring today. Learn what we look for in architecture-first engineers and how to reach the founders directly.';
 
-const FOUNDERS = [
-  {
-    name: 'Jose Antunes',
-    initials: 'JA',
-    role: 'Co-founder - Software Engineer',
-    focus: 'Backend - Systems - Data - AI',
-    replyTime: '~ 36 hours',
-    emailHref: getMailtoLink(EMAIL_KEYS.JOSE, 'Career Inquiry - Jose Antunes'),
-    linkedin: getPersonLinkedInLink(PERSON_KEYS.JOSE),
-  },
-  {
-    name: 'Rui Rocha',
-    initials: 'RR',
-    role: 'Co-founder - Software Engineer',
-    focus: 'Frontend - Mobile - AI',
-    replyTime: '~ 36 hours',
-    emailHref: getMailtoLink(EMAIL_KEYS.RUI, 'Career Inquiry - Rui Rocha'),
-    linkedin: getPersonLinkedInLink(PERSON_KEYS.RUI),
-  },
-];
+const FOUNDERS = CAREERS_PAGE.founders.cards.map(founder => ({
+  ...founder,
+  emailHref: getMailtoLink(EMAIL_KEYS[founder.emailKey], founder.emailSubject),
+  linkedin: getPersonLinkedInLink(PERSON_KEYS[founder.personKey]),
+}));
 
 const EMPTY_FORM = {
   name: '',
@@ -108,7 +90,9 @@ export default function CareersPage() {
   const applicationRef = useRef(null);
   const nameInputRef = useRef(null);
   const hasJobs = JOBS.length > 0;
-  const seoDescription = hasJobs ? CAREERS_OPEN_ROLES_DESCRIPTION : CAREERS_NO_ROLES_DESCRIPTION;
+  const seoDescription = hasJobs
+    ? CAREERS_PAGE.seo.openRolesDescription
+    : CAREERS_PAGE.seo.noRolesDescription;
 
   useTimeOnPage('/careers/');
   useScrollAnimations();
@@ -117,58 +101,58 @@ export default function CareersPage() {
   const applicationFields = [
     {
       name: 'name',
-      label: 'Full name',
+      label: CAREERS_PAGE.applicationForm.fields.name.label,
       type: 'text',
       value: form.name,
       onChange: handleInputChange,
-      placeholder: 'Your name',
+      placeholder: CAREERS_PAGE.applicationForm.fields.name.placeholder,
       required: true,
       layout: 'half',
       ref: nameInputRef,
     },
     {
       name: 'email',
-      label: 'Email',
+      label: CAREERS_PAGE.applicationForm.fields.email.label,
       type: 'email',
       value: form.email,
       onChange: handleInputChange,
-      placeholder: 'you@example.com',
+      placeholder: CAREERS_PAGE.applicationForm.fields.email.placeholder,
       required: true,
       layout: 'half',
     },
     {
       name: 'role',
-      label: 'Role',
+      label: CAREERS_PAGE.applicationForm.fields.role.label,
       type: 'select',
       value: form.role,
       onChange: handleInputChange,
       required: true,
       options: [
-        { value: '', label: 'Select a role' },
+        { value: '', label: CAREERS_PAGE.applicationForm.fields.role.placeholder },
         ...JOBS.map(job => ({ value: job.id, label: job.title })),
       ],
     },
     {
       name: 'linkedin',
-      label: 'LinkedIn or portfolio - optional',
+      label: CAREERS_PAGE.applicationForm.fields.linkedin.label,
       type: 'url',
       value: form.linkedin,
       onChange: handleInputChange,
-      placeholder: 'https://linkedin.com/in/yourprofile',
+      placeholder: CAREERS_PAGE.applicationForm.fields.linkedin.placeholder,
     },
     {
       name: 'message',
-      label: 'Why ARG? What have you built?',
+      label: CAREERS_PAGE.applicationForm.fields.message.label,
       type: 'textarea',
       value: form.message,
       onChange: handleInputChange,
-      placeholder: 'A few lines about your work, what you value in a team, and why now...',
+      placeholder: CAREERS_PAGE.applicationForm.fields.message.placeholder,
       rows: 5,
       required: true,
     },
     {
       name: 'cv',
-      label: 'CV / portfolio',
+      label: CAREERS_PAGE.applicationForm.fields.cv.label,
       type: 'file',
       accept: '.pdf,.doc,.docx',
     },
@@ -224,33 +208,23 @@ export default function CareersPage() {
 
   return (
     <>
-      <SEO title="Careers" description={seoDescription} path="/careers/" />
+      <SEO title={CAREERS_PAGE.seo.title} description={seoDescription} path="/careers/" />
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper background-color-dark">
           <PageHeader
-            title={
-              hasJobs ? ['Careers at ARG', 'Open Roles'] : ['Careers at ARG', 'No Open Roles Today']
-            }
+            title={hasJobs ? CAREERS_PAGE.hero.openRolesTitle : CAREERS_PAGE.hero.noRolesTitle}
             subtitle={
-              hasJobs
-                ? 'Every role is scoped for meaningful ownership on production systems. No hiring theatre, no filler seats.'
-                : 'We are not hiring for a specific role today, but we still want to hear from engineers who think like us. The next opening is often shaped around someone we already know.'
+              hasJobs ? CAREERS_PAGE.hero.openRolesSubtitle : CAREERS_PAGE.hero.noRolesSubtitle
             }
-            breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Careers' }]}
+            breadcrumbs={CAREERS_PAGE.hero.breadcrumbs}
             sideItems={
               hasJobs
-                ? [
-                    { label: 'Open Roles', href: '#roles', meta: String(JOBS.length) },
-                    { label: 'How to Apply', href: '#apply' },
-                    { label: 'Contact', href: '#contact' },
-                  ]
-                : [
-                    { label: 'Who We Look For', href: '#who' },
-                    { label: 'Talk to the Founders', href: '#founders' },
-                    { label: 'Contact', href: '#contact' },
-                  ]
+                ? CAREERS_PAGE.hero.openRolesSideItems.map((item, index) =>
+                    index === 0 ? { ...item, meta: String(JOBS.length) } : item
+                  )
+                : CAREERS_PAGE.hero.noRolesSideItems
             }
             size="small"
           />
@@ -269,12 +243,12 @@ export default function CareersPage() {
                   <div className="container padding-global cp-careers-inner">
                     <div className="cp-section-header" data-animate-order="0">
                       <h2 className="cp-section-title">
-                        The team is <span className="text-color-gradiant">growing.</span>
+                        {CAREERS_PAGE.roles.title}{' '}
+                        <span className="text-color-gradiant">
+                          {CAREERS_PAGE.roles.titleHighlight}
+                        </span>
                       </h2>
-                      <p className="cp-section-subtitle">
-                        Focused openings across engineering, infrastructure, product, security, and
-                        data. Each one is built for senior contributors with a direct feedback loop.
-                      </p>
+                      <p className="cp-section-subtitle">{CAREERS_PAGE.roles.subtitle}</p>
                     </div>
                     <div className="cp-career-jobs-list">
                       {JOBS.map((job, index) => (
@@ -300,12 +274,12 @@ export default function CareersPage() {
                     <div className="cp-careers-process" data-animate-order="0">
                       <div className="cp-section-header">
                         <h2 className="cp-section-title">
-                          How we <span className="text-color-gradiant">hire.</span>
+                          {CAREERS_PAGE.hiring.title}{' '}
+                          <span className="text-color-gradiant">
+                            {CAREERS_PAGE.hiring.titleHighlight}
+                          </span>
                         </h2>
-                        <p className="cp-section-subtitle">
-                          Four steps. No take-home puzzles, no ghost stages. We move fast when we
-                          find the right person.
-                        </p>
+                        <p className="cp-section-subtitle">{CAREERS_PAGE.hiring.subtitle}</p>
                       </div>
                       <div className="cp-careers-steps">
                         {HIRING_STEPS.map((step, index) => (
@@ -321,12 +295,12 @@ export default function CareersPage() {
                     </div>
 
                     <ContactForm
-                      title="Apply for a role"
-                      description="Reviewed by founders directly - no recruiter in the middle."
+                      title={CAREERS_PAGE.applicationForm.title}
+                      description={CAREERS_PAGE.applicationForm.description}
                       fields={applicationFields}
-                      submitLabel="Send application"
-                      helperText="We reply to every application."
-                      subject="New ARG career application"
+                      submitLabel={CAREERS_PAGE.applicationForm.submitLabel}
+                      helperText={CAREERS_PAGE.applicationForm.helperText}
+                      subject={CAREERS_PAGE.applicationForm.subject}
                       source="careers_page"
                       formName="career_application"
                       onSubmit={handleSubmit}
@@ -346,14 +320,12 @@ export default function CareersPage() {
                   <div className="container padding-global cp-careers-inner">
                     <div className="cp-section-header" data-animate-order="0">
                       <h2 className="cp-section-title">
-                        Not hiring today. But here's{' '}
-                        <span className="text-color-gradiant">who we look for.</span>
+                        {CAREERS_PAGE.who.title}{' '}
+                        <span className="text-color-gradiant">
+                          {CAREERS_PAGE.who.titleHighlight}
+                        </span>
                       </h2>
-                      <p className="cp-section-subtitle">
-                        We stay intentionally small and selective. If this sounds like the kind of
-                        team where you would do your best work, reach out early - the right
-                        conversations are worth having before a role exists.
-                      </p>
+                      <p className="cp-section-subtitle">{CAREERS_PAGE.who.subtitle}</p>
                     </div>
                     <div className="cp-careers-traits-grid">
                       {CAREER_TRAITS.map((trait, index) => (
@@ -385,12 +357,10 @@ export default function CareersPage() {
                   <div className="container padding-global cp-founders-inner">
                     <div className="cp-founders-intro" data-animate-order="0">
                       <h2>
-                        We're small. <span>Talk to a founder directly.</span>
+                        {CAREERS_PAGE.founders.title}{' '}
+                        <span>{CAREERS_PAGE.founders.titleHighlight}</span>
                       </h2>
-                      <p>
-                        No recruiter wall, no ATS black hole. If you think you'd fit at ARG, the
-                        fastest way in is a short note to one of us.
-                      </p>
+                      <p>{CAREERS_PAGE.founders.intro}</p>
                     </div>
                     <div className="cp-founders-grid">
                       {FOUNDERS.map((founder, index) => (
@@ -412,12 +382,26 @@ export default function CareersPage() {
 
           <section className="page-cta-wrapper background-color-dark" id="contact">
             <CTASection
-              title={hasJobs ? 'Ready to apply,' : "Think you'd fit,"}
-              titleHighlight={hasJobs ? 'show us your work.' : 'reach out anyway.'}
-              mobileTitle={hasJobs ? 'Ready to apply?' : "Think you'd fit?"}
-              mobileTitleHighlight={hasJobs ? 'Show us your work.' : 'Reach out.'}
-              buttonTextNotHover={hasJobs ? 'Email careers' : 'Send us a message'}
-              buttonTextHover="Let's talk"
+              title={hasJobs ? CAREERS_PAGE.cta.openRolesTitle : CAREERS_PAGE.cta.noRolesTitle}
+              titleHighlight={
+                hasJobs
+                  ? CAREERS_PAGE.cta.openRolesTitleHighlight
+                  : CAREERS_PAGE.cta.noRolesTitleHighlight
+              }
+              mobileTitle={
+                hasJobs
+                  ? CAREERS_PAGE.cta.openRolesMobileTitle
+                  : CAREERS_PAGE.cta.noRolesMobileTitle
+              }
+              mobileTitleHighlight={
+                hasJobs
+                  ? CAREERS_PAGE.cta.openRolesMobileTitleHighlight
+                  : CAREERS_PAGE.cta.noRolesMobileTitleHighlight
+              }
+              buttonTextNotHover={
+                hasJobs ? CAREERS_PAGE.cta.openRolesButtonText : CAREERS_PAGE.cta.noRolesButtonText
+              }
+              buttonTextHover={CAREERS_PAGE.cta.buttonTextHover}
               animationClass="cp-animate"
               animate={true}
               buttonLink={getMailtoLink(EMAIL_KEYS.HR, 'Career Inquiry')}

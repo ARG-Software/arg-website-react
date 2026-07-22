@@ -1,30 +1,9 @@
 import { SectionDivider } from '../../../components/layout/SectionDivider';
+import HOMEPAGE from '../../../data/homepage.json';
 
-const testimonialsData = [
-  {
-    quote:
-      'It was a pleasure to work with! Good communication, solid work, and helped us deliver our new version of the product in a timely fashion.',
-    author: 'Marc-André Mignault, Project Manager at Skytracks',
-  },
-  {
-    quote:
-      "ARG Software were great to work with from the first day. We needed a MVP for our tourism management company and they provided all the technical solutions we required, optimizing and improving our day-to-day operations. I definitely recommend ARG Software's team for their effort and great work. Thank you so much!",
-    author: 'Andre Mendo, CEO at Hostelier',
-  },
-  {
-    quote:
-      'Jose and Rui delivered good work and I enjoyed working with them. They transformed a legacy API from PHP to TypeScript, where their architectural skills in building an object-oriented backend were really handy. They were quick in extending their knowledge and competence in TypeScript-based projects to successfully complete the project. It is likely that we will hire them in the future for projects.',
-    author: 'Hendrik, CTO at Dokutar',
-  },
-  {
-    quote:
-      'ARG did great! Was awesome to work with and always quick to respond. Great attitude despite project requirements changing. Also helped out in a few tight spots with last-minute requests — highly recommend working with ARG!',
-    author: 'Austin Klise, CEO at Klise Consulting',
-    isLast: true,
-  },
-];
+const testimonialsData = HOMEPAGE.testimonials;
 
-export function TestimonialsSection({ className = '' }) {
+export function TestimonialsSection({ className = '', testimonials = testimonialsData }) {
   return (
     <section
       id="testimonials"
@@ -37,7 +16,7 @@ export function TestimonialsSection({ className = '' }) {
       <div className="padding-global">
         <div className="container-medium">
           <div className="testimonials-component">
-            {testimonialsData.map((t, i) => (
+            {testimonials.map((t, i) => (
               <div key={i} className="testimonials-item" data-animate-order={i}>
                 <div className="max-width-testimonials align-center">
                   <div className="overflow-hidden">

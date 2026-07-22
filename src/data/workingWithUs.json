@@ -1,0 +1,115 @@
+{
+  "seo": {
+    "title": "Working with Us",
+    "description": "Work with Arg Software when architecture, reliability, and senior execution matter from the first technical decision to production."
+  },
+  "hero": {
+    "title": ["Work With", "Arg Software"],
+    "subtitle": "Work with a small architecture-first team that designs the system before writing it, then stays close when it reaches production.",
+    "breadcrumbs": [{ "label": "Home", "path": "/" }, { "label": "Working with Us" }],
+    "sideItems": [
+      { "label": "Why ARG", "href": "#why-us" },
+      { "label": "How we work", "href": "#values" },
+      { "label": "Fit check", "href": "#fit-check" },
+      { "label": "Start a conversation", "href": "#contact" }
+    ]
+  },
+  "whyUs": {
+    "title": {
+      "beforeStrike": "We don't do",
+      "strike": "patchwork.",
+      "middle": "We design the system",
+      "highlight": "before we write it."
+    },
+    "aside": {
+      "text": "ARG is a small, opinionated engineering team. We take on hard problems on purpose: systems where architecture, reliability, and ownership matter from day one.",
+      "label": "ARG Team"
+    },
+    "pillars": [
+      {
+        "index": "01 - Method",
+        "metricValue": 100,
+        "metricSuffix": "%",
+        "unit": "of projects",
+        "title": "Diagram first. Then code.",
+        "description": "Every engagement opens with a written technical plan you can argue with. Two days on architecture beats two weeks unpicking a wrong call."
+      },
+      {
+        "index": "02 - Domain",
+        "metricValue": 10,
+        "metricSuffix": "k",
+        "unit": "tx/sec, live",
+        "title": "The systems that cannot fall over.",
+        "description": "Open-payment rails, real-time audio sync, exchange order flow. The work where \"usually works\" is not good enough."
+      },
+      {
+        "index": "03 - Craft",
+        "metricValue": 0,
+        "unit": "band-aids shipped",
+        "title": "Gold standard, not trendy.",
+        "description": "Battle-tested tools we have used under pressure, not the ones with the loudest feed. Clean code, clear ownership, easy hand-off when we are done."
+      }
+    ],
+    "techStackIntro": {
+      "title": "The tools are not the point. The operating history is.",
+      "text": "This console maps the stack we trust when a system needs to stay observable, scalable, and easy to hand over after the hard part is done."
+    },
+    "techStackConsole": {
+      "ariaLabel": "ARG technology stack shell",
+      "path": "arg@stack ~ /stack.sh",
+      "meta": "interactive stack browser",
+      "prompt": "arg@stack:~$",
+      "inputPlaceholder": "type /help to check the commands",
+      "commands": {
+        "/all": { "description": "show all available stack categories and tools" },
+        "/languages": { "description": "shows production languages we use daily", "lines": ["TypeScript", "JavaScript", "C#", "Python"] },
+        "/databases": { "description": "shows storage, cache, and streaming tools", "lines": ["Postgres", "MongoDB", "MySQL", "SQLite", "SQL Server"] },
+        "/frontend": { "description": "shows web and real-time UI tools", "lines": ["React", "Next.js", "Angular", "Vue"] },
+        "/backend": { "description": "shows server and API tools", "lines": ["Node.js", "Express", "NestJS", "ASP.NET Core", "Kafka", "RabbitMQ", "gRPC", "REST"] },
+        "/infra": { "description": "shows ship, run, and rollback tooling", "lines": ["Nx", "Docker", "Kubernetes", "GitHub Actions", "CircleCI", "Octopus Deploy", "Azure", "Hetzner Cloud", "Supabase", "Vercel", "Netlify"] },
+        "/observe": { "description": "shows observability tooling", "lines": ["OpenTelemetry", "Grafana", "Sentry", "Prometheus"] },
+        "/ai": { "description": "shows AI and automation tooling", "lines": ["Hugging Face", "LangChain", "OpenAI", "Claude", "ClaudeCode", "OpenCode", "Ollama"] },
+        "/principles": { "description": "shows the operating principles behind the stack", "lines": ["Clean Architecture", "Domain-Driven Design", "Continuous Delivery", "Continuous Integration", "SOLID Principles", "Event-Driven Architecture", "Microservices"] }
+      },
+      "systemCommands": {
+        "/help": "lists available commands",
+        "/clear": "clears the shell output"
+      }
+    }
+  },
+  "values": {
+    "title": "Four things we actually mean.",
+    "subtitle": "Most companies list values that could belong to anyone. Ours are operational: they decide what we ship, what we refuse, and who fits on the team.",
+    "items": [
+      { "title": "Architecture first", "description": "The system is designed before it's written. If we can't explain it clearly, we don't build it yet.", "antiValue": "ship fast, fix later" },
+      { "title": "No patchwork", "description": "If a fix needs a workaround, we refactor the abstraction. Band-aids compound; we'd rather pay the cost now.", "antiValue": "good enough for now" },
+      { "title": "Production on a Tuesday", "description": "We deploy when we can stay close. We own what we ship: bugs, performance, and the unexpected page.", "antiValue": "merge Friday, ghost the weekend" },
+      { "title": "Direct, kind, no politics", "description": "Honest in code review, honest in retro. Small team means every personality compounds.", "antiValue": "let's circle back offline" }
+    ]
+  },
+  "fitCheck": {
+    "title": "Not every project needs ARG.",
+    "titleHighlight": "The hard ones usually do.",
+    "intro": "Before we talk scope, we look for the shape of the problem: where the risk is, what needs to stay reliable, and whether a small senior team can make a real difference.",
+    "fitTicker": "Where ARG fits",
+    "processTicker": "How it starts",
+    "processAriaLabel": "How it starts",
+    "checks": [
+      { "title": "High-stakes architecture", "description": "You are making decisions that will shape the product for years: platform design, migrations, integrations, or a system that needs to scale without becoming fragile." },
+      { "title": "Production reliability", "description": "The system is already live, or close to it, and performance, observability, recovery, or operational confidence matters more than another feature sprint." },
+      { "title": "Senior execution", "description": "You do not need a large vendor layer. You need people who can reason about the product, write the code, and stay accountable when it reaches production." }
+    ],
+    "conversationSteps": [
+      { "title": "Send context", "description": "Share the product, constraint, or technical risk you need to solve." },
+      { "title": "We review the problem", "description": "We look for fit before suggesting calls, proposals, or unnecessary process." },
+      { "title": "You speak with someone technical", "description": "The first conversation is with someone who can reason about the system." },
+      { "title": "We suggest the next move", "description": "You leave with a clear recommendation, even if that means ARG is not the fit." }
+    ]
+  },
+  "cta": {
+    "title": "Ready to work",
+    "titleHighlight": "with us?",
+    "buttonTextNotHover": "Send us a message",
+    "buttonTextHover": "Let's meet"
+  }
+}
