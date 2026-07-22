@@ -3,7 +3,7 @@ import { createContentHash, normalizeText } from './text.js';
 
 export async function upsertRagSource({ supabase, source, embeddings }) {
   const content = normalizeText(source.content);
-  const chunks = chunkText(content);
+  const chunks = source.chunks ?? chunkText(content);
   const chunkEmbeddings = embeddings ?? [];
 
   if (chunks.length === 0) {

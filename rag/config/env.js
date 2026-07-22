@@ -1,5 +1,7 @@
 const DEFAULTS = {
-  GEMINI_EMBEDDING_MODEL: 'text-embedding-004',
+  GEMINI_EMBEDDING_MODEL: 'gemini-embedding-2',
+  GEMINI_EMBEDDING_DIMENSIONS: '768',
+  GEMINI_EMBEDDING_REQUEST_DELAY_MS: '750',
   DEEPSEEK_MODEL: 'deepseek-v4-flash',
   RAG_SITE_URL: 'https://arg.software',
   RAG_COMPANY_NAME: 'ARG Software',
@@ -66,6 +68,8 @@ export function getGeminiConfig() {
   return {
     geminiApiKey: getEnv('GEMINI_API_KEY', { required: true }),
     geminiEmbeddingModel: getEnv('GEMINI_EMBEDDING_MODEL'),
+    geminiEmbeddingDimensions: getNumberEnv('GEMINI_EMBEDDING_DIMENSIONS'),
+    geminiEmbeddingRequestDelayMs: getNumberEnv('GEMINI_EMBEDDING_REQUEST_DELAY_MS'),
   };
 }
 

@@ -35,7 +35,9 @@ SUPABASE_PROJECT_REF=
 SUPABASE_SERVICE_ROLE_KEY=
 
 GEMINI_API_KEY=
-GEMINI_EMBEDDING_MODEL=text-embedding-004
+GEMINI_EMBEDDING_MODEL=gemini-embedding-2
+GEMINI_EMBEDDING_DIMENSIONS=768
+GEMINI_EMBEDDING_REQUEST_DELAY_MS=750
 
 DEEPSEEK_API_KEY=
 DEEPSEEK_MODEL=deepseek-v4-flash
@@ -118,6 +120,10 @@ Use these for the internal ingestion endpoint/script:
 - `src/data/workingWithUs.json`
 - `src/data/faq.json`
 - `src/blog/*.md`
+- PDFs listed in `rag/internal-pdfs.json`.
+
+Default internal PDFs:
+
 - `public/files/portfolio.pdf`
 
 Do not ingest:
@@ -194,6 +200,23 @@ External ingestion should:
 - Upsert by URL.
 - Avoid touching internal sources.
 
+## Internal PDF Sources
+
+Add repeatable internal PDF ingestion sources to:
+
+- `rag/internal-pdfs.json`
+
+Required fields:
+
+```json
+{
+  "filePath": "public/files/example.pdf",
+  "sourceKey": "example-pdf",
+  "title": "Example PDF",
+  "url": "/files/example.pdf"
+}
+```
+
 ## Next Implementation Steps
 
 1. Add dependencies: done and committed.
@@ -203,7 +226,7 @@ External ingestion should:
    - `cheerio@^1.2.0` in `devDependencies`.
    - Supabase was pinned to `^2.58.0` because newer `2.110.x` releases declare a Node 22 engine floor while Netlify is configured for Node 20.
 
-2. Add Supabase files: done and pushed to Supabase, but not committed yet.
+2. Add Supabase files: done, pushed to Supabase, and committed.
    - `supabase/config.toml`
    - `supabase/migrations/20260722000000_create_rag_schema.sql`
 
@@ -220,10 +243,17 @@ External ingestion should:
    - PDF extraction helper.
    - external HTML extraction helper.
 
-4. Add ingestion scripts:
+4. Add ingestion scripts: done and committed.
    - internal ingestion for JSON/Markdown/PDF.
    - external ingestion for allowlisted URLs.
    - do not implement these as Netlify Functions.
+   - `projects.json` is split into one `project` source per project.
+   - `partners.json` is split into one `partner` source per partner.
+   - Internal PDFs are read from `rag/internal-pdfs.json`.
+   - Both ingestion scripts support `--dry-run`.
+   - Gemini embeddings use `gemini-embedding-2` with `GEMINI_EMBEDDING_DIMENSIONS=768`.
+   - Gemini embedding requests are throttled with `GEMINI_EMBEDDING_REQUEST_DELAY_MS=750` to stay under free-tier RPM limits.
+   - Internal ingestion has been run successfully: 60 sources and 412 chunks in Supabase.
 
 5. Add ask function:
    - embed user question with Gemini.
@@ -231,7 +261,7 @@ External ingestion should:
    - send retrieved context to DeepSeek.
    - return answer plus citations.
 
-6. Add npm scripts for local/admin workflows: command names added, but ingestion/test script files still need implementation.
+6. Add npm scripts for local/admin workflows: done.
    - `rag:ingest:internal`
    - `rag:ingest:external`
    - `rag:ask:test`
@@ -241,7 +271,7 @@ External ingestion should:
 
 ## Suggested First SQL Shape
 
-Use `vector(768)` if continuing with Google `text-embedding-004`.
+Use `vector(768)` with Google `gemini-embedding-2` and `GEMINI_EMBEDDING_DIMENSIONS=768`.
 
 Tables should support:
 
@@ -253,13 +283,9 @@ Tables should support:
 
 ## Continue From Here
 
-Current worktree after this handoff update should contain uncommitted changes in:
+Current worktree after this handoff update should be clean.
 
-- `docs/rag-session-handoff.md`
-- `package.json`
-- `rag/scripts/supabase.js`
-
-Start by checking the current worktree, then implement the ingestion scripts.
+Start by checking the current worktree, then implement retrieval testing and the ask function.
 
 Useful commands:
 
