@@ -207,7 +207,7 @@ External ingestion should:
    - `supabase/config.toml`
    - `supabase/migrations/20260722000000_create_rag_schema.sql`
 
-3. Add shared RAG modules: done, but not committed yet.
+3. Add shared RAG modules: done and committed.
    - Files are grouped under `rag/config/`, `rag/clients/`, `rag/ingestion/processing/`, and `rag/ingestion/sources/`.
    - env validation.
    - Supabase server client.
@@ -231,12 +231,13 @@ External ingestion should:
    - send retrieved context to DeepSeek.
    - return answer plus citations.
 
-6. Add npm scripts for local/admin workflows:
+6. Add npm scripts for local/admin workflows: command names added, but ingestion/test script files still need implementation.
    - `rag:ingest:internal`
    - `rag:ingest:external`
    - `rag:ask:test`
    - `supabase:link`
    - `supabase:push`
+   - Supabase scripts use `rag/scripts/supabase.js` so `.env` values are loaded automatically.
 
 ## Suggested First SQL Shape
 
@@ -255,7 +256,8 @@ Tables should support:
 Current worktree after this handoff update should contain uncommitted changes in:
 
 - `docs/rag-session-handoff.md`
-- `rag/`
+- `package.json`
+- `rag/scripts/supabase.js`
 
 Start by checking the current worktree, then implement the ingestion scripts.
 

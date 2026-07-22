@@ -22,7 +22,12 @@
     "lint:fix": "eslint src plugins --ext .js,.jsx --fix",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "blog:import:medium": "node scripts/import-medium-articles.cjs",
-    "blog:import:medium:drafts": "node scripts/import-medium-articles.cjs --drafts"
+    "blog:import:medium:drafts": "node scripts/import-medium-articles.cjs --drafts",
+    "rag:ingest:internal": "node rag/ingestion/scripts/ingestInternal.js",
+    "rag:ingest:external": "node rag/ingestion/scripts/ingestExternal.js",
+    "rag:ask:test": "node rag/runtime/scripts/testAsk.js",
+    "supabase:link": "node rag/scripts/supabase.js link",
+    "supabase:push": "node rag/scripts/supabase.js push"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^8.0.0",
