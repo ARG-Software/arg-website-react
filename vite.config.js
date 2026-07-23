@@ -51,6 +51,46 @@ export default defineConfig({
         },
       },
     },
+    // Local ask endpoint: proxies /.netlify/functions/ask to askQuestion() in dev
+    {
+      name: 'local-ask-endpoint',
+      apply: 'serve',
+      configureServer(server) {
+        server.middlewares.use(async (req, res, next) => {
+          if (req.url !== '/.netlify/functions/ask' || req.method !== 'POST') {
+            return next();
+          }
+
+          let body = '';
+          for await (const chunk of req) body += chunk;
+
+          try {
+            const { askQuestion } = await import('./rag/runtime/ask.ts');
+            const payload = JSON.parse(body || '{}');
+            const result = await askQuestion({
+              question: payload.question,
+              messages: payload.messages,
+              sourceTypes: payload.sourceTypes,
+            });
+
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ answer: result.answer, citations: result.citations }));
+          } catch (error) {
+            const statusCode = error?.name === 'RagValidationError' ? 400 : 500;
+            res.statusCode = statusCode;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(
+              JSON.stringify({
+                error: {
+                  code: error?.code || 'answer_failed',
+                  message: statusCode === 500 ? 'Unable to answer the question' : error.message,
+                },
+              })
+            );
+          }
+        });
+      },
+    },
     // SPA fallback: serve index.html for routes without file extensions
     {
       name: 'spa-fallback',

@@ -68,3 +68,8 @@ export function trackBlogPostClick(slug, title, location) {
 export function trackConsent(action) {
   trackEvent('cookie_consent', { consent_action: action });
 }
+
+/** Gaspar assistant events. */
+export function trackAssistantEvent(action, data = {}) {
+  trackEvent(`assistant_${action}`, data);
+}

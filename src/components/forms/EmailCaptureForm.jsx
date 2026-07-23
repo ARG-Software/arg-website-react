@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { closeSvg } from '../icons/SocialIcons';
 import { trackEvent } from '../../utils/analytics';
 import { ALREADY_SUBSCRIBED_KEY } from '@constants/ui';
 import { useLeadCaptureVisibility } from '@hooks/useLeadCaptureVisibility';
 import { useWeb3Form } from '@hooks/useWeb3Form';
 
-export function EmailCaptureForm() {
+export function EmailCaptureForm({ onVisibilityChange }) {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [neverShowAgain, setNeverShowAgain] = useState(false);
   const [messageError, setMessageError] = useState('');
   const leadCapture = useLeadCaptureVisibility();
   const { status, isSubmitting, submitForm, resetStatus } = useWeb3Form({
@@ -26,8 +25,12 @@ export function EmailCaptureForm() {
   });
 
   function dismiss() {
-    leadCapture.dismiss({ neverShowAgain });
+    leadCapture.dismiss();
   }
+
+  useEffect(() => {
+    onVisibilityChange?.(leadCapture.visible);
+  }, [leadCapture.visible, onVisibilityChange]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -149,14 +152,6 @@ export function EmailCaptureForm() {
                 </div>
                 {messageError && <span className="ec-field-error">{messageError}</span>}
               </div>
-              <label className="ec-never-show">
-                <input
-                  type="checkbox"
-                  checked={neverShowAgain}
-                  onChange={event => setNeverShowAgain(event.target.checked)}
-                />
-                <span>Do not show this again</span>
-              </label>
               <div className="form-card__hidden" aria-hidden="true">
                 <label htmlFor="lead-capture-botcheck">Do not fill this field</label>
                 <input id="lead-capture-botcheck" type="checkbox" name="botcheck" tabIndex={-1} />

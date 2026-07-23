@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   ALREADY_SUBSCRIBED_KEY,
+  LEAD_CAPTURE_DISMISS_EXPIRY_KEY,
+  LEAD_CAPTURE_DISMISS_EXPIRY_MS,
   LEAD_CAPTURE_DISMISSED_CONTEXT_KEY,
-  NEVER_SHOW_LEAD_CAPTURE_KEY,
   MOBILE_BREAKPOINT,
 } from '@constants/ui';
 import { isMobile } from '../utils/helpers';
@@ -25,11 +26,20 @@ function isContactPath(pathname) {
   return normalizePath(pathname) === CONTACT_PATH;
 }
 
-function isSuppressedPermanently() {
-  return (
-    localStorage.getItem(ALREADY_SUBSCRIBED_KEY) ||
-    localStorage.getItem(NEVER_SHOW_LEAD_CAPTURE_KEY)
-  );
+function isDismissedWithExpiry() {
+  try {
+    const data = JSON.parse(localStorage.getItem(LEAD_CAPTURE_DISMISS_EXPIRY_KEY));
+
+    if (!data?.dismissedAt) return false;
+
+    return Date.now() - Number(data.dismissedAt) < LEAD_CAPTURE_DISMISS_EXPIRY_MS;
+  } catch {
+    return false;
+  }
+}
+
+function isSuppressed() {
+  return localStorage.getItem(ALREADY_SUBSCRIBED_KEY) || isDismissedWithExpiry();
 }
 
 function getDismissedContextKey() {
@@ -104,7 +114,7 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
   }, []);
 
   useEffect(() => {
-    if (isContactPath(location.pathname) || isSuppressedPermanently() || mobileViewport) return;
+    if (isContactPath(location.pathname) || isSuppressed() || mobileViewport) return;
 
     let observer;
     let retryTimer;
@@ -157,7 +167,7 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
   }, [location.pathname, normalizedPath, mobileViewport]);
 
   useEffect(() => {
-    if (!currentContext || isVisible || isSuppressedPermanently() || mobileViewport) return;
+    if (!currentContext || isVisible || isSuppressed() || mobileViewport) return;
     if (currentContext.path !== normalizedPath) return;
     if (currentContext.key === dismissedContextKey) return;
 
@@ -173,13 +183,15 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
     return () => clearTimeout(timer);
   }, [currentContext, delayMs, dismissedContextKey, isVisible, normalizedPath, mobileViewport]);
 
-  function dismiss({ neverShowAgain = false } = {}) {
+  function dismiss() {
     const dismissedContext = visibleContext || currentContext;
 
-    if (neverShowAgain) {
-      localStorage.setItem(NEVER_SHOW_LEAD_CAPTURE_KEY, '1');
-      trackEvent('lead_capture', { action: 'never_show_again' });
-    } else if (dismissedContext) {
+    localStorage.setItem(
+      LEAD_CAPTURE_DISMISS_EXPIRY_KEY,
+      JSON.stringify({ dismissedAt: Date.now() })
+    );
+
+    if (dismissedContext) {
       setDismissedContext(dismissedContext);
       setDismissedContextKey(dismissedContext.key);
       trackEvent('lead_capture', {

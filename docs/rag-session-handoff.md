@@ -409,34 +409,119 @@ Tables should support:
 - chunk ordering.
 - citations in answers.
 
+## Frontend Assistant UI (Gaspar)
+
+The frontend assistant widget named **Gaspar** is now implemented.
+
+### Components
+
+- `src/components/widgets/AssistantWidget.jsx` — main widget component
+- `src/components/widgets/WidgetManager.jsx` — coordinates email capture + Gaspar
+- `src/styles/assistant.css` — all Gaspar widget styles
+
+### How it works
+
+- A floating trigger button (56px circle, dark navy, ARG logo) sits at bottom-right (`z-index: 9996`).
+- Clicking it opens a chat panel (380x520px card, `z-index: 9998`) or fullscreen on mobile.
+- The panel shows a welcome message from Gaspar, 4 quick prompt buttons, and a message input.
+- Questions are sent to `POST /.netlify/functions/ask` with the full conversation history via `messages`.
+- Responses include answer text and citation chips (clickable links to sources).
+- Conversation history is maintained in React state across the session.
+- Users can toggle between card and fullscreen modes; Escape key minimizes the panel.
+- On mobile (<=768px), the panel always opens fullscreen.
+
+### Widget coordination
+
+`WidgetManager` renders both `EmailCaptureForm` and `AssistantWidget`. When the email capture card is visible, the Gaspar trigger button is hidden. When the email card is dismissed, the trigger fades in. They share the same bottom-right position but are z-indexed to never collide:
+
+| Element | z-index |
+|---|---|
+| Gaspar trigger button | 9996 |
+| Email capture card | 9997 (unchanged) |
+| Gaspar chat panel | 9998 |
+| Cookie banner | 9999 (unchanged) |
+
+### Email capture dismiss changes
+
+- The "Do not show this again" checkbox has been removed.
+- Clicking the close button (X) now stores a dismiss timestamp in `localStorage` under `arg_lead_capture_dismissed`.
+- The card reappears after 2 days (`LEAD_CAPTURE_DISMISS_EXPIRY_MS = 2 * 24 * 60 * 60 * 1000`).
+- Successful form submission still permanently suppresses the card via `arg_insights_subscribed`.
+- Removed `NEVER_SHOW_LEAD_CAPTURE_KEY` from `src/constants/ui.js`.
+
+### Analytics events
+
+All tracked via `trackAssistantEvent(action, data)` in `src/utils/analytics.js`:
+
+- `assistant_open` — panel opens
+- `assistant_close` — panel closes/minimizes
+- `assistant_submit` — question submitted
+- `assistant_answer` — answer received
+- `assistant_error` — error occurred
+- `assistant_citation_click` — citation link clicked
+- `assistant_quick_prompt` — quick prompt clicked
+
+### Local dev ask endpoint
+
+A Vite dev server middleware in `vite.config.js` handles `POST /.netlify/functions/ask` by calling `askQuestion()` directly. No Netlify CLI or separate server needed — `npm run dev` handles everything.
+
+### Mounting
+
+`WidgetManager` is mounted in `src/main.jsx` as a sibling to `CookieConsent`, outside `<Routes>`, so it persists across all page transitions.
+
+### API contract (unchanged)
+
+```
+POST /.netlify/functions/ask
+Body: { "question": "...", "messages": [...], "sourceTypes": [...] }
+Response: { "answer": "...", "citations": [...] }
+Error: { "error": { "code": "...", "message": "..." } }
+```
+
+See the Runtime Endpoint section above for full details on error codes and behavior.
+
 ## Continue From Here
 
-Frontend UI and deployment environment setup were intentionally left for the end.
+The frontend UI is implemented. Remaining work:
 
-Recommended next work:
+- **Deploy**: Configure server-side Netlify environment variables before deploying the ask endpoint:
+  - `SUPABASE_URL`
+  - `SUPABASE_SERVICE_ROLE_KEY`
+  - `GEMINI_API_KEY`
+  - `DEEPSEEK_API_KEY`
+- **External sources**: Optionally add more manually approved external URLs to `rag/config/external-sources.json` and rerun external ingestion.
+- **Polish**: Adjust Gaspar UI/UX based on real usage (typing speed, response formatting, citation display).
+- **Commit**: The current working tree has uncommitted changes (Gaspar widget + email capture changes). Commit when ready.
 
-- Add a frontend assistant UI that calls `POST /.netlify/functions/ask`.
-- Have the frontend send recent `user`/`assistant` turns through the optional `messages` array for follow-up questions.
-- Configure server-side Netlify environment variables before deploying the ask endpoint.
-- Optionally add more manually approved external URLs to `rag/config/external-sources.json` and rerun external ingestion.
+### Uncommitted changes
 
-Verification already completed in this session:
+```
+M  src/components/forms/EmailCaptureForm.jsx
+M  src/constants/ui.js
+M  src/hooks/useLeadCaptureVisibility.js
+M  src/main.jsx
+M  src/styles/components.css
+M  src/utils/analytics.js
+M  vite.config.js
+?? src/components/widgets/AssistantWidget.jsx
+?? src/components/widgets/WidgetManager.jsx
+?? src/styles/assistant.css
+```
+
+### Verification already completed
 
 - `npm run lint` passes.
-- `npm run build` passes with a longer timeout because image optimization produces large output.
+- `npm run typecheck:rag` passes.
+- `npm run build` passes (including SEO prerender, image optimization).
 - `npm run rag:ask:test --retrieve-only -- "What does ARG Software do?"` returns 6 chunks from Supabase.
 - `npm run rag:ingest:external -- --dry-run` validates all five approved external sources: 90 chunks planned, 0 failures.
 - `npm run rag:ingest:external` ingests all five approved external sources: 90 chunks ingested, 0 failures.
-- `npm run rag:ask:test -- --retrieve-only "What external profiles mention ARG Software?"` returns external profile chunks from Supabase.
 - `npm run rag:ask:test -- "What external profiles mention ARG Software?"` returns a generated answer with citations from DesignRush, GoodFirms, TechBehemoths, and LinkedIn.
-- `npm run rag:ask:test -- --external-profile-history "Tell me more about the second one"` verifies conversational follow-up rewriting and answering.
-- `npm run rag:ask:test -- "Quels profils externes mentionnent ARG Software ?"` verifies French question translation for retrieval and French answer generation.
-- `npm run rag:ask:test -- "Que perfis externos mencionam a ARG Software?"` verifies Portuguese question translation for retrieval and Portuguese answer generation.
-- `npm run rag:ask:test -- --external-profile-history "Parle-moi du deuxième"` verifies French follow-up reference resolution and French answer generation.
-- `npm run rag:ask:test -- "bonjour"` verifies same-language small talk without citations.
-- `npm run rag:ask:test -- "write me a Python scraper"` verifies unsupported request redirection without citations.
-- Local Netlify handler smoke test with an empty JSON body returns `error.code: question_required`.
-- Direct `askQuestion` no-context smoke test returns a French insufficient-context response with zero citations.
+- `npm run rag:ask:test -- --external-profile-history "Tell me more about the second one"` verifies conversational follow-up.
+- `npm run rag:ask:test -- "Quels profils externes mentionnent ARG Software ?"` verifies French translation.
+- `npm run rag:ask:test -- "Que perfis externos mencionam a ARG Software?"` verifies Portuguese translation.
+- `npm run rag:ask:test -- "bonjour"` verifies same-language small talk.
+- `npm run rag:ask:test -- "write me a Python scraper"` verifies unsupported request redirection.
 
 Useful commands:
 
@@ -445,14 +530,14 @@ git status --short
 npm run lint
 npm run typecheck:rag
 npm run build
-npm run rag:ingest:external -- --dry-run
-npm run rag:ask:test --retrieve-only -- "What does ARG Software do?"
+npm run dev                          # starts Vite with local ask middleware
+npm run rag:ingest:internal          # re-ingest internal sources
+npm run rag:ingest:external          # re-ingest external sources
 npm run rag:ask:test -- "What does ARG Software do?"
 npm run rag:ask:test -- "What external profiles mention ARG Software?"
 npm run rag:ask:test -- --external-profile-history "Tell me more about the second one"
 npm run rag:ask:test -- "Quels profils externes mentionnent ARG Software ?"
 npm run rag:ask:test -- "Que perfis externos mencionam a ARG Software?"
-npm run rag:ask:test -- --external-profile-history "Parle-moi du deuxième"
 npm run rag:ask:test -- "bonjour"
 npm run rag:ask:test -- "write me a Python scraper"
 ```

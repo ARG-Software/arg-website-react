@@ -8,12 +8,13 @@ import HomePage from './pages/home/HomePage.jsx';
 import { LenisProvider } from './providers/LenisProvider.jsx';
 import { TransitionProvider } from './providers/TransitionProvider.jsx';
 import { CookieConsent } from '@components/overlays/CookieConsent';
-import { EmailCaptureForm } from '@components/forms/EmailCaptureForm';
+import { WidgetManager } from '@components/widgets/WidgetManager';
 import { ErrorBoundary } from '@components/layout/ErrorBoundary';
 import { lazyWithRetry } from '@utils/lazyWithRetry';
 import './styles/base.css';
 import './styles/home.css';
 import './styles/components.css';
+import './styles/assistant.css';
 import './styles/legal.css';
 import './styles/effects.css';
 
@@ -80,7 +81,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </TransitionProvider>
           </LenisProvider>
         </RAFProvider>
-        <EmailCaptureForm />
+        <WidgetManager />
         <CookieConsent />
       </BrowserRouter>
     </HelmetProvider>
