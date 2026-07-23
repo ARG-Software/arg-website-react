@@ -547,31 +547,52 @@ npm run rag:ask:test -- "write me a Python scraper"
 ### Implemented Since The Historical Handoff
 
 - `vite.config.js` now loads all local environment variables with Vite's `loadEnv()` before its local ask middleware calls `askQuestion()`. This fixed local assistant failures caused by RAG credentials in `.env` not reaching `process.env`.
-- `netlify/functions/ask.js` and the Vite middleware return `configuration_error` when required RAG environment variables are missing, instead of masking that condition as `answer_failed`.
+- `netlify/functions/ask.js` and the Vite middleware return `configuration_error` with HTTP 503 when required RAG environment variables are missing, instead of masking that condition as `answer_failed`.
 - `AssistantWidget` is independent of email capture. It accepts generic `isSuppressed` and `onOpenChange` props; it no longer receives `emailVisible`.
 - `WidgetManager` remains the narrow coordinator for mutually exclusive widgets. It suppresses email capture while the assistant is open, and suppresses the assistant while email capture is visible.
 - `useLeadCaptureVisibility` accepts generic `isSuppressed` state.
 - The email capture card has a higher z-index than the assistant panel as a CSS fallback; normal widget state prevents overlap.
 - `AssistantWidget` uses the shared `isMobile()` helper and `MOBILE_BREAKPOINT` instead of a hardcoded breakpoint.
 - Assistant error copy supports English and Portuguese. Browser locale handling maps `pt-*` to Portuguese and defaults all other locales to English. Keep this scope; do not add an external translation dependency for error states.
+- The assistant sends bounded page metadata (`pathname` and document title) with every question. The runtime validates it, derives a project slug only from `/projects/:slug/`, and passes it to the retrieval rewrite prompt as navigation data rather than instructions.
+- The runtime rewrites each question once, reuses that embedding for retrieval, and prefers relevant chunks from the active project without excluding general sources.
+- Retrieval starts at the existing `0.72` similarity threshold and retries at `RAG_FALLBACK_SIMILARITY_THRESHOLD=0.60` only when fewer than the requested number of contexts are found. Results are deduplicated and capped at `RAG_MATCH_COUNT`.
+- Internal ingestion derives `ARG Team`, `José Antunes`, and `Rui Rocha` sources from homepage, About, and careers JSON. They use the existing `about` source type and were ingested without resetting existing data.
+- Supabase migration `20260723000000_add_rag_source_key_filter.sql` is applied. `match_rag_chunks` now accepts optional `source_keys` for active-project preference.
+- The intent and answer prompts explicitly cover team, founder experience, pricing, budgets, estimates, and project-cost questions. They prohibit invented people, rates, budgets, and estimates.
+
+### Recent Commit
+
+- `3a6ec5d fix(rag): coordinate assistant and lead capture` contains the previously pending widget, configuration, and handoff changes.
 
 ### Current Working Tree
 
-These files are modified and intentionally uncommitted:
+The local bot improvements are intentionally uncommitted. Review and commit them together; do not revert them or reset the RAG database.
 
 ```text
+M .env.example
 M docs/rag-session-handoff.md
 M netlify/functions/ask.js
-M src/components/forms/EmailCaptureForm.jsx
+M rag/clients/deepseek.ts
+M rag/config/env.ts
+M rag/ingestion/sources/internal.ts
+M rag/runtime/ask.ts
+M rag/runtime/scripts/testAsk.ts
+M rag/types/aiClient.ts
+M rag/types/config.ts
 M src/components/widgets/AssistantWidget.jsx
-M src/components/widgets/WidgetManager.jsx
-M src/hooks/useLeadCaptureVisibility.js
 M src/styles/assistant.css
-M src/styles/components.css
+M supabase/scripts.js
 M vite.config.js
+?? supabase/migrations/20260723000000_add_rag_source_key_filter.sql
 ```
 
-Do not revert these changes. Inspect them carefully before adding RAG work.
+### Database State
+
+- `20260723000000_add_rag_source_key_filter.sql` has been applied to the connected Supabase project.
+- `about/arg-team`, `about/jose-antunes`, and `about/rui-rocha` have been ingested.
+- No tables or existing sources were cleared.
+- No Netlify deployment has been performed.
 
 ### Latest Verification
 
@@ -579,50 +600,21 @@ Do not revert these changes. Inspect them carefully before adding RAG work.
 - `npm run typecheck:rag` passes.
 - `npm run build` passes.
 - `npm run rag:ask:test -- "What does ARG Software do?"` returns an answer with citations.
+- `npm run rag:ingest:internal -- --source arg-team --source jose-antunes --source rui-rocha` ingested all three generated sources.
+- `npm run rag:ask:test -- "Who is part of ARG?"` correctly identifies José Antunes and Rui Rocha and describes other collaborators as an unnamed trusted network.
+- `npm run rag:ask:test -- --retrieve-only --page-path=/projects/mojaloop/ --page-title=Mojaloop "Tell me more about this project."` prioritizes Mojaloop contexts.
+- `npm run rag:ask:test -- --page-path=/projects/mojaloop/ --page-title=Mojaloop "Tell me more about this project."` answers from Mojaloop context.
+- `npm run supabase:push` completes with the remote database up to date.
 
 ### Current Gaps
 
-The assistant still lacks page context. The frontend sends only `question` and conversation `messages`, so references such as "this project" or "the project I am seeing" cannot resolve to the current page.
-
-The public team information is spread across existing RAG sources:
-
-- `src/data/homepage.json` contains homepage team cards.
-- `src/data/about.json` contains founder profiles and detailed work history.
-- Careers data contains additional founder references.
-
-José Antunes and Rui Rocha are the only individually named public team members. The site describes other collaborators as an unnamed trusted network. The assistant must state this accurately and never invent people.
-
-Projects are already ingested individually from `src/data/projects.json`, but broad/ambiguous questions can miss them because retrieval currently uses a single global similarity threshold of `0.72`.
+Pricing remains unverified. DesignRush may have indexed indicative rate or budget data, but its source can currently return 403 and must not be refreshed or cited without retrieval verification.
 
 ### Required Next Work
 
-1. Generate dedicated first-party RAG sources from existing public JSON data.
-   - Create an aggregate `ARG Team` source.
-   - Create separate José Antunes and Rui Rocha profile sources.
-   - Derive these from existing homepage, About, and careers data rather than creating manually duplicated profile content.
-   - Use the existing `about` source type with distinct source keys to avoid a schema migration solely for a new type.
-
-2. Add page context to assistant requests.
-   - In `AssistantWidget`, use React Router location and send bounded `pageContext` with `pathname` and `document.title`.
-   - Validate and normalize it in `netlify/functions/ask.js` and `rag/runtime/ask.ts`.
-   - Derive a project slug server-side for `/projects/:slug/` paths.
-
-3. Resolve contextual project questions.
-   - Pass page context to the question-rewrite prompt in `rag/clients/deepseek.ts`.
-   - Rewrite references such as "tell me more about this project" to the project identified by page context.
-   - Prefer matching chunks from the active project without preventing general questions on a project page from using other sources.
-
-4. Broaden retrieval safely.
-   - Do not globally discard the current `0.72` threshold.
-   - First run the current high-confidence retrieval.
-   - When it returns too little context, retry with a configurable lower threshold, initially around `0.60`.
-   - Merge and deduplicate results while continuing to answer only from retrieved context.
-   - Add the fallback threshold to `rag/config/env.ts`, `rag/types/config.ts`, and `.env.example`.
-
-5. Update intent and answer prompts.
-   - Treat team, founder experience, rates, budgets, estimates, and project-cost questions as `rag_question` requests.
-   - For team questions, enumerate named people in retrieved public context and clarify that unnamed collaborators are not publicly listed.
-   - For pricing, distinguish a third-party indicative listing from a project quote; never invent rates or estimates.
+1. Verify DesignRush pricing context before answering project-cost questions with external figures.
+2. Test the assistant in the browser on project pages, including English and Portuguese error states.
+3. Before deployment, add public-endpoint abuse protection such as rate limiting or bot verification.
 
 ### DesignRush Pricing
 
@@ -649,12 +641,12 @@ If no verified pricing context is returned, do not fabricate it or bypass Design
 
 Do not clear tables. Internal ingestion is content-hash/upsert based and replaces chunks only for the refreshed source.
 
-After generated team/person sources are implemented, refresh the relevant internal data:
+Generated team and founder sources are already ingested. To refresh them after source-data changes:
 
 ```bash
 npm run rag:ingest:internal -- --file src/data/about.json --refresh
 npm run rag:ingest:internal -- --file src/data/homepage.json --refresh
-npm run rag:ingest:internal -- --file src/data/projects.json --refresh
+npm run rag:ingest:internal -- --file src/data/careersPage.json --refresh
 ```
 
 Use the generated-source loader's matching selection once it exists. Do not force-refresh DesignRush until it is available through an approved, accessible route.
@@ -668,6 +660,7 @@ npm run build
 npm run rag:ask:test -- "Who is part of ARG?"
 npm run rag:ask:test -- "What is Jose Antunes's experience?"
 npm run rag:ask:test -- "What is Rui Rocha's experience?"
+npm run rag:ask:test -- --retrieve-only --page-path=/projects/mojaloop/ --page-title=Mojaloop "Tell me more about this project."
 ```
 
 Also test in the browser:

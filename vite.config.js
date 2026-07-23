@@ -74,6 +74,7 @@ export default defineConfig(({ mode }) => {
               question: payload.question,
               messages: payload.messages,
               sourceTypes: payload.sourceTypes,
+              pageContext: payload.pageContext,
             });
 
             res.setHeader('Content-Type', 'application/json');
@@ -82,7 +83,11 @@ export default defineConfig(({ mode }) => {
             const isConfigurationError =
               error instanceof Error &&
               error.message.startsWith('Missing required environment variables:');
-            const statusCode = error?.name === 'RagValidationError' || isConfigurationError ? 400 : 500;
+            const statusCode = isConfigurationError
+              ? 503
+              : error?.name === 'RagValidationError'
+                ? 400
+                : 500;
             res.statusCode = statusCode;
             res.setHeader('Content-Type', 'application/json');
             res.end(

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { RagSource, RagSourceRepository } from '../types/ingestion.js';
+import type { RagSourceRepository } from '../types/ingestion.js';
+import type { RagSource } from '../types/source.js';
 import { toEmbeddingLiteral } from '../utils/embeddings.js';
 import { chunkText } from '../ingestion/processing/chunking.js';
 import { createContentHash, normalizeText } from '../ingestion/processing/text.js';

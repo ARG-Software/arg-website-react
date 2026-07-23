@@ -1,24 +1,47 @@
 import { getDeepSeekConfig, getSiteConfig } from '../config/env.js';
-import type { RagConfig } from '../types/config.js';
+import {
+  buildHistoryMessages,
+  buildInsufficientContextPrompt,
+  buildIntentFallbackPrompt,
+  buildIntentPrompt,
+  buildPageContextMessages,
+  buildQuestionRewritePrompt,
+  buildSystemPrompt,
+  buildUserPrompt,
+  parseIntentResponse,
+} from '../prompts/answering.js';
 import type {
-  AnswerClient,
+  AnswerProvider,
   ChatMessage,
+  PageContext,
+  PromptMessage,
   QuestionIntent,
   QuestionIntentResult,
   RetrievedContext,
-} from '../types/aiClient.js';
+} from '../types/ai.js';
+import type { RagConfig } from '../types/config.js';
 
 const DEEPSEEK_CHAT_URL = 'https://api.deepseek.com/chat/completions';
 
-const RAG_INTENT = 'rag_question';
+type DeepSeekAnswerConfig = Pick<RagConfig, 'deepseekApiKey' | 'deepseekModel' | 'companyName'>;
 
-type DeepSeekRuntimeConfig = Pick<
-  RagConfig,
-  'deepseekApiKey' | 'deepseekModel' | 'siteUrl' | 'companyName'
->;
+interface DeepSeekChatCompletionInput {
+  config: DeepSeekAnswerConfig;
+  messages: PromptMessage[];
+  temperature: number;
+  errorPrefix: string;
+}
 
-export class DeepSeekAnswerClient implements AnswerClient {
-  constructor(private readonly config?: DeepSeekRuntimeConfig) {}
+interface DeepSeekChatCompletionResponse {
+  choices?: Array<{
+    message?: {
+      content?: string;
+    };
+  }>;
+}
+
+export class DeepSeekAnswerClient implements AnswerProvider {
+  constructor(private readonly config?: DeepSeekAnswerConfig) {}
 
   async generateAnswer(
     question: string,
@@ -26,7 +49,7 @@ export class DeepSeekAnswerClient implements AnswerClient {
     contexts: RetrievedContext[]
   ): Promise<string> {
     const config = this.getConfig();
-    const chatMessages: DeepSeekMessage[] = [
+    const chatMessages: PromptMessage[] = [
       {
         role: 'system',
         content: buildSystemPrompt(config.companyName),
@@ -48,7 +71,11 @@ export class DeepSeekAnswerClient implements AnswerClient {
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
 
-  async rewriteQuestion(question: string, messages: ChatMessage[]): Promise<string> {
+  async rewriteQuestion(
+    question: string,
+    messages: ChatMessage[],
+    pageContext: PageContext | null
+  ): Promise<string> {
     const config = this.getConfig();
     const data = await createChatCompletion({
       config,
@@ -57,13 +84,9 @@ export class DeepSeekAnswerClient implements AnswerClient {
       messages: [
         {
           role: 'system',
-          content: [
-            'Rewrite and translate the latest user question as a standalone English search query for retrieval.',
-            'Use the conversation only to resolve references such as "it", "that", or "the second one".',
-            'Preserve company names, project names, product names, source names, URLs, and other proper nouns.',
-            'Do not answer the question. Return only the standalone English retrieval query.',
-          ].join(' '),
+          content: buildQuestionRewritePrompt(),
         },
+        ...buildPageContextMessages(pageContext),
         ...buildHistoryMessages(messages),
         {
           role: 'user',
@@ -112,12 +135,7 @@ export class DeepSeekAnswerClient implements AnswerClient {
       messages: [
         {
           role: 'system',
-          content: [
-            `You are the public website assistant for ${config.companyName}.`,
-            'Answer in the same language as the latest user question.',
-            'Say briefly that you do not have enough information in the available ARG Software context to answer.',
-            'Do not invent facts. Do not include citations.',
-          ].join(' '),
+          content: buildInsufficientContextPrompt(config.companyName),
         },
         ...buildHistoryMessages(messages),
         {
@@ -142,13 +160,7 @@ export class DeepSeekAnswerClient implements AnswerClient {
       messages: [
         {
           role: 'system',
-          content: [
-            `You are the public website assistant for ${config.companyName}.`,
-            'Answer in the same language as the latest user question.',
-            intent === 'small_talk'
-              ? `Give a brief friendly response and mention you can help with ${config.companyName} website topics.`
-              : `Politely redirect the user to ${config.companyName} website topics such as services, projects, careers, partners, blog posts, or contact options.`,
-          ].join(' '),
+          content: buildIntentFallbackPrompt(config.companyName, intent),
         },
         {
           role: 'user',
@@ -160,7 +172,7 @@ export class DeepSeekAnswerClient implements AnswerClient {
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
 
-  private getConfig(): DeepSeekRuntimeConfig {
+  private getConfig(): DeepSeekAnswerConfig {
     return (
       this.config ?? {
         ...getDeepSeekConfig(),
@@ -172,32 +184,12 @@ export class DeepSeekAnswerClient implements AnswerClient {
 
 export const deepSeekAnswerClient = new DeepSeekAnswerClient();
 
-interface ChatCompletionInput {
-  config: DeepSeekRuntimeConfig;
-  messages: DeepSeekMessage[];
-  temperature: number;
-  errorPrefix: string;
-}
-
-interface DeepSeekMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
-}
-
-interface DeepSeekChatCompletionResponse {
-  choices?: Array<{
-    message?: {
-      content?: string;
-    };
-  }>;
-}
-
 async function createChatCompletion({
   config,
   messages,
   temperature,
   errorPrefix,
-}: ChatCompletionInput): Promise<DeepSeekChatCompletionResponse> {
+}: DeepSeekChatCompletionInput): Promise<DeepSeekChatCompletionResponse> {
   const response = await fetch(DEEPSEEK_CHAT_URL, {
     method: 'POST',
     headers: {
@@ -216,71 +208,4 @@ async function createChatCompletion({
   }
 
   return (await response.json()) as DeepSeekChatCompletionResponse;
-}
-
-function buildSystemPrompt(companyName: string): string {
-  return [
-    `You are the public website assistant for ${companyName}.`,
-    'Answer in the same language as the latest user question.',
-    'If the latest user question is not English, answer naturally in that language.',
-    'Do not translate company names, project names, URLs, citation titles, or source names.',
-    'Answer only from the provided context.',
-    'Use conversation history only to understand references in the latest question.',
-    'Do not treat previous assistant messages as facts unless the provided context supports them.',
-    'If the context is insufficient, say that you do not have enough information.',
-    'Keep answers concise, factual, and useful to prospective clients or candidates.',
-  ].join(' ');
-}
-
-function buildIntentPrompt(companyName: string): string {
-  return [
-    `You route messages for ${companyName}'s public website assistant.`,
-    'Classify the latest user message as one of: small_talk, rag_question, unsupported.',
-    'small_talk means greetings, thanks, brief social replies, identity questions, or capability questions.',
-    `rag_question means questions about ${companyName}, its services, projects, partners, careers, blog posts, external profiles, contact options, legal pages, or follow-ups about prior ${companyName}-related answers.`,
-    `unsupported means unrelated requests, general coding help, personal advice, news, politics, or tasks not about ${companyName}.`,
-    'For small_talk and unsupported, include a short response in the same language as the latest user message.',
-    `For unsupported, politely redirect to ${companyName} website topics.`,
-    'For rag_question, use an empty response string.',
-    'Return only valid JSON with this exact shape: {"intent":"small_talk|rag_question|unsupported","response":"..."}.',
-  ].join(' ');
-}
-
-function parseIntentResponse(content: string | undefined): QuestionIntentResult {
-  if (!content) {
-    return { intent: RAG_INTENT, response: '' };
-  }
-
-  try {
-    const parsed = JSON.parse(content);
-
-    if (!['small_talk', RAG_INTENT, 'unsupported'].includes(parsed.intent)) {
-      return { intent: RAG_INTENT, response: '' };
-    }
-
-    return {
-      intent: parsed.intent,
-      response: typeof parsed.response === 'string' ? parsed.response.trim() : '',
-    };
-  } catch {
-    return { intent: RAG_INTENT, response: '' };
-  }
-}
-
-function buildHistoryMessages(messages: ChatMessage[]): DeepSeekMessage[] {
-  return messages.map(message => ({
-    role: message.role,
-    content: message.content,
-  }));
-}
-
-function buildUserPrompt(question: string, contexts: RetrievedContext[]): string {
-  const contextText = contexts
-    .map((context, index) => {
-      const citation = context.title || context.url || context.path || `Source ${index + 1}`;
-      return `[${index + 1}] ${citation}\n${context.content}`;
-    })
-    .join('\n\n');
-
-  return `Context:\n${contextText}\n\nQuestion: ${question}`;
 }

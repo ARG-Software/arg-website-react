@@ -32,6 +32,7 @@ if (!process.env.SUPABASE_ACCESS_TOKEN) {
 const executable = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 const child = spawn(executable, args, {
   env: process.env,
+  shell: process.platform === 'win32',
   stdio: 'inherit',
 });
 

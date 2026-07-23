@@ -1,5 +1,5 @@
 import { loadLocalEnv } from '../../config/loadLocalEnv.js';
-import type { ChatMessage } from '../../types/aiClient.js';
+import type { ChatMessage, PageContext } from '../../types/ai.js';
 import { askQuestion, retrieveRelevantChunks } from '../ask.js';
 
 loadLocalEnv();
@@ -11,20 +11,25 @@ const historyDemo =
   args.includes('--external-profile-history') ||
   process.env.npm_config_external_profile_history === 'true';
 const historyJsonIndex = args.indexOf('--history-json');
+const pagePathIndex = args.indexOf('--page-path');
+const pageTitleIndex = args.indexOf('--page-title');
+const pagePath = getOptionValue('--page-path');
+const pageTitle = getOptionValue('--page-title');
 
 try {
   const messages = parseMessages();
+  const pageContext = parsePageContext();
   const question = getQuestion();
 
   if (!question) {
     console.error(
-      'Usage: npm run rag:ask:test -- [--retrieve-only] [--external-profile-history] [--history-json <json>] "What does ARG Software do?"'
+      'Usage: npm run rag:ask:test -- [--retrieve-only] [--external-profile-history] [--history-json <json>] [--page-path=<pathname> --page-title=<title>] "What does ARG Software do?"'
     );
     process.exit(1);
   }
 
   if (retrieveOnly) {
-    const contexts = await retrieveRelevantChunks({ question, messages });
+    const contexts = await retrieveRelevantChunks({ question, messages, pageContext });
     console.log(`\nQuestion: ${question}\n`);
     console.log(`Retrieved chunks: ${contexts.length}`);
 
@@ -37,7 +42,7 @@ try {
     process.exit(0);
   }
 
-  const result = await askQuestion({ question, messages });
+  const result = await askQuestion({ question, messages, pageContext });
   console.log(`\nQuestion: ${question}\n`);
   console.log(`Answer:\n${result.answer}\n`);
 
@@ -59,7 +64,14 @@ function getQuestion(): string {
         return false;
       }
 
-      if (arg === '--history-json' || (historyJsonIndex !== -1 && index === historyJsonIndex + 1)) {
+      if (
+        arg === '--history-json' ||
+        arg === '--page-path' ||
+        arg === '--page-title' ||
+        (historyJsonIndex !== -1 && index === historyJsonIndex + 1) ||
+        (pagePathIndex !== -1 && index === pagePathIndex + 1) ||
+        (pageTitleIndex !== -1 && index === pageTitleIndex + 1)
+      ) {
         return false;
       }
 
@@ -94,4 +106,27 @@ function parseMessages(): ChatMessage[] {
   }
 
   return JSON.parse(rawHistory) as ChatMessage[];
+}
+
+function parsePageContext(): PageContext | undefined {
+  if (!pagePath) {
+    return undefined;
+  }
+
+  return {
+    pathname: pagePath,
+    title: pageTitle || '',
+  };
+}
+
+function getOptionValue(option: string): string | undefined {
+  const optionIndex = args.indexOf(option);
+
+  if (optionIndex !== -1) {
+    return args[optionIndex + 1];
+  }
+
+  const envName = `npm_config_${option.slice(2).replace(/-/g, '_')}`;
+  const value = process.env[envName];
+  return value && value !== 'true' ? value : undefined;
 }

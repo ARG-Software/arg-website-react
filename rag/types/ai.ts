@@ -1,10 +1,24 @@
-import type { RagSourceType } from './ingestion.js';
+import type { RagSourceMetadata, RagSourceType } from './source.js';
 
-type RetrievedContextMetadata = Record<string, unknown>;
+export interface EmbeddingProvider {
+  embedText(text: string): Promise<number[]>;
+  embedTexts(texts: string[]): Promise<number[][]>;
+}
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+}
+
+export interface PromptMessage {
+  role: 'system' | ChatMessage['role'];
+  content: string;
+}
+
+export interface PageContext {
+  pathname: string;
+  title: string;
+  projectSlug?: string;
 }
 
 export type QuestionIntent = 'small_talk' | 'rag_question' | 'unsupported';
@@ -25,8 +39,8 @@ export interface RetrievedContext {
   chunkIndex: number;
   content: string;
   similarity: number;
-  sourceMetadata: RetrievedContextMetadata;
-  chunkMetadata: RetrievedContextMetadata;
+  sourceMetadata: RagSourceMetadata;
+  chunkMetadata: RagSourceMetadata;
 }
 
 export interface Citation {
@@ -42,9 +56,13 @@ export interface AskQuestionResult {
   contexts: RetrievedContext[];
 }
 
-export interface AnswerClient {
+export interface AnswerProvider {
   classifyQuestionIntent(question: string, messages: ChatMessage[]): Promise<QuestionIntentResult>;
-  rewriteQuestion(question: string, messages: ChatMessage[]): Promise<string>;
+  rewriteQuestion(
+    question: string,
+    messages: ChatMessage[],
+    pageContext: PageContext | null
+  ): Promise<string>;
   generateAnswer(
     question: string,
     messages: ChatMessage[],

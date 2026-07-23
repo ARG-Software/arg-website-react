@@ -1,16 +1,17 @@
 import { createSupabaseServiceClient } from '../../clients/supabaseClient.js';
 import { loadLocalEnv } from '../../config/loadLocalEnv.js';
-import type { IngestSourceResult, RagSource } from '../../types/ingestion.js';
-import { ingestSource } from '../ingestSource.js';
+import type { IngestSourceResult } from '../../types/ingestion.js';
+import type { RagSource } from '../../types/source.js';
+import { ingestSource } from '../ingestPipeline.js';
 import { loadInternalSources } from '../sources/internal.js';
-import { getIngestionSelection, hasSelection, isDryRun, printSelectionUsage } from './cli.js';
+import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
 
 loadLocalEnv();
 
 const dryRun = isDryRun();
-const selection = getIngestionSelection();
+const selection = getIngestionRunOptions();
 
-if (!hasSelection(selection)) {
+if (!hasSourceFilters(selection)) {
   printSelectionUsage('rag:ingest:internal');
   process.exit(1);
 }

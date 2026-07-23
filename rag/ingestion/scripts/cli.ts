@@ -6,15 +6,9 @@ export function isDryRun(): boolean {
   );
 }
 
-export interface IngestionSelection {
-  all: boolean;
-  force: boolean;
-  sourceKeys: string[];
-  filePaths: string[];
-  urls: string[];
-}
+import type { IngestionRunOptions } from '../../types/ingestion.js';
 
-export function getIngestionSelection(): IngestionSelection {
+export function getIngestionRunOptions(): IngestionRunOptions {
   const selection = {
     all: hasFlag('--all') || process.env.npm_config_all === 'true',
     force:
@@ -34,7 +28,7 @@ export function getIngestionSelection(): IngestionSelection {
   return selection;
 }
 
-export function hasSelection(selection: IngestionSelection): boolean {
+export function hasSourceFilters(selection: IngestionRunOptions): boolean {
   return (
     selection.all ||
     selection.sourceKeys.length > 0 ||
@@ -90,7 +84,7 @@ function getPositionalArgs(): string[] {
   });
 }
 
-function addInferredPositionalValue(selection: IngestionSelection, value: string): void {
+function addInferredPositionalValue(selection: IngestionRunOptions, value: string): void {
   if (selection.sourceKeys.includes(value) || selection.filePaths.includes(value) || selection.urls.includes(value)) {
     return;
   }

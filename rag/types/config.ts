@@ -13,4 +13,9 @@ export interface RagConfig {
   chunkOverlap: number;
   matchCount: number;
   similarityThreshold: number;
+  fallbackSimilarityThreshold: number;
+}
+
+export interface EnvOptions {
+  required?: boolean;
 }

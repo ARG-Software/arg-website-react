@@ -28,6 +28,7 @@ export async function handler(event) {
       question: payload.question,
       messages: payload.messages,
       sourceTypes: payload.sourceTypes,
+      pageContext: payload.pageContext,
     });
 
     return createResponse(200, {
@@ -35,9 +36,9 @@ export async function handler(event) {
       citations: result.citations,
     });
   } catch (error) {
-    const statusCode = isClientError(error) || isConfigurationError(error) ? 400 : 500;
+    const statusCode = isConfigurationError(error) ? 503 : isClientError(error) ? 400 : 500;
     const errorBody =
-      statusCode === 400
+      statusCode === 400 || statusCode === 503
         ? createErrorBody(
             isConfigurationError(error) ? 'configuration_error' : error.code,
             isConfigurationError(error) ? 'Assistant configuration is unavailable' : error.message

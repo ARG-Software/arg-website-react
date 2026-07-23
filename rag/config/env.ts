@@ -1,4 +1,4 @@
-import type { RagConfig } from '../types/config.js';
+import type { EnvOptions, RagConfig } from '../types/config.js';
 
 const DEFAULTS: Record<string, string> = {
   GEMINI_EMBEDDING_MODEL: 'gemini-embedding-2',
@@ -11,6 +11,7 @@ const DEFAULTS: Record<string, string> = {
   RAG_CHUNK_OVERLAP: '180',
   RAG_MATCH_COUNT: '6',
   RAG_SIMILARITY_THRESHOLD: '0.72',
+  RAG_FALLBACK_SIMILARITY_THRESHOLD: '0.60',
 };
 
 const REQUIRED_ENV = [
@@ -19,10 +20,6 @@ const REQUIRED_ENV = [
   'GEMINI_API_KEY',
   'DEEPSEEK_API_KEY',
 ];
-
-interface EnvOptions {
-  required?: boolean;
-}
 
 export function getEnv(name: string, options: EnvOptions = {}): string | undefined {
   const value = process.env[name] ?? DEFAULTS[name];
@@ -106,10 +103,14 @@ export function getChunkingConfig(): Pick<RagConfig, 'chunkSize' | 'chunkOverlap
   };
 }
 
-export function getRetrievalConfig(): Pick<RagConfig, 'matchCount' | 'similarityThreshold'> {
+export function getRetrievalConfig(): Pick<
+  RagConfig,
+  'matchCount' | 'similarityThreshold' | 'fallbackSimilarityThreshold'
+> {
   return {
     matchCount: getRequiredNumberEnv('RAG_MATCH_COUNT'),
     similarityThreshold: getRequiredNumberEnv('RAG_SIMILARITY_THRESHOLD'),
+    fallbackSimilarityThreshold: getRequiredNumberEnv('RAG_FALLBACK_SIMILARITY_THRESHOLD'),
   };
 }
 

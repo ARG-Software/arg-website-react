@@ -1,24 +1,22 @@
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-
 import { createSupabaseServiceClient } from '../../clients/supabaseClient.js';
 import { loadLocalEnv } from '../../config/loadLocalEnv.js';
 import type { IngestSourceResult } from '../../types/ingestion.js';
-import { ingestSource } from '../ingestSource.js';
-import { loadExternalHtmlSource, type ExternalHtmlSourceInput } from '../sources/html.js';
-import { getIngestionSelection, hasSelection, isDryRun, printSelectionUsage } from './cli.js';
+import { ingestSource } from '../ingestPipeline.js';
+import type { ExternalSourceManifestEntry } from '../manifest.js';
+import { loadExternalSource, loadExternalSourceEntries } from '../sources/external.js';
+import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
 
 loadLocalEnv();
 
 const dryRun = isDryRun();
-const selection = getIngestionSelection();
+const selection = getIngestionRunOptions();
 
-if (!hasSelection(selection)) {
+if (!hasSourceFilters(selection)) {
   printSelectionUsage('rag:ingest:external');
   process.exit(1);
 }
 
-const allowlist = filterAllowlist(await loadAllowlist(), selection);
+const allowlist = await loadExternalSourceEntries(process.cwd(), selection);
 
 if (allowlist.length === 0) {
   console.log('External ingestion allowlist is empty. Nothing to ingest.');
@@ -27,11 +25,11 @@ if (allowlist.length === 0) {
 
 const supabase = createSupabaseServiceClient();
 const results: IngestSourceResult[] = [];
-const failures: Array<{ item: ExternalHtmlSourceInput; error: unknown }> = [];
+const failures: Array<{ item: ExternalSourceManifestEntry; error: unknown }> = [];
 
 for (const item of allowlist) {
   try {
-    const source = await loadExternalHtmlSource(item);
+    const source = await loadExternalSource(item);
     const result = await ingestSource({ supabase, source, dryRun, force: selection.force });
     results.push(result);
     printResult(result);
@@ -56,58 +54,6 @@ console.log(`failures: ${failures.length}`);
 
 if (failures.length > 0) {
   process.exitCode = 1;
-}
-
-async function loadAllowlist(): Promise<ExternalHtmlSourceInput[]> {
-  const filePath = path.join(process.cwd(), 'rag/config/external-sources.json');
-  const sources = JSON.parse(await readFile(filePath, 'utf8'));
-
-  if (!Array.isArray(sources)) {
-    throw new Error('rag/config/external-sources.json must contain an array');
-  }
-
-  return sources.map(validateAllowlistItem);
-}
-
-function validateAllowlistItem(item: unknown): ExternalHtmlSourceInput {
-  if (!item || typeof item !== 'object') {
-    throw new Error('External source entries must be objects');
-  }
-
-  if (!('url' in item) || !item.url) {
-    throw new Error('External source entries require a url');
-  }
-
-  const rawUrl = String(item.url);
-  const url = new URL(rawUrl);
-
-  if (!['http:', 'https:'].includes(url.protocol)) {
-    throw new Error(`External source URL must be HTTP(S): ${rawUrl}`);
-  }
-
-  return {
-    url: url.toString(),
-    title: 'title' in item && typeof item.title === 'string' ? item.title : undefined,
-    trusted: 'trusted' in item && typeof item.trusted === 'boolean' ? item.trusted : true,
-  };
-}
-
-function filterAllowlist(
-  allowlist: ExternalHtmlSourceInput[],
-  selected: ReturnType<typeof getIngestionSelection>
-): ExternalHtmlSourceInput[] {
-  if (selected.all) {
-    return allowlist;
-  }
-
-  return allowlist.filter(item => {
-    const normalizedUrl = new URL(item.url).toString();
-    return (
-      selected.urls.some(url => new URL(url).toString() === normalizedUrl) ||
-      selected.sourceKeys.includes(item.url) ||
-      (item.title ? selected.sourceKeys.includes(item.title) : false)
-    );
-  });
 }
 
 function printResult(result: IngestSourceResult): void {

@@ -25,11 +25,9 @@ function walk(value: unknown, label: string, lines: string[]): void {
 
   const text = normalizeText(value);
 
-  if (!text) {
-    return;
+  if (text) {
+    lines.push(label ? `${label}: ${text}` : text);
   }
-
-  lines.push(label ? `${label}: ${text}` : text);
 }
 
 function formatLabel(parent: string, key: string): string {

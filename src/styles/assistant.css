@@ -374,8 +374,8 @@
   opacity: 0.85;
 }
 
-/* ── Mobile (<=768px): always fullscreen ── */
-@media (max-width: 768px) {
+/* ── Mobile (<=767px): always fullscreen ── */
+@media (max-width: 767px) {
   .aw-trigger {
     bottom: 20px;
     right: 20px;

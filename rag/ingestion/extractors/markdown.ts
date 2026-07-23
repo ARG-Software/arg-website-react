@@ -1,0 +1,34 @@
+import type { RagSourceMetadata } from '../../types/source.js';
+
+interface ParsedMarkdown {
+  frontmatter: RagSourceMetadata;
+  body: string;
+}
+
+export function parseFrontmatter(markdown: string): ParsedMarkdown {
+  const match = markdown.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+
+  if (!match) {
+    return { frontmatter: {}, body: markdown };
+  }
+
+  return {
+    frontmatter: parseYamlSubset(match[1]),
+    body: match[2],
+  };
+}
+
+function parseYamlSubset(value: string): RagSourceMetadata {
+  return value.split('\n').reduce<RagSourceMetadata>((frontmatter, line) => {
+    const match = line.match(/^([^:#]+):\s*(.*)$/);
+
+    if (!match) {
+      return frontmatter;
+    }
+
+    const key = match[1].trim();
+    const rawValue = match[2].trim();
+    frontmatter[key] = rawValue.replace(/^['"]|['"]$/g, '');
+    return frontmatter;
+  }, {});
+}

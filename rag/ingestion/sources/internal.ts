@@ -1,64 +1,50 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import type { RagSource, RagSourceMetadata } from '../../types/ingestion.js';
-import type { IngestionSelection } from '../scripts/cli.js';
-import { flattenJsonToText } from './json.js';
-import { loadMarkdownSource } from './markdown.js';
-import { loadPdfSource, type PdfSourceMetadata, type RequiredPdfSourceMetadata } from './pdf.js';
-import { loadJsonSource, type JsonSourceOptions } from './sources.js';
+import { flattenJsonToText } from '../extractors/json.js';
+import { parseFrontmatter } from '../extractors/markdown.js';
+import { extractPdfText } from '../extractors/pdf.js';
+import { stripMarkdown } from '../processing/text.js';
+import { createSource } from '../sourceFactory.js';
+import type {
+  AboutJson,
+  CareersJson,
+  HomepageJson,
+  PartnersJson,
+  ProjectJson,
+} from './internal-content.js';
+import type {
+  InternalManifestEntry,
+  JsonManifestEntry,
+  PdfManifestEntry,
+  ValidatedPdfManifestEntry,
+} from '../manifest.js';
+import type { IngestionRunOptions } from '../../types/ingestion.js';
+import type { RagSource, RagSourceMetadata } from '../../types/source.js';
 
-interface JsonManifestSource extends JsonSourceOptions {
-  kind: 'json';
-  filePath: string;
-}
-
-interface FileManifestSource {
-  kind: 'projects_json' | 'partners_json' | 'markdown_dir' | 'pdf_manifest';
-  filePath: string;
-}
-
-type InternalManifestSource = JsonManifestSource | FileManifestSource;
-
-interface ProjectJson extends RagSourceMetadata {
-  slug: string;
-  title: string;
-  client?: string;
-  subtitle?: string;
-  liveLink?: string;
-}
-
-interface PartnerJson extends RagSourceMetadata {
-  slug: string;
-  name: string;
-  category?: string;
-  industry?: string;
-  link?: string;
-}
-
-interface PartnersJson {
-  clients: PartnerJson[];
-}
+const PERSON_SOURCE_KEYS: Record<string, string> = {
+  jose: 'jose-antunes',
+  rui: 'rui-rocha',
+};
 
 export async function loadInternalSources(
   rootDir = process.cwd(),
-  selection?: IngestionSelection
+  selection?: IngestionRunOptions
 ): Promise<RagSource[]> {
   const manifest = await loadInternalManifest(rootDir);
   const sources: RagSource[] = [];
 
   for (const entry of manifest) {
-    if (!shouldLoadManifestEntry(entry, selection)) {
-      continue;
+    if (shouldLoadManifestEntry(entry, selection)) {
+      sources.push(...(await loadManifestEntry(rootDir, entry)));
     }
-
-    sources.push(...(await loadManifestEntry(rootDir, entry)));
   }
 
+  sources.push(...(await loadTeamProfileSources(rootDir)));
   return filterLoadedSources(sources, selection);
 }
 
-async function loadManifestEntry(rootDir: string, entry: InternalManifestSource): Promise<RagSource[]> {
+async function loadManifestEntry(rootDir: string, entry: InternalManifestEntry): Promise<RagSource[]> {
   switch (entry.kind) {
     case 'json':
       return [await loadJsonSource(resolveRoot(rootDir, entry.filePath), entry)];
@@ -73,44 +59,127 @@ async function loadManifestEntry(rootDir: string, entry: InternalManifestSource)
   }
 }
 
+async function loadJsonSource(filePath: string, options: JsonManifestEntry): Promise<RagSource> {
+  const sourceKey = options.sourceKey ?? path.basename(filePath, path.extname(filePath));
+  const json = await readJsonFile(filePath);
+
+  return createSource({
+    sourceType: options.sourceType,
+    sourceKey,
+    title: options.title ?? sourceKey,
+    url: options.url,
+    path: filePath,
+    metadata: { ...(options.metadata ?? {}), source_file: filePath },
+    content: flattenJsonToText(json, options.label),
+  });
+}
+
 async function loadProjectSources(rootDir: string, relativeFilePath: string): Promise<RagSource[]> {
   const filePath = resolveRoot(rootDir, relativeFilePath);
-  const projects = JSON.parse(await readFile(filePath, 'utf8')) as ProjectJson[];
+  const projects = await readJsonFile<ProjectJson[]>(filePath);
 
-  return projects.map(project => ({
-    sourceType: 'project' as const,
-    sourceKey: project.slug,
-    title: project.title,
-    url: `/projects/${project.slug}/`,
-    path: filePath,
-    metadata: {
-      source_file: filePath,
-      client: project.client,
-      category: project.subtitle,
-      live_link: project.liveLink,
-    },
-    content: flattenJsonToText(project, `project ${project.title}`),
-  }));
+  return projects.map(project =>
+    createSource({
+      sourceType: 'project',
+      sourceKey: project.slug,
+      title: project.title,
+      url: `/projects/${project.slug}/`,
+      path: filePath,
+      metadata: {
+        source_file: filePath,
+        client: project.client,
+        category: project.subtitle,
+        live_link: project.liveLink,
+      },
+      content: flattenJsonToText(project, `project ${project.title}`),
+    })
+  );
 }
 
 async function loadPartnerSources(rootDir: string, relativeFilePath: string): Promise<RagSource[]> {
   const filePath = resolveRoot(rootDir, relativeFilePath);
-  const partners = JSON.parse(await readFile(filePath, 'utf8')) as PartnersJson;
+  const partners = await readJsonFile<PartnersJson>(filePath);
 
-  return partners.clients.map(partner => ({
-    sourceType: 'partner' as const,
-    sourceKey: partner.slug,
-    title: partner.name,
-    url: '/partners/',
-    path: filePath,
-    metadata: {
-      source_file: filePath,
-      category: partner.category,
-      industry: partner.industry,
-      external_url: partner.link,
-    },
-    content: flattenJsonToText(partner, `partner ${partner.name}`),
-  }));
+  return partners.clients.map(partner =>
+    createSource({
+      sourceType: 'partner',
+      sourceKey: partner.slug,
+      title: partner.name,
+      url: '/partners/',
+      path: filePath,
+      metadata: {
+        source_file: filePath,
+        category: partner.category,
+        industry: partner.industry,
+        external_url: partner.link,
+      },
+      content: flattenJsonToText(partner, `partner ${partner.name}`),
+    })
+  );
+}
+
+async function loadTeamProfileSources(rootDir: string): Promise<RagSource[]> {
+  const homepagePath = resolveRoot(rootDir, 'src/data/homepage.json');
+  const aboutPath = resolveRoot(rootDir, 'src/data/about.json');
+  const careersPath = resolveRoot(rootDir, 'src/data/careersPage.json');
+  const [homepage, about, careers] = await Promise.all([
+    readJsonFile<HomepageJson>(homepagePath),
+    readJsonFile<AboutJson>(aboutPath),
+    readJsonFile<CareersJson>(careersPath),
+  ]);
+  const sourceFiles = [homepagePath, aboutPath, careersPath];
+  const sources: RagSource[] = [
+    createSource({
+      sourceType: 'about',
+      sourceKey: 'arg-team',
+      title: 'ARG Team',
+      url: '/about-us/',
+      path: aboutPath,
+      metadata: { source_files: sourceFiles },
+      content: [
+        'ARG Team',
+        homepage.team.intro,
+        'The only individually named public team members are the two co-founders:',
+        ...about.founders.people.map(person => `${person.name}: ${person.role}. ${person.focus}.`),
+        'ARG also works with a trusted network of collaborators whose individual names are not publicly listed.',
+        ...about.collaborators.paragraphs,
+        `Publicly described collaborator disciplines: ${about.collaborators.disciplines.join(', ')}.`,
+      ].join('\n\n'),
+    }),
+  ];
+
+  for (const person of about.founders.people) {
+    const homepageMember = homepage.team.members.find(
+      member => member.personKey.toLowerCase() === person.id.toLowerCase()
+    );
+    const careersCard = careers.founders.cards.find(
+      card => card.personKey.toLowerCase() === person.id.toLowerCase()
+    );
+
+    sources.push(
+      createSource({
+        sourceType: 'about',
+        sourceKey: PERSON_SOURCE_KEYS[person.id] ?? person.id,
+        title: person.name,
+        url: '/about-us/',
+        path: aboutPath,
+        metadata: { source_files: sourceFiles, person_key: person.id },
+        content: [
+          person.name,
+          person.role,
+          person.bio,
+          `Primary focus: ${person.focus}.`,
+          `Areas: ${person.tags.join(', ')}.`,
+          homepageMember ? `Homepage role: ${homepageMember.role}.` : '',
+          careersCard ? `Careers contact focus: ${careersCard.focus}.` : '',
+        ]
+          .filter(Boolean)
+          .join('\n\n'),
+      })
+    );
+  }
+
+  return sources;
 }
 
 async function loadBlogSources(rootDir: string, relativeFilePath: string): Promise<RagSource[]> {
@@ -121,40 +190,65 @@ async function loadBlogSources(rootDir: string, relativeFilePath: string): Promi
     .map(entry => path.join(blogDir, entry.name))
     .sort();
 
-  return Promise.all(markdownFiles.map(filePath => loadMarkdownSource(filePath)));
+  return Promise.all(markdownFiles.map(loadMarkdownSource));
+}
+
+async function loadMarkdownSource(filePath: string): Promise<RagSource> {
+  const { frontmatter, body } = parseFrontmatter(await readFile(filePath, 'utf8'));
+  const slug = getFrontmatterString(frontmatter, 'slug');
+  const fallbackName = path.basename(filePath, path.extname(filePath));
+
+  return createSource({
+    sourceType: 'blog_post',
+    sourceKey: slug ?? fallbackName,
+    title: getFrontmatterString(frontmatter, 'title') ?? fallbackName,
+    url: slug ? `/blog/${slug}/` : undefined,
+    path: filePath,
+    metadata: frontmatter,
+    content: stripMarkdown(body),
+  });
 }
 
 async function loadPdfSources(rootDir: string, relativeFilePath: string): Promise<RagSource[]> {
   const filePath = resolveRoot(rootDir, relativeFilePath);
-  const pdfs = JSON.parse(await readFile(filePath, 'utf8')) as PdfSourceMetadata[];
+  const pdfs = await readJsonFile<PdfManifestEntry[]>(filePath);
 
   if (!Array.isArray(pdfs)) {
     throw new Error('rag/config/internal-pdfs.json must contain an array');
   }
 
   return Promise.all(
-    pdfs.map(pdf => {
+    pdfs.map(async pdf => {
       validatePdfSource(pdf);
-      return loadPdfSource(resolveRoot(rootDir, pdf.filePath), pdf);
+      const pdfPath = resolveRoot(rootDir, pdf.filePath);
+      return createSource({
+        sourceType: 'portfolio_pdf',
+        sourceKey: pdf.sourceKey,
+        title: pdf.title,
+        url: pdf.url,
+        path: pdfPath,
+        metadata: pdf,
+        content: await extractPdfText(pdfPath),
+      });
     })
   );
 }
 
-function validatePdfSource(pdf: PdfSourceMetadata): asserts pdf is RequiredPdfSourceMetadata {
+function validatePdfSource(pdf: PdfManifestEntry): asserts pdf is ValidatedPdfManifestEntry {
   if (!pdf || typeof pdf !== 'object') {
     throw new Error('Internal PDF entries must be objects');
   }
 
-  for (const key of ['filePath', 'sourceKey', 'title', 'url']) {
+  for (const key of ['filePath', 'sourceKey', 'title', 'url'] as const) {
     if (!pdf[key]) {
       throw new Error(`Internal PDF entries require ${key}`);
     }
   }
 }
 
-async function loadInternalManifest(rootDir: string): Promise<InternalManifestSource[]> {
+async function loadInternalManifest(rootDir: string): Promise<InternalManifestEntry[]> {
   const filePath = resolveRoot(rootDir, 'rag/config/internal-sources.json');
-  const sources = JSON.parse(await readFile(filePath, 'utf8')) as InternalManifestSource[];
+  const sources = await readJsonFile<InternalManifestEntry[]>(filePath);
 
   if (!Array.isArray(sources)) {
     throw new Error('rag/config/internal-sources.json must contain an array');
@@ -163,7 +257,7 @@ async function loadInternalManifest(rootDir: string): Promise<InternalManifestSo
   return sources.map(validateManifestEntry);
 }
 
-function validateManifestEntry(entry: InternalManifestSource): InternalManifestSource {
+function validateManifestEntry(entry: InternalManifestEntry): InternalManifestEntry {
   if (!entry || typeof entry !== 'object') {
     throw new Error('Internal source manifest entries must be objects');
   }
@@ -180,8 +274,8 @@ function validateManifestEntry(entry: InternalManifestSource): InternalManifestS
 }
 
 function shouldLoadManifestEntry(
-  entry: InternalManifestSource,
-  selection: IngestionSelection | undefined
+  entry: InternalManifestEntry,
+  selection: IngestionRunOptions | undefined
 ): boolean {
   if (!selection || selection.all) {
     return true;
@@ -191,17 +285,12 @@ function shouldLoadManifestEntry(
     return true;
   }
 
-  if (entry.kind === 'json') {
-    return selection.sourceKeys.includes(entry.sourceKey ?? '');
-  }
-
-  return selection.sourceKeys.length > 0;
+  return entry.kind === 'json'
+    ? selection.sourceKeys.includes(entry.sourceKey ?? '')
+    : selection.sourceKeys.length > 0;
 }
 
-function filterLoadedSources(
-  sources: RagSource[],
-  selection: IngestionSelection | undefined
-): RagSource[] {
+function filterLoadedSources(sources: RagSource[], selection: IngestionRunOptions | undefined): RagSource[] {
   if (!selection || selection.all) {
     return sources;
   }
@@ -211,13 +300,29 @@ function filterLoadedSources(
       return true;
     }
 
-    if (!source.path) {
-      return false;
-    }
-
-    const sourcePath = source.path;
-    return selection.filePaths.some(filePath => samePath(filePath, sourcePath));
+    const sourcePaths = [source.path, ...getSourceFilePaths(source.metadata)].filter(
+      (filePath): filePath is string => Boolean(filePath)
+    );
+    return sourcePaths.some(sourcePath =>
+      selection.filePaths.some(filePath => samePath(filePath, sourcePath))
+    );
   });
+}
+
+function getSourceFilePaths(metadata: RagSourceMetadata | undefined): string[] {
+  const sourceFiles = metadata?.source_files;
+  return Array.isArray(sourceFiles)
+    ? sourceFiles.filter((filePath): filePath is string => typeof filePath === 'string')
+    : [];
+}
+
+async function readJsonFile<T = unknown>(filePath: string): Promise<T> {
+  return JSON.parse(await readFile(filePath, 'utf8')) as T;
+}
+
+function getFrontmatterString(frontmatter: RagSourceMetadata, key: string): string | undefined {
+  const value = frontmatter[key];
+  return typeof value === 'string' ? value : undefined;
 }
 
 function samePath(left: string, right: string): boolean {

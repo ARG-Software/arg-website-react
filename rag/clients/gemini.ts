@@ -1,20 +1,23 @@
 import { getGeminiConfig } from '../config/env.js';
+import type { EmbeddingProvider } from '../types/ai.js';
 import type { RagConfig } from '../types/config.js';
-import type { EmbeddingClient } from '../types/embeddings.js';
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const MAX_RETRIES = 6;
 
-type GeminiConfig = Pick<
+type GeminiEmbeddingConfig = Pick<
   RagConfig,
-  | 'geminiApiKey'
-  | 'geminiEmbeddingModel'
-  | 'geminiEmbeddingDimensions'
-  | 'geminiEmbeddingRequestDelayMs'
+  'geminiApiKey' | 'geminiEmbeddingModel' | 'geminiEmbeddingDimensions' | 'geminiEmbeddingRequestDelayMs'
 >;
 
-export class GeminiEmbeddingClient implements EmbeddingClient {
-  constructor(private readonly config?: GeminiConfig) {}
+interface GeminiEmbeddingResponse {
+  embedding?: {
+    values?: number[];
+  };
+}
+
+export class GeminiEmbeddingClient implements EmbeddingProvider {
+  constructor(private readonly config?: GeminiEmbeddingConfig) {}
 
   async embedText(text: string): Promise<number[]> {
     const [embedding] = await this.embedTexts([text]);
@@ -59,7 +62,7 @@ export class GeminiEmbeddingClient implements EmbeddingClient {
     return data.embedding?.values ?? [];
   }
 
-  private getConfig(): GeminiConfig {
+  private getConfig(): GeminiEmbeddingConfig {
     return this.config ?? getGeminiConfig();
   }
 }
@@ -97,12 +100,6 @@ async function fetchWithRetry(url: string, init: RequestInit): Promise<GeminiEmb
   }
 
   throw new Error(`Gemini embedding request failed: ${lastResponseText}`);
-}
-
-interface GeminiEmbeddingResponse {
-  embedding?: {
-    values?: number[];
-  };
 }
 
 function getRetryDelayMs(responseText: string, attempt: number): number {

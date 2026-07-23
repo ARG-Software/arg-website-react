@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Logo } from '@components/icons/Logo';
 import { MOBILE_BREAKPOINT } from '@constants/ui';
 import { trackAssistantEvent } from '@utils/analytics';
@@ -59,6 +60,7 @@ function useMobileFullscreen() {
 }
 
 export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
+  const location = useLocation();
   const mobileViewport = useMobileFullscreen();
   const [panelState, setPanelState] = useState('closed');
   const [messages, setMessages] = useState([]);
@@ -139,6 +141,10 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
           body: JSON.stringify({
             question: trimmed,
             messages: messages.map(m => ({ role: m.role, content: m.content })),
+            pageContext: {
+              pathname: location.pathname,
+              title: document.title,
+            },
           }),
         });
 
@@ -168,7 +174,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
         setLoading(false);
       }
     },
-    [loading, messages]
+    [loading, location.pathname, messages]
   );
 
   function handleSubmit(e) {

@@ -1,27 +1,15 @@
-export type RagSourceMetadata = Record<string, unknown>;
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-export type RagSourceType =
-  | 'homepage'
-  | 'about'
-  | 'project'
-  | 'partner'
-  | 'careers'
-  | 'working_with_us'
-  | 'faq'
-  | 'blog_post'
-  | 'portfolio_pdf'
-  | 'external_page';
+import type { EmbeddingProvider } from './ai.js';
+import type { RagSource, RagSourceType } from './source.js';
 
-export interface RagSource {
-  sourceType: RagSourceType;
-  sourceKey: string;
-  title: string;
-  url?: string;
-  path?: string;
-  metadata?: RagSourceMetadata;
-  content: string;
-  chunks?: string[];
-  chunkMetadata?: RagSourceMetadata;
+export interface IngestSourceInput {
+  supabase?: SupabaseClient | null;
+  source: RagSource;
+  dryRun?: boolean;
+  force?: boolean;
+  embeddingProvider?: EmbeddingProvider;
+  repository?: RagSourceRepository;
 }
 
 export interface IngestSourceResult {
@@ -40,4 +28,12 @@ export interface RagSourceRepository {
     source: RagSource,
     embeddings: number[][]
   ): Promise<{ sourceId: string | null; chunkCount: number }>;
+}
+
+export interface IngestionRunOptions {
+  all: boolean;
+  force: boolean;
+  sourceKeys: string[];
+  filePaths: string[];
+  urls: string[];
 }
