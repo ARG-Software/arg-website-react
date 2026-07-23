@@ -1,20 +1,53 @@
-import {
-  classifyQuestionIntent,
-  generateAnswer,
-  generateInsufficientContextAnswer,
-  generateIntentFallbackResponse,
-  rewriteQuestion,
-} from '../clients/deepseek.js';
-import { embedText } from '../clients/gemini.js';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
+import { deepSeekAnswerClient } from '../clients/deepseek.js';
+import { geminiEmbeddingClient } from '../clients/gemini.js';
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
 import { getRagConfig } from '../config/env.js';
-import { toEmbeddingLiteral } from '../ingestion/processing/upsert.js';
+import type {
+  AnswerClient,
+  AskQuestionResult,
+  ChatMessage,
+  Citation,
+  RetrievedContext,
+} from '../types/aiClient.js';
+import type { RagConfig } from '../types/config.js';
+import type { EmbeddingClient } from '../types/embeddings.js';
+import type { RagSourceMetadata, RagSourceType } from '../types/ingestion.js';
+import { toEmbeddingLiteral } from '../utils/embeddings.js';
 
 const MAX_HISTORY_MESSAGES = 12;
 const MAX_HISTORY_MESSAGE_LENGTH = 2000;
 
+interface AskQuestionInput {
+  question?: unknown;
+  messages?: unknown;
+  sourceTypes?: unknown;
+  config?: RagConfig;
+  supabase?: SupabaseClient;
+  answerClient?: AnswerClient;
+  embeddingClient?: EmbeddingClient;
+}
+
+interface MatchRagChunkRow {
+  chunk_id: string;
+  source_id: string;
+  source_type: RagSourceType;
+  source_key: string;
+  title: string;
+  url: string | null;
+  path: string | null;
+  chunk_index: number;
+  content: string;
+  similarity: number;
+  source_metadata: RagSourceMetadata | null;
+  chunk_metadata: RagSourceMetadata | null;
+}
+
 export class RagValidationError extends Error {
-  constructor(code, message) {
+  code: string;
+
+  constructor(code: string, message: string) {
     super(message);
     this.name = 'RagValidationError';
     this.code = code;
@@ -27,23 +60,17 @@ export async function askQuestion({
   sourceTypes,
   config = getRagConfig(),
   supabase = createSupabaseServiceClient(config),
-} = {}) {
+  answerClient = deepSeekAnswerClient,
+  embeddingClient = geminiEmbeddingClient,
+}: AskQuestionInput = {}): Promise<AskQuestionResult> {
   const normalizedQuestion = normalizeQuestion(question);
   const normalizedMessages = normalizeMessages(messages);
-  const intent = await classifyQuestionIntent({
-    question: normalizedQuestion,
-    messages: normalizedMessages,
-    config,
-  });
+  const intent = await answerClient.classifyQuestionIntent(normalizedQuestion, normalizedMessages);
 
   if (intent.intent !== 'rag_question') {
     const answer =
       intent.response ||
-      (await generateIntentFallbackResponse({
-        question: normalizedQuestion,
-        intent: intent.intent,
-        config,
-      }));
+      (await answerClient.generateIntentFallbackResponse(normalizedQuestion, intent.intent));
 
     return {
       answer,
@@ -55,21 +82,22 @@ export async function askQuestion({
   const retrievalQuestion = await createRetrievalQuestion({
     question: normalizedQuestion,
     messages: normalizedMessages,
-    config,
+    answerClient,
   });
   const contexts = await retrieveRelevantChunks({
     question: retrievalQuestion,
     sourceTypes,
     config,
     supabase,
+    answerClient,
+    embeddingClient,
   });
 
   if (contexts.length === 0) {
-    const answer = await generateInsufficientContextAnswer({
-      question: normalizedQuestion,
-      messages: normalizedMessages,
-      config,
-    });
+    const answer = await answerClient.generateInsufficientContextAnswer(
+      normalizedQuestion,
+      normalizedMessages
+    );
 
     return {
       answer,
@@ -78,12 +106,7 @@ export async function askQuestion({
     };
   }
 
-  const answer = await generateAnswer({
-    question: normalizedQuestion,
-    messages: normalizedMessages,
-    contexts,
-    config,
-  });
+  const answer = await answerClient.generateAnswer(normalizedQuestion, normalizedMessages, contexts);
 
   return {
     answer,
@@ -98,15 +121,17 @@ export async function retrieveRelevantChunks({
   sourceTypes,
   config = getRagConfig(),
   supabase = createSupabaseServiceClient(config),
-} = {}) {
+  answerClient = deepSeekAnswerClient,
+  embeddingClient = geminiEmbeddingClient,
+}: AskQuestionInput = {}): Promise<RetrievedContext[]> {
   const normalizedQuestion = normalizeQuestion(question);
   const normalizedMessages = normalizeMessages(messages);
   const retrievalQuestion = await createRetrievalQuestion({
     question: normalizedQuestion,
     messages: normalizedMessages,
-    config,
+    answerClient,
   });
-  const embedding = await embedText(retrievalQuestion, config);
+  const embedding = await embeddingClient.embedText(retrievalQuestion);
   const { data, error } = await supabase.rpc('match_rag_chunks', {
     query_embedding: toEmbeddingLiteral(embedding),
     match_count: config.matchCount,
@@ -118,7 +143,7 @@ export async function retrieveRelevantChunks({
     throw error;
   }
 
-  return (data ?? []).map(row => ({
+  return ((data ?? []) as MatchRagChunkRow[]).map(row => ({
     chunkId: row.chunk_id,
     sourceId: row.source_id,
     sourceType: row.source_type,
@@ -134,15 +159,19 @@ export async function retrieveRelevantChunks({
   }));
 }
 
-async function createRetrievalQuestion({ question, messages, config }) {
-  return rewriteQuestion({
-    question,
-    messages,
-    config,
-  });
+async function createRetrievalQuestion({
+  question,
+  messages,
+  answerClient,
+}: {
+  question: string;
+  messages: ChatMessage[];
+  answerClient: AnswerClient;
+}): Promise<string> {
+  return answerClient.rewriteQuestion(question, messages);
 }
 
-function createCitations(contexts, siteUrl) {
+function createCitations(contexts: RetrievedContext[], siteUrl: string): Citation[] {
   const seen = new Set();
   const citations = [];
 
@@ -165,7 +194,7 @@ function createCitations(contexts, siteUrl) {
   return citations;
 }
 
-function normalizeQuestion(question) {
+function normalizeQuestion(question: unknown): string {
   if (typeof question !== 'string') {
     throw new RagValidationError('question_required', 'Question is required');
   }
@@ -183,7 +212,7 @@ function normalizeQuestion(question) {
   return normalizedQuestion;
 }
 
-function normalizeSourceTypes(sourceTypes) {
+function normalizeSourceTypes(sourceTypes: unknown): RagSourceType[] | null {
   if (!sourceTypes) {
     return null;
   }
@@ -193,10 +222,10 @@ function normalizeSourceTypes(sourceTypes) {
   }
 
   const normalized = sourceTypes.map(sourceType => String(sourceType).trim()).filter(Boolean);
-  return normalized.length > 0 ? normalized : null;
+  return normalized.length > 0 ? (normalized as RagSourceType[]) : null;
 }
 
-function normalizeMessages(messages) {
+function normalizeMessages(messages: unknown): ChatMessage[] {
   if (!messages) {
     return [];
   }
@@ -241,13 +270,13 @@ function normalizeMessages(messages) {
     }
 
     return {
-      role: message.role,
+      role: message.role as ChatMessage['role'],
       content,
     };
   });
 }
 
-function resolveUrl(url, siteUrl) {
+function resolveUrl(url: string | null | undefined, siteUrl: string): string | null {
   if (!url) {
     return null;
   }

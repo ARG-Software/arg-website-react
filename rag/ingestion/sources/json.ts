@@ -1,12 +1,12 @@
 import { normalizeText } from '../processing/text.js';
 
-export function flattenJsonToText(value, label = '') {
-  const lines = [];
+export function flattenJsonToText(value: unknown, label = ''): string {
+  const lines: string[] = [];
   walk(value, label, lines);
   return normalizeText(lines.join('\n'));
 }
 
-function walk(value, label, lines) {
+function walk(value: unknown, label: string, lines: string[]): void {
   if (value === null || value === undefined || value === '') {
     return;
   }
@@ -32,7 +32,7 @@ function walk(value, label, lines) {
   lines.push(label ? `${label}: ${text}` : text);
 }
 
-function formatLabel(parent, key) {
+function formatLabel(parent: string, key: string): string {
   const formattedKey = key
     .replace(/([a-z])([A-Z])/g, '$1 $2')
     .replace(/[-_]/g, ' ')

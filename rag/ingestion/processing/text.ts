@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-export function normalizeText(value) {
+export function normalizeText(value: unknown): string {
   return String(value ?? '')
     .replace(/\r\n/g, '\n')
     .replace(/\t/g, ' ')
@@ -9,7 +9,7 @@ export function normalizeText(value) {
     .trim();
 }
 
-export function stripMarkdown(value) {
+export function stripMarkdown(value: unknown): string {
   return normalizeText(value)
     .replace(/^---\n[\s\S]*?\n---\n?/, '')
     .replace(/```[\s\S]*?```/g, ' ')
@@ -24,7 +24,7 @@ export function stripMarkdown(value) {
     .trim();
 }
 
-export function createContentHash(value) {
+export function createContentHash(value: unknown): string {
   const text = normalizeText(value);
   return createHash('sha256').update(text).digest('hex');
 }

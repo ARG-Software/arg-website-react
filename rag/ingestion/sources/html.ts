@@ -1,6 +1,13 @@
+import type { RagSource } from '../../types/ingestion.js';
 import { normalizeText } from '../processing/text.js';
 
-export async function extractHtmlText(html) {
+export interface ExternalHtmlSourceInput {
+  url: string;
+  title?: string;
+  trusted?: boolean;
+}
+
+export async function extractHtmlText(html: string): Promise<string> {
   const cheerio = await import('cheerio');
   const $ = cheerio.load(html);
 
@@ -13,7 +20,11 @@ export async function extractHtmlText(html) {
   return normalizeText([title, description, body].filter(Boolean).join('\n\n'));
 }
 
-export async function loadExternalHtmlSource({ url, title, trusted = true }) {
+export async function loadExternalHtmlSource({
+  url,
+  title,
+  trusted = true,
+}: ExternalHtmlSourceInput): Promise<RagSource> {
   const response = await fetch(url, {
     headers: {
       Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -30,7 +41,7 @@ export async function loadExternalHtmlSource({ url, title, trusted = true }) {
   const parsedUrl = new URL(url);
 
   return {
-    sourceType: 'external_page',
+    sourceType: 'external_page' as const,
     sourceKey: url,
     title: title ?? parsedUrl.hostname,
     url,

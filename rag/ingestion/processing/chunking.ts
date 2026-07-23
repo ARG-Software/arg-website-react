@@ -1,7 +1,12 @@
 import { getChunkingConfig } from '../../config/env.js';
 import { normalizeText } from './text.js';
 
-export function chunkText(text, options = {}) {
+interface ChunkTextOptions {
+  chunkSize?: number;
+  chunkOverlap?: number;
+}
+
+export function chunkText(text: unknown, options: ChunkTextOptions = {}): string[] {
   const config = getChunkingConfig();
   const chunkSize = options.chunkSize ?? config.chunkSize;
   const chunkOverlap = options.chunkOverlap ?? config.chunkOverlap;
@@ -41,7 +46,7 @@ export function chunkText(text, options = {}) {
   return chunks.map(normalizeText).filter(Boolean);
 }
 
-function splitLongText(text, chunkSize, chunkOverlap) {
+function splitLongText(text: string, chunkSize: number, chunkOverlap: number): string[] {
   const chunks = [];
   const step = chunkSize - chunkOverlap;
 
@@ -52,7 +57,7 @@ function splitLongText(text, chunkSize, chunkOverlap) {
   return chunks;
 }
 
-function tail(text, length) {
+function tail(text: string, length: number): string {
   if (length <= 0) {
     return '';
   }

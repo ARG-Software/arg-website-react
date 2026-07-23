@@ -3,6 +3,7 @@ const reactPlugin = require('eslint-plugin-react');
 const reactHooks = require('eslint-plugin-react-hooks');
 const prettierPlugin = require('eslint-plugin-prettier');
 const globals = require('globals');
+const tseslint = require('typescript-eslint');
 
 module.exports = [
   {
@@ -62,4 +63,9 @@ module.exports = [
       },
     },
   },
+  ...tseslint.configs.recommended.map(config => ({
+    ...config,
+    files: ['rag/**/*.ts'],
+    ignores: ['node_modules/**', 'dist/**'],
+  })),
 ];

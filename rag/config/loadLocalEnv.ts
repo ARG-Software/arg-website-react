@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
 
-export function loadLocalEnv(path = '.env') {
+export function loadLocalEnv(path = '.env'): Record<string, string> {
   const result = config({ path, quiet: true });
 
   if (result.error) {

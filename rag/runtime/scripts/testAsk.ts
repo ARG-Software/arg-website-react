@@ -1,4 +1,5 @@
 import { loadLocalEnv } from '../../config/loadLocalEnv.js';
+import type { ChatMessage } from '../../types/aiClient.js';
 import { askQuestion, retrieveRelevantChunks } from '../ask.js';
 
 loadLocalEnv();
@@ -47,11 +48,11 @@ try {
     }
   }
 } catch (error) {
-  console.error(error.message);
+  console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
 }
 
-function getQuestion() {
+function getQuestion(): string {
   return args
     .filter((arg, index) => {
       if (arg === '--retrieve-only' || arg === '--external-profile-history') {
@@ -68,7 +69,7 @@ function getQuestion() {
     .trim();
 }
 
-function parseMessages() {
+function parseMessages(): ChatMessage[] {
   if (historyDemo) {
     return [
       {
@@ -92,5 +93,5 @@ function parseMessages() {
     throw new Error('--history-json requires a JSON array argument');
   }
 
-  return JSON.parse(rawHistory);
+  return JSON.parse(rawHistory) as ChatMessage[];
 }

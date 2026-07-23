@@ -1,4 +1,4 @@
-import { RagValidationError, askQuestion } from '../../rag/runtime/ask.js';
+import { RagValidationError, askQuestion } from '../../rag/runtime/ask.ts';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',

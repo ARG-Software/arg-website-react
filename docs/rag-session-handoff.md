@@ -145,6 +145,7 @@ Netlify Functions are used only for asking questions:
 Implemented at:
 
 - `netlify/functions/ask.js`
+- Shared runtime is TypeScript at `rag/runtime/ask.ts`.
 
 Request body:
 
@@ -323,13 +324,15 @@ Required fields:
    - `supabase/migrations/20260722000000_create_rag_schema.sql`
 
 3. Add shared RAG modules: done and committed.
-   - Files are grouped under `rag/config/`, `rag/clients/`, `rag/ingestion/processing/`, and `rag/ingestion/sources/`.
+   - Files are TypeScript and grouped under `rag/config/`, `rag/clients/`, `rag/repositories/`, `rag/ingestion/processing/`, `rag/ingestion/sources/`, `rag/types/`, and `rag/utils/`.
    - env validation.
    - Supabase server client.
-   - Gemini embedding client.
-   - DeepSeek answer client.
+   - `GeminiEmbeddingClient` implements the provider-neutral `EmbeddingClient` interface.
+   - `DeepSeekAnswerClient` implements the provider-neutral `AnswerClient` interface.
+   - `SupabaseRagSourceRepository` implements the provider-neutral `RagSourceRepository` interface.
+   - Shared RAG types are split by intent: `config`, `ingestion`, `embeddings`, and `aiClient`.
    - chunking helpers.
-   - source/chunk upsert helpers.
+   - source/chunk persistence helpers behind the repository interface.
    - JSON flattening helpers.
    - Markdown loading helpers.
    - PDF extraction helper.
@@ -352,8 +355,8 @@ Required fields:
    - call Supabase RPC.
    - send retrieved context to DeepSeek.
    - return answer plus citations.
-   - Shared runtime lives at `rag/runtime/ask.js`.
-   - Local test script lives at `rag/runtime/scripts/testAsk.js`.
+   - Shared runtime lives at `rag/runtime/ask.ts`.
+   - Local test script lives at `rag/runtime/scripts/testAsk.ts`.
    - Netlify endpoint lives at `netlify/functions/ask.js`.
    - Retrieval-only smoke test passes.
    - Full generation smoke test passes with the current `DEEPSEEK_API_KEY`.
@@ -382,7 +385,17 @@ Required fields:
    - `supabase/scripts.js` loads `.env` directly with `dotenv`; it does not import from `rag/`.
 
 8. Update lint coverage: done.
-   - `package.json` now lints `src`, `plugins`, `rag`, `supabase/scripts.js`, and `netlify/functions`.
+    - `package.json` now lints `src`, `plugins`, `rag`, `supabase/scripts.js`, and `netlify/functions`.
+
+9. Convert RAG runtime/ingestion to TypeScript: done.
+   - `tsconfig.rag.json` checks `rag/**/*.ts` with `moduleResolution: NodeNext`.
+   - Local scripts now run through `tsx`.
+   - `rag/types.ts` was removed in favor of focused type files under `rag/types/`.
+   - The only shared interfaces are the replaceable boundaries: `EmbeddingClient`, `AnswerClient`, and `RagSourceRepository`.
+   - Provider configs are constructor details on concrete clients, not method-level shared parameter bags.
+   - Supabase no longer leaks into the repository interface; it is owned by `SupabaseRagSourceRepository`.
+   - `toEmbeddingLiteral()` lives in `rag/utils/embeddings.ts`, not in ingestion persistence code.
+   - Verification: `npm run typecheck:rag` and `npx eslint rag --ext .ts` pass.
 
 ## Suggested First SQL Shape
 
@@ -430,6 +443,7 @@ Useful commands:
 ```bash
 git status --short
 npm run lint
+npm run typecheck:rag
 npm run build
 npm run rag:ingest:external -- --dry-run
 npm run rag:ask:test --retrieve-only -- "What does ARG Software do?"

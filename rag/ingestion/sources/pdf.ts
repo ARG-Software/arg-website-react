@@ -1,9 +1,27 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import type { RagSource, RagSourceMetadata } from '../../types/ingestion.js';
 import { normalizeText } from '../processing/text.js';
 
-export async function loadPdfSource(filePath, metadata = {}) {
+export interface PdfSourceMetadata extends RagSourceMetadata {
+  filePath?: string;
+  sourceKey?: string;
+  title?: string;
+  url?: string;
+}
+
+export interface RequiredPdfSourceMetadata extends PdfSourceMetadata {
+  filePath: string;
+  sourceKey: string;
+  title: string;
+  url: string;
+}
+
+export async function loadPdfSource(
+  filePath: string,
+  metadata: PdfSourceMetadata = {}
+): Promise<RagSource> {
   const content = await extractPdfText(filePath);
 
   return {
@@ -17,12 +35,16 @@ export async function loadPdfSource(filePath, metadata = {}) {
   };
 }
 
-export async function extractPdfText(filePath) {
+export async function extractPdfText(filePath: string): Promise<string> {
   const buffer = await readFile(filePath);
   const pdfParse = await import('pdf-parse');
 
-  if (typeof pdfParse.default === 'function') {
-    const parsed = await pdfParse.default(buffer);
+  const parserModule = pdfParse as typeof pdfParse & {
+    default?: (data: Buffer) => Promise<{ text: string }>;
+  };
+
+  if (typeof parserModule.default === 'function') {
+    const parsed = await parserModule.default(buffer);
     return normalizeText(parsed.text);
   }
 
