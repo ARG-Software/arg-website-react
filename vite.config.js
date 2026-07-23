@@ -1,11 +1,14 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { fileURLToPath, URL } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import seoPrerender from './plugins/seo-prerender/index.js';
 
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  Object.assign(process.env, loadEnv(mode, process.cwd(), ''));
+
+  return {
   assetsInclude: ['**/*.md'],
   resolve: {
     alias: {
@@ -76,14 +79,21 @@ export default defineConfig({
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify({ answer: result.answer, citations: result.citations }));
           } catch (error) {
-            const statusCode = error?.name === 'RagValidationError' ? 400 : 500;
+            const isConfigurationError =
+              error instanceof Error &&
+              error.message.startsWith('Missing required environment variables:');
+            const statusCode = error?.name === 'RagValidationError' || isConfigurationError ? 400 : 500;
             res.statusCode = statusCode;
             res.setHeader('Content-Type', 'application/json');
             res.end(
               JSON.stringify({
                 error: {
-                  code: error?.code || 'answer_failed',
-                  message: statusCode === 500 ? 'Unable to answer the question' : error.message,
+                  code: isConfigurationError ? 'configuration_error' : error?.code || 'answer_failed',
+                  message: isConfigurationError
+                    ? 'Assistant configuration is unavailable'
+                    : statusCode === 500
+                      ? 'Unable to answer the question'
+                      : error.message,
                 },
               })
             );
@@ -152,4 +162,5 @@ export default defineConfig({
       },
     },
   },
+  };
 });

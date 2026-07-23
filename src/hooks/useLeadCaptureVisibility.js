@@ -38,7 +38,7 @@ function isDismissedWithExpiry() {
   }
 }
 
-function isSuppressed() {
+function isLeadCaptureSuppressed() {
   return localStorage.getItem(ALREADY_SUBSCRIBED_KEY) || isDismissedWithExpiry();
 }
 
@@ -90,7 +90,10 @@ function createContext(path, section, index) {
   };
 }
 
-export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
+export function useLeadCaptureVisibility({
+  delayMs = DEFAULT_DELAY_MS,
+  isSuppressed = false,
+} = {}) {
   const location = useLocation();
   const normalizedPath = normalizePath(location.pathname);
   const [visibleContext, setVisibleContext] = useState(null);
@@ -98,7 +101,10 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
   const [dismissedContextKey, setDismissedContextKey] = useState(getDismissedContextKey);
   const [mobileViewport, setMobileViewport] = useState(isMobile);
   const isVisible =
-    visibleContext?.path === normalizedPath && !isContactPath(location.pathname) && !mobileViewport;
+    visibleContext?.path === normalizedPath &&
+    !isContactPath(location.pathname) &&
+    !mobileViewport &&
+    !isSuppressed;
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -114,7 +120,13 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
   }, []);
 
   useEffect(() => {
-    if (isContactPath(location.pathname) || isSuppressed() || mobileViewport) return;
+    if (
+      isContactPath(location.pathname) ||
+      isLeadCaptureSuppressed() ||
+      mobileViewport ||
+      isSuppressed
+    )
+      return;
 
     let observer;
     let retryTimer;
@@ -164,10 +176,11 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
       clearTimeout(retryTimer);
       observer?.disconnect();
     };
-  }, [location.pathname, normalizedPath, mobileViewport]);
+  }, [location.pathname, normalizedPath, mobileViewport, isSuppressed]);
 
   useEffect(() => {
-    if (!currentContext || isVisible || isSuppressed() || mobileViewport) return;
+    if (!currentContext || isVisible || isLeadCaptureSuppressed() || mobileViewport || isSuppressed)
+      return;
     if (currentContext.path !== normalizedPath) return;
     if (currentContext.key === dismissedContextKey) return;
 
@@ -181,7 +194,15 @@ export function useLeadCaptureVisibility({ delayMs = DEFAULT_DELAY_MS } = {}) {
     }, delayMs);
 
     return () => clearTimeout(timer);
-  }, [currentContext, delayMs, dismissedContextKey, isVisible, normalizedPath, mobileViewport]);
+  }, [
+    currentContext,
+    delayMs,
+    dismissedContextKey,
+    isVisible,
+    normalizedPath,
+    mobileViewport,
+    isSuppressed,
+  ]);
 
   function dismiss() {
     const dismissedContext = visibleContext || currentContext;

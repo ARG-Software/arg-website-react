@@ -5,11 +5,11 @@ import { ALREADY_SUBSCRIBED_KEY } from '@constants/ui';
 import { useLeadCaptureVisibility } from '@hooks/useLeadCaptureVisibility';
 import { useWeb3Form } from '@hooks/useWeb3Form';
 
-export function EmailCaptureForm({ onVisibilityChange }) {
+export function EmailCaptureForm({ isSuppressed = false, onVisibilityChange }) {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [messageError, setMessageError] = useState('');
-  const leadCapture = useLeadCaptureVisibility();
+  const leadCapture = useLeadCaptureVisibility({ isSuppressed });
   const { status, isSubmitting, submitForm, resetStatus } = useWeb3Form({
     subject: 'New ARG lead capture',
     source: 'lead_capture_widget',

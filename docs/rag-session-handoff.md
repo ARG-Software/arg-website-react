@@ -480,7 +480,7 @@ Error: { "error": { "code": "...", "message": "..." } }
 
 See the Runtime Endpoint section above for full details on error codes and behavior.
 
-## Continue From Here
+## Historical Continuation (Superseded)
 
 The frontend UI is implemented. Remaining work:
 
@@ -541,3 +541,138 @@ npm run rag:ask:test -- "Que perfis externos mencionam a ARG Software?"
 npm run rag:ask:test -- "bonjour"
 npm run rag:ask:test -- "write me a Python scraper"
 ```
+
+## Current Continuation
+
+### Implemented Since The Historical Handoff
+
+- `vite.config.js` now loads all local environment variables with Vite's `loadEnv()` before its local ask middleware calls `askQuestion()`. This fixed local assistant failures caused by RAG credentials in `.env` not reaching `process.env`.
+- `netlify/functions/ask.js` and the Vite middleware return `configuration_error` when required RAG environment variables are missing, instead of masking that condition as `answer_failed`.
+- `AssistantWidget` is independent of email capture. It accepts generic `isSuppressed` and `onOpenChange` props; it no longer receives `emailVisible`.
+- `WidgetManager` remains the narrow coordinator for mutually exclusive widgets. It suppresses email capture while the assistant is open, and suppresses the assistant while email capture is visible.
+- `useLeadCaptureVisibility` accepts generic `isSuppressed` state.
+- The email capture card has a higher z-index than the assistant panel as a CSS fallback; normal widget state prevents overlap.
+- `AssistantWidget` uses the shared `isMobile()` helper and `MOBILE_BREAKPOINT` instead of a hardcoded breakpoint.
+- Assistant error copy supports English and Portuguese. Browser locale handling maps `pt-*` to Portuguese and defaults all other locales to English. Keep this scope; do not add an external translation dependency for error states.
+
+### Current Working Tree
+
+These files are modified and intentionally uncommitted:
+
+```text
+M docs/rag-session-handoff.md
+M netlify/functions/ask.js
+M src/components/forms/EmailCaptureForm.jsx
+M src/components/widgets/AssistantWidget.jsx
+M src/components/widgets/WidgetManager.jsx
+M src/hooks/useLeadCaptureVisibility.js
+M src/styles/assistant.css
+M src/styles/components.css
+M vite.config.js
+```
+
+Do not revert these changes. Inspect them carefully before adding RAG work.
+
+### Latest Verification
+
+- `npm run lint` passes.
+- `npm run typecheck:rag` passes.
+- `npm run build` passes.
+- `npm run rag:ask:test -- "What does ARG Software do?"` returns an answer with citations.
+
+### Current Gaps
+
+The assistant still lacks page context. The frontend sends only `question` and conversation `messages`, so references such as "this project" or "the project I am seeing" cannot resolve to the current page.
+
+The public team information is spread across existing RAG sources:
+
+- `src/data/homepage.json` contains homepage team cards.
+- `src/data/about.json` contains founder profiles and detailed work history.
+- Careers data contains additional founder references.
+
+José Antunes and Rui Rocha are the only individually named public team members. The site describes other collaborators as an unnamed trusted network. The assistant must state this accurately and never invent people.
+
+Projects are already ingested individually from `src/data/projects.json`, but broad/ambiguous questions can miss them because retrieval currently uses a single global similarity threshold of `0.72`.
+
+### Required Next Work
+
+1. Generate dedicated first-party RAG sources from existing public JSON data.
+   - Create an aggregate `ARG Team` source.
+   - Create separate José Antunes and Rui Rocha profile sources.
+   - Derive these from existing homepage, About, and careers data rather than creating manually duplicated profile content.
+   - Use the existing `about` source type with distinct source keys to avoid a schema migration solely for a new type.
+
+2. Add page context to assistant requests.
+   - In `AssistantWidget`, use React Router location and send bounded `pageContext` with `pathname` and `document.title`.
+   - Validate and normalize it in `netlify/functions/ask.js` and `rag/runtime/ask.ts`.
+   - Derive a project slug server-side for `/projects/:slug/` paths.
+
+3. Resolve contextual project questions.
+   - Pass page context to the question-rewrite prompt in `rag/clients/deepseek.ts`.
+   - Rewrite references such as "tell me more about this project" to the project identified by page context.
+   - Prefer matching chunks from the active project without preventing general questions on a project page from using other sources.
+
+4. Broaden retrieval safely.
+   - Do not globally discard the current `0.72` threshold.
+   - First run the current high-confidence retrieval.
+   - When it returns too little context, retry with a configurable lower threshold, initially around `0.60`.
+   - Merge and deduplicate results while continuing to answer only from retrieved context.
+   - Add the fallback threshold to `rag/config/env.ts`, `rag/types/config.ts`, and `.env.example`.
+
+5. Update intent and answer prompts.
+   - Treat team, founder experience, rates, budgets, estimates, and project-cost questions as `rag_question` requests.
+   - For team questions, enumerate named people in retrieved public context and clarify that unnamed collaborators are not publicly listed.
+   - For pricing, distinguish a third-party indicative listing from a project quote; never invent rates or estimates.
+
+### DesignRush Pricing
+
+`rag/config/external-sources.json` allowlists the ARG DesignRush profile. External ingestion fetches and indexes the page title, meta description, and visible HTML body; it does not merely store the link.
+
+However:
+
+- The extractor removes script tags, so client-rendered pricing data may not be indexed.
+- A current direct fetch of the DesignRush profile returned `403`.
+- Existing indexed DesignRush content may still contain data from a previous successful ingestion, but this has not been verified.
+
+Do not drop or reset the RAG database. A reset could remove existing external content that cannot currently be restored because DesignRush may reject a new fetch.
+
+Before making pricing claims, test the existing index:
+
+```bash
+npm run rag:ask:test -- --retrieve-only "What hourly rate or minimum project budget does DesignRush list for ARG Software?"
+npm run rag:ask:test -- "What hourly rate or minimum project budget does DesignRush list for ARG Software?"
+```
+
+If no verified pricing context is returned, do not fabricate it or bypass DesignRush access controls. Use an approved accessible source, or add user-verified pricing to a first-party source and identify third-party marketplace rates as indicative only.
+
+### Re-ingestion Strategy
+
+Do not clear tables. Internal ingestion is content-hash/upsert based and replaces chunks only for the refreshed source.
+
+After generated team/person sources are implemented, refresh the relevant internal data:
+
+```bash
+npm run rag:ingest:internal -- --file src/data/about.json --refresh
+npm run rag:ingest:internal -- --file src/data/homepage.json --refresh
+npm run rag:ingest:internal -- --file src/data/projects.json --refresh
+```
+
+Use the generated-source loader's matching selection once it exists. Do not force-refresh DesignRush until it is available through an approved, accessible route.
+
+### Required Tests For The Next Session
+
+```bash
+npm run lint
+npm run typecheck:rag
+npm run build
+npm run rag:ask:test -- "Who is part of ARG?"
+npm run rag:ask:test -- "What is Jose Antunes's experience?"
+npm run rag:ask:test -- "What is Rui Rocha's experience?"
+```
+
+Also test in the browser:
+
+- On a project page: "Tell me more about this project."
+- On any page: "Who is part of ARG?"
+- Project-cost questions with and without verified pricing context.
+- English and Portuguese browser locales for assistant errors.

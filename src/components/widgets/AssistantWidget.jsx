@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Logo } from '@components/icons/Logo';
+import { MOBILE_BREAKPOINT } from '@constants/ui';
 import { trackAssistantEvent } from '@utils/analytics';
+import { isMobile } from '@utils/helpers';
 
 const QUICK_PROMPTS = [
   'What does ARG do?',
@@ -15,35 +17,49 @@ const WELCOME_MESSAGE = {
     "Hi, I'm Gaspar, ARG's AI assistant. Ask me about our work, our research, or how to get in touch.",
 };
 
-function getErrorMessage(code) {
-  const map = {
+const ERROR_MESSAGES = {
+  en: {
     question_required: 'Please enter a question.',
     question_too_long: 'Question must be 1000 characters or fewer.',
+    configuration_error: 'Gaspar is temporarily unavailable. Please try again later.',
     answer_failed: 'Something went wrong. Please try again.',
     network_error: 'Unable to reach Gaspar. Please check your connection.',
-  };
-  return map[code] || 'Something went wrong. Please try again.';
+  },
+  pt: {
+    question_required: 'Introduza uma pergunta.',
+    question_too_long: 'A pergunta tem de ter no maximo 1000 caracteres.',
+    configuration_error: 'O Gaspar esta temporariamente indisponivel. Tente novamente mais tarde.',
+    answer_failed: 'Algo correu mal. Tente novamente.',
+    network_error: 'Nao foi possivel contactar o Gaspar. Verifique a sua ligacao.',
+  },
+};
+
+function getErrorMessage(code) {
+  const locale = typeof navigator === 'undefined' ? 'en' : navigator.language.toLowerCase();
+  const messages = locale.startsWith('pt') ? ERROR_MESSAGES.pt : ERROR_MESSAGES.en;
+
+  return messages[code] || messages.answer_failed;
 }
 
 function useMobileFullscreen() {
-  const [isMobile, setIsMobile] = useState(() => {
+  const [mobileViewport, setMobileViewport] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return window.matchMedia('(max-width: 768px)').matches;
+    return isMobile();
   });
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
-    const mql = window.matchMedia('(max-width: 768px)');
-    const onChange = event => setIsMobile(event.matches);
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+    const onChange = event => setMobileViewport(event.matches);
     mql.addEventListener('change', onChange);
     return () => mql.removeEventListener('change', onChange);
   }, []);
 
-  return isMobile;
+  return mobileViewport;
 }
 
-export function AssistantWidget({ emailVisible }) {
-  const isMobile = useMobileFullscreen();
+export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
+  const mobileViewport = useMobileFullscreen();
   const [panelState, setPanelState] = useState('closed');
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -53,6 +69,18 @@ export function AssistantWidget({ emailVisible }) {
   const inputRef = useRef(null);
 
   const showPrompts = messages.length === 0;
+  const isPanelOpen = panelState !== 'closed';
+
+  useEffect(() => {
+    onOpenChange?.(isPanelOpen);
+  }, [isPanelOpen, onOpenChange]);
+
+  useEffect(() => {
+    if (!isSuppressed || panelState === 'closed') return;
+
+    setPanelState('closed');
+    setError(null);
+  }, [isSuppressed, panelState]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -66,12 +94,14 @@ export function AssistantWidget({ emailVisible }) {
 
   const open = useCallback(
     source => {
-      const next = isMobile ? 'fullscreen' : 'open';
+      if (isSuppressed) return;
+
+      const next = mobileViewport ? 'fullscreen' : 'open';
       setPanelState(next);
       setError(null);
       trackAssistantEvent('open', { source });
     },
-    [isMobile]
+    [mobileViewport, isSuppressed]
   );
 
   const close = useCallback(source => {
@@ -156,12 +186,10 @@ export function AssistantWidget({ emailVisible }) {
     submitQuestion(prompt);
   }
 
-  const isPanelOpen = panelState !== 'closed';
-
   return (
     <>
       <button
-        className={`aw-trigger${emailVisible || isPanelOpen ? ' aw-trigger--hidden' : ''}`}
+        className={`aw-trigger${isSuppressed || isPanelOpen ? ' aw-trigger--hidden' : ''}`}
         onClick={() => open('trigger_button')}
         aria-label="Open Gaspar assistant"
         type="button"

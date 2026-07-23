@@ -4,11 +4,12 @@ import { AssistantWidget } from './AssistantWidget';
 
 export function WidgetManager() {
   const [emailVisible, setEmailVisible] = useState(false);
+  const [assistantOpen, setAssistantOpen] = useState(false);
 
   return (
     <>
-      <EmailCaptureForm onVisibilityChange={setEmailVisible} />
-      <AssistantWidget emailVisible={emailVisible} />
+      <EmailCaptureForm isSuppressed={assistantOpen} onVisibilityChange={setEmailVisible} />
+      <AssistantWidget isSuppressed={emailVisible} onOpenChange={setAssistantOpen} />
     </>
   );
 }

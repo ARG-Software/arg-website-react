@@ -35,10 +35,13 @@ export async function handler(event) {
       citations: result.citations,
     });
   } catch (error) {
-    const statusCode = isClientError(error) ? 400 : 500;
+    const statusCode = isClientError(error) || isConfigurationError(error) ? 400 : 500;
     const errorBody =
       statusCode === 400
-        ? createErrorBody(error.code, error.message)
+        ? createErrorBody(
+            isConfigurationError(error) ? 'configuration_error' : error.code,
+            isConfigurationError(error) ? 'Assistant configuration is unavailable' : error.message
+          )
         : createErrorBody('answer_failed', 'Unable to answer the question');
 
     if (statusCode === 500) {
@@ -71,4 +74,10 @@ function createResponse(statusCode, body) {
 
 function isClientError(error) {
   return error instanceof RagValidationError;
+}
+
+function isConfigurationError(error) {
+  return (
+    error instanceof Error && error.message.startsWith('Missing required environment variables:')
+  );
 }

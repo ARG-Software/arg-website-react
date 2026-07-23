@@ -2637,7 +2637,7 @@
     opacity 0.35s ease;
   width: 296px;
   will-change: transform, opacity;
-  z-index: 9997;
+  z-index: 9998;
 }
 
 .ec-card--visible {
