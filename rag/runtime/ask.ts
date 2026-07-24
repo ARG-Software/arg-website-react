@@ -1,7 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { deepSeekAnswerClient } from '../clients/deepseek.js';
-import { geminiEmbeddingClient } from '../clients/gemini.js';
+import {
+  GeminiEmbeddingQuotaError,
+  geminiEmbeddingClient,
+  geminiFallbackEmbeddingClient,
+} from '../clients/gemini.js';
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
 import { getRagConfig } from '../config/env.js';
 import type {
@@ -53,6 +57,7 @@ export interface AskQuestionInput {
   supabase?: SupabaseClient;
   answerProvider?: AnswerProvider;
   embeddingProvider?: EmbeddingProvider;
+  fallbackEmbeddingProvider?: EmbeddingProvider;
 }
 
 interface MatchRagChunkRow {
@@ -81,6 +86,7 @@ interface PreferredContextsInput {
   supabase: SupabaseClient;
   embedding: number[];
   config: RagConfig;
+  matchFunction: MatchFunction;
   sourceOrigin: RagSourceOrigin;
   sourceTypes?: RagSourceType[] | null;
   sourceKeys?: string[] | null;
@@ -91,11 +97,14 @@ interface MatchChunksInput {
   supabase: SupabaseClient;
   embedding: number[];
   config: RagConfig;
+  matchFunction: MatchFunction;
   sourceTypes?: RagSourceType[] | null;
   sourceKeys?: string[] | null;
   sourceOrigin: RagSourceOrigin;
   similarityThreshold: number;
 }
+
+type MatchFunction = 'match_rag_chunks' | 'match_rag_chunks_fallback';
 
 export class RagValidationError extends Error {
   code: string;
@@ -115,6 +124,7 @@ export async function askQuestion({
   supabase = createSupabaseServiceClient(config),
   answerProvider = deepSeekAnswerClient,
   embeddingProvider = geminiEmbeddingClient,
+  fallbackEmbeddingProvider = geminiFallbackEmbeddingClient,
 }: AskQuestionInput = {}): Promise<AskQuestionResult> {
   const normalizedQuestion = normalizeQuestion(question);
   const normalizedMessages = normalizeMessages(messages);
@@ -157,6 +167,7 @@ export async function askQuestion({
     supabase,
     answerProvider,
     embeddingProvider,
+    fallbackEmbeddingProvider,
   });
 
   if (contexts.length === 0) {
@@ -205,6 +216,7 @@ export async function retrieveRelevantChunks({
   supabase = createSupabaseServiceClient(config),
   answerProvider = deepSeekAnswerClient,
   embeddingProvider = geminiEmbeddingClient,
+  fallbackEmbeddingProvider = geminiFallbackEmbeddingClient,
 }: AskQuestionInput = {}): Promise<RetrievedContext[]> {
   const normalizedQuestion = normalizeQuestion(question);
   const normalizedMessages = normalizeMessages(messages);
@@ -217,13 +229,18 @@ export async function retrieveRelevantChunks({
       pageContext: normalizedPageContext,
       answerProvider,
     }));
-  const embedding = await embeddingProvider.embedText(query);
+  const { embedding, matchFunction } = await createQueryEmbedding(
+    query,
+    embeddingProvider,
+    fallbackEmbeddingProvider
+  );
   const retrievalPolicy = getRetrievalPolicy(normalizedQuestion, normalizedPageContext);
   const [firstPartyContexts, trustedExternalContexts] = await Promise.all([
     retrieveContextsForOrigin({
       supabase,
       embedding,
       config,
+      matchFunction,
       sourceOrigin: FIRST_PARTY_ORIGINS[0],
       sourceTypes: retrievalPolicy.firstPartySourceTypes,
     }),
@@ -232,6 +249,7 @@ export async function retrieveRelevantChunks({
           supabase,
           embedding,
           config,
+          matchFunction,
           sourceOrigin: TRUSTED_EXTERNAL_ORIGINS[0],
           sourceTypes: ['external_page'],
           sourceKeys: ['designrush'],
@@ -245,10 +263,33 @@ export async function retrieveRelevantChunks({
   );
 }
 
+async function createQueryEmbedding(
+  query: string,
+  embeddingProvider: EmbeddingProvider,
+  fallbackEmbeddingProvider: EmbeddingProvider
+): Promise<{ embedding: number[]; matchFunction: MatchFunction }> {
+  try {
+    return {
+      embedding: await embeddingProvider.embedText(query),
+      matchFunction: 'match_rag_chunks',
+    };
+  } catch (error) {
+    if (!(error instanceof GeminiEmbeddingQuotaError)) {
+      throw error;
+    }
+
+    return {
+      embedding: await fallbackEmbeddingProvider.embedText(query),
+      matchFunction: 'match_rag_chunks_fallback',
+    };
+  }
+}
+
 async function retrieveContextsForOrigin({
   supabase,
   embedding,
   config,
+  matchFunction,
   sourceOrigin,
   sourceTypes = null,
   sourceKeys = null,
@@ -257,6 +298,7 @@ async function retrieveContextsForOrigin({
     supabase,
     embedding,
     config,
+    matchFunction,
     sourceOrigin,
     sourceTypes,
     sourceKeys,
@@ -274,6 +316,7 @@ async function retrieveContextsForOrigin({
     supabase,
     embedding,
     config,
+    matchFunction,
     sourceOrigin,
     sourceTypes,
     sourceKeys,
@@ -296,6 +339,7 @@ async function getPreferredContexts({
   supabase,
   embedding,
   config,
+  matchFunction,
   sourceOrigin,
   sourceTypes,
   sourceKeys,
@@ -305,6 +349,7 @@ async function getPreferredContexts({
     supabase,
     embedding,
     config,
+    matchFunction,
     sourceOrigin,
     sourceTypes,
     sourceKeys,
@@ -316,12 +361,13 @@ async function matchChunks({
   supabase,
   embedding,
   config,
+  matchFunction,
   sourceTypes = null,
   sourceKeys = null,
   sourceOrigin,
   similarityThreshold,
 }: MatchChunksInput): Promise<RetrievedContext[]> {
-  const { data, error } = await supabase.rpc('match_rag_chunks', {
+  const { data, error } = await supabase.rpc(matchFunction, {
     query_embedding: toEmbeddingLiteral(embedding),
     match_count: config.matchCount,
     similarity_threshold: similarityThreshold,

@@ -4,6 +4,8 @@ export interface RagConfig {
   geminiApiKey: string;
   geminiEmbeddingModel: string;
   geminiEmbeddingDimensions: number;
+  geminiFallbackEmbeddingModel: string;
+  geminiFallbackEmbeddingDimensions: number;
   geminiEmbeddingRequestDelayMs: number;
   deepseekApiKey: string;
   deepseekModel: string;

@@ -28,7 +28,13 @@ if (sources.length === 0) {
 
 for (const source of sources) {
   try {
-    const result = await ingestSource({ supabase, source, dryRun, force: selection.force });
+    const result = await ingestSource({
+      supabase,
+      source,
+      dryRun,
+      force: selection.force,
+      fallbackOnly: selection.fallbackOnly,
+    });
     results.push(result);
     printResult(result);
   } catch (error) {

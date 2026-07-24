@@ -30,7 +30,13 @@ const failures: Array<{ item: ExternalSourceManifestEntry; error: unknown }> = [
 for (const item of allowlist) {
   try {
     const source = await loadExternalSource(item);
-    const result = await ingestSource({ supabase, source, dryRun, force: selection.force });
+    const result = await ingestSource({
+      supabase,
+      source,
+      dryRun,
+      force: selection.force,
+      fallbackOnly: selection.fallbackOnly,
+    });
     results.push(result);
     printResult(result);
   } catch (error) {

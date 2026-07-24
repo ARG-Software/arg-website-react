@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { RagSourceRepository } from '../types/ingestion.js';
+import type { RagSourceEmbeddings, RagSourceRepository, UpsertSourceResult } from '../types/ingestion.js';
 import type { RagSource } from '../types/source.js';
 import { toEmbeddingLiteral } from '../utils/embeddings.js';
 import { chunkText } from '../ingestion/processing/chunking.js';
@@ -11,8 +11,8 @@ export class SupabaseRagSourceRepository implements RagSourceRepository {
 
   async upsertSource(
     source: RagSource,
-    embeddings: number[][]
-  ): Promise<{ sourceId: string | null; chunkCount: number }> {
+    embeddings: RagSourceEmbeddings
+  ): Promise<UpsertSourceResult> {
     const content = normalizeText(source.content);
     const chunks = source.chunks ?? chunkText(content);
 
@@ -20,9 +20,10 @@ export class SupabaseRagSourceRepository implements RagSourceRepository {
       return { sourceId: null, chunkCount: 0 };
     }
 
-    if (embeddings.length !== chunks.length) {
-      throw new Error(`Expected ${chunks.length} embeddings, received ${embeddings.length}`);
+    if (embeddings.primary) {
+      assertEmbeddingCount('primary', chunks, embeddings.primary);
     }
+    assertEmbeddingCount('fallback', chunks, embeddings.fallback);
 
     const { data: sourceRow, error: sourceError } = await this.supabase
       .from('rag_sources')
@@ -62,7 +63,8 @@ export class SupabaseRagSourceRepository implements RagSourceRepository {
       source_id: sourceId,
       chunk_index: index,
       content: chunk,
-      embedding: toEmbeddingLiteral(embeddings[index]),
+      embedding: embeddings.primary ? toEmbeddingLiteral(embeddings.primary[index]) : null,
+      fallback_embedding: toEmbeddingLiteral(embeddings.fallback[index]),
       metadata: {
         ...(source.chunkMetadata ?? {}),
         char_count: chunk.length,
@@ -76,6 +78,65 @@ export class SupabaseRagSourceRepository implements RagSourceRepository {
     }
 
     return { sourceId, chunkCount: rows.length };
+  }
+
+  async updateFallbackEmbeddings(source: RagSource, embeddings: number[][]): Promise<UpsertSourceResult> {
+    const content = normalizeText(source.content);
+    const chunks = source.chunks ?? chunkText(content);
+
+    if (chunks.length === 0) {
+      return { sourceId: null, chunkCount: 0 };
+    }
+
+    assertEmbeddingCount('fallback', chunks, embeddings);
+
+    const { data: sourceRow, error: sourceError } = await this.supabase
+      .from('rag_sources')
+      .select('id, content_hash')
+      .eq('source_type', source.sourceType)
+      .eq('source_key', source.sourceKey)
+      .maybeSingle();
+
+    if (sourceError) {
+      throw sourceError;
+    }
+
+    if (!sourceRow) {
+      return this.upsertSource(source, { primary: null, fallback: embeddings });
+    }
+
+    const { data: chunkRows, error: chunkError } = await this.supabase
+      .from('rag_chunks')
+      .select('id, chunk_index, content')
+      .eq('source_id', sourceRow.id)
+      .order('chunk_index');
+
+    if (chunkError) {
+      throw chunkError;
+    }
+
+    if (
+      chunkRows.length !== chunks.length ||
+      chunkRows.some((row, index) => row.chunk_index !== index || row.content !== chunks[index])
+    ) {
+      return this.upsertSource(source, { primary: null, fallback: embeddings });
+    }
+
+    const updates = await Promise.all(
+      chunkRows.map((row, index) =>
+        this.supabase
+          .from('rag_chunks')
+          .update({ fallback_embedding: toEmbeddingLiteral(embeddings[index]) })
+          .eq('id', row.id)
+      )
+    );
+    const updateError = updates.find(result => result.error)?.error;
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    return { sourceId: sourceRow.id, chunkCount: chunks.length };
   }
 
   async getSourceContentHash(
@@ -93,5 +154,11 @@ export class SupabaseRagSourceRepository implements RagSourceRepository {
     }
 
     return typeof data?.content_hash === 'string' ? data.content_hash : null;
+  }
+}
+
+function assertEmbeddingCount(label: string, chunks: string[], embeddings: number[][]): void {
+  if (embeddings.length !== chunks.length) {
+    throw new Error(`Expected ${chunks.length} ${label} embeddings, received ${embeddings.length}`);
   }
 }

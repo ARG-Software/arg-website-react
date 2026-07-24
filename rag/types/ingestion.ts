@@ -8,7 +8,9 @@ export interface IngestSourceInput {
   source: RagSource;
   dryRun?: boolean;
   force?: boolean;
+  fallbackOnly?: boolean;
   embeddingProvider?: EmbeddingProvider;
+  fallbackEmbeddingProvider?: EmbeddingProvider;
   repository?: RagSourceRepository;
 }
 
@@ -24,15 +26,24 @@ export interface IngestSourceResult {
 
 export interface RagSourceRepository {
   getSourceContentHash(source: Pick<RagSource, 'sourceType' | 'sourceKey'>): Promise<string | null>;
-  upsertSource(
-    source: RagSource,
-    embeddings: number[][]
-  ): Promise<{ sourceId: string | null; chunkCount: number }>;
+  upsertSource(source: RagSource, embeddings: RagSourceEmbeddings): Promise<UpsertSourceResult>;
+  updateFallbackEmbeddings(source: RagSource, embeddings: number[][]): Promise<UpsertSourceResult>;
+}
+
+export interface RagSourceEmbeddings {
+  primary: number[][] | null;
+  fallback: number[][];
+}
+
+export interface UpsertSourceResult {
+  sourceId: string | null;
+  chunkCount: number;
 }
 
 export interface IngestionRunOptions {
   all: boolean;
   force: boolean;
+  fallbackOnly: boolean;
   sourceKeys: string[];
   filePaths: string[];
   urls: string[];

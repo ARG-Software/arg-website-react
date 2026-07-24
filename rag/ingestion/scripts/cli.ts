@@ -16,6 +16,7 @@ export function getIngestionRunOptions(): IngestionRunOptions {
       hasFlag('--refresh') ||
       process.env.npm_config_force === 'true' ||
       process.env.npm_config_refresh === 'true',
+    fallbackOnly: hasFlag('--fallback-only') || process.env.npm_config_fallback_only === 'true',
     sourceKeys: getOptionValues('--source'),
     filePaths: getOptionValues('--file'),
     urls: getOptionValues('--url'),
@@ -39,7 +40,7 @@ export function hasSourceFilters(selection: IngestionRunOptions): boolean {
 
 export function printSelectionUsage(scriptName: string): void {
   console.error(
-    `Usage: npm run ${scriptName} -- --all|--source <sourceKey>|--file <filePath>|--url <url> [--dry-run] [--refresh]`
+    `Usage: npm run ${scriptName} -- --all|--source <sourceKey>|--file <filePath>|--url <url> [--dry-run] [--refresh] [--fallback-only]`
   );
 }
 

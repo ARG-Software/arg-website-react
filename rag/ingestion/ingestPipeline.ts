@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { geminiEmbeddingClient } from '../clients/gemini.js';
+import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../clients/gemini.js';
 import { SupabaseRagSourceRepository } from '../repositories/SupabaseRagSourceRepository.js';
 import type { IngestSourceInput, IngestSourceResult } from '../types/ingestion.js';
 import { chunkText } from './processing/chunking.js';
@@ -12,6 +12,7 @@ export async function ingestSource({
   dryRun = false,
   force = false,
   embeddingProvider = geminiEmbeddingClient,
+  fallbackEmbeddingProvider = geminiFallbackEmbeddingClient,
   repository,
 }: IngestSourceInput): Promise<IngestSourceResult> {
   const content = normalizeText(source.content);
@@ -60,14 +61,13 @@ export async function ingestSource({
     };
   }
 
-  const embeddings = await embeddingProvider.embedTexts(chunks);
-  const result = await sourceRepository.upsertSource(
-    {
-      ...source,
-      chunks,
-    },
-    embeddings
-  );
+  const sourceWithChunks = { ...source, chunks };
+  const primaryEmbeddings = await embeddingProvider.embedTexts(chunks);
+  const fallbackEmbeddings = await fallbackEmbeddingProvider.embedTexts(chunks);
+  const result = await sourceRepository.upsertSource(sourceWithChunks, {
+    primary: primaryEmbeddings,
+    fallback: fallbackEmbeddings,
+  });
 
   return {
     skipped: false,

@@ -3,6 +3,8 @@ import type { EnvOptions, RagConfig } from '../types/config.js';
 const DEFAULTS: Record<string, string> = {
   GEMINI_EMBEDDING_MODEL: 'gemini-embedding-2',
   GEMINI_EMBEDDING_DIMENSIONS: '768',
+  GEMINI_FALLBACK_EMBEDDING_MODEL: 'gemini-embedding-001',
+  GEMINI_FALLBACK_EMBEDDING_DIMENSIONS: '768',
   GEMINI_EMBEDDING_REQUEST_DELAY_MS: '750',
   DEEPSEEK_MODEL: 'deepseek-v4-flash',
   RAG_SITE_URL: 'https://arg.software',
@@ -53,6 +55,7 @@ export function getRagConfig(): RagConfig {
   return {
     ...getSupabaseConfig(),
     ...getGeminiConfig(),
+    ...getGeminiFallbackEmbeddingConfig(),
     ...getDeepSeekConfig(),
     ...getSiteConfig(),
     ...getChunkingConfig(),
@@ -78,6 +81,21 @@ export function getGeminiConfig(): Pick<
     geminiApiKey: getRequiredEnv('GEMINI_API_KEY'),
     geminiEmbeddingModel: getRequiredEnv('GEMINI_EMBEDDING_MODEL'),
     geminiEmbeddingDimensions: getRequiredNumberEnv('GEMINI_EMBEDDING_DIMENSIONS'),
+    geminiEmbeddingRequestDelayMs: getRequiredNumberEnv('GEMINI_EMBEDDING_REQUEST_DELAY_MS'),
+  };
+}
+
+export function getGeminiFallbackEmbeddingConfig(): Pick<
+  RagConfig,
+  | 'geminiApiKey'
+  | 'geminiFallbackEmbeddingModel'
+  | 'geminiFallbackEmbeddingDimensions'
+  | 'geminiEmbeddingRequestDelayMs'
+> {
+  return {
+    geminiApiKey: getRequiredEnv('GEMINI_API_KEY'),
+    geminiFallbackEmbeddingModel: getRequiredEnv('GEMINI_FALLBACK_EMBEDDING_MODEL'),
+    geminiFallbackEmbeddingDimensions: getRequiredNumberEnv('GEMINI_FALLBACK_EMBEDDING_DIMENSIONS'),
     geminiEmbeddingRequestDelayMs: getRequiredNumberEnv('GEMINI_EMBEDDING_REQUEST_DELAY_MS'),
   };
 }

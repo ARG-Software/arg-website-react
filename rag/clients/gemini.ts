@@ -1,4 +1,4 @@
-import { getGeminiConfig } from '../config/env.js';
+import { getGeminiConfig, getGeminiFallbackEmbeddingConfig } from '../config/env.js';
 import type { EmbeddingProvider } from '../types/ai.js';
 import type { RagConfig } from '../types/config.js';
 
@@ -9,13 +9,22 @@ const REQUEST_TIMEOUT_MS = 10000;
 export class GeminiEmbeddingQuotaError extends Error {
   code = 'embedding_quota_exceeded';
 
-  constructor() {
-    super('Gemini embedding quota exceeded');
+  constructor(model?: string) {
+    super(`Gemini embedding quota exceeded${model ? ` for ${model}` : ''}`);
     this.name = 'GeminiEmbeddingQuotaError';
   }
 }
 
-type GeminiEmbeddingConfig = Pick<
+export interface GeminiEmbeddingConfig {
+  geminiApiKey: string;
+  model: string;
+  dimensions: number;
+  requestDelayMs: number;
+}
+
+type GeminiEmbeddingConfigSource = () => GeminiEmbeddingConfig;
+
+type PrimaryGeminiEmbeddingConfig = Pick<
   RagConfig,
   'geminiApiKey' | 'geminiEmbeddingModel' | 'geminiEmbeddingDimensions' | 'geminiEmbeddingRequestDelayMs'
 >;
@@ -27,7 +36,7 @@ interface GeminiEmbeddingResponse {
 }
 
 export class GeminiEmbeddingClient implements EmbeddingProvider {
-  constructor(private readonly config?: GeminiEmbeddingConfig) {}
+  constructor(private readonly configSource: GeminiEmbeddingConfigSource = getPrimaryEmbeddingConfig) {}
 
   async embedText(text: string): Promise<number[]> {
     const [embedding] = await this.embedTexts([text]);
@@ -45,8 +54,8 @@ export class GeminiEmbeddingClient implements EmbeddingProvider {
     for (let index = 0; index < texts.length; index += 1) {
       embeddings.push(await this.embedTextContent(texts[index]));
 
-      if (index + 1 < texts.length && config.geminiEmbeddingRequestDelayMs > 0) {
-        await sleep(config.geminiEmbeddingRequestDelayMs);
+      if (index + 1 < texts.length && config.requestDelayMs > 0) {
+        await sleep(config.requestDelayMs);
       }
     }
 
@@ -55,31 +64,62 @@ export class GeminiEmbeddingClient implements EmbeddingProvider {
 
   private async embedTextContent(text: string): Promise<number[]> {
     const config = this.getConfig();
-    const url = `${GEMINI_API_BASE}/models/${config.geminiEmbeddingModel}:embedContent?key=${config.geminiApiKey}`;
-    const data = await fetchWithRetry(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: `models/${config.geminiEmbeddingModel}`,
-        outputDimensionality: config.geminiEmbeddingDimensions,
-        content: {
-          parts: [{ text }],
+    const url = `${GEMINI_API_BASE}/models/${config.model}:embedContent?key=${config.geminiApiKey}`;
+    const data = await fetchWithRetry(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      }),
-    });
+        body: JSON.stringify({
+          model: `models/${config.model}`,
+          outputDimensionality: config.dimensions,
+          content: {
+            parts: [{ text }],
+          },
+        }),
+      },
+      config.model
+    );
     return data.embedding?.values ?? [];
   }
 
   private getConfig(): GeminiEmbeddingConfig {
-    return this.config ?? getGeminiConfig();
+    return this.configSource();
   }
 }
 
 export const geminiEmbeddingClient = new GeminiEmbeddingClient();
+export const geminiFallbackEmbeddingClient = new GeminiEmbeddingClient(getFallbackEmbeddingConfig);
 
-async function fetchWithRetry(url: string, init: RequestInit): Promise<GeminiEmbeddingResponse> {
+function getPrimaryEmbeddingConfig(): GeminiEmbeddingConfig {
+  const config: PrimaryGeminiEmbeddingConfig = getGeminiConfig();
+
+  return {
+    geminiApiKey: config.geminiApiKey,
+    model: config.geminiEmbeddingModel,
+    dimensions: config.geminiEmbeddingDimensions,
+    requestDelayMs: config.geminiEmbeddingRequestDelayMs,
+  };
+}
+
+function getFallbackEmbeddingConfig(): GeminiEmbeddingConfig {
+  const config = getGeminiFallbackEmbeddingConfig();
+
+  return {
+    geminiApiKey: config.geminiApiKey,
+    model: config.geminiFallbackEmbeddingModel,
+    dimensions: config.geminiFallbackEmbeddingDimensions,
+    requestDelayMs: config.geminiEmbeddingRequestDelayMs,
+  };
+}
+
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  model: string
+): Promise<GeminiEmbeddingResponse> {
   let lastResponseText = '';
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt += 1) {
@@ -103,7 +143,7 @@ async function fetchWithRetry(url: string, init: RequestInit): Promise<GeminiEmb
     }
 
     if (response.status === 429 && isQuotaExhausted(lastResponseText)) {
-      throw new GeminiEmbeddingQuotaError();
+      throw new GeminiEmbeddingQuotaError(model);
     }
 
     if (response.status !== 429 || attempt === MAX_RETRIES) {

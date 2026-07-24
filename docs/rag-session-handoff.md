@@ -14,7 +14,7 @@ Target architecture:
 
 ## Decisions Made
 
-- Use one embedding provider/model only to avoid mixed vector spaces.
+- Use Gemini Embedding 2 as the primary index and Gemini Embedding 1 as a separate fallback index. Never compare vectors across models.
 - Use Gemini embeddings and DeepSeek generation.
 - Use Supabase for database/vector search only.
 - Use Netlify Functions instead of Supabase Edge Functions for runtime API calls.
@@ -38,6 +38,8 @@ SUPABASE_SERVICE_ROLE_KEY=
 GEMINI_API_KEY=
 GEMINI_EMBEDDING_MODEL=gemini-embedding-2
 GEMINI_EMBEDDING_DIMENSIONS=768
+GEMINI_FALLBACK_EMBEDDING_MODEL=gemini-embedding-001
+GEMINI_FALLBACK_EMBEDDING_DIMENSIONS=768
 GEMINI_EMBEDDING_REQUEST_DELAY_MS=750
 
 DEEPSEEK_API_KEY=
@@ -714,6 +716,33 @@ npm run rag:ingest:local -- --file src/data/careersPage.json --refresh
 ```
 
 Refresh the DesignRush source only from the private saved profile. Do not bypass external access controls to fetch it live.
+
+### Dual Embeddings And Quota Fallback
+
+The `rag_chunks` table stores the original chunk text once and keeps one vector column per embedding model:
+
+- `embedding`: Gemini Embedding 2 primary vector.
+- `fallback_embedding`: Gemini Embedding 1 fallback vector.
+
+Migrations `20260724000000_add_rag_fallback_embeddings.sql` and
+`20260724000001_allow_fallback_only_rag_chunks.sql` add the fallback index and permit
+temporarily Model-1-only chunks. Normal ingestion writes both vectors. Runtime retrieval
+embeds and searches with Model 2 first; on `GeminiEmbeddingQuotaError`, it re-embeds the
+same query with Model 1 and calls `match_rag_chunks_fallback`.
+
+The Model 1 index was rebuilt from all 441 current `rag_chunks.content` rows with:
+
+```bash
+npm run rag:embeddings:rebuild:fallback
+```
+
+This command intentionally clears only `fallback_embedding`, then regenerates it from the
+stored chunk text. It does not alter source records, chunk text, metadata, or Model 2 vectors.
+Use it only when the Gemini Embedding 1 quota can cover the full corpus.
+
+If a source was added during a Model-1-only period, re-ingest it after the Model 2 quota resets
+to populate its primary vector as well. The normal local and external ingestion commands then
+continue to write both models.
 
 ### Required Tests For The Next Session
 
