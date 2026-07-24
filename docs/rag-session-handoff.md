@@ -678,6 +678,9 @@ M vite.config.js
 - `npm run rag:ask:test -- --retrieve-only --page-path=/projects/mojaloop/ --page-title=Mojaloop "Tell me more about this project."` prioritizes Mojaloop contexts.
 - `npm run rag:ask:test -- --page-path=/projects/mojaloop/ --page-title=Mojaloop "Tell me more about this project."` answers from Mojaloop context.
 - `npm run supabase:push` completes with the remote database up to date.
+- A forced dual-index refresh completed successfully: 75 local sources (424 chunks) and one approved external source (one chunk), with zero ingestion failures.
+- All 441 `rag_chunks` rows have both a Gemini Embedding 2 primary vector and a Gemini Embedding 1 fallback vector.
+- `npm run rag:ask:test -- --retrieve-only "What does ARG Software do?"` completed through the primary retrieval path and returned four chunks.
 
 ### Current Gaps
 
@@ -730,7 +733,12 @@ temporarily Model-1-only chunks. Normal ingestion writes both vectors. Runtime r
 embeds and searches with Model 2 first; on `GeminiEmbeddingQuotaError`, it re-embeds the
 same query with Model 1 and calls `match_rag_chunks_fallback`.
 
-The Model 1 index was rebuilt from all 441 current `rag_chunks.content` rows with:
+On July 24, 2026, normal forced ingestion refreshed both indexes for 75 local sources
+(424 chunks) and one approved external source (one chunk), with no failures. Database
+verification confirmed that all 441 `rag_chunks` rows have both `embedding` and
+`fallback_embedding` populated.
+
+The Model 1-only repair command is:
 
 ```bash
 npm run rag:embeddings:rebuild:fallback
@@ -738,11 +746,18 @@ npm run rag:embeddings:rebuild:fallback
 
 This command intentionally clears only `fallback_embedding`, then regenerates it from the
 stored chunk text. It does not alter source records, chunk text, metadata, or Model 2 vectors.
-Use it only when the Gemini Embedding 1 quota can cover the full corpus.
+Use it only to repair the Model 1 fallback index; use normal forced ingestion to refresh both
+indexes together.
 
-If a source was added during a Model-1-only period, re-ingest it after the Model 2 quota resets
-to populate its primary vector as well. The normal local and external ingestion commands then
-continue to write both models.
+If a source is missing either vector, force-refresh it with the normal local or external ingestion
+command. Normal ingestion writes both Model 2 primary vectors and Model 1 fallback vectors.
+
+To refresh every index without clearing source records or chunk data:
+
+```bash
+npm run rag:ingest:local -- --all --refresh
+npm run rag:ingest:external -- --all --refresh
+```
 
 ### Required Tests For The Next Session
 
@@ -765,3 +780,239 @@ Also test in the browser:
 - On any page: "Who is part of ARG?"
 - Project-cost questions with and without verified pricing context.
 - English and Portuguese browser locales for assistant errors.
+
+## Completed RAG Correction Plan
+
+This section recorded the correction plan for the assistant behaviour observed on July 24, 2026. The implementation and verification described below were completed on the same day. Preserve the existing source-authority and no-invention rules in future work.
+
+### Observed Failures
+
+- `Latest articles?` and `Do you have blog posts?` can return an insufficient-answer response even though blog posts are ingested.
+- The assistant can claim that it covers blog posts in one reply, then deny having enough blog information in the next reply.
+- A fintech question that also contains a technical term such as `AI` can retrieve AI/RAG blog material while excluding ARG's documented payment and financial-infrastructure projects.
+- A follow-up such as `does he know Python?`, after discussing Rui Rocha, is routed to technical blog retrieval because the raw question contains `Python`. This excludes Rui's public profile and can show an unrelated article recommendation.
+- The assistant's existing insufficient-answer copy is mechanical and exposes internal wording such as "available ARG Software context".
+- Commit `5240655 feat(rag): add embedding fallback` introduced a `--fallback-only` CLI flag and type, but `rag/ingestion/ingestPipeline.ts` does not currently use it. The advertised fallback-only ingestion workflow is therefore incomplete.
+
+### Core Retrieval Design
+
+Refactor `rag/runtime/ask.ts` so a single resolved retrieval route controls source selection and article recommendations. The route must be based on the rewritten English retrieval query, not only the raw user message. The rewrite query resolves follow-up references and translates non-English questions; the raw question remains appropriate for contact/action detection.
+
+Use route kinds equivalent to:
+
+- `latest_blog`
+- `person_profile`
+- `fintech`
+- `pricing`
+- `capability`
+- `technical_insight`
+- `general`
+
+The resolved route must be passed to article-recommendation logic. Do not classify the raw question a second time when deciding whether to show recommendations.
+
+### Latest Blog Posts
+
+For requests such as `Latest articles?`, `newest blog posts`, and `what are the most recent ones?`:
+
+1. Detect the request from the rewritten query so conversational follow-ups and translated questions work.
+2. Bypass vector similarity search entirely.
+3. Read public, first-party `blog_post` records directly from `rag_sources`.
+4. Parse and sort `metadata.date` with the same `Date.parse()` behaviour used by the frontend.
+5. Ignore sources with an invalid or missing publication date.
+6. Fetch the first chunk for the three newest sources and return them as contexts.
+7. Return the same three articles as UI recommendations so the assistant can show `Read more` links.
+
+This direct branch must still respect `is_public = true` and `origin = first_party`.
+
+Update `rag/ingestion/sources/local.ts` so every blog chunk begins with searchable, public metadata:
+
+```text
+Blog post
+Title: ...
+Subtitle: ...
+Published: ...
+Topic: ...
+```
+
+Use frontmatter `title`, `subtitle` with `intro` as fallback, `date`, and `tag`, followed by the stripped article body. Continue retaining the full frontmatter as source metadata. This lets ordinary questions such as `Do you have blog posts?` retrieve actual blog records rather than depending on a match against arbitrary article prose.
+
+Update `rag/prompts/answering.ts` to expose only the publication date for `blog_post` contexts. Do not expose source paths or unrelated metadata. Instruct the answer prompt to list recent-post titles and dates only when they are present in the retrieved data.
+
+### Fintech Retrieval
+
+Add a finance-domain pattern in `rag/runtime/ask.ts` covering terms such as:
+
+- `fintech`
+- `financial`
+- `payments`
+- `banking`
+- `clearing`
+- `settlement`
+- `trading`
+- `financial inclusion`
+
+Give finance questions priority access to authoritative ARG sources: `project`, `about`, `homepage`, and `working_with_us`. This route must win over generic technical-blog routing, so questions such as `Can you build AI for fintech?` retrieve official financial-infrastructure evidence rather than only AI/RAG articles.
+
+The documented evidence is already in `src/data/projects.json`, notably Mojaloop and People's Clearinghouse. The answer must distinguish documented project experience from a promise that every fintech capability is an in-house service.
+
+### Person Profiles And Pronoun Follow-Ups
+
+Keep a small public-profile mapping in `rag/runtime/ask.ts`:
+
+- `José Antunes` -> `about/jose-antunes`
+- `Rui Rocha` -> `about/rui-rocha`
+
+When the rewritten query names a mapped person:
+
+1. Retrieve that exact public source before technical, capability, or blog routes.
+2. Bypass semantic similarity thresholds so a profile remains available even when the asked skill is not in the profile.
+3. If no person can be resolved from history, ask whom the visitor means instead of returning technical articles.
+
+Expand `buildQuestionRewritePrompt()` to explicitly resolve `he`, `she`, `they`, `him`, `her`, and possessives from conversation history.
+
+Add an answer rule that a company-level technology must never be attributed to an individual without individual-specific public evidence. For example, ARG's use of Python cannot establish that Rui Rocha personally uses Python.
+
+### Article Recommendations
+
+Only return article recommendations for `technical_insight` and `latest_blog` routes. Do not return recommendations for `person_profile`, `fintech`, `pricing`, `capability`, or `general` routes.
+
+This prevents a technical word in a profile question from producing unrelated article cards. A nonempty but irrelevant retrieval must not be treated as an article recommendation opportunity.
+
+### Natural Unknown Answers
+
+Replace the mechanical insufficient-context instructions in `rag/prompts/answering.ts`.
+
+Never use these phrases:
+
+- `I do not have enough information.`
+- `I do not have enough context.`
+- `Based on the provided context.`
+- `available ARG Software context`
+
+When the assistant cannot verify an exact answer, it must say so naturally and invite the visitor to message ARG so someone closer to the subject can answer properly. Keep the reply specific to the question and do not invent facts.
+
+Expected style:
+
+```text
+I don't know that exactly. Please send us a message, and someone closer to this can give you a better answer.
+```
+
+For partial evidence, acknowledge the boundary first:
+
+```text
+I can't confirm whether Rui uses Python personally. Please send us a message, and someone who works more closely with him can answer properly.
+```
+
+Apply this rule both when retrieval returns no contexts and when retrieved material does not establish the requested fact. The no-context response should return the existing `email_hello` action so the widget gives the visitor a direct contact option.
+
+For generic assistant-scope questions, do not enumerate categories that have not been retrieved. Use a modest invitation to ask about information published on the ARG website instead.
+
+### Embedding Fallback Repair
+
+Complete the `fallbackOnly` implementation in `rag/ingestion/ingestPipeline.ts`:
+
+1. Destructure and honor `fallbackOnly`.
+2. In fallback-only mode, generate only Gemini Embedding 1 vectors.
+3. Call `updateFallbackEmbeddings()` rather than primary-vector upsert logic.
+4. Do not skip unchanged content when fallback embeddings need backfilling.
+5. Do not call the primary embedding provider in fallback-only mode.
+
+Normal ingestion should also handle `GeminiEmbeddingQuotaError` by persisting fallback-only vectors. If a primary vector is missing after an exceptional Model 2 failure, re-run normal ingestion with `--refresh` to restore both vectors.
+
+Before relying on runtime fallback, validate the connected Supabase project:
+
+- Both fallback migrations are applied.
+- Every expected public blog source exists and has a valid date.
+- `about/rui-rocha` exists.
+- Fallback-vector coverage matches the total number of chunks.
+- Primary-vector coverage is known, including any Model-1-only chunks.
+
+Do not clear the RAG tables. Use the existing content-hash/upsert workflow and a normal forced refresh to rebuild both indexes. Reserve the fallback rebuild command for a Model-1-only repair.
+
+### Blog Synchronization Workflow
+
+The existing Medium importer only writes Markdown files under `src/blog/`. Gaspar reads blog data from Supabase, so imported or manually added posts must be indexed afterward.
+
+Add an admin-only package command named:
+
+```bash
+npm run sync:blog
+```
+
+It must:
+
+1. Run the existing Medium import.
+2. Run `npm run rag:ingest:local -- --all`.
+3. Require local/server credentials and remain outside public Netlify functions.
+
+Content hashing means unchanged sources are skipped. This workflow prevents newly published articles from appearing on the website while remaining unavailable to Gaspar.
+
+### Required Verification
+
+Add focused automated coverage for route selection, direct source retrieval, and fallback-only ingestion. At minimum cover:
+
+- `Latest articles?` returns the newest three dated posts without an embedding call.
+- `what are the most recent ones?` resolves a prior article/blog reference.
+- `Do you have blog posts?` retrieves searchable blog metadata.
+- `What experience do you have in fintech?` retrieves official project evidence.
+- `Can you build AI for fintech?` is not routed to blogs alone.
+- A Rui Rocha follow-up asking about Python retrieves `about/rui-rocha`.
+- The Rui/Python question does not show article recommendations.
+- An unresolved pronoun asks for clarification.
+- `--fallback-only` never calls the primary embedding provider.
+- Primary quota failure uses the fallback index.
+
+The following checks were run after implementation:
+
+```bash
+npm run typecheck:rag
+npm run lint
+npm run build
+npm run rag:ask:test -- "Latest articles?"
+npm run rag:ask:test -- "Do you have blog posts?"
+npm run rag:ask:test -- "What experience do you have in fintech?"
+npm run rag:ask:test -- "Can you build AI for fintech?"
+npm run rag:ask:test -- --history-json '[{"role":"user","content":"Tell me about Rui Rocha."},{"role":"assistant","content":"Rui is an ARG co-founder."}]' "Does he know Python?"
+```
+
+### Completion Record
+
+Implemented changes:
+
+- `rag/runtime/ask.ts` now resolves one retrieval route from the rewritten English question. The route controls source selection, direct retrieval, and article recommendations.
+- `latest_blog` reads public first-party blog sources directly, ignores invalid dates, returns the newest three posts, and does not generate an embedding.
+- General blog questions search only `blog_post` sources, whose chunks now start with a public title, subtitle, publication date, and topic header.
+- The `fintech` route takes precedence over technical-blog retrieval and searches `project`, `about`, `homepage`, and `working_with_us` evidence.
+- Named José Antunes and Rui Rocha questions retrieve their exact public profile. Unresolved personal pronouns ask for a name. Person/technology questions include matching company technology evidence without attributing it to the individual.
+- Article recommendations are limited to `latest_blog` and `technical_insight` routes.
+- Natural insufficient-information and scope prompts no longer promise unverified coverage or expose internal context wording. Empty retrieval returns `email_hello`.
+- `--fallback-only` now bypasses unchanged-content skipping, uses Gemini Embedding 1 only, and persists through `updateFallbackEmbeddings()`. Normal ingestion catches Model 2 quota failures and persists fallback vectors.
+- `sync:blog` imports Medium posts and runs local RAG ingestion. `rag/README.md` documents the same ingestion requirement for manual Markdown changes.
+- `rag:test` runs focused Node tests for routing, direct retrieval, primary quota fallback, and fallback-only ingestion.
+
+Supabase verification after the source refresh:
+
+- `supabase db push` reported the remote schema is up to date.
+- 37 public first-party blog sources exist; 35 have valid publication dates. Two undated posts are intentionally excluded from recent-post retrieval.
+- The newest stored source is `the-stack-nobody-hypes-but-serious-ctos-keep-choosing` dated July 15, 2026, and its first chunk has the searchable blog header.
+- `about/rui-rocha` is present as `source_type = about`, `source_key = rui-rocha`.
+- All 449 chunks have both primary `embedding` and `fallback_embedding` vectors.
+
+Validation completed:
+
+```bash
+npm run typecheck:rag
+npm run lint
+npm run rag:test
+npm run build
+```
+
+Live checks confirmed latest-article retrieval and recommendations, blog metadata retrieval, fintech and AI-for-fintech routing, Rui/Python evidence boundaries, and a deliberately primary-quota-failing query using the live fallback index.
+
+When a future ingestion leaves Model-1-only chunks after a Model 2 quota event, wait for quota recovery and run:
+
+```bash
+npm run rag:ingest:local -- --all --refresh
+```
+
+Also verify the same questions in the browser, including the latest-article quick prompt, article cards, the contact action on unknown answers, and English and Portuguese responses.

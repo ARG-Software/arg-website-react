@@ -1,6 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../clients/gemini.js';
+import {
+  GeminiEmbeddingQuotaError,
+  geminiEmbeddingClient,
+  geminiFallbackEmbeddingClient,
+} from '../clients/gemini.js';
 import { SupabaseRagSourceRepository } from '../repositories/SupabaseRagSourceRepository.js';
 import type { IngestSourceInput, IngestSourceResult } from '../types/ingestion.js';
 import { chunkText } from './processing/chunking.js';
@@ -11,6 +15,7 @@ export async function ingestSource({
   source,
   dryRun = false,
   force = false,
+  fallbackOnly = false,
   embeddingProvider = geminiEmbeddingClient,
   fallbackEmbeddingProvider = geminiFallbackEmbeddingClient,
   repository,
@@ -35,19 +40,21 @@ export async function ingestSource({
 
   const sourceRepository = repository ?? new SupabaseRagSourceRepository(supabase as SupabaseClient);
 
-  const contentHash = createContentHash(content);
-  const existingContentHash = await sourceRepository.getSourceContentHash(source);
+  if (!fallbackOnly) {
+    const contentHash = createContentHash(content);
+    const existingContentHash = await sourceRepository.getSourceContentHash(source);
 
-  if (!force && existingContentHash === contentHash) {
-    return {
-      skipped: true,
-      dryRun,
-      sourceType: source.sourceType,
-      sourceKey: source.sourceKey,
-      title: source.title,
-      chunkCount: chunks.length,
-      reason: 'unchanged_content',
-    };
+    if (!force && existingContentHash === contentHash) {
+      return {
+        skipped: true,
+        dryRun,
+        sourceType: source.sourceType,
+        sourceKey: source.sourceKey,
+        title: source.title,
+        chunkCount: chunks.length,
+        reason: 'unchanged_content',
+      };
+    }
   }
 
   if (dryRun) {
@@ -62,7 +69,40 @@ export async function ingestSource({
   }
 
   const sourceWithChunks = { ...source, chunks };
-  const primaryEmbeddings = await embeddingProvider.embedTexts(chunks);
+
+  if (fallbackOnly) {
+    const fallbackEmbeddings = await fallbackEmbeddingProvider.embedTexts(chunks);
+    const result = await sourceRepository.updateFallbackEmbeddings(sourceWithChunks, fallbackEmbeddings);
+
+    return {
+      skipped: false,
+      sourceType: source.sourceType,
+      sourceKey: source.sourceKey,
+      title: source.title,
+      chunkCount: result.chunkCount,
+    };
+  }
+
+  let primaryEmbeddings: number[][];
+  try {
+    primaryEmbeddings = await embeddingProvider.embedTexts(chunks);
+  } catch (error) {
+    if (!(error instanceof GeminiEmbeddingQuotaError)) {
+      throw error;
+    }
+
+    const fallbackEmbeddings = await fallbackEmbeddingProvider.embedTexts(chunks);
+    const result = await sourceRepository.updateFallbackEmbeddings(sourceWithChunks, fallbackEmbeddings);
+
+    return {
+      skipped: false,
+      sourceType: source.sourceType,
+      sourceKey: source.sourceKey,
+      title: source.title,
+      chunkCount: result.chunkCount,
+    };
+  }
+
   const fallbackEmbeddings = await fallbackEmbeddingProvider.embedTexts(chunks);
   const result = await sourceRepository.upsertSource(sourceWithChunks, {
     primary: primaryEmbeddings,

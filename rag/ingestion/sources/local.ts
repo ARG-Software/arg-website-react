@@ -230,15 +230,27 @@ async function loadMarkdownSource(filePath: string): Promise<RagSource> {
   const { frontmatter, body } = parseFrontmatter(await readFile(filePath, 'utf8'));
   const slug = getFrontmatterString(frontmatter, 'slug');
   const fallbackName = path.basename(filePath, path.extname(filePath));
+  const title = getFrontmatterString(frontmatter, 'title') ?? fallbackName;
+  const subtitle = getFrontmatterString(frontmatter, 'subtitle') ?? getFrontmatterString(frontmatter, 'intro') ?? '';
+  const published = getFrontmatterString(frontmatter, 'date') ?? '';
+  const topic = getFrontmatterString(frontmatter, 'tag') ?? '';
 
   return createSource({
     sourceType: 'blog_post',
     sourceKey: slug ?? fallbackName,
-    title: getFrontmatterString(frontmatter, 'title') ?? fallbackName,
+    title,
     url: slug ? `/blog/${slug}/` : undefined,
     path: filePath,
     metadata: frontmatter,
-    content: stripMarkdown(body),
+    content: [
+      'Blog post',
+      `Title: ${title}`,
+      `Subtitle: ${subtitle}`,
+      `Published: ${published}`,
+      `Topic: ${topic}`,
+      '',
+      stripMarkdown(body),
+    ].join('\n'),
   });
 }
 

@@ -163,7 +163,7 @@ function getRetryDelayMs(responseText: string, attempt: number): number {
 }
 
 function isQuotaExhausted(responseText: string): boolean {
-  return /quota exceeded|quotaValue|daily limit/i.test(responseText);
+  return /quota|resource exhausted|rate limit|too many requests/i.test(responseText);
 }
 
 async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {

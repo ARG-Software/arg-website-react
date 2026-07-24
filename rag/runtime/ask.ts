@@ -47,6 +47,30 @@ const CURRENT_PROJECT_REFERENCE_PATTERN = /\b(?:this|that|the)\s+(?:project|case
 const CAPABILITY_SOURCE_TYPES: RagSourceType[] = ['homepage', 'about', 'faq', 'working_with_us'];
 const PRICING_SOURCE_TYPES: RagSourceType[] = ['project', 'faq', 'working_with_us'];
 const BLOG_SOURCE_TYPES: RagSourceType[] = ['blog_post'];
+const FINTECH_SOURCE_TYPES: RagSourceType[] = ['project', 'about', 'homepage', 'working_with_us'];
+const PERSON_COMPANION_SOURCE_TYPES: RagSourceType[] = ['working_with_us'];
+const LATEST_BLOG_PATTERN =
+  /\b(?:latest|newest|most recent|recent)\b.{0,50}\b(?:articles?|blog posts?|posts?)\b|\b(?:articles?|blog posts?|posts?)\b.{0,50}\b(?:latest|newest|most recent|recent)\b/i;
+const BLOG_REFERENCE_PATTERN = /\b(?:articles?|blog posts?|posts?)\b/i;
+const FINANCE_DOMAIN_PATTERN =
+  /\b(?:fintech|financial|payments?|banking|clearing|settlement|trading|financial inclusion)\b/i;
+const PERSONAL_PRONOUN_PATTERN = /\b(?:he|she|they|him|her|his|hers|them|their|theirs)\b/i;
+const PERSON_PROFILE_SOURCE_KEYS: Record<string, string> = {
+  'josé antunes': 'jose-antunes',
+  'jose antunes': 'jose-antunes',
+  'rui rocha': 'rui-rocha',
+};
+const COMPANY_TECHNOLOGY_TERMS = [
+  'typescript',
+  'javascript',
+  'c#',
+  'python',
+  'react',
+  'angular',
+  'node.js',
+  'docker',
+  'kubernetes',
+];
 
 export interface AskQuestionInput {
   question?: unknown;
@@ -73,6 +97,26 @@ interface MatchRagChunkRow {
   similarity: number;
   source_metadata: RagSourceMetadata | null;
   chunk_metadata: RagSourceMetadata | null;
+}
+
+interface DirectSourceRow {
+  id: string;
+  source_type: RagSourceType;
+  source_key: string;
+  title: string;
+  url: string | null;
+  path: string | null;
+  origin: RagSourceOrigin;
+  is_public: boolean;
+  metadata: RagSourceMetadata | null;
+}
+
+interface DirectChunkRow {
+  id: string;
+  source_id: string;
+  chunk_index: number;
+  content: string;
+  metadata: RagSourceMetadata | null;
 }
 
 interface RetrievalQuestionInput {
@@ -106,6 +150,28 @@ interface MatchChunksInput {
 
 type MatchFunction = 'match_rag_chunks' | 'match_rag_chunks_fallback';
 
+export type RetrievalRouteKind =
+  | 'latest_blog'
+  | 'person_profile'
+  | 'fintech'
+  | 'pricing'
+  | 'capability'
+  | 'technical_insight'
+  | 'general';
+
+export interface RetrievalRoute {
+  kind: RetrievalRouteKind;
+  firstPartySourceTypes: RagSourceType[] | null;
+  includeCommercialData: boolean;
+  personSourceKey?: string;
+  requiresPersonClarification?: boolean;
+}
+
+interface RetrievalResult {
+  contexts: RetrievedContext[];
+  route: RetrievalRoute;
+}
+
 export class RagValidationError extends Error {
   code: string;
 
@@ -131,6 +197,7 @@ export async function askQuestion({
   const normalizedPageContext = normalizePageContext(pageContext);
   const intent = await answerProvider.classifyQuestionIntent(normalizedQuestion, normalizedMessages);
   const requiresRag =
+    isLikelyBlogRequest(normalizedQuestion) ||
     isTechnicalInsightQuestion(normalizedQuestion, normalizedPageContext) ||
     isTechnicalServiceInquiry(normalizedQuestion) ||
     isProjectCited(normalizedQuestion, normalizedPageContext);
@@ -159,10 +226,24 @@ export async function askQuestion({
     pageContext: normalizedPageContext,
     answerProvider,
   });
-  const contexts = await retrieveRelevantChunks({
+  const route = resolveRetrievalRoute(retrievalQuestion, normalizedPageContext);
+
+  if (route.requiresPersonClarification) {
+    return {
+      answer: createPersonClarification(intent.language),
+      citations: [],
+      articleRecommendations: [],
+      actions: [{ type: 'email_hello' }],
+      contexts: [],
+    };
+  }
+
+  const { contexts } = await retrieveRoutedContexts({
     question: normalizedQuestion,
+    messages: normalizedMessages,
     retrievalQuestion,
     pageContext: normalizedPageContext,
+    route,
     config,
     supabase,
     answerProvider,
@@ -181,7 +262,7 @@ export async function askQuestion({
       answer: normalizeAssistantAnswer(answer),
       citations: [],
       articleRecommendations: [],
-      actions: createAssistantActions(normalizedQuestion),
+      actions: createInsufficientContextActions(normalizedQuestion),
       contexts: [],
     };
   }
@@ -198,8 +279,7 @@ export async function askQuestion({
     citations: createCitations(contexts, config.siteUrl),
     articleRecommendations: createArticleRecommendations(
       contexts,
-      normalizedQuestion,
-      normalizedPageContext,
+      route,
       config.siteUrl
     ),
     actions: createAssistantActions(normalizedQuestion),
@@ -229,12 +309,65 @@ export async function retrieveRelevantChunks({
       pageContext: normalizedPageContext,
       answerProvider,
     }));
+  const route = resolveRetrievalRoute(query, normalizedPageContext);
+
+  if (route.requiresPersonClarification) {
+    return [];
+  }
+
+  const result = await retrieveRoutedContexts({
+    question: normalizedQuestion,
+    messages: normalizedMessages,
+    retrievalQuestion: query,
+    pageContext: normalizedPageContext,
+    route,
+    config,
+    supabase,
+    answerProvider,
+    embeddingProvider,
+    fallbackEmbeddingProvider,
+  });
+
+  return result.contexts;
+}
+
+async function retrieveRoutedContexts({
+  retrievalQuestion,
+  route,
+  config,
+  supabase,
+  embeddingProvider,
+  fallbackEmbeddingProvider,
+}: {
+  question: string;
+  messages: ChatMessage[];
+  retrievalQuestion: string;
+  pageContext: PageContext | null;
+  route: RetrievalRoute;
+  config: RagConfig;
+  supabase: SupabaseClient;
+  answerProvider: AnswerProvider;
+  embeddingProvider: EmbeddingProvider;
+  fallbackEmbeddingProvider: EmbeddingProvider;
+}): Promise<RetrievalResult> {
+  if (route.kind === 'latest_blog') {
+    return {
+      contexts: await retrieveLatestBlogContexts(supabase, config),
+      route,
+    };
+  }
+
+  const directProfileContexts = route.personSourceKey
+    ? await retrieveDirectSourceContexts(supabase, config, 'about', route.personSourceKey)
+    : [];
+  const companyTechnologyContexts = route.personSourceKey
+    ? await retrieveCompanyTechnologyContexts(supabase, config, retrievalQuestion)
+    : [];
   const { embedding, matchFunction } = await createQueryEmbedding(
-    query,
+    retrievalQuestion,
     embeddingProvider,
     fallbackEmbeddingProvider
   );
-  const retrievalPolicy = getRetrievalPolicy(normalizedQuestion, normalizedPageContext);
   const [firstPartyContexts, trustedExternalContexts] = await Promise.all([
     retrieveContextsForOrigin({
       supabase,
@@ -242,9 +375,9 @@ export async function retrieveRelevantChunks({
       config,
       matchFunction,
       sourceOrigin: FIRST_PARTY_ORIGINS[0],
-      sourceTypes: retrievalPolicy.firstPartySourceTypes,
+      sourceTypes: route.firstPartySourceTypes,
     }),
-    retrievalPolicy.includeCommercialData
+    route.includeCommercialData
       ? retrieveContextsForOrigin({
           supabase,
           embedding,
@@ -257,10 +390,13 @@ export async function retrieveRelevantChunks({
       : Promise.resolve([]),
   ]);
 
-  return mergeComplementaryContexts(
-    [firstPartyContexts, trustedExternalContexts],
-    config.matchCount
-  );
+  return {
+    contexts: mergeComplementaryContexts(
+      [directProfileContexts, companyTechnologyContexts, firstPartyContexts, trustedExternalContexts],
+      config.matchCount
+    ),
+    route,
+  };
 }
 
 async function createQueryEmbedding(
@@ -429,6 +565,170 @@ function mergeComplementaryContexts(
   return mergeContexts([leadingContexts, ...remainingContexts], matchCount);
 }
 
+async function retrieveLatestBlogContexts(
+  supabase: SupabaseClient,
+  config: RagConfig
+): Promise<RetrievedContext[]> {
+  const { data, error } = await supabase
+    .from('rag_sources')
+    .select('id, source_type, source_key, title, url, path, origin, is_public, metadata')
+    .eq('source_type', 'blog_post')
+    .eq('origin', FIRST_PARTY_ORIGINS[0])
+    .eq('is_public', true);
+
+  if (error) {
+    throw error;
+  }
+
+  const newestSources = ((data ?? []) as DirectSourceRow[])
+    .map(source => ({ source, timestamp: getPublicationTimestamp(source.metadata) }))
+    .filter((item): item is { source: DirectSourceRow; timestamp: number } => item.timestamp !== null)
+    .sort((left, right) => right.timestamp - left.timestamp)
+    .slice(0, 3)
+    .map(item => item.source);
+
+  return retrieveFirstChunksForSources(supabase, config, newestSources);
+}
+
+async function retrieveDirectSourceContexts(
+  supabase: SupabaseClient,
+  config: RagConfig,
+  sourceType: RagSourceType,
+  sourceKey: string
+): Promise<RetrievedContext[]> {
+  const { data, error } = await supabase
+    .from('rag_sources')
+    .select('id, source_type, source_key, title, url, path, origin, is_public, metadata')
+    .eq('source_type', sourceType)
+    .eq('source_key', sourceKey)
+    .eq('origin', FIRST_PARTY_ORIGINS[0])
+    .eq('is_public', true)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data
+    ? retrieveFirstChunksForSources(supabase, config, [data as DirectSourceRow])
+    : [];
+}
+
+async function retrieveCompanyTechnologyContexts(
+  supabase: SupabaseClient,
+  config: RagConfig,
+  retrievalQuestion: string
+): Promise<RetrievedContext[]> {
+  const technology = getCompanyTechnologyTerm(retrievalQuestion);
+
+  if (!technology) {
+    return [];
+  }
+
+  const { data: source, error: sourceError } = await supabase
+    .from('rag_sources')
+    .select('id, source_type, source_key, title, url, path, origin, is_public, metadata')
+    .eq('source_type', 'working_with_us')
+    .eq('source_key', 'working-with-us')
+    .eq('origin', FIRST_PARTY_ORIGINS[0])
+    .eq('is_public', true)
+    .maybeSingle();
+
+  if (sourceError) {
+    throw sourceError;
+  }
+
+  if (!source) {
+    return [];
+  }
+
+  const { data: chunks, error: chunkError } = await supabase
+    .from('rag_chunks')
+    .select('id, source_id, chunk_index, content, metadata')
+    .eq('source_id', source.id)
+    .ilike('content', `%${technology}%`)
+    .order('chunk_index')
+    .limit(1);
+
+  if (chunkError) {
+    throw chunkError;
+  }
+
+  return ((chunks ?? []) as DirectChunkRow[]).map(chunk =>
+    createDirectContext(source as DirectSourceRow, chunk, config)
+  );
+}
+
+async function retrieveFirstChunksForSources(
+  supabase: SupabaseClient,
+  config: RagConfig,
+  sources: DirectSourceRow[]
+): Promise<RetrievedContext[]> {
+  if (sources.length === 0) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from('rag_chunks')
+    .select('id, source_id, chunk_index, content, metadata')
+    .in(
+      'source_id',
+      sources.map(source => source.id)
+    )
+    .eq('chunk_index', 0);
+
+  if (error) {
+    throw error;
+  }
+
+  const chunksBySourceId = new Map(
+    ((data ?? []) as DirectChunkRow[]).map(chunk => [chunk.source_id, chunk])
+  );
+
+  return sources.flatMap(source => {
+    const chunk = chunksBySourceId.get(source.id);
+
+    if (!chunk) {
+      return [];
+    }
+
+    return [createDirectContext(source, chunk, config)];
+  });
+}
+
+function createDirectContext(
+  source: DirectSourceRow,
+  chunk: DirectChunkRow,
+  config: RagConfig
+): RetrievedContext {
+  return {
+    chunkId: chunk.id,
+    sourceId: source.id,
+    sourceType: source.source_type,
+    sourceKey: source.source_key,
+    title: source.title,
+    url: resolveUrl(source.url, config.siteUrl),
+    path: source.path,
+    chunkIndex: chunk.chunk_index,
+    content: chunk.content,
+    similarity: 1,
+    sourceMetadata: source.metadata ?? {},
+    chunkMetadata: chunk.metadata ?? {},
+    origin: source.origin,
+  };
+}
+
+function getPublicationTimestamp(metadata: RagSourceMetadata | null): number | null {
+  const date = metadata?.date;
+  const timestamp = typeof date === 'string' ? Date.parse(date) : Number.NaN;
+  return Number.isNaN(timestamp) ? null : timestamp;
+}
+
+function getCompanyTechnologyTerm(question: string): string | undefined {
+  const lowerCaseQuestion = question.toLowerCase();
+  return COMPANY_TECHNOLOGY_TERMS.find(technology => lowerCaseQuestion.includes(technology));
+}
+
 function createCitations(contexts: RetrievedContext[], siteUrl: string): Citation[] {
   if (
     contexts.some(
@@ -468,11 +768,10 @@ function createCitations(contexts: RetrievedContext[], siteUrl: string): Citatio
 
 function createArticleRecommendations(
   contexts: RetrievedContext[],
-  question: string,
-  pageContext: PageContext | null,
+  route: RetrievalRoute,
   siteUrl: string
 ): ArticleRecommendation[] {
-  if (!isTechnicalInsightQuestion(question, pageContext)) {
+  if (route.kind !== 'technical_insight' && route.kind !== 'latest_blog') {
     return [];
   }
 
@@ -493,7 +792,7 @@ function createArticleRecommendations(
     seenUrls.add(url);
     recommendations.push({ title: context.title, url });
 
-    if (recommendations.length === 2) {
+    if (recommendations.length === (route.kind === 'latest_blog' ? 3 : 2)) {
       break;
     }
   }
@@ -501,32 +800,80 @@ function createArticleRecommendations(
   return recommendations;
 }
 
-function getRetrievalPolicy(question: string, pageContext: PageContext | null): {
-  firstPartySourceTypes: RagSourceType[] | null;
-  includeCommercialData: boolean;
-} {
-  if (PRICING_QUESTION_PATTERN.test(question)) {
+export function resolveRetrievalRoute(
+  retrievalQuestion: string,
+  pageContext: PageContext | null = null
+): RetrievalRoute {
+  if (LATEST_BLOG_PATTERN.test(retrievalQuestion)) {
     return {
+      kind: 'latest_blog',
+      firstPartySourceTypes: BLOG_SOURCE_TYPES,
+      includeCommercialData: false,
+    };
+  }
+
+  const personSourceKey = getPersonSourceKey(retrievalQuestion);
+
+  if (personSourceKey) {
+    return {
+      kind: 'person_profile',
+      firstPartySourceTypes: PERSON_COMPANION_SOURCE_TYPES,
+      includeCommercialData: false,
+      personSourceKey,
+    };
+  }
+
+  if (PERSONAL_PRONOUN_PATTERN.test(retrievalQuestion)) {
+    return {
+      kind: 'general',
+      firstPartySourceTypes: null,
+      includeCommercialData: false,
+      requiresPersonClarification: true,
+    };
+  }
+
+  if (BLOG_REFERENCE_PATTERN.test(retrievalQuestion)) {
+    return {
+      kind: 'general',
+      firstPartySourceTypes: BLOG_SOURCE_TYPES,
+      includeCommercialData: false,
+    };
+  }
+
+  if (FINANCE_DOMAIN_PATTERN.test(retrievalQuestion)) {
+    return {
+      kind: 'fintech',
+      firstPartySourceTypes: FINTECH_SOURCE_TYPES,
+      includeCommercialData: false,
+    };
+  }
+
+  if (PRICING_QUESTION_PATTERN.test(retrievalQuestion)) {
+    return {
+      kind: 'pricing',
       firstPartySourceTypes: PRICING_SOURCE_TYPES,
       includeCommercialData: true,
     };
   }
 
-  if (CAPABILITY_QUESTION_PATTERN.test(question)) {
+  if (CAPABILITY_QUESTION_PATTERN.test(retrievalQuestion)) {
     return {
+      kind: 'capability',
       firstPartySourceTypes: CAPABILITY_SOURCE_TYPES,
       includeCommercialData: false,
     };
   }
 
-  if (isTechnicalInsightQuestion(question, pageContext)) {
+  if (isTechnicalInsightQuestion(retrievalQuestion, pageContext)) {
     return {
+      kind: 'technical_insight',
       firstPartySourceTypes: BLOG_SOURCE_TYPES,
       includeCommercialData: false,
     };
   }
 
   return {
+    kind: 'general',
     firstPartySourceTypes: null,
     includeCommercialData: false,
   };
@@ -554,6 +901,38 @@ function createAssistantActions(question: string): AssistantAction[] {
   }
 
   return [];
+}
+
+function createInsufficientContextActions(question: string): AssistantAction[] {
+  const actions = createAssistantActions(question);
+
+  return actions.some(action => action.type === 'email_hello')
+    ? actions
+    : [...actions, { type: 'email_hello' }];
+}
+
+function isLikelyBlogRequest(question: string): boolean {
+  return BLOG_REFERENCE_PATTERN.test(question) || LATEST_BLOG_PATTERN.test(question);
+}
+
+function getPersonSourceKey(question: string): string | undefined {
+  const normalizedQuestion = question.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+
+  return Object.entries(PERSON_PROFILE_SOURCE_KEYS).find(([name]) =>
+    normalizedQuestion.includes(name.normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+  )?.[1];
+}
+
+function createPersonClarification(responseLanguage: string): string {
+  if (responseLanguage.toLowerCase().startsWith('pt')) {
+    return 'De quem está a falar? Diga-me o nome da pessoa para eu poder verificar a nossa informação pública.';
+  }
+
+  if (responseLanguage.toLowerCase().startsWith('es')) {
+    return '¿De quién hablas? Dime el nombre de la persona para que pueda comprobar nuestra información pública.';
+  }
+
+  return 'Who do you mean? Please tell me the person’s name so I can check our public information.';
 }
 
 function isTechnicalInsightQuestion(question: string, pageContext: PageContext | null): boolean {
