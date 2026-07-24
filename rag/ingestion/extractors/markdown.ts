@@ -6,10 +6,11 @@ interface ParsedMarkdown {
 }
 
 export function parseFrontmatter(markdown: string): ParsedMarkdown {
-  const match = markdown.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  const normalizedMarkdown = markdown.replace(/\r\n?/g, '\n');
+  const match = normalizedMarkdown.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
 
   if (!match) {
-    return { frontmatter: {}, body: markdown };
+    return { frontmatter: {}, body: normalizedMarkdown };
   }
 
   return {

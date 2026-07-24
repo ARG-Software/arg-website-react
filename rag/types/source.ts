@@ -1,5 +1,7 @@
 export type RagSourceMetadata = Record<string, unknown>;
 
+export type RagSourceOrigin = 'first_party' | 'trusted_external';
+
 export type RagSourceType =
   | 'homepage'
   | 'about'
@@ -9,7 +11,7 @@ export type RagSourceType =
   | 'working_with_us'
   | 'faq'
   | 'blog_post'
-  | 'portfolio_pdf'
+  | 'local_document'
   | 'external_page';
 
 export interface RagSource {
@@ -18,6 +20,8 @@ export interface RagSource {
   title: string;
   url?: string;
   path?: string;
+  origin: RagSourceOrigin;
+  isPublic: boolean;
   metadata?: RagSourceMetadata;
   content: string;
   chunks?: string[];

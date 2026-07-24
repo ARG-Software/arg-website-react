@@ -28,6 +28,7 @@ export function HeroSection({ content }) {
 
   return (
     <header
+      id="hero"
       className="hero_wrap"
       data-animate-scope
       data-animate-trigger="load"

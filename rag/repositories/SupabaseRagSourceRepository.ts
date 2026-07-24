@@ -33,6 +33,8 @@ export class SupabaseRagSourceRepository implements RagSourceRepository {
           title: source.title,
           url: source.url ?? null,
           path: source.path ?? null,
+          origin: source.origin,
+          is_public: source.isPublic,
           metadata: source.metadata ?? {},
           content_hash: createContentHash(content),
         },

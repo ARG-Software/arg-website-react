@@ -1,6 +1,11 @@
 import { normalizeText } from '../processing/text.js';
 
-export async function fetchExternalHtml(url: string): Promise<string> {
+const MAX_EXTERNAL_HTML_BYTES = 2 * 1024 * 1024;
+
+export async function fetchExternalHtml(
+  url: string,
+  allowedHostname: string
+): Promise<{ html: string; finalUrl: string }> {
   const response = await fetch(url, {
     headers: {
       Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -12,7 +17,25 @@ export async function fetchExternalHtml(url: string): Promise<string> {
     throw new Error(`Failed to fetch external source ${url}: ${response.status}`);
   }
 
-  return response.text();
+  const finalUrl = new URL(response.url);
+
+  if (finalUrl.hostname !== allowedHostname) {
+    throw new Error(`External source redirected to an unapproved host: ${finalUrl.hostname}`);
+  }
+
+  const contentLength = Number(response.headers.get('content-length') ?? 0);
+
+  if (contentLength > MAX_EXTERNAL_HTML_BYTES) {
+    throw new Error(`External source exceeds the ${MAX_EXTERNAL_HTML_BYTES} byte limit`);
+  }
+
+  const html = await response.text();
+
+  if (Buffer.byteLength(html, 'utf8') > MAX_EXTERNAL_HTML_BYTES) {
+    throw new Error(`External source exceeds the ${MAX_EXTERNAL_HTML_BYTES} byte limit`);
+  }
+
+  return { html, finalUrl: finalUrl.toString() };
 }
 
 export async function extractHtmlText(html: string): Promise<string> {

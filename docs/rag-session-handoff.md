@@ -10,7 +10,7 @@ Target architecture:
 - Supabase + pgvector for storage/retrieval.
 - DeepSeek for final answer generation.
 - Netlify Functions for the public `ask` API endpoint only.
-- Local/admin ingestion scripts for internal and external sources.
+- Local/admin ingestion scripts for local and external sources.
 
 ## Decisions Made
 
@@ -20,7 +20,7 @@ Target architecture:
 - Use Netlify Functions instead of Supabase Edge Functions for runtime API calls.
 - Manage Supabase schema through repo migrations.
 - Do not expose API keys in frontend code.
-- Ingest internal and external sources separately.
+- Ingest local first-party and trusted external sources separately.
 - Prefer canonical JSON/Markdown/PDF sources over scraping JSX/components.
 - Start external scraping from a manual allowlist, not an open crawler.
 - Run ingestion locally/admin-side, not as Netlify Functions.
@@ -101,7 +101,7 @@ Verification completed:
 
 - `.env` is already ignored by git.
 - `.env.example` is trackable by `.gitignore` and was included in the canonical-data refactor commit.
-- `public/files/portfolio.pdf` exists and should be included in internal ingestion.
+- `public/files/portfolio.pdf` exists and should be included in local ingestion.
 - The first RAG implementation should ingest internal data without scraping rendered React.
 - Ingestion should run via local/admin scripts, not deployed Netlify Functions.
 - `@supabase/supabase-js` should remain in production `dependencies` for the deployed `ask` function.
@@ -110,9 +110,9 @@ Verification completed:
 - Supabase CLI helper lives under `supabase/scripts.js`, not under `rag/`.
 - The current `.env` has a valid `DEEPSEEK_API_KEY`; full answer generation has been verified locally.
 
-## Internal Ingestion Sources
+## Local Ingestion Sources
 
-Use these for the internal ingestion endpoint/script:
+Use these for the local ingestion endpoint/script:
 
 - `src/data/homepage.json`
 - `src/data/about.json`
@@ -124,9 +124,9 @@ Use these for the internal ingestion endpoint/script:
 - `src/data/workingWithUs.json`
 - `src/data/faq.json`
 - `src/blog/*.md`
-- PDFs listed in `rag/config/internal-pdfs.json`.
+- Documents listed in `rag/config/local-documents.json`.
 
-Default internal PDFs:
+Default local documents:
 
 - `public/files/portfolio.pdf`
 
@@ -185,7 +185,8 @@ The function handles:
 - Client validation errors return stable error codes under `error.code`; frontend should localize validation/UI errors from those codes.
 - DeepSeek classifies each request as `small_talk`, `rag_question`, or `unsupported` before retrieval.
 - Small talk and unsupported requests return direct same-language responses without Gemini embeddings or Supabase retrieval.
-- Unsupported requests are politely redirected to ARG Software website topics.
+- Unsupported requests are politely redirected to ARG Software website topics. Technical service enquiries also include meeting and email actions so prospective clients can share their requirements.
+- General technical insight questions retrieve ARG blog posts and can return up to two article recommendations. Recommendations are suppressed only when the user explicitly cites an ARG project.
 - DeepSeek rewrites/translates every question into a standalone English retrieval query before embedding.
 - Follow-up question reference resolution before retrieval when history is provided.
 - Answers are generated in the same language as the latest user question.
@@ -222,14 +223,14 @@ Do not add Netlify ingestion endpoints unless the architecture changes again.
 
 Use local/admin scripts for ingestion:
 
-- internal ingestion for JSON/Markdown/PDF.
+- local ingestion for JSON/Markdown/PDF.
 - external ingestion for allowlisted URLs.
 
 These scripts should use local/server env vars and must not expose service-role or AI provider keys to frontend code.
 
 Implemented scripts:
 
-- `npm run rag:ingest:internal`
+- `npm run rag:ingest:local`
 - `npm run rag:ingest:external`
 - Both support `--dry-run`.
 - External allowlist lives at `rag/config/external-sources.json` and currently includes five approved sources.
@@ -256,7 +257,7 @@ Recommended source types:
 - `working_with_us`
 - `faq`
 - `blog_post`
-- `portfolio_pdf`
+- `local_document`
 - `external_page`
 
 ## External Sources
@@ -293,22 +294,26 @@ External ingestion should:
 - Upsert by URL.
 - Avoid touching internal sources.
 
-## Internal PDF Sources
+## Local Document Sources
 
-Add repeatable internal PDF ingestion sources to:
+Add repeatable local document ingestion sources to:
 
-- `rag/config/internal-pdfs.json`
+- `rag/config/local-documents.json`
 
 Required fields:
 
 ```json
 {
+  "format": "pdf",
   "filePath": "public/files/example.pdf",
   "sourceKey": "example-pdf",
   "title": "Example PDF",
-  "url": "/files/example.pdf"
+  "citationUrl": "/files/example.pdf",
+  "documentKind": "portfolio"
 }
 ```
+
+CVs must use a manually reviewed `redaction` policy, stay outside `public/`, and cite a public profile page rather than the raw document. Only redacted extracted text is embedded.
 
 ## Next Implementation Steps
 
@@ -531,7 +536,7 @@ npm run lint
 npm run typecheck:rag
 npm run build
 npm run dev                          # starts Vite with local ask middleware
-npm run rag:ingest:internal          # re-ingest internal sources
+npm run rag:ingest:local             # re-ingest first-party local sources
 npm run rag:ingest:external          # re-ingest external sources
 npm run rag:ask:test -- "What does ARG Software do?"
 npm run rag:ask:test -- "What external profiles mention ARG Software?"
@@ -543,6 +548,72 @@ npm run rag:ask:test -- "write me a Python scraper"
 ```
 
 ## Current Continuation
+
+### Current Source Policy
+
+- `fa87efc feat(rag): improve source ingestion and retrieval` is the latest committed RAG baseline.
+- The local-document, active-section, and source-authority update is currently uncommitted.
+- The local ingestion command is `npm run rag:ingest:local`; the old `rag:ingest:internal` command and `internal-*` configuration files were removed.
+- First-party sources use `origin = first_party`; approved web sources use `origin = trusted_external`. The database RPC only returns `is_public = true` sources.
+- Every RAG question retrieves matching first-party and trusted external sources in parallel. The runtime keeps the strongest context from each available origin before filling the remaining slots by similarity, so independent information can complement official ARG material without excluding it.
+- Current-page project and homepage-section data is used only while rewriting explicit references such as "this project" or "this section". It is not independently retrieved or boosted for unrelated questions.
+- Trusted external material can inform an answer but its URLs are never returned as assistant citation chips. Automatic citations are limited to the highest-ranked first-party ARG page or section; booking and email links are returned only as enquiry-relevant assistant actions.
+- Answers use ARG's first-person team voice, return plain text, and do not volunteer missing review, rating, profile, or other credibility-damaging absence claims from independent sources.
+- External entries require stable `sourceKey`, non-empty title, and explicit `trusted: true`. Fetches reject host-changing redirects and responses over 2 MiB.
+
+### Local Documents And CVs
+
+- Local document manifest: `rag/config/local-documents.json`.
+- Local source registry: `rag/config/local-sources.json` with `kind: local_document_manifest`.
+- Supported document format is currently PDF. Documents use the `local_document` source type.
+- Portfolio documents may cite their public file URL.
+- CVs must be kept outside `public/`, for example under `.rag-private/cvs/`; `.rag-private/` is git-ignored.
+- CV entries require `{ "documentKind": "cv", "redaction": { "profile": "cv", "manualReview": true } }` and may add personally identifying literals to redact.
+- CV extraction redacts email addresses, labelled phone/address/birth details, URLs, and manifest-provided literals before hashing, embedding, or persistence. The loader rejects any CV stored beneath `public/`.
+- The CVs currently under `public/files/cvs` must be moved to `.rag-private/cvs` before they are added to the manifest. Cite `/about-us/` or another public profile page, never the raw CV file.
+
+### Homepage Section Context
+
+- `rag/config/homepageSections.ts` is the canonical mapping of homepage DOM IDs to RAG source keys.
+- Homepage content is ingested as independent sources such as `home:services`, `home:overview`, and `home:faq`; the old aggregate `homepage/homepage` source was removed by migration.
+- `useActiveHomepageSection` observes the visible homepage section and `AssistantWidget` submits it as `pageContext.activeSection`.
+- The runtime validates section IDs server-side and supplies the section to question rewriting only for explicit current-section references. It does not retrieve or boost the section for unrelated questions.
+- Project pages follow the same rule: page metadata resolves explicit current-project references without otherwise preferring that project.
+
+### Database State
+
+- `20260723000000_add_rag_source_key_filter.sql` remains applied.
+- `20260723000001_add_rag_source_policy.sql` was applied to the connected Supabase project.
+- The policy migration adds `origin` and `is_public`, migrates `portfolio_pdf` to `local_document`, assigns stable keys to existing external sources, removes the obsolete aggregate homepage source, and recreates `match_rag_chunks` with `source_origins` filtering.
+- Local re-ingestion completed after migration: 12 homepage section sources and 17 chunks were added; 62 unchanged sources were skipped; no existing corpus reset was performed.
+
+### Current Verification
+
+- `npm run typecheck:rag` passes.
+- `npm run lint` passes.
+- `npm run build` passes, including SEO prerender and image optimization.
+- Direct `--file` selection loads an individual Markdown blog post and `public/files/portfolio.pdf` correctly.
+- CV redaction smoke tests remove email, phone, address, birth-date, and URL content before persistence.
+- `npx tsx rag/runtime/scripts/testAsk.ts --retrieve-only --page-path / --page-title Homepage --section services "Tell me more about this section"` resolves the reference through the rewritten query and retrieves relevant `home:services` chunks.
+- `npx tsx rag/runtime/scripts/testAsk.ts --retrieve-only "Which external profiles mention ARG Software?"` returns matching first-party and trusted external contexts when both are available.
+
+### Operational Commands
+
+```bash
+npm run rag:ingest:local -- --all
+npm run rag:ingest:local -- --file src/blog/my-new-post.md
+npm run rag:ingest:local -- --file public/files/portfolio.pdf
+npm run rag:ingest:external -- --source linkedin
+npx tsx rag/runtime/scripts/testAsk.ts --retrieve-only --page-path / --page-title Homepage --section services "Tell me more about this section"
+```
+
+### Remaining Work
+
+1. Move any raw CVs from `public/files/cvs` to `.rag-private/cvs`, redact the original files, and add manually reviewed CV entries to `local-documents.json`.
+2. Test the active-section behavior in the browser on desktop and mobile.
+3. Add rate limiting or bot verification to the public ask endpoint before deployment.
+
+## Superseded Continuation
 
 ### Implemented Since The Historical Handoff
 
@@ -608,34 +679,27 @@ M vite.config.js
 
 ### Current Gaps
 
-Pricing remains unverified. DesignRush may have indexed indicative rate or budget data, but its source can currently return 403 and must not be refreshed or cited without retrieval verification.
+The public endpoint still needs abuse protection such as rate limiting or bot verification before deployment.
 
 ### Required Next Work
 
-1. Verify DesignRush pricing context before answering project-cost questions with external figures.
-2. Test the assistant in the browser on project pages, including English and Portuguese error states.
-3. Before deployment, add public-endpoint abuse protection such as rate limiting or bot verification.
+1. Test the assistant in the browser on project pages, including English and Portuguese error states.
+2. Before deployment, add public-endpoint abuse protection such as rate limiting or bot verification.
 
 ### DesignRush Pricing
 
-`rag/config/external-sources.json` allowlists the ARG DesignRush profile. External ingestion fetches and indexes the page title, meta description, and visible HTML body; it does not merely store the link.
+`rag/config/external-sources.json` allows only the private DesignRush snapshot at `.rag-private/designrush-profile.html`. It extracts the approved minimum budget, hourly rate, and explicitly published project budget ranges; it does not ingest the raw dashboard text, navigation, or directory categories.
 
-However:
+- GoodFirms, TechBehemoths, LinkedIn, and the GitHub directory sources were removed from the RAG database.
+- The DesignRush source is internal reference data. Assistant answers must never name, link to, cite, or otherwise disclose it.
+- A project budget range can be stated only when the snapshot explicitly associates it with that project. The current snapshot associates Sky Tracks with `$20K - $100K`.
+- The saved profile and its assets live under `.rag-private/`, which is ignored and not deployed.
 
-- The extractor removes script tags, so client-rendered pricing data may not be indexed.
-- A current direct fetch of the DesignRush profile returned `403`.
-- Existing indexed DesignRush content may still contain data from a previous successful ingestion, but this has not been verified.
-
-Do not drop or reset the RAG database. A reset could remove existing external content that cannot currently be restored because DesignRush may reject a new fetch.
-
-Before making pricing claims, test the existing index:
+To refresh the approved commercial facts after updating the local snapshot:
 
 ```bash
-npm run rag:ask:test -- --retrieve-only "What hourly rate or minimum project budget does DesignRush list for ARG Software?"
-npm run rag:ask:test -- "What hourly rate or minimum project budget does DesignRush list for ARG Software?"
+npm run rag:ingest:external -- --source designrush --refresh
 ```
-
-If no verified pricing context is returned, do not fabricate it or bypass DesignRush access controls. Use an approved accessible source, or add user-verified pricing to a first-party source and identify third-party marketplace rates as indicative only.
 
 ### Re-ingestion Strategy
 
@@ -644,12 +708,12 @@ Do not clear tables. Internal ingestion is content-hash/upsert based and replace
 Generated team and founder sources are already ingested. To refresh them after source-data changes:
 
 ```bash
-npm run rag:ingest:internal -- --file src/data/about.json --refresh
-npm run rag:ingest:internal -- --file src/data/homepage.json --refresh
-npm run rag:ingest:internal -- --file src/data/careersPage.json --refresh
+npm run rag:ingest:local -- --file src/data/about.json --refresh
+npm run rag:ingest:local -- --file src/data/homepage.json --refresh
+npm run rag:ingest:local -- --file src/data/careersPage.json --refresh
 ```
 
-Use the generated-source loader's matching selection once it exists. Do not force-refresh DesignRush until it is available through an approved, accessible route.
+Refresh the DesignRush source only from the private saved profile. Do not bypass external access controls to fetch it live.
 
 ### Required Tests For The Next Session
 
@@ -661,6 +725,9 @@ npm run rag:ask:test -- "Who is part of ARG?"
 npm run rag:ask:test -- "What is Jose Antunes's experience?"
 npm run rag:ask:test -- "What is Rui Rocha's experience?"
 npm run rag:ask:test -- --retrieve-only --page-path=/projects/mojaloop/ --page-title=Mojaloop "Tell me more about this project."
+npm run rag:ask:test -- "Do you work with design, branding, UX/UI, or web design?"
+npm run rag:ask:test -- "Does ARG work with embedded systems?"
+npm run rag:ask:test -- "How much did Sky Tracks cost?"
 ```
 
 Also test in the browser:

@@ -1,0 +1,13 @@
+{
+  "capabilities": {
+    "directServices": "ARG directly provides software engineering, product delivery, architecture, technical consulting, cloud and platform engineering, AI and automation, staff augmentation, and dedicated product teams.",
+    "design": "ARG does not provide branding, graphic design, logo design, web design, UX/UI design, or product design as direct in-house services. When a software project needs design, ARG can coordinate with trusted external design partners.",
+    "embeddedSystems": "Hardware, robotics, firmware, and embedded-systems work are not publicly listed ARG specialisms. ARG assesses these requests case by case based on the requirements, delivery setup, and available specialist support. Do not promise delivery before that assessment; invite prospective clients to book a meeting or contact ARG with their requirements.",
+    "evidence": "Do not infer a capability from a directory category, a blog article, a technology mention, or a project interface implementation. Only state a capability when this policy or an official ARG service source explicitly supports it."
+  },
+  "commercialAnswers": {
+    "projectBudgets": "A named project's published budget range may be stated only when approved commercial data explicitly associates that range with the project.",
+    "generalPricing": "For general project-cost questions, say that ARG's historic average project cost has been around EUR 50,000. Make clear that ARG can adapt scope and deliverables to match the proposed budget. The approved hourly rate may be stated when relevant, but neither a general budget nor hourly rate is a minimum project cost.",
+    "sourceDisclosure": "Approved commercial data is internal reference material. Never name, link to, cite, or otherwise disclose an external directory or profile in an answer."
+  }
+}

@@ -4,6 +4,7 @@ import path from 'node:path';
 import { flattenJsonToText } from '../extractors/json.js';
 import { parseFrontmatter } from '../extractors/markdown.js';
 import { extractPdfText } from '../extractors/pdf.js';
+import { redactCvContent } from '../processing/redaction.js';
 import { stripMarkdown } from '../processing/text.js';
 import { createSource } from '../sourceFactory.js';
 import type {
@@ -12,13 +13,13 @@ import type {
   HomepageJson,
   PartnersJson,
   ProjectJson,
-} from './internal-content.js';
+} from './local-content.js';
 import type {
-  InternalManifestEntry,
+  LocalDocumentManifestEntry,
+  LocalManifestEntry,
   JsonManifestEntry,
-  PdfManifestEntry,
-  ValidatedPdfManifestEntry,
 } from '../manifest.js';
+import { HOMEPAGE_SECTION_SCOPES } from '../../config/homepageSections.js';
 import type { IngestionRunOptions } from '../../types/ingestion.js';
 import type { RagSource, RagSourceMetadata } from '../../types/source.js';
 
@@ -27,16 +28,16 @@ const PERSON_SOURCE_KEYS: Record<string, string> = {
   rui: 'rui-rocha',
 };
 
-export async function loadInternalSources(
+export async function loadLocalSources(
   rootDir = process.cwd(),
   selection?: IngestionRunOptions
 ): Promise<RagSource[]> {
-  const manifest = await loadInternalManifest(rootDir);
+  const manifest = await loadLocalManifest(rootDir);
   const sources: RagSource[] = [];
 
   for (const entry of manifest) {
-    if (shouldLoadManifestEntry(entry, selection)) {
-      sources.push(...(await loadManifestEntry(rootDir, entry)));
+    if (shouldLoadManifestEntry(rootDir, entry, selection)) {
+      sources.push(...(await loadManifestEntry(rootDir, entry, selection)));
     }
   }
 
@@ -44,19 +45,46 @@ export async function loadInternalSources(
   return filterLoadedSources(sources, selection);
 }
 
-async function loadManifestEntry(rootDir: string, entry: InternalManifestEntry): Promise<RagSource[]> {
+async function loadManifestEntry(
+  rootDir: string,
+  entry: LocalManifestEntry,
+  selection?: IngestionRunOptions
+): Promise<RagSource[]> {
   switch (entry.kind) {
     case 'json':
+      if (entry.sourceKey === 'homepage') {
+        return loadHomepageSectionSources(rootDir, entry);
+      }
       return [await loadJsonSource(resolveRoot(rootDir, entry.filePath), entry)];
     case 'projects_json':
       return loadProjectSources(rootDir, entry.filePath);
     case 'partners_json':
       return loadPartnerSources(rootDir, entry.filePath);
     case 'markdown_dir':
-      return loadBlogSources(rootDir, entry.filePath);
-    case 'pdf_manifest':
-      return loadPdfSources(rootDir, entry.filePath);
+      return loadBlogSources(rootDir, entry.filePath, selection);
+    case 'local_document_manifest':
+      return loadLocalDocumentSources(rootDir, entry.filePath, selection);
   }
+}
+
+async function loadHomepageSectionSources(
+  rootDir: string,
+  entry: JsonManifestEntry
+): Promise<RagSource[]> {
+  const filePath = resolveRoot(rootDir, entry.filePath);
+  const homepage = await readJsonFile<Record<string, unknown>>(filePath);
+
+  return Object.entries(HOMEPAGE_SECTION_SCOPES).map(([sectionId, scope]) =>
+    createSource({
+      sourceType: 'homepage',
+      sourceKey: scope.sourceKey,
+      title: scope.title,
+      url: `/#${sectionId}`,
+      path: filePath,
+      metadata: { source_file: filePath, section_id: sectionId },
+      content: flattenJsonToText(homepage[scope.dataKey], `homepage ${scope.title}`),
+    })
+  );
 }
 
 async function loadJsonSource(filePath: string, options: JsonManifestEntry): Promise<RagSource> {
@@ -182,12 +210,17 @@ async function loadTeamProfileSources(rootDir: string): Promise<RagSource[]> {
   return sources;
 }
 
-async function loadBlogSources(rootDir: string, relativeFilePath: string): Promise<RagSource[]> {
+async function loadBlogSources(
+  rootDir: string,
+  relativeFilePath: string,
+  selection?: IngestionRunOptions
+): Promise<RagSource[]> {
   const blogDir = resolveRoot(rootDir, relativeFilePath);
   const entries = await readdir(blogDir, { withFileTypes: true });
   const markdownFiles = entries
     .filter(entry => entry.isFile() && entry.name.endsWith('.md'))
     .map(entry => path.join(blogDir, entry.name))
+    .filter(filePath => matchesFileSelection(filePath, selection))
     .sort();
 
   return Promise.all(markdownFiles.map(loadMarkdownSource));
@@ -209,72 +242,102 @@ async function loadMarkdownSource(filePath: string): Promise<RagSource> {
   });
 }
 
-async function loadPdfSources(rootDir: string, relativeFilePath: string): Promise<RagSource[]> {
+async function loadLocalDocumentSources(
+  rootDir: string,
+  relativeFilePath: string,
+  selection?: IngestionRunOptions
+): Promise<RagSource[]> {
   const filePath = resolveRoot(rootDir, relativeFilePath);
-  const pdfs = await readJsonFile<PdfManifestEntry[]>(filePath);
+  const documents = await readJsonFile<LocalDocumentManifestEntry[]>(filePath);
 
-  if (!Array.isArray(pdfs)) {
-    throw new Error('rag/config/internal-pdfs.json must contain an array');
+  if (!Array.isArray(documents)) {
+    throw new Error('rag/config/local-documents.json must contain an array');
   }
 
+  const validDocuments = documents.map(document => {
+    validateLocalDocument(document, rootDir);
+    return document;
+  });
+
   return Promise.all(
-    pdfs.map(async pdf => {
-      validatePdfSource(pdf);
-      const pdfPath = resolveRoot(rootDir, pdf.filePath);
+    validDocuments
+      .filter(document => matchesFileSelection(resolveRoot(rootDir, document.filePath), selection))
+      .map(async document => {
+      const documentPath = resolveRoot(rootDir, document.filePath);
+      const extractedContent = await extractPdfText(documentPath);
       return createSource({
-        sourceType: 'portfolio_pdf',
-        sourceKey: pdf.sourceKey,
-        title: pdf.title,
-        url: pdf.url,
-        path: pdfPath,
-        metadata: pdf,
-        content: await extractPdfText(pdfPath),
+        sourceType: 'local_document',
+        sourceKey: document.sourceKey,
+        title: document.title,
+        url: document.citationUrl,
+        path: documentPath,
+        isPublic: document.isPublic ?? true,
+        metadata: { ...document, source_file: documentPath },
+        content:
+          document.documentKind === 'cv'
+            ? redactCvContent(extractedContent, document.redaction?.literals)
+            : extractedContent,
       });
-    })
+      })
   );
 }
 
-function validatePdfSource(pdf: PdfManifestEntry): asserts pdf is ValidatedPdfManifestEntry {
-  if (!pdf || typeof pdf !== 'object') {
-    throw new Error('Internal PDF entries must be objects');
+function validateLocalDocument(document: LocalDocumentManifestEntry, rootDir: string): void {
+  if (!document || typeof document !== 'object') {
+    throw new Error('Local document entries must be objects');
   }
 
-  for (const key of ['filePath', 'sourceKey', 'title', 'url'] as const) {
-    if (!pdf[key]) {
-      throw new Error(`Internal PDF entries require ${key}`);
+  for (const key of ['format', 'filePath', 'sourceKey', 'title', 'documentKind'] as const) {
+    if (!document[key]) {
+      throw new Error(`Local document entries require ${key}`);
+    }
+  }
+
+  if (document.format !== 'pdf') {
+    throw new Error(`Unsupported local document format: ${document.format}`);
+  }
+
+  if (document.documentKind === 'cv') {
+    if (!document.redaction || document.redaction.profile !== 'cv' || !document.redaction.manualReview) {
+      throw new Error(`CV document ${document.sourceKey} requires a manually reviewed CV redaction policy`);
+    }
+
+    if (isPathInDirectory(rootDir, document.filePath, 'public')) {
+      throw new Error(`CV document ${document.sourceKey} must not be stored under public/`);
     }
   }
 }
 
-async function loadInternalManifest(rootDir: string): Promise<InternalManifestEntry[]> {
-  const filePath = resolveRoot(rootDir, 'rag/config/internal-sources.json');
-  const sources = await readJsonFile<InternalManifestEntry[]>(filePath);
+async function loadLocalManifest(rootDir: string): Promise<LocalManifestEntry[]> {
+  const filePath = resolveRoot(rootDir, 'rag/config/local-sources.json');
+  const sources = await readJsonFile<LocalManifestEntry[]>(filePath);
 
   if (!Array.isArray(sources)) {
-    throw new Error('rag/config/internal-sources.json must contain an array');
+    throw new Error('rag/config/local-sources.json must contain an array');
   }
 
   return sources.map(validateManifestEntry);
 }
 
-function validateManifestEntry(entry: InternalManifestEntry): InternalManifestEntry {
+function validateManifestEntry(entry: LocalManifestEntry): LocalManifestEntry {
   if (!entry || typeof entry !== 'object') {
-    throw new Error('Internal source manifest entries must be objects');
+    throw new Error('Local source manifest entries must be objects');
   }
 
   if (!entry.kind || !entry.filePath) {
-    throw new Error('Internal source manifest entries require kind and filePath');
+    throw new Error('Local source manifest entries require kind and filePath');
   }
 
   if (entry.kind === 'json' && (!entry.sourceType || !entry.sourceKey || !entry.title)) {
-    throw new Error('JSON internal source manifest entries require sourceType, sourceKey, and title');
+    throw new Error('JSON local source manifest entries require sourceType, sourceKey, and title');
   }
 
   return entry;
 }
 
 function shouldLoadManifestEntry(
-  entry: InternalManifestEntry,
+  rootDir: string,
+  entry: LocalManifestEntry,
   selection: IngestionRunOptions | undefined
 ): boolean {
   if (!selection || selection.all) {
@@ -285,9 +348,37 @@ function shouldLoadManifestEntry(
     return true;
   }
 
-  return entry.kind === 'json'
-    ? selection.sourceKeys.includes(entry.sourceKey ?? '')
-    : selection.sourceKeys.length > 0;
+  if (
+    entry.kind === 'markdown_dir' &&
+    selection.filePaths.some(filePath => isPathInDirectory(rootDir, filePath, entry.filePath))
+  ) {
+    return true;
+  }
+
+  // The document manifest must be read to match a selected document against its configured path.
+  if (entry.kind === 'local_document_manifest' && selection.filePaths.length > 0) {
+    return true;
+  }
+
+  if (entry.kind !== 'json') {
+    return selection.sourceKeys.length > 0;
+  }
+
+  return (
+    selection.sourceKeys.includes(entry.sourceKey ?? '') ||
+    (entry.sourceKey === 'homepage' &&
+      selection.sourceKeys.some(sourceKey => sourceKey.startsWith('home:')))
+  );
+}
+
+function matchesFileSelection(filePath: string, selection: IngestionRunOptions | undefined): boolean {
+  return (
+    !selection ||
+    selection.all ||
+    selection.filePaths.length === 0 ||
+    selection.sourceKeys.length > 0 ||
+    selection.filePaths.some(selectedFilePath => samePath(selectedFilePath, filePath))
+  );
 }
 
 function filterLoadedSources(sources: RagSource[], selection: IngestionRunOptions | undefined): RagSource[] {
@@ -333,6 +424,14 @@ function samePath(left: string, right: string): boolean {
     normalizedLeft.endsWith(normalizedRight) ||
     normalizedRight.endsWith(normalizedLeft)
   );
+}
+
+function isPathInDirectory(rootDir: string, filePath: string, directoryPath: string): boolean {
+  const resolvedFilePath = path.resolve(rootDir, filePath);
+  const resolvedDirectoryPath = path.resolve(rootDir, directoryPath);
+  const relativePath = path.relative(resolvedDirectoryPath, resolvedFilePath);
+
+  return !relativePath || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath));
 }
 
 function normalizePath(filePath: string): string {

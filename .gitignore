@@ -147,3 +147,5 @@ mockups
 todos
 .medium-browser-profile/
 public/files/cvs
+public/files/sites
+.rag-private/

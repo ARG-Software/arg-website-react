@@ -1,4 +1,5 @@
-import type { RagSourceMetadata, RagSourceType } from './source.js';
+import type { RagSourceMetadata, RagSourceOrigin, RagSourceType } from './source.js';
+import type { HomepageSectionId } from '../config/homepageSections.js';
 
 export interface EmbeddingProvider {
   embedText(text: string): Promise<number[]>;
@@ -19,6 +20,7 @@ export interface PageContext {
   pathname: string;
   title: string;
   projectSlug?: string;
+  activeSection?: HomepageSectionId;
 }
 
 export type QuestionIntent = 'small_talk' | 'rag_question' | 'unsupported';
@@ -26,6 +28,7 @@ export type QuestionIntent = 'small_talk' | 'rag_question' | 'unsupported';
 export interface QuestionIntentResult {
   intent: QuestionIntent;
   response: string;
+  language: string;
 }
 
 export interface RetrievedContext {
@@ -41,6 +44,7 @@ export interface RetrievedContext {
   similarity: number;
   sourceMetadata: RagSourceMetadata;
   chunkMetadata: RagSourceMetadata;
+  origin: RagSourceOrigin;
 }
 
 export interface Citation {
@@ -50,9 +54,22 @@ export interface Citation {
   sourceKey: string;
 }
 
+export type AssistantActionType = 'book_meeting' | 'email_hello' | 'email_hr';
+
+export interface AssistantAction {
+  type: AssistantActionType;
+}
+
+export interface ArticleRecommendation {
+  title: string;
+  url: string;
+}
+
 export interface AskQuestionResult {
   answer: string;
   citations: Citation[];
+  articleRecommendations: ArticleRecommendation[];
+  actions: AssistantAction[];
   contexts: RetrievedContext[];
 }
 
@@ -66,11 +83,17 @@ export interface AnswerProvider {
   generateAnswer(
     question: string,
     messages: ChatMessage[],
-    contexts: RetrievedContext[]
+    contexts: RetrievedContext[],
+    responseLanguage: string
   ): Promise<string>;
-  generateInsufficientContextAnswer(question: string, messages: ChatMessage[]): Promise<string>;
+  generateInsufficientContextAnswer(
+    question: string,
+    messages: ChatMessage[],
+    responseLanguage: string
+  ): Promise<string>;
   generateIntentFallbackResponse(
     question: string,
-    intent: Exclude<QuestionIntent, 'rag_question'>
+    intent: Exclude<QuestionIntent, 'rag_question'>,
+    responseLanguage: string
   ): Promise<string>;
 }

@@ -3,7 +3,7 @@ import { loadLocalEnv } from '../../config/loadLocalEnv.js';
 import type { IngestSourceResult } from '../../types/ingestion.js';
 import type { RagSource } from '../../types/source.js';
 import { ingestSource } from '../ingestPipeline.js';
-import { loadInternalSources } from '../sources/internal.js';
+import { loadLocalSources } from '../sources/local.js';
 import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
 
 loadLocalEnv();
@@ -12,17 +12,17 @@ const dryRun = isDryRun();
 const selection = getIngestionRunOptions();
 
 if (!hasSourceFilters(selection)) {
-  printSelectionUsage('rag:ingest:internal');
+  printSelectionUsage('rag:ingest:local');
   process.exit(1);
 }
 
 const supabase = createSupabaseServiceClient();
-const sources = await loadInternalSources(process.cwd(), selection);
+const sources = await loadLocalSources(process.cwd(), selection);
 const results: IngestSourceResult[] = [];
 const failures: Array<{ source: RagSource; error: unknown }> = [];
 
 if (sources.length === 0) {
-  console.log('No internal sources matched the selected filters. Nothing to ingest.');
+  console.log('No local sources matched the selected filters. Nothing to ingest.');
   process.exit(0);
 }
 
@@ -42,7 +42,7 @@ const skipped = results.filter(result => result.skipped);
 const unchanged = skipped.filter(result => result.reason === 'unchanged_content');
 const chunkCount = ingested.reduce((total, result) => total + result.chunkCount, 0);
 
-console.log('\nInternal ingestion summary');
+console.log('\nLocal ingestion summary');
 console.log(`sources loaded: ${sources.length}`);
 console.log(`sources ${dryRun ? 'ready' : 'ingested'}: ${ingested.length}`);
 console.log(`sources skipped: ${skipped.length}`);

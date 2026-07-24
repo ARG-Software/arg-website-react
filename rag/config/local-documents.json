@@ -1,8 +1,10 @@
 [
   {
+    "format": "pdf",
     "filePath": "public/files/portfolio.pdf",
     "sourceKey": "portfolio-pdf",
     "title": "ARG Software Portfolio",
-    "url": "/files/portfolio.pdf"
+    "citationUrl": "/files/portfolio.pdf",
+    "documentKind": "portfolio"
   }
 ]

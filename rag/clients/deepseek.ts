@@ -46,13 +46,14 @@ export class DeepSeekAnswerClient implements AnswerProvider {
   async generateAnswer(
     question: string,
     messages: ChatMessage[],
-    contexts: RetrievedContext[]
+    contexts: RetrievedContext[],
+    responseLanguage: string
   ): Promise<string> {
     const config = this.getConfig();
     const chatMessages: PromptMessage[] = [
       {
         role: 'system',
-        content: buildSystemPrompt(config.companyName),
+        content: buildSystemPrompt(config.companyName, responseLanguage),
       },
       ...buildHistoryMessages(messages),
       {
@@ -125,7 +126,8 @@ export class DeepSeekAnswerClient implements AnswerProvider {
 
   async generateInsufficientContextAnswer(
     question: string,
-    messages: ChatMessage[]
+    messages: ChatMessage[],
+    responseLanguage: string
   ): Promise<string> {
     const config = this.getConfig();
     const data = await createChatCompletion({
@@ -135,7 +137,7 @@ export class DeepSeekAnswerClient implements AnswerProvider {
       messages: [
         {
           role: 'system',
-          content: buildInsufficientContextPrompt(config.companyName),
+          content: buildInsufficientContextPrompt(config.companyName, responseLanguage),
         },
         ...buildHistoryMessages(messages),
         {
@@ -150,7 +152,8 @@ export class DeepSeekAnswerClient implements AnswerProvider {
 
   async generateIntentFallbackResponse(
     question: string,
-    intent: Exclude<QuestionIntent, 'rag_question'>
+    intent: Exclude<QuestionIntent, 'rag_question'>,
+    responseLanguage: string
   ): Promise<string> {
     const config = this.getConfig();
     const data = await createChatCompletion({
@@ -160,7 +163,7 @@ export class DeepSeekAnswerClient implements AnswerProvider {
       messages: [
         {
           role: 'system',
-          content: buildIntentFallbackPrompt(config.companyName, intent),
+          content: buildIntentFallbackPrompt(config.companyName, intent, responseLanguage),
         },
         {
           role: 'user',

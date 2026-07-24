@@ -1,27 +1,9 @@
 [
   {
+    "sourceKey": "designrush",
     "url": "https://www.designrush.com/agency/profile/arg-software",
-    "title": "ARG Software on DesignRush",
-    "trusted": true
-  },
-  {
-    "url": "https://www.goodfirms.co/company/arg-software",
-    "title": "ARG Software on GoodFirms",
-    "trusted": true
-  },
-  {
-    "url": "https://techbehemoths.com/company/arg-software",
-    "title": "ARG Software on TechBehemoths",
-    "trusted": true
-  },
-  {
-    "url": "https://www.linkedin.com/company/arg-software/",
-    "title": "ARG Software on LinkedIn",
-    "trusted": true
-  },
-  {
-    "url": "https://github.com/marmelo/tech-companies-in-portugal/blob/master/README.md",
-    "title": "ARG Software in Tech Companies in Portugal",
+    "title": "Approved Commercial Data",
+    "snapshotPath": ".rag-private/designrush-profile.html",
     "trusted": true
   }
 ]

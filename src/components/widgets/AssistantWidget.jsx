@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Logo } from '@components/icons/Logo';
+import { Link, useLocation } from 'react-router-dom';
 import { MOBILE_BREAKPOINT } from '@constants/ui';
+import { useActiveHomepageSection } from '@hooks/useActiveHomepageSection';
+import { getMailtoLink, getProjectBookingLink } from '@services/linksservice';
 import { trackAssistantEvent } from '@utils/analytics';
 import { isMobile } from '@utils/helpers';
 
@@ -18,20 +19,43 @@ const WELCOME_MESSAGE = {
     "Hi, I'm Gaspar, ARG's AI assistant. Ask me about our work, our research, or how to get in touch.",
 };
 
+const ASSISTANT_ACTIONS = {
+  book_meeting: {
+    label: 'Book a meeting',
+    href: getProjectBookingLink(),
+    external: true,
+  },
+  email_hello: {
+    label: 'Email us',
+    href: getMailtoLink('hello', 'Project enquiry'),
+    external: false,
+  },
+  email_hr: {
+    label: 'Email careers team',
+    href: getMailtoLink('hr', 'Career enquiry'),
+    external: false,
+  },
+};
+
 const ERROR_MESSAGES = {
   en: {
     question_required: 'Please enter a question.',
     question_too_long: 'Question must be 1000 characters or fewer.',
     configuration_error: 'Gaspar is temporarily unavailable. Please try again later.',
+    embedding_quota_exceeded: 'Gaspar is temporarily unavailable. Please try again later.',
     answer_failed: 'Something went wrong. Please try again.',
     network_error: 'Unable to reach Gaspar. Please check your connection.',
+    request_timeout: 'Gaspar is taking too long to respond. Please try again.',
   },
   pt: {
     question_required: 'Introduza uma pergunta.',
     question_too_long: 'A pergunta tem de ter no maximo 1000 caracteres.',
     configuration_error: 'O Gaspar esta temporariamente indisponivel. Tente novamente mais tarde.',
+    embedding_quota_exceeded:
+      'O Gaspar esta temporariamente indisponivel. Tente novamente mais tarde.',
     answer_failed: 'Algo correu mal. Tente novamente.',
     network_error: 'Nao foi possivel contactar o Gaspar. Verifique a sua ligacao.',
+    request_timeout: 'O Gaspar esta a demorar demasiado a responder. Tente novamente.',
   },
 };
 
@@ -40,6 +64,21 @@ function getErrorMessage(code) {
   const messages = locale.startsWith('pt') ? ERROR_MESSAGES.pt : ERROR_MESSAGES.en;
 
   return messages[code] || messages.answer_failed;
+}
+
+function getInternalAssistantPath(url) {
+  try {
+    const destination = new URL(url, window.location.origin);
+    const siteOrigin = 'https://arg.software';
+
+    if (destination.origin !== window.location.origin && destination.origin !== siteOrigin) {
+      return null;
+    }
+
+    return `${destination.pathname}${destination.search}${destination.hash}`;
+  } catch {
+    return null;
+  }
 }
 
 function useMobileFullscreen() {
@@ -59,8 +98,9 @@ function useMobileFullscreen() {
   return mobileViewport;
 }
 
-export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
+export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequest = 0 }) {
   const location = useLocation();
+  const activeSection = useActiveHomepageSection(location.pathname);
   const mobileViewport = useMobileFullscreen();
   const [panelState, setPanelState] = useState('closed');
   const [messages, setMessages] = useState([]);
@@ -93,6 +133,13 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [panelState]);
+
+  useEffect(() => {
+    if (!reopenRequest || isSuppressed) return;
+
+    setPanelState(mobileViewport ? 'fullscreen' : 'open');
+    setError(null);
+  }, [isSuppressed, mobileViewport, reopenRequest]);
 
   const open = useCallback(
     source => {
@@ -133,17 +180,23 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
       setLoading(true);
       setError(null);
       setInputValue('');
+      setMessages(prev => [...prev, { role: 'user', content: trimmed }]);
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 25000);
 
       try {
         const response = await fetch('/.netlify/functions/ask', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             question: trimmed,
             messages: messages.map(m => ({ role: m.role, content: m.content })),
             pageContext: {
               pathname: location.pathname,
               title: document.title,
+              ...(activeSection ? { activeSection } : {}),
             },
           }),
         });
@@ -159,22 +212,30 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
 
         setMessages(prev => [
           ...prev,
-          { role: 'user', content: trimmed },
-          { role: 'assistant', content: data.answer, citations: data.citations || [] },
+          {
+            role: 'assistant',
+            content: data.answer,
+            citations: data.citations || [],
+            articleRecommendations: data.articleRecommendations || [],
+            actions: data.actions || [],
+          },
         ]);
 
         trackAssistantEvent('answer', {
           has_citations: (data.citations || []).length > 0,
           citation_count: (data.citations || []).length,
+          action_count: (data.actions || []).length,
         });
-      } catch {
-        setError(getErrorMessage('network_error'));
-        trackAssistantEvent('error', { error_code: 'network_error' });
+      } catch (error) {
+        const code = error.name === 'AbortError' ? 'request_timeout' : 'network_error';
+        setError(getErrorMessage(code));
+        trackAssistantEvent('error', { error_code: code });
       } finally {
+        clearTimeout(timeout);
         setLoading(false);
       }
     },
-    [loading, location.pathname, messages]
+    [activeSection, loading, location.pathname, messages]
   );
 
   function handleSubmit(e) {
@@ -201,7 +262,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
         type="button"
       >
         <span className="aw-trigger__icon">
-          <Logo />
+          <img src="/icons/icon-192.png" alt="" />
         </span>
       </button>
 
@@ -214,7 +275,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
         <div className="aw-header">
           <div className="aw-header__left">
             <div className="aw-header__avatar">
-              <Logo />
+              <img src="/icons/icon-192.png" alt="" />
             </div>
             <div>
               <div className="aw-header__title">Gaspar</div>
@@ -300,7 +361,21 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
               {msg.citations && msg.citations.length > 0 && (
                 <div className="aw-citations">
                   {msg.citations.map((cit, ci) =>
-                    cit.url ? (
+                    cit.url && getInternalAssistantPath(cit.url) ? (
+                      <Link
+                        key={ci}
+                        className="aw-citation"
+                        to={getInternalAssistantPath(cit.url)}
+                        onClick={() =>
+                          trackAssistantEvent('citation_click', {
+                            source_type: cit.sourceType,
+                            source_key: cit.sourceKey,
+                          })
+                        }
+                      >
+                        {cit.title}
+                      </Link>
+                    ) : cit.url ? (
                       <a
                         key={ci}
                         className="aw-citation"
@@ -322,6 +397,65 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange }) {
                       </span>
                     )
                   )}
+                </div>
+              )}
+              {msg.articleRecommendations && msg.articleRecommendations.length > 0 && (
+                <div className="aw-article-recommendations">
+                  <span className="aw-article-recommendations__label">Read more</span>
+                  {msg.articleRecommendations.map(article => {
+                    const internalPath = getInternalAssistantPath(article.url);
+                    const onClick = () =>
+                      trackAssistantEvent('article_recommendation_click', {
+                        article_title: article.title,
+                      });
+
+                    return internalPath ? (
+                      <Link
+                        key={article.url}
+                        className="aw-article-recommendation"
+                        to={internalPath}
+                        onClick={onClick}
+                      >
+                        {article.title}
+                      </Link>
+                    ) : (
+                      <a
+                        key={article.url}
+                        className="aw-article-recommendation"
+                        href={article.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={onClick}
+                      >
+                        {article.title}
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
+              {msg.actions && msg.actions.length > 0 && (
+                <div className="aw-actions">
+                  {msg.actions.map((action, ai) => {
+                    const details = ASSISTANT_ACTIONS[action.type];
+
+                    if (!details) return null;
+
+                    return (
+                      <a
+                        key={`${action.type}-${ai}`}
+                        className="aw-action"
+                        href={details.href}
+                        {...(details.external
+                          ? { target: '_blank', rel: 'noopener noreferrer' }
+                          : {})}
+                        onClick={() =>
+                          trackAssistantEvent('action_click', { action_type: action.type })
+                        }
+                      >
+                        {details.label}
+                      </a>
+                    );
+                  })}
                 </div>
               )}
             </div>

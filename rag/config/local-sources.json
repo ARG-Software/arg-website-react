@@ -63,6 +63,14 @@
     "label": "faq"
   },
   {
+    "kind": "json",
+    "filePath": "rag/config/assistant-policy.json",
+    "sourceType": "working_with_us",
+    "sourceKey": "assistant-policy",
+    "title": "Assistant Response Policy",
+    "label": "assistant response policy"
+  },
+  {
     "kind": "projects_json",
     "filePath": "src/data/projects.json"
   },
@@ -75,7 +83,7 @@
     "filePath": "src/blog"
   },
   {
-    "kind": "pdf_manifest",
-    "filePath": "rag/config/internal-pdfs.json"
+    "kind": "local_document_manifest",
+    "filePath": "rag/config/local-documents.json"
   }
 ]

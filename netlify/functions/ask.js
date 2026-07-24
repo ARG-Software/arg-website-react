@@ -1,4 +1,5 @@
 import { RagValidationError, askQuestion } from '../../rag/runtime/ask.ts';
+import { GeminiEmbeddingQuotaError } from '../../rag/clients/gemini.ts';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -27,21 +28,22 @@ export async function handler(event) {
     const result = await askQuestion({
       question: payload.question,
       messages: payload.messages,
-      sourceTypes: payload.sourceTypes,
       pageContext: payload.pageContext,
     });
 
     return createResponse(200, {
       answer: result.answer,
       citations: result.citations,
+      articleRecommendations: result.articleRecommendations,
+      actions: result.actions,
     });
   } catch (error) {
-    const statusCode = isConfigurationError(error) ? 503 : isClientError(error) ? 400 : 500;
+    const statusCode = isServiceUnavailable(error) ? 503 : isClientError(error) ? 400 : 500;
     const errorBody =
       statusCode === 400 || statusCode === 503
         ? createErrorBody(
-            isConfigurationError(error) ? 'configuration_error' : error.code,
-            isConfigurationError(error) ? 'Assistant configuration is unavailable' : error.message
+            getServiceErrorCode(error),
+            statusCode === 503 ? 'Assistant service is temporarily unavailable' : error.message
           )
         : createErrorBody('answer_failed', 'Unable to answer the question');
 
@@ -77,8 +79,20 @@ function isClientError(error) {
   return error instanceof RagValidationError;
 }
 
+function isServiceUnavailable(error) {
+  return isConfigurationError(error) || error instanceof GeminiEmbeddingQuotaError;
+}
+
 function isConfigurationError(error) {
   return (
     error instanceof Error && error.message.startsWith('Missing required environment variables:')
   );
+}
+
+function getServiceErrorCode(error) {
+  if (error instanceof GeminiEmbeddingQuotaError) {
+    return error.code;
+  }
+
+  return 'configuration_error';
 }

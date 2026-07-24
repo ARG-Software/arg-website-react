@@ -10,6 +10,8 @@ export function createSource(
   return {
     url: undefined,
     path: undefined,
+    origin: 'first_party',
+    isPublic: true,
     metadata: {},
     content: '',
     ...overrides,

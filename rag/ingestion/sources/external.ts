@@ -22,23 +22,33 @@ export async function loadExternalSourceEntries(
 }
 
 export async function loadExternalSource({
+  sourceKey,
   url,
   title,
-  trusted = true,
+  snapshotPath,
 }: ExternalSourceManifestEntry): Promise<RagSource> {
-  const content = await extractHtmlText(await fetchExternalHtml(url));
   const parsedUrl = new URL(url);
+  const snapshot = snapshotPath
+    ? {
+        html: await readFile(path.resolve(process.cwd(), snapshotPath), 'utf8'),
+        finalUrl: url,
+      }
+    : await fetchExternalHtml(url, parsedUrl.hostname);
 
   return createSource({
     sourceType: 'external_page',
-    sourceKey: url,
-    title: title ?? parsedUrl.hostname,
-    url,
+    sourceKey,
+    title,
+    url: snapshot.finalUrl,
+    origin: 'trusted_external',
     metadata: {
       domain: parsedUrl.hostname,
-      trusted,
+      trusted: true,
     },
-    content,
+    content:
+      sourceKey === 'designrush' && snapshotPath
+        ? await extractDesignRushFacts(snapshot.html)
+        : await extractHtmlText(snapshot.html),
   });
 }
 
@@ -47,8 +57,23 @@ function validateExternalSourceEntry(item: unknown): ExternalSourceManifestEntry
     throw new Error('External source entries must be objects');
   }
 
-  if (!('url' in item) || !item.url) {
-    throw new Error('External source entries require a url');
+  if (!('sourceKey' in item) || !item.sourceKey || !('url' in item) || !item.url || !('title' in item)) {
+    throw new Error('External source entries require sourceKey, url, and title');
+  }
+
+  if (!('trusted' in item) || item.trusted !== true) {
+    throw new Error('External source entries must explicitly set trusted to true');
+  }
+
+  const sourceKey = String(item.sourceKey).trim();
+  const title = String(item.title).trim();
+  const snapshotPath =
+    'snapshotPath' in item && typeof item.snapshotPath === 'string'
+      ? item.snapshotPath.trim()
+      : undefined;
+
+  if (!sourceKey || !title) {
+    throw new Error('External source entries require a non-empty sourceKey and title');
   }
 
   const rawUrl = String(item.url);
@@ -59,10 +84,53 @@ function validateExternalSourceEntry(item: unknown): ExternalSourceManifestEntry
   }
 
   return {
+    sourceKey,
     url: url.toString(),
-    title: 'title' in item && typeof item.title === 'string' ? item.title : undefined,
-    trusted: 'trusted' in item && typeof item.trusted === 'boolean' ? item.trusted : true,
+    title,
+    ...(snapshotPath ? { snapshotPath } : {}),
+    trusted: true,
   };
+}
+
+async function extractDesignRushFacts(html: string): Promise<string> {
+  const text = await extractHtmlText(html);
+  const hourlyRate = text.match(/Average Hourly Rate\s*(\$[\d,]+\s*\/\s*hr)/i)?.[1];
+  const portfolioText =
+    text.match(/ARG Software Portfolio\s*(.*?)(?:ARG Software Team|ARG Software Clients|ARG Software Press Mentions)/is)?.[1] ??
+    '';
+  const projectBudgets = [
+    ['Sky Tracks', 'Skytracks'],
+    ['Mojaloop', 'Mojaloop'],
+    ['Vector', 'Vector'],
+    ['Dokutar', 'Dokutar'],
+    ['TV Cine', 'TV Cine'],
+    ['Royalty Flush', 'Royalty Flush'],
+    ["People's Clearinghouse", "People's Clearinghouse"],
+  ].flatMap(([projectName, sourceName]) => {
+    const match = portfolioText.match(
+      new RegExp(`${escapeRegExp(sourceName)}\\s+(\\$[\\d.]+[KMB]?\\s*-\\s*\\$[\\d.]+[KMB]?)`, 'i')
+    );
+    return match ? [`${projectName}: ${match[1]}`] : [];
+  });
+
+  if (!hourlyRate && projectBudgets.length === 0) {
+    throw new Error('The DesignRush snapshot does not contain approved commercial facts');
+  }
+
+  return [
+    'Approved commercial data for ARG Software.',
+    hourlyRate ? `General average hourly rate: ${hourlyRate}.` : '',
+    projectBudgets.length > 0 ? 'Published project budget ranges:' : '',
+    ...projectBudgets,
+    'Use a project budget range only for the named project. Do not present a general hourly rate as a project cost.',
+    'This is internal reference data. Never name, link to, cite, or disclose its source in visitor answers.',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function filterExternalSourceEntries(
@@ -74,8 +142,7 @@ function filterExternalSourceEntries(
       const normalizedUrl = new URL(entry.url).toString();
       return (
         selection?.urls.some(url => new URL(url).toString() === normalizedUrl) ||
-        selection?.sourceKeys.includes(entry.url) ||
-        (entry.title ? selection?.sourceKeys.includes(entry.title) : false)
+        selection?.sourceKeys.includes(entry.sourceKey)
       );
     });
   }

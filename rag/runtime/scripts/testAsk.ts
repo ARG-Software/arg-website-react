@@ -13,8 +13,10 @@ const historyDemo =
 const historyJsonIndex = args.indexOf('--history-json');
 const pagePathIndex = args.indexOf('--page-path');
 const pageTitleIndex = args.indexOf('--page-title');
+const sectionIndex = args.indexOf('--section');
 const pagePath = getOptionValue('--page-path');
 const pageTitle = getOptionValue('--page-title');
+const activeSection = getOptionValue('--section');
 
 try {
   const messages = parseMessages();
@@ -23,7 +25,7 @@ try {
 
   if (!question) {
     console.error(
-      'Usage: npm run rag:ask:test -- [--retrieve-only] [--external-profile-history] [--history-json <json>] [--page-path=<pathname> --page-title=<title>] "What does ARG Software do?"'
+      'Usage: npm run rag:ask:test -- [--retrieve-only] [--external-profile-history] [--history-json <json>] [--page-path=<pathname> --page-title=<title> --section=<sectionId>] "What does ARG Software do?"'
     );
     process.exit(1);
   }
@@ -52,6 +54,20 @@ try {
       console.log(`- ${citation.title}: ${citation.url ?? citation.sourceKey}`);
     }
   }
+
+  if (result.articleRecommendations.length > 0) {
+    console.log('Article recommendations:');
+    for (const article of result.articleRecommendations) {
+      console.log(`- ${article.title}: ${article.url}`);
+    }
+  }
+
+  if (result.actions.length > 0) {
+    console.log('Actions:');
+    for (const action of result.actions) {
+      console.log(`- ${action.type}`);
+    }
+  }
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
@@ -65,12 +81,22 @@ function getQuestion(): string {
       }
 
       if (
-        arg === '--history-json' ||
-        arg === '--page-path' ||
-        arg === '--page-title' ||
-        (historyJsonIndex !== -1 && index === historyJsonIndex + 1) ||
-        (pagePathIndex !== -1 && index === pagePathIndex + 1) ||
-        (pageTitleIndex !== -1 && index === pageTitleIndex + 1)
+         arg === '--history-json' ||
+         arg === '--page-path' ||
+         arg === '--page-title' ||
+         arg === '--section' ||
+         (historyJsonIndex !== -1 && index === historyJsonIndex + 1) ||
+         (pagePathIndex !== -1 && index === pagePathIndex + 1) ||
+         (pageTitleIndex !== -1 && index === pageTitleIndex + 1) ||
+         (sectionIndex !== -1 && index === sectionIndex + 1)
+      ) {
+        return false;
+      }
+
+      if (
+        (pagePathIndex === -1 && arg === pagePath) ||
+        (pageTitleIndex === -1 && arg === pageTitle) ||
+        (sectionIndex === -1 && arg === activeSection)
       ) {
         return false;
       }
@@ -116,6 +142,7 @@ function parsePageContext(): PageContext | undefined {
   return {
     pathname: pagePath,
     title: pageTitle || '',
+    ...(activeSection ? { activeSection: activeSection as PageContext['activeSection'] } : {}),
   };
 }
 

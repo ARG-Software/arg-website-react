@@ -24,7 +24,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "blog:import:medium": "node scripts/import-medium-articles.cjs",
     "blog:import:medium:drafts": "node scripts/import-medium-articles.cjs --drafts",
-    "rag:ingest:internal": "tsx rag/ingestion/scripts/ingestInternal.ts",
+    "rag:ingest:local": "tsx rag/ingestion/scripts/ingestLocal.ts",
     "rag:ingest:external": "tsx rag/ingestion/scripts/ingestExternal.ts",
     "rag:ask:test": "tsx rag/runtime/scripts/testAsk.ts",
     "supabase:link": "node supabase/scripts.js link",

@@ -73,12 +73,18 @@ export default defineConfig(({ mode }) => {
             const result = await askQuestion({
               question: payload.question,
               messages: payload.messages,
-              sourceTypes: payload.sourceTypes,
               pageContext: payload.pageContext,
             });
 
             res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({ answer: result.answer, citations: result.citations }));
+            res.end(
+              JSON.stringify({
+                answer: result.answer,
+                citations: result.citations,
+                articleRecommendations: result.articleRecommendations,
+                actions: result.actions,
+              })
+            );
           } catch (error) {
             const isConfigurationError =
               error instanceof Error &&
