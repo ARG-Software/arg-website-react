@@ -8,7 +8,7 @@ import {
 import { SupabaseRagSourceRepository } from '../repositories/SupabaseRagSourceRepository.js';
 import type { IngestSourceInput, IngestSourceResult } from '../types/ingestion.js';
 import { chunkText } from './processing/chunking.js';
-import { createContentHash, normalizeText } from './processing/text.js';
+import { createSourceHash, normalizeText } from './processing/text.js';
 
 export async function ingestSource({
   supabase,
@@ -41,7 +41,7 @@ export async function ingestSource({
   const sourceRepository = repository ?? new SupabaseRagSourceRepository(supabase as SupabaseClient);
 
   if (!fallbackOnly) {
-    const contentHash = createContentHash(content);
+    const contentHash = createSourceHash(source);
     const existingContentHash = await sourceRepository.getSourceContentHash(source);
 
     if (!force && existingContentHash === contentHash) {
@@ -103,7 +103,16 @@ export async function ingestSource({
     };
   }
 
-  const fallbackEmbeddings = await fallbackEmbeddingProvider.embedTexts(chunks);
+  let fallbackEmbeddings: number[][] | null;
+  try {
+    fallbackEmbeddings = await fallbackEmbeddingProvider.embedTexts(chunks);
+  } catch (error) {
+    if (!(error instanceof GeminiEmbeddingQuotaError)) {
+      throw error;
+    }
+
+    fallbackEmbeddings = null;
+  }
   const result = await sourceRepository.upsertSource(sourceWithChunks, {
     primary: primaryEmbeddings,
     fallback: fallbackEmbeddings,

@@ -6,5 +6,31 @@
     "title": "ARG Software Portfolio",
     "citationUrl": "/files/portfolio.pdf",
     "documentKind": "portfolio"
+  },
+  {
+    "format": "pdf",
+    "filePath": "rag/.rag_private/cvs/JoseAntunes-CV.pdf",
+    "sourceKey": "jose-antunes-cv",
+    "title": "José Antunes",
+    "citationUrl": "/about-us/",
+    "documentKind": "cv",
+    "personKey": "jose",
+    "redaction": {
+      "profile": "cv",
+      "manualReview": true
+    }
+  },
+  {
+    "format": "pdf",
+    "filePath": "rag/.rag_private/cvs/Rui-Rocha_CV.pdf",
+    "sourceKey": "rui-rocha-cv",
+    "title": "Rui Rocha",
+    "citationUrl": "/about-us/",
+    "documentKind": "cv",
+    "personKey": "rui",
+    "redaction": {
+      "profile": "cv",
+      "manualReview": true
+    }
   }
 ]

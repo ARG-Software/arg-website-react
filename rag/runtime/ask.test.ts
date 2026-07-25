@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { GeminiEmbeddingQuotaError } from '../clients/gemini.js';
 import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from './ask.js';
-import type { AnswerProvider, EmbeddingProvider } from '../types/ai.js';
+import type { AnswerProvider, EmbeddingProvider, RetrievalPlan } from '../types/ai.js';
 import type { RagConfig } from '../types/config.js';
 import type { RagSourceOrigin, RagSourceType } from '../types/source.js';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -46,7 +46,9 @@ test('latest articles retrieve the newest three dated blog posts without embeddi
     question: 'Latest articles?',
     config,
     supabase: supabase.client,
-    answerProvider: createAnswerProvider('Latest blog posts'),
+    answerProvider: createAnswerProvider('Latest blog posts', {
+      plan: { mode: 'article_discovery', entity: '', subject: 'articles' },
+    }),
     embeddingProvider,
     fallbackEmbeddingProvider: embeddingProvider,
   });
@@ -60,8 +62,15 @@ test('latest articles retrieve the newest three dated blog posts without embeddi
   assert.equal(supabase.calls.rpc.length, 0);
 });
 
-test('a rewritten recent-post follow-up uses the latest-blog route', () => {
-  assert.equal(resolveRetrievalRoute('What are the most recent blog posts?').kind, 'latest_blog');
+test('an article-discovery plan uses the latest-blog route', () => {
+  assert.equal(
+    resolveRetrievalRoute('What are the most recent blog posts?', {
+      mode: 'article_discovery',
+      entity: '',
+      subject: 'blog posts',
+    }).kind,
+    'latest_blog'
+  );
 });
 
 test('blog metadata remains retrievable through the general route', async () => {
@@ -74,7 +83,9 @@ test('blog metadata remains retrievable through the general route', async () => 
     retrievalQuestion: 'Do you have blog posts?',
     config,
     supabase: supabase.client,
-    answerProvider: createAnswerProvider('Do you have blog posts?'),
+    answerProvider: createAnswerProvider('Do you have blog posts?', {
+      plan: { mode: 'article_discovery', entity: '', subject: 'blog posts' },
+    }),
     embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
     fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
   });
@@ -94,23 +105,35 @@ test('fintech questions use official project evidence before technical blog retr
     retrievalQuestion: 'Can ARG Software build AI for fintech?',
     config,
     supabase: supabase.client,
-    answerProvider: createAnswerProvider('Can ARG Software build AI for fintech?'),
+    answerProvider: createAnswerProvider('Can ARG Software build AI for fintech?', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'AI for fintech' },
+    }),
     embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
     fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
   });
 
-  assert.equal(resolveRetrievalRoute('What experience do you have in fintech?').kind, 'fintech');
+  assert.equal(
+    resolveRetrievalRoute('What experience do you have in fintech?', {
+      mode: 'direct_evidence',
+      entity: 'ARG Software',
+      subject: 'fintech',
+    }).kind,
+    'direct_evidence'
+  );
   assert.equal(contexts[0]?.sourceType, 'project');
   assert.deepEqual(supabase.calls.rpc[0]?.source_types, [
-    'project',
-    'about',
     'homepage',
+    'about',
+    'project',
+    'partner',
+    'careers',
     'working_with_us',
+    'faq',
   ]);
 });
 
 test('a Rui Python follow-up directly retrieves Rui profile without article recommendations', async () => {
-  const rui = source('rui-id', 'Rui Rocha', null, 'about', 'rui-rocha');
+  const rui = source('rui-id', 'Rui Rocha', null, 'about', 'rui-rocha', { person_key: 'rui' });
   const workingWithUs = source(
     'working-with-us-id',
     'Working With Us',
@@ -121,7 +144,7 @@ test('a Rui Python follow-up directly retrieves Rui profile without article reco
   const supabase = createSupabase({
     sources: [rui, workingWithUs],
     chunks: [
-      chunk('rui-id', 'rui-rocha', 'Rui Rocha\nProduct-minded delivery, frontend, mobile, and execution.'),
+      chunk('rui-id', 'rui-rocha', 'Rui Rocha\nWorks with Python.'),
       chunk('working-with-us-id', 'working-with-us', 'Python is a language ARG uses daily.'),
     ],
   });
@@ -134,7 +157,9 @@ test('a Rui Python follow-up directly retrieves Rui profile without article reco
     ],
     config: { ...config, matchCount: 6 },
     supabase: supabase.client,
-    answerProvider: createAnswerProvider('Does Rui Rocha know Python?'),
+    answerProvider: createAnswerProvider('Does Rui Rocha know Python?', {
+      plan: { mode: 'direct_evidence', entity: 'Rui Rocha', subject: 'Python' },
+    }),
     embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
     fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
   });
@@ -142,6 +167,126 @@ test('a Rui Python follow-up directly retrieves Rui profile without article reco
   assert.equal(result.contexts[0]?.sourceKey, 'rui-rocha');
   assert.ok(result.contexts.some(context => context.sourceKey === 'working-with-us'));
   assert.deepEqual(result.articleRecommendations, []);
+});
+
+test('a first-name C# question retrieves José evidence without a technology allowlist', async () => {
+  const jose = source('jose-id', 'José Antunes', null, 'about', 'jose-antunes', { person_key: 'jose' });
+  const joseCv = source('jose-cv-id', 'José Antunes', null, 'local_document', 'jose-antunes-cv', {
+    person_key: 'jose',
+  });
+  const supabase = createSupabase({
+    sources: [jose, joseCv],
+    chunks: [
+      chunk('jose-id', 'jose-antunes', 'José Antunes\nBackend and architecture with C#.'),
+      chunk('jose-cv-id', 'jose-antunes-cv', 'Backend: C#; WebApi; .NET Core.'),
+    ],
+  });
+
+  const result = await askQuestion({
+    question: 'Does Jose know C#?',
+    config: { ...config, matchCount: 6 },
+    supabase: supabase.client,
+    answerProvider: createAnswerProvider('Does Jose know C#?', {
+      plan: { mode: 'direct_evidence', entity: 'Jose', subject: 'C#' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.ok(result.contexts.some(context => context.sourceKey === 'jose-antunes'));
+  assert.ok(result.contexts.some(context => context.sourceKey === 'jose-antunes-cv'));
+  assert.deepEqual(result.articleRecommendations, []);
+});
+
+test('an unconfirmed person technology searches only public and personal evidence', async () => {
+  const jose = source('jose-id', 'José Antunes', null, 'about', 'jose-antunes', {
+    person_key: 'jose',
+  });
+  const joseCv = source('jose-cv-id', 'José Antunes', null, 'local_document', 'jose-antunes-cv', {
+    person_key: 'jose',
+  });
+  const supabase = createSupabase({
+    sources: [jose, joseCv],
+    chunks: [
+      chunk('jose-id', 'jose-antunes', 'José Antunes\nBackend and architecture with C#.'),
+      chunk('jose-cv-id', 'jose-antunes-cv', 'Backend: C#; WebApi; .NET Core.'),
+    ],
+  });
+
+  const result = await askQuestion({
+    question: 'Does Jose know Go?',
+    config,
+    supabase: supabase.client,
+    answerProvider: createAnswerProvider('Does Jose know Go?', {
+      plan: { mode: 'direct_evidence', entity: 'Jose', subject: 'Go' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => {
+      throw new Error('No embedding should be generated for missing personal evidence');
+    }),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.equal(result.answer, 'Please send us a message so we can help.');
+  assert.deepEqual(result.contexts, []);
+  assert.deepEqual(result.articleRecommendations, []);
+  assert.deepEqual(supabase.calls.rpc, []);
+});
+
+test('a founder skill question never uses another person\'s CV as evidence', async () => {
+  const rui = source('rui-id', 'Rui Rocha', null, 'about', 'rui-rocha', { person_key: 'rui' });
+  const ruiCv = source('rui-cv-id', 'Rui Rocha', null, 'local_document', 'rui-rocha-cv', {
+    person_key: 'rui',
+  });
+  const joseCv = source('jose-cv-id', 'José Antunes', null, 'local_document', 'jose-antunes-cv', {
+    person_key: 'jose',
+  });
+  const supabase = createSupabase({
+    sources: [rui, ruiCv, joseCv],
+    chunks: [
+      chunk('rui-id', 'rui-rocha', 'Rui Rocha\nFrontend and delivery.'),
+      chunk('rui-cv-id', 'rui-rocha-cv', 'Backend: C#; .NET Core.'),
+      chunk('jose-cv-id', 'jose-antunes-cv', 'Backend: Python; Mapnik.'),
+    ],
+  });
+
+  const result = await askQuestion({
+    question: 'Does Rui know Python?',
+    config: { ...config, matchCount: 6 },
+    supabase: supabase.client,
+    answerProvider: createAnswerProvider('Does Rui know Python?', {
+      plan: { mode: 'direct_evidence', entity: 'Rui', subject: 'Python' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.ok(result.contexts.every(context => context.sourceKey !== 'jose-antunes-cv'));
+  assert.deepEqual(result.articleRecommendations, []);
+});
+
+test('team questions retrieve the public team source without embeddings', async () => {
+  const team = source('team-id', 'ARG Team', null, 'about', 'arg-team');
+  const supabase = createSupabase({
+    sources: [team],
+    chunks: [chunk('team-id', 'arg-team', 'José Antunes and Rui Rocha are ARG co-founders.')],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for team questions');
+  });
+
+  const result = await askQuestion({
+    question: 'Who are the team members of ARG?',
+    config,
+    supabase: supabase.client,
+    answerProvider: createAnswerProvider('Who are the team members of ARG?', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Team', subject: '' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['arg-team']);
+  assert.deepEqual(supabase.calls.rpc, []);
 });
 
 test('an unresolved personal pronoun asks for clarification', async () => {
@@ -170,7 +315,9 @@ test('runtime retrieval switches to the fallback index after a primary quota err
     retrievalQuestion: 'Explain Python architecture',
     config,
     supabase: supabase.client,
-    answerProvider: createAnswerProvider('Explain Python architecture'),
+    answerProvider: createAnswerProvider('Explain Python architecture', {
+      plan: { mode: 'direct_evidence', entity: '', subject: 'Python architecture' },
+    }),
     embeddingProvider: createEmbeddingProvider(() => {
       throw new GeminiEmbeddingQuotaError('primary');
     }),
@@ -180,13 +327,27 @@ test('runtime retrieval switches to the fallback index after a primary quota err
   assert.equal(supabase.calls.rpc[0]?.functionName, 'match_rag_chunks_fallback');
 });
 
-function createAnswerProvider(rewrite: string): AnswerProvider {
+function createAnswerProvider(
+  rewrite: string,
+  {
+    intent = 'rag_question',
+    plan,
+  }: { intent?: 'rag_question' | 'unsupported'; plan?: Partial<RetrievalPlan> } = {}
+): AnswerProvider {
+  const retrievalPlan: RetrievalPlan = {
+    query: rewrite,
+    mode: 'direct_evidence',
+    entity: '',
+    subject: '',
+    ...plan,
+  };
+
   return {
     async classifyQuestionIntent() {
-      return { intent: 'rag_question', response: '', language: 'en' };
+      return { intent, response: '', language: 'en' };
     },
-    async rewriteQuestion() {
-      return rewrite;
+    async planRetrieval() {
+      return retrievalPlan;
     },
     async generateAnswer() {
       return 'Grounded answer.';
@@ -219,7 +380,8 @@ function source(
   title: string,
   date: string | null,
   sourceType: RagSourceType = 'blog_post',
-  sourceKey = id
+  sourceKey = id,
+  metadata: Record<string, unknown> = {}
 ) {
   return {
     id,
@@ -230,7 +392,7 @@ function source(
     path: null,
     origin: 'first_party' as RagSourceOrigin,
     is_public: true,
-    metadata: date ? { date } : {},
+    metadata: { ...(date ? { date } : {}), ...metadata },
   };
 }
 

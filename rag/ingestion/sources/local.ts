@@ -191,12 +191,17 @@ async function loadTeamProfileSources(rootDir: string): Promise<RagSource[]> {
         title: person.name,
         url: '/about-us/',
         path: aboutPath,
-        metadata: { source_files: sourceFiles, person_key: person.id },
+        metadata: {
+          source_files: sourceFiles,
+          person_key: person.id,
+          evidence_scope: 'individual_public',
+        },
         content: [
           person.name,
           person.role,
           person.bio,
           `Primary focus: ${person.focus}.`,
+          person.languageExperience ? `Language experience: ${person.languageExperience}` : '',
           `Areas: ${person.tags.join(', ')}.`,
           homepageMember ? `Homepage role: ${homepageMember.role}.` : '',
           careersCard ? `Careers contact focus: ${careersCard.focus}.` : '',
@@ -284,7 +289,12 @@ async function loadLocalDocumentSources(
         url: document.citationUrl,
         path: documentPath,
         isPublic: document.isPublic ?? true,
-        metadata: { ...document, source_file: documentPath },
+        metadata: {
+          ...document,
+          source_file: documentPath,
+          person_key: typeof document.personKey === 'string' ? document.personKey : undefined,
+          evidence_scope: document.documentKind === 'cv' ? 'individual_private_evidence' : 'company',
+        },
         content:
           document.documentKind === 'cv'
             ? redactCvContent(extractedContent, document.redaction?.literals)

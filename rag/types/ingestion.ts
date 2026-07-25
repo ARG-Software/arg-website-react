@@ -32,7 +32,7 @@ export interface RagSourceRepository {
 
 export interface RagSourceEmbeddings {
   primary: number[][] | null;
-  fallback: number[][];
+  fallback: number[][] | null;
 }
 
 export interface UpsertSourceResult {

@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { GeminiEmbeddingQuotaError } from '../clients/gemini.js';
 import { ingestSource } from './ingestPipeline.js';
+import { createSourceHash } from './processing/text.js';
 import type { EmbeddingProvider } from '../types/ai.js';
 import type { RagSourceRepository } from '../types/ingestion.js';
 import type { RagSource } from '../types/source.js';
@@ -97,6 +98,54 @@ test('primary quota exhaustion persists fallback embeddings', async () => {
   assert.equal(fallbackCalls, 1);
   assert.equal(fallbackUpdates, 1);
   assert.equal(upserts, 0);
+});
+
+test('fallback quota exhaustion persists primary embeddings', async () => {
+  let upserts = 0;
+  const primaryProvider = createProvider(() => [[0.5, 0.6]]);
+  const fallbackProvider = createProvider(() => {
+    throw new GeminiEmbeddingQuotaError('fallback-model');
+  });
+  const repository = createRepository({
+    upsertSource: async (sourceWithChunks, embeddings) => {
+      upserts += 1;
+      assert.deepEqual(sourceWithChunks.chunks, [source.content]);
+      assert.deepEqual(embeddings, { primary: [[0.5, 0.6]], fallback: null });
+      return { sourceId: 'source-id', chunkCount: 1 };
+    },
+  });
+
+  const result = await ingestSource({
+    source,
+    embeddingProvider: primaryProvider,
+    fallbackEmbeddingProvider: fallbackProvider,
+    repository,
+  });
+
+  assert.equal(result.skipped, false);
+  assert.equal(upserts, 1);
+});
+
+test('metadata changes re-ingest a source even when its content is unchanged', async () => {
+  let upserts = 0;
+  const sourceWithPerson = { ...source, metadata: { person_key: 'jose' } };
+  const repository = createRepository({
+    getSourceContentHash: async () => createSourceHash(source),
+    upsertSource: async () => {
+      upserts += 1;
+      return { sourceId: 'source-id', chunkCount: 1 };
+    },
+  });
+
+  const result = await ingestSource({
+    source: sourceWithPerson,
+    embeddingProvider: createProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createProvider(() => [[0.1, 0.2]]),
+    repository,
+  });
+
+  assert.equal(result.skipped, false);
+  assert.equal(upserts, 1);
 });
 
 function createProvider(embedTexts: (texts: string[]) => number[][] | Promise<number[][]>): EmbeddingProvider {

@@ -5,10 +5,11 @@ import {
   buildIntentFallbackPrompt,
   buildIntentPrompt,
   buildPageContextMessages,
-  buildQuestionRewritePrompt,
+  buildRetrievalPlanPrompt,
   buildSystemPrompt,
   buildUserPrompt,
   parseIntentResponse,
+  parseRetrievalPlan,
 } from '../prompts/answering.js';
 import type {
   AnswerProvider,
@@ -17,6 +18,7 @@ import type {
   PromptMessage,
   QuestionIntent,
   QuestionIntentResult,
+  RetrievalPlan,
   RetrievedContext,
 } from '../types/ai.js';
 import type { RagConfig } from '../types/config.js';
@@ -72,31 +74,25 @@ export class DeepSeekAnswerClient implements AnswerProvider {
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
 
-  async rewriteQuestion(
+  async planRetrieval(
     question: string,
     messages: ChatMessage[],
     pageContext: PageContext | null
-  ): Promise<string> {
+  ): Promise<RetrievalPlan> {
     const config = this.getConfig();
     const data = await createChatCompletion({
       config,
       temperature: 0,
-      errorPrefix: 'DeepSeek question rewrite request failed',
+      errorPrefix: 'DeepSeek retrieval-plan request failed',
       messages: [
-        {
-          role: 'system',
-          content: buildQuestionRewritePrompt(),
-        },
+        { role: 'system', content: buildRetrievalPlanPrompt() },
         ...buildPageContextMessages(pageContext),
         ...buildHistoryMessages(messages),
-        {
-          role: 'user',
-          content: question,
-        },
+        { role: 'user', content: question },
       ],
     });
 
-    return data.choices?.[0]?.message?.content?.trim() || question;
+    return parseRetrievalPlan(data.choices?.[0]?.message?.content);
   }
 
   async classifyQuestionIntent(

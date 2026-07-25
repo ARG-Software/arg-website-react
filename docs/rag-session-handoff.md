@@ -551,6 +551,65 @@ npm run rag:ask:test -- "write me a Python scraper"
 
 ## Current Continuation
 
+### Latest Session Update - 2026-07-25
+
+- `src/data/about.json` and `src/data/workingWithUs.json` were restored to `HEAD` after an unwanted assistant/data change. `git diff --name-only -- src/data` returned no changes after the restore.
+- The RAG runtime was refactored to make `rag/runtime/ask.ts` a small facade instead of a 1000+ line mixed-responsibility file. It now orchestrates intent, route resolution, retrieval, and answer assembly in 191 lines.
+- Public imports remain stable: `askQuestion`, `retrieveRelevantChunks`, `RagValidationError`, and `resolveRetrievalRoute` are still exported from `rag/runtime/ask.ts`.
+- Retrieval routing is now a typed decision tree in `rag/runtime/retrieval/route.ts` and `rag/runtime/retrieval/retrieve.ts`.
+- Input validation, answer cleanup, citations, article recommendations, actions, URL resolution, embeddings, vector search, direct evidence, latest blog retrieval, and Supabase source helpers were split into focused modules.
+- This was intended as a behavior-preserving refactor. Do not mix the next behavior changes into the same review unless necessary.
+
+New runtime files added in this session:
+
+```text
+rag/runtime/answerOutput.ts
+rag/runtime/inputValidation.ts
+rag/runtime/url.ts
+rag/runtime/retrieval/directEvidence.ts
+rag/runtime/retrieval/embeddings.ts
+rag/runtime/retrieval/latestBlog.ts
+rag/runtime/retrieval/retrieve.ts
+rag/runtime/retrieval/route.ts
+rag/runtime/retrieval/sources.ts
+rag/runtime/retrieval/types.ts
+rag/runtime/retrieval/vectorSearch.ts
+```
+
+Current RAG runtime layout:
+
+- `rag/runtime/ask.ts`: public facade and high-level ask/retrieve orchestration.
+- `rag/runtime/inputValidation.ts`: `question`, `messages`, and `pageContext` normalization plus `RagValidationError`.
+- `rag/runtime/answerOutput.ts`: assistant answer normalization, team voice cleanup, citations, article recommendations, actions, and person clarification copy.
+- `rag/runtime/url.ts`: shared URL normalization.
+- `rag/runtime/retrieval/route.ts`: route decision tree: `latest_blog`, `direct_evidence`, `editorial`, and unresolved-person clarification.
+- `rag/runtime/retrieval/retrieve.ts`: route dispatcher that calls latest-blog, direct-evidence, or vector retrieval.
+- `rag/runtime/retrieval/directEvidence.ts`: person/company direct evidence lookup, including public profile and same-person CV evidence.
+- `rag/runtime/retrieval/latestBlog.ts`: newest dated blog-post retrieval without embeddings.
+- `rag/runtime/retrieval/vectorSearch.ts`: RPC vector search, threshold fallback, context merge/deduplication.
+- `rag/runtime/retrieval/embeddings.ts`: primary Gemini embedding with fallback-index switch on quota errors.
+- `rag/runtime/retrieval/sources.ts`: Supabase source/chunk reads and direct context creation.
+- `rag/runtime/retrieval/types.ts`: Supabase row DTOs and match-function type.
+
+Verification completed after the refactor:
+
+- `npm run lint` passes.
+- `npm run rag:test` passes: 15 tests, 15 passing.
+
+Current working tree notes:
+
+- `src/data` is clean relative to `HEAD`.
+- Several `rag/*` files were already modified before the refactor and remain uncommitted. Do not assume they were all changed in this session.
+- This session intentionally changed `rag/runtime/ask.ts` and added the new runtime modules listed above.
+- After this handoff edit, `docs/rag-session-handoff.md` is also expected to be modified.
+
+Next behavior work discussed but not implemented in this refactor:
+
+1. Fix plain named-person identity questions like `Who is Jose?` so they route as RAG/person questions instead of possible small talk.
+2. Prevent generic person-bio answers from volunteering languages/frameworks unless the visitor asks for them.
+3. Add ranked language/framework evidence based on citations/collected source occurrences.
+4. Add tests for `Who is Jose?`, generic founder bios without stack mentions, and ranked language/framework answers.
+
 ### Current Source Policy
 
 - `fa87efc feat(rag): improve source ingestion and retrieval` is the latest committed RAG baseline.

@@ -1,5 +1,7 @@
 import { createHash } from 'node:crypto';
 
+import type { RagSource } from '../../types/source.js';
+
 export function normalizeText(value: unknown): string {
   return String(value ?? '')
     .replace(/\r\n/g, '\n')
@@ -27,4 +29,39 @@ export function stripMarkdown(value: unknown): string {
 export function createContentHash(value: unknown): string {
   const text = normalizeText(value);
   return createHash('sha256').update(text).digest('hex');
+}
+
+export function createSourceHash(source: RagSource): string {
+  return createHash('sha256')
+    .update(
+      JSON.stringify({
+        sourceType: source.sourceType,
+        sourceKey: source.sourceKey,
+        title: source.title,
+        url: source.url ?? null,
+        path: source.path ?? null,
+        origin: source.origin,
+        isPublic: source.isPublic,
+        metadata: sortHashValue(source.metadata ?? {}),
+        chunkMetadata: sortHashValue(source.chunkMetadata ?? {}),
+        content: normalizeText(source.content),
+      })
+    )
+    .digest('hex');
+}
+
+function sortHashValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(sortHashValue);
+  }
+
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, nestedValue]) => [key, sortHashValue(nestedValue)])
+  );
 }

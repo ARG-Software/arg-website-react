@@ -26,6 +26,7 @@ export interface FounderProfile {
   role: string;
   bio: string;
   focus: string;
+  languageExperience?: string;
   tags: string[];
 }
 

@@ -4,7 +4,7 @@ import type { RagSourceEmbeddings, RagSourceRepository, UpsertSourceResult } fro
 import type { RagSource } from '../types/source.js';
 import { toEmbeddingLiteral } from '../utils/embeddings.js';
 import { chunkText } from '../ingestion/processing/chunking.js';
-import { createContentHash, normalizeText } from '../ingestion/processing/text.js';
+import { createSourceHash, normalizeText } from '../ingestion/processing/text.js';
 
 export class SupabaseRagSourceRepository implements RagSourceRepository {
   constructor(private readonly supabase: SupabaseClient) {}
@@ -23,7 +23,9 @@ export class SupabaseRagSourceRepository implements RagSourceRepository {
     if (embeddings.primary) {
       assertEmbeddingCount('primary', chunks, embeddings.primary);
     }
-    assertEmbeddingCount('fallback', chunks, embeddings.fallback);
+    if (embeddings.fallback) {
+      assertEmbeddingCount('fallback', chunks, embeddings.fallback);
+    }
 
     const { data: sourceRow, error: sourceError } = await this.supabase
       .from('rag_sources')
@@ -37,7 +39,7 @@ export class SupabaseRagSourceRepository implements RagSourceRepository {
           origin: source.origin,
           is_public: source.isPublic,
           metadata: source.metadata ?? {},
-          content_hash: createContentHash(content),
+          content_hash: createSourceHash(source),
         },
         { onConflict: 'source_type,source_key' }
       )
@@ -64,7 +66,9 @@ export class SupabaseRagSourceRepository implements RagSourceRepository {
       chunk_index: index,
       content: chunk,
       embedding: embeddings.primary ? toEmbeddingLiteral(embeddings.primary[index]) : null,
-      fallback_embedding: toEmbeddingLiteral(embeddings.fallback[index]),
+      fallback_embedding: embeddings.fallback
+        ? toEmbeddingLiteral(embeddings.fallback[index])
+        : null,
       metadata: {
         ...(source.chunkMetadata ?? {}),
         char_count: chunk.length,

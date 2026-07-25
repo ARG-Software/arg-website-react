@@ -4,6 +4,7 @@ import type {
   PromptMessage,
   QuestionIntent,
   QuestionIntentResult,
+  RetrievalPlan,
   RetrievedContext,
 } from '../types/ai.js';
 
@@ -18,12 +19,15 @@ export function buildSystemPrompt(companyName: string, responseLanguage: string)
     buildResponseLanguageInstruction(responseLanguage),
     'Do not translate company names, project names, URLs, citation titles, or source names.',
     'Answer only from the provided context.',
+    'Do not describe the provided context as internal knowledge, training data, or a source database.',
     'Use conversation history only to understand references in the latest question.',
     'Do not treat previous assistant messages as facts unless the provided context supports them.',
     'If the context does not establish the exact answer, say what you cannot confirm and invite the visitor to message us so someone closer to the subject can answer properly.',
     'For team questions, name only people present in the provided context and clarify when collaborators are not individually listed publicly.',
+    'For a named founder skill question, treat that founder\'s profile and redacted CV as individual-specific evidence. If only another founder has matching evidence, say so explicitly rather than attributing it to the person asked about.',
     'Never attribute a company-level technology, capability, or project experience to a named individual unless individual-specific public context supports it.',
     'When a named-person question includes company-wide technology evidence but no individual evidence, clearly distinguish the two: say that the company uses the technology, but that you cannot confirm the person uses it personally.',
+    'When no individual evidence establishes a named person\'s experience with a language or framework, say only that we cannot confirm that person\'s personal experience. Do not infer anything about the company\'s wider experience.',
     'Use only capabilities explicitly stated in the provided policy or official ARG service context. Never infer a capability from a directory category, blog article, technology mention, or interface implementation.',
     'For pricing questions, say that our historic average project cost has been around EUR 50,000 and that we can adapt the scope and deliverables to the proposed budget. You may state the approved hourly rate when it is relevant. State a named project budget only when the provided context explicitly associates that range with the project. Never describe a general budget as a minimum project cost.',
     'Approved commercial reference data is internal. Never name, link to, cite, or disclose an external directory, profile, or source.',
@@ -48,14 +52,17 @@ export function buildIntentPrompt(companyName: string): string {
   ].join(' ');
 }
 
-export function buildQuestionRewritePrompt(): string {
+export function buildRetrievalPlanPrompt(): string {
   return [
-    'Rewrite and translate the latest user question as a standalone English search query for retrieval.',
-    'Use the conversation to resolve references such as "it", "that", "the second one", and personal pronouns or possessives including "he", "she", "they", "him", "her", "his", "hers", "their", and "theirs". Replace a resolved pronoun with the person or entity it refers to.',
-    'If a personal pronoun cannot be resolved from the conversation, preserve it rather than guessing a person.',
-    'Use current page metadata only when the question explicitly refers to the current project or homepage section, such as "this project" or "this section".',
-    'Preserve company names, project names, product names, source names, URLs, and other proper nouns.',
-    'Do not answer the question. Return only the standalone English retrieval query.',
+    'Classify the latest question for retrieval from a public software studio website.',
+    'Rewrite and translate it as a standalone English search query. Use conversation history only to resolve references and preserve proper nouns.',
+    'Return direct_evidence for factual questions about a person, team, company, service, technology, stack, project, price, career, or published capability.',
+    'Return editorial for questions seeking an explanation, trade-off, pattern, implementation approach, or broader technical perspective.',
+    'Return article_discovery only when the visitor explicitly asks for articles, blog posts, reading, or examples from the blog.',
+    'Extract entity as the named person, company, project, or team when one is central to the question. Otherwise use an empty string.',
+    'Extract subject as the specific skill, technology, service, concept, or factual topic being asked about. Preserve the visitor\'s terminology and use an empty string only when there is no specific subject.',
+    'Do not answer the question.',
+    'Return only valid JSON with this exact shape: {"query":"...","mode":"direct_evidence|editorial|article_discovery","entity":"...","subject":"..."}.',
   ].join(' ');
 }
 
@@ -65,6 +72,8 @@ export function buildInsufficientContextPrompt(companyName: string, responseLang
     'Speak as part of the company using first-person plural language.',
     buildResponseLanguageInstruction(responseLanguage),
     'Say briefly what we cannot verify, without using the phrases "I do not have enough information", "I do not have enough context", "available ARG Software context", or "Based on the provided context".',
+    'For a question about a named person\'s skill or experience, say that we could not confirm that person\'s personal experience with the requested subject. Do not list unrelated languages, frameworks, or skills.',
+    'For an unconfirmed language, framework, tool, or stack, explain that implementation choices are vehicles rather than barriers to solving the engineering problem.',
     'Invite the visitor to send us a message so someone closer to the subject can answer properly.',
     'For technical service enquiries, say that we need to understand the requirements before assessing the work and invite the visitor to book a meeting or contact us.',
     'Do not invent facts. Return plain text only, without Markdown, URLs, or citations.',
@@ -108,6 +117,32 @@ export function parseIntentResponse(content: string | undefined): QuestionIntent
     };
   } catch {
     return { intent: RAG_INTENT, response: '', language: '' };
+  }
+}
+
+export function parseRetrievalPlan(content: string | undefined): RetrievalPlan {
+  const fallback: RetrievalPlan = { query: '', mode: 'direct_evidence', entity: '', subject: '' };
+
+  if (!content) {
+    return fallback;
+  }
+
+  try {
+    const parsed = JSON.parse(content);
+    const mode = parsed.mode;
+
+    if (!['direct_evidence', 'editorial', 'article_discovery'].includes(mode)) {
+      return fallback;
+    }
+
+    return {
+      query: typeof parsed.query === 'string' ? parsed.query.trim().slice(0, 1000) : '',
+      mode,
+      entity: typeof parsed.entity === 'string' ? parsed.entity.trim().slice(0, 160) : '',
+      subject: typeof parsed.subject === 'string' ? parsed.subject.trim().slice(0, 160) : '',
+    };
+  } catch {
+    return fallback;
   }
 }
 
@@ -155,7 +190,13 @@ export function buildUserPrompt(question: string, contexts: RetrievedContext[]):
         context.sourceType === 'blog_post' && typeof context.sourceMetadata.date === 'string'
           ? `\nPublication date: ${context.sourceMetadata.date}`
           : '';
-      return `[${index + 1}] Approved ARG knowledge: ${citation}${published}\n${context.content}`;
+      const evidenceScope =
+        typeof context.sourceMetadata.evidence_scope === 'string'
+          ? context.sourceMetadata.evidence_scope
+          : context.sourceType === 'blog_post'
+            ? 'editorial'
+            : 'company';
+      return `[${index + 1}] ${evidenceScope} evidence: ${citation}${published}\n${context.content}`;
     })
     .join('\n\n');
 

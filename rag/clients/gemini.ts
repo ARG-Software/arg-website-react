@@ -5,6 +5,7 @@ import type { RagConfig } from '../types/config.js';
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const MAX_RETRIES = 1;
 const REQUEST_TIMEOUT_MS = 10000;
+const MAX_BATCH_SIZE = 100;
 
 export class GeminiEmbeddingQuotaError extends Error {
   code = 'embedding_quota_exceeded';
@@ -35,6 +36,10 @@ interface GeminiEmbeddingResponse {
   };
 }
 
+interface GeminiBatchEmbeddingResponse {
+  embeddings?: Array<GeminiEmbeddingResponse['embedding']>;
+}
+
 export class GeminiEmbeddingClient implements EmbeddingProvider {
   constructor(private readonly configSource: GeminiEmbeddingConfigSource = getPrimaryEmbeddingConfig) {}
 
@@ -48,13 +53,18 @@ export class GeminiEmbeddingClient implements EmbeddingProvider {
       return [];
     }
 
-    const embeddings = [];
+    if (texts.length === 1) {
+      return [await this.embedTextContent(texts[0])];
+    }
+
+    const embeddings: number[][] = [];
     const config = this.getConfig();
 
-    for (let index = 0; index < texts.length; index += 1) {
-      embeddings.push(await this.embedTextContent(texts[index]));
+    for (let index = 0; index < texts.length; index += MAX_BATCH_SIZE) {
+      const batch = texts.slice(index, index + MAX_BATCH_SIZE);
+      embeddings.push(...(await this.embedBatch(batch)));
 
-      if (index + 1 < texts.length && config.requestDelayMs > 0) {
+      if (index + MAX_BATCH_SIZE < texts.length && config.requestDelayMs > 0) {
         await sleep(config.requestDelayMs);
       }
     }
@@ -65,7 +75,7 @@ export class GeminiEmbeddingClient implements EmbeddingProvider {
   private async embedTextContent(text: string): Promise<number[]> {
     const config = this.getConfig();
     const url = `${GEMINI_API_BASE}/models/${config.model}:embedContent?key=${config.geminiApiKey}`;
-    const data = await fetchWithRetry(
+    const data = await fetchWithRetry<GeminiEmbeddingResponse>(
       url,
       {
         method: 'POST',
@@ -83,6 +93,37 @@ export class GeminiEmbeddingClient implements EmbeddingProvider {
       config.model
     );
     return data.embedding?.values ?? [];
+  }
+
+  private async embedBatch(texts: string[]): Promise<number[][]> {
+    const config = this.getConfig();
+    const url = `${GEMINI_API_BASE}/models/${config.model}:batchEmbedContents?key=${config.geminiApiKey}`;
+    const data = await fetchWithRetry<GeminiBatchEmbeddingResponse>(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          requests: texts.map(text => ({
+            model: `models/${config.model}`,
+            outputDimensionality: config.dimensions,
+            content: {
+              parts: [{ text }],
+            },
+          })),
+        }),
+      },
+      config.model
+    );
+    const embeddings = data.embeddings?.map(embedding => embedding?.values ?? []) ?? [];
+
+    if (embeddings.length !== texts.length) {
+      throw new Error(`Gemini returned ${embeddings.length} embeddings for ${texts.length} inputs`);
+    }
+
+    return embeddings;
   }
 
   private getConfig(): GeminiEmbeddingConfig {
@@ -115,11 +156,11 @@ function getFallbackEmbeddingConfig(): GeminiEmbeddingConfig {
   };
 }
 
-async function fetchWithRetry(
+async function fetchWithRetry<T extends GeminiEmbeddingResponse | GeminiBatchEmbeddingResponse>(
   url: string,
   init: RequestInit,
   model: string
-): Promise<GeminiEmbeddingResponse> {
+): Promise<T> {
   let lastResponseText = '';
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt += 1) {
@@ -139,7 +180,7 @@ async function fetchWithRetry(
     lastResponseText = await response.text();
 
     if (response.ok) {
-      return JSON.parse(lastResponseText);
+      return JSON.parse(lastResponseText) as T;
     }
 
     if (response.status === 429 && isQuotaExhausted(lastResponseText)) {
