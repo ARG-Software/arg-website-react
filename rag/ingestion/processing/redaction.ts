@@ -2,14 +2,17 @@ import { normalizeText } from './text.js';
 
 const CV_REDACTIONS = [
   /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,
-  /\b(?:phone|telephone|tel|mobile|contact)\s*[:\-]?\s*(?:\+?\d[\d\s().-]{6,}\d)/gi,
+  /\b(?:phone|telephone|tel|mobile|cell|cellphone|contact|whatsapp)\s*[:\-]?\s*(?:\+?\d[\d\s().-]{6,}\d)/gi,
   /\+\d[\d\s().-]{7,}\d/g,
-  /\b(?:address|residence|street address)\s*:\s*[^\n]+/gi,
+  /\b(?:address|residence|street address|location|based in)\s*:\s*[^\n]+/gi,
   /\b(?:date of birth|birth date|born|dob|age|nationality|marital status)\s*:\s*[^\n]+/gi,
+  /(?:^|\n)\s*(?:email|e-mail|linkedin|linked in|github|gitlab|bitbucket|twitter|x|facebook|instagram|portfolio|website|personal website|homepage|social|profile|skype)\s*[:\-]\s*[^\n]+/gi,
   /\bhttps?:\/\/[^\s]+/gi,
+  /\bwww\.[^\s]+/gi,
+  /(?<![\w.])@[a-z0-9_][a-z0-9_.-]{2,}/gi,
 ];
 
-const CV_PROHIBITED_PATTERNS = CV_REDACTIONS.slice(0, -1);
+const CV_PROHIBITED_PATTERNS = CV_REDACTIONS;
 
 export function redactCvContent(content: string, literals: string[] = []): string {
   let redacted = content;

@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { GeminiEmbeddingQuotaError } from '../clients/gemini.js';
 import { ingestSource } from './ingestPipeline.js';
+import { redactCvContent } from './processing/redaction.js';
 import { createSourceHash } from './processing/text.js';
 import type { EmbeddingProvider } from '../types/ai.js';
 import type { RagSourceRepository } from '../types/ingestion.js';
@@ -146,6 +147,48 @@ test('metadata changes re-ingest a source even when its content is unchanged', a
 
   assert.equal(result.skipped, false);
   assert.equal(upserts, 1);
+});
+
+test('CV redaction removes personal data while preserving professional content', () => {
+  const redacted = redactCvContent(`
+    José Antunes
+    Software Architect
+    Email: jose@example.com
+    Phone: +351 912 345 678
+    Address: Rua Example 123, Porto
+    Location: Porto, Portugal
+    Date of Birth: 1988-01-01
+    Nationality: Portuguese
+    Marital Status: Private
+    LinkedIn: https://linkedin.com/in/example
+    GitHub: @example
+    Website: www.example.dev
+
+    Professional Experience
+    Backend architecture with C#, Python, distributed systems, and technical leadership.
+  `);
+
+  assert.match(redacted, /José Antunes/);
+  assert.match(redacted, /Professional Experience/);
+  assert.match(redacted, /Backend architecture with C#, Python/);
+  assert.doesNotMatch(redacted, /jose@example\.com/);
+  assert.doesNotMatch(redacted, /\+351/);
+  assert.doesNotMatch(redacted, /Rua Example/);
+  assert.doesNotMatch(redacted, /Porto, Portugal/);
+  assert.doesNotMatch(redacted, /1988-01-01/);
+  assert.doesNotMatch(redacted, /Portuguese/);
+  assert.doesNotMatch(redacted, /linkedin\.com/);
+  assert.doesNotMatch(redacted, /@example/);
+  assert.doesNotMatch(redacted, /www\.example\.dev/);
+});
+
+test('CV redaction removes configured personal-data literals', () => {
+  const redacted = redactCvContent('Professional summary. Sensitive private token.', [
+    'Sensitive private token',
+  ]);
+
+  assert.match(redacted, /Professional summary/);
+  assert.doesNotMatch(redacted, /Sensitive private token/i);
 });
 
 function createProvider(embedTexts: (texts: string[]) => number[][] | Promise<number[][]>): EmbeddingProvider {

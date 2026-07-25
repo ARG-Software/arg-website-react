@@ -6,6 +6,8 @@ import { getMailtoLink, getProjectBookingLink } from '@services/linksservice';
 import { trackAssistantEvent } from '@utils/analytics';
 import { isMobile } from '@utils/helpers';
 
+const GASPAR_IMAGE_SRC = '/images/ai/gaspar.png';
+
 const QUICK_PROMPTS = [
   'What does ARG do?',
   'Latest articles?',
@@ -262,7 +264,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
         type="button"
       >
         <span className="aw-trigger__icon">
-          <img src="/icons/icon-192.png" alt="" />
+          <img src={GASPAR_IMAGE_SRC} alt="" />
         </span>
       </button>
 
@@ -275,7 +277,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
         <div className="aw-header">
           <div className="aw-header__left">
             <div className="aw-header__avatar">
-              <img src="/icons/icon-192.png" alt="" />
+              <img src={GASPAR_IMAGE_SRC} alt="" />
             </div>
             <div>
               <div className="aw-header__title">Gaspar</div>

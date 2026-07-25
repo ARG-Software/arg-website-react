@@ -44,6 +44,7 @@ export async function loadExternalSource({
     metadata: {
       domain: parsedUrl.hostname,
       trusted: true,
+      evidence_scope: 'approved_trusted_external_reference',
     },
     content:
       sourceKey === 'designrush' && snapshotPath

@@ -13,7 +13,7 @@ create table public.rag_sources (
       'working_with_us',
       'faq',
       'blog_post',
-      'portfolio_pdf',
+      'local_document',
       'external_page'
     )
   ),
@@ -21,6 +21,10 @@ create table public.rag_sources (
   title text not null,
   url text,
   path text,
+  origin text not null default 'first_party' check (
+    origin in ('first_party', 'trusted_external')
+  ),
+  is_public boolean not null default true,
   metadata jsonb not null default '{}'::jsonb,
   content_hash text,
   created_at timestamptz not null default now(),
@@ -33,18 +37,25 @@ create table public.rag_chunks (
   source_id uuid not null references public.rag_sources(id) on delete cascade,
   chunk_index integer not null check (chunk_index >= 0),
   content text not null,
-  embedding extensions.vector(768) not null,
+  embedding extensions.vector(768),
+  fallback_embedding extensions.vector(768),
   metadata jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  unique (source_id, chunk_index)
+  unique (source_id, chunk_index),
+  check (embedding is not null or fallback_embedding is not null)
 );
 
 create index rag_sources_source_type_idx on public.rag_sources (source_type);
 create index rag_sources_source_key_idx on public.rag_sources (source_key);
+create index rag_sources_origin_idx on public.rag_sources (origin);
 create index rag_chunks_source_id_idx on public.rag_chunks (source_id);
 create index rag_chunks_embedding_idx on public.rag_chunks
-  using hnsw (embedding extensions.vector_cosine_ops);
+  using hnsw (embedding extensions.vector_cosine_ops)
+  where embedding is not null;
+create index rag_chunks_fallback_embedding_idx on public.rag_chunks
+  using hnsw (fallback_embedding extensions.vector_cosine_ops)
+  where fallback_embedding is not null;
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -73,7 +84,9 @@ create or replace function public.match_rag_chunks(
   query_embedding extensions.vector(768),
   match_count integer default 6,
   similarity_threshold double precision default 0.72,
-  source_types text[] default null
+  source_types text[] default null,
+  source_keys text[] default null,
+  source_origins text[] default array['first_party']
 )
 returns table (
   chunk_id uuid,
@@ -107,16 +120,100 @@ as $$
     c.metadata as chunk_metadata
   from public.rag_chunks c
   join public.rag_sources s on s.id = c.source_id
-  where (source_types is null or s.source_type = any(source_types))
+  where s.is_public
+    and c.embedding is not null
+    and (source_types is null or s.source_type = any(source_types))
+    and (source_keys is null or s.source_key = any(source_keys))
+    and (source_origins is null or s.origin = any(source_origins))
     and 1 - (c.embedding operator(extensions.<=>) query_embedding) >= similarity_threshold
   order by c.embedding operator(extensions.<=>) query_embedding
   limit greatest(match_count, 0);
 $$;
 
+create or replace function public.match_rag_chunks_fallback(
+  query_embedding extensions.vector(768),
+  match_count integer default 6,
+  similarity_threshold double precision default 0.72,
+  source_types text[] default null,
+  source_keys text[] default null,
+  source_origins text[] default array['first_party']
+)
+returns table (
+  chunk_id uuid,
+  source_id uuid,
+  source_type text,
+  source_key text,
+  title text,
+  url text,
+  path text,
+  chunk_index integer,
+  content text,
+  similarity double precision,
+  source_metadata jsonb,
+  chunk_metadata jsonb
+)
+language sql
+stable
+as $$
+  select
+    c.id as chunk_id,
+    s.id as source_id,
+    s.source_type,
+    s.source_key,
+    s.title,
+    s.url,
+    s.path,
+    c.chunk_index,
+    c.content,
+    1 - (c.fallback_embedding operator(extensions.<=>) query_embedding) as similarity,
+    s.metadata as source_metadata,
+    c.metadata as chunk_metadata
+  from public.rag_chunks c
+  join public.rag_sources s on s.id = c.source_id
+  where s.is_public
+    and c.fallback_embedding is not null
+    and (source_types is null or s.source_type = any(source_types))
+    and (source_keys is null or s.source_key = any(source_keys))
+    and (source_origins is null or s.origin = any(source_origins))
+    and 1 - (c.fallback_embedding operator(extensions.<=>) query_embedding) >= similarity_threshold
+  order by c.fallback_embedding operator(extensions.<=>) query_embedding
+  limit greatest(match_count, 0);
+$$;
+
 revoke all on public.rag_sources from anon, authenticated;
 revoke all on public.rag_chunks from anon, authenticated;
-revoke execute on function public.match_rag_chunks(extensions.vector, integer, double precision, text[]) from public, anon, authenticated;
+revoke execute on function public.match_rag_chunks(
+  extensions.vector,
+  integer,
+  double precision,
+  text[],
+  text[],
+  text[]
+) from public, anon, authenticated;
+revoke execute on function public.match_rag_chunks_fallback(
+  extensions.vector,
+  integer,
+  double precision,
+  text[],
+  text[],
+  text[]
+) from public, anon, authenticated;
 
 grant all on public.rag_sources to service_role;
 grant all on public.rag_chunks to service_role;
-grant execute on function public.match_rag_chunks(extensions.vector, integer, double precision, text[]) to service_role;
+grant execute on function public.match_rag_chunks(
+  extensions.vector,
+  integer,
+  double precision,
+  text[],
+  text[],
+  text[]
+) to service_role;
+grant execute on function public.match_rag_chunks_fallback(
+  extensions.vector,
+  integer,
+  double precision,
+  text[],
+  text[],
+  text[]
+) to service_role;

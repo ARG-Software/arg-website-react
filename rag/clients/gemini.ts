@@ -16,6 +16,15 @@ export class GeminiEmbeddingQuotaError extends Error {
   }
 }
 
+export function isGeminiEmbeddingQuotaError(error: unknown): error is GeminiEmbeddingQuotaError {
+  return (
+    error instanceof GeminiEmbeddingQuotaError ||
+    (error instanceof Error &&
+      (error.name === 'GeminiEmbeddingQuotaError' ||
+        'code' in error && error.code === 'embedding_quota_exceeded'))
+  );
+}
+
 export interface GeminiEmbeddingConfig {
   geminiApiKey: string;
   model: string;

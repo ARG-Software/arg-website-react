@@ -5,13 +5,14 @@
 /* ── Trigger Button ── */
 .aw-trigger {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 56px;
-  height: 56px;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 50%;
   background: #0c002e;
   border: none;
+  padding: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -41,14 +42,26 @@
 }
 
 .aw-trigger__icon {
+  position: relative;
   display: flex;
-  width: 24px;
-  height: 24px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .aw-trigger__icon img {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 88%;
+  height: auto;
+  max-height: none;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
 }
 
 /* ── Chat Panel ── */
@@ -114,14 +127,16 @@
 }
 
 .aw-header__avatar {
-  width: 32px;
-  height: 32px;
+  position: relative;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   background: #0c002e;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .aw-header__avatar svg {
@@ -131,8 +146,15 @@
 }
 
 .aw-header__avatar img {
-  width: 16px;
-  height: 16px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 88%;
+  height: auto;
+  max-height: none;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
 }
 
 .aw-header__title {
@@ -434,15 +456,15 @@
 /* ── Mobile (<=767px): always fullscreen ── */
 @media (max-width: 767px) {
   .aw-trigger {
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    width: 3.125rem;
+    height: 3.125rem;
   }
 
   .aw-trigger__icon {
-    width: 22px;
-    height: 22px;
+    width: 100%;
+    height: 100%;
   }
 
   .aw-panel:not(.aw-panel--open) {

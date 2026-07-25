@@ -5,6 +5,14 @@
     "embeddedSystems": "Hardware, robotics, firmware, and embedded-systems work are not publicly listed ARG specialisms. ARG assesses these requests case by case based on the requirements, delivery setup, and available specialist support. Do not promise delivery before that assessment; invite prospective clients to book a meeting or contact ARG with their requirements.",
     "evidence": "Do not infer a capability from a directory category, a blog article, a technology mention, or a project interface implementation. Only state a capability when this policy or an official ARG service source explicitly supports it."
   },
+  "technologyStack": {
+    "goToLanguages": "ARG's go-to production languages are TypeScript, JavaScript, and C#.",
+    "pythonUse": "ARG also uses Python when it fits the problem, especially for AI, automation, data, scripting, and integration work. Do not present Python as ARG's primary language or as a named founder's personal default unless individual-specific evidence says so."
+  },
+  "sourcePriority": {
+    "order": "Prefer official website data first, FAQs second, approved trusted external reference data third, redacted CV evidence only for named-person professional experience questions, and blog articles only for broader technical/editorial handoff.",
+    "blogs": "Blog articles are editorial writing and technical perspective. Do not use them as proof of company capability, team skills, or named-person experience unless the visitor explicitly asks for writing, articles, or broader technical perspective."
+  },
   "commercialAnswers": {
     "projectBudgets": "A named project's published budget range may be stated only when approved commercial data explicitly associates that range with the project.",
     "generalPricing": "For general project-cost questions, say that ARG's historic average project cost has been around EUR 50,000. Make clear that ARG can adapt scope and deliverables to match the proposed budget. The approved hourly rate may be stated when relevant, but neither a general budget nor hourly rate is a minimum project cost.",

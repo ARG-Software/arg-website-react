@@ -62,7 +62,7 @@
       "inputPlaceholder": "type /help to check the commands",
       "commands": {
         "/all": { "description": "show all available stack categories and tools" },
-        "/languages": { "description": "shows production languages we use daily", "lines": ["TypeScript", "JavaScript", "C#", "Python"] },
+        "/languages": { "description": "shows our go-to production languages", "lines": ["TypeScript", "JavaScript", "C#"] },
         "/databases": { "description": "shows storage, cache, and streaming tools", "lines": ["Postgres", "MongoDB", "MySQL", "SQLite", "SQL Server"] },
         "/frontend": { "description": "shows web and real-time UI tools", "lines": ["React", "Next.js", "Angular", "Vue"] },
         "/backend": { "description": "shows server and API tools", "lines": ["Node.js", "Express", "NestJS", "ASP.NET Core", "Kafka", "RabbitMQ", "gRPC", "REST"] },

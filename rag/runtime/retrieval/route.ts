@@ -1,15 +1,20 @@
 import type { RetrievalPlan } from '../../types/ai.js';
 import type { RagSourceType } from '../../types/source.js';
 
-const BLOG_SOURCE_TYPES: RagSourceType[] = ['blog_post'];
-export const DIRECT_EVIDENCE_SOURCE_TYPES: RagSourceType[] = [
+export const BLOG_SOURCE_TYPES: RagSourceType[] = ['blog_post'];
+export const OFFICIAL_WEBSITE_SOURCE_TYPES: RagSourceType[] = [
   'homepage',
   'about',
   'project',
   'partner',
   'careers',
   'working_with_us',
-  'faq',
+];
+export const FAQ_SOURCE_TYPES: RagSourceType[] = ['faq'];
+export const TRUSTED_EXTERNAL_SOURCE_TYPES: RagSourceType[] = ['external_page'];
+export const DIRECT_EVIDENCE_SOURCE_TYPES: RagSourceType[] = [
+  ...OFFICIAL_WEBSITE_SOURCE_TYPES,
+  ...FAQ_SOURCE_TYPES,
 ];
 
 const LATEST_BLOG_PATTERN =

@@ -10,6 +10,7 @@ loadLocalEnv();
 
 const dryRun = isDryRun();
 const selection = getIngestionRunOptions();
+const requestDelayMs = getEmbeddingRequestDelayMs();
 
 if (!hasSourceFilters(selection)) {
   printSelectionUsage('rag:ingest:local');
@@ -41,6 +42,10 @@ for (const source of sources) {
     failures.push({ source, error });
     console.error(`failed ${source.sourceType}/${source.sourceKey}: ${getErrorMessage(error)}`);
   }
+
+  if (!dryRun && requestDelayMs > 0) {
+    await sleep(requestDelayMs);
+  }
 }
 
 const ingested = results.filter(result => !result.skipped);
@@ -67,4 +72,15 @@ function printResult(result: IngestSourceResult): void {
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function getEmbeddingRequestDelayMs(): number {
+  const value = Number(process.env.GEMINI_EMBEDDING_REQUEST_DELAY_MS ?? 0);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
 }

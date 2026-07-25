@@ -1,9 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import {
-  GeminiEmbeddingQuotaError,
   geminiEmbeddingClient,
   geminiFallbackEmbeddingClient,
+  isGeminiEmbeddingQuotaError,
 } from '../clients/gemini.js';
 import { SupabaseRagSourceRepository } from '../repositories/SupabaseRagSourceRepository.js';
 import type { IngestSourceInput, IngestSourceResult } from '../types/ingestion.js';
@@ -87,7 +87,7 @@ export async function ingestSource({
   try {
     primaryEmbeddings = await embeddingProvider.embedTexts(chunks);
   } catch (error) {
-    if (!(error instanceof GeminiEmbeddingQuotaError)) {
+    if (!isGeminiEmbeddingQuotaError(error)) {
       throw error;
     }
 
@@ -107,7 +107,7 @@ export async function ingestSource({
   try {
     fallbackEmbeddings = await fallbackEmbeddingProvider.embedTexts(chunks);
   } catch (error) {
-    if (!(error instanceof GeminiEmbeddingQuotaError)) {
+    if (!isGeminiEmbeddingQuotaError(error)) {
       throw error;
     }
 

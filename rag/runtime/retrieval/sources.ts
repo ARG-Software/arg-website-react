@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { RetrievedContext } from '../../types/ai.js';
 import type { RagConfig } from '../../types/config.js';
-import type { RagSourceType } from '../../types/source.js';
+import type { RagSourceOrigin, RagSourceType } from '../../types/source.js';
 import { resolveUrl } from '../url.js';
 import type { DirectChunkRow, DirectSourceRow } from './types.js';
 
@@ -10,13 +10,14 @@ const FIRST_PARTY_ORIGIN = 'first_party';
 
 export async function retrieveSources(
   supabase: SupabaseClient,
-  sourceTypes: RagSourceType[]
+  sourceTypes: RagSourceType[],
+  sourceOrigin: RagSourceOrigin = FIRST_PARTY_ORIGIN
 ): Promise<DirectSourceRow[]> {
   const { data, error } = await supabase
     .from('rag_sources')
     .select('id, source_type, source_key, title, url, path, origin, is_public, metadata')
     .in('source_type', sourceTypes)
-    .eq('origin', FIRST_PARTY_ORIGIN)
+    .eq('origin', sourceOrigin)
     .eq('is_public', true);
 
   if (error) {

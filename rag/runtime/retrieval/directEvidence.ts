@@ -2,14 +2,21 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { EmbeddingProvider, RetrievedContext } from '../../types/ai.js';
 import type { RagConfig } from '../../types/config.js';
-import type { RagSourceMetadata, RagSourceType } from '../../types/source.js';
+import type { RagSourceMetadata, RagSourceOrigin, RagSourceType } from '../../types/source.js';
 import { createQueryEmbedding } from './embeddings.js';
-import { DIRECT_EVIDENCE_SOURCE_TYPES, type RetrievalRoute } from './route.js';
+import {
+  DIRECT_EVIDENCE_SOURCE_TYPES,
+  FAQ_SOURCE_TYPES,
+  OFFICIAL_WEBSITE_SOURCE_TYPES,
+  TRUSTED_EXTERNAL_SOURCE_TYPES,
+  type RetrievalRoute,
+} from './route.js';
 import { createDirectContext, retrieveFirstChunksForSources, retrieveSources } from './sources.js';
 import type { DirectChunkRow, DirectSourceRow } from './types.js';
-import { mergeComplementaryContexts, retrieveContextsForOrigin } from './vectorSearch.js';
+import { retrieveContextsForOrigin } from './vectorSearch.js';
 
 const FIRST_PARTY_ORIGIN = 'first_party';
+const TRUSTED_EXTERNAL_ORIGIN = 'trusted_external';
 
 export async function retrieveDirectEvidenceContexts({
   supabase,
@@ -31,14 +38,26 @@ export async function retrieveDirectEvidenceContexts({
     return entitySource ? retrieveFirstChunksForSources(supabase, config, [entitySource]) : [];
   }
 
-  const publicEvidence = route.subject
-    ? await retrieveTextEvidence(supabase, config, DIRECT_EVIDENCE_SOURCE_TYPES, route.subject)
+  const officialEvidence = route.subject
+    ? await retrieveTextEvidence(supabase, config, OFFICIAL_WEBSITE_SOURCE_TYPES, route.subject)
+    : [];
+  const faqEvidence = route.subject
+    ? await retrieveTextEvidence(supabase, config, FAQ_SOURCE_TYPES, route.subject)
+    : [];
+  const trustedExternalEvidence = route.subject
+    ? await retrieveTextEvidence(
+        supabase,
+        config,
+        TRUSTED_EXTERNAL_SOURCE_TYPES,
+        route.subject,
+        TRUSTED_EXTERNAL_ORIGIN
+      )
     : [];
   const personalEvidence = person && route.subject
     ? await retrievePersonDocumentEvidence(supabase, config, person, route.subject)
     : [];
-  const directEvidence = mergeComplementaryContexts(
-    [publicEvidence, personalEvidence],
+  const directEvidence = mergePrioritizedContexts(
+    [officialEvidence, faqEvidence, trustedExternalEvidence, personalEvidence],
     config.matchCount
   );
 
@@ -106,12 +125,13 @@ async function retrieveTextEvidence(
   supabase: SupabaseClient,
   config: RagConfig,
   sourceTypes: RagSourceType[],
-  subject: string
+  subject: string,
+  sourceOrigin: RagSourceOrigin = FIRST_PARTY_ORIGIN
 ): Promise<RetrievedContext[]> {
   return retrieveTextEvidenceFromSources(
     supabase,
     config,
-    await retrieveSources(supabase, sourceTypes),
+    await retrieveSources(supabase, sourceTypes, sourceOrigin),
     subject
   );
 }
@@ -165,14 +185,50 @@ async function retrieveSemanticEvidence(
     embeddingProvider,
     fallbackEmbeddingProvider
   );
-  return retrieveContextsForOrigin({
+  const officialEvidence = await retrieveContextsForOrigin({
     supabase,
     embedding,
     config,
     matchFunction,
     sourceOrigin: FIRST_PARTY_ORIGIN,
-    sourceTypes: DIRECT_EVIDENCE_SOURCE_TYPES,
+    sourceTypes: OFFICIAL_WEBSITE_SOURCE_TYPES,
   });
+  const faqEvidence = await retrieveContextsForOrigin({
+    supabase,
+    embedding,
+    config,
+    matchFunction,
+    sourceOrigin: FIRST_PARTY_ORIGIN,
+    sourceTypes: FAQ_SOURCE_TYPES,
+  });
+  const trustedExternalEvidence = await retrieveContextsForOrigin({
+    supabase,
+    embedding,
+    config,
+    matchFunction,
+    sourceOrigin: TRUSTED_EXTERNAL_ORIGIN,
+    sourceTypes: TRUSTED_EXTERNAL_SOURCE_TYPES,
+  });
+
+  return mergePrioritizedContexts(
+    [officialEvidence, faqEvidence, trustedExternalEvidence],
+    config.matchCount
+  );
+}
+
+function mergePrioritizedContexts(
+  contextGroups: RetrievedContext[][],
+  matchCount: number
+): RetrievedContext[] {
+  const contextsByChunk = new Map<string, RetrievedContext>();
+
+  for (const context of contextGroups.flat()) {
+    if (!contextsByChunk.has(context.chunkId)) {
+      contextsByChunk.set(context.chunkId, context);
+    }
+  }
+
+  return Array.from(contextsByChunk.values()).slice(0, matchCount);
 }
 
 function containsSubject(content: string, subject: string): boolean {

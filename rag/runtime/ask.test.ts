@@ -128,8 +128,10 @@ test('fintech questions use official project evidence before technical blog retr
     'partner',
     'careers',
     'working_with_us',
-    'faq',
   ]);
+  assert.deepEqual(supabase.calls.rpc[1]?.source_types, ['faq']);
+  assert.deepEqual(supabase.calls.rpc[2]?.source_types, ['external_page']);
+  assert.deepEqual(supabase.calls.rpc[2]?.source_origins, ['trusted_external']);
 });
 
 test('a Rui Python follow-up directly retrieves Rui profile without article recommendations', async () => {
@@ -432,7 +434,13 @@ function createSupabase({
   chunks?: ReturnType<typeof chunk>[];
   rpcRows?: ReturnType<typeof matchRow>[];
 }) {
-  const calls: { rpc: Array<{ functionName: string; source_types: RagSourceType[] | null }> } = { rpc: [] };
+  const calls: {
+    rpc: Array<{
+      functionName: string;
+      source_types: RagSourceType[] | null;
+      source_origins?: string[] | null;
+    }>;
+  } = { rpc: [] };
 
   const client = {
     from(table: 'rag_sources' | 'rag_chunks') {
@@ -483,8 +491,15 @@ function createSupabase({
 
       return query;
     },
-    async rpc(functionName: string, parameters: { source_types: RagSourceType[] | null }) {
-      calls.rpc.push({ functionName, source_types: parameters.source_types });
+    async rpc(
+      functionName: string,
+      parameters: { source_types: RagSourceType[] | null; source_origins?: string[] | null }
+    ) {
+      calls.rpc.push({
+        functionName,
+        source_types: parameters.source_types,
+        source_origins: parameters.source_origins,
+      });
       return { data: rpcRows, error: null };
     },
   };
