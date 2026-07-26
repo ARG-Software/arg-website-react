@@ -1,16 +1,15 @@
 import { getDeepSeekConfig, getSiteConfig } from '../config/env.js';
+import { buildSystemPrompt } from '../prompts/answering.js';
 import {
   buildHistoryMessages,
-  buildInsufficientContextPrompt,
-  buildIntentFallbackPrompt,
-  buildIntentPrompt,
   buildPageContextMessages,
-  buildRetrievalPlanPrompt,
-  buildSystemPrompt,
   buildUserPrompt,
-  parseIntentResponse,
-  parseRetrievalPlan,
-} from '../prompts/answering.js';
+} from '../prompts/contextFormatting.js';
+import { buildIntentFallbackPrompt } from '../prompts/fallback.js';
+import { buildInsufficientContextPrompt } from '../prompts/insufficientContext.js';
+import { buildIntentPrompt } from '../prompts/intent.js';
+import { parseIntentResponse, parseRetrievalPlan } from '../prompts/parsers.js';
+import { buildRetrievalPlanPrompt } from '../prompts/retrievalPlan.js';
 import type { ChatMessage, PageContext, PromptMessage } from '../core/types/chat.js';
 import type { RagConfig } from '../core/types/config.js';
 import type { RetrievedContext } from '../core/types/context.js';
