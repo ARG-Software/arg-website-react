@@ -1068,6 +1068,60 @@ npm run build
 
 Live checks confirmed latest-article retrieval and recommendations, blog metadata retrieval, fintech and AI-for-fintech routing, Rui/Python evidence boundaries, and a deliberately primary-quota-failing query using the live fallback index.
 
+## RAG Refactor Completion - July 26, 2026
+
+`docs/rag-refactor-plan.md` phases 1 through 8 are complete and committed:
+
+- `5fe9626 chore(rag): move tests and scripts to dedicated folders`
+- `d84508f refactor(rag): split types by domain under rag/core/types`
+- `8419638 refactor(rag): add runtime read repository boundary`
+- `290d96c refactor(rag): split prompt modules by purpose`
+- `d91dcfb refactor(rag): shrink ask orchestration`
+- `8e2faf3 refactor(rag): split retrieval into strategies`
+- `5845d45 test(rag): add shared fakes and fixtures`
+- `b11557c fix(rag): retrieve exact technologies from indexed evidence`
+
+Current RAG structure highlights:
+
+- Focused domain types live under `rag/core/types/`.
+- Runtime orchestration entrypoint is `rag/runtime/askQuestion.ts`.
+- Public ask endpoints in `netlify/functions/ask.js` and `vite.config.js` import `askQuestion.ts`.
+- Runtime read access goes through `rag/repositories/RagReadRepository.ts`.
+- Supabase table names and RPC names are isolated in `rag/repositories/supabase/SupabaseRagReadRepository.ts` and `SupabaseRagWriteRepository.ts`.
+- Tests live under `rag/tests/`; scripts live under `rag/scripts/`.
+- Shared fakes and fixtures live under `rag/tests/fakes/` and `rag/tests/fixtures/`.
+- Retrieval strategies live under `rag/runtime/retrieval/strategies/`.
+- Technology normalization, compound question splitting, and exact evidence lookup live under `rag/runtime/retrieval/technology/`.
+
+Important behavior from the refactor:
+
+- Exact technology retrieval now searches indexed chunk text lexically before vector fallback.
+- Multi-technology retrieval cap was raised from 3 to 6 so compound questions can cover all requested technologies.
+- Supported aliases include `kubernettes`, `k8s`, `kubernetes`, `docker`, `.net`, `dotnet`, `asp.net`, `angular`, and `react`.
+- Official/project source evidence is preferred over blog evidence for company technology capability answers.
+- Repository code uses `EmbeddingIndex = 'primary' | 'fallback'` instead of leaking Supabase RPC names into domain-level retrieval code.
+- The deprecated `supabase` input was removed from `askQuestion`; tests now use repository fakes.
+
+Phase 9 re-indexing was intentionally skipped. The completed changes affect runtime retrieval and code structure only; no loaded source content, chunking, source generation, or stored metadata changed.
+
+Final automated verification completed successfully:
+
+```bash
+npm run typecheck:rag
+npm run rag:test
+npm run lint
+npm run build
+```
+
+Live technology checks completed successfully with the current indexed Supabase data:
+
+- `Do you use Kubernetes?` confirms Kubernetes and cites `https://arg.software/working-with-us/`.
+- `Do you use Docker?` confirms Docker and cites `https://arg.software/working-with-us/`.
+- `Do you use .NET?` confirms .NET and cites `https://arg.software/projects/tv-cine/`.
+- `Do you use Angular?` confirms Angular and cites `https://arg.software/working-with-us/`.
+- `Do you use React?` confirms React and cites `https://arg.software/working-with-us/`.
+- `And .net? or angular? or react? also do you use kubernettes or docker?` confirms all five requested technologies.
+
 When a future ingestion leaves Model-1-only chunks after a Model 2 quota event, wait for quota recovery and run:
 
 ```bash
