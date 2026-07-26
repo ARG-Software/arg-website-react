@@ -1,4 +1,4 @@
-import { RagValidationError, askQuestion } from '../../rag/runtime/ask.ts';
+import { RagValidationError, askQuestion } from '../../rag/runtime/askQuestion.ts';
 import { GeminiEmbeddingQuotaError } from '../../rag/clients/gemini.ts';
 
 const CORS_HEADERS = {

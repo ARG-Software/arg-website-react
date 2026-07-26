@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { GeminiEmbeddingQuotaError } from '../../clients/gemini.js';
 import { buildInsufficientContextPrompt } from '../../prompts/insufficientContext.js';
-import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from '../../runtime/ask.js';
+import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from '../../runtime/askQuestion.js';
 import type { RagConfig } from '../../core/types/config.js';
 import type { AnswerProvider, EmbeddingProvider } from '../../core/types/providers.js';
 import type { RetrievalPlan } from '../../core/types/retrieval.js';

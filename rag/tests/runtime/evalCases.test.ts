@@ -15,7 +15,7 @@ import type { RagConfig } from '../../core/types/config.js';
 import type { AnswerProvider, EmbeddingProvider } from '../../core/types/providers.js';
 import type { RetrievalPlan } from '../../core/types/retrieval.js';
 import type { RagSourceOrigin, RagSourceType } from '../../core/types/source.js';
-import { askQuestion } from '../../runtime/ask.js';
+import { askQuestion } from '../../runtime/askQuestion.js';
 
 const config: RagConfig = {
   supabaseUrl: 'https://example.supabase.co',

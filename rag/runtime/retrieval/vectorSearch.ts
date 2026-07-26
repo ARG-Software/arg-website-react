@@ -53,6 +53,22 @@ export async function retrieveContextsForOrigin({
   return mergeContexts([highConfidenceContexts, fallbackContexts], config.matchCount);
 }
 
+export function mergeRetrievedContexts(
+  contextGroups: RetrievedContext[][],
+  matchCount: number
+): RetrievedContext[] {
+  const contextsByChunk = new Map<string, RetrievedContext>();
+
+  for (const context of contextGroups.flat()) {
+    const current = contextsByChunk.get(context.chunkId);
+    if (!current || context.similarity > current.similarity) {
+      contextsByChunk.set(context.chunkId, context);
+    }
+  }
+
+  return Array.from(contextsByChunk.values()).slice(0, matchCount);
+}
+
 export function mergeContexts(
   contextGroups: RetrievedContext[][],
   matchCount: number

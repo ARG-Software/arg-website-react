@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => {
           for await (const chunk of req) body += chunk;
 
           try {
-            const { askQuestion } = await import('./rag/runtime/ask.ts');
+            const { askQuestion } = await import('./rag/runtime/askQuestion.ts');
             const payload = JSON.parse(body || '{}');
             const result = await askQuestion({
               question: payload.question,
