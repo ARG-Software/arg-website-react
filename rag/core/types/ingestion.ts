@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { EmbeddingProvider } from './ai.js';
+import type { EmbeddingProvider } from './providers.js';
 import type { RagSource, RagSourceType } from './source.js';
 
 export interface IngestSourceInput {

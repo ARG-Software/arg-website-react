@@ -1,6 +1,6 @@
 import { getGeminiConfig, getGeminiFallbackEmbeddingConfig } from '../config/env.js';
-import type { EmbeddingProvider } from '../types/ai.js';
-import type { RagConfig } from '../types/config.js';
+import type { RagConfig } from '../core/types/config.js';
+import type { EmbeddingProvider } from '../core/types/providers.js';
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const MAX_RETRIES = 1;

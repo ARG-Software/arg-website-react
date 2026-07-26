@@ -1,6 +1,6 @@
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
 import { loadLocalEnv } from '../config/loadLocalEnv.js';
-import type { IngestSourceResult } from '../types/ingestion.js';
+import type { IngestSourceResult } from '../core/types/ingestion.js';
 import { ingestSource } from '../ingestion/ingestPipeline.js';
 import type { ExternalSourceManifestEntry } from '../ingestion/manifest.js';
 import { loadExternalSource, loadExternalSourceEntries } from '../ingestion/sources/external.js';

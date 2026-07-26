@@ -1,14 +1,12 @@
+import type { ChatMessage, PageContext, PromptMessage } from '../core/types/chat.js';
+import type { RetrievedContext } from '../core/types/context.js';
 import type {
-  ChatMessage,
-  PageContext,
-  PromptMessage,
   QuestionIntent,
   QuestionIntentResult,
   RetrievalMode,
   RetrievalPlan,
   RetrievalQuestionPlan,
-  RetrievedContext,
-} from '../types/ai.js';
+} from '../core/types/retrieval.js';
 
 const RAG_INTENT = 'rag_question';
 const RETRIEVAL_MODES: RetrievalMode[] = ['direct_evidence', 'editorial', 'article_discovery'];

@@ -3,8 +3,8 @@ import path from 'node:path';
 
 import { extractHtmlText, fetchExternalHtml } from '../extractors/html.js';
 import { createSource } from '../sourceFactory.js';
-import type { IngestionRunOptions } from '../../types/ingestion.js';
-import type { RagSource } from '../../types/source.js';
+import type { IngestionRunOptions } from '../../core/types/ingestion.js';
+import type { RagSource } from '../../core/types/source.js';
 import type { ExternalSourceManifestEntry } from '../manifest.js';
 
 export async function loadExternalSourceEntries(

@@ -1,4 +1,4 @@
-import type { RagSourceMetadata } from '../../types/source.js';
+import type { RagSourceMetadata } from '../../core/types/source.js';
 
 export interface ProjectJson extends RagSourceMetadata {
   slug: string;

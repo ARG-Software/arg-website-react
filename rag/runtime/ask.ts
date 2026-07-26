@@ -4,16 +4,12 @@ import { deepSeekAnswerClient } from '../clients/deepseek.js';
 import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../clients/gemini.js';
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
 import { getRagConfig } from '../config/env.js';
-import type {
-  AnswerProvider,
-  AskQuestionResult,
-  ChatMessage,
-  EmbeddingProvider,
-  PageContext,
-  RetrievalQuestionPlan,
-  RetrievedContext,
-} from '../types/ai.js';
-import type { RagConfig } from '../types/config.js';
+import type { ChatMessage, PageContext } from '../core/types/chat.js';
+import type { RagConfig } from '../core/types/config.js';
+import type { RetrievedContext } from '../core/types/context.js';
+import type { AskQuestionResult } from '../core/types/output.js';
+import type { AnswerProvider, EmbeddingProvider } from '../core/types/providers.js';
+import type { RetrievalQuestionPlan } from '../core/types/retrieval.js';
 import {
   createArticleRecommendations,
   createAssistantActions,

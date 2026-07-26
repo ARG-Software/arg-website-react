@@ -1,8 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { RetrievedContext } from '../../types/ai.js';
-import type { RagConfig } from '../../types/config.js';
-import type { RagSourceOrigin, RagSourceType } from '../../types/source.js';
+import type { RagConfig } from '../../core/types/config.js';
+import type { RetrievedContext } from '../../core/types/context.js';
+import type { RagSourceOrigin, RagSourceType } from '../../core/types/source.js';
 import { resolveUrl } from '../url.js';
 import type { DirectChunkRow, DirectSourceRow } from './types.js';
 

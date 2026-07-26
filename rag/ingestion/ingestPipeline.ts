@@ -6,7 +6,7 @@ import {
   isGeminiEmbeddingQuotaError,
 } from '../clients/gemini.js';
 import { SupabaseRagSourceRepository } from '../repositories/SupabaseRagSourceRepository.js';
-import type { IngestSourceInput, IngestSourceResult } from '../types/ingestion.js';
+import type { IngestSourceInput, IngestSourceResult } from '../core/types/ingestion.js';
 import { chunkText } from './processing/chunking.js';
 import { createSourceHash, normalizeText } from './processing/text.js';
 

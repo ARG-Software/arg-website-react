@@ -1,7 +1,7 @@
 import {
   GeminiEmbeddingQuotaError,
 } from '../../clients/gemini.js';
-import type { EmbeddingProvider } from '../../types/ai.js';
+import type { EmbeddingProvider } from '../../core/types/providers.js';
 import type { MatchFunction } from './types.js';
 
 export async function createQueryEmbedding(

@@ -5,9 +5,9 @@ import { GeminiEmbeddingQuotaError } from '../../clients/gemini.js';
 import { ingestSource } from '../../ingestion/ingestPipeline.js';
 import { redactCvContent } from '../../ingestion/processing/redaction.js';
 import { createSourceHash } from '../../ingestion/processing/text.js';
-import type { EmbeddingProvider } from '../../types/ai.js';
-import type { RagSourceRepository } from '../../types/ingestion.js';
-import type { RagSource } from '../../types/source.js';
+import type { RagSourceRepository } from '../../core/types/ingestion.js';
+import type { EmbeddingProvider } from '../../core/types/providers.js';
+import type { RagSource } from '../../core/types/source.js';
 
 const source: RagSource = {
   sourceType: 'blog_post',

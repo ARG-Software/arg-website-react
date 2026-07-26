@@ -1,5 +1,7 @@
-import type { RetrievalPlan } from '../../types/ai.js';
-import type { RagSourceType } from '../../types/source.js';
+import type { RetrievalPlan, RetrievalRoute } from '../../core/types/retrieval.js';
+import type { RagSourceType } from '../../core/types/source.js';
+
+export type { RetrievalRoute, RetrievalRouteKind } from '../../core/types/retrieval.js';
 
 export const BLOG_SOURCE_TYPES: RagSourceType[] = ['blog_post'];
 export const OFFICIAL_WEBSITE_SOURCE_TYPES: RagSourceType[] = [
@@ -20,16 +22,6 @@ export const DIRECT_EVIDENCE_SOURCE_TYPES: RagSourceType[] = [
 const LATEST_BLOG_PATTERN =
   /\b(?:latest|newest|most recent|recent)\b.{0,50}\b(?:articles?|blog posts?|posts?)\b|\b(?:articles?|blog posts?|posts?)\b.{0,50}\b(?:latest|newest|most recent|recent)\b/i;
 const PERSONAL_PRONOUN_PATTERN = /\b(?:he|she|they|him|her|his|hers|them|their|theirs)\b/i;
-
-export type RetrievalRouteKind = 'latest_blog' | 'direct_evidence' | 'editorial';
-
-export interface RetrievalRoute {
-  kind: RetrievalRouteKind;
-  firstPartySourceTypes: RagSourceType[] | null;
-  entity: string;
-  subject: string;
-  requiresPersonClarification?: boolean;
-}
 
 export function resolveRetrievalRoute(
   retrievalQuestion: string,

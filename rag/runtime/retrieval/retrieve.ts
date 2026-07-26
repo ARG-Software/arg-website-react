@@ -1,7 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { EmbeddingProvider, RetrievedContext } from '../../types/ai.js';
-import type { RagConfig } from '../../types/config.js';
+import type { RagConfig } from '../../core/types/config.js';
+import type { RetrievedContext } from '../../core/types/context.js';
+import type { EmbeddingProvider } from '../../core/types/providers.js';
 import { createQueryEmbedding } from './embeddings.js';
 import { retrieveDirectEvidenceContexts } from './directEvidence.js';
 import { retrieveLatestBlogContexts } from './latestBlog.js';

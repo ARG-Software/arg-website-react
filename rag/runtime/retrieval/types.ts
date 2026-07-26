@@ -1,4 +1,8 @@
-import type { RagSourceMetadata, RagSourceOrigin, RagSourceType } from '../../types/source.js';
+import type {
+  RagSourceMetadata,
+  RagSourceOrigin,
+  RagSourceType,
+} from '../../core/types/source.js';
 
 export interface MatchRagChunkRow {
   chunk_id: string;

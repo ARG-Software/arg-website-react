@@ -1,4 +1,4 @@
-import type { EnvOptions, RagConfig } from '../types/config.js';
+import type { EnvOptions, RagConfig } from '../core/types/config.js';
 
 const DEFAULTS: Record<string, string> = {
   GEMINI_EMBEDDING_MODEL: 'gemini-embedding-2',

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { RetrievedContext } from '../../types/ai.js';
-import type { RagConfig } from '../../types/config.js';
+import type { RagConfig } from '../../core/types/config.js';
+import type { RetrievedContext } from '../../core/types/context.js';
 import { retrieveFirstChunksForSources } from './sources.js';
 import type { DirectSourceRow } from './types.js';
 

@@ -11,9 +11,10 @@ import {
   type EvalSourceRow,
   type RagEvalCase,
 } from '../evals/cases.js';
-import type { AnswerProvider, EmbeddingProvider, RetrievalPlan } from '../../types/ai.js';
-import type { RagConfig } from '../../types/config.js';
-import type { RagSourceOrigin, RagSourceType } from '../../types/source.js';
+import type { RagConfig } from '../../core/types/config.js';
+import type { AnswerProvider, EmbeddingProvider } from '../../core/types/providers.js';
+import type { RetrievalPlan } from '../../core/types/retrieval.js';
+import type { RagSourceOrigin, RagSourceType } from '../../core/types/source.js';
 import { askQuestion } from '../../runtime/ask.js';
 
 const config: RagConfig = {

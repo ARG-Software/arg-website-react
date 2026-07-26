@@ -20,8 +20,8 @@ import type {
   JsonManifestEntry,
 } from '../manifest.js';
 import { HOMEPAGE_SECTION_SCOPES } from '../../config/homepageSections.js';
-import type { IngestionRunOptions } from '../../types/ingestion.js';
-import type { RagSource, RagSourceMetadata } from '../../types/source.js';
+import type { IngestionRunOptions } from '../../core/types/ingestion.js';
+import type { RagSource, RagSourceMetadata } from '../../core/types/source.js';
 
 const PERSON_SOURCE_KEYS: Record<string, string> = {
   jose: 'jose-antunes',

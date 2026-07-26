@@ -1,4 +1,4 @@
-import type { RagSource } from '../types/source.js';
+import type { RagSource } from '../core/types/source.js';
 
 export function createSource(
   overrides: Partial<RagSource> & Pick<RagSource, 'sourceType' | 'sourceKey' | 'title'>

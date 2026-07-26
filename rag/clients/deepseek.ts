@@ -11,17 +11,15 @@ import {
   parseIntentResponse,
   parseRetrievalPlan,
 } from '../prompts/answering.js';
+import type { ChatMessage, PageContext, PromptMessage } from '../core/types/chat.js';
+import type { RagConfig } from '../core/types/config.js';
+import type { RetrievedContext } from '../core/types/context.js';
+import type { AnswerProvider } from '../core/types/providers.js';
 import type {
-  AnswerProvider,
-  ChatMessage,
-  PageContext,
-  PromptMessage,
   QuestionIntent,
   QuestionIntentResult,
   RetrievalPlan,
-  RetrievedContext,
-} from '../types/ai.js';
-import type { RagConfig } from '../types/config.js';
+} from '../core/types/retrieval.js';
 
 const DEEPSEEK_CHAT_URL = 'https://api.deepseek.com/chat/completions';
 

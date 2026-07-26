@@ -1,4 +1,4 @@
-import type { RagSourceMetadata, RagSourceType } from '../types/source.js';
+import type { RagSourceMetadata, RagSourceType } from '../core/types/source.js';
 
 export interface JsonManifestEntry {
   kind: 'json';
