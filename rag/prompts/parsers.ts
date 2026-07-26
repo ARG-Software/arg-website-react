@@ -43,7 +43,7 @@ export function parseRetrievalPlan(content: string | undefined): RetrievalPlan {
   try {
     const parsed = JSON.parse(content);
     const questions = Array.isArray(parsed.questions)
-      ? parsed.questions.map(parseRetrievalQuestionPlan).filter(Boolean).slice(0, 3)
+      ? parsed.questions.map(parseRetrievalQuestionPlan).filter(Boolean).slice(0, 6)
       : [];
 
     if (questions.length > 0) {

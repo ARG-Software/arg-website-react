@@ -3,7 +3,7 @@ const TECHNOLOGY_DESCRIPTOR_PATTERN =
 const TECHNOLOGY_CATEGORY_WORD_PATTERN =
   /\b(?:cloud|database|framework|language|library|methodology|platform|programming|stack|technology|tool)\b/giu;
 const NON_EXACT_TECHNOLOGY_SUBJECT_PATTERN =
-  /\b(?:automated\s+tests?|background|budget|career|ci\/cd|cicd|code\s+reviews?|contact|continuous\s+(?:delivery|integration)|cost|duration|e2e(?:\s+testing)?|end[-\s]+to[-\s]+end\s+testing|experience|fintech|integration\s+tests?|origin|price|project|qa|quality\s+assurance|service|team|test\s+coverage|testing|unit\s+tests?)\b/iu;
+  /\b(?:automated\s+tests?|background|budget|career|ci\/cd|cicd|code\s+reviews?|collaboration|contact|continuous\s+(?:delivery|integration)|cost|duration|e2e(?:\s+testing)?|end[-\s]+to[-\s]+end\s+testing|experience|fintech|hybrid|integration\s+tests?|mode|on[-\s]?site|origin|price|project|qa|quality\s+assurance|remote|service|team|test\s+coverage|testing|unit\s+tests?)\b/iu;
 const TECHNOLOGY_DISPLAY_NAMES = new Map([
   ['aws', 'AWS'],
   ['c#', 'C#'],
@@ -12,7 +12,29 @@ const TECHNOLOGY_DISPLAY_NAMES = new Map([
   ['go', 'Go'],
   ['golang', 'Go'],
   ['javascript', 'JavaScript'],
+  ['.net', '.NET'],
+  ['dotnet', '.NET'],
+  ['asp.net', 'ASP.NET Core / .NET'],
+  ['aspnet', 'ASP.NET Core / .NET'],
+  ['angular', 'Angular'],
+  ['docker', 'Docker'],
+  ['k8s', 'Kubernetes'],
+  ['kubernettes', 'Kubernetes'],
+  ['kubernetes', 'Kubernetes'],
+  ['react', 'React'],
   ['typescript', 'TypeScript'],
+]);
+const TECHNOLOGY_SEARCH_TERMS = new Map([
+  ['.net', ['.NET', 'dotnet']],
+  ['dotnet', ['.NET', 'dotnet']],
+  ['asp.net', ['ASP.NET', 'ASP.NET Core', '.NET', 'dotnet']],
+  ['aspnet', ['ASP.NET', 'ASP.NET Core', '.NET', 'dotnet']],
+  ['angular', ['Angular']],
+  ['docker', ['Docker']],
+  ['k8s', ['Kubernetes', 'k8s']],
+  ['kubernettes', ['Kubernetes', 'k8s']],
+  ['kubernetes', ['Kubernetes', 'k8s']],
+  ['react', ['React']],
 ]);
 
 export function normalizeName(value: string): string {
@@ -64,6 +86,18 @@ export function normalizeTechnologySubject(subject: string): string {
     .replace(/[^a-z0-9#+. ]/gu, ' ')
     .replace(/\s+/gu, ' ')
     .trim();
+}
+
+export function getTechnologySearchTerms(subject: string): string[] {
+  const normalizedSubject = normalizeTechnologySubject(subject);
+  const explicitTerms = TECHNOLOGY_SEARCH_TERMS.get(normalizedSubject);
+
+  if (explicitTerms) {
+    return explicitTerms;
+  }
+
+  const displayName = extractTechnologyName(subject);
+  return displayName ? [displayName] : [normalizedSubject];
 }
 
 export function isLikelyExactTechnologySubject(normalizedSubject: string): boolean {

@@ -1,6 +1,6 @@
 export function buildRetrievalPlanPrompt(): string {
   return [
-    'Split the latest user message into up to three standalone retrieval questions for a public software studio website.',
+    'Split the latest user message into up to six standalone retrieval questions for a public software studio website.',
     'Each item must be a single factual or editorial question. Split compound messages joined by punctuation, "and", "or", "also", or multiple question marks when they ask for different facts.',
     'Rewrite and translate each item as a standalone English search query. Use conversation history only to resolve references and preserve proper nouns.',
     'Return direct_evidence for factual questions about a person, team, company, service, technology, stack, project, price, career, quality practice, testing, QA, CI/CD, or published capability.',

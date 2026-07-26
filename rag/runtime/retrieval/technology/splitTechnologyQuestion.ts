@@ -9,7 +9,7 @@ export function splitTechnologySubjects(subject: string): string[] {
     .split(/\s+(?:and|or)\s+|[,;]+/giu)
     .map(value => value.trim())
     .filter(Boolean)
-    .slice(0, 3);
+    .slice(0, 6);
 }
 
 export function createTechnologySupportQuery(

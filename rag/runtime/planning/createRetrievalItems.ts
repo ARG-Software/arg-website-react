@@ -55,7 +55,7 @@ function createRetrievalItems(
       subject: item.subject,
     }))
     .filter(item => item.query || item.subject || item.entity)
-    .slice(0, 3);
+    .slice(0, 6);
 }
 
 function createTechnologySubjectItems(

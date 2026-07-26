@@ -459,7 +459,7 @@ export const executableRagEvalCases: RagEvalCase[] = [
     },
   },
   {
-    id: 'payment-qa-playwright-banks-truncates-fourth-item',
+    id: 'payment-qa-playwright-banks-keeps-fourth-item',
     category: 'oneLineMultiQuestion',
     question: 'can you build payment systems, do QA, use Playwright, and work with banks?',
     plan: {
@@ -482,18 +482,16 @@ export const executableRagEvalCases: RagEvalCase[] = [
         /Can ARG Software build payment systems\? \(context retrieved\)/u,
         /Does ARG Software do QA\? \(context retrieved\)/u,
         /Does ARG Software use Playwright\? \(context retrieved\)/u,
+        /Does ARG Software work with banks\? \(no context retrieved\)/u,
       ],
       embeddingBatches: [
-        [
-          'Can ARG Software build payment systems?',
-          'Does ARG Software do QA?',
-          'Does ARG Software use Playwright?',
-        ],
+        ['Does ARG Software do QA?'],
+        ['banks'],
       ],
     },
   },
   {
-    id: 'technology-overflow-keeps-first-three-subjects',
+    id: 'technology-overflow-keeps-all-requested-subjects',
     category: 'oneLineMultiQuestion',
     question: 'do you know Go, Rust, Angular, and .NET?',
     plan: {
@@ -508,19 +506,16 @@ export const executableRagEvalCases: RagEvalCase[] = [
     ],
     matchCount: 6,
     expected: {
-      sourceKeys: ['sky-tracks'],
-      forbiddenSourceKeys: ['royalty-flush'],
+      sourceKeys: ['sky-tracks', 'royalty-flush'],
       generatedQuestionPatterns: [
         /Does ARG Software use Go\? \(no context retrieved\)/u,
         /Does ARG Software use Rust\? \(no context retrieved\)/u,
         /Does ARG Software use Angular\? \(context retrieved\)/u,
+        /Does ARG Software use \.NET\? \(context retrieved\)/u,
       ],
       embeddingBatches: [
-        [
-          'Does ARG Software use Go?',
-          'Does ARG Software use Rust?',
-          'Does ARG Software use Angular?',
-        ],
+        ['Go'],
+        ['Rust'],
       ],
     },
   },

@@ -8,6 +8,12 @@ const EXACT_TECHNOLOGY_PATTERNS: Array<{ names: string[]; pattern: RegExp }> = [
   { names: ['go', 'go language', 'golang', 'golang language'], pattern: /\b(?:go|golang)\b/iu },
   { names: ['c#', 'c sharp', 'csharp'], pattern: /(?:^|[^a-z0-9])c#(?=$|[^a-z0-9])/iu },
   { names: ['python', 'python language'], pattern: /\bpython\b/iu },
+  { names: ['kubernetes', 'kubernettes', 'k8s'], pattern: /\b(?:kubernetes|kubernettes|k8s)\b/iu },
+  { names: ['docker'], pattern: /\bdocker\b/iu },
+  { names: ['.net', 'dotnet'], pattern: /(?:^|[^a-z0-9])(?:\.net|dotnet)(?=$|[^a-z0-9])/iu },
+  { names: ['asp.net', 'aspnet'], pattern: /(?:^|[^a-z0-9])(?:asp\.?net|\.net|dotnet)(?:\s+core)?(?=$|[^a-z0-9])/iu },
+  { names: ['react'], pattern: /\breact\b/iu },
+  { names: ['angular'], pattern: /\bangular\b/iu },
   { names: ['typescript', 'typescript language'], pattern: /\btypescript\b/iu },
   { names: ['javascript', 'javascript language'], pattern: /\bjavascript\b/iu },
 ];

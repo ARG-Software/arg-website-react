@@ -1,12 +1,45 @@
 import type { RetrievedContext } from '../../../core/types/context.js';
+import type { RagConfig } from '../../../core/types/config.js';
 import type { RetrievalRoute } from '../../../core/types/retrieval.js';
-import type { RagSourceRecord } from '../../../repositories/RagReadRepository.js';
-import { isCompanyEntity } from '../technology/normalizeTechnology.js';
+import type { RagSourceType } from '../../../core/types/source.js';
+import type { RagReadRepository, RagSourceRecord } from '../../../repositories/RagReadRepository.js';
+import { getTechnologySearchTerms, isCompanyEntity } from '../technology/normalizeTechnology.js';
 import {
   getExactTechnologyPattern,
   isDisqualifyingTechnologyEvidence,
   removeIdioms,
 } from '../technology/technologyEvidence.js';
+
+const AUTHORITATIVE_TECHNOLOGY_SOURCE_TYPES: RagSourceType[] = [
+  'working_with_us',
+  'project',
+  'faq',
+  'homepage',
+  'about',
+];
+const SOURCE_TYPE_PRIORITY = new Map(
+  AUTHORITATIVE_TECHNOLOGY_SOURCE_TYPES.map((sourceType, index) => [sourceType, index])
+);
+
+export async function retrieveLexicalExactTechnologyEvidence(
+  readRepository: RagReadRepository,
+  config: RagConfig,
+  subject: string
+): Promise<RetrievedContext[]> {
+  if (!isExactTechnologySubject(subject)) {
+    return [];
+  }
+
+  const contexts = await readRepository.findChunksByText({
+    terms: getTechnologySearchTerms(subject),
+    matchCount: Math.max(config.matchCount * 4, 20),
+    sourceTypes: AUTHORITATIVE_TECHNOLOGY_SOURCE_TYPES,
+  });
+
+  return filterExactTechnologyEvidence(contexts, subject)
+    .sort((left, right) => getSourcePriority(left.sourceType) - getSourcePriority(right.sourceType))
+    .slice(0, config.matchCount);
+}
 
 export function isExactTechnologySubject(subject: string): boolean {
   return Boolean(getExactTechnologyPattern(subject));
@@ -38,4 +71,8 @@ export function shouldUseBlogTechnologyEvidence(
   }
 
   return isExactTechnologySubject(route.subject);
+}
+
+function getSourcePriority(sourceType: RagSourceType): number {
+  return SOURCE_TYPE_PRIORITY.get(sourceType) ?? Number.MAX_SAFE_INTEGER;
 }

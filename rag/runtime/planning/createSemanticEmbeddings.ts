@@ -1,6 +1,7 @@
 import type { EmbeddingProvider } from '../../core/types/providers.js';
 import type { EmbeddingIndex } from '../../core/types/retrieval.js';
 import { createQueryEmbeddings } from '../retrieval/embeddings.js';
+import { isExactTechnologySubject } from '../retrieval/strategies/exactTechnology.js';
 import type { RoutedRetrievalItem } from './createRetrievalItems.js';
 
 export async function createSemanticEmbeddings(
@@ -32,6 +33,10 @@ export async function createSemanticEmbeddings(
 
 function requiresSemanticEmbedding(item: RoutedRetrievalItem): boolean {
   if (item.route.kind === 'latest_blog' || item.route.requiresPersonClarification) {
+    return false;
+  }
+
+  if (item.route.kind === 'direct_evidence' && isExactTechnologySubject(item.plan.subject)) {
     return false;
   }
 

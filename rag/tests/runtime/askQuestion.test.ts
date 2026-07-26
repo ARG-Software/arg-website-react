@@ -456,6 +456,62 @@ test('compound technology questions split or subjects before retrieval', async (
   );
 });
 
+test('compound exact technology questions keep all requested technologies and search lexically first', async () => {
+  const embeddingBatches: string[][] = [];
+  const supabase = createSupabase({
+    rpcRows: [
+      matchRow(
+        'working_with_us',
+        'assistant-policy',
+        'Assistant Response Policy',
+        'ARG can support Kubernetes-based deployments when the project infrastructure calls for it.'
+      ),
+      matchRow(
+        'project',
+        'sky-tracks',
+        'Sky Tracks',
+        'Sky Tracks migrated the frontend to Angular.'
+      ),
+      matchRow(
+        'project',
+        'royalty-flush',
+        'Royalty Flush',
+        'Royalty Flush stack: .NET Core, Docker, React, PostgreSQL.'
+      ),
+    ],
+  });
+
+  const result = await askQuestion({
+    question: 'And .net? or angular? or react? also do you use kubernettes or docker?',
+    config: { ...config, matchCount: 6 },
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider(
+      'Does ARG Software use .net, angular, react, kubernettes or docker?',
+      {
+        plan: {
+          mode: 'direct_evidence',
+          entity: 'ARG Software',
+          subject: '.net, angular, react, kubernettes or docker',
+        },
+      }
+    ),
+    embeddingProvider: createEmbeddingProvider(texts => {
+      embeddingBatches.push(texts);
+      return texts.map(() => [0.1, 0.2]);
+    }),
+    fallbackEmbeddingProvider: createEmbeddingProvider(texts => texts.map(() => [0.1, 0.2])),
+  });
+
+  assert.deepEqual(new Set(result.contexts.map(context => context.sourceKey)), new Set([
+    'assistant-policy',
+    'sky-tracks',
+    'royalty-flush',
+  ]));
+  assert.deepEqual(embeddingBatches, []);
+  assert.equal(supabase.calls.matchChunks.length, 0);
+  assert.equal(supabase.calls.findChunksByText.length, 5);
+});
+
 test('blog-only technology evidence supports knowledge without official project evidence', async () => {
   const supabase = createSupabase({
     rpcRows: [

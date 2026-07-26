@@ -17,6 +17,7 @@ import { retrieveContextsForOrigin } from '../vectorSearch.js';
 import {
   filterExactTechnologyEvidence,
   isExactTechnologySubject,
+  retrieveLexicalExactTechnologyEvidence,
   shouldUseBlogTechnologyEvidence,
 } from './exactTechnology.js';
 import {
@@ -63,6 +64,22 @@ export async function retrieveDirectEvidenceContexts({
     return entitySource ? readRepository.findFirstChunksForSources([entitySource]) : [];
   }
 
+  const entitySource =
+    !person && route.entity ? await findDirectSource(readRepository, route.entity) : null;
+  const isCompanyQuestion = isCompanyEntity(route.entity);
+
+  if (route.subject && !person && (!entitySource || isCompanyQuestion)) {
+    const lexicalExactTechnologyEvidence = await retrieveLexicalExactTechnologyEvidence(
+      readRepository,
+      config,
+      route.subject
+    );
+
+    if (lexicalExactTechnologyEvidence.length > 0) {
+      return lexicalExactTechnologyEvidence;
+    }
+  }
+
   const search = route.subject
     ? await resolveSemanticSearch(
         route.subject,
@@ -74,9 +91,6 @@ export async function retrieveDirectEvidenceContexts({
   const personalEvidence = person && search
     ? await retrievePersonSemanticEvidence(readRepository, config, person, search)
     : [];
-  const entitySource =
-    !person && route.entity ? await findDirectSource(readRepository, route.entity) : null;
-  const isCompanyQuestion = isCompanyEntity(route.entity);
   const entityEvidence = entitySource && search
     ? await retrieveSemanticEvidenceForSourceKeys(readRepository, config, search, [
         entitySource.sourceKey,
