@@ -11,6 +11,7 @@ const STACK_GROUP_LABELS = {
   '/infra': 'Infrastructure',
   '/languages': 'Languages',
   '/observe': 'Observability',
+  '/testing': 'Testing',
 };
 
 export function TechStackConsole({

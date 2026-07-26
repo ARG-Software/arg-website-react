@@ -6,6 +6,7 @@ import { createQueryEmbedding } from './embeddings.js';
 import { retrieveDirectEvidenceContexts } from './directEvidence.js';
 import { retrieveLatestBlogContexts } from './latestBlog.js';
 import type { RetrievalRoute } from './route.js';
+import type { MatchFunction } from './types.js';
 import { retrieveContextsForOrigin } from './vectorSearch.js';
 
 const FIRST_PARTY_ORIGIN = 'first_party';
@@ -22,6 +23,8 @@ export async function retrieveRoutedContexts({
   supabase,
   embeddingProvider,
   fallbackEmbeddingProvider,
+  embedding,
+  matchFunction,
 }: {
   retrievalQuestion: string;
   route: RetrievalRoute;
@@ -29,6 +32,8 @@ export async function retrieveRoutedContexts({
   supabase: SupabaseClient;
   embeddingProvider: EmbeddingProvider;
   fallbackEmbeddingProvider: EmbeddingProvider;
+  embedding?: number[];
+  matchFunction?: MatchFunction;
 }): Promise<RetrievalResult> {
   if (route.kind === 'latest_blog') {
     return {
@@ -45,21 +50,24 @@ export async function retrieveRoutedContexts({
         route,
         embeddingProvider,
         fallbackEmbeddingProvider,
+        semanticSearch:
+          embedding && matchFunction
+            ? { query: retrievalQuestion, embedding, matchFunction }
+            : undefined,
       }),
       route,
     };
   }
 
-  const { embedding, matchFunction } = await createQueryEmbedding(
-    retrievalQuestion,
-    embeddingProvider,
-    fallbackEmbeddingProvider
-  );
+  const semanticSearch =
+    embedding && matchFunction
+      ? { embedding, matchFunction }
+      : await createQueryEmbedding(retrievalQuestion, embeddingProvider, fallbackEmbeddingProvider);
   const firstPartyContexts = await retrieveContextsForOrigin({
     supabase,
-    embedding,
+    embedding: semanticSearch.embedding,
     config,
-    matchFunction,
+    matchFunction: semanticSearch.matchFunction,
     sourceOrigin: FIRST_PARTY_ORIGIN,
     sourceTypes: route.firstPartySourceTypes,
   });

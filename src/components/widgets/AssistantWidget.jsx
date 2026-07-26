@@ -83,6 +83,97 @@ function getInternalAssistantPath(url) {
   }
 }
 
+function getAssistantLinks(message) {
+  const links = [];
+  const seen = new Set();
+
+  for (const article of message.articleRecommendations || []) {
+    addAssistantLink(links, seen, {
+      type: 'article',
+      title: article.title,
+      url: article.url,
+    });
+  }
+
+  for (const citation of message.citations || []) {
+    addAssistantLink(links, seen, {
+      type: 'citation',
+      title: citation.title,
+      url: citation.url,
+      sourceType: citation.sourceType,
+      sourceKey: citation.sourceKey,
+    });
+  }
+
+  return links;
+}
+
+function addAssistantLink(links, seen, link) {
+  const key = `${link.url || ''}:${link.title || ''}`.toLowerCase();
+
+  if (!link.title || seen.has(key)) {
+    return;
+  }
+
+  seen.add(key);
+  links.push(link);
+}
+
+function trackAssistantLinkClick(link) {
+  if (link.type === 'article') {
+    trackAssistantEvent('article_recommendation_click', {
+      article_title: link.title,
+    });
+    return;
+  }
+
+  trackAssistantEvent('citation_click', {
+    source_type: link.sourceType,
+    source_key: link.sourceKey,
+  });
+}
+
+function AssistantLinkList({ links }) {
+  if (links.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="aw-source-links" aria-label="Related links">
+      {links.map(link => {
+        const internalPath = link.url ? getInternalAssistantPath(link.url) : null;
+        const onClick = () => trackAssistantLinkClick(link);
+
+        return internalPath ? (
+          <Link
+            key={`${link.url}-${link.title}`}
+            className="aw-source-link"
+            to={internalPath}
+            onClick={onClick}
+          >
+            {link.title}
+          </Link>
+        ) : link.url ? (
+          <a
+            key={`${link.url}-${link.title}`}
+            className="aw-source-link"
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClick}
+          >
+            {link.title}
+          </a>
+        ) : (
+          <span key={link.title} className="aw-source-link aw-source-link--static">
+            {link.title}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 function useMobileFullscreen() {
   const [mobileViewport, setMobileViewport] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -360,81 +451,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
           {messages.map((msg, i) => (
             <div key={i} className={`aw-message aw-message--${msg.role}`}>
               <p>{msg.content}</p>
-              {msg.citations && msg.citations.length > 0 && (
-                <div className="aw-citations">
-                  {msg.citations.map((cit, ci) =>
-                    cit.url && getInternalAssistantPath(cit.url) ? (
-                      <Link
-                        key={ci}
-                        className="aw-citation"
-                        to={getInternalAssistantPath(cit.url)}
-                        onClick={() =>
-                          trackAssistantEvent('citation_click', {
-                            source_type: cit.sourceType,
-                            source_key: cit.sourceKey,
-                          })
-                        }
-                      >
-                        {cit.title}
-                      </Link>
-                    ) : cit.url ? (
-                      <a
-                        key={ci}
-                        className="aw-citation"
-                        href={cit.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() =>
-                          trackAssistantEvent('citation_click', {
-                            source_type: cit.sourceType,
-                            source_key: cit.sourceKey,
-                          })
-                        }
-                      >
-                        {cit.title}
-                      </a>
-                    ) : (
-                      <span key={ci} className="aw-citation">
-                        {cit.title}
-                      </span>
-                    )
-                  )}
-                </div>
-              )}
-              {msg.articleRecommendations && msg.articleRecommendations.length > 0 && (
-                <div className="aw-article-recommendations">
-                  <span className="aw-article-recommendations__label">Read more</span>
-                  {msg.articleRecommendations.map(article => {
-                    const internalPath = getInternalAssistantPath(article.url);
-                    const onClick = () =>
-                      trackAssistantEvent('article_recommendation_click', {
-                        article_title: article.title,
-                      });
-
-                    return internalPath ? (
-                      <Link
-                        key={article.url}
-                        className="aw-article-recommendation"
-                        to={internalPath}
-                        onClick={onClick}
-                      >
-                        {article.title}
-                      </Link>
-                    ) : (
-                      <a
-                        key={article.url}
-                        className="aw-article-recommendation"
-                        href={article.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={onClick}
-                      >
-                        {article.title}
-                      </a>
-                    );
-                  })}
-                </div>
-              )}
+              <AssistantLinkList links={getAssistantLinks(msg)} />
               {msg.actions && msg.actions.length > 0 && (
                 <div className="aw-actions">
                   {msg.actions.map((action, ai) => {

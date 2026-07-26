@@ -27,11 +27,15 @@ export type QuestionIntent = 'small_talk' | 'rag_question' | 'unsupported';
 
 export type RetrievalMode = 'direct_evidence' | 'editorial' | 'article_discovery';
 
-export interface RetrievalPlan {
+export interface RetrievalQuestionPlan {
   query: string;
   mode: RetrievalMode;
   entity: string;
   subject: string;
+}
+
+export interface RetrievalPlan extends RetrievalQuestionPlan {
+  questions?: RetrievalQuestionPlan[];
 }
 
 export interface QuestionIntentResult {

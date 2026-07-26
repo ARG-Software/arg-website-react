@@ -249,12 +249,31 @@
   max-width: 100%;
 }
 
-/* ── Citations ── */
-.aw-citations {
+/* ── Source / Article Links ── */
+.aw-source-links {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
   margin-top: 8px;
+}
+
+.aw-source-link {
+  color: #0c002e;
+  font: 500 11px/1.35 Neuemontreal, sans-serif;
+  text-decoration: underline;
+  text-decoration-color: rgba(121, 4, 253, 0.45);
+  text-underline-offset: 3px;
+  transition: color 0.15s;
+}
+
+.aw-source-link:hover {
+  color: #7904fd;
+}
+
+.aw-source-link--static {
+  color: rgba(12, 0, 46, 0.6);
+  text-decoration: none;
 }
 
 .aw-actions {
@@ -262,47 +281,6 @@
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 8px;
-}
-
-.aw-article-recommendations {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.aw-article-recommendations__label {
-  color: rgba(12, 0, 46, 0.58);
-  font: 600 10px/1 Neuemontreal, sans-serif;
-  text-transform: uppercase;
-}
-
-.aw-article-recommendation {
-  color: #0c002e;
-  font: 500 11px/1.35 Neuemontreal, sans-serif;
-  text-decoration: underline;
-  text-decoration-color: rgba(121, 4, 253, 0.45);
-  text-underline-offset: 3px;
-}
-
-.aw-article-recommendation:hover {
-  color: #7904fd;
-}
-
-.aw-citation {
-  background: rgba(12, 0, 46, 0.06);
-  border: 1px solid rgba(12, 0, 46, 0.12);
-  border-radius: 999px;
-  color: #0c002e;
-  font: 500 10px/1 Neuemontreal, sans-serif;
-  padding: 5px 10px;
-  text-decoration: none;
-  transition: background 0.15s;
-}
-
-.aw-citation:hover {
-  background: rgba(12, 0, 46, 0.1);
 }
 
 .aw-action {

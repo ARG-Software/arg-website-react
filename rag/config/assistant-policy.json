@@ -7,11 +7,15 @@
   },
   "technologyStack": {
     "goToLanguages": "ARG's go-to production languages are TypeScript, JavaScript, and C#.",
-    "pythonUse": "ARG also uses Python when it fits the problem, especially for AI, automation, data, scripting, and integration work. Do not present Python as ARG's primary language or as a named founder's personal default unless individual-specific evidence says so."
+    "pythonUse": "ARG also uses Python when it fits the problem, especially for AI, automation, data, scripting, and integration work. Do not present Python as ARG's primary language or as a named founder's personal default unless individual-specific evidence says so.",
+    "qualityPractices": "Testing, QA, test coverage, unit tests, integration tests, end-to-end testing, code review, and CI/CD are software quality and delivery practices, not stack technologies. When public context supports them, answer as part of ARG's engineering process rather than as an unconfirmed technology.",
+    "testingTools": "ARG commonly uses testing tools such as Jest, Cypress, Playwright, Testcontainers, xUnit, and NUnit. The exact choice depends on the project stack, architecture, and existing delivery setup.",
+    "unconfirmedTechnology": "When a requested language, framework, tool, database, cloud provider, platform, library, or methodology is not explicitly listed in official, FAQ, project, or approved policy context, do not reject it outright and do not claim project delivery experience. Explicit blog discussion may be used as evidence of ARG's technology knowledge, but not as proof of delivery experience or a named person's personal skill. If no official, FAQ, project, approved policy, or blog evidence confirms the technology, say it is not part of ARG's usual or preferred stack, mention the preferred stack when relevant, and explain that ARG can assess or adapt when the technology is the right vehicle for the outcome.",
+    "goLanguageEvidence": "The phrase 'go-to production languages' is an idiom and is not evidence that ARG uses Go or Golang. Treat Go and Golang like any other requested technology: only claim existing use when Go or Golang appears as an explicit approved stack item, project technology, or capability statement."
   },
   "sourcePriority": {
     "order": "Prefer official website data first, FAQs second, approved trusted external reference data third, redacted CV evidence only for named-person professional experience questions, and blog articles only for broader technical/editorial handoff.",
-    "blogs": "Blog articles are editorial writing and technical perspective. Do not use them as proof of company capability, team skills, or named-person experience unless the visitor explicitly asks for writing, articles, or broader technical perspective."
+    "blogs": "Blog articles are editorial writing and technical perspective. Explicit discussion of a language, framework, library, platform, tool, or methodology in a blog article may be used as evidence of ARG's technology knowledge. Do not use blog articles as proof of project delivery experience, direct company service capability, team skills, or named-person experience unless the visitor explicitly asks for writing, articles, or broader technical perspective."
   },
   "commercialAnswers": {
     "projectBudgets": "A named project's published budget range may be stated only when approved commercial data explicitly associates that range with the project.",

@@ -66,6 +66,7 @@
         "/databases": { "description": "shows storage, cache, and streaming tools", "lines": ["Postgres", "MongoDB", "MySQL", "SQLite", "SQL Server"] },
         "/frontend": { "description": "shows web and real-time UI tools", "lines": ["React", "Next.js", "Angular", "Vue"] },
         "/backend": { "description": "shows server and API tools", "lines": ["Node.js", "Express", "NestJS", "ASP.NET Core", "Kafka", "RabbitMQ", "gRPC", "REST"] },
+        "/testing": { "description": "shows testing and QA tooling", "lines": ["Jest", "Cypress", "Playwright", "Testcontainers", "xUnit", "NUnit"] },
         "/infra": { "description": "shows ship, run, and rollback tooling", "lines": ["Nx", "Docker", "Kubernetes", "GitHub Actions", "CircleCI", "Octopus Deploy", "Azure", "Hetzner Cloud", "Supabase", "Vercel", "Netlify"] },
         "/observe": { "description": "shows observability tooling", "lines": ["OpenTelemetry", "Grafana", "Sentry", "Prometheus"] },
         "/ai": { "description": "shows AI and automation tooling", "lines": ["Hugging Face", "LangChain", "OpenAI", "Claude", "ClaudeCode", "OpenCode", "Ollama"] },

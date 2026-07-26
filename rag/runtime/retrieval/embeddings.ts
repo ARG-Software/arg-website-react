@@ -25,3 +25,25 @@ export async function createQueryEmbedding(
     };
   }
 }
+
+export async function createQueryEmbeddings(
+  queries: string[],
+  embeddingProvider: EmbeddingProvider,
+  fallbackEmbeddingProvider: EmbeddingProvider
+): Promise<{ embeddings: number[][]; matchFunction: MatchFunction }> {
+  try {
+    return {
+      embeddings: await embeddingProvider.embedTexts(queries),
+      matchFunction: 'match_rag_chunks',
+    };
+  } catch (error) {
+    if (!(error instanceof GeminiEmbeddingQuotaError)) {
+      throw error;
+    }
+
+    return {
+      embeddings: await fallbackEmbeddingProvider.embedTexts(queries),
+      matchFunction: 'match_rag_chunks_fallback',
+    };
+  }
+}

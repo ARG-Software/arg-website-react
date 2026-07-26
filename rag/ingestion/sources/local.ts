@@ -199,10 +199,10 @@ async function loadTeamProfileSources(rootDir: string): Promise<RagSource[]> {
         content: [
           person.name,
           person.role,
-          person.bio,
+          `Professional background and education: ${person.bio}`,
           `Primary focus: ${person.focus}.`,
           person.languageExperience ? `Language experience: ${person.languageExperience}` : '',
-          `Areas: ${person.tags.join(', ')}.`,
+          `Experience areas: ${person.tags.join(', ')}.`,
           homepageMember ? `Homepage role: ${homepageMember.role}.` : '',
           careersCard ? `Careers contact focus: ${careersCard.focus}.` : '',
         ]

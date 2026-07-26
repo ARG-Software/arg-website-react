@@ -4,11 +4,14 @@ import type {
   PromptMessage,
   QuestionIntent,
   QuestionIntentResult,
+  RetrievalMode,
   RetrievalPlan,
+  RetrievalQuestionPlan,
   RetrievedContext,
 } from '../types/ai.js';
 
 const RAG_INTENT = 'rag_question';
+const RETRIEVAL_MODES: RetrievalMode[] = ['direct_evidence', 'editorial', 'article_discovery'];
 
 export function buildSystemPrompt(companyName: string, responseLanguage: string): string {
   return [
@@ -28,12 +31,16 @@ export function buildSystemPrompt(companyName: string, responseLanguage: string)
     'Never attribute a company-level technology, capability, or project experience to a named individual unless individual-specific public context supports it.',
     'When a named-person question includes company-wide technology evidence but no individual evidence, clearly distinguish the two: say that the company uses the technology, but that you cannot confirm the person uses it personally.',
     'When no individual evidence establishes a named person\'s experience with a language or framework, say only that we cannot confirm that person\'s personal experience. Do not infer anything about the company\'s wider experience.',
-    'Use only capabilities explicitly stated in the provided policy or official ARG service context. Never infer a capability from a directory category, blog article, technology mention, or interface implementation.',
-    'Prefer context in this order when multiple sources are present: official website data, FAQs, approved trusted external reference data, redacted CV evidence for named-person professional experience, then blog articles only as editorial writing.',
-    'Treat blog context as technical writing or optional reading material, not proof of company capability, team skills, or named-person experience.',
+    'Use only capabilities explicitly stated in the provided policy or official ARG service context. Never infer a delivery capability from a directory category, generic technology mention, or interface implementation.',
+    'Treat testing, QA, test coverage, unit tests, integration tests, end-to-end testing, code review, and CI/CD as software quality and delivery practices, not as stack technologies.',
+    'When asked what testing tools we usually use, mention supported examples from context such as Jest, Cypress, Playwright, Testcontainers, xUnit, and NUnit, and clarify that the exact tool depends on the project stack.',
+    'For an unconfirmed language, framework, tool, database, cloud provider, platform, library, or methodology, do not reject it outright and do not claim existing experience. Say it is not part of our usual or preferred stack, mention our preferred stack when relevant, and explain that we can assess or adapt when the technology is the right vehicle for the outcome.',
+    'The phrase "go-to production languages" is an idiom and is not evidence that we use Go or Golang. Treat Go and Golang like any other requested technology: only claim existing use when Go or Golang appears as an explicit approved stack item, project technology, or capability statement.',
+    'Prefer context in this order when multiple sources are present: official website data, FAQs, approved trusted external reference data, redacted CV evidence for named-person professional experience, then blog articles as technical writing.',
+    'Treat blog context as technical writing. When a language, framework, library, platform, tool, or methodology is explicitly discussed in a blog article, you may use that as evidence of our technology knowledge, but not as proof of project delivery experience or a named person\'s personal skill unless individual-specific context also supports it.',
     'For pricing questions, say that our historic average project cost has been around EUR 50,000 and that we can adapt the scope and deliverables to the proposed budget. You may state the approved hourly rate when it is relevant. State a named project budget only when the provided context explicitly associates that range with the project. Never describe a general budget as a minimum project cost.',
     'Approved commercial reference data is internal. Never name, link to, cite, or disclose an external directory, profile, or source.',
-    'For recent blog-post requests, list only titles and publication dates that appear in the supplied context.',
+    'For recent blog-post requests, list titles and publication dates from the supplied context. If the visitor asks about a specific article\'s content, topic, or summary, you may discuss it using the supplied blog content.',
     'Return plain text only. Do not use Markdown, asterisks, headings, bullet markers, URLs, citations, or the phrase "Based on the provided context".',
     'Keep answers concise, factual, and useful to prospective clients or candidates.',
   ].join(' ');
@@ -56,16 +63,19 @@ export function buildIntentPrompt(companyName: string): string {
 
 export function buildRetrievalPlanPrompt(): string {
   return [
-    'Classify the latest question for retrieval from a public software studio website.',
-    'Rewrite and translate it as a standalone English search query. Use conversation history only to resolve references and preserve proper nouns.',
-    'Return direct_evidence for factual questions about a person, team, company, service, technology, stack, project, price, career, or published capability.',
+    'Split the latest user message into up to three standalone retrieval questions for a public software studio website.',
+    'Each item must be a single factual or editorial question. Split compound messages joined by punctuation, "and", "or", "also", or multiple question marks when they ask for different facts.',
+    'Rewrite and translate each item as a standalone English search query. Use conversation history only to resolve references and preserve proper nouns.',
+    'Return direct_evidence for factual questions about a person, team, company, service, technology, stack, project, price, career, quality practice, testing, QA, CI/CD, or published capability.',
+    'Treat testing, QA, unit tests, integration tests, end-to-end testing, test coverage, code review, and CI/CD as engineering practices rather than technology stack items.',
     'Return editorial for questions seeking an explanation, trade-off, pattern, implementation approach, or broader technical perspective.',
     'Do not return editorial for factual company, service, stack, project, pricing, career, or named-person questions.',
     'Return article_discovery only when the visitor explicitly asks for articles, blog posts, reading, or examples from the blog.',
+    'When the visitor follows up on a previously listed article, resolve references like "it", "the first one", "that article", or "the one about X" into the full article title in the query.',
     'Extract entity as the named person, company, project, or team when one is central to the question. Otherwise use an empty string.',
     'Extract subject as the specific skill, technology, service, concept, or factual topic being asked about. Preserve the visitor\'s terminology and use an empty string only when there is no specific subject.',
     'Do not answer the question.',
-    'Return only valid JSON with this exact shape: {"query":"...","mode":"direct_evidence|editorial|article_discovery","entity":"...","subject":"..."}.',
+    'Return only valid JSON with this exact shape: {"questions":[{"query":"...","mode":"direct_evidence|editorial|article_discovery","entity":"...","subject":"..."}]}.',
   ].join(' ');
 }
 
@@ -76,7 +86,9 @@ export function buildInsufficientContextPrompt(companyName: string, responseLang
     buildResponseLanguageInstruction(responseLanguage),
     'Say briefly what we cannot verify, without using the phrases "I do not have enough information", "I do not have enough context", "available ARG Software context", or "Based on the provided context".',
     'For a question about a named person\'s skill or experience, say that we could not confirm that person\'s personal experience with the requested subject. Do not list unrelated languages, frameworks, or skills.',
-    'For an unconfirmed language, framework, tool, or stack, explain that implementation choices are vehicles rather than barriers to solving the engineering problem.',
+    'For testing, QA, test coverage, unit tests, integration tests, end-to-end testing, code review, or CI/CD questions, treat the topic as a software quality practice, not as an unconfirmed stack technology.',
+    'For an unconfirmed language, framework, tool, database, cloud provider, platform, library, methodology, or stack, avoid hard rejection and do not lead with "we cannot confirm". Treat explicit blog discussion as technology knowledge evidence, but say it is not part of our usual or preferred stack unless official, FAQ, project, or approved policy context verifies it. Explain that we can assess or adapt when it is the right vehicle for the outcome rather than a bottleneck.',
+    'The phrase "go-to production languages" is an idiom and is not evidence that we use Go or Golang.',
     'Invite the visitor to send us a message so someone closer to the subject can answer properly.',
     'For technical service enquiries, say that we need to understand the requirements before assessing the work and invite the visitor to book a meeting or contact us.',
     'Do not invent facts. Return plain text only, without Markdown, URLs, or citations.',
@@ -132,9 +144,20 @@ export function parseRetrievalPlan(content: string | undefined): RetrievalPlan {
 
   try {
     const parsed = JSON.parse(content);
-    const mode = parsed.mode;
+    const questions = Array.isArray(parsed.questions)
+      ? parsed.questions.map(parseRetrievalQuestionPlan).filter(Boolean).slice(0, 3)
+      : [];
 
-    if (!['direct_evidence', 'editorial', 'article_discovery'].includes(mode)) {
+    if (questions.length > 0) {
+      return {
+        ...questions[0],
+        questions,
+      };
+    }
+
+    const mode = parseRetrievalMode(parsed.mode);
+
+    if (!mode) {
       return fallback;
     }
 
@@ -147,6 +170,32 @@ export function parseRetrievalPlan(content: string | undefined): RetrievalPlan {
   } catch {
     return fallback;
   }
+}
+
+function parseRetrievalQuestionPlan(value: unknown): RetrievalQuestionPlan | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const parsed = value as Record<string, unknown>;
+  const mode = parseRetrievalMode(parsed.mode);
+
+  if (!mode) {
+    return null;
+  }
+
+  return {
+    query: typeof parsed.query === 'string' ? parsed.query.trim().slice(0, 1000) : '',
+    mode,
+    entity: typeof parsed.entity === 'string' ? parsed.entity.trim().slice(0, 160) : '',
+    subject: typeof parsed.subject === 'string' ? parsed.subject.trim().slice(0, 160) : '',
+  };
+}
+
+function parseRetrievalMode(value: unknown): RetrievalMode | null {
+  return typeof value === 'string' && RETRIEVAL_MODES.includes(value as RetrievalMode)
+    ? (value as RetrievalMode)
+    : null;
 }
 
 function buildResponseLanguageInstruction(responseLanguage: string): string {

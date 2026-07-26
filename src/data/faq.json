@@ -25,9 +25,10 @@
     {
       "id": "remote-work",
       "q": "Do you work with clients outside the USA and Europe?",
-      "schemaAnswer": "Yes. ARG works remotely with teams across regions. What matters is clear written context, direct technical conversations, predictable async updates, and enough overlap for decisions.",
+      "schemaAnswer": "Yes. ARG is remote-first and works with teams across regions. For hybrid mode, recurring on-site sessions, or a different collaboration rhythm, we assess the setup case by case. What matters is clear written context, direct technical conversations, predictable async updates, and enough overlap for decisions.",
       "answer": [
-        { "type": "paragraph", "text": "Yes. ARG works remotely with teams across regions. What matters is not location, but whether the communication rhythm supports serious engineering work." },
+        { "type": "paragraph", "text": "Yes. ARG is remote-first and works with teams across regions. What matters is not location, but whether the communication rhythm supports serious engineering work." },
+        { "type": "paragraph", "text": "If you need a specific hybrid mode, recurring on-site sessions, or a different collaboration setup, we assess that case by case before promising it." },
         { "type": "list", "items": ["Clear written context", "Direct technical conversations", "Predictable async updates", "Enough overlap for decisions"] },
         { "type": "paragraph", "text": "If the problem is clear and the ownership is real, distance is not the blocker." }
       ]
@@ -55,10 +56,11 @@
     {
       "id": "quality",
       "q": "How do you ensure scalability and code quality?",
-      "schemaAnswer": "Quality starts before implementation. We make architecture boundaries, testing strategy, code reviews, CI/CD, observability, recovery paths, security, and data constraints explicit so the software can evolve instead of being rewritten after year one.",
+      "schemaAnswer": "Quality starts before implementation. We make architecture boundaries, testing strategy, code reviews, CI/CD, observability, recovery paths, security, and data constraints explicit so the software can evolve instead of being rewritten after year one. Testing tools vary by stack, but common choices include Jest, Cypress, Playwright, Testcontainers, xUnit, and NUnit.",
       "answer": [
         { "type": "paragraph", "text": "Quality starts before implementation. We make the important decisions explicit:" },
         { "type": "list", "items": ["Architecture boundaries", "Testing strategy", "Code reviews", "CI/CD and release flow", "Observability and recovery paths", "Security and data constraints"] },
+        { "type": "paragraph", "text": "Testing tools vary by stack, but common choices include Jest, Cypress, Playwright, Testcontainers, xUnit, and NUnit across unit, integration, end-to-end, and backend test suites." },
         { "type": "paragraph", "text": "We build software meant to evolve, not be rewritten after year one." }
       ]
     },

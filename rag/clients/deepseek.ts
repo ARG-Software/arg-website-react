@@ -199,6 +199,7 @@ async function createChatCompletion({
       model: config.deepseekModel,
       temperature,
       messages,
+      thinking: { type: 'disabled' },
     }),
   });
 

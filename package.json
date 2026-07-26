@@ -34,7 +34,7 @@
     "rag:ingest:external": "tsx rag/ingestion/scripts/ingestExternal.ts",
     "rag:embeddings:rebuild:fallback": "tsx rag/ingestion/scripts/rebuildFallbackEmbeddings.ts",
     "rag:ask:test": "tsx rag/runtime/scripts/testAsk.ts",
-    "rag:test": "tsx --test rag/ingestion/ingestPipeline.test.ts rag/runtime/ask.test.ts",
+    "rag:test": "tsx --test rag/ingestion/ingestPipeline.test.ts rag/runtime/ask.test.ts rag/runtime/evalCases.test.ts",
     "supabase:link": "node supabase/scripts.js link",
     "supabase:push": "node supabase/scripts.js push"
   },
