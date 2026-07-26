@@ -5,12 +5,12 @@ import type {
   RetrievalRoute,
 } from '../../core/types/retrieval.js';
 import { resolveRetrievalRoute } from '../retrieval/route.js';
+import { extractTechnologyName } from '../retrieval/technology/normalizeTechnology.js';
 import {
   createTechnologySupportQuery,
-  extractTechnologyName,
   isEngineeringPracticeQuestion,
   splitTechnologySubjects,
-} from './technologySubjects.js';
+} from '../retrieval/technology/splitTechnologyQuestion.js';
 
 const TECHNOLOGY_SUPPORT_QUESTION_PATTERN =
   /\b(?:do|does|can)\b.{0,50}\b(?:know|use|uses|work with|works with|support|supports|build with|builds with|have experience with|has experience with)\b/iu;

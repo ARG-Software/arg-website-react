@@ -1,9 +1,9 @@
 import type { RetrievalItemResult } from '../planning/createRetrievalItems.js';
+import { extractTechnologyName } from '../retrieval/technology/normalizeTechnology.js';
 import {
-  extractTechnologyName,
   isEngineeringPracticeQuestion,
   isNamedEntityTechnologyQuestion,
-} from '../planning/technologySubjects.js';
+} from '../retrieval/technology/splitTechnologyQuestion.js';
 
 export function createUnconfirmedTechnologyAnswer(
   results: RetrievalItemResult[],

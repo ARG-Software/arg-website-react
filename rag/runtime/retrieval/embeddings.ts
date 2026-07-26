@@ -7,6 +7,29 @@ export interface QueryEmbedding {
   index: EmbeddingIndex;
 }
 
+export interface SemanticSearchInput extends QueryEmbedding {
+  query: string;
+}
+
+export async function resolveSemanticSearch(
+  query: string,
+  embeddingProvider: EmbeddingProvider,
+  fallbackEmbeddingProvider: EmbeddingProvider,
+  semanticSearch?: SemanticSearchInput
+): Promise<SemanticSearchInput> {
+  if (semanticSearch) {
+    return semanticSearch;
+  }
+
+  const { embedding, index } = await createQueryEmbedding(
+    query,
+    embeddingProvider,
+    fallbackEmbeddingProvider
+  );
+
+  return { query, embedding, index };
+}
+
 export async function createQueryEmbedding(
   query: string,
   embeddingProvider: EmbeddingProvider,

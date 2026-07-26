@@ -3,12 +3,9 @@ import type { RetrievedContext } from '../../core/types/context.js';
 import type { EmbeddingProvider } from '../../core/types/providers.js';
 import type { EmbeddingIndex, RetrievalRoute } from '../../core/types/retrieval.js';
 import type { RagReadRepository } from '../../repositories/RagReadRepository.js';
-import { createQueryEmbedding } from './embeddings.js';
-import { retrieveDirectEvidenceContexts } from './directEvidence.js';
-import { retrieveLatestBlogContexts } from './latestBlog.js';
-import { retrieveContextsForOrigin } from './vectorSearch.js';
-
-const FIRST_PARTY_ORIGIN = 'first_party';
+import { retrieveEditorialContexts } from './strategies/editorial.js';
+import { retrieveLatestBlogContexts } from './strategies/latestBlog.js';
+import { retrieveDirectEvidenceContexts } from './strategies/semanticDirectEvidence.js';
 
 export interface RetrievalResult {
   contexts: RetrievedContext[];
@@ -43,6 +40,8 @@ export async function retrieveRoutedContexts({
     };
   }
 
+  const semanticSearch = embedding && index ? { query: retrievalQuestion, embedding, index } : undefined;
+
   if (route.kind === 'direct_evidence') {
     return {
       contexts: await retrieveDirectEvidenceContexts({
@@ -51,30 +50,22 @@ export async function retrieveRoutedContexts({
         route,
         embeddingProvider,
         fallbackEmbeddingProvider,
-        semanticSearch:
-          embedding && index
-            ? { query: retrievalQuestion, embedding, index }
-            : undefined,
+        semanticSearch,
       }),
       route,
     };
   }
 
-  const semanticSearch =
-    embedding && index
-      ? { embedding, index }
-      : await createQueryEmbedding(retrievalQuestion, embeddingProvider, fallbackEmbeddingProvider);
-  const firstPartyContexts = await retrieveContextsForOrigin({
-    repository: readRepository,
-    embedding: semanticSearch.embedding,
-    index: semanticSearch.index,
-    config,
-    sourceOrigin: FIRST_PARTY_ORIGIN,
-    sourceTypes: route.firstPartySourceTypes,
-  });
-
   return {
-    contexts: firstPartyContexts,
+    contexts: await retrieveEditorialContexts({
+      retrievalQuestion,
+      route,
+      config,
+      readRepository,
+      embeddingProvider,
+      fallbackEmbeddingProvider,
+      semanticSearch,
+    }),
     route,
   };
 }
