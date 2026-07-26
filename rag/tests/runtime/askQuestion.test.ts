@@ -2,33 +2,16 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { GeminiEmbeddingQuotaError } from '../../clients/gemini.js';
+import { createFakeAnswerProvider as createAnswerProvider } from '../fakes/FakeAnswerProvider.js';
+import { createFakeEmbeddingProvider as createEmbeddingProvider } from '../fakes/FakeEmbeddingProvider.js';
+import { FakeRagReadRepository } from '../fakes/FakeRagReadRepository.js';
+import { createContextFixture as matchRow } from '../fixtures/contexts.js';
+import { createTestConfig } from '../fixtures/config.js';
+import { createChunkFixture as chunk, createSourceFixture as source } from '../fixtures/sources.js';
 import { buildInsufficientContextPrompt } from '../../prompts/insufficientContext.js';
 import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from '../../runtime/askQuestion.js';
-import type { RagConfig } from '../../core/types/config.js';
-import type { AnswerProvider, EmbeddingProvider } from '../../core/types/providers.js';
-import type { RetrievalPlan } from '../../core/types/retrieval.js';
-import type { RagSourceOrigin, RagSourceType } from '../../core/types/source.js';
-import type { SupabaseClient } from '@supabase/supabase-js';
 
-const config: RagConfig = {
-  supabaseUrl: 'https://example.supabase.co',
-  supabaseServiceRoleKey: 'test-key',
-  geminiApiKey: 'test-key',
-  geminiEmbeddingModel: 'primary',
-  geminiEmbeddingDimensions: 2,
-  geminiFallbackEmbeddingModel: 'fallback',
-  geminiFallbackEmbeddingDimensions: 2,
-  geminiEmbeddingRequestDelayMs: 0,
-  deepseekApiKey: 'test-key',
-  deepseekModel: 'test-model',
-  siteUrl: 'https://arg.software',
-  companyName: 'ARG Software',
-  chunkSize: 1200,
-  chunkOverlap: 180,
-  matchCount: 1,
-  similarityThreshold: 0.72,
-  fallbackSimilarityThreshold: 0.6,
-};
+const config = createTestConfig({ matchCount: 1 });
 
 test('latest articles retrieve the newest three dated blog posts without embeddings', async () => {
   const sources = [
@@ -38,7 +21,7 @@ test('latest articles retrieve the newest three dated blog posts without embeddi
     source('third', 'Third post', 'July 1, 2026'),
     source('invalid', 'Invalid post', null),
   ];
-  const chunks = sources.map(item => chunk(item.id, item.source_key));
+  const chunks = sources.map(item => chunk(item.id, item.sourceKey));
   const supabase = createSupabase({ sources, chunks });
   const embeddingProvider = createEmbeddingProvider(() => {
     throw new Error('Embeddings must not be generated for latest posts');
@@ -47,7 +30,7 @@ test('latest articles retrieve the newest three dated blog posts without embeddi
   const result = await askQuestion({
     question: 'Latest articles?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Latest blog posts', {
       plan: { mode: 'article_discovery', entity: '', subject: 'articles' },
     }),
@@ -61,7 +44,7 @@ test('latest articles retrieve the newest three dated blog posts without embeddi
     'Middle post',
     'Third post',
   ]);
-  assert.equal(supabase.calls.rpc.length, 0);
+  assert.equal(supabase.calls.matchChunks.length, 0);
 });
 
 test('an article-discovery plan uses the latest-blog route', () => {
@@ -97,7 +80,7 @@ test('a follow-up about an article uses editorial route and retrieves blog conte
       },
     ],
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider(
       'what does The Stack Nobody Hypes, but Serious CTOs Keep Choosing talk about?',
       {
@@ -129,7 +112,7 @@ test('blog metadata remains retrievable through the general route', async () => 
     question: 'Do you have blog posts?',
     retrievalQuestion: 'Do you have blog posts?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Do you have blog posts?', {
       plan: { mode: 'article_discovery', entity: '', subject: 'blog posts' },
     }),
@@ -139,7 +122,7 @@ test('blog metadata remains retrievable through the general route', async () => 
 
   assert.equal(contexts[0]?.sourceType, 'blog_post');
   assert.match(contexts[0]?.content ?? '', /^Blog post/u);
-  assert.deepEqual(supabase.calls.rpc[0]?.source_types, ['blog_post']);
+  assert.deepEqual(supabase.calls.matchChunks[0]?.sourceTypes, ['blog_post']);
 });
 
 test('fintech questions use official project evidence before technical blog retrieval', async () => {
@@ -151,7 +134,7 @@ test('fintech questions use official project evidence before technical blog retr
     question: 'Can you build AI for fintech?',
     retrievalQuestion: 'Can ARG Software build AI for fintech?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Can ARG Software build AI for fintech?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'AI for fintech' },
     }),
@@ -168,7 +151,7 @@ test('fintech questions use official project evidence before technical blog retr
     'direct_evidence'
   );
   assert.equal(contexts[0]?.sourceType, 'project');
-  assert.deepEqual(supabase.calls.rpc[0]?.source_types, [
+  assert.deepEqual(supabase.calls.matchChunks[0]?.sourceTypes, [
     'homepage',
     'about',
     'project',
@@ -176,10 +159,10 @@ test('fintech questions use official project evidence before technical blog retr
     'careers',
     'working_with_us',
   ]);
-  assert.ok(supabase.calls.rpc.some(call => call.source_types?.includes('faq')));
+  assert.ok(supabase.calls.matchChunks.some(call => call.sourceTypes?.includes('faq')));
   assert.ok(
-    supabase.calls.rpc.some(
-      call => call.source_types?.includes('external_page') && call.source_origins?.includes('trusted_external')
+    supabase.calls.matchChunks.some(
+      call => call.sourceTypes?.includes('external_page') && call.sourceOrigin === 'trusted_external'
     )
   );
 });
@@ -209,7 +192,7 @@ test('a hybrid mode client-hiring question retrieves FAQ evidence and project ac
   const result = await askQuestion({
     question: 'But if I want to hire you guys can you work in a hybrid mode?',
     config: { ...config, matchCount: 6 },
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Can I hire ARG in hybrid mode?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'hybrid mode' },
     }),
@@ -219,7 +202,7 @@ test('a hybrid mode client-hiring question retrieves FAQ evidence and project ac
 
   assert.deepEqual(result.contexts.map(context => context.sourceKey), ['faq']);
   assert.deepEqual(result.actions, [{ type: 'book_meeting' }, { type: 'email_hello' }]);
-  assert.ok(supabase.calls.rpc.some(call => call.source_types?.includes('faq')));
+  assert.ok(supabase.calls.matchChunks.some(call => call.sourceTypes?.includes('faq')));
 });
 
 test('a Go stack question does not treat go-to language wording as Go evidence', async () => {
@@ -237,7 +220,7 @@ test('a Go stack question does not treat go-to language wording as Go evidence',
   const contexts = await retrieveRelevantChunks({
     question: 'Do you know Go?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use Go?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'Go' },
     }),
@@ -266,7 +249,7 @@ test('unconfirmed technology questions do not borrow preferred-stack evidence', 
     const contexts = await retrieveRelevantChunks({
       question: `Do you work with ${technology}?`,
       config,
-      supabase: supabase.client,
+      readRepository: supabase.repository,
       answerProvider: createAnswerProvider(`Does ARG Software use ${technology}?`, {
         plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: technology },
       }),
@@ -292,7 +275,7 @@ test('unconfirmed single-technology answers use adaptive wording deterministical
   const result = await askQuestion({
     question: 'Do you know Go?',
     config,
-    supabase: createSupabase({}).client,
+    readRepository: createSupabase({}).repository,
     answerProvider: createAnswerProvider('Does ARG Software use Go?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'Go' },
     }),
@@ -320,7 +303,7 @@ test('a C# stack question retrieves explicit production-language evidence', asyn
   const contexts = await retrieveRelevantChunks({
     question: 'Do you know C#?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use C#?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'C#' },
     }),
@@ -347,7 +330,7 @@ test('technology support questions override editorial planner mistakes', async (
   const result = await askQuestion({
     question: 'do you know C#?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('What is C#?', {
       plan: { mode: 'editorial', entity: '', subject: 'C#' },
     }),
@@ -375,7 +358,7 @@ test('a Python stack question retrieves explicit conditional-use evidence', asyn
   const contexts = await retrieveRelevantChunks({
     question: 'Do you know Python?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use Python?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'Python' },
     }),
@@ -401,7 +384,7 @@ test('an Angular stack question retrieves explicit project evidence', async () =
   const contexts = await retrieveRelevantChunks({
     question: 'Do you know Angular?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use Angular?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'Angular' },
     }),
@@ -427,7 +410,7 @@ test('a .NET stack question retrieves explicit project evidence', async () => {
   const contexts = await retrieveRelevantChunks({
     question: 'Do you know .NET?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use .NET?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: '.NET' },
     }),
@@ -459,7 +442,7 @@ test('compound technology questions split or subjects before retrieval', async (
   const result = await askQuestion({
     question: 'Do you know Angular or .NET?',
     config: { ...config, matchCount: 2 },
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use Angular or .NET?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'Angular or .NET' },
     }),
@@ -494,7 +477,7 @@ test('blog-only technology evidence supports knowledge without official project 
   const result = await askQuestion({
     question: 'Do you know Svelte?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use Svelte?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'Svelte' },
     }),
@@ -522,7 +505,7 @@ test('testing questions are treated as quality practice rather than stack techno
   const result = await askQuestion({
     question: 'Do you guys use testing in software?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use testing in software?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'testing in software' },
     }),
@@ -549,7 +532,7 @@ test('QA questions are treated as delivery practice rather than stack technology
   const contexts = await retrieveRelevantChunks({
     question: 'Do you do QA?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software do QA?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'QA' },
     }),
@@ -575,7 +558,7 @@ test('unit testing questions are treated as quality practice rather than stack t
   const contexts = await retrieveRelevantChunks({
     question: 'Do you use unit testing?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use unit testing?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'unit testing' },
     }),
@@ -607,7 +590,7 @@ test('testing tool questions retrieve approved testing tool examples', async () 
   const result = await askQuestion({
     question: 'What tools do you usually use for testing?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('What testing tools does ARG Software usually use?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'testing tools' },
     }),
@@ -635,7 +618,7 @@ test('Cypress and Playwright are supported testing tool questions', async () => 
   const result = await askQuestion({
     question: 'Do you use Cypress or Playwright?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use Cypress or Playwright?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'Cypress or Playwright' },
     }),
@@ -663,7 +646,7 @@ test('.NET testing tools split into xUnit and NUnit evidence checks', async () =
   const result = await askQuestion({
     question: 'Do you use xUnit or NUnit?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use xUnit or NUnit?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'xUnit or NUnit' },
       onGenerateAnswer(question) {
@@ -683,7 +666,7 @@ test('testing practice questions without context do not use technology-stack fal
   const result = await askQuestion({
     question: 'Do you guys use testing in software?',
     config,
-    supabase: createSupabase({}).client,
+    readRepository: createSupabase({}).repository,
     answerProvider: createAnswerProvider('Does ARG Software use testing in software?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'testing in software' },
     }),
@@ -710,7 +693,7 @@ test('test tools like Jest remain technology questions', async () => {
   const contexts = await retrieveRelevantChunks({
     question: 'Do you use Jest?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does ARG Software use Jest?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'Jest' },
     }),
@@ -754,7 +737,7 @@ test('a Rui Python follow-up directly retrieves Rui profile without article reco
       { role: 'assistant', content: 'Rui is an ARG co-founder.' },
     ],
     config: { ...config, matchCount: 6 },
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does Rui Rocha know Python?', {
       plan: { mode: 'direct_evidence', entity: 'Rui Rocha', subject: 'Python' },
     }),
@@ -787,7 +770,7 @@ test('a first-name C# question retrieves José evidence without a technology all
   const result = await askQuestion({
     question: 'Does Jose know C#?',
     config: { ...config, matchCount: 6 },
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does Jose know C#?', {
       plan: { mode: 'direct_evidence', entity: 'Jose', subject: 'C#' },
     }),
@@ -852,7 +835,7 @@ test('a broad José background and ARG origin question retrieves person, about, 
   const result = await askQuestion({
     question: 'What is Jose background, and how did Arg started?',
     config: { ...config, matchCount: 6 },
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Jose background and ARG origin', {
       plan: { mode: 'direct_evidence', entity: 'Jose', subject: 'background and how ARG started' },
     }),
@@ -866,7 +849,7 @@ test('a broad José background and ARG origin question retrieves person, about, 
     'jose-antunes-cv',
   ]);
   assert.deepEqual(result.articleRecommendations, []);
-  assert.ok(supabase.calls.rpc.some(call => call.source_keys?.includes('jose-antunes')));
+  assert.ok(supabase.calls.matchChunks.some(call => call.sourceKeys?.includes('jose-antunes')));
 });
 
 test('compound questions retrieve separate semantic contexts with one embedding batch', async () => {
@@ -898,7 +881,7 @@ test('compound questions retrieve separate semantic contexts with one embedding 
   const result = await askQuestion({
     question: 'What is Jose background? How long did you worked in mojaloop project?',
     config: { ...config, matchCount: 6 },
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('unused', {
       plan: {
         questions: [
@@ -928,7 +911,7 @@ test('compound questions retrieve separate semantic contexts with one embedding 
   assert.ok(result.contexts.some(context => context.sourceKey === 'jose-antunes'));
   assert.ok(result.contexts.some(context => context.sourceKey === 'jose-antunes-cv'));
   assert.ok(result.contexts.some(context => context.sourceKey === 'mojaloop'));
-  assert.ok(supabase.calls.rpc.some(call => call.source_keys?.includes('mojaloop')));
+  assert.ok(supabase.calls.matchChunks.some(call => call.sourceKeys?.includes('mojaloop')));
 });
 
 test('compound questions preserve answered parts when another part has no context', async () => {
@@ -945,7 +928,7 @@ test('compound questions preserve answered parts when another part has no contex
   const result = await askQuestion({
     question: 'What is Jose background? How long did you worked in mojaloop project?',
     config: { ...config, matchCount: 6 },
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('unused', {
       plan: {
         questions: [
@@ -994,7 +977,7 @@ test('an unconfirmed person technology searches only public and personal evidenc
   const result = await askQuestion({
     question: 'Does Jose know Go?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does Jose know Go?', {
       plan: { mode: 'direct_evidence', entity: 'Jose', subject: 'Go' },
     }),
@@ -1005,7 +988,7 @@ test('an unconfirmed person technology searches only public and personal evidenc
   assert.equal(result.answer, 'Please send us a message so we can help.');
   assert.deepEqual(result.contexts, []);
   assert.deepEqual(result.articleRecommendations, []);
-  assert.ok(supabase.calls.rpc.some(call => call.source_keys?.includes('jose-antunes')));
+  assert.ok(supabase.calls.matchChunks.some(call => call.sourceKeys?.includes('jose-antunes')));
 });
 
 test('a founder skill question never uses another person\'s CV as evidence', async () => {
@@ -1028,7 +1011,7 @@ test('a founder skill question never uses another person\'s CV as evidence', asy
   const result = await askQuestion({
     question: 'Does Rui know Python?',
     config: { ...config, matchCount: 6 },
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Does Rui know Python?', {
       plan: { mode: 'direct_evidence', entity: 'Rui', subject: 'Python' },
     }),
@@ -1053,7 +1036,7 @@ test('team questions retrieve the public team source without embeddings', async 
   const result = await askQuestion({
     question: 'Who are the team members of ARG?',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Who are the team members of ARG?', {
       plan: { mode: 'direct_evidence', entity: 'ARG Team', subject: '' },
     }),
@@ -1062,14 +1045,14 @@ test('team questions retrieve the public team source without embeddings', async 
   });
 
   assert.deepEqual(result.contexts.map(context => context.sourceKey), ['arg-team']);
-  assert.deepEqual(supabase.calls.rpc, []);
+  assert.deepEqual(supabase.calls.matchChunks, []);
 });
 
 test('an unresolved personal pronoun asks for clarification', async () => {
   const result = await askQuestion({
     question: 'Does he know Python?',
     config,
-    supabase: createSupabase({}).client,
+    readRepository: createSupabase({}).repository,
     answerProvider: createAnswerProvider('Does he know Python?'),
     embeddingProvider: createEmbeddingProvider(() => {
       throw new Error('Embeddings must not be generated for unresolved people');
@@ -1090,7 +1073,7 @@ test('runtime retrieval switches to the fallback index after a primary quota err
     question: 'Explain Python architecture',
     retrievalQuestion: 'Explain Python architecture',
     config,
-    supabase: supabase.client,
+    readRepository: supabase.repository,
     answerProvider: createAnswerProvider('Explain Python architecture', {
       plan: { mode: 'direct_evidence', entity: '', subject: 'Python architecture' },
     }),
@@ -1100,110 +1083,8 @@ test('runtime retrieval switches to the fallback index after a primary quota err
     fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
   });
 
-  assert.equal(supabase.calls.rpc[0]?.functionName, 'match_rag_chunks_fallback');
+  assert.equal(supabase.calls.matchChunks[0]?.index, 'fallback');
 });
-
-function createAnswerProvider(
-  rewrite: string,
-  {
-    intent = 'rag_question',
-    plan,
-    onGenerateAnswer,
-  }: {
-    intent?: 'rag_question' | 'unsupported';
-    plan?: Partial<RetrievalPlan>;
-    onGenerateAnswer?: (question: string) => void;
-  } = {}
-): AnswerProvider {
-  const retrievalPlan: RetrievalPlan = {
-    query: rewrite,
-    mode: 'direct_evidence',
-    entity: '',
-    subject: '',
-    ...plan,
-  };
-
-  return {
-    async classifyQuestionIntent() {
-      return { intent, response: '', language: 'en' };
-    },
-    async planRetrieval() {
-      return retrievalPlan;
-    },
-    async generateAnswer(question) {
-      onGenerateAnswer?.(question);
-      return 'Grounded answer.';
-    },
-    async generateInsufficientContextAnswer() {
-      return 'Please send us a message so we can help.';
-    },
-    async generateIntentFallbackResponse() {
-      return 'Please ask about our website.';
-    },
-  };
-}
-
-function createEmbeddingProvider(
-  embedTexts: (texts: string[]) => number[][] | Promise<number[][]>
-): EmbeddingProvider {
-  return {
-    async embedText(text) {
-      const [embedding] = await embedTexts([text]);
-      return embedding;
-    },
-    async embedTexts(texts) {
-      return embedTexts(texts);
-    },
-  };
-}
-
-function source(
-  id: string,
-  title: string,
-  date: string | null,
-  sourceType: RagSourceType = 'blog_post',
-  sourceKey = id,
-  metadata: Record<string, unknown> = {}
-) {
-  return {
-    id,
-    source_type: sourceType,
-    source_key: sourceKey,
-    title,
-    url: `/blog/${sourceKey}/`,
-    path: null,
-    origin: 'first_party' as RagSourceOrigin,
-    is_public: true,
-    metadata: { ...(date ? { date } : {}), ...metadata },
-  };
-}
-
-function chunk(sourceId: string, suffix: string, content = `Blog post ${suffix}`) {
-  return {
-    id: `chunk-${suffix}`,
-    source_id: sourceId,
-    chunk_index: 0,
-    content,
-    metadata: {},
-  };
-}
-
-function matchRow(sourceType: RagSourceType, sourceKey: string, title: string, content: string) {
-  return {
-    chunk_id: `chunk-${sourceKey}`,
-    source_id: `source-${sourceKey}`,
-    source_type: sourceType,
-    source_key: sourceKey,
-    title,
-    url: `/blog/${sourceKey}/`,
-    path: null,
-    chunk_index: 0,
-    content,
-    similarity: 0.9,
-    source_metadata: {},
-    chunk_metadata: {},
-  };
-}
 
 function createSupabase({
   sources = [],
@@ -1214,90 +1095,7 @@ function createSupabase({
   chunks?: ReturnType<typeof chunk>[];
   rpcRows?: ReturnType<typeof matchRow>[];
 }) {
-  const calls: {
-    rpc: Array<{
-      functionName: string;
-      source_types: RagSourceType[] | null;
-      source_keys?: string[] | null;
-      source_origins?: string[] | null;
-    }>;
-  } = { rpc: [] };
+  const repository = new FakeRagReadRepository({ sources, chunks, contexts: rpcRows });
 
-  const client = {
-    from(table: 'rag_sources' | 'rag_chunks') {
-      const filters: Array<(row: Record<string, unknown>) => boolean> = [];
-      let limit: number | undefined;
-      const query = {
-        select() {
-          return query;
-        },
-        eq(field: string, value: unknown) {
-          filters.push(row => row[field] === value);
-          return query;
-        },
-        in(field: string, values: unknown[]) {
-          filters.push(row => values.includes(row[field]));
-          return query;
-        },
-        ilike(field: string, pattern: string) {
-          const search = pattern.replace(/%/gu, '').toLowerCase();
-          filters.push(row => String(row[field] ?? '').toLowerCase().includes(search));
-          return query;
-        },
-        order() {
-          return query;
-        },
-        limit(value: number) {
-          limit = value;
-          return query;
-        },
-        maybeSingle: async () => {
-          const rows = getRows();
-          return { data: rows[0] ?? null, error: null };
-        },
-        then<TResult1 = { data: unknown[]; error: null }, TResult2 = never>(
-          onfulfilled?: ((value: { data: unknown[]; error: null }) => TResult1 | PromiseLike<TResult1>) | null,
-          onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
-        ) {
-          return Promise.resolve({ data: getRows(), error: null }).then(onfulfilled, onrejected);
-        },
-      };
-
-      function getRows() {
-        const rows = table === 'rag_sources' ? sources : chunks;
-        return rows
-          .filter(row => filters.every(filter => filter(row as Record<string, unknown>)))
-          .slice(0, limit);
-      }
-
-      return query;
-    },
-    async rpc(
-      functionName: string,
-      parameters: {
-        source_types: RagSourceType[] | null;
-        source_keys?: string[] | null;
-        source_origins?: string[] | null;
-      }
-    ) {
-      calls.rpc.push({
-        functionName,
-        source_types: parameters.source_types,
-        source_keys: parameters.source_keys,
-        source_origins: parameters.source_origins,
-      });
-      return {
-        data: rpcRows.filter(row => {
-          const matchesSourceType =
-            !parameters.source_types || parameters.source_types.includes(row.source_type);
-          const matchesSourceKey =
-            !parameters.source_keys || parameters.source_keys.includes(row.source_key);
-          return matchesSourceType && matchesSourceKey;
-        }),
-        error: null,
-      };
-    },
-  };
-
-  return { client: client as unknown as SupabaseClient, calls };
+  return { repository, calls: repository.calls };
 }

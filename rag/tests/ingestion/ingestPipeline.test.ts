@@ -5,9 +5,9 @@ import { GeminiEmbeddingQuotaError } from '../../clients/gemini.js';
 import { ingestSource } from '../../ingestion/ingestPipeline.js';
 import { redactCvContent } from '../../ingestion/processing/redaction.js';
 import { createSourceHash } from '../../ingestion/processing/text.js';
-import type { EmbeddingProvider } from '../../core/types/providers.js';
+import { createFakeEmbeddingProvider as createProvider } from '../fakes/FakeEmbeddingProvider.js';
+import { createFakeRagWriteRepository as createRepository } from '../fakes/FakeRagWriteRepository.js';
 import type { RagSource } from '../../core/types/source.js';
-import type { RagWriteRepository } from '../../repositories/RagWriteRepository.js';
 
 const source: RagSource = {
   sourceType: 'blog_post',
@@ -191,23 +191,3 @@ test('CV redaction removes configured personal-data literals', () => {
   assert.doesNotMatch(redacted, /Sensitive private token/i);
 });
 
-function createProvider(embedTexts: (texts: string[]) => number[][] | Promise<number[][]>): EmbeddingProvider {
-  return {
-    async embedText(text) {
-      const [embedding] = await embedTexts([text]);
-      return embedding;
-    },
-    async embedTexts(texts) {
-      return embedTexts(texts);
-    },
-  };
-}
-
-function createRepository(overrides: Partial<RagWriteRepository>): RagWriteRepository {
-  return {
-    getSourceContentHash: async () => null,
-    upsertSource: async () => ({ sourceId: 'source-id', chunkCount: 1 }),
-    updateFallbackEmbeddings: async () => ({ sourceId: 'source-id', chunkCount: 1 }),
-    ...overrides,
-  };
-}

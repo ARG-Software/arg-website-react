@@ -1,8 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 import {
   executableRagEvalCases,
   ragEvalPromptBank,
@@ -11,31 +9,16 @@ import {
   type EvalSourceRow,
   type RagEvalCase,
 } from '../evals/cases.js';
-import type { RagConfig } from '../../core/types/config.js';
-import type { AnswerProvider, EmbeddingProvider } from '../../core/types/providers.js';
-import type { RetrievalPlan } from '../../core/types/retrieval.js';
-import type { RagSourceOrigin, RagSourceType } from '../../core/types/source.js';
+import type { RetrievedContext } from '../../core/types/context.js';
+import { createFakeAnswerProvider } from '../fakes/FakeAnswerProvider.js';
+import { createFakeEmbeddingProvider } from '../fakes/FakeEmbeddingProvider.js';
+import { FakeRagReadRepository } from '../fakes/FakeRagReadRepository.js';
+import { createTestConfig } from '../fixtures/config.js';
+import type { ChunkFixture } from '../fixtures/sources.js';
+import type { RagSourceRecord } from '../../repositories/RagReadRepository.js';
 import { askQuestion } from '../../runtime/askQuestion.js';
 
-const config: RagConfig = {
-  supabaseUrl: 'https://example.supabase.co',
-  supabaseServiceRoleKey: 'test-key',
-  geminiApiKey: 'test-key',
-  geminiEmbeddingModel: 'primary',
-  geminiEmbeddingDimensions: 2,
-  geminiFallbackEmbeddingModel: 'fallback',
-  geminiFallbackEmbeddingDimensions: 2,
-  geminiEmbeddingRequestDelayMs: 0,
-  deepseekApiKey: 'test-key',
-  deepseekModel: 'test-model',
-  siteUrl: 'https://arg.software',
-  companyName: 'ARG Software',
-  chunkSize: 1200,
-  chunkOverlap: 180,
-  matchCount: 6,
-  similarityThreshold: 0.72,
-  fallbackSimilarityThreshold: 0.6,
-};
+const config = createTestConfig();
 
 test('RAG eval prompt bank has broad, non-duplicated coverage', () => {
   const prompts = Object.values(ragEvalPromptBank).flat();
@@ -52,12 +35,12 @@ for (const ragCase of executableRagEvalCases) {
   test(`RAG eval: ${ragCase.id}`, async () => {
     const generatedQuestions: string[] = [];
     const embeddingBatches: string[][] = [];
-    const supabase = createSupabase({
+    const readRepository = createReadRepository({
       sources: ragCase.sources ?? [],
       chunks: ragCase.chunks ?? [],
       rpcRows: ragCase.rpcRows ?? [],
     });
-    const embeddingProvider = createEmbeddingProvider(texts => {
+    const embeddingProvider = createFakeEmbeddingProvider(texts => {
       embeddingBatches.push(texts);
       return texts.map((_, index) => [index + 0.1, index + 0.2]);
     });
@@ -67,8 +50,8 @@ for (const ragCase of executableRagEvalCases) {
       messages: ragCase.messages,
       pageContext: ragCase.pageContext,
       config: { ...config, matchCount: ragCase.matchCount ?? config.matchCount },
-      supabase: supabase.client,
-      answerProvider: createAnswerProvider(ragCase, generatedQuestions),
+      readRepository,
+      answerProvider: createAnswerProviderForCase(ragCase, generatedQuestions),
       embeddingProvider,
       fallbackEmbeddingProvider: embeddingProvider,
     });
@@ -126,7 +109,7 @@ for (const ragCase of executableRagEvalCases) {
     }
 
     if (expected.noRpc) {
-      assert.deepEqual(supabase.calls.rpc, []);
+      assert.deepEqual(readRepository.calls.matchChunks, []);
     }
 
     if (expected.embeddingBatches) {
@@ -135,54 +118,21 @@ for (const ragCase of executableRagEvalCases) {
   });
 }
 
-function createAnswerProvider(ragCase: RagEvalCase, generatedQuestions: string[]): AnswerProvider {
-  const retrievalPlan: RetrievalPlan = {
-    query: ragCase.question,
-    mode: 'direct_evidence',
-    entity: '',
-    subject: '',
-    ...ragCase.plan,
-  };
-
-  return {
-    async classifyQuestionIntent() {
-      return {
-        intent: ragCase.intent ?? 'rag_question',
-        response: ragCase.intentResponse ?? '',
-        language: 'en',
-      };
-    },
-    async planRetrieval() {
-      return retrievalPlan;
-    },
-    async generateAnswer(question) {
+function createAnswerProviderForCase(ragCase: RagEvalCase, generatedQuestions: string[]) {
+  return createFakeAnswerProvider(ragCase.question, {
+    intent: ragCase.intent ?? 'rag_question',
+    intentResponse: ragCase.intentResponse ?? '',
+    plan: ragCase.plan,
+    generatedAnswer: ragCase.generatedAnswer ?? 'Grounded answer.',
+    insufficientContextAnswer: ragCase.generatedAnswer ?? 'Please send us a message so we can help.',
+    intentFallbackResponse: ragCase.intentResponse ?? 'Please ask about our website.',
+    onGenerateAnswer: question => {
       generatedQuestions.push(question);
-      return ragCase.generatedAnswer ?? 'Grounded answer.';
     },
-    async generateInsufficientContextAnswer() {
-      return ragCase.generatedAnswer ?? 'Please send us a message so we can help.';
-    },
-    async generateIntentFallbackResponse() {
-      return ragCase.intentResponse ?? 'Please ask about our website.';
-    },
-  };
+  });
 }
 
-function createEmbeddingProvider(
-  embedTexts: (texts: string[]) => number[][] | Promise<number[][]>
-): EmbeddingProvider {
-  return {
-    async embedText(text) {
-      const [embedding] = await embedTexts([text]);
-      return embedding;
-    },
-    async embedTexts(texts) {
-      return embedTexts(texts);
-    },
-  };
-}
-
-function createSupabase({
+function createReadRepository({
   sources,
   chunks,
   rpcRows,
@@ -190,97 +140,52 @@ function createSupabase({
   sources: EvalSourceRow[];
   chunks: EvalChunkRow[];
   rpcRows: EvalMatchRow[];
-}) {
-  const calls: {
-    rpc: Array<{
-      functionName: string;
-      source_types: RagSourceType[] | null;
-      source_keys?: string[] | null;
-      source_origins?: RagSourceOrigin[] | null;
-    }>;
-  } = { rpc: [] };
+}): FakeRagReadRepository {
+  return new FakeRagReadRepository({
+    sources: sources.map(toSourceRecord),
+    chunks: chunks.map(toChunkFixture),
+    contexts: rpcRows.map(toContextFixture),
+  });
+}
 
-  const client = {
-    from(table: 'rag_sources' | 'rag_chunks') {
-      const filters: Array<(row: Record<string, unknown>) => boolean> = [];
-      let limit: number | undefined;
-      const query = {
-        select() {
-          return query;
-        },
-        eq(field: string, value: unknown) {
-          filters.push(row => row[field] === value);
-          return query;
-        },
-        in(field: string, values: unknown[]) {
-          filters.push(row => values.includes(row[field]));
-          return query;
-        },
-        ilike(field: string, pattern: string) {
-          const search = pattern.replace(/%/gu, '').toLowerCase();
-          filters.push(row => String(row[field] ?? '').toLowerCase().includes(search));
-          return query;
-        },
-        order() {
-          return query;
-        },
-        limit(value: number) {
-          limit = value;
-          return query;
-        },
-        maybeSingle: async () => {
-          const rows = getRows();
-          return { data: rows[0] ?? null, error: null };
-        },
-        then<TResult1 = { data: unknown[]; error: null }, TResult2 = never>(
-          onfulfilled?:
-            | ((value: { data: unknown[]; error: null }) => TResult1 | PromiseLike<TResult1>)
-            | null,
-          onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
-        ) {
-          return Promise.resolve({ data: getRows(), error: null }).then(onfulfilled, onrejected);
-        },
-      };
-
-      function getRows() {
-        const rows = table === 'rag_sources' ? sources : chunks;
-        return rows
-          .filter(row => filters.every(filter => filter(row as unknown as Record<string, unknown>)))
-          .slice(0, limit);
-      }
-
-      return query;
-    },
-    async rpc(
-      functionName: string,
-      parameters: {
-        source_types: RagSourceType[] | null;
-        source_keys?: string[] | null;
-        source_origins?: RagSourceOrigin[] | null;
-      }
-    ) {
-      calls.rpc.push({
-        functionName,
-        source_types: parameters.source_types,
-        source_keys: parameters.source_keys,
-        source_origins: parameters.source_origins,
-      });
-
-      return {
-        data: rpcRows.filter(row => {
-          const matchesSourceType =
-            !parameters.source_types || parameters.source_types.includes(row.source_type);
-          const matchesSourceKey =
-            !parameters.source_keys || parameters.source_keys.includes(row.source_key);
-          const matchesSourceOrigin =
-            !parameters.source_origins || parameters.source_origins.includes(row.origin);
-
-          return matchesSourceType && matchesSourceKey && matchesSourceOrigin;
-        }),
-        error: null,
-      };
-    },
+function toSourceRecord(row: EvalSourceRow): RagSourceRecord {
+  return {
+    id: row.id,
+    sourceType: row.source_type,
+    sourceKey: row.source_key,
+    title: row.title,
+    url: row.url,
+    path: row.path,
+    origin: row.origin,
+    isPublic: row.is_public,
+    metadata: row.metadata,
   };
+}
 
-  return { client: client as unknown as SupabaseClient, calls };
+function toChunkFixture(row: EvalChunkRow): ChunkFixture {
+  return {
+    id: row.id,
+    sourceId: row.source_id,
+    chunkIndex: row.chunk_index,
+    content: row.content,
+    metadata: row.metadata ?? {},
+  };
+}
+
+function toContextFixture(row: EvalMatchRow): RetrievedContext {
+  return {
+    chunkId: row.chunk_id,
+    sourceId: row.source_id,
+    sourceType: row.source_type,
+    sourceKey: row.source_key,
+    title: row.title,
+    url: row.url,
+    path: row.path,
+    chunkIndex: row.chunk_index,
+    content: row.content,
+    similarity: row.similarity,
+    sourceMetadata: row.source_metadata ?? {},
+    chunkMetadata: row.chunk_metadata ?? {},
+    origin: row.origin,
+  };
 }

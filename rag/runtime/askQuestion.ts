@@ -1,5 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 import { deepSeekAnswerClient } from '../clients/deepseek.js';
 import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../clients/gemini.js';
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
@@ -39,8 +37,6 @@ export interface AskQuestionInput {
   retrievalQuestion?: string;
   config?: RagConfig;
   readRepository?: RagReadRepository;
-  /** @deprecated Pass readRepository instead. Kept for tests that still inject a Supabase client. */
-  supabase?: SupabaseClient;
   answerProvider?: AnswerProvider;
   embeddingProvider?: EmbeddingProvider;
   fallbackEmbeddingProvider?: EmbeddingProvider;
@@ -211,7 +207,6 @@ function createRuntimeContext({
   pageContext,
   config = getRagConfig(),
   readRepository,
-  supabase,
   answerProvider = deepSeekAnswerClient,
   embeddingProvider = geminiEmbeddingClient,
   fallbackEmbeddingProvider = geminiFallbackEmbeddingClient,
@@ -223,10 +218,7 @@ function createRuntimeContext({
     config,
     readRepository:
       readRepository ??
-      new SupabaseRagReadRepository(
-        supabase ?? createSupabaseServiceClient(config),
-        config.siteUrl
-      ),
+      new SupabaseRagReadRepository(createSupabaseServiceClient(config), config.siteUrl),
     answerProvider,
     embeddingProvider,
     fallbackEmbeddingProvider,
