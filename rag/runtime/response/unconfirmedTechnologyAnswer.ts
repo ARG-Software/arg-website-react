@@ -3,6 +3,7 @@ import { extractTechnologyName } from '../retrieval/technology/normalizeTechnolo
 import {
   isEngineeringPracticeQuestion,
   isNamedEntityTechnologyQuestion,
+  isTechnologySupportQuestion,
 } from '../retrieval/technology/splitTechnologyQuestion.js';
 
 export function createUnconfirmedTechnologyAnswer(
@@ -18,6 +19,10 @@ export function createUnconfirmedTechnologyAnswer(
   }
 
   if (isEngineeringPracticeQuestion(results[0].retrievalQuestion, results[0].plan.subject)) {
+    return null;
+  }
+
+  if (!isTechnologySupportQuestion(results[0].retrievalQuestion)) {
     return null;
   }
 

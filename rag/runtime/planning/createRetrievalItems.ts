@@ -8,12 +8,10 @@ import { resolveRetrievalRoute } from '../retrieval/route.js';
 import { extractTechnologyName } from '../retrieval/technology/normalizeTechnology.js';
 import {
   createTechnologySupportQuery,
+  isTechnologySupportQuestion,
   isEngineeringPracticeQuestion,
   splitTechnologySubjects,
 } from '../retrieval/technology/splitTechnologyQuestion.js';
-
-const TECHNOLOGY_SUPPORT_QUESTION_PATTERN =
-  /\b(?:do|does|can)\b.{0,50}\b(?:know|use|uses|work with|works with|support|supports|build with|builds with|have experience with|has experience with)\b/iu;
 
 export interface RoutedRetrievalItem {
   plan: RetrievalQuestionPlan;
@@ -65,7 +63,7 @@ function createTechnologySubjectItems(
   if (
     item.mode === 'article_discovery' ||
     isEngineeringPracticeQuestion(originalQuestion, item.subject) ||
-    !TECHNOLOGY_SUPPORT_QUESTION_PATTERN.test(originalQuestion)
+    !isTechnologySupportQuestion(originalQuestion)
   ) {
     return [item];
   }
@@ -90,7 +88,7 @@ function shouldUseDirectEvidenceForTechnology(
   if (
     item.mode === 'article_discovery' ||
     isEngineeringPracticeQuestion(originalQuestion, item.subject) ||
-    !TECHNOLOGY_SUPPORT_QUESTION_PATTERN.test(originalQuestion)
+    !isTechnologySupportQuestion(originalQuestion)
   ) {
     return false;
   }

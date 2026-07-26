@@ -126,7 +126,7 @@ Use these for the local ingestion endpoint/script:
 - `src/data/workingWithUs.json`
 - `src/data/faq.json`
 - `src/blog/*.md`
-- Documents listed in `rag/config/local-documents.json`.
+- Local documents listed in `rag/config/localSources.ts`.
 
 Default local documents:
 
@@ -235,7 +235,7 @@ Implemented scripts:
 - `npm run rag:ingest:local`
 - `npm run rag:ingest:external`
 - Both support `--dry-run`.
-- External allowlist lives at `rag/config/external-sources.json` and currently includes five approved sources.
+- External allowlist lives at `rag/config/externalSources.ts`.
 
 ## Database Schema
 
@@ -264,9 +264,9 @@ Recommended source types:
 
 ## External Sources
 
-Use the curated allowlist file:
+Use the curated allowlist module:
 
-- `rag/config/external-sources.json`
+- `rag/config/externalSources.ts`
 
 Current approved sources:
 
@@ -300,7 +300,7 @@ External ingestion should:
 
 Add repeatable local document ingestion sources to:
 
-- `rag/config/local-documents.json`
+- `rag/config/localSources.ts`
 
 Required fields:
 
@@ -385,7 +385,7 @@ CVs must use a manually reviewed `redaction` policy, stay outside `public/`, and
    - Supabase scripts use `supabase/scripts.js` so `.env` values are loaded automatically.
 
 7. Move RAG config files and Supabase helper: done and committed.
-   - `rag/config/external-sources.json`
+   - `rag/config/externalSources.ts`
    - `rag/config/internal-pdfs.json`
    - `supabase/scripts.js`
    - Old paths removed: `rag/external-sources.json`, `rag/internal-pdfs.json`, `rag/scripts/supabase.js`.
@@ -496,7 +496,7 @@ The frontend UI is implemented. Remaining work:
   - `SUPABASE_SERVICE_ROLE_KEY`
   - `GEMINI_API_KEY`
   - `DEEPSEEK_API_KEY`
-- **External sources**: Optionally add more manually approved external URLs to `rag/config/external-sources.json` and rerun external ingestion.
+- **External sources**: Optionally add more manually approved external URLs to `rag/config/externalSources.ts` and rerun external ingestion.
 - **Polish**: Adjust Gaspar UI/UX based on real usage (typing speed, response formatting, citation display).
 - **Commit**: The current working tree has uncommitted changes (Gaspar widget + email capture changes). Commit when ready.
 
@@ -624,8 +624,8 @@ Next behavior work discussed but not implemented in this refactor:
 
 ### Local Documents And CVs
 
-- Local document manifest: `rag/config/local-documents.json`.
-- Local source registry: `rag/config/local-sources.json` with `kind: local_document_manifest`.
+- Local document entries live in `rag/config/localSources.ts` with `kind: local_document`.
+- Local source registry lives in `rag/config/localSources.ts`.
 - Supported document format is currently PDF. Documents use the `local_document` source type.
 - Portfolio documents may cite their public file URL.
 - CVs must be kept outside `public/`, for example under `.rag-private/cvs/`; `.rag-private/` is git-ignored.
@@ -635,7 +635,7 @@ Next behavior work discussed but not implemented in this refactor:
 
 ### Homepage Section Context
 
-- `rag/config/homepageSections.ts` is the canonical mapping of homepage DOM IDs to RAG source keys.
+- `rag/config/localSources.ts` is the canonical mapping of homepage DOM IDs to RAG source keys.
 - Homepage content is ingested as independent sources such as `home:services`, `home:overview`, and `home:faq`; the old aggregate `homepage/homepage` source was removed by migration.
 - `useActiveHomepageSection` observes the visible homepage section and `AssistantWidget` submits it as `pageContext.activeSection`.
 - The runtime validates section IDs server-side and supplies the section to question rewriting only for explicit current-section references. It does not retrieve or boost the section for unrelated questions.
@@ -670,7 +670,7 @@ npx tsx rag/runtime/scripts/testAsk.ts --retrieve-only --page-path / --page-titl
 
 ### Remaining Work
 
-1. Move any raw CVs from `public/files/cvs` to `.rag-private/cvs`, redact the original files, and add manually reviewed CV entries to `local-documents.json`.
+1. Move any raw CVs from `public/files/cvs` to `.rag-private/cvs`, redact the original files, and add manually reviewed CV entries to `rag/config/localSources.ts`.
 2. Test the active-section behavior in the browser on desktop and mobile.
 3. Add rate limiting or bot verification to the public ask endpoint before deployment.
 
@@ -752,7 +752,7 @@ The public endpoint still needs abuse protection such as rate limiting or bot ve
 
 ### DesignRush Pricing
 
-`rag/config/external-sources.json` allows only the private DesignRush snapshot at `.rag-private/designrush-profile.html`. It extracts the approved minimum budget, hourly rate, and explicitly published project budget ranges; it does not ingest the raw dashboard text, navigation, or directory categories.
+`rag/config/externalSources.ts` allows only the private DesignRush snapshot under `.rag-private/`. It extracts the approved minimum budget, hourly rate, and explicitly published project budget ranges; it does not ingest the raw dashboard text, navigation, or directory categories.
 
 - GoodFirms, TechBehemoths, LinkedIn, and the GitHub directory sources were removed from the RAG database.
 - The DesignRush source is internal reference data. Assistant answers must never name, link to, cite, or otherwise disclose it.
@@ -1129,3 +1129,41 @@ npm run rag:ingest:local -- --all --refresh
 ```
 
 Also verify the same questions in the browser, including the latest-article quick prompt, article cards, the contact action on unknown answers, and English and Portuguese responses.
+
+## RAG Config Consolidation - July 26, 2026
+
+Current config modules:
+
+- `rag/config/env.ts`: environment defaults, required env validation, and local `.env` loading for admin scripts.
+- `rag/config/localSources.ts`: local source registry, homepage section mapping, and local document entries.
+- `rag/config/externalSources.ts`: approved trusted external source allowlist.
+- `rag/config/assistantPolicy.ts`: assistant response policy content and source metadata.
+
+Removed superseded config files:
+
+- `rag/config/loadLocalEnv.ts`
+- `rag/config/homepageSections.ts`
+- `rag/config/local-sources.json`
+- `rag/config/local-documents.json`
+- `rag/config/external-sources.json`
+- `rag/config/assistant-policy.json`
+
+The frontend no longer imports RAG config. `useActiveHomepageSection` keeps only the client-safe homepage section ID list, while runtime validation and ingestion use `localSources.ts`.
+
+## Ranked Project References - July 26, 2026
+
+Project reference questions such as `What are the top referenced projects of Arg?` now use direct project-reference retrieval instead of semantic vector search or technology fallback handling.
+
+- Top project rankings are source data in `src/data/projects.json` via `referenceRank`.
+- Current top three are Mojaloop, People's Clearinghouse, and Sky Tracks.
+- Ingestion stores the rank as `rag_sources.metadata.reference_rank` for project sources.
+- Runtime retrieval returns `home:projects` plus the top ranked project sources, capped by requested `top N` wording and defaulting to three.
+- The unconfirmed technology fallback now requires technology-support wording, so project-list questions cannot become fake stack answers.
+
+Targeted re-ingestion completed after adding project ranks:
+
+```bash
+npm run rag:ingest:local -- --source home:projects --source mojaloop --source peoples-clearinghouse --source sky-tracks
+```
+
+Live check confirmed the exact question retrieves `home:projects`, `mojaloop`, `peoples-clearinghouse`, and `sky-tracks`, and answers with Mojaloop, People's Clearinghouse, and Sky Tracks.

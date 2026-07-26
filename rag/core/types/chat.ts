@@ -1,4 +1,4 @@
-import type { HomepageSectionId } from '../../config/homepageSections.js';
+import type { HomepageSectionId } from '../../config/localSources.js';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';

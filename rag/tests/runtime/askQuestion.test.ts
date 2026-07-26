@@ -205,6 +205,69 @@ test('a hybrid mode client-hiring question retrieves FAQ evidence and project ac
   assert.ok(supabase.calls.matchChunks.some(call => call.sourceTypes?.includes('faq')));
 });
 
+test('top referenced project questions retrieve ranked public project evidence', async () => {
+  const sources = [
+    source('home-projects-id', 'Homepage Projects', null, 'homepage', 'home:projects'),
+    source('mojaloop-id', 'Mojaloop', null, 'project', 'mojaloop', { reference_rank: 1 }),
+    source('pch-id', "People's Clearinghouse", null, 'project', 'peoples-clearinghouse', {
+      reference_rank: 2,
+    }),
+    source('sky-tracks-id', 'Sky Tracks', null, 'project', 'sky-tracks', { reference_rank: 3 }),
+    source('tv-cine-id', 'TV Cine', null, 'project', 'tv-cine'),
+  ];
+  const chunks = [
+    chunk(
+      'home-projects-id',
+      'home-projects',
+      'This is a public selection, not the full archive.'
+    ),
+    chunk('mojaloop-id', 'mojaloop', 'Mojaloop payment switch case study.'),
+    chunk('pch-id', 'peoples-clearinghouse', "People's Clearinghouse public demo case study."),
+    chunk('sky-tracks-id', 'sky-tracks', 'Sky Tracks music production case study.'),
+    chunk('tv-cine-id', 'tv-cine', 'TV Cine entertainment platform case study.'),
+  ];
+  const supabase = createSupabase({ sources, chunks });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Project reference retrieval should not require embeddings');
+  });
+
+  const contexts = await retrieveRelevantChunks({
+    question: 'What are the top referenced projects of Arg?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('What are the top referenced projects of ARG Software?', {
+      plan: { mode: 'direct_evidence', entity: 'Arg', subject: 'top referenced projects' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(contexts.map(context => context.sourceKey), [
+    'home:projects',
+    'mojaloop',
+    'peoples-clearinghouse',
+    'sky-tracks',
+  ]);
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('project reference questions do not use unconfirmed technology fallback', async () => {
+  const result = await askQuestion({
+    question: 'What are the top referenced projects of Arg?',
+    config,
+    readRepository: createSupabase({}).repository,
+    answerProvider: createAnswerProvider('What are the top referenced projects of ARG Software?', {
+      plan: { mode: 'direct_evidence', entity: 'Arg', subject: 'top referenced projects' },
+      insufficientContextAnswer: 'Please send us a message so we can share relevant project references.',
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.doesNotMatch(result.answer, /usual or preferred stack/iu);
+  assert.match(result.answer, /project references/iu);
+});
+
 test('a Go stack question does not treat go-to language wording as Go evidence', async () => {
   const supabase = createSupabase({
     rpcRows: [

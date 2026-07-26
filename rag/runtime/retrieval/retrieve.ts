@@ -47,6 +47,7 @@ export async function retrieveRoutedContexts({
       contexts: await retrieveDirectEvidenceContexts({
         readRepository,
         config,
+        retrievalQuestion,
         route,
         embeddingProvider,
         fallbackEmbeddingProvider,

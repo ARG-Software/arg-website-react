@@ -11,7 +11,20 @@ export interface JsonManifestEntry {
   metadata?: RagSourceMetadata;
 }
 
+export interface InlineJsonManifestEntry {
+  kind: 'inline_json';
+  sourceType: RagSourceType;
+  sourceKey: string;
+  title: string;
+  url?: string;
+  label?: string;
+  virtualPath: string;
+  content: unknown;
+  metadata?: RagSourceMetadata;
+}
+
 export interface LocalDocumentManifestEntry extends RagSourceMetadata {
+  kind: 'local_document';
   format: 'pdf';
   filePath: string;
   sourceKey: string;
@@ -37,8 +50,12 @@ export interface ExternalSourceManifestEntry {
 }
 
 export interface FileManifestEntry {
-  kind: 'projects_json' | 'partners_json' | 'markdown_dir' | 'local_document_manifest';
+  kind: 'projects_json' | 'partners_json' | 'markdown_dir';
   filePath: string;
 }
 
-export type LocalManifestEntry = JsonManifestEntry | FileManifestEntry;
+export type LocalManifestEntry =
+  | JsonManifestEntry
+  | InlineJsonManifestEntry
+  | FileManifestEntry
+  | LocalDocumentManifestEntry;

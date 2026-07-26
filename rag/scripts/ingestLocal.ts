@@ -1,5 +1,5 @@
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
-import { loadLocalEnv } from '../config/loadLocalEnv.js';
+import { loadLocalEnv } from '../config/env.js';
 import type { IngestSourceResult } from '../core/types/ingestion.js';
 import type { RagSource } from '../core/types/source.js';
 import { ingestSource } from '../ingestion/ingestPipeline.js';

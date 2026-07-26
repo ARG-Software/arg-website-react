@@ -3,7 +3,7 @@ const TECHNOLOGY_DESCRIPTOR_PATTERN =
 const TECHNOLOGY_CATEGORY_WORD_PATTERN =
   /\b(?:cloud|database|framework|language|library|methodology|platform|programming|stack|technology|tool)\b/giu;
 const NON_EXACT_TECHNOLOGY_SUBJECT_PATTERN =
-  /\b(?:automated\s+tests?|background|budget|career|ci\/cd|cicd|code\s+reviews?|collaboration|contact|continuous\s+(?:delivery|integration)|cost|duration|e2e(?:\s+testing)?|end[-\s]+to[-\s]+end\s+testing|experience|fintech|hybrid|integration\s+tests?|mode|on[-\s]?site|origin|price|project|qa|quality\s+assurance|remote|service|team|test\s+coverage|testing|unit\s+tests?)\b/iu;
+  /\b(?:automated\s+tests?|background|budget|career|case\s+stud(?:y|ies)|ci\/cd|cicd|clients?|code\s+reviews?|collaboration|contact|continuous\s+(?:delivery|integration)|cost|duration|e2e(?:\s+testing)?|end[-\s]+to[-\s]+end\s+testing|experience|fintech|hybrid|integration\s+tests?|mode|on[-\s]?site|origin|portfolio|price|projects?|qa|quality\s+assurance|references?|referenced|remote|service|team|test\s+coverage|testing|unit\s+tests?)\b/iu;
 const TECHNOLOGY_DISPLAY_NAMES = new Map([
   ['aws', 'AWS'],
   ['c#', 'C#'],

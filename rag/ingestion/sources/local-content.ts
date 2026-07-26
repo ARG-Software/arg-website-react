@@ -3,6 +3,7 @@ import type { RagSourceMetadata } from '../../core/types/source.js';
 export interface ProjectJson extends RagSourceMetadata {
   slug: string;
   title: string;
+  referenceRank?: number;
   client?: string;
   subtitle?: string;
   liveLink?: string;

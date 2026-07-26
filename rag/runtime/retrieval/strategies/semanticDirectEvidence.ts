@@ -26,6 +26,10 @@ import {
   retrieveBroadPersonProfileContexts,
   retrievePersonSemanticEvidence,
 } from './personProfile.js';
+import {
+  isProjectReferenceQuestion,
+  retrieveProjectReferenceContexts,
+} from './projectReferences.js';
 
 const FIRST_PARTY_ORIGIN = 'first_party';
 const TRUSTED_EXTERNAL_ORIGIN = 'trusted_external';
@@ -33,6 +37,7 @@ const TRUSTED_EXTERNAL_ORIGIN = 'trusted_external';
 export async function retrieveDirectEvidenceContexts({
   readRepository,
   config,
+  retrievalQuestion,
   route,
   embeddingProvider,
   fallbackEmbeddingProvider,
@@ -40,11 +45,21 @@ export async function retrieveDirectEvidenceContexts({
 }: {
   readRepository: RagReadRepository;
   config: RagConfig;
+  retrievalQuestion: string;
   route: RetrievalRoute;
   embeddingProvider: EmbeddingProvider;
   fallbackEmbeddingProvider: EmbeddingProvider;
   semanticSearch?: SemanticSearchInput;
 }): Promise<RetrievedContext[]> {
+  if (isProjectReferenceQuestion(retrievalQuestion, route.subject)) {
+    return retrieveProjectReferenceContexts({
+      readRepository,
+      config,
+      question: retrievalQuestion,
+      subject: route.subject,
+    });
+  }
+
   const person = route.entity ? await findPersonSource(readRepository, route.entity) : null;
 
   if (person && route.subject && isBroadPersonProfileSubject(route.subject)) {

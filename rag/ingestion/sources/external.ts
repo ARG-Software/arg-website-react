@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { EXTERNAL_SOURCE_ENTRIES } from '../../config/externalSources.js';
 import { extractHtmlText, fetchExternalHtml } from '../extractors/html.js';
 import { createSource } from '../sourceFactory.js';
 import type { IngestionRunOptions } from '../../core/types/ingestion.js';
@@ -11,14 +12,9 @@ export async function loadExternalSourceEntries(
   rootDir = process.cwd(),
   selection?: IngestionRunOptions
 ): Promise<ExternalSourceManifestEntry[]> {
-  const filePath = path.join(rootDir, 'rag/config/external-sources.json');
-  const sources = JSON.parse(await readFile(filePath, 'utf8'));
+  void rootDir;
 
-  if (!Array.isArray(sources)) {
-    throw new Error('rag/config/external-sources.json must contain an array');
-  }
-
-  return filterExternalSourceEntries(sources.map(validateExternalSourceEntry), selection);
+  return filterExternalSourceEntries(EXTERNAL_SOURCE_ENTRIES.map(validateExternalSourceEntry), selection);
 }
 
 export async function loadExternalSource({

@@ -1,5 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { HOMEPAGE_SECTION_IDS } from '../../rag/config/homepageSections';
+
+const HOMEPAGE_SECTION_IDS = [
+  'hero',
+  'partners',
+  'overview',
+  'services',
+  'cases',
+  'testimonials',
+  'working-with-us',
+  'team',
+  'blog-promo',
+  'social',
+  'faq',
+  'contact',
+];
 
 export function useActiveHomepageSection(pathname) {
   const [activeSection, setActiveSection] = useState(null);

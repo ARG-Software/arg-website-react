@@ -1,3 +1,5 @@
+import { config as loadDotenv } from 'dotenv';
+
 import type { EnvOptions, RagConfig } from '../core/types/config.js';
 
 const DEFAULTS: Record<string, string> = {
@@ -47,6 +49,16 @@ export function getNumberEnv(name: string, options: EnvOptions = {}): number | u
   }
 
   return number;
+}
+
+export function loadLocalEnv(path = '.env'): Record<string, string> {
+  const result = loadDotenv({ path, quiet: true });
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  return result.parsed ?? {};
 }
 
 export function getRagConfig(): RagConfig {

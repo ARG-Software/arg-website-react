@@ -2,6 +2,7 @@
   {
     "slug": "mojaloop",
     "title": "Mojaloop",
+    "referenceRank": 1,
     "subtitle": "Fintech",
     "client": "Mojaloop",
     "timeline": "Ongoing",
@@ -37,6 +38,7 @@
   {
     "slug": "peoples-clearinghouse",
     "title": "People's Clearinghouse",
+    "referenceRank": 2,
     "subtitle": "Fintech & Financial Inclusion",
     "client": "AMUCSS / People's Clearinghouse",
     "timeline": "3 Years",
@@ -134,6 +136,7 @@
   {
     "slug": "sky-tracks",
     "title": "Sky Tracks",
+    "referenceRank": 3,
     "subtitle": "Music Tech",
     "client": "SkyTracks",
     "timeline": "1 Year",

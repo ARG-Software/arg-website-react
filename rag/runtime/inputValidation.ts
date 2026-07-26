@@ -1,4 +1,4 @@
-import { getHomepageSectionScope } from '../config/homepageSections.js';
+import { getHomepageSectionScope } from '../config/localSources.js';
 import type { ChatMessage, PageContext } from '../core/types/chat.js';
 
 const MAX_HISTORY_MESSAGES = 12;
