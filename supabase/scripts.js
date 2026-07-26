@@ -11,7 +11,7 @@ if (!command) {
 }
 
 const argsByCommand = {
-  link: ['supabase', 'link', '--project-ref', process.env.SUPABASE_PROJECT_REF],
+  link: ['supabase', 'link', '--project-ref', process.env.DATABASE_PROJECT_REF],
   push: ['supabase', 'db', 'push'],
 };
 
@@ -21,17 +21,22 @@ if (!args) {
   throw new Error(`Unsupported Supabase command: ${command}`);
 }
 
-if (command === 'link' && !process.env.SUPABASE_PROJECT_REF) {
-  throw new Error('Missing required environment variable: SUPABASE_PROJECT_REF');
+if (command === 'link' && !process.env.DATABASE_PROJECT_REF) {
+  throw new Error('Missing required environment variable: DATABASE_PROJECT_REF');
 }
 
-if (!process.env.SUPABASE_ACCESS_TOKEN) {
-  throw new Error('Missing required environment variable: SUPABASE_ACCESS_TOKEN');
+if (!process.env.DATABASE_ACCESS_TOKEN) {
+  throw new Error('Missing required environment variable: DATABASE_ACCESS_TOKEN');
 }
+
+const childEnv = {
+  ...process.env,
+  SUPABASE_ACCESS_TOKEN: process.env.DATABASE_ACCESS_TOKEN,
+};
 
 const executable = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 const child = spawn(executable, args, {
-  env: process.env,
+  env: childEnv,
   shell: process.platform === 'win32',
   stdio: 'inherit',
 });

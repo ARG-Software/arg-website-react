@@ -2,11 +2,17 @@
    Gaspar Assistant Widget
    ========================================================================== */
 
+@property --aw-sweep-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
 /* ── Trigger Button ── */
 .aw-trigger {
   position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
+  bottom: 2.5rem;
+  right: 3.5rem;
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
@@ -18,11 +24,37 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 16px rgba(12, 0, 46, 0.2);
-  z-index: 9996;
+  z-index: 1090;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
     opacity 0.3s ease;
+}
+
+.aw-trigger::before {
+  content: '';
+  position: absolute;
+  inset: -2.5px;
+  border-radius: 50%;
+  padding: 2.5px;
+  background: conic-gradient(
+    from -90deg,
+    #7904fd 0deg,
+    #c924d7,
+    #f0060d var(--aw-sweep-angle),
+    transparent var(--aw-sweep-angle)
+  );
+  pointer-events: none;
+  opacity: 0;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: aw-trigger-sweep 5s linear infinite;
 }
 
 .aw-trigger:hover {
@@ -41,6 +73,10 @@
   pointer-events: none;
 }
 
+.aw-trigger--hidden::before {
+  animation-play-state: paused;
+}
+
 .aw-trigger__icon {
   position: relative;
   display: flex;
@@ -57,11 +93,34 @@
   top: 50%;
   left: 50%;
   display: block;
-  width: 88%;
+  width: 60%;
   height: auto;
   max-height: none;
   transform: translate(-50%, -50%);
   transform-origin: center;
+}
+
+@keyframes aw-trigger-sweep {
+  0% {
+    --aw-sweep-angle: 0deg;
+    opacity: 0;
+  }
+
+  2% {
+    --aw-sweep-angle: 30deg;
+    opacity: 1;
+  }
+
+  14% {
+    --aw-sweep-angle: 360deg;
+    opacity: 1;
+  }
+
+  18%,
+  100% {
+    --aw-sweep-angle: 360deg;
+    opacity: 0;
+  }
 }
 
 /* ── Chat Panel ── */
@@ -76,7 +135,7 @@
   border-radius: 18px;
   display: flex;
   flex-direction: column;
-  z-index: 9997;
+  z-index: 1091;
   opacity: 0;
   pointer-events: none;
   transform: translateY(calc(100% + 40px));
@@ -85,6 +144,12 @@
     opacity 0.35s ease;
   overflow: hidden;
   will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-trigger::before {
+    animation: none;
+  }
 }
 
 .aw-panel--open {
@@ -150,7 +215,7 @@
   top: 50%;
   left: 50%;
   display: block;
-  width: 88%;
+  width: 60%;
   height: auto;
   max-height: none;
   transform: translate(-50%, -50%);
@@ -205,6 +270,16 @@
 .aw-header__btn:hover {
   background: rgba(12, 0, 46, 0.06);
   color: #0c002e;
+}
+
+.aw-header__btn:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.aw-header__btn:disabled:hover {
+  background: transparent;
+  color: rgba(12, 0, 46, 0.5);
 }
 
 /* ── Messages ── */
@@ -374,7 +449,7 @@
 
 /* ── Input Area ── */
 .aw-input-area {
-  padding: 12px 16px 16px;
+  padding: 12px 16px 12px;
   border-top: 1px solid rgba(12, 0, 46, 0.08);
   flex-shrink: 0;
 }
@@ -429,6 +504,25 @@
 
 .aw-send:not(:disabled):hover {
   opacity: 0.85;
+}
+
+/* ── ALTCHA Badge ── */
+.aw-altcha-badge {
+  text-align: center;
+  padding: 4px 16px 10px;
+  flex-shrink: 0;
+}
+
+.aw-altcha-badge a {
+  font: 400 10px/1.4 'Neuemontreal', sans-serif;
+  color: rgba(12, 0, 46, 0.3);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease;
+}
+
+.aw-altcha-badge a:hover {
+  color: rgba(12, 0, 46, 0.5);
 }
 
 /* ── Mobile (<=767px): always fullscreen ── */

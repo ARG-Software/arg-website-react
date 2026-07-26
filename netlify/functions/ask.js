@@ -1,11 +1,33 @@
 import { RagValidationError, askQuestion } from '../../rag/runtime/askQuestion.ts';
 import { GeminiEmbeddingQuotaError } from '../../rag/clients/gemini.ts';
+import { verifyAltchaChallenge } from '../../rag/security/altcha.ts';
+import { checkRateLimits, getRateLimitConfig } from '../../rag/security/rateLimit.ts';
+import { SupabaseRateLimitStore } from '../../rag/security/rateLimitStores.ts';
+import { createSupabaseServiceClient } from '../../rag/clients/supabaseClient.ts';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
+
+export const config = {
+  path: '/.netlify/functions/ask',
+  rateLimit: {
+    windowLimit: 6,
+    windowSize: 60,
+    aggregateBy: ['ip', 'domain'],
+  },
+};
+
+let rateLimitStore;
+
+function getRateLimitStore() {
+  if (!rateLimitStore) {
+    rateLimitStore = new SupabaseRateLimitStore(createSupabaseServiceClient());
+  }
+  return rateLimitStore;
+}
 
 export async function handler(event) {
   if (event.httpMethod === 'OPTIONS') {
@@ -22,6 +44,39 @@ export async function handler(event) {
     payload = JSON.parse(event.body || '{}');
   } catch {
     return createResponse(400, createErrorBody('invalid_json', 'Invalid JSON body'));
+  }
+
+  try {
+    if (!payload.altcha?.challenge || !payload.altcha?.solution) {
+      return createResponse(403, createErrorBody('bot_verification_failed', 'Verification required'));
+    }
+
+    const altchaResult = await verifyAltchaChallenge({
+      challenge: payload.altcha.challenge,
+      solution: payload.altcha.solution,
+    });
+
+    if (!altchaResult.verified) {
+      return createResponse(403, createErrorBody('bot_verification_failed', 'Verification failed'));
+    }
+  } catch {
+    return createResponse(403, createErrorBody('bot_verification_failed', 'Verification failed'));
+  }
+
+  const clientIp = event.headers['x-nf-client-connection-ip'] || 'unknown';
+
+  try {
+    const rateLimitConfig = getRateLimitConfig();
+    const rateLimitResult = await checkRateLimits(clientIp, getRateLimitStore(), rateLimitConfig);
+
+    if (!rateLimitResult.allowed) {
+      return createResponse(
+        429,
+        createErrorBody('rate_limited', 'Too many requests. Please try again later.')
+      );
+    }
+  } catch (error) {
+    console.error('Rate limit check failed, failing open:', error);
   }
 
   try {

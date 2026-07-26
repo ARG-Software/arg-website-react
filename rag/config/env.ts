@@ -3,12 +3,12 @@ import { config as loadDotenv } from 'dotenv';
 import type { EnvOptions, RagConfig } from '../core/types/config.js';
 
 const DEFAULTS: Record<string, string> = {
-  GEMINI_EMBEDDING_MODEL: 'gemini-embedding-2',
-  GEMINI_EMBEDDING_DIMENSIONS: '768',
-  GEMINI_FALLBACK_EMBEDDING_MODEL: 'gemini-embedding-001',
-  GEMINI_FALLBACK_EMBEDDING_DIMENSIONS: '768',
-  GEMINI_EMBEDDING_REQUEST_DELAY_MS: '750',
-  DEEPSEEK_MODEL: 'deepseek-v4-flash',
+  EMBEDDING_MODEL: 'gemini-embedding-2',
+  EMBEDDING_DIMENSIONS: '768',
+  FALLBACK_EMBEDDING_MODEL: 'gemini-embedding-001',
+  FALLBACK_EMBEDDING_DIMENSIONS: '768',
+  EMBEDDING_REQUEST_DELAY_MS: '750',
+  AI_MODEL: 'deepseek-v4-flash',
   RAG_SITE_URL: 'https://arg.software',
   RAG_COMPANY_NAME: 'ARG Software',
   RAG_CHUNK_SIZE: '1200',
@@ -19,10 +19,10 @@ const DEFAULTS: Record<string, string> = {
 };
 
 const REQUIRED_ENV = [
-  'SUPABASE_URL',
-  'SUPABASE_SERVICE_ROLE_KEY',
-  'GEMINI_API_KEY',
-  'DEEPSEEK_API_KEY',
+  'DATABASE_URL',
+  'DATABASE_SERVICE_ROLE_KEY',
+  'EMBEDDING_API_KEY',
+  'AI_MODEL_API_KEY',
 ];
 
 export function getEnv(name: string, options: EnvOptions = {}): string | undefined {
@@ -77,8 +77,8 @@ export function getRagConfig(): RagConfig {
 
 export function getSupabaseConfig(): Pick<RagConfig, 'supabaseUrl' | 'supabaseServiceRoleKey'> {
   return {
-    supabaseUrl: getRequiredEnv('SUPABASE_URL'),
-    supabaseServiceRoleKey: getRequiredEnv('SUPABASE_SERVICE_ROLE_KEY'),
+    supabaseUrl: getRequiredEnv('DATABASE_URL'),
+    supabaseServiceRoleKey: getRequiredEnv('DATABASE_SERVICE_ROLE_KEY'),
   };
 }
 
@@ -90,10 +90,10 @@ export function getGeminiConfig(): Pick<
   | 'geminiEmbeddingRequestDelayMs'
 > {
   return {
-    geminiApiKey: getRequiredEnv('GEMINI_API_KEY'),
-    geminiEmbeddingModel: getRequiredEnv('GEMINI_EMBEDDING_MODEL'),
-    geminiEmbeddingDimensions: getRequiredNumberEnv('GEMINI_EMBEDDING_DIMENSIONS'),
-    geminiEmbeddingRequestDelayMs: getRequiredNumberEnv('GEMINI_EMBEDDING_REQUEST_DELAY_MS'),
+    geminiApiKey: getRequiredEnv('EMBEDDING_API_KEY'),
+    geminiEmbeddingModel: getRequiredEnv('EMBEDDING_MODEL'),
+    geminiEmbeddingDimensions: getRequiredNumberEnv('EMBEDDING_DIMENSIONS'),
+    geminiEmbeddingRequestDelayMs: getRequiredNumberEnv('EMBEDDING_REQUEST_DELAY_MS'),
   };
 }
 
@@ -105,17 +105,17 @@ export function getGeminiFallbackEmbeddingConfig(): Pick<
   | 'geminiEmbeddingRequestDelayMs'
 > {
   return {
-    geminiApiKey: getRequiredEnv('GEMINI_API_KEY'),
-    geminiFallbackEmbeddingModel: getRequiredEnv('GEMINI_FALLBACK_EMBEDDING_MODEL'),
-    geminiFallbackEmbeddingDimensions: getRequiredNumberEnv('GEMINI_FALLBACK_EMBEDDING_DIMENSIONS'),
-    geminiEmbeddingRequestDelayMs: getRequiredNumberEnv('GEMINI_EMBEDDING_REQUEST_DELAY_MS'),
+    geminiApiKey: getRequiredEnv('EMBEDDING_API_KEY'),
+    geminiFallbackEmbeddingModel: getRequiredEnv('FALLBACK_EMBEDDING_MODEL'),
+    geminiFallbackEmbeddingDimensions: getRequiredNumberEnv('FALLBACK_EMBEDDING_DIMENSIONS'),
+    geminiEmbeddingRequestDelayMs: getRequiredNumberEnv('EMBEDDING_REQUEST_DELAY_MS'),
   };
 }
 
 export function getDeepSeekConfig(): Pick<RagConfig, 'deepseekApiKey' | 'deepseekModel'> {
   return {
-    deepseekApiKey: getRequiredEnv('DEEPSEEK_API_KEY'),
-    deepseekModel: getRequiredEnv('DEEPSEEK_MODEL'),
+    deepseekApiKey: getRequiredEnv('AI_MODEL_API_KEY'),
+    deepseekModel: getRequiredEnv('AI_MODEL'),
   };
 }
 

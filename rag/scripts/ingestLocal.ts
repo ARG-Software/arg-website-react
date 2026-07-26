@@ -75,7 +75,7 @@ function getErrorMessage(error: unknown): string {
 }
 
 function getEmbeddingRequestDelayMs(): number {
-  const value = Number(process.env.GEMINI_EMBEDDING_REQUEST_DELAY_MS ?? 0);
+  const value = Number(process.env.EMBEDDING_REQUEST_DELAY_MS ?? 0);
   return Number.isFinite(value) && value > 0 ? value : 0;
 }
 

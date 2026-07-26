@@ -1,9 +1,9 @@
 {
   "latest": {
     "label": "Latest",
-    "aiTitle": "ARG AI · Coming soon",
-    "aiTag": "In development",
-    "aiTagTone": "amber"
+    "aiTitle": "Talk to Gaspar our AI Assistant",
+    "aiTag": "Online",
+    "aiTagTone": "green"
   },
   "primary": [
     {

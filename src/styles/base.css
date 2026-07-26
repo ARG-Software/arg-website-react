@@ -1,25 +1,41 @@
 /* Native scrollbar styling */
-html {
+html,
+.aw-messages {
   scrollbar-width: thin;
   scrollbar-color: #ffffff #0c002e;
 }
-html::-webkit-scrollbar {
+
+html::-webkit-scrollbar,
+.aw-messages::-webkit-scrollbar {
   width: 14px;
   height: 14px;
 }
-html::-webkit-scrollbar-track {
+
+html::-webkit-scrollbar-track,
+.aw-messages::-webkit-scrollbar-track {
   background: transparent;
 }
-html::-webkit-scrollbar-thumb {
+
+html::-webkit-scrollbar-thumb,
+.aw-messages::-webkit-scrollbar-thumb {
   background-color: #ffffff;
   border-radius: 999px;
   border: 2.5px solid #0c002e;
 }
-html::-webkit-scrollbar-button {
+
+html::-webkit-scrollbar-button,
+.aw-messages::-webkit-scrollbar-button {
   display: none;
 }
-html::-webkit-scrollbar-corner {
+
+html::-webkit-scrollbar-corner,
+.aw-messages::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+html.aw-fullscreen-open,
+html.aw-fullscreen-open body {
+  overflow: hidden !important;
 }
 
 /* ===== FONTS ===== */

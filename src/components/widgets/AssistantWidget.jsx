@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { MOBILE_BREAKPOINT } from '@constants/ui';
 import { useActiveHomepageSection } from '@hooks/useActiveHomepageSection';
+import { useAssistantConversation } from '@hooks/useAssistantConversation';
+import { getAltchaPayload } from '@services/altchaservice';
 import { getMailtoLink, getProjectBookingLink } from '@services/linksservice';
 import { trackAssistantEvent } from '@utils/analytics';
 import { isMobile } from '@utils/helpers';
@@ -48,6 +50,8 @@ const ERROR_MESSAGES = {
     answer_failed: 'Something went wrong. Please try again.',
     network_error: 'Unable to reach Gaspar. Please check your connection.',
     request_timeout: 'Gaspar is taking too long to respond. Please try again.',
+    bot_verification_failed: 'Verification failed. Please try again.',
+    rate_limited: 'You are sending messages too quickly. Please wait a moment.',
   },
   pt: {
     question_required: 'Introduza uma pergunta.',
@@ -58,6 +62,8 @@ const ERROR_MESSAGES = {
     answer_failed: 'Algo correu mal. Tente novamente.',
     network_error: 'Nao foi possivel contactar o Gaspar. Verifique a sua ligacao.',
     request_timeout: 'O Gaspar esta a demorar demasiado a responder. Tente novamente.',
+    bot_verification_failed: 'Falha na verificacao. Tente novamente.',
+    rate_limited: 'Esta a enviar mensagens demasiado rapido. Aguarde um momento.',
   },
 };
 
@@ -196,7 +202,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
   const activeSection = useActiveHomepageSection(location.pathname);
   const mobileViewport = useMobileFullscreen();
   const [panelState, setPanelState] = useState('closed');
-  const [messages, setMessages] = useState([]);
+  const { messages, setMessages, clearConversation } = useAssistantConversation();
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -205,6 +211,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
 
   const showPrompts = messages.length === 0;
   const isPanelOpen = panelState !== 'closed';
+  const canClearConversation = messages.length > 0 || inputValue.length > 0 || Boolean(error);
 
   useEffect(() => {
     onOpenChange?.(isPanelOpen);
@@ -225,6 +232,13 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
     if (panelState !== 'closed') {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
+  }, [panelState]);
+
+  useEffect(() => {
+    if (panelState !== 'fullscreen') return undefined;
+
+    document.documentElement.classList.add('aw-fullscreen-open');
+    return () => document.documentElement.classList.remove('aw-fullscreen-open');
   }, [panelState]);
 
   useEffect(() => {
@@ -252,9 +266,27 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
     trackAssistantEvent('close', { source });
   }, []);
 
+  useEffect(() => {
+    function handleGasparOpen(event) {
+      open(event.detail?.source || 'external_request');
+    }
+
+    window.addEventListener('gaspar:open', handleGasparOpen);
+    return () => window.removeEventListener('gaspar:open', handleGasparOpen);
+  }, [open]);
+
   const toggleFullscreen = useCallback(() => {
     setPanelState(prev => (prev === 'fullscreen' ? 'open' : 'fullscreen'));
   }, []);
+
+  const handleClearConversation = useCallback(() => {
+    if (loading) return;
+
+    clearConversation();
+    setInputValue('');
+    setError(null);
+    trackAssistantEvent('clear_conversation', { had_history: messages.length > 0 });
+  }, [clearConversation, loading, messages.length]);
 
   useEffect(() => {
     if (panelState === 'closed') return undefined;
@@ -279,6 +311,16 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
       const timeout = setTimeout(() => controller.abort(), 25000);
 
       try {
+        let altcha;
+
+        try {
+          altcha = await getAltchaPayload();
+        } catch {
+          setError(getErrorMessage('bot_verification_failed'));
+          trackAssistantEvent('error', { error_code: 'bot_verification_failed' });
+          return;
+        }
+
         const response = await fetch('/.netlify/functions/ask', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -291,8 +333,24 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
               title: document.title,
               ...(activeSection ? { activeSection } : {}),
             },
+            altcha,
           }),
         });
+
+        if (response.status === 403 || response.status === 429) {
+          let code = response.status === 429 ? 'rate_limited' : 'bot_verification_failed';
+
+          try {
+            const errorData = await response.json();
+            code = errorData.error?.code || code;
+          } catch {
+            // non-JSON 429 from Netlify native rate limit
+          }
+
+          setError(getErrorMessage(code));
+          trackAssistantEvent('error', { error_code: code });
+          return;
+        }
 
         const data = await response.json();
 
@@ -328,7 +386,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
         setLoading(false);
       }
     },
-    [activeSection, loading, location.pathname, messages]
+    [activeSection, loading, location.pathname, messages, setMessages]
   );
 
   function handleSubmit(e) {
@@ -364,6 +422,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
         role="dialog"
         aria-label="Gaspar assistant"
         aria-hidden={!isPanelOpen}
+        data-lenis-prevent
       >
         <div className="aw-header">
           <div className="aw-header__left">
@@ -379,6 +438,26 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
             </div>
           </div>
           <div className="aw-header__controls">
+            <button
+              className="aw-header__btn"
+              onClick={handleClearConversation}
+              aria-label="Clear conversation"
+              type="button"
+              disabled={loading || !canClearConversation}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 6h18M8 6V4h8v2M7 6l1 14h8l1-14" />
+              </svg>
+            </button>
             {panelState !== 'fullscreen' && (
               <button
                 className="aw-header__btn"
@@ -396,7 +475,7 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M15 3h6v6M9 21H3v6M21 3l-7 7M3 21l7-7" />
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
                 </svg>
               </button>
             )}
@@ -540,6 +619,12 @@ export function AssistantWidget({ isSuppressed = false, onOpenChange, reopenRequ
             </button>
           </div>
         </form>
+
+        <div className="aw-altcha-badge">
+          <a href="https://altcha.org" target="_blank" rel="noopener noreferrer">
+            Protected by ALTCHA
+          </a>
+        </div>
       </div>
     </>
   );

@@ -30,20 +30,20 @@ Target architecture:
 Expected local/server env vars:
 
 ```env
-SUPABASE_URL=
-SUPABASE_PROJECT_REF=
-SUPABASE_ACCESS_TOKEN=
-SUPABASE_SERVICE_ROLE_KEY=
+DATABASE_URL=
+DATABASE_PROJECT_REF=
+DATABASE_ACCESS_TOKEN=
+DATABASE_SERVICE_ROLE_KEY=
 
-GEMINI_API_KEY=
-GEMINI_EMBEDDING_MODEL=gemini-embedding-2
-GEMINI_EMBEDDING_DIMENSIONS=768
-GEMINI_FALLBACK_EMBEDDING_MODEL=gemini-embedding-001
-GEMINI_FALLBACK_EMBEDDING_DIMENSIONS=768
-GEMINI_EMBEDDING_REQUEST_DELAY_MS=750
+EMBEDDING_API_KEY=
+EMBEDDING_MODEL=gemini-embedding-2
+EMBEDDING_DIMENSIONS=768
+FALLBACK_EMBEDDING_MODEL=gemini-embedding-001
+FALLBACK_EMBEDDING_DIMENSIONS=768
+EMBEDDING_REQUEST_DELAY_MS=750
 
-DEEPSEEK_API_KEY=
-DEEPSEEK_MODEL=deepseek-v4-flash
+AI_MODEL_API_KEY=
+AI_MODEL=deepseek-v4-flash
 ```
 
 Optional later:
@@ -110,7 +110,7 @@ Verification completed:
 - `dotenv`, `cheerio`, and `pdf-parse` should remain in `devDependencies` because they support local/admin ingestion scripts.
 - RAG config JSON files live under `rag/config/`.
 - Supabase CLI helper lives under `supabase/scripts.js`, not under `rag/`.
-- The current `.env` has a valid `DEEPSEEK_API_KEY`; full answer generation has been verified locally.
+- The current `.env` has a valid `AI_MODEL_API_KEY`; full answer generation has been verified locally.
 
 ## Local Ingestion Sources
 
@@ -353,8 +353,8 @@ CVs must use a manually reviewed `redaction` policy, stay outside `public/`, and
    - `partners.json` is split into one `partner` source per partner.
    - Internal PDFs are read from `rag/config/internal-pdfs.json`.
    - Both ingestion scripts support `--dry-run`.
-   - Gemini embeddings use `gemini-embedding-2` with `GEMINI_EMBEDDING_DIMENSIONS=768`.
-   - Gemini embedding requests are throttled with `GEMINI_EMBEDDING_REQUEST_DELAY_MS=750` to stay under free-tier RPM limits.
+   - Embeddings use `gemini-embedding-2` with `EMBEDDING_DIMENSIONS=768`.
+   - Embedding requests are throttled with `EMBEDDING_REQUEST_DELAY_MS=750` to stay under free-tier RPM limits.
    - Internal ingestion has been run successfully: 60 sources and 412 chunks in Supabase.
 
 5. Add ask function: done and committed.
@@ -366,7 +366,7 @@ CVs must use a manually reviewed `redaction` policy, stay outside `public/`, and
    - Local test script lives at `rag/runtime/scripts/testAsk.ts`.
    - Netlify endpoint lives at `netlify/functions/ask.js`.
    - Retrieval-only smoke test passes.
-   - Full generation smoke test passes with the current `DEEPSEEK_API_KEY`.
+   - Full generation smoke test passes with the current `AI_MODEL_API_KEY`.
    - Optional conversation history is supported through `messages`.
    - Bounded small talk is handled by DeepSeek intent classification before retrieval.
    - Unsupported off-topic requests are redirected before retrieval.
@@ -406,7 +406,7 @@ CVs must use a manually reviewed `redaction` policy, stay outside `public/`, and
 
 ## Suggested First SQL Shape
 
-Use `vector(768)` with Google `gemini-embedding-2` and `GEMINI_EMBEDDING_DIMENSIONS=768`.
+Use `vector(768)` with the configured embedding model and `EMBEDDING_DIMENSIONS=768`.
 
 Tables should support:
 
@@ -492,10 +492,10 @@ See the Runtime Endpoint section above for full details on error codes and behav
 The frontend UI is implemented. Remaining work:
 
 - **Deploy**: Configure server-side Netlify environment variables before deploying the ask endpoint:
-  - `SUPABASE_URL`
-  - `SUPABASE_SERVICE_ROLE_KEY`
-  - `GEMINI_API_KEY`
-  - `DEEPSEEK_API_KEY`
+  - `DATABASE_URL`
+  - `DATABASE_SERVICE_ROLE_KEY`
+  - `EMBEDDING_API_KEY`
+  - `AI_MODEL_API_KEY`
 - **External sources**: Optionally add more manually approved external URLs to `rag/config/externalSources.ts` and rerun external ingestion.
 - **Polish**: Adjust Gaspar UI/UX based on real usage (typing speed, response formatting, citation display).
 - **Commit**: The current working tree has uncommitted changes (Gaspar widget + email capture changes). Commit when ready.
@@ -672,7 +672,7 @@ npx tsx rag/runtime/scripts/testAsk.ts --retrieve-only --page-path / --page-titl
 
 1. Move any raw CVs from `public/files/cvs` to `.rag-private/cvs`, redact the original files, and add manually reviewed CV entries to `rag/config/localSources.ts`.
 2. Test the active-section behavior in the browser on desktop and mobile.
-3. Add rate limiting or bot verification to the public ask endpoint before deployment.
+3. ~~Add rate limiting or bot verification to the public ask endpoint before deployment.~~ **Done** — see Security section below.
 
 ## Superseded Continuation
 
@@ -1167,3 +1167,79 @@ npm run rag:ingest:local -- --source home:projects --source mojaloop --source pe
 ```
 
 Live check confirmed the exact question retrieves `home:projects`, `mojaloop`, `peoples-clearinghouse`, and `sky-tracks`, and answers with Mojaloop, People's Clearinghouse, and Sky Tracks.
+
+## Ask Endpoint Security - July 26, 2026
+
+Three-layer defense for the public `POST /.netlify/functions/ask` endpoint.
+
+### Layer 1: Netlify Native Rate Limit
+
+Both functions export `config` with Netlify's code-based rate limiting (all plans, enforced at the edge before function invocation):
+
+- `ask.js`: 6 requests per IP per 60 seconds.
+- `askChallenge.js`: 30 requests per IP per 60 seconds.
+
+When exceeded, Netlify returns HTTP 429 before the function runs — zero invocation cost.
+
+### Layer 2: ALTCHA Proof-of-Work Bot Verification
+
+Uses ALTCHA v2 (`altcha-lib`) with PBKDF2/SHA-256 — fully local cryptographic verification, no third-party calls, GDPR-compliant.
+
+- `GET /.netlify/functions/ask-challenge` returns a signed challenge with 5-minute TTL.
+- Client solves the challenge programmatically (`solveChallenge` from `altcha-lib`) — invisible to the user, ~0.5–1s on modern devices.
+- Server verifies the solution before any AI calls. Failed verification returns 403 `bot_verification_failed`.
+- Challenge difficulty is env-configurable via `ALTCHA_COST`, `ALTCHA_COUNTER_MIN`, `ALTCHA_COUNTER_MAX`.
+
+### Layer 3: App-Level Rate Limits (Supabase)
+
+Per-day per-IP and global daily budget caps, enforced in the function after ALTCHA verification:
+
+- 6 requests/minute per IP (matching Netlify native limit).
+- 30 requests/day per IP.
+- 500 requests/day globally.
+
+Backed by `rag_rate_limits` table + `hit_rag_rate_limit` RPC (atomic fixed-window upsert, service-role only, probabilistic stale-row cleanup). IP hashes are SHA-256 with a configurable salt — no raw IPs stored.
+
+Rate limit errors fail open (log + allow) so a Supabase outage does not break the assistant; Netlify's edge limit still guards.
+
+### Architecture
+
+- `rag/security/altcha.ts`: challenge creation/verification, in-memory challenge store with TTL.
+- `rag/security/rateLimit.ts`: pure decision logic, bucket naming, config from env.
+- `rag/security/rateLimitStores.ts`: `InMemoryRateLimitStore` (dev middleware) and `SupabaseRateLimitStore` (production function).
+- `src/services/altchaservice.js`: frontend challenge fetch + solve.
+- `netlify/functions/ask.js`: orchestrates verification → rate limit → askQuestion.
+- `netlify/functions/askChallenge.js`: challenge endpoint.
+- `vite.config.js` dev middleware mirrors both endpoints with in-memory stores.
+
+### New Environment Variables
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `ALTCHA_HMAC_KEY` | Yes | — | HMAC secret for challenge signing |
+| `ALTCHA_COST` | No | 5000 | PBKDF2 iteration count |
+| `ALTCHA_COUNTER_MIN` | No | 5000 | Minimum counter for challenge difficulty |
+| `ALTCHA_COUNTER_MAX` | No | 10000 | Maximum counter for challenge difficulty |
+| `RAG_ASK_RATE_LIMIT_PER_MINUTE` | No | 6 | Per-IP requests per minute |
+| `RAG_ASK_RATE_LIMIT_PER_DAY` | No | 30 | Per-IP requests per day |
+| `RAG_ASK_GLOBAL_RATE_LIMIT_PER_DAY` | No | 500 | Global daily budget cap |
+| `RAG_ASK_RATE_LIMIT_SALT` | No | `arg-ask-rate-limit` | Salt for IP hashing |
+
+### Frontend Changes
+
+- `AssistantWidget` fetches + solves an ALTCHA challenge before every submission.
+- New error copy for `bot_verification_failed` and `rate_limited` in English and Portuguese.
+- 429 responses from Netlify native limits (non-JSON body) are handled gracefully.
+
+### Supabase Migration
+
+`supabase/migrations/20260726000000_create_rag_rate_limits.sql` creates the rate limiting table and RPC function. Apply with `npm run supabase:push`.
+
+### Verification
+
+```bash
+npm run typecheck:rag    # passes
+npm run rag:test         # 73 tests, 73 passing (includes ALTCHA roundtrip, tampered solution, rate limit windows)
+npm run lint:rag         # passes
+npm run build            # passes (including SEO prerender, image optimization)
+```

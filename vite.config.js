@@ -54,12 +54,40 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    // Local ask endpoint: proxies /.netlify/functions/ask to askQuestion() in dev
+    // Local ask endpoints: challenge + ask with ALTCHA verification and in-memory rate limiting
     {
       name: 'local-ask-endpoint',
       apply: 'serve',
       configureServer(server) {
+        const devRateLimitBuckets = new Map();
+
         server.middlewares.use(async (req, res, next) => {
+          if (req.url === '/.netlify/functions/ask-challenge' && req.method === 'GET') {
+            try {
+              const { createAltchaChallenge } = await import('./rag/security/altcha.ts');
+              const challenge = await createAltchaChallenge();
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ challenge }));
+            } catch (error) {
+              const isConfigError =
+                error instanceof Error &&
+                error.message.startsWith('Missing required environment variable:');
+              res.statusCode = isConfigError ? 503 : 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(
+                JSON.stringify({
+                  error: {
+                    code: isConfigError ? 'configuration_error' : 'challenge_failed',
+                    message: isConfigError
+                      ? 'Assistant configuration is unavailable'
+                      : 'Unable to create verification challenge',
+                  },
+                })
+              );
+            }
+            return;
+          }
+
           if (req.url !== '/.netlify/functions/ask' || req.method !== 'POST') {
             return next();
           }
@@ -68,8 +96,73 @@ export default defineConfig(({ mode }) => {
           for await (const chunk of req) body += chunk;
 
           try {
-            const { askQuestion } = await import('./rag/runtime/askQuestion.ts');
             const payload = JSON.parse(body || '{}');
+
+            if (!payload.altcha?.challenge || !payload.altcha?.solution) {
+              res.statusCode = 403;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(
+                JSON.stringify({
+                  error: { code: 'bot_verification_failed', message: 'Verification required' },
+                })
+              );
+              return;
+            }
+
+            try {
+              const { verifyAltchaChallenge } = await import('./rag/security/altcha.ts');
+              const altchaResult = await verifyAltchaChallenge({
+                challenge: payload.altcha.challenge,
+                solution: payload.altcha.solution,
+              });
+
+              if (!altchaResult.verified) {
+                res.statusCode = 403;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(
+                  JSON.stringify({
+                    error: { code: 'bot_verification_failed', message: 'Verification failed' },
+                  })
+                );
+                return;
+              }
+            } catch {
+              res.statusCode = 403;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(
+                JSON.stringify({
+                  error: { code: 'bot_verification_failed', message: 'Verification failed' },
+                })
+              );
+              return;
+            }
+
+            const clientIp =
+              req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+              req.socket?.remoteAddress ||
+              'unknown';
+            const now = Math.floor(Date.now() / 1000);
+            const minuteBucket = `dev:${clientIp}:m:${Math.floor(now / 60)}`;
+            const entry = devRateLimitBuckets.get(minuteBucket);
+
+            if (entry && entry.count >= 6) {
+              res.statusCode = 429;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(
+                JSON.stringify({
+                  error: { code: 'rate_limited', message: 'Too many requests. Please try again later.' },
+                })
+              );
+              return;
+            }
+
+            if (!entry || entry.windowStart + 60 <= now) {
+              devRateLimitBuckets.set(minuteBucket, { count: 1, windowStart: now });
+            } else {
+              entry.count += 1;
+            }
+
+            const { askQuestion } = await import('./rag/runtime/askQuestion.ts');
             const result = await askQuestion({
               question: payload.question,
               messages: payload.messages,

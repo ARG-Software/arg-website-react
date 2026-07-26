@@ -125,6 +125,19 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
     trackCTA(cta?.eventName || 'book_meeting', cta?.location || 'nav_menu');
   }, [cta?.eventName, cta?.location]);
 
+  const handleAssistantClick = useCallback(
+    event => {
+      event.stopPropagation();
+      handleClose();
+      window.setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent('gaspar:open', { detail: { source: 'nav_menu_chip' } })
+        );
+      }, 420);
+    },
+    [handleClose]
+  );
+
   const ctaHref = useMemo(() => resolveCtaHref(cta?.to), [cta?.to]);
 
   return (
@@ -249,10 +262,10 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
             </div>
           )}
 
-          <div className="nav-menu__ai-chip">
+          <button className="nav-menu__ai-chip" type="button" onClick={handleAssistantClick}>
             <span className="nav-menu__ai-dot"></span>
-            {latest?.aiTitle || 'ARG AI · Coming soon'}
-          </div>
+            {latest?.aiTitle || 'Talk to Gaspar our AI Assistant'}
+          </button>
 
           <a
             href={ctaHref}

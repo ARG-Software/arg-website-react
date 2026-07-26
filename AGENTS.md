@@ -353,6 +353,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - Dev server: port 3000, auto-open browser
 - Path aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`
 - Manual chunks: `vendor` (React/Router/Helmet), `three`, `gsap`, `hljs`
+- Local ask endpoint middleware: `GET /.netlify/functions/ask-challenge` (ALTCHA challenge) + `POST /.netlify/functions/ask` (with ALTCHA verification + in-memory rate limiting) — mirrors production security
 - SPA fallback middleware for dev server
 - CSS preload injection plugin
 - Production: drops `console` and `debugger` statements
