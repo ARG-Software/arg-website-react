@@ -1,9 +1,9 @@
-import { createSupabaseServiceClient } from '../../clients/supabaseClient.js';
-import { loadLocalEnv } from '../../config/loadLocalEnv.js';
-import type { IngestSourceResult } from '../../types/ingestion.js';
-import type { RagSource } from '../../types/source.js';
-import { ingestSource } from '../ingestPipeline.js';
-import { loadLocalSources } from '../sources/local.js';
+import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
+import { loadLocalEnv } from '../config/loadLocalEnv.js';
+import type { IngestSourceResult } from '../types/ingestion.js';
+import type { RagSource } from '../types/source.js';
+import { ingestSource } from '../ingestion/ingestPipeline.js';
+import { loadLocalSources } from '../ingestion/sources/local.js';
 import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
 
 loadLocalEnv();

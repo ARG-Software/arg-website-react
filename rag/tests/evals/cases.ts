@@ -4,8 +4,8 @@ import type {
   PageContext,
   QuestionIntent,
   RetrievalPlan,
-} from '../types/ai.js';
-import type { RagSourceMetadata, RagSourceOrigin, RagSourceType } from '../types/source.js';
+} from '../../types/ai.js';
+import type { RagSourceMetadata, RagSourceOrigin, RagSourceType } from '../../types/source.js';
 
 export interface EvalSourceRow {
   id: string;

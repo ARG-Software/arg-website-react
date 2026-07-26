@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { GeminiEmbeddingQuotaError } from '../clients/gemini.js';
-import { buildInsufficientContextPrompt } from '../prompts/answering.js';
-import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from './ask.js';
-import type { AnswerProvider, EmbeddingProvider, RetrievalPlan } from '../types/ai.js';
-import type { RagConfig } from '../types/config.js';
-import type { RagSourceOrigin, RagSourceType } from '../types/source.js';
+import { GeminiEmbeddingQuotaError } from '../../clients/gemini.js';
+import { buildInsufficientContextPrompt } from '../../prompts/answering.js';
+import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from '../../runtime/ask.js';
+import type { AnswerProvider, EmbeddingProvider, RetrievalPlan } from '../../types/ai.js';
+import type { RagConfig } from '../../types/config.js';
+import type { RagSourceOrigin, RagSourceType } from '../../types/source.js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 const config: RagConfig = {
