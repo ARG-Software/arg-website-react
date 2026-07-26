@@ -9,7 +9,9 @@ import type { RagConfig } from '../core/types/config.js';
 import type { RetrievedContext } from '../core/types/context.js';
 import type { AskQuestionResult } from '../core/types/output.js';
 import type { AnswerProvider, EmbeddingProvider } from '../core/types/providers.js';
-import type { RetrievalQuestionPlan } from '../core/types/retrieval.js';
+import type { EmbeddingIndex, RetrievalQuestionPlan } from '../core/types/retrieval.js';
+import type { RagReadRepository } from '../repositories/RagReadRepository.js';
+import { SupabaseRagReadRepository } from '../repositories/supabase/SupabaseRagReadRepository.js';
 import {
   createArticleRecommendations,
   createAssistantActions,
@@ -27,7 +29,6 @@ import {
 } from './inputValidation.js';
 import { resolveRetrievalRoute } from './retrieval/route.js';
 import { retrieveRoutedContexts } from './retrieval/retrieve.js';
-import type { MatchFunction } from './retrieval/types.js';
 
 export { RagValidationError, resolveRetrievalRoute };
 export type { RetrievalRoute, RetrievalRouteKind } from './retrieval/route.js';
@@ -38,6 +39,8 @@ export interface AskQuestionInput {
   pageContext?: unknown;
   retrievalQuestion?: string;
   config?: RagConfig;
+  readRepository?: RagReadRepository;
+  /** @deprecated Pass readRepository instead. Kept for tests that still inject a Supabase client. */
   supabase?: SupabaseClient;
   answerProvider?: AnswerProvider;
   embeddingProvider?: EmbeddingProvider;
@@ -49,7 +52,7 @@ interface RuntimeContext {
   messages: ChatMessage[];
   pageContext: PageContext | null;
   config: RagConfig;
-  supabase: SupabaseClient;
+  readRepository: RagReadRepository;
   answerProvider: AnswerProvider;
   embeddingProvider: EmbeddingProvider;
   fallbackEmbeddingProvider: EmbeddingProvider;
@@ -117,11 +120,11 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
         retrievalQuestion: item.retrievalQuestion,
         route: item.route,
         config: context.config,
-        supabase: context.supabase,
+        readRepository: context.readRepository,
         embeddingProvider: context.embeddingProvider,
         fallbackEmbeddingProvider: context.fallbackEmbeddingProvider,
         embedding: semanticSearch?.embedding,
-        matchFunction: semanticSearch?.matchFunction,
+        index: semanticSearch?.index,
       });
 
       return { ...item, contexts: result.contexts };
@@ -256,7 +259,7 @@ function createTechnologySupportQuery(item: RetrievalQuestionPlan, subject: stri
 async function createSemanticEmbeddings(
   items: RoutedRetrievalItem[],
   context: RuntimeContext
-): Promise<Map<number, { embedding: number[]; matchFunction: MatchFunction }>> {
+): Promise<Map<number, { embedding: number[]; index: EmbeddingIndex }>> {
   const semanticItems = items
     .map((item, index) => ({ item, index }))
     .filter(({ item }) => requiresSemanticEmbedding(item));
@@ -265,16 +268,16 @@ async function createSemanticEmbeddings(
     return new Map();
   }
 
-  const { embeddings, matchFunction } = await createQueryEmbeddings(
+  const { embeddings, index: embeddingIndex } = await createQueryEmbeddings(
     semanticItems.map(({ item }) => item.retrievalQuestion),
     context.embeddingProvider,
     context.fallbackEmbeddingProvider
   );
 
   return new Map(
-    semanticItems.flatMap(({ index }, embeddingIndex) => {
-      const embedding = embeddings[embeddingIndex];
-      return embedding ? [[index, { embedding, matchFunction }]] : [];
+    semanticItems.flatMap(({ index }, batchIndex) => {
+      const embedding = embeddings[batchIndex];
+      return embedding ? [[index, { embedding, index: embeddingIndex }]] : [];
     })
   );
 }
@@ -475,7 +478,7 @@ export async function retrieveRelevantChunks(
     retrievalQuestion: query,
     route,
     config: context.config,
-    supabase: context.supabase,
+    readRepository: context.readRepository,
     embeddingProvider: context.embeddingProvider,
     fallbackEmbeddingProvider: context.fallbackEmbeddingProvider,
   });
@@ -488,6 +491,7 @@ function createRuntimeContext({
   messages,
   pageContext,
   config = getRagConfig(),
+  readRepository,
   supabase,
   answerProvider = deepSeekAnswerClient,
   embeddingProvider = geminiEmbeddingClient,
@@ -498,7 +502,12 @@ function createRuntimeContext({
     messages: normalizeMessages(messages),
     pageContext: normalizePageContext(pageContext),
     config,
-    supabase: supabase ?? createSupabaseServiceClient(config),
+    readRepository:
+      readRepository ??
+      new SupabaseRagReadRepository(
+        supabase ?? createSupabaseServiceClient(config),
+        config.siteUrl
+      ),
     answerProvider,
     embeddingProvider,
     fallbackEmbeddingProvider,

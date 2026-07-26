@@ -1,7 +1,7 @@
 import type { AssistantAction } from '../core/types/actions.js';
 import type { RetrievedContext } from '../core/types/context.js';
 import type { ArticleRecommendation, Citation } from '../core/types/output.js';
-import { resolveUrl } from './url.js';
+import { resolveUrl } from '../utils/url.js';
 import type { RetrievalRoute } from './retrieval/route.js';
 
 const PROJECT_CONTACT_QUESTION_PATTERN =

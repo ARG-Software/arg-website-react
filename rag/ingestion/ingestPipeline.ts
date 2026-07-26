@@ -5,7 +5,7 @@ import {
   geminiFallbackEmbeddingClient,
   isGeminiEmbeddingQuotaError,
 } from '../clients/gemini.js';
-import { SupabaseRagSourceRepository } from '../repositories/SupabaseRagSourceRepository.js';
+import { SupabaseRagWriteRepository } from '../repositories/supabase/SupabaseRagWriteRepository.js';
 import type { IngestSourceInput, IngestSourceResult } from '../core/types/ingestion.js';
 import { chunkText } from './processing/chunking.js';
 import { createSourceHash, normalizeText } from './processing/text.js';
@@ -38,7 +38,7 @@ export async function ingestSource({
     throw new Error('A RAG source repository or Supabase client is required for ingestion checks');
   }
 
-  const sourceRepository = repository ?? new SupabaseRagSourceRepository(supabase as SupabaseClient);
+  const sourceRepository = repository ?? new SupabaseRagWriteRepository(supabase as SupabaseClient);
 
   if (!fallbackOnly) {
     const contentHash = createSourceHash(source);

@@ -5,9 +5,9 @@ import { GeminiEmbeddingQuotaError } from '../../clients/gemini.js';
 import { ingestSource } from '../../ingestion/ingestPipeline.js';
 import { redactCvContent } from '../../ingestion/processing/redaction.js';
 import { createSourceHash } from '../../ingestion/processing/text.js';
-import type { RagSourceRepository } from '../../core/types/ingestion.js';
 import type { EmbeddingProvider } from '../../core/types/providers.js';
 import type { RagSource } from '../../core/types/source.js';
+import type { RagWriteRepository } from '../../repositories/RagWriteRepository.js';
 
 const source: RagSource = {
   sourceType: 'blog_post',
@@ -203,7 +203,7 @@ function createProvider(embedTexts: (texts: string[]) => number[][] | Promise<nu
   };
 }
 
-function createRepository(overrides: Partial<RagSourceRepository>): RagSourceRepository {
+function createRepository(overrides: Partial<RagWriteRepository>): RagWriteRepository {
   return {
     getSourceContentHash: async () => null,
     upsertSource: async () => ({ sourceId: 'source-id', chunkCount: 1 }),

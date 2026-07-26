@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import type { RagWriteRepository } from '../../repositories/RagWriteRepository.js';
 import type { EmbeddingProvider } from './providers.js';
 import type { RagSource, RagSourceType } from './source.js';
 
@@ -11,7 +12,7 @@ export interface IngestSourceInput {
   fallbackOnly?: boolean;
   embeddingProvider?: EmbeddingProvider;
   fallbackEmbeddingProvider?: EmbeddingProvider;
-  repository?: RagSourceRepository;
+  repository?: RagWriteRepository;
 }
 
 export interface IngestSourceResult {
@@ -22,12 +23,6 @@ export interface IngestSourceResult {
   title: string;
   chunkCount: number;
   reason?: 'empty_content' | 'unchanged_content';
-}
-
-export interface RagSourceRepository {
-  getSourceContentHash(source: Pick<RagSource, 'sourceType' | 'sourceKey'>): Promise<string | null>;
-  upsertSource(source: RagSource, embeddings: RagSourceEmbeddings): Promise<UpsertSourceResult>;
-  updateFallbackEmbeddings(source: RagSource, embeddings: number[][]): Promise<UpsertSourceResult>;
 }
 
 export interface RagSourceEmbeddings {

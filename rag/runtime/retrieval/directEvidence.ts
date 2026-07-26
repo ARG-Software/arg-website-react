@@ -1,13 +1,13 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 import type { RagConfig } from '../../core/types/config.js';
 import type { RetrievedContext } from '../../core/types/context.js';
 import type { EmbeddingProvider } from '../../core/types/providers.js';
+import type { EmbeddingIndex, RetrievalRoute } from '../../core/types/retrieval.js';
 import type {
   RagSourceMetadata,
   RagSourceOrigin,
   RagSourceType,
 } from '../../core/types/source.js';
+import type { RagReadRepository, RagSourceRecord } from '../../repositories/RagReadRepository.js';
 import { createQueryEmbedding } from './embeddings.js';
 import {
   BLOG_SOURCE_TYPES,
@@ -15,10 +15,7 @@ import {
   FAQ_SOURCE_TYPES,
   OFFICIAL_WEBSITE_SOURCE_TYPES,
   TRUSTED_EXTERNAL_SOURCE_TYPES,
-  type RetrievalRoute,
 } from './route.js';
-import { retrieveFirstChunksForSources, retrieveSources } from './sources.js';
-import type { DirectSourceRow, MatchFunction } from './types.js';
 import { mergeComplementaryContexts, retrieveContextsForOrigin } from './vectorSearch.js';
 
 const FIRST_PARTY_ORIGIN = 'first_party';
@@ -43,29 +40,29 @@ const NON_EXACT_TECHNOLOGY_SUBJECT_PATTERN =
 interface SemanticSearchInput {
   query: string;
   embedding: number[];
-  matchFunction: MatchFunction;
+  index: EmbeddingIndex;
 }
 
 export async function retrieveDirectEvidenceContexts({
-  supabase,
+  readRepository,
   config,
   route,
   embeddingProvider,
   fallbackEmbeddingProvider,
   semanticSearch,
 }: {
-  supabase: SupabaseClient;
+  readRepository: RagReadRepository;
   config: RagConfig;
   route: RetrievalRoute;
   embeddingProvider: EmbeddingProvider;
   fallbackEmbeddingProvider: EmbeddingProvider;
   semanticSearch?: SemanticSearchInput;
 }): Promise<RetrievedContext[]> {
-  const person = route.entity ? await findPersonSource(supabase, route.entity) : null;
+  const person = route.entity ? await findPersonSource(readRepository, route.entity) : null;
 
   if (person && route.subject && isBroadPersonProfileSubject(route.subject)) {
     return retrieveBroadPersonProfileContexts({
-      supabase,
+      readRepository,
       config,
       person,
       subject: route.subject,
@@ -76,8 +73,8 @@ export async function retrieveDirectEvidenceContexts({
   }
 
   if (!route.subject && route.entity) {
-    const entitySource = person ?? (await findDirectSource(supabase, route.entity));
-    return entitySource ? retrieveFirstChunksForSources(supabase, config, [entitySource]) : [];
+    const entitySource = person ?? (await findDirectSource(readRepository, route.entity));
+    return entitySource ? readRepository.findFirstChunksForSources([entitySource]) : [];
   }
 
   const search = route.subject
@@ -89,12 +86,12 @@ export async function retrieveDirectEvidenceContexts({
       )
     : null;
   const personalEvidence = person && search
-    ? await retrievePersonSemanticEvidence(supabase, config, person, search)
+    ? await retrievePersonSemanticEvidence(readRepository, config, person, search)
     : [];
-  const entitySource = !person && route.entity ? await findDirectSource(supabase, route.entity) : null;
+  const entitySource = !person && route.entity ? await findDirectSource(readRepository, route.entity) : null;
   const isCompanyQuestion = isCompanyEntity(route.entity);
   const entityEvidence = entitySource && search
-    ? await retrieveSemanticEvidenceForSourceKeys(supabase, config, search, [entitySource.source_key])
+    ? await retrieveSemanticEvidenceForSourceKeys(readRepository, config, search, [entitySource.sourceKey])
     : [];
 
   if (route.entity && !person && !entitySource && !isCompanyQuestion) {
@@ -107,7 +104,7 @@ export async function retrieveDirectEvidenceContexts({
 
   const officialEvidence = search
     ? await retrieveSemanticEvidenceForOrigin(
-        supabase,
+        readRepository,
         config,
         search,
         OFFICIAL_WEBSITE_SOURCE_TYPES,
@@ -116,7 +113,7 @@ export async function retrieveDirectEvidenceContexts({
     : [];
   const faqEvidence = search
     ? await retrieveSemanticEvidenceForOrigin(
-        supabase,
+        readRepository,
         config,
         search,
         FAQ_SOURCE_TYPES,
@@ -125,7 +122,7 @@ export async function retrieveDirectEvidenceContexts({
     : [];
   const trustedExternalEvidence = search
     ? await retrieveSemanticEvidenceForOrigin(
-        supabase,
+        readRepository,
         config,
         search,
         TRUSTED_EXTERNAL_SOURCE_TYPES,
@@ -134,7 +131,7 @@ export async function retrieveDirectEvidenceContexts({
     : [];
   const blogTechnologyEvidence = shouldUseBlogTechnologyEvidence(route, person, entitySource) && search
     ? await retrieveSemanticEvidenceForOrigin(
-        supabase,
+        readRepository,
         config,
         search,
         BLOG_SOURCE_TYPES,
@@ -169,7 +166,7 @@ export async function retrieveDirectEvidenceContexts({
   }
 
   return retrieveSemanticEvidence(
-    supabase,
+    readRepository,
     config,
     route.subject,
     embeddingProvider,
@@ -179,10 +176,10 @@ export async function retrieveDirectEvidenceContexts({
 }
 
 async function findPersonSource(
-  supabase: SupabaseClient,
+  readRepository: RagReadRepository,
   entity: string
-): Promise<DirectSourceRow | null> {
-  const sources = await retrieveSources(supabase, ['about']);
+): Promise<RagSourceRecord | null> {
+  const sources = await readRepository.findSources({ sourceTypes: ['about'] });
   const people = sources.filter(source => getPersonKey(source.metadata));
   const entityName = normalizeEntityName(entity);
   const matches = people.filter(source => normalizeEntityName(source.title) === entityName);
@@ -198,32 +195,32 @@ async function findPersonSource(
 }
 
 async function findDirectSource(
-  supabase: SupabaseClient,
+  readRepository: RagReadRepository,
   entity: string
-): Promise<DirectSourceRow | null> {
+): Promise<RagSourceRecord | null> {
   const entityName = normalizeEntityName(entity);
-  const matches = (await retrieveSources(supabase, DIRECT_EVIDENCE_SOURCE_TYPES)).filter(
-    source => normalizeEntityName(source.title) === entityName
-  );
+  const sources = await readRepository.findSources({
+    sourceTypes: DIRECT_EVIDENCE_SOURCE_TYPES,
+  });
+  const matches = sources.filter(source => normalizeEntityName(source.title) === entityName);
   return matches.length === 1 ? matches[0] : null;
 }
 
 async function findPersonDocuments(
-  supabase: SupabaseClient,
-  person: DirectSourceRow
-): Promise<DirectSourceRow[]> {
+  readRepository: RagReadRepository,
+  person: RagSourceRecord
+): Promise<RagSourceRecord[]> {
   const personKey = getPersonKey(person.metadata);
   if (!personKey) {
     return [];
   }
 
-  return (await retrieveSources(supabase, ['local_document'])).filter(
-    source => source.metadata?.person_key === personKey
-  );
+  const documents = await readRepository.findSources({ sourceTypes: ['local_document'] });
+  return documents.filter(source => source.metadata?.person_key === personKey);
 }
 
 async function retrieveBroadPersonProfileContexts({
-  supabase,
+  readRepository,
   config,
   person,
   subject,
@@ -231,9 +228,9 @@ async function retrieveBroadPersonProfileContexts({
   fallbackEmbeddingProvider,
   semanticSearch,
 }: {
-  supabase: SupabaseClient;
+  readRepository: RagReadRepository;
   config: RagConfig;
-  person: DirectSourceRow;
+  person: RagSourceRecord;
   subject: string;
   embeddingProvider: EmbeddingProvider;
   fallbackEmbeddingProvider: EmbeddingProvider;
@@ -242,14 +239,14 @@ async function retrieveBroadPersonProfileContexts({
   const sources = [person];
 
   if (asksCompanyOrigin(subject)) {
-    const aboutSource = await findAboutSource(supabase);
+    const aboutSource = await findAboutSource(readRepository);
     if (aboutSource) {
       sources.push(aboutSource);
     }
   }
 
   if (asksProfessionalBackground(subject)) {
-    sources.push(...(await findPersonDocuments(supabase, person)));
+    sources.push(...(await findPersonDocuments(readRepository, person)));
   }
 
   const uniqueProfileSources = uniqueSources(sources);
@@ -260,23 +257,23 @@ async function retrieveBroadPersonProfileContexts({
     semanticSearch
   );
   const semanticContexts = await retrieveSemanticEvidenceForSourceKeys(
-    supabase,
+    readRepository,
     config,
     search,
-    uniqueProfileSources.map(source => source.source_key)
+    uniqueProfileSources.map(source => source.sourceKey)
   );
-  const anchorContexts = await retrieveFirstChunksForSources(supabase, config, uniqueProfileSources);
+  const anchorContexts = await readRepository.findFirstChunksForSources(uniqueProfileSources);
 
   return mergeComplementaryContexts([semanticContexts, anchorContexts], config.matchCount);
 }
 
-async function findAboutSource(supabase: SupabaseClient): Promise<DirectSourceRow | null> {
-  const sources = await retrieveSources(supabase, ['about']);
-  return sources.find(source => source.source_key === 'about') ?? null;
+async function findAboutSource(readRepository: RagReadRepository): Promise<RagSourceRecord | null> {
+  const sources = await readRepository.findSources({ sourceTypes: ['about'] });
+  return sources.find(source => source.sourceKey === 'about') ?? null;
 }
 
 async function retrieveSemanticEvidence(
-  supabase: SupabaseClient,
+  readRepository: RagReadRepository,
   config: RagConfig,
   subject: string,
   embeddingProvider: EmbeddingProvider,
@@ -294,21 +291,21 @@ async function retrieveSemanticEvidence(
     semanticSearch
   );
   const officialEvidence = await retrieveSemanticEvidenceForOrigin(
-    supabase,
+    readRepository,
     config,
     search,
     OFFICIAL_WEBSITE_SOURCE_TYPES,
     FIRST_PARTY_ORIGIN
   );
   const faqEvidence = await retrieveSemanticEvidenceForOrigin(
-    supabase,
+    readRepository,
     config,
     search,
     FAQ_SOURCE_TYPES,
     FIRST_PARTY_ORIGIN
   );
   const trustedExternalEvidence = await retrieveSemanticEvidenceForOrigin(
-    supabase,
+    readRepository,
     config,
     search,
     TRUSTED_EXTERNAL_SOURCE_TYPES,
@@ -322,22 +319,22 @@ async function retrieveSemanticEvidence(
 }
 
 async function retrievePersonSemanticEvidence(
-  supabase: SupabaseClient,
+  readRepository: RagReadRepository,
   config: RagConfig,
-  person: DirectSourceRow,
+  person: RagSourceRecord,
   search: SemanticSearchInput
 ): Promise<RetrievedContext[]> {
-  const documents = await findPersonDocuments(supabase, person);
+  const documents = await findPersonDocuments(readRepository, person);
   return retrieveSemanticEvidenceForSourceKeys(
-    supabase,
+    readRepository,
     config,
     search,
-    [person, ...documents].map(source => source.source_key)
+    [person, ...documents].map(source => source.sourceKey)
   );
 }
 
 async function retrieveSemanticEvidenceForSourceKeys(
-  supabase: SupabaseClient,
+  readRepository: RagReadRepository,
   config: RagConfig,
   search: SemanticSearchInput,
   sourceKeys: string[]
@@ -347,27 +344,27 @@ async function retrieveSemanticEvidenceForSourceKeys(
   }
 
   return retrieveContextsForOrigin({
-    supabase,
+    repository: readRepository,
     embedding: search.embedding,
+    index: search.index,
     config,
-    matchFunction: search.matchFunction,
     sourceOrigin: FIRST_PARTY_ORIGIN,
     sourceKeys,
   });
 }
 
 async function retrieveSemanticEvidenceForOrigin(
-  supabase: SupabaseClient,
+  readRepository: RagReadRepository,
   config: RagConfig,
   search: SemanticSearchInput,
   sourceTypes: RagSourceType[],
   sourceOrigin: RagSourceOrigin
 ): Promise<RetrievedContext[]> {
   return retrieveContextsForOrigin({
-    supabase,
+    repository: readRepository,
     embedding: search.embedding,
+    index: search.index,
     config,
-    matchFunction: search.matchFunction,
     sourceOrigin,
     sourceTypes,
   });
@@ -383,13 +380,13 @@ async function resolveSemanticSearch(
     return semanticSearch;
   }
 
-  const { embedding, matchFunction } = await createQueryEmbedding(
+  const { embedding, index } = await createQueryEmbedding(
     query,
     embeddingProvider,
     fallbackEmbeddingProvider
   );
 
-  return { query, embedding, matchFunction };
+  return { query, embedding, index };
 }
 
 function mergePrioritizedContexts(
@@ -493,8 +490,8 @@ function isDisqualifyingTechnologyEvidence(content: string, subject: string): bo
 
 function shouldUseBlogTechnologyEvidence(
   route: RetrievalRoute,
-  person: DirectSourceRow | null,
-  entitySource: DirectSourceRow | null
+  person: RagSourceRecord | null,
+  entitySource: RagSourceRecord | null
 ): boolean {
   if (person || (entitySource && !isCompanyEntity(route.entity))) {
     return false;
@@ -515,7 +512,7 @@ function asksCompanyOrigin(subject: string): boolean {
   return COMPANY_ORIGIN_PATTERN.test(subject);
 }
 
-function uniqueSources(sources: DirectSourceRow[]): DirectSourceRow[] {
+function uniqueSources(sources: RagSourceRecord[]): RagSourceRecord[] {
   const seen = new Set<string>();
   return sources.filter(source => {
     if (seen.has(source.id)) {

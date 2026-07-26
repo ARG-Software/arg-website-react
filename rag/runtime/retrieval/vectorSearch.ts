@@ -1,43 +1,36 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 import type { RagConfig } from '../../core/types/config.js';
 import type { RetrievedContext } from '../../core/types/context.js';
+import type { EmbeddingIndex } from '../../core/types/retrieval.js';
 import type { RagSourceOrigin, RagSourceType } from '../../core/types/source.js';
-import { toEmbeddingLiteral } from '../../utils/embeddings.js';
-import { resolveUrl } from '../url.js';
-import type { MatchFunction, MatchRagChunkRow } from './types.js';
+import type { RagReadRepository } from '../../repositories/RagReadRepository.js';
 
-interface PreferredContextsInput {
-  supabase: SupabaseClient;
+export interface RetrieveContextsInput {
+  repository: RagReadRepository;
   embedding: number[];
+  index: EmbeddingIndex;
   config: RagConfig;
-  matchFunction: MatchFunction;
   sourceOrigin: RagSourceOrigin;
   sourceTypes?: RagSourceType[] | null;
   sourceKeys?: string[] | null;
-  similarityThreshold: number;
 }
 
-type MatchChunksInput = PreferredContextsInput;
-
 export async function retrieveContextsForOrigin({
-  supabase,
+  repository,
   embedding,
+  index,
   config,
-  matchFunction,
   sourceOrigin,
   sourceTypes = null,
   sourceKeys = null,
-}: Omit<PreferredContextsInput, 'similarityThreshold'>): Promise<RetrievedContext[]> {
-  const highConfidenceContexts = await getPreferredContexts({
-    supabase,
+}: RetrieveContextsInput): Promise<RetrievedContext[]> {
+  const highConfidenceContexts = await repository.matchChunks({
     embedding,
-    config,
-    matchFunction,
+    index,
+    matchCount: config.matchCount,
+    similarityThreshold: config.similarityThreshold,
     sourceOrigin,
     sourceTypes,
     sourceKeys,
-    similarityThreshold: config.similarityThreshold,
   });
 
   if (
@@ -47,15 +40,14 @@ export async function retrieveContextsForOrigin({
     return highConfidenceContexts;
   }
 
-  const fallbackContexts = await getPreferredContexts({
-    supabase,
+  const fallbackContexts = await repository.matchChunks({
     embedding,
-    config,
-    matchFunction,
+    index,
+    matchCount: config.matchCount,
+    similarityThreshold: config.fallbackSimilarityThreshold,
     sourceOrigin,
     sourceTypes,
     sourceKeys,
-    similarityThreshold: config.fallbackSimilarityThreshold,
   });
 
   return mergeContexts([highConfidenceContexts, fallbackContexts], config.matchCount);
@@ -91,48 +83,4 @@ export function mergeComplementaryContexts(
   const remainingContexts = sortedGroups.map(contexts => contexts.slice(1));
 
   return mergeContexts([leadingContexts, ...remainingContexts], matchCount);
-}
-
-async function getPreferredContexts(input: PreferredContextsInput): Promise<RetrievedContext[]> {
-  return matchChunks(input);
-}
-
-async function matchChunks({
-  supabase,
-  embedding,
-  config,
-  matchFunction,
-  sourceTypes = null,
-  sourceKeys = null,
-  sourceOrigin,
-  similarityThreshold,
-}: MatchChunksInput): Promise<RetrievedContext[]> {
-  const { data, error } = await supabase.rpc(matchFunction, {
-    query_embedding: toEmbeddingLiteral(embedding),
-    match_count: config.matchCount,
-    similarity_threshold: similarityThreshold,
-    source_types: sourceTypes,
-    source_keys: sourceKeys,
-    source_origins: [sourceOrigin],
-  });
-
-  if (error) {
-    throw error;
-  }
-
-  return ((data ?? []) as MatchRagChunkRow[]).map(row => ({
-    chunkId: row.chunk_id,
-    sourceId: row.source_id,
-    sourceType: row.source_type,
-    sourceKey: row.source_key,
-    title: row.title,
-    url: resolveUrl(row.url, config.siteUrl),
-    path: row.path,
-    chunkIndex: row.chunk_index,
-    content: row.content,
-    similarity: row.similarity,
-    sourceMetadata: row.source_metadata ?? {},
-    chunkMetadata: row.chunk_metadata ?? {},
-    origin: sourceOrigin,
-  }));
 }

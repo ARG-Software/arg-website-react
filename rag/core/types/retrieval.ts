@@ -23,6 +23,8 @@ export interface RetrievalPlan extends RetrievalQuestionPlan {
 
 export type RetrievalRouteKind = 'latest_blog' | 'direct_evidence' | 'editorial';
 
+export type EmbeddingIndex = 'primary' | 'fallback';
+
 export interface RetrievalRoute {
   kind: RetrievalRouteKind;
   firstPartySourceTypes: RagSourceType[] | null;
