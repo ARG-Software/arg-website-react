@@ -23,7 +23,7 @@ import { FAQSection } from './sections/FAQSection';
 import { ContactSection } from './sections/ContactSection';
 import PROJECTS from '../../data/projects.json';
 import PARTNERS from '../../data/partners.json';
-import HOMEPAGE from '../../data/homepage.json';
+import HOMEPAGE from '../../data/homePage.json';
 import FAQ from '../../data/faq.json';
 
 export default function HomePage() {

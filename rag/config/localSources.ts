@@ -22,7 +22,7 @@ export const HOMEPAGE_SECTION_IDS = Object.keys(HOMEPAGE_SECTION_SCOPES) as Home
 export const LOCAL_SOURCE_ENTRIES = [
   {
     kind: 'json',
-    filePath: 'src/data/homepage.json',
+    filePath: 'src/data/homePage.json',
     sourceType: 'homepage',
     sourceKey: 'homepage',
     title: 'Homepage',

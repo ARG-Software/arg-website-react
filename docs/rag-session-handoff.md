@@ -65,7 +65,7 @@ Committed as:
 
 Created canonical data files for content that RAG can ingest directly:
 
-- `src/data/homepage.json`
+- `src/data/homePage.json`
 - `src/data/faq.json`
 - `src/data/careersPage.json`
 - `src/data/partnersPage.json`
@@ -116,7 +116,7 @@ Verification completed:
 
 Use these for the local ingestion endpoint/script:
 
-- `src/data/homepage.json`
+- `src/data/homePage.json`
 - `src/data/about.json`
 - `src/data/projects.json`
 - `src/data/partners.json`
@@ -773,7 +773,7 @@ Generated team and founder sources are already ingested. To refresh them after s
 
 ```bash
 npm run rag:ingest:local -- --file src/data/about.json --refresh
-npm run rag:ingest:local -- --file src/data/homepage.json --refresh
+npm run rag:ingest:local -- --file src/data/homePage.json --refresh
 npm run rag:ingest:local -- --file src/data/careersPage.json --refresh
 ```
 
@@ -1207,7 +1207,7 @@ Rate limit errors fail open (log + allow) so a Supabase outage does not break th
 - `rag/security/altcha.ts`: challenge creation/verification, in-memory challenge store with TTL.
 - `rag/security/rateLimit.ts`: pure decision logic, bucket naming, config from env.
 - `rag/security/rateLimitStores.ts`: `InMemoryRateLimitStore` (dev middleware) and `SupabaseRateLimitStore` (production function).
-- `src/services/altchaservice.js`: frontend challenge fetch + solve.
+- `src/services/altchaService.js`: frontend challenge fetch + solve.
 - `netlify/functions/ask.js`: orchestrates verification → rate limit → askQuestion.
 - `netlify/functions/askChallenge.js`: challenge endpoint.
 - `vite.config.js` dev middleware mirrors both endpoints with in-memory stores.

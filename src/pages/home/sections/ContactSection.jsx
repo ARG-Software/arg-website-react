@@ -1,7 +1,7 @@
 import { CTASection } from '../../../components/layout/CTASection';
 import { trackCTA } from '../../../utils/analytics';
-import { getPortfolioLink, getProjectBriefFormLink } from '../../../services/linksservice';
-import HOMEPAGE from '../../../data/homepage.json';
+import { getPortfolioLink, getProjectBriefFormLink } from '../../../services/linksService';
+import HOMEPAGE from '../../../data/homePage.json';
 
 export function ContactSection({ className = '', content = HOMEPAGE.contact }) {
   return (

@@ -1,4 +1,4 @@
-import sitelinks from '../data/sitelinks.json';
+import siteLinks from '../data/siteLinks.json';
 
 export const EXTERNAL_LINK_KEYS = Object.freeze({
   PROJECT_BOOKING: 'calendar.project',
@@ -31,7 +31,7 @@ export const SOCIAL_KEYS = Object.freeze({
 });
 
 function readPath(path) {
-  return path.split('.').reduce((value, segment) => value?.[segment], sitelinks);
+  return path.split('.').reduce((value, segment) => value?.[segment], siteLinks);
 }
 
 function getRequiredValue(value, label) {
@@ -75,7 +75,7 @@ export function getFeedLink(feedKey) {
 }
 
 export function getEmailAddress(emailKey) {
-  return getRequiredValue(sitelinks.emails[emailKey], `emails.${emailKey}`);
+  return getRequiredValue(siteLinks.emails[emailKey], `emails.${emailKey}`);
 }
 
 export function getMailtoLink(emailKey, subject) {
@@ -86,11 +86,11 @@ export function getMailtoLink(emailKey, subject) {
 }
 
 export function getPersonLinkedInLink(personKey) {
-  return getRequiredValue(sitelinks.people[personKey]?.linkedin, `people.${personKey}.linkedin`);
+  return getRequiredValue(siteLinks.people[personKey]?.linkedin, `people.${personKey}.linkedin`);
 }
 
 export function getCompanySocialLink(socialKey) {
-  return getRequiredValue(sitelinks.socials[socialKey], `socials.${socialKey}`);
+  return getRequiredValue(siteLinks.socials[socialKey], `socials.${socialKey}`);
 }
 
 export function getCompanySocialLinks() {
@@ -106,19 +106,19 @@ export function getCompanySocialLinks() {
 }
 
 export function getLinkedInShareLink(url) {
-  const shareUrl = new URL(getRequiredValue(sitelinks.share.linkedin, 'share.linkedin'));
+  const shareUrl = new URL(getRequiredValue(siteLinks.share.linkedin, 'share.linkedin'));
   shareUrl.searchParams.set('url', url);
   return shareUrl.toString();
 }
 
 export function getBlueskyShareLink(title, url) {
-  const shareUrl = new URL(getRequiredValue(sitelinks.share.bluesky, 'share.bluesky'));
+  const shareUrl = new URL(getRequiredValue(siteLinks.share.bluesky, 'share.bluesky'));
   shareUrl.searchParams.set('text', `${title} ${url}`);
   return shareUrl.toString();
 }
 
 export function getTwitterShareLink(title, url) {
-  const shareUrl = new URL(getRequiredValue(sitelinks.share.twitter, 'share.twitter'));
+  const shareUrl = new URL(getRequiredValue(siteLinks.share.twitter, 'share.twitter'));
   shareUrl.searchParams.set('text', title);
   shareUrl.searchParams.set('url', url);
   return shareUrl.toString();

@@ -1,5 +1,5 @@
 import { submitVerifiedContactForm as submitVerifiedContactFormRequest } from '@services/apiService';
-import { getWeb3FormsAccessKey, getWeb3FormsEndpoint } from '@services/linksservice';
+import { getWeb3FormsAccessKey, getWeb3FormsEndpoint } from '@services/linksService';
 
 function appendFields(formData, fields = {}) {
   Object.entries(fields).forEach(([key, value]) => {

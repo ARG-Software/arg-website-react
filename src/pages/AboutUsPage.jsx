@@ -2,7 +2,7 @@ import { useHashScroll } from '@hooks/useHashScroll';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA } from '@utils/analytics';
-import { getProjectBriefFormLink } from '../services/linksservice';
+import { getProjectBriefFormLink } from '../services/linksService';
 import { Navbar } from '@components/navigation/Navbar';
 import { BaseCard } from '@components/cards/BaseCard';
 import { Footer } from '@components/layout/Footer';

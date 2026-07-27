@@ -32,7 +32,7 @@ import {
   getLinkedInShareLink,
   getNewsletterSubscribeLink,
   getTwitterShareLink,
-} from '@services/linksservice';
+} from '@services/linksService';
 import { buildArticleSchema } from '@utils/structuredData';
 import '../../styles/blog.css';
 

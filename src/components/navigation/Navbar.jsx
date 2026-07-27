@@ -5,7 +5,7 @@ import { trackCTA } from '../../utils/analytics';
 import { LenisContext } from '../../providers/LenisProvider';
 import { NAV_SCROLL_THRESHOLD } from '@constants/config';
 import { NavMenu } from './NavMenu';
-import { getProjectBookingLink } from '../../services/linksservice';
+import { getProjectBookingLink } from '../../services/linksService';
 
 export function Navbar({ variant = 'transparent', position = 'absolute' }) {
   const isCompact = variant === 'dark';

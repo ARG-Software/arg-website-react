@@ -3,7 +3,7 @@ import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { Pill } from '../../../components/pills/Pill';
 import { trackBlogPostClick } from '../../../utils/analytics';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
-import HOMEPAGE from '../../../data/homepage.json';
+import HOMEPAGE from '../../../data/homePage.json';
 
 function getTagColorStyle(tag) {
   let hash = 0;

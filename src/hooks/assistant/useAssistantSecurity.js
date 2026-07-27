@@ -3,7 +3,7 @@ import {
   consumeAltchaPayload,
   getAltchaPayload,
   prepareAltchaPayload,
-} from '@services/altchaservice';
+} from '@services/altchaService';
 
 export function useAssistantSecurity({ isOpen }) {
   const preparedRef = useRef(false);

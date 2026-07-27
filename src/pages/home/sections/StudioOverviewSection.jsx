@@ -4,7 +4,7 @@ import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { TransitionContext } from '../../../providers/TransitionProvider';
 import { trackEvent } from '../../../utils/analytics';
 
-import HOMEPAGE from '../../../data/homepage.json';
+import HOMEPAGE from '../../../data/homePage.json';
 
 export function StudioOverviewSection({ className = '', content = HOMEPAGE.overview }) {
   const { scrollToHash } = useContext(TransitionContext);

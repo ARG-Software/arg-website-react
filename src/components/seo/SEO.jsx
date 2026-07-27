@@ -7,7 +7,7 @@ import {
   DEFAULT_OG_IMAGE,
   DEFAULT_AUTHOR,
 } from '@constants/seo';
-import { EXTERNAL_LINK_KEYS, getFeedLink } from '../../services/linksservice';
+import { EXTERNAL_LINK_KEYS, getFeedLink } from '../../services/linksService';
 import { buildPageSchemas, stringifyJsonLd } from '../../utils/structuredData';
 
 /**

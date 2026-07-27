@@ -6,7 +6,7 @@ import { PageHeader } from '@components/headers/PageHeader';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA } from '@utils/analytics';
-import { EMAIL_KEYS, getEmailAddress, getMailtoLink } from '../services/linksservice';
+import { EMAIL_KEYS, getEmailAddress, getMailtoLink } from '../services/linksService';
 
 const CONTACT_EMAIL = getEmailAddress(EMAIL_KEYS.INFO);
 

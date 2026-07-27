@@ -14,7 +14,7 @@ import {
   getEmailAddress,
   getMailtoLink,
   getProjectBookingLink,
-} from '../services/linksservice';
+} from '../services/linksService';
 import '../styles/contact.css';
 
 const CONTACT_METHODS = [

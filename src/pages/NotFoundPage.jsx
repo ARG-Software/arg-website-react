@@ -5,7 +5,7 @@ import { useNotFoundPageScene } from '@hooks/useNotFoundPageScene';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA } from '@utils/analytics';
-import { getProjectBookingLink } from '../services/linksservice';
+import { getProjectBookingLink } from '../services/linksService';
 
 import '../styles/404.css';
 

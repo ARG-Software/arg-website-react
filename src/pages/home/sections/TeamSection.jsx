@@ -1,8 +1,8 @@
 import React from 'react';
 import { linkedinSvg } from '../../../components/icons/SocialIcons';
 import { trackSocial } from '../../../utils/analytics';
-import { getPersonLinkedInLink, PERSON_KEYS } from '../../../services/linksservice';
-import HOMEPAGE from '../../../data/homepage.json';
+import { getPersonLinkedInLink, PERSON_KEYS } from '../../../services/linksService';
+import HOMEPAGE from '../../../data/homePage.json';
 
 function resolveTeamMembers(members) {
   return members.map(member => ({

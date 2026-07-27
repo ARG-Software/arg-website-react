@@ -165,7 +165,7 @@ async function loadPartnerSources(rootDir: string, relativeFilePath: string): Pr
 }
 
 async function loadTeamProfileSources(rootDir: string): Promise<RagSource[]> {
-  const homepagePath = resolveRoot(rootDir, 'src/data/homepage.json');
+  const homepagePath = resolveRoot(rootDir, 'src/data/homePage.json');
   const aboutPath = resolveRoot(rootDir, 'src/data/about.json');
   const careersPath = resolveRoot(rootDir, 'src/data/careersPage.json');
   const [homepage, about, careers] = await Promise.all([

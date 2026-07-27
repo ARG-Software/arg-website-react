@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { trackFAQOpen } from '../../../utils/analytics';
-import HOMEPAGE from '../../../data/homepage.json';
+import HOMEPAGE from '../../../data/homePage.json';
 import FAQ from '../../../data/faq.json';
 
 const faqData = FAQ.items;

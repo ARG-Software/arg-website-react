@@ -78,7 +78,7 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── projectGallery.js  # Project gallery images
     │   ├── projects.json   # 7 project detail entries (slug, images, metrics, stack)
     │   ├── services.json   # Services data
-    │   ├── sitelinks.json  # External links, emails, socials, share URLs
+    │   ├── siteLinks.json  # External links, emails, socials, share URLs
     │   └── techStackConsole.json  # Tech stack console data
     ├── hooks/
     │   ├── useBlogSearch.js       # Blog list search + pagination + tag filtering
@@ -128,7 +128,7 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── RAFProvider.jsx       # requestAnimationFrame context
     │   └── TransitionProvider.jsx# Page transition orchestrator
     ├── services/
-    │   └── linksservice.js      # External link resolution, email, social, share URLs
+    │   └── linksService.js      # External link resolution, email, social, share URLs
     ├── styles/
     │   ├── base.css              # Global styles (original Webflow CSS)
     │   ├── components.css        # Shared component styles
@@ -202,7 +202,7 @@ Vite config defines import aliases for cleaner imports:
 import { Navbar } from '@components/navigation/Navbar';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { trackCTA } from '@utils/analytics';
-import { getProjectBookingLink } from '@services/linksservice';
+import { getProjectBookingLink } from '@services/linksService';
 ```
 Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`.
 
@@ -223,8 +223,8 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Medium import: `npm run blog:import:medium` fetches from Medium feed
 
 ### 3.8 External Links Service
-- `src/services/linksservice.js` centralizes all external URLs
-- Reads from `src/data/sitelinks.json`
+- `src/services/linksService.js` centralizes all external URLs
+- Reads from `src/data/siteLinks.json`
 - Provides typed getters: `getProjectBookingLink()`, `getNewsletterSubscribeLink()`, `getProjectBriefFormLink()`, etc.
 - Also provides email, social, and share URL builders
 - Never hardcode external URLs in components — always use this service
@@ -309,6 +309,8 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 ### 6.2 Naming
 - Components: PascalCase files, named exports preferred
 - Custom hooks: camelCase, `use*` prefix
+- Service, utility, constant, and multi-word JSON module files: camelCase
+- CSS, blog Markdown slugs, and generated/static route-oriented files: kebab-case or lowercase
 - CSS classes: kebab-case, scoped by page/component prefix (e.g. `footer-`, `pc-`, `pt-`)
 - Analytics events: `snake_case`
 
@@ -343,7 +345,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 
 ### 7.2 External Services
 - **GA4**: `G-79TG4N6C2W` — loaded dynamically (skipped on localhost), proxied via Netlify
-- **Web3Forms**: form submission endpoint for assistant lead capture and general forms (configured via `sitelinks.json`)
+- **Web3Forms**: form submission endpoint for assistant lead capture and general forms (configured via `siteLinks.json`)
 - **Social**: GitHub, LinkedIn, Medium profiles
 
 ### 7.3 Build Plugins
@@ -429,7 +431,7 @@ Build output: `dist/` directory ready for deployment.
 
 ### Using External Links
 ```jsx
-import { getProjectBookingLink, getMailtoLink, getCompanySocialLinks } from '@services/linksservice';
+import { getProjectBookingLink, getMailtoLink, getCompanySocialLinks } from '@services/linksService';
 
 // Never hardcode external URLs — always use the service
 const bookingUrl = getProjectBookingLink();
@@ -469,7 +471,7 @@ export default function MyPage() {
 |---|---|
 | `src/main.jsx` | App entry — provider stack, route definitions |
 | `src/utils/analytics.js` | All GA4 tracking functions |
-| `src/services/linksservice.js` | External link resolution, emails, socials, share URLs |
+| `src/services/linksService.js` | External link resolution, emails, socials, share URLs |
 | `src/components/navigation/AppLink.jsx` | Enhanced Link with analytics props |
 | `src/providers/TransitionProvider.jsx` | Page transitions + scroll + page view tracking |
 | `plugins/seo-prerender/` | Build-time SEO — prerender, sitemap, RSS, Atom |
@@ -477,7 +479,7 @@ export default function MyPage() {
 | `vite.config.js` | Build config — plugins, chunks, aliases, SPA fallback |
 | `index.html` | HTML shell — OG tags, JSON-LD, GA4 bootstrap, font preloads |
 | `src/data/projects.json` | Project data (7 projects) |
-| `src/data/sitelinks.json` | All external URLs, emails, social links |
+| `src/data/siteLinks.json` | All external URLs, emails, social links |
 | `src/utils/blog/` | Blog frontmatter parser + metadata loader |
 | `src/utils/lazyWithRetry.js` | Lazy loading with chunk retry |
 | `public/_redirects` | Netlify redirect rules |

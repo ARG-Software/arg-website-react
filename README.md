@@ -80,7 +80,7 @@ npm run preview      # Preview production build
     │   ├── WorkingWithUsPage.jsx
     │   └── NotFoundPage.jsx
     ├── providers/                # Context providers (Loading, RAF, Lenis, Transition)
-    ├── services/                 # External link resolution (linksservice.js)
+    ├── services/                 # External link resolution (linksService.js)
     ├── styles/                   # CSS files (base, components, home, blog, projects, partners, careers, etc.)
     ├── utils/                    # Analytics, blog parser, helpers, structured data, lazy retry
     └── animations/               # Animation attribute presets

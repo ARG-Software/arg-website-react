@@ -5,7 +5,7 @@ import { Logo } from '../icons/Logo';
 import { trackEvent, trackCTA } from '../../utils/analytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { arrowSvg } from '../icons/SocialIcons';
-import { getExternalLink, EXTERNAL_LINK_KEYS } from '../../services/linksservice';
+import { getExternalLink, EXTERNAL_LINK_KEYS } from '../../services/linksService';
 import projects from '../../data/projects.json';
 import menuConfig from '../../data/menu.json';
 

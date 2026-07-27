@@ -1,4 +1,4 @@
-import { getProjectBookingLink } from '../../services/linksservice';
+import { getProjectBookingLink } from '../../services/linksService';
 
 function isExternal(href) {
   return /^https?:\/\//.test(href) || href.startsWith('mailto:');

@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useThreeSphereBackground } from '../../../hooks/useThreeSphereBackground';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
-import HOMEPAGE from '../../../data/homepage.json';
+import HOMEPAGE from '../../../data/homePage.json';
 
 export function ServicesSection({ className = '', content = HOMEPAGE.services }) {
   const containerRef = useRef(null);

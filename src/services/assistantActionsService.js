@@ -1,5 +1,5 @@
 import assistantContent from '@data/assistant.json';
-import { getMailtoLink, getProjectBookingLink } from '@services/linksservice';
+import { getMailtoLink, getProjectBookingLink } from '@services/linksService';
 
 const ASSISTANT_ACTION_HREFS = {
   book_meeting: () => getProjectBookingLink(),

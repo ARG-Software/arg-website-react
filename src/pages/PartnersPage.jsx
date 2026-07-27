@@ -13,7 +13,7 @@ import { Timeline } from '@components/grids/Timeline';
 import { PageHeader } from '@components/headers/PageHeader';
 import data from '../data/partners.json';
 import PARTNERS_PAGE from '../data/partnersPage.json';
-import { getProjectBookingLink, getProjectBriefFormLink } from '../services/linksservice';
+import { getProjectBookingLink, getProjectBriefFormLink } from '../services/linksService';
 import '../styles/partners.css';
 
 const { categories, clients } = data;

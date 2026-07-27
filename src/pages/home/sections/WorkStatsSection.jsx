@@ -4,7 +4,7 @@ import { CounterWidget } from '../../../components/widgets/CounterWidget';
 import { SectionDivider } from '../../../components/layout/SectionDivider';
 import { arrowSvg } from '../../../components/icons/SocialIcons';
 import { isMobile } from '../../../utils/helpers';
-import HOMEPAGE from '../../../data/homepage.json';
+import HOMEPAGE from '../../../data/homePage.json';
 
 export function WorkStatsSection({ className = '', content = HOMEPAGE.workStats }) {
   // Inlined useImageHoverEffects hook

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import '../../../styles/elfsight.css';
-import HOMEPAGE from '../../../data/homepage.json';
+import HOMEPAGE from '../../../data/homePage.json';
 
 const ELFSIGHT_APP_SELECTOR = '.elfsight-app-aafa18f0-0e7e-4ff0-a44e-5c047f44429b';
 const ELFSIGHT_CARD_SELECTOR =

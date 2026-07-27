@@ -19,7 +19,7 @@ import {
   getMailtoLink,
   getPersonLinkedInLink,
   PERSON_KEYS,
-} from '../services/linksservice';
+} from '../services/linksService';
 import '../styles/careers.css';
 
 const JOBS = CAREERS_DATA.jobs;
