@@ -1217,9 +1217,9 @@ Rate limit errors fail open (log + allow) so a Supabase outage does not break th
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `ALTCHA_HMAC_KEY` | Yes | — | HMAC secret for challenge signing |
-| `ALTCHA_COST` | No | 5000 | PBKDF2 iteration count |
-| `ALTCHA_COUNTER_MIN` | No | 5000 | Minimum counter for challenge difficulty |
-| `ALTCHA_COUNTER_MAX` | No | 10000 | Maximum counter for challenge difficulty |
+| `ALTCHA_COST` | No | 2000 | PBKDF2 iteration count |
+| `ALTCHA_COUNTER_MIN` | No | 1000 | Minimum counter for challenge difficulty |
+| `ALTCHA_COUNTER_MAX` | No | 3000 | Maximum counter for challenge difficulty |
 | `RAG_ASK_RATE_LIMIT_PER_MINUTE` | No | 6 | Per-IP requests per minute |
 | `RAG_ASK_RATE_LIMIT_PER_DAY` | No | 30 | Per-IP requests per day |
 | `RAG_ASK_GLOBAL_RATE_LIMIT_PER_DAY` | No | 500 | Global daily budget cap |

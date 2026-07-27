@@ -1,7 +1,7 @@
 import { solveChallengeWorkers } from 'altcha-lib';
+import { fetchAssistantChallenge } from '@services/apiService';
 import AltchaPbkdf2Worker from '../workers/altchaPbkdf2Worker.js?worker';
 
-const CHALLENGE_ENDPOINT = '/.netlify/functions/ask-challenge';
 const SOLVE_TIMEOUT_MS = 60_000;
 
 let preparedPayload = null;
@@ -19,18 +19,7 @@ function isProofValid(proof) {
 }
 
 async function fetchAndSolveChallenge() {
-  const response = await fetch(CHALLENGE_ENDPOINT);
-
-  if (!response.ok) {
-    throw new Error(`Challenge request failed: ${response.status}`);
-  }
-
-  const { challenge } = await response.json();
-
-  if (!challenge) {
-    throw new Error('No challenge received');
-  }
-
+  const challenge = await fetchAssistantChallenge();
   const solution = await solveChallengeWorkers({
     challenge,
     concurrency: Math.min(navigator.hardwareConcurrency || 2, 4),

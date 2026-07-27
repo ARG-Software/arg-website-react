@@ -1,6 +1,5 @@
+import { submitVerifiedContactForm as submitVerifiedContactFormRequest } from '@services/apiService';
 import { getWeb3FormsAccessKey, getWeb3FormsEndpoint } from '@services/linksservice';
-
-const CONTACT_SUBMIT_ENDPOINT = '/.netlify/functions/contact-submit';
 
 function appendFields(formData, fields = {}) {
   Object.entries(fields).forEach(([key, value]) => {
@@ -22,7 +21,7 @@ export async function submitWeb3Form(fields, { subject, source, formName, errorM
   if (formName) formData.set('form_name', formName);
 
   if (formName === 'contact_page_brief') {
-    return submitVerifiedContactForm(formData, errorMessage);
+    return submitContactPageBrief(formData, errorMessage);
   }
 
   const response = await fetch(getWeb3FormsEndpoint(), {
@@ -38,26 +37,11 @@ export async function submitWeb3Form(fields, { subject, source, formName, errorM
   return { success: true, data, formData };
 }
 
-async function submitVerifiedContactForm(formData, errorMessage) {
+async function submitContactPageBrief(formData, errorMessage) {
   formData.delete('access_key');
-
-  const response = await fetch(CONTACT_SUBMIT_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ fields: Object.fromEntries(formData.entries()) }),
+  const data = await submitVerifiedContactFormRequest(Object.fromEntries(formData.entries()), {
+    errorMessage,
   });
-  const data = await response.json();
-
-  if (!response.ok || !data.success) {
-    throw new Error(
-      data.error?.message ||
-        data.message ||
-        errorMessage ||
-        'Something went wrong. Please try again.'
-    );
-  }
 
   return { success: true, data, formData };
 }

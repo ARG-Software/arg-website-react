@@ -1,10 +1,8 @@
 import { useEffect, useRef } from 'react';
 import 'altcha';
+import { getContactChallengeEndpoint } from '@services/apiService';
 
-const CONTACT_CHALLENGE_ENDPOINT = '/.netlify/functions/contact-challenge';
-const ALTCHA_CONFIGURATION = JSON.stringify({
-  hideFooter: true,
-});
+const CONTACT_CHALLENGE_ENDPOINT = getContactChallengeEndpoint();
 
 export function AltchaVerification({ onStateChange }) {
   const widgetRef = useRef(null);
@@ -25,16 +23,13 @@ export function AltchaVerification({ onStateChange }) {
   }, [onStateChange]);
 
   return (
-    <div className="altcha-verification">
-      <altcha-widget
-        ref={widgetRef}
-        auto="onload"
-        challenge={CONTACT_CHALLENGE_ENDPOINT}
-        configuration={ALTCHA_CONFIGURATION}
-        name="altcha"
-        type="checkbox"
-        workers="2"
-      ></altcha-widget>
-    </div>
+    <altcha-widget
+      ref={widgetRef}
+      auto="off"
+      challenge={CONTACT_CHALLENGE_ENDPOINT}
+      name="altcha"
+      type="checkbox"
+      workers="2"
+    ></altcha-widget>
   );
 }

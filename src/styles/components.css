@@ -446,26 +446,6 @@
   margin-top: 0.25rem;
 }
 
-.altcha-verification {
-  background: #f3f3f7;
-  border: 1px solid rgba(12, 0, 46, 0.12);
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-}
-
-.altcha-verification altcha-widget {
-  --altcha-color-base: #0c002e;
-  --altcha-color-border: rgba(12, 0, 46, 0.16);
-  --altcha-color-error-text: #9c1d1d;
-  --altcha-color-footer-bg: transparent;
-  --altcha-color-text: #0c002e;
-  --altcha-border-radius: 0.65rem;
-  --altcha-font: Neuemontreal, sans-serif;
-
-  display: block;
-  width: 100%;
-}
-
 .form-card__submit-row > span,
 .form-card__submit-row > p {
   color: rgba(12, 0, 46, 0.58);

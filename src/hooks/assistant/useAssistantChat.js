@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useActiveHomepageSection } from '@hooks/useActiveHomepageSection';
+import { submitAssistantQuestion } from '@services/apiService';
 import { trackAssistantEvent } from '@utils/analytics';
 
 const ERROR_MESSAGES = {
@@ -53,11 +54,8 @@ export function useAssistantChat({ getPayload, consumePayload }) {
 
         setPendingStatus('Searching ARG knowledge...');
 
-        const response = await fetch('/.netlify/functions/ask', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          signal: controller.signal,
-          body: JSON.stringify({
+        const response = await submitAssistantQuestion(
+          {
             question: trimmed,
             messages: messages.map(m => ({ role: m.role, content: m.content })),
             pageContext: {
@@ -66,8 +64,9 @@ export function useAssistantChat({ getPayload, consumePayload }) {
               ...(activeSection ? { activeSection } : {}),
             },
             altcha,
-          }),
-        });
+          },
+          { signal: controller.signal }
+        );
 
         setPendingStatus('Writing answer...');
 

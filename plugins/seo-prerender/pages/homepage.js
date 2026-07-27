@@ -3,6 +3,7 @@ import path from 'node:path';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { injectStructuredData } from '../html-utils.js';
 import { getHomepageExtraLinks } from '../links.js';
+import { DEFAULT_TITLE } from '../../../src/constants/seo.js';
 import { buildFAQPageSchema, buildWebPageSchema } from '../../../src/utils/structuredData.js';
 
 const FAQ = JSON.parse(
@@ -25,7 +26,7 @@ export function writeHomepage({ distDir, baseHtml }) {
   const indexPath = path.join(distDir, 'index.html');
   const html = injectStructuredData(baseHtml, [
     buildWebPageSchema({
-      title: 'Software Development for SaaS & Fintech | Arg Software',
+      title: DEFAULT_TITLE,
       description:
         'We build secure, scalable digital platforms for fintech, media, and high-growth tech companies. Architecture-first. Production-ready.',
       path: '/',

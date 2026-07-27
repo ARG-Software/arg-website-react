@@ -28,17 +28,17 @@ function maybeCleanup(): void {
 
 function getAltchaCost(): number {
   const value = Number(process.env.ALTCHA_COST);
-  return Number.isFinite(value) && value > 0 ? value : 5_000;
+  return Number.isFinite(value) && value > 0 ? value : 2_000;
 }
 
 function getAltchaCounterMin(): number {
   const value = Number(process.env.ALTCHA_COUNTER_MIN);
-  return Number.isFinite(value) && value > 0 ? value : 5_000;
+  return Number.isFinite(value) && value > 0 ? value : 1_000;
 }
 
 function getAltchaCounterMax(): number {
   const value = Number(process.env.ALTCHA_COUNTER_MAX);
-  return Number.isFinite(value) && value > 0 ? value : 10_000;
+  return Number.isFinite(value) && value > 0 ? value : 3_000;
 }
 
 export async function createAltchaChallenge(): Promise<Challenge> {
