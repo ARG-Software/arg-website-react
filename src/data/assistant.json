@@ -1,0 +1,65 @@
+{
+  "imageSrc": "/images/ai/gaspar.png",
+  "name": "Gaspar",
+  "statusText": "online now",
+  "quickPrompts": [
+    "What does ARG do?",
+    "Latest articles?",
+    "How can I work with ARG?",
+    "Are you hiring?"
+  ],
+  "leadCaptureQuickPrompts": [
+    "Yes, send email",
+    "No, don't show again",
+    "Ask Gaspar instead"
+  ],
+  "messages": {
+    "welcome": "Hi, I'm Gaspar, ARG's AI assistant. Ask me about our work, our research, or how to get in touch.",
+    "leadCaptureOffer": "Want to send ARG a quick email? I can collect your email and message here.",
+    "leadCaptureEmail": "What email should we reply to?",
+    "leadCaptureMessagePrompt": "Want to add a message? You can also say \"skip\".",
+    "leadCaptureSuccess": "Done. We'll reply within 48h. Thanks for reaching out!",
+    "leadCaptureDeclined": "No problem. I won't show this again for 2 days. Feel free to ask me anything else.",
+    "leadCaptureCancelled": "No problem. Feel free to ask me anything else.",
+    "multipleEmails": "I found multiple emails. Please enter just one email address.",
+    "noEmailFound": "I couldn't find a valid email address. Please enter your email.",
+    "emptyResponse": "Please enter a valid response.",
+    "sending": "Sending...",
+    "noMessageAdded": "No message added."
+  },
+  "actions": {
+    "book_meeting": {
+      "label": "Book a meeting",
+      "external": true
+    },
+    "email_hello": {
+      "label": "Email us",
+      "external": false
+    },
+    "email_hr": {
+      "label": "Email careers team",
+      "external": false
+    }
+  },
+  "labels": {
+    "open": "Open Gaspar assistant",
+    "dialog": "Gaspar assistant",
+    "clear": "Clear conversation",
+    "expand": "Expand to fullscreen",
+    "minimize": "Minimize to panel",
+    "close": "Close assistant",
+    "sendResponse": "Send response",
+    "sendQuestion": "Send question",
+    "send": "Send",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "tryAgain": "Try Again",
+    "relatedLinks": "Related links"
+  },
+  "placeholders": {
+    "question": "Ask a question...",
+    "email": "Enter your email...",
+    "message": "Enter your message or \"skip\"...",
+    "confirm": "Type \"send\" to confirm..."
+  }
+}

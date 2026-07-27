@@ -1,0 +1,427 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { MOBILE_BREAKPOINT } from '@constants/ui';
+import assistantContent from '@data/assistant.json';
+import { trackAssistantEvent } from '@utils/analytics';
+import { isMobile } from '@utils/helpers';
+import { useAssistantChat } from './useAssistantChat';
+import { useAssistantLeadCapture } from './useAssistantLeadCapture';
+import { useAssistantSecurity } from './useAssistantSecurity';
+
+const LEAD_SOURCE = 'lead_capture';
+const LEAD_DISMISS_DELAY_MS = 3000;
+
+function useMobileFullscreen() {
+  const [mobileViewport, setMobileViewport] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return isMobile();
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+    const onChange = event => setMobileViewport(event.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
+  return mobileViewport;
+}
+
+function getLeadAssistantMessage(content, extra = {}) {
+  return { role: 'assistant', content, source: LEAD_SOURCE, ...extra };
+}
+
+function getLeadUserMessage(content) {
+  return { role: 'user', content, source: LEAD_SOURCE };
+}
+
+function getLeadConfirmMessage(email, message) {
+  return getLeadAssistantMessage(`Send this to ARG?\nEmail: ${email}\nMessage: ${message}`, {
+    showConfirmButtons: true,
+  });
+}
+
+function getLeadPromptInput(prompt) {
+  const [acceptPrompt, declinePrompt, cancelPrompt] = assistantContent.leadCaptureQuickPrompts;
+
+  if (prompt === acceptPrompt) return 'yes';
+  if (prompt === declinePrompt) return 'no';
+  if (prompt === cancelPrompt) return 'cancel';
+
+  return prompt.toLowerCase();
+}
+
+function getInputPlaceholder({ isLeadActive, leadStep, LEAD_STEPS }) {
+  if (!isLeadActive) return assistantContent.placeholders.question;
+  if (leadStep === LEAD_STEPS.EMAIL) return assistantContent.placeholders.email;
+  if (leadStep === LEAD_STEPS.MESSAGE) return assistantContent.placeholders.message;
+  if (leadStep === LEAD_STEPS.CONFIRM) return assistantContent.placeholders.confirm;
+  return assistantContent.placeholders.question;
+}
+
+export function useAssistantWidgetController({
+  onOpenChange,
+  reopenRequest = 0,
+  leadCaptureVisible = false,
+  onLeadCaptureDismiss,
+  onLeadCaptureComplete,
+}) {
+  const mobileViewport = useMobileFullscreen();
+  const [panelState, setPanelState] = useState('closed');
+  const [inputValue, setInputValue] = useState('');
+  const [leadMessages, setLeadMessages] = useState([]);
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
+  const leadCaptureStartedRef = useRef(false);
+
+  const isOpen = panelState !== 'closed';
+  const { getPayload, consumePayload } = useAssistantSecurity({ isOpen });
+  const { messages, loading, error, pendingStatus, setError, submitQuestion, resetChat } =
+    useAssistantChat({ getPayload, consumePayload });
+
+  const {
+    leadStep,
+    isActive: isLeadActive,
+    capturedEmail,
+    errorMessage: leadErrorMessage,
+    startLeadCapture,
+    cancelLeadCapture,
+    handleInput: handleLeadInput,
+    submitLead,
+    retrySubmit,
+    LEAD_STEPS,
+  } = useAssistantLeadCapture({
+    onDismiss: onLeadCaptureDismiss,
+    onComplete: () => {
+      setLeadMessages(prev => [
+        ...prev.filter(message => !message.isLoading),
+        getLeadAssistantMessage(assistantContent.messages.leadCaptureSuccess),
+      ]);
+      onLeadCaptureComplete?.();
+    },
+  });
+
+  const showPrompts = !isLeadActive && messages.length === 0;
+  const showLeadPrompts = isLeadActive && leadStep === LEAD_STEPS.OFFER;
+  const canClearConversation =
+    messages.length > 0 || leadMessages.length > 0 || inputValue.length > 0 || Boolean(error);
+  const inputPlaceholder = getInputPlaceholder({ isLeadActive, leadStep, LEAD_STEPS });
+  const isSubmitDisabled = (loading && !isLeadActive) || !inputValue.trim();
+  const isClearDisabled = loading || !canClearConversation;
+
+  const clearLeadMessagesSoon = useCallback(() => {
+    setTimeout(() => {
+      setLeadMessages([]);
+      leadCaptureStartedRef.current = false;
+    }, LEAD_DISMISS_DELAY_MS);
+  }, []);
+
+  const addLeadResultMessages = useCallback(
+    (result, userContent) => {
+      const copy = assistantContent.messages;
+      const userMessage = getLeadUserMessage(userContent);
+
+      if (result.type === 'accepted') {
+        setLeadMessages(prev => [
+          ...prev,
+          userMessage,
+          getLeadAssistantMessage(copy.leadCaptureEmail),
+        ]);
+      } else if (result.type === 'declined') {
+        setLeadMessages(prev => [
+          ...prev,
+          userMessage,
+          getLeadAssistantMessage(copy.leadCaptureDeclined),
+        ]);
+        clearLeadMessagesSoon();
+      } else if (result.type === 'email_captured') {
+        setLeadMessages(prev => [
+          ...prev,
+          userMessage,
+          getLeadAssistantMessage(copy.leadCaptureMessagePrompt),
+        ]);
+      } else if (result.type === 'lead_captured') {
+        setLeadMessages(prev => [
+          ...prev,
+          userMessage,
+          getLeadConfirmMessage(result.email, result.message),
+        ]);
+      } else if (result.type === 'multiple_emails') {
+        setLeadMessages(prev => [
+          ...prev,
+          userMessage,
+          getLeadAssistantMessage(copy.multipleEmails),
+        ]);
+      } else if (result.type === 'no_email_found') {
+        setLeadMessages(prev => [...prev, userMessage, getLeadAssistantMessage(copy.noEmailFound)]);
+      } else if (result.type === 'message_skipped') {
+        setLeadMessages(prev => [
+          ...prev,
+          getLeadUserMessage('skip'),
+          getLeadConfirmMessage(capturedEmail, copy.noMessageAdded),
+        ]);
+      } else if (result.type === 'message_captured') {
+        setLeadMessages(prev => [
+          ...prev,
+          userMessage,
+          getLeadConfirmMessage(capturedEmail, result.message),
+        ]);
+      } else if (result.type === 'cancelled') {
+        setLeadMessages(prev => [
+          ...prev,
+          userMessage,
+          getLeadAssistantMessage(copy.leadCaptureCancelled),
+        ]);
+        clearLeadMessagesSoon();
+      } else if (result.type === 'submitting') {
+        setLeadMessages(prev => [
+          ...prev,
+          getLeadUserMessage('send'),
+          getLeadAssistantMessage(copy.sending, { isLoading: true }),
+        ]);
+      } else if (result.type === 'editing') {
+        setLeadMessages(prev => [
+          ...prev,
+          getLeadUserMessage('edit'),
+          getLeadAssistantMessage(copy.leadCaptureEmail),
+        ]);
+      } else if (result.type === 'empty') {
+        setLeadMessages(prev => [
+          ...prev,
+          getLeadUserMessage('(empty)'),
+          getLeadAssistantMessage(copy.emptyResponse),
+        ]);
+      }
+    },
+    [capturedEmail, clearLeadMessagesSoon]
+  );
+
+  useEffect(() => {
+    onOpenChange?.(isOpen);
+  }, [isOpen, onOpenChange]);
+
+  useEffect(() => {
+    if (!leadCaptureVisible || panelState !== 'closed' || leadCaptureStartedRef.current) return;
+
+    leadCaptureStartedRef.current = true;
+    const next = mobileViewport ? 'fullscreen' : 'open';
+
+    requestAnimationFrame(() => {
+      setPanelState(next);
+      setError(null);
+      startLeadCapture();
+      setLeadMessages([getLeadAssistantMessage(assistantContent.messages.leadCaptureOffer)]);
+      trackAssistantEvent('open', { source: LEAD_SOURCE });
+    });
+  }, [leadCaptureVisible, mobileViewport, panelState, startLeadCapture, setError]);
+
+  useEffect(() => {
+    if (!isLeadActive) return;
+
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [leadMessages, isLeadActive]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
+
+  useEffect(() => {
+    if (panelState !== 'closed') {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [panelState]);
+
+  useEffect(() => {
+    if (panelState !== 'fullscreen') return undefined;
+
+    document.documentElement.classList.add('aw-fullscreen-open');
+    return () => document.documentElement.classList.remove('aw-fullscreen-open');
+  }, [panelState]);
+
+  useEffect(() => {
+    if (!reopenRequest) return;
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPanelState(mobileViewport ? 'fullscreen' : 'open');
+    setError(null);
+  }, [mobileViewport, reopenRequest, setError]);
+
+  const open = useCallback(
+    source => {
+      const next = mobileViewport ? 'fullscreen' : 'open';
+      setPanelState(next);
+      setError(null);
+      trackAssistantEvent('open', { source });
+    },
+    [mobileViewport, setError]
+  );
+
+  const close = useCallback(
+    source => {
+      setPanelState('closed');
+      setError(null);
+      cancelLeadCapture();
+      setLeadMessages([]);
+      leadCaptureStartedRef.current = false;
+      trackAssistantEvent('close', { source });
+    },
+    [setError, cancelLeadCapture]
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    function handleGasparOpen(event) {
+      open(event.detail?.source || 'external_request');
+    }
+
+    window.addEventListener('gaspar:open', handleGasparOpen);
+    return () => window.removeEventListener('gaspar:open', handleGasparOpen);
+  }, [open]);
+
+  const toggleFullscreen = useCallback(() => {
+    setPanelState(prev => (prev === 'fullscreen' ? 'open' : 'fullscreen'));
+  }, []);
+
+  const handleClearConversation = useCallback(() => {
+    if (loading || leadStep === LEAD_STEPS.SUBMITTING) return;
+
+    resetChat();
+    cancelLeadCapture();
+    setLeadMessages([]);
+    setInputValue('');
+    setError(null);
+    leadCaptureStartedRef.current = false;
+    trackAssistantEvent('clear_conversation', {
+      had_history: messages.length > 0 || leadMessages.length > 0,
+    });
+  }, [
+    loading,
+    leadStep,
+    LEAD_STEPS.SUBMITTING,
+    messages.length,
+    leadMessages.length,
+    resetChat,
+    cancelLeadCapture,
+    setError,
+  ]);
+
+  useEffect(() => {
+    if (panelState === 'closed') return undefined;
+    function onKeyDown(e) {
+      if (e.key === 'Escape') close('escape_key');
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [panelState, close]);
+
+  const handleSubmit = useCallback(
+    e => {
+      e.preventDefault();
+      const trimmed = inputValue.trim();
+      if (!trimmed || (loading && !isLeadActive)) return;
+
+      if (isLeadActive) {
+        const result = handleLeadInput(trimmed);
+        addLeadResultMessages(result, trimmed);
+        setInputValue('');
+        return;
+      }
+
+      trackAssistantEvent('submit', {
+        has_history: messages.length > 0,
+        question_length: inputValue.length,
+      });
+      submitQuestion(inputValue).then(() => setInputValue(''));
+    },
+    [
+      addLeadResultMessages,
+      handleLeadInput,
+      inputValue,
+      isLeadActive,
+      loading,
+      messages.length,
+      submitQuestion,
+    ]
+  );
+
+  const handleQuickPrompt = useCallback(
+    prompt => {
+      if (isLeadActive) {
+        const result = handleLeadInput(getLeadPromptInput(prompt));
+        addLeadResultMessages(result, prompt);
+        setInputValue('');
+        return;
+      }
+
+      trackAssistantEvent('quick_prompt', { prompt_text: prompt });
+      trackAssistantEvent('submit', { has_history: false, question_length: prompt.length });
+      submitQuestion(prompt).then(() => setInputValue(''));
+    },
+    [addLeadResultMessages, handleLeadInput, isLeadActive, submitQuestion]
+  );
+
+  const handleLeadConfirm = useCallback(() => {
+    if (leadStep === LEAD_STEPS.SUBMITTING) return;
+
+    submitLead();
+    setLeadMessages(prev => [
+      ...prev,
+      getLeadUserMessage('send'),
+      getLeadAssistantMessage(assistantContent.messages.sending, { isLoading: true }),
+    ]);
+  }, [leadStep, LEAD_STEPS.SUBMITTING, submitLead]);
+
+  const handleLeadEdit = useCallback(() => {
+    handleLeadInput('edit');
+    setLeadMessages(prev => [
+      ...prev,
+      getLeadUserMessage('edit'),
+      getLeadAssistantMessage(assistantContent.messages.leadCaptureEmail),
+    ]);
+  }, [handleLeadInput]);
+
+  const handleLeadCancel = useCallback(() => {
+    handleLeadInput('cancel');
+    setLeadMessages(prev => [
+      ...prev,
+      getLeadUserMessage('cancel'),
+      getLeadAssistantMessage(assistantContent.messages.leadCaptureCancelled),
+    ]);
+    clearLeadMessagesSoon();
+  }, [clearLeadMessagesSoon, handleLeadInput]);
+
+  return {
+    panelState,
+    isOpen,
+    inputValue,
+    setInputValue,
+    messages,
+    leadMessages,
+    loading,
+    error,
+    pendingStatus,
+    leadStep,
+    isLeadActive,
+    leadErrorMessage,
+    LEAD_STEPS,
+    showPrompts,
+    showLeadPrompts,
+    canClearConversation,
+    inputPlaceholder,
+    isSubmitDisabled,
+    isClearDisabled,
+    messagesEndRef,
+    inputRef,
+    open,
+    close,
+    toggleFullscreen,
+    handleClearConversation,
+    handleSubmit,
+    handleQuickPrompt,
+    handleLeadConfirm,
+    handleLeadEdit,
+    handleLeadCancel,
+    retrySubmit,
+  };
+}

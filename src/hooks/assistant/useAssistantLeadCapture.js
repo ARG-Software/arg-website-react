@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { ALREADY_SUBSCRIBED_KEY } from '@constants/ui';
-import { trackEvent } from '@utils/analytics';
 import { getWeb3FormsAccessKey, getWeb3FormsEndpoint } from '@services/linksservice';
+import { trackEvent } from '@utils/analytics';
 
 const LEAD_STEPS = {
   OFFER: 'offer',
@@ -53,7 +53,7 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
   const [capturedMessage, setCapturedMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const isActive = leadStep !== null;
+  const isActive = leadStep !== null && leadStep !== LEAD_STEPS.SUCCESS;
 
   const startLeadCapture = useCallback(() => {
     setLeadStep(LEAD_STEPS.OFFER);
@@ -145,7 +145,7 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
       }
 
       if (leadStep === LEAD_STEPS.EMAIL) {
-        const { email, hasEmail, multipleEmails } = extractEmailAndMessage(trimmed);
+        const { email, message, hasEmail, multipleEmails } = extractEmailAndMessage(trimmed);
 
         if (multipleEmails) {
           return { type: 'multiple_emails', input: trimmed };
@@ -156,6 +156,13 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
         }
 
         setCapturedEmail(email);
+
+        if (message) {
+          setCapturedMessage(message);
+          setLeadStep(LEAD_STEPS.CONFIRM);
+          return { type: 'lead_captured', email, message };
+        }
+
         setLeadStep(LEAD_STEPS.MESSAGE);
         return { type: 'email_captured', email };
       }

@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useActiveHomepageSection } from '@hooks/useActiveHomepageSection';
-import { useAssistantConversation } from '@hooks/useAssistantConversation';
 import { trackAssistantEvent } from '@utils/analytics';
 
 const ERROR_MESSAGES = {
@@ -23,7 +22,7 @@ function getErrorMessage(code) {
 export function useAssistantChat({ getPayload, consumePayload }) {
   const location = useLocation();
   const activeSection = useActiveHomepageSection(location.pathname);
-  const { messages, setMessages, clearConversation } = useAssistantConversation();
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pendingStatus, setPendingStatus] = useState(null);
@@ -126,14 +125,14 @@ export function useAssistantChat({ getPayload, consumePayload }) {
         setPendingStatus(null);
       }
     },
-    [activeSection, consumePayload, getPayload, loading, location.pathname, messages, setMessages]
+    [activeSection, consumePayload, getPayload, loading, location.pathname, messages]
   );
 
   const resetChat = useCallback(() => {
-    clearConversation();
+    setMessages([]);
     setError(null);
     setPendingStatus(null);
-  }, [clearConversation]);
+  }, []);
 
   return {
     messages,
