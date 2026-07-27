@@ -57,13 +57,14 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── cards/          # BaseCard, FounderCard, ProjectItem
     │   ├── careers/        # Careers-specific components
     │   ├── filters/        # TagFilterPills
-    │   ├── forms/          # ContactForm, EmailCaptureForm, FormCard
+    │   ├── forms/          # ContactForm, FormCard
     │   ├── grids/          # FilterGrid, ImageGallery, Timeline, VerticalTimeline, StepProgressTimeline
     │   ├── headers/        # PageHeader
     │   ├── icons/          # Logo, SocialIcons, AtomIcon, BlueskyIcon, CopyIcon, etc.
     │   ├── layout/         # CTASection, Footer, LoadingScreen, Marquee, SectionDivider, SectionTicker, ErrorBoundary, PageTransitionOverlay
     │   ├── navigation/     # AppLink, Breadcrumb, Navbar, NavMenu, Pagination, SimpleCarousel, ArticleSidebar
     │   ├── overlays/       # CookieConsent, Drawer
+    │   ├── widgets/        # AssistantWidget, WidgetManager, CounterWidget, ShuffleText, TechStackConsole
     │   ├── pills/          # Pill, PillButton
     │   ├── seo/            # SEO (react-helmet-async wrapper)
     │   └── widgets/        # CounterWidget, ShuffleText, TechStackConsole
@@ -83,7 +84,7 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── useBlogSearch.js       # Blog list search + pagination + tag filtering
     │   ├── useCountUp.js          # Animated number counter
     │   ├── useHashScroll.js       # Hash fragment scroll handling
-    │   ├── useLeadCaptureVisibility.js  # Email capture visibility tracking
+    │   ├── useLeadCaptureVisibility.js  # Assistant lead capture visibility tracking
     │   ├── useNextProjectSection.js  # Scroll-to-next-project CTA behavior
     │   ├── useNotFoundPageScene.js   # Three.js 3D scene for 404 page
     │   ├── useRAF.js              # requestAnimationFrame coordinator
@@ -91,7 +92,8 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── useThreeSphereBackground.js  # Three.js sphere background
     │   ├── useTimeOnPage.js       # Fires time_on_page event on unmount (≥5s threshold)
     │   ├── useWaterRipple.js      # Canvas water ripple effect
-    │   └── useWeb3Form.js         # Web3Forms integration
+    │   ├── useWeb3Form.js         # Web3Forms integration
+    │   └── assistant/             # Assistant-specific hooks (lead capture, security)
     ├── pages/
     │   ├── home/
     │   │   ├── HomePage.jsx     # Main landing page — composes all sections
@@ -163,7 +165,7 @@ and comprehensive Google Analytics 4 instrumentation.
 - Project detail: `/projects/:slug/` renders `ProjectDetailPage`
 - `/projects` and `/projects/` redirect to first project via `ProjectsPage`
 - 404 catch-all: `<Route path="*" element={<NotFoundPage />} />`
-- Global overlays (`EmailCaptureForm`, `CookieConsent`) rendered outside `<Routes>`
+- Global overlays (`AssistantWidget` + `CookieConsent`) rendered outside `<Routes>`
 
 ### 3.2 Provider Stack (innermost → outermost)
 ```
@@ -324,6 +326,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
   - `footer-*` = Footer
   - `nav-menu__*` = Navigation menu
   - `section_*` = Layout sections
+  - `aw-*` = Assistant widget
 
 ---
 
@@ -340,7 +343,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 
 ### 7.2 External Services
 - **GA4**: `G-79TG4N6C2W` — loaded dynamically (skipped on localhost), proxied via Netlify
-- **Web3Forms**: form submission endpoint (configured via `sitelinks.json`)
+- **Web3Forms**: form submission endpoint for assistant lead capture and general forms (configured via `sitelinks.json`)
 - **Social**: GitHub, LinkedIn, Medium profiles
 
 ### 7.3 Build Plugins
@@ -480,3 +483,7 @@ export default function MyPage() {
 | `public/_redirects` | Netlify redirect rules |
 | `public/robots.txt` | Crawler directives |
 | `public/llms.txt` | LLM metadata |
+| `src/components/widgets/AssistantWidget.jsx` | Assistant widget UI, deterministic lead capture, and proactive offer flow |
+| `src/hooks/useLeadCaptureVisibility.js` | Lead-capture offer visibility rules for the assistant widget |
+| `src/services/assistantActionsService.js` | Assistant CTA action mapping (e.g. `email_hello` → in-chat lead capture) |
+| `src/workers/altchaPbkdf2Worker.js` | Web Worker used for browser-side ALTCHA proof-of-work solving |

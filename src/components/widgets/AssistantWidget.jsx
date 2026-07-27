@@ -75,8 +75,7 @@ function AssistantActions({ actions }) {
 
         if (!details) return null;
 
-        const trackClick = () =>
-          trackAssistantEvent('action_click', { action_type: action.type });
+        const trackClick = () => trackAssistantEvent('action_click', { action_type: action.type });
 
         if (details.onClick) {
           return (

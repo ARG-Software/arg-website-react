@@ -77,6 +77,7 @@ export function buildOrganizationSchema() {
     knowsAbout: [
       'Custom Software Development',
       'SaaS Development',
+      'ERP',
       'Server Infrastructure',
       'Prototyping',
       'AI',
@@ -157,6 +158,36 @@ export function buildArticleSchema(post) {
       '@type': 'WebPage',
       '@id': `${SITE_URL}/blog/${post.slug}/`,
     },
+  };
+}
+
+export function buildProjectSchema(project) {
+  const projectUrl = `${SITE_URL}/projects/${project.slug}/`;
+  const stackItems =
+    project.stack
+      ?.split(',')
+      .map(item => item.trim())
+      .filter(Boolean) ?? [];
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    '@id': `${projectUrl}#case-study`,
+    name: `${project.title} Use Case`,
+    description: project.intro || project.description || project.challenge,
+    url: projectUrl,
+    image: absoluteUrl(project.imgSrc),
+    creator: { '@id': ORGANIZATION_ID },
+    publisher: { '@id': ORGANIZATION_ID },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': projectUrl,
+    },
+    about: [
+      project.subtitle ? { '@type': 'Thing', name: project.subtitle } : null,
+      ...stackItems.map(name => ({ '@type': 'Thing', name })),
+    ].filter(Boolean),
+    keywords: stackItems,
   };
 }
 

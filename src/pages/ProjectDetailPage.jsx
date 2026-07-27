@@ -12,6 +12,7 @@ import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useNextProjectSection } from '@hooks/useNextProjectSection';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA } from '@utils/analytics';
+import { buildProjectSchema } from '@utils/structuredData';
 import { getProjectGallery } from '@constants/projectGallery';
 import PROJECTS from '../data/projects.json';
 import '../styles/projects.css';
@@ -117,6 +118,8 @@ export default function ProjectDetailPage() {
         title={`${project.title} - Use Case`}
         description={seoDescription}
         path={`/projects/${slug}/`}
+        image={project.imgSrc}
+        jsonLd={buildProjectSchema(project)}
       />
       <div className="prp-page">
         <Navbar position="fixed" variant="dark" />

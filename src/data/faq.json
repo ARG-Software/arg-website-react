@@ -46,10 +46,10 @@
     {
       "id": "technology",
       "q": "What technologies do you use?",
-      "schemaAnswer": "We choose technology for maintainability, team fit, and production requirements. Common choices include React, Next.js, TypeScript, Node.js, .NET, Java, AWS, Azure, GCP, React Native, Flutter, PostgreSQL, and MongoDB.",
+      "schemaAnswer": "We choose technology for maintainability, team fit, and production requirements. Common choices include React, Next.js, TypeScript, Node.js, .NET, Java, AWS, Azure, GCP, Serverless Functions, Supabase, Vercel, Netlify, React Native, Flutter, PostgreSQL, and MongoDB.",
       "answer": [
         { "type": "paragraph", "text": "We choose technology for maintainability, team fit, and production requirements. The stack is a tool, not the strategy." },
-        { "type": "list", "items": ["Web: React, Next.js, TypeScript", "Backend: Node.js, .NET, Java", "Cloud: AWS, Azure, GCP", "Mobile: React Native and Flutter", "Databases: PostgreSQL, MongoDB"] },
+        { "type": "list", "items": ["Web: React, Next.js, TypeScript", "Backend: Node.js, .NET, Java", "Cloud: AWS, Azure, GCP, Supabase, Vercel, Netlify, Serverless Functions", "Mobile: React Native and Flutter", "Databases: PostgreSQL, MongoDB"] },
         { "type": "paragraph", "text": "The important part is choosing a system your team can operate after launch." }
       ]
     },

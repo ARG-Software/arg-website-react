@@ -120,8 +120,7 @@ export function useAssistantWidgetController({
   const canClearConversation =
     messages.length > 0 || leadMessages.length > 0 || inputValue.length > 0 || Boolean(error);
   const inputPlaceholder = getInputPlaceholder({ isLeadActive, leadStep, LEAD_STEPS });
-  const isInputDisabled =
-    (loading && !isLeadActive) || leadStep === LEAD_STEPS.SUCCESS;
+  const isInputDisabled = (loading && !isLeadActive) || leadStep === LEAD_STEPS.SUCCESS;
   const isSubmitDisabled = (loading && !isLeadActive) || !inputValue.trim();
   const isClearDisabled = loading || !canClearConversation;
 

@@ -55,6 +55,7 @@
 - Frontend and product interfaces with React, Next.js, Angular, Vue, and TypeScript
 - Payment switching, ledgers, interoperability, Open Payments, Interledger, and Mojaloop vNext
 - Cloud infrastructure, Docker, Kubernetes, CI/CD, observability, and production operations
+- Serverless functions, AWS, Azure, GCP, Supabase, Vercel, and Netlify
 - Databases and data workflows with PostgreSQL, MongoDB, MySQL, Kafka, and related tooling
 
 ## Social Links

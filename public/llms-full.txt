@@ -78,7 +78,8 @@ Common technologies and domains include:
 - PostgreSQL, MongoDB, MySQL, TypeORM, MikroORM, Knex
 - Kafka, event-driven architecture, distributed systems
 - Docker, Kubernetes, CI/CD, Octopus Deploy, cloud platforms
-- AWS, Azure, GCP depending on client context
+- AWS, Azure, GCP, Serverless Functions
+- Supabase, Vercel, Netlify
 - Open Payments, Interledger Protocol, Mojaloop vNext
 - Payment switching, ledger orchestration, QR payments, merchant payments, participant systems
 - Testing, QA, observability, release engineering, and production support

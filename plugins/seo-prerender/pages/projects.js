@@ -4,6 +4,7 @@ import { SITE_URL } from '../constants.js';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { replaceMetaTags } from '../html-utils.js';
 import { getProjectExtraLinks } from '../links.js';
+import { buildProjectSchema } from '../../../src/utils/structuredData.js';
 
 export function writeProjectPages({ distDir, baseHtml, generated }) {
   const projectsPath = path.resolve('src/data/projects.json');
@@ -29,6 +30,7 @@ export function writeProjectPages({ distDir, baseHtml, generated }) {
       url: projectUrl,
       image: project.imgSrc || '',
       type: 'website',
+      jsonLd: buildProjectSchema(project),
     });
 
     html = injectCrawlableBlock(
