@@ -110,6 +110,8 @@ const VIDEO_OPACITY = 0.09;
 // Normal map resolution for text displacement (kept small to minimise readPixels cost)
 const NM_W = 64;
 const NM_H = 36;
+// Text-displacement filter: stops generating base64 data URLs when idle
+const TEXT_FILTER_ACTIVE_MS = 1800;
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
@@ -298,6 +300,20 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       document.body.appendChild(dispCanvas);
       const dispCtx = dispCanvas.getContext('2d');
 
+      // Precompute a neutral (flat) normal-map data URL — no displacement when idle
+      const neutralNm = new ImageData(NM_W, NM_H);
+      for (let i = 0; i < neutralNm.data.length; i += 4) {
+        neutralNm.data[i] = 128;
+        neutralNm.data[i + 1] = 128;
+        neutralNm.data[i + 2] = 128;
+        neutralNm.data[i + 3] = 255;
+      }
+      dispCtx.putImageData(neutralNm, 0, 0);
+      const neutralDataUrl = dispCanvas.toDataURL();
+
+      let textFilterActiveUntil = 0;
+      let textFilterIsNeutral = true;
+
       const svgNS = 'http://www.w3.org/2000/svg';
       const svgEl = document.createElementNS(svgNS, 'svg');
       svgEl.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;';
@@ -318,6 +334,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       feImage.setAttribute('width', '3000');
       feImage.setAttribute('height', '800');
       feImage.setAttribute('preserveAspectRatio', 'none');
+      feImage.setAttribute('href', neutralDataUrl);
       const feDisp = document.createElementNS(svgNS, 'feDisplacementMap');
       feDisp.setAttribute('in', 'SourceGraphic');
       feDisp.setAttribute('in2', 'wmap');
@@ -365,16 +382,26 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         renderer.render(simScene, orthoCamera);
         simMaterial.uniforms.u_addImpulse.value = 0;
 
-        normalMaterial.uniforms.u_heightMap.value = writeTarget.texture;
-        renderer.setRenderTarget(nmRt);
-        renderer.render(normalScene, orthoCamera);
-        renderer.readRenderTargetPixels(nmRt, 0, 0, NM_W, NM_H, nmPixels);
-        for (let y = 0; y < NM_H; y++) {
-          const srcRow = (NM_H - 1 - y) * NM_W * 4;
-          nmImageData.data.set(nmPixels.subarray(srcRow, srcRow + NM_W * 4), y * NM_W * 4);
+        // Expensive normal-map readback: skip when idle
+        const now = performance.now();
+        const textFilterActive = now < textFilterActiveUntil;
+
+        if (textFilterActive) {
+          normalMaterial.uniforms.u_heightMap.value = writeTarget.texture;
+          renderer.setRenderTarget(nmRt);
+          renderer.render(normalScene, orthoCamera);
+          renderer.readRenderTargetPixels(nmRt, 0, 0, NM_W, NM_H, nmPixels);
+          for (let y = 0; y < NM_H; y++) {
+            const srcRow = (NM_H - 1 - y) * NM_W * 4;
+            nmImageData.data.set(nmPixels.subarray(srcRow, srcRow + NM_W * 4), y * NM_W * 4);
+          }
+          dispCtx.putImageData(nmImageData, 0, 0);
+          feImage.setAttribute('href', dispCanvas.toDataURL());
+          textFilterIsNeutral = false;
+        } else if (!textFilterIsNeutral) {
+          feImage.setAttribute('href', neutralDataUrl);
+          textFilterIsNeutral = true;
         }
-        dispCtx.putImageData(nmImageData, 0, 0);
-        feImage.setAttribute('href', dispCanvas.toDataURL());
 
         displayMaterial.uniforms.u_heightMap.value = writeTarget.texture;
         renderer.setRenderTarget(null);
@@ -395,6 +422,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         simMaterial.uniforms.u_radius.value = MOUSE_RADIUS;
         simMaterial.uniforms.u_strength.value = MOUSE_STRENGTH;
         simMaterial.uniforms.u_addImpulse.value = 1;
+        textFilterActiveUntil = performance.now() + TEXT_FILTER_ACTIVE_MS;
       };
 
       const handleTouchMove = e => {
@@ -407,6 +435,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         simMaterial.uniforms.u_radius.value = MOUSE_RADIUS;
         simMaterial.uniforms.u_strength.value = MOUSE_STRENGTH;
         simMaterial.uniforms.u_addImpulse.value = 1;
+        textFilterActiveUntil = performance.now() + TEXT_FILTER_ACTIVE_MS;
       };
 
       heroEl.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -464,6 +493,8 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
               displayMaterial.uniforms.u_res.value.set(W2, H2);
               setVideoCover();
               updateFilterGeometry();
+              feImage.setAttribute('href', neutralDataUrl);
+              textFilterIsNeutral = true;
 
               displayMaterial.uniformsNeedUpdate = true;
               simMaterial.uniformsNeedUpdate = true;

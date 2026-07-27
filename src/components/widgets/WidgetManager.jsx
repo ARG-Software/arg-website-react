@@ -1,31 +1,36 @@
 import { useRef, useState } from 'react';
-import { EmailCaptureForm } from '@components/forms/EmailCaptureForm';
+import { useLeadCaptureVisibility } from '@hooks/useLeadCaptureVisibility';
 import { AssistantWidget } from './AssistantWidget';
 
 export function WidgetManager() {
-  const [emailVisible, setEmailVisible] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [reopenRequest, setReopenRequest] = useState(0);
   const assistantWasOpenRef = useRef(false);
+  const leadCapture = useLeadCaptureVisibility();
 
-  function handleEmailVisibilityChange(visible) {
-    if (visible && !emailVisible) {
-      assistantWasOpenRef.current = assistantOpen;
-    } else if (assistantWasOpenRef.current) {
+  function handleLeadCaptureDismiss() {
+    leadCapture.dismiss();
+    if (assistantOpen) {
+      assistantWasOpenRef.current = true;
+    }
+  }
+
+  function handleAssistantOpenChange(isOpen) {
+    setAssistantOpen(isOpen);
+
+    if (!isOpen && assistantWasOpenRef.current) {
       assistantWasOpenRef.current = false;
       setReopenRequest(request => request + 1);
     }
-
-    setEmailVisible(visible);
   }
 
   return (
     <>
-      <EmailCaptureForm onVisibilityChange={handleEmailVisibilityChange} />
       <AssistantWidget
-        isSuppressed={emailVisible}
-        onOpenChange={setAssistantOpen}
+        onOpenChange={handleAssistantOpenChange}
         reopenRequest={reopenRequest}
+        leadCaptureVisible={leadCapture.visible}
+        onLeadCaptureDismiss={handleLeadCaptureDismiss}
       />
     </>
   );

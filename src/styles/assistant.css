@@ -400,12 +400,18 @@
 }
 
 /* ── Typing Indicator ── */
+.aw-pending {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 14px;
+  align-self: flex-start;
+}
+
 .aw-typing {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 10px 14px;
-  align-self: flex-start;
 }
 
 .aw-typing__dot {
@@ -424,6 +430,12 @@
   animation-delay: 0.32s;
 }
 
+.aw-pending__text {
+  font: 400 13px/1.55 'Neuemontreal', sans-serif;
+  color: rgba(12, 0, 46, 0.5);
+  animation: aw-pending-fade 2s ease-in-out infinite;
+}
+
 @keyframes aw-bounce {
   0%,
   80%,
@@ -433,6 +445,16 @@
   }
   40% {
     transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes aw-pending-fade {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
     opacity: 1;
   }
 }
