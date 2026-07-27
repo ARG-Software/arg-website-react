@@ -128,7 +128,11 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── RAFProvider.jsx       # requestAnimationFrame context
     │   └── TransitionProvider.jsx# Page transition orchestrator
     ├── services/
-    │   └── linksService.js      # External link resolution, email, social, share URLs
+    │   ├── apiService.js        # Centralized external API calls (assistant ask/challenge, contact submit)
+    │   ├── altchaService.js     # ALTCHA challenge pre-solving + payload caching (Web Workers)
+    │   ├── assistantActionsService.js  # Assistant CTA action mapping (e.g. email_hello → lead capture)
+    │   ├── linksService.js      # External link resolution, email, social, share URLs
+    │   └── web3formsService.js  # Web3Forms submission (lead capture, verified contact form)
     ├── styles/
     │   ├── base.css              # Global styles (original Webflow CSS)
     │   ├── components.css        # Shared component styles
@@ -358,7 +362,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - Dev server: port 3000, auto-open browser
 - Path aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`
 - Manual chunks: `vendor` (React/Router/Helmet), `three`, `gsap`, `hljs`
-- Local ask endpoint middleware: `GET /.netlify/functions/ask-challenge` (ALTCHA challenge) + `POST /.netlify/functions/ask` (with ALTCHA verification + in-memory rate limiting) — mirrors production security
+- Local endpoint middleware: `GET /.netlify/functions/ask-challenge` + `POST /.netlify/functions/ask` (assistant, with ALTCHA verification + in-memory rate limiting) and `GET /.netlify/functions/contact-challenge` + `POST /.netlify/functions/contact-submit` (verified contact form) — mirrors production security
 - SPA fallback middleware for dev server
 - CSS preload injection plugin
 - Production: drops `console` and `debugger` statements
