@@ -85,6 +85,22 @@ export async function verifyAltchaChallenge(payload: {
   });
 }
 
+export async function verifyAltchaPayload(payload: string): Promise<VerifySolutionResult> {
+  const decodedPayload = JSON.parse(Buffer.from(payload, 'base64').toString('utf8')) as {
+    challenge?: Challenge;
+    solution?: Solution;
+  };
+
+  if (!decodedPayload.challenge || !decodedPayload.solution) {
+    throw new Error('ALTCHA payload is invalid');
+  }
+
+  return verifyAltchaChallenge({
+    challenge: decodedPayload.challenge,
+    solution: decodedPayload.solution,
+  });
+}
+
 export function getAltchaHmacKey(): string {
   const key = process.env.ALTCHA_HMAC_KEY;
 

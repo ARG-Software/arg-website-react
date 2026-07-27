@@ -60,8 +60,14 @@ export default defineConfig(({ mode }) => {
       apply: 'serve',
       configureServer(server) {
         const devRateLimitBuckets = new Map();
+        const web3FormsEndpoint = 'https://api.web3forms.com/submit';
+        const web3FormsAccessKey =
+          process.env.WEB3FORMS_ACCESS_KEY || '64440476-6752-463a-a2f3-56c028cf8be0';
+        const contactFields = ['name', 'email', 'company', 'message', 'subject', 'source', 'form_name'];
 
         server.middlewares.use(async (req, res, next) => {
+          const requestPath = req.url?.split('?')[0];
+
           if (req.url === '/.netlify/functions/ask-challenge' && req.method === 'GET') {
             try {
               const { createAltchaChallenge } = await import('./rag/security/altcha.ts');
@@ -82,6 +88,130 @@ export default defineConfig(({ mode }) => {
                       ? 'Assistant configuration is unavailable'
                       : 'Unable to create verification challenge',
                   },
+                })
+              );
+            }
+            return;
+          }
+
+          if (requestPath === '/.netlify/functions/contact-challenge' && req.method === 'GET') {
+            try {
+              const { createAltchaChallenge } = await import('./rag/security/altcha.ts');
+              const challenge = await createAltchaChallenge();
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify(challenge));
+            } catch (error) {
+              const isConfigError =
+                error instanceof Error &&
+                error.message.startsWith('Missing required environment variable:');
+              res.statusCode = isConfigError ? 503 : 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(
+                JSON.stringify({
+                  error: {
+                    code: isConfigError ? 'configuration_error' : 'challenge_failed',
+                    message: isConfigError
+                      ? 'Contact verification is temporarily unavailable'
+                      : 'Unable to create verification challenge',
+                  },
+                })
+              );
+            }
+            return;
+          }
+
+          if (requestPath === '/.netlify/functions/contact-submit' && req.method === 'POST') {
+            let body = '';
+            for await (const chunk of req) body += chunk;
+
+            try {
+              const fields = JSON.parse(body || '{}').fields || {};
+
+              if (fields.botcheck) {
+                res.statusCode = 400;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(
+                  JSON.stringify({
+                    error: { code: 'spam_detected', message: 'Unable to submit this form' },
+                  })
+                );
+                return;
+              }
+
+              try {
+                if (!fields.altcha) {
+                  res.statusCode = 403;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(
+                    JSON.stringify({
+                      error: { code: 'bot_verification_failed', message: 'Verification required' },
+                    })
+                  );
+                  return;
+                }
+
+                const { verifyAltchaPayload } = await import('./rag/security/altcha.ts');
+                const altchaResult = await verifyAltchaPayload(String(fields.altcha));
+
+                if (!altchaResult.verified) {
+                  res.statusCode = 403;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(
+                    JSON.stringify({
+                      error: { code: 'bot_verification_failed', message: 'Verification failed' },
+                    })
+                  );
+                  return;
+                }
+              } catch {
+                res.statusCode = 403;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(
+                  JSON.stringify({
+                    error: { code: 'bot_verification_failed', message: 'Verification failed' },
+                  })
+                );
+                return;
+              }
+
+              const formData = new FormData();
+              formData.set('access_key', web3FormsAccessKey);
+              contactFields.forEach(field => {
+                const value = fields[field];
+
+                if (value !== undefined && value !== null && value !== '') {
+                  formData.set(field, String(value));
+                }
+              });
+
+              const response = await fetch(web3FormsEndpoint, {
+                method: 'POST',
+                body: formData,
+              });
+              const data = await response.json();
+
+              if (!response.ok || !data.success) {
+                res.statusCode = response.ok ? 502 : response.status;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(
+                  JSON.stringify({
+                    error: {
+                      code: 'submission_failed',
+                      message: data.message || 'Unable to submit this form',
+                    },
+                  })
+                );
+                return;
+              }
+
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ success: true, data }));
+            } catch {
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(
+                JSON.stringify({
+                  error: { code: 'submission_failed', message: 'Unable to submit this form' },
                 })
               );
             }

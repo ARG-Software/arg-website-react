@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { AltchaVerification } from '@components/forms/AltchaVerification';
 import { ContactForm } from '@components/forms/ContactForm';
 import { Footer } from '@components/layout/Footer';
 import { Navbar } from '@components/navigation/Navbar';
@@ -67,6 +69,9 @@ const CONTACT_FIELDS = [
 
 export default function ContactPage() {
   const socialLinks = getCompanySocialLinks();
+  const [verificationState, setVerificationState] = useState('unverified');
+  const [verificationKey, setVerificationKey] = useState(0);
+  const isVerified = verificationState === 'verified';
 
   useTimeOnPage('/contact/');
   useScrollAnimations();
@@ -77,10 +82,14 @@ export default function ContactPage() {
 
   const handleSuccess = () => {
     trackEvent('contact_form_success', { source: 'contact_page' });
+    setVerificationState('unverified');
+    setVerificationKey(key => key + 1);
   };
 
   const handleError = () => {
     trackEvent('contact_form_error', { source: 'contact_page' });
+    setVerificationState('unverified');
+    setVerificationKey(key => key + 1);
   };
 
   return (
@@ -137,6 +146,13 @@ export default function ContactPage() {
                       subject="New ARG contact brief"
                       source="contact_page"
                       formName="contact_page_brief"
+                      submitDisabled={!isVerified}
+                      verification={
+                        <AltchaVerification
+                          key={verificationKey}
+                          onStateChange={setVerificationState}
+                        />
+                      }
                       onSubmit={handleSubmit}
                       onSuccess={handleSuccess}
                       onError={handleError}

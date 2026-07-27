@@ -11,7 +11,7 @@ Canonical website: https://arg.software/
 ## Contact
 
 - Email: hello@arg.software
-- Project brief: https://5ppw8e4ewzu.typeform.com/to/O5kXHIiC
+- Project brief: https://arg.software/contact/#brief
 - Portfolio PDF: https://arg.software/files/portfolio.pdf
 - LinkedIn: https://www.linkedin.com/company/arg-software
 - GitHub: https://github.com/ARG-Software

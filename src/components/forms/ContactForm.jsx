@@ -88,6 +88,8 @@ export function ContactForm({
   resetOnSuccess = true,
   successMessage,
   errorMessage,
+  verification,
+  submitDisabled = false,
   onSubmit,
   onSuccess,
   onError,
@@ -107,17 +109,27 @@ export function ContactForm({
   const statusText = status === 'idle' ? helperText : result;
   const statusClassName = getStatusClassName(status);
   const buttonText = isSubmitting ? sendingLabel : submitLabel;
+  const isSubmitDisabled = isSubmitting || submitDisabled;
+
+  function handleFormSubmit(event) {
+    if (submitDisabled) {
+      event.preventDefault();
+      return undefined;
+    }
+
+    return handleSubmit(event);
+  }
 
   return (
     <FormCard
       title={title}
       description={description}
       className={className}
-      onSubmit={handleSubmit}
+      onSubmit={handleFormSubmit}
       submit={
         <>
           <FormSubmitButton
-            disabled={isSubmitting}
+            disabled={isSubmitDisabled}
             hoverText={isSubmitting ? sendingLabel : submitHoverLabel}
           >
             {buttonText}
@@ -135,6 +147,7 @@ export function ContactForm({
         <input id={`${formName}-botcheck`} type="checkbox" name="botcheck" tabIndex={-1} />
       </div>
       {renderFields(formName, fields)}
+      {verification}
     </FormCard>
   );
 }
