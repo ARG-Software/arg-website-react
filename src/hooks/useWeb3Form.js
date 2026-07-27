@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getWeb3FormsAccessKey, getWeb3FormsEndpoint } from '../services/linksservice';
+import { submitWeb3Form } from '@services/web3formsService';
 
 const STATUS = Object.freeze({
   IDLE: 'idle',
@@ -25,25 +25,12 @@ export function useWeb3Form({
   async function submitForm(formElement) {
     const formData = formElement instanceof FormData ? formElement : new FormData(formElement);
 
-    formData.set('access_key', getWeb3FormsAccessKey());
-    if (subject) formData.set('subject', subject);
-    if (source) formData.set('source', source);
-    if (formName) formData.set('form_name', formName);
-
     setStatus(STATUS.LOADING);
     setResult('Sending...');
     onSubmit?.({ formData });
 
     try {
-      const response = await fetch(getWeb3FormsEndpoint(), {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || errorMessage);
-      }
+      const { data } = await submitWeb3Form(formData, { subject, source, formName, errorMessage });
 
       setStatus(STATUS.SUCCESS);
       setResult(successMessage);

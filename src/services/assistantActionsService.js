@@ -3,15 +3,32 @@ import { getMailtoLink, getProjectBookingLink } from '@services/linksservice';
 
 const ASSISTANT_ACTION_HREFS = {
   book_meeting: () => getProjectBookingLink(),
-  email_hello: () => getMailtoLink('hello', 'Project enquiry'),
   email_hr: () => getMailtoLink('hr', 'Career enquiry'),
 };
 
+function triggerLeadCapture() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('gaspar:start-lead-capture'));
+  }
+}
+
 export function getAssistantActionDetails(actionType) {
   const action = assistantContent.actions[actionType];
+
+  if (!action) return null;
+
+  if (actionType === 'email_hello') {
+    return {
+      label: action.label,
+      href: null,
+      external: false,
+      onClick: triggerLeadCapture,
+    };
+  }
+
   const getHref = ASSISTANT_ACTION_HREFS[actionType];
 
-  if (!action || !getHref) return null;
+  if (!getHref) return null;
 
   return {
     label: action.label,

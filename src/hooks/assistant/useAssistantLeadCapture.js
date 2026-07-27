@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { ALREADY_SUBSCRIBED_KEY } from '@constants/ui';
-import { getWeb3FormsAccessKey, getWeb3FormsEndpoint } from '@services/linksservice';
+import { submitWeb3Form } from '@services/web3formsService';
 import { trackEvent } from '@utils/analytics';
 
 const LEAD_STEPS = {
@@ -47,30 +47,41 @@ function extractEmailAndMessage(input) {
   };
 }
 
+const SUCCESS_RESET_MS = 3000;
+
 export function useAssistantLeadCapture({ onDismiss, onComplete }) {
   const [leadStep, setLeadStep] = useState(null);
   const [capturedEmail, setCapturedEmail] = useState('');
   const [capturedMessage, setCapturedMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [leadError, setLeadError] = useState('');
+  const successTimerRef = useRef(null);
 
   const isActive = leadStep !== null && leadStep !== LEAD_STEPS.SUCCESS;
 
+  const resetToNormal = useCallback(() => {
+    setLeadStep(null);
+    setLeadError('');
+  }, []);
+
   const startLeadCapture = useCallback(() => {
+    if (successTimerRef.current) clearTimeout(successTimerRef.current);
     setLeadStep(LEAD_STEPS.OFFER);
     setCapturedEmail('');
     setCapturedMessage('');
-    setErrorMessage('');
+    setLeadError('');
     trackEvent('lead_capture', { action: 'impression', source: 'assistant' });
   }, []);
 
   const cancelLeadCapture = useCallback(() => {
+    if (successTimerRef.current) clearTimeout(successTimerRef.current);
     setLeadStep(null);
     setCapturedEmail('');
     setCapturedMessage('');
-    setErrorMessage('');
+    setLeadError('');
   }, []);
 
   const declineLeadCapture = useCallback(() => {
+    if (successTimerRef.current) clearTimeout(successTimerRef.current);
     setLeadStep(null);
     setCapturedEmail('');
     setCapturedMessage('');
@@ -80,62 +91,57 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
 
   const submitLead = useCallback(async () => {
     setLeadStep(LEAD_STEPS.SUBMITTING);
-    setErrorMessage('');
+    setLeadError('');
     trackEvent('lead_capture', { action: 'submit', source: 'assistant' });
 
     try {
-      const formData = new FormData();
-      formData.set('access_key', getWeb3FormsAccessKey());
-      formData.set('subject', 'New ARG lead capture');
-      formData.set('source', 'lead_capture_widget');
-      formData.set('form_name', 'lead_capture');
-      formData.set('email', capturedEmail);
-      if (capturedMessage) {
-        formData.set('message', capturedMessage);
+      if (!capturedEmail) {
+        throw new Error('Please enter your email before sending.');
       }
 
-      const response = await fetch(getWeb3FormsEndpoint(), {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Submission failed');
-      }
+      const result = await submitWeb3Form(
+        {
+          email: capturedEmail,
+          message: capturedMessage || 'No message added.',
+          from_name: 'Gaspar lead capture',
+          botcheck: '',
+        },
+        {
+          subject: 'New ARG lead capture',
+          source: 'lead_capture_widget',
+          formName: 'lead_capture',
+        }
+      );
 
       setLeadStep(LEAD_STEPS.SUCCESS);
-      localStorage.setItem(ALREADY_SUBSCRIBED_KEY, '1');
+      try {
+        localStorage.setItem(ALREADY_SUBSCRIBED_KEY, '1');
+      } catch {
+        /* storage unavailable */
+      }
       trackEvent('lead_capture', { action: 'success', source: 'assistant' });
       onComplete?.();
+
+      successTimerRef.current = setTimeout(resetToNormal, SUCCESS_RESET_MS);
+      return result;
     } catch (error) {
+      const message = 'Something went wrong. Please try again.';
       setLeadStep(LEAD_STEPS.ERROR);
-      setErrorMessage(error.message || 'Something went wrong. Please try again.');
+      setLeadError(message);
       trackEvent('lead_capture', { action: 'error', source: 'assistant' });
+      return {
+        success: false,
+        error,
+      };
     }
-  }, [capturedEmail, capturedMessage, onComplete]);
+  }, [capturedEmail, capturedMessage, onComplete, resetToNormal]);
 
   const handleInput = useCallback(
-    input => {
+    (input, action) => {
       const trimmed = input.trim();
 
-      if (!trimmed) return { type: 'empty' };
-
-      const lower = trimmed.toLowerCase();
-
-      if (lower === 'cancel' || lower === 'nevermind' || lower === 'never mind') {
-        cancelLeadCapture();
-        return { type: 'cancelled' };
-      }
-
-      if (lower === 'no' || lower === 'no thanks' || lower === 'not now' || lower === 'stop') {
-        declineLeadCapture();
-        return { type: 'declined' };
-      }
-
       if (leadStep === LEAD_STEPS.OFFER) {
-        if (lower === 'yes' || lower === 'y' || lower === 'sure' || lower === 'ok') {
+        if (action === 'accept') {
           setLeadStep(LEAD_STEPS.EMAIL);
           return { type: 'accepted' };
         }
@@ -144,14 +150,35 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
         return { type: 'declined' };
       }
 
+      if (leadStep === LEAD_STEPS.CONFIRM) {
+        if (action === 'submit') return { type: 'submitting' };
+        if (action === 'edit') {
+          setLeadStep(LEAD_STEPS.EMAIL);
+          return { type: 'editing' };
+        }
+        return { type: 'blocked' };
+      }
+
+      if (leadStep === LEAD_STEPS.SUBMITTING) {
+        return { type: 'blocked' };
+      }
+
       if (leadStep === LEAD_STEPS.EMAIL) {
+        setLeadError('');
+
+        if (!trimmed) {
+          return { type: 'blocked' };
+        }
+
         const { email, message, hasEmail, multipleEmails } = extractEmailAndMessage(trimmed);
 
         if (multipleEmails) {
-          return { type: 'multiple_emails', input: trimmed };
+          setLeadError('Multiple emails found. Please enter just one.');
+          return { type: 'no_email_found', input: trimmed };
         }
 
         if (!hasEmail) {
+          setLeadError('Please enter a valid email, or close the chat to discard.');
           return { type: 'no_email_found', input: trimmed };
         }
 
@@ -168,53 +195,35 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
       }
 
       if (leadStep === LEAD_STEPS.MESSAGE) {
-        if (lower === 'skip' || lower === 'none' || lower === 'no message') {
+        if (action === 'skip') {
           setCapturedMessage('');
           setLeadStep(LEAD_STEPS.CONFIRM);
           return { type: 'message_skipped' };
         }
+
+        if (!trimmed) return { type: 'empty' };
 
         setCapturedMessage(trimmed);
         setLeadStep(LEAD_STEPS.CONFIRM);
         return { type: 'message_captured', message: trimmed };
       }
 
-      if (leadStep === LEAD_STEPS.CONFIRM) {
-        if (lower === 'send' || lower === 'yes' || lower === 'confirm' || lower === 'y') {
-          submitLead();
-          return { type: 'submitting' };
-        }
-
-        if (lower === 'edit' || lower === 'change' || lower === 'back') {
-          setLeadStep(LEAD_STEPS.EMAIL);
-          return { type: 'editing' };
-        }
-
-        cancelLeadCapture();
-        return { type: 'cancelled' };
-      }
-
-      return { type: 'unknown' };
+      return { type: 'blocked' };
     },
-    [leadStep, cancelLeadCapture, declineLeadCapture, submitLead]
+    [leadStep, declineLeadCapture]
   );
-
-  const retrySubmit = useCallback(() => {
-    submitLead();
-  }, [submitLead]);
 
   return {
     leadStep,
     isActive,
     capturedEmail,
     capturedMessage,
-    errorMessage,
+    leadError,
     startLeadCapture,
     cancelLeadCapture,
     declineLeadCapture,
     handleInput,
     submitLead,
-    retrySubmit,
     LEAD_STEPS,
   };
 }

@@ -104,7 +104,8 @@ export function useLeadCaptureVisibility({
     visibleContext?.path === normalizedPath &&
     !isContactPath(location.pathname) &&
     !mobileViewport &&
-    !isSuppressed;
+    !isSuppressed &&
+    !isLeadCaptureSuppressed();
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;

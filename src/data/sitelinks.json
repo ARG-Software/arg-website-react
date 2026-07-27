@@ -10,9 +10,6 @@
     "web3": {
       "endpoint": "https://api.web3forms.com/submit",
       "accessKey": "64440476-6752-463a-a2f3-56c028cf8be0"
-    },
-    "hcaptcha": {
-      "sitekey": "50b2fe65-b00b-4b9e-ad62-3ba471098be2"
     }
   },
   "emails": {

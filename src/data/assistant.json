@@ -10,7 +10,7 @@
   ],
   "leadCaptureQuickPrompts": [
     "Yes, send email",
-    "No, don't show again",
+    "No thanks",
     "Ask Gaspar instead"
   ],
   "messages": {
@@ -25,7 +25,8 @@
     "noEmailFound": "I couldn't find a valid email address. Please enter your email.",
     "emptyResponse": "Please enter a valid response.",
     "sending": "Sending...",
-    "noMessageAdded": "No message added."
+    "noMessageAdded": "No message added.",
+    "leadCaptureUnclear": "I didn't catch that — please use the buttons to continue."
   },
   "actions": {
     "book_meeting": {
@@ -33,7 +34,7 @@
       "external": true
     },
     "email_hello": {
-      "label": "Email us",
+      "label": "Tell Gaspar to contact us",
       "external": false
     },
     "email_hr": {
@@ -53,13 +54,19 @@
     "send": "Send",
     "edit": "Edit",
     "cancel": "Cancel",
+    "skip": "Skip",
+    "chat": "Ask Gaspar instead",
     "tryAgain": "Try Again",
     "relatedLinks": "Related links"
   },
   "placeholders": {
     "question": "Ask a question...",
+    "leadOffer": "Use the buttons above...",
     "email": "Enter your email...",
     "message": "Enter your message or \"skip\"...",
-    "confirm": "Type \"send\" to confirm..."
+    "leadConfirm": "Use the buttons above...",
+    "leadSubmitting": "Sending...",
+    "leadSuccess": "Sent!",
+    "confirm": "Use the buttons above..."
   }
 }

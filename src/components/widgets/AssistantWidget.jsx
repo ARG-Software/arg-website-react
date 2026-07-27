@@ -75,13 +75,32 @@ function AssistantActions({ actions }) {
 
         if (!details) return null;
 
+        const trackClick = () =>
+          trackAssistantEvent('action_click', { action_type: action.type });
+
+        if (details.onClick) {
+          return (
+            <button
+              key={`${action.type}-${index}`}
+              className="aw-action"
+              type="button"
+              onClick={() => {
+                trackClick();
+                details.onClick();
+              }}
+            >
+              {details.label}
+            </button>
+          );
+        }
+
         return (
           <a
             key={`${action.type}-${index}`}
             className="aw-action"
             href={details.href}
             {...(details.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-            onClick={() => trackAssistantEvent('action_click', { action_type: action.type })}
+            onClick={trackClick}
           >
             {details.label}
           </a>
@@ -104,11 +123,12 @@ export function AssistantWidget(props) {
     pendingStatus,
     leadStep,
     isLeadActive,
-    leadErrorMessage,
+    leadError,
     LEAD_STEPS,
     showPrompts,
     showLeadPrompts,
     inputPlaceholder,
+    isInputDisabled,
     isSubmitDisabled,
     isClearDisabled,
     messagesEndRef,
@@ -287,7 +307,7 @@ export function AssistantWidget(props) {
 
           {leadStep === LEAD_STEPS.ERROR && (
             <div className="aw-message aw-message--assistant">
-              <p>{leadErrorMessage}</p>
+              <p>{leadError}</p>
               <div className="aw-actions">
                 <button className="aw-action" onClick={retrySubmit} type="button">
                   {assistantContent.labels.tryAgain}
@@ -353,7 +373,7 @@ export function AssistantWidget(props) {
               placeholder={inputPlaceholder}
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
-              disabled={loading && !isLeadActive}
+              disabled={isInputDisabled}
             />
             <button
               className="aw-send"

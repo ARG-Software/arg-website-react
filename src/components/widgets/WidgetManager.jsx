@@ -8,9 +8,9 @@ export function WidgetManager() {
   const assistantWasOpenRef = useRef(false);
   const leadCapture = useLeadCaptureVisibility();
 
-  function handleLeadCaptureDismiss() {
+  function handleLeadCaptureDismiss(options) {
     leadCapture.dismiss();
-    if (assistantOpen) {
+    if (options?.reopenAsChat && assistantOpen) {
       assistantWasOpenRef.current = true;
     }
   }

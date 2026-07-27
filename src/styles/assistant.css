@@ -469,6 +469,12 @@
   font: 400 13px/1.55 Neuemontreal, sans-serif;
 }
 
+.aw-lead-error {
+  padding: 4px 0 0;
+  color: #d32f2f;
+  font: 400 11px/1.4 Neuemontreal, sans-serif;
+}
+
 /* ── Input Area ── */
 .aw-input-area {
   padding: 12px 16px 12px;
