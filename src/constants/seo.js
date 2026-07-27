@@ -6,3 +6,13 @@ export const DEFAULT_TITLE =
 export const DEFAULT_DESCRIPTION =
   'We build secure, scalable digital platforms for fintech, media, and high-growth tech companies. Architecture-first. Production-ready.';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og.jpg`;
+export const DEFAULT_AUTHOR = {
+  type: 'Organization',
+  name: SITE_NAME,
+  url: `${SITE_URL}/about-us/`,
+  sameAs: [
+    'https://www.linkedin.com/company/arg-software',
+    'https://github.com/ARG-Software',
+    'https://medium.com/@arg-software',
+  ],
+};

@@ -337,7 +337,8 @@ export default function BlogPostPage() {
         path={`/blog/${BLOG_POST.slug}/`}
         type="article"
         publishedTime={parseDateToIso(BLOG_POST.date)}
-        author="Arg Software"
+        author={BLOG_POST.author}
+        authorUrl={BLOG_POST.authorUrl}
         section={BLOG_POST.tag}
         image={BLOG_POST.image}
         rss
@@ -366,7 +367,7 @@ export default function BlogPostPage() {
               <span className="bp-header-meta__sep" aria-hidden="true" />
               <span>{BLOG_POST.readTime}</span>
               <span className="bp-header-meta__sep" aria-hidden="true" />
-              <span>Arg Software</span>
+              <span>{BLOG_POST.author || 'Arg Software'}</span>
             </div>
           </PageHeader>
 

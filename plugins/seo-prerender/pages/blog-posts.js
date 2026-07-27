@@ -3,6 +3,7 @@ import path from 'node:path';
 import { SITE_URL } from '../constants.js';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { replaceMetaTags, escapeHtml } from '../html-utils.js';
+import { DEFAULT_AUTHOR } from '../../../src/constants/seo.js';
 import { buildArticleSchema } from '../../../src/utils/structuredData.js';
 
 export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) {
@@ -19,6 +20,8 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
     const articleUrl = `${SITE_URL}/blog/${meta.slug}/`;
     const title = `${meta.seoTitle || meta.title || meta.slug} | Arg Software`;
     const description = meta.subtitle || '';
+    const author = meta.author || DEFAULT_AUTHOR.name;
+    const authorUrl = meta.authorUrl || DEFAULT_AUTHOR.url;
 
     let extra = '';
     if (meta.date) {
@@ -29,7 +32,16 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
         /* invalid date — skip published_time */
       }
     }
-    extra += `<meta property="article:author" content="Arg Software">`;
+    if (meta.dateModified || meta.updated) {
+      try {
+        const iso = new Date(meta.dateModified || meta.updated).toISOString();
+        extra += `<meta property="article:modified_time" content="${iso}">\n  `;
+      } catch {
+        /* invalid date — skip modified_time */
+      }
+    }
+    extra += `<meta property="article:author" content="${escapeHtml(author)}">`;
+    extra += `\n  <meta property="article:publisher" content="Arg Software">`;
     if (meta.tag) {
       extra += `\n  <meta property="article:section" content="${escapeHtml(meta.tag)}">`;
     }
@@ -41,7 +53,9 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
       image,
       type: 'article',
       extra,
-      jsonLd: buildArticleSchema({ ...meta, image }),
+      author,
+      authorUrl,
+      jsonLd: buildArticleSchema({ ...meta, author, authorUrl, image }),
     });
 
     html = injectCrawlableBlock(

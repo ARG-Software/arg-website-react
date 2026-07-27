@@ -5,6 +5,7 @@ import {
   DEFAULT_TITLE,
   DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
+  DEFAULT_AUTHOR,
 } from '@constants/seo';
 import { EXTERNAL_LINK_KEYS, getFeedLink } from '../../services/linksservice';
 import { buildPageSchemas, stringifyJsonLd } from '../../utils/structuredData';
@@ -22,6 +23,7 @@ import { buildPageSchemas, stringifyJsonLd } from '../../utils/structuredData';
  * @param {boolean} [props.noIndex]       – If true, adds robots meta tag with "noindex, follow"
  * @param {string}  [props.publishedTime] – ISO 8601 date for blog posts
  * @param {string}  [props.author]        – Author name for blog posts
+ * @param {string}  [props.authorUrl]     – Canonical author profile/about URL
  * @param {string}  [props.section]       – Article section/category
  * @param {boolean} [props.rss]           – If true, injects <link rel="alternate" type="application/rss+xml">
  * @param {boolean} [props.atom]          – If true, injects <link rel="alternate" type="application/atom+xml">
@@ -38,6 +40,7 @@ export function SEO({
   noIndex = false,
   publishedTime,
   author,
+  authorUrl,
   section,
   rss = false,
   atom = false,
@@ -48,7 +51,22 @@ export function SEO({
 
   const pageDescription = description || DEFAULT_DESCRIPTION;
   const canonicalUrl = `${SITE_URL}${path}`;
-  const schemas = buildPageSchemas(jsonLd, { includeGlobal: globalJsonLd && !noIndex });
+  const pageAuthor = author || DEFAULT_AUTHOR.name;
+  const pageAuthorUrl = authorUrl || DEFAULT_AUTHOR.url;
+  const absoluteAuthorUrl = pageAuthorUrl.startsWith('http')
+    ? pageAuthorUrl
+    : `${SITE_URL}${pageAuthorUrl.startsWith('/') ? '' : '/'}${pageAuthorUrl}`;
+  const schemas = buildPageSchemas(jsonLd, {
+    includeGlobal: globalJsonLd && !noIndex,
+    page: noIndex
+      ? undefined
+      : {
+          title: pageTitle,
+          description: pageDescription,
+          path: path || '/',
+          image,
+        },
+  });
 
   // Ensure image is absolute
   const ogImage = image
@@ -62,8 +80,10 @@ export function SEO({
       {/* Primary */}
       <title>{pageTitle}</title>
       <meta name="description" content={pageDescription} />
+      {!noIndex && <meta name="author" content={pageAuthor} />}
       {noIndex && <meta name="robots" content="noindex, follow" />}
       <link rel="canonical" href={canonicalUrl} />
+      {!noIndex && <link rel="author" href={absoluteAuthorUrl} />}
 
       {/* Open Graph */}
       <meta property="og:type" content={type} />
@@ -89,7 +109,8 @@ export function SEO({
       {type === 'article' && publishedTime && (
         <meta property="article:published_time" content={publishedTime} />
       )}
-      {type === 'article' && author && <meta property="article:author" content={author} />}
+      {type === 'article' && <meta property="article:author" content={pageAuthor} />}
+      {type === 'article' && <meta property="article:publisher" content={SITE_NAME} />}
       {type === 'article' && section && <meta property="article:section" content={section} />}
 
       {/* JSON-LD Structured Data */}

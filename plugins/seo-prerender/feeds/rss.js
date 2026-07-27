@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { SITE_URL } from '../constants.js';
 import { escapeHtml } from '../html-utils.js';
+import { DEFAULT_AUTHOR } from '../../../src/constants/seo.js';
 
 export function generateRss({ distDir, blogPostMetas }) {
   const rssItems = blogPostMetas
@@ -10,18 +11,20 @@ export function generateRss({ distDir, blogPostMetas }) {
       const pubDate = meta.date ? new Date(meta.date).toUTCString() : new Date().toUTCString();
       const desc = escapeHtml(meta.subtitle || '');
       const title = escapeHtml(meta.seoTitle || meta.title || meta.slug);
+      const author = escapeHtml(meta.author || DEFAULT_AUTHOR.name);
       return `    <item>
       <title>${title}</title>
       <link>${itemUrl}</link>
       <guid isPermaLink="true">${itemUrl}</guid>
       <pubDate>${pubDate}</pubDate>
+      <dc:creator>${author}</dc:creator>
       <description>${desc}</description>
     </item>`;
     })
     .join('\n');
 
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>Arg Software Blog</title>
     <link>${SITE_URL}/blog/</link>
@@ -43,11 +46,15 @@ export function generateAtom({ distDir, blogPostMetas }) {
       const updated = meta.date ? new Date(meta.date).toISOString() : new Date().toISOString();
       const summary = escapeHtml(meta.subtitle || '');
       const title = escapeHtml(meta.seoTitle || meta.title || meta.slug);
+      const author = escapeHtml(meta.author || DEFAULT_AUTHOR.name);
       return `  <entry>
     <title>${title}</title>
     <link href="${itemUrl}" />
     <id>${itemUrl}</id>
     <updated>${updated}</updated>
+    <author>
+      <name>${author}</name>
+    </author>
     <summary>${summary}</summary>
   </entry>`;
     })

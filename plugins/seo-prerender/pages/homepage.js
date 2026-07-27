@@ -3,7 +3,7 @@ import path from 'node:path';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { injectStructuredData } from '../html-utils.js';
 import { getHomepageExtraLinks } from '../links.js';
-import { buildFAQPageSchema } from '../../../src/utils/structuredData.js';
+import { buildFAQPageSchema, buildWebPageSchema } from '../../../src/utils/structuredData.js';
 
 const FAQ = JSON.parse(
   fs.readFileSync(new URL('../../../src/data/faq.json', import.meta.url), 'utf8')
@@ -23,6 +23,14 @@ export function writeHomepage({ distDir, baseHtml }) {
   });
 
   const indexPath = path.join(distDir, 'index.html');
-  const html = injectStructuredData(baseHtml, buildFAQPageSchema(FAQ.items));
+  const html = injectStructuredData(baseHtml, [
+    buildWebPageSchema({
+      title: 'Software Development for SaaS & Fintech | Arg Software',
+      description:
+        'We build secure, scalable digital platforms for fintech, media, and high-growth tech companies. Architecture-first. Production-ready.',
+      path: '/',
+    }),
+    buildFAQPageSchema(FAQ.items),
+  ]);
   fs.writeFileSync(indexPath, injectCrawlableBlock(html, block));
 }

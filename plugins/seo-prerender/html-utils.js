@@ -1,4 +1,5 @@
 import { SITE_URL } from './constants.js';
+import { DEFAULT_AUTHOR } from '../../src/constants/seo.js';
 import { renderJsonLdScripts } from '../../src/utils/structuredData.js';
 
 export function escapeHtml(str) {
@@ -25,6 +26,9 @@ export function replaceMetaTags(
     extra = '',
     jsonLd,
     includeGlobalJsonLd = true,
+    includePageJsonLd = true,
+    author = DEFAULT_AUTHOR.name,
+    authorUrl = DEFAULT_AUTHOR.url,
   }
 ) {
   const ogImage = image
@@ -35,6 +39,12 @@ export function replaceMetaTags(
 
   const safeTitle = escapeHtml(title);
   const safeDesc = escapeHtml(description);
+  const safeAuthor = escapeHtml(author);
+  const safeAuthorUrl = escapeHtml(
+    authorUrl.startsWith('http')
+      ? authorUrl
+      : `${SITE_URL}${authorUrl.startsWith('/') ? '' : '/'}${authorUrl}`
+  );
 
   let result = html;
 
@@ -49,6 +59,16 @@ export function replaceMetaTags(
     result,
     /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/,
     `<link rel="canonical" href="${escapeHtml(url)}" />`
+  );
+  result = replaceOrInsertHeadTag(
+    result,
+    /<meta\s+name="author"\s+content="[^"]*"\s*\/?>/,
+    `<meta name="author" content="${safeAuthor}" />`
+  );
+  result = replaceOrInsertHeadTag(
+    result,
+    /<link\s+rel="author"\s+href="[^"]*"\s*\/?>/,
+    `<link rel="author" href="${safeAuthorUrl}" />`
   );
 
   result = result.replace(
@@ -93,7 +113,17 @@ export function replaceMetaTags(
     result = result.replace('</head>', `  ${extra}\n</head>`);
   }
 
-  result = injectStructuredData(result, jsonLd, { includeGlobal: includeGlobalJsonLd });
+  result = injectStructuredData(result, jsonLd, {
+    includeGlobal: includeGlobalJsonLd,
+    page: includePageJsonLd
+      ? {
+          title,
+          description,
+          path: new URL(url).pathname,
+          image,
+        }
+      : undefined,
+  });
 
   return result;
 }

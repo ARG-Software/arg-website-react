@@ -1,4 +1,11 @@
-import { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '../constants/seo.js';
+import {
+  DEFAULT_AUTHOR,
+  DEFAULT_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_TITLE,
+  SITE_NAME,
+  SITE_URL,
+} from '../constants/seo.js';
 
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
@@ -7,6 +14,28 @@ export function absoluteUrl(url) {
   if (!url) return undefined;
   if (url.startsWith('http')) return url;
   return `${SITE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
+function splitSameAs(value) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (!value) return undefined;
+  return value
+    .split(',')
+    .map(item => item.trim())
+    .filter(Boolean);
+}
+
+function buildAuthorSchema({ name, url, type, sameAs } = {}) {
+  const authorName = name || DEFAULT_AUTHOR.name;
+  const isDefaultAuthor = authorName === DEFAULT_AUTHOR.name;
+
+  return {
+    '@type': type || (isDefaultAuthor ? DEFAULT_AUTHOR.type : 'Person'),
+    '@id': isDefaultAuthor ? ORGANIZATION_ID : undefined,
+    name: authorName,
+    url: absoluteUrl(url || (isDefaultAuthor ? DEFAULT_AUTHOR.url : undefined)),
+    sameAs: splitSameAs(sameAs) || (isDefaultAuthor ? DEFAULT_AUTHOR.sameAs : undefined),
+  };
 }
 
 function removeEmptyValues(value) {
@@ -98,6 +127,7 @@ export function buildWebsiteSchema() {
     '@id': WEBSITE_ID,
     url: `${SITE_URL}/`,
     name: SITE_NAME,
+    author: buildAuthorSchema(),
     publisher: {
       '@id': ORGANIZATION_ID,
     },
@@ -109,6 +139,32 @@ export function buildWebsiteSchema() {
       },
       'query-input': 'required name=search_term_string',
     },
+  };
+}
+
+export function buildWebPageSchema({ title, description, path = '/', image } = {}) {
+  const pageUrl = `${SITE_URL}${path || '/'}`;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${pageUrl}#webpage`,
+    url: pageUrl,
+    name: title || DEFAULT_TITLE,
+    description: description || DEFAULT_DESCRIPTION,
+    isPartOf: {
+      '@id': WEBSITE_ID,
+    },
+    author: buildAuthorSchema(),
+    publisher: {
+      '@id': ORGANIZATION_ID,
+    },
+    primaryImageOfPage: image
+      ? {
+          '@type': 'ImageObject',
+          url: absoluteUrl(image),
+        }
+      : undefined,
   };
 }
 
@@ -140,6 +196,10 @@ export function buildFAQPageSchema(faqItems) {
 export function buildArticleSchema(post) {
   const timestamp = Date.parse(post.date || '');
   const datePublished = Number.isNaN(timestamp) ? undefined : new Date(timestamp).toISOString();
+  const modifiedTimestamp = Date.parse(post.dateModified || post.updated || '');
+  const dateModified = Number.isNaN(modifiedTimestamp)
+    ? datePublished
+    : new Date(modifiedTimestamp).toISOString();
 
   return {
     '@context': 'https://schema.org',
@@ -148,9 +208,13 @@ export function buildArticleSchema(post) {
     description: post.subtitle,
     datePublished,
     image: absoluteUrl(post.image),
-    author: {
-      '@id': ORGANIZATION_ID,
-    },
+    dateModified,
+    author: buildAuthorSchema({
+      name: post.author,
+      url: post.authorUrl,
+      type: post.authorType,
+      sameAs: post.authorSameAs,
+    }),
     publisher: {
       '@id': ORGANIZATION_ID,
     },
@@ -191,10 +255,12 @@ export function buildProjectSchema(project) {
   };
 }
 
-export function buildPageSchemas(jsonLd, { includeGlobal = true } = {}) {
-  return [...(includeGlobal ? buildGlobalSchemas() : []), ...normalizeJsonLd(jsonLd)].filter(
-    Boolean
-  );
+export function buildPageSchemas(jsonLd, { includeGlobal = true, page } = {}) {
+  return [
+    ...(includeGlobal ? buildGlobalSchemas() : []),
+    page ? buildWebPageSchema(page) : null,
+    ...normalizeJsonLd(jsonLd),
+  ].filter(Boolean);
 }
 
 export function renderJsonLdScripts(jsonLd, options) {

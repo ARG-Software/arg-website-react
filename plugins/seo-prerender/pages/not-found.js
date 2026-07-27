@@ -11,6 +11,7 @@ export function writeNotFoundPage({ distDir, baseHtml, generated }) {
     url: `${SITE_URL}/`,
     type: 'website',
     includeGlobalJsonLd: false,
+    includePageJsonLd: false,
   });
 
   html = html.replace(
