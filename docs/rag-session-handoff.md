@@ -36,14 +36,14 @@ DATABASE_ACCESS_TOKEN=
 DATABASE_SERVICE_ROLE_KEY=
 
 EMBEDDING_API_KEY=
-EMBEDDING_MODEL=gemini-embedding-2
+EMBEDDING_MODEL=<primary-embedding-model>
 EMBEDDING_DIMENSIONS=768
-FALLBACK_EMBEDDING_MODEL=gemini-embedding-001
+FALLBACK_EMBEDDING_MODEL=<fallback-embedding-model>
 FALLBACK_EMBEDDING_DIMENSIONS=768
 EMBEDDING_REQUEST_DELAY_MS=750
 
 AI_MODEL_API_KEY=
-AI_MODEL=deepseek-v4-flash
+AI_MODEL=<answer-generation-model>
 ```
 
 Optional later:
@@ -353,7 +353,7 @@ CVs must use a manually reviewed `redaction` policy, stay outside `public/`, and
    - `partners.json` is split into one `partner` source per partner.
    - Internal PDFs are read from `rag/config/internal-pdfs.json`.
    - Both ingestion scripts support `--dry-run`.
-   - Embeddings use `gemini-embedding-2` with `EMBEDDING_DIMENSIONS=768`.
+   - Embeddings use the configured primary embedding model with `EMBEDDING_DIMENSIONS=768`.
    - Embedding requests are throttled with `EMBEDDING_REQUEST_DELAY_MS=750` to stay under free-tier RPM limits.
    - Internal ingestion has been run successfully: 60 sources and 412 chunks in Supabase.
 

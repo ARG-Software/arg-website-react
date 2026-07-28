@@ -3,12 +3,9 @@ import { config as loadDotenv } from 'dotenv';
 import type { EnvOptions, RagConfig } from '../core/types/config.js';
 
 const DEFAULTS: Record<string, string> = {
-  EMBEDDING_MODEL: 'gemini-embedding-2',
   EMBEDDING_DIMENSIONS: '768',
-  FALLBACK_EMBEDDING_MODEL: 'gemini-embedding-001',
   FALLBACK_EMBEDDING_DIMENSIONS: '768',
   EMBEDDING_REQUEST_DELAY_MS: '750',
-  AI_MODEL: 'deepseek-v4-flash',
   RAG_SITE_URL: 'https://arg.software',
   RAG_COMPANY_NAME: 'ARG Software',
   RAG_CHUNK_SIZE: '1200',
@@ -22,7 +19,10 @@ const REQUIRED_ENV = [
   'DATABASE_URL',
   'DATABASE_SERVICE_ROLE_KEY',
   'EMBEDDING_API_KEY',
+  'EMBEDDING_MODEL',
+  'FALLBACK_EMBEDDING_MODEL',
   'AI_MODEL_API_KEY',
+  'AI_MODEL',
 ];
 
 export function getEnv(name: string, options: EnvOptions = {}): string | undefined {
