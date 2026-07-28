@@ -54,7 +54,7 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    // Local ask endpoints: challenge + ask with ALTCHA verification and in-memory rate limiting
+    // Local API endpoints: challenge + ask with ALTCHA verification and in-memory rate limiting
     {
       name: 'local-ask-endpoint',
       apply: 'serve',
@@ -64,7 +64,7 @@ export default defineConfig(({ mode }) => {
         server.middlewares.use(async (req, res, next) => {
           const requestPath = req.url?.split('?')[0];
 
-          if (req.url === '/.netlify/functions/ask-challenge' && req.method === 'GET') {
+          if (requestPath === '/api/assistant/challenge' && req.method === 'GET') {
             try {
               const { createAltchaChallenge } = await import('./rag/security/altcha.ts');
               const challenge = await createAltchaChallenge();
@@ -90,7 +90,7 @@ export default defineConfig(({ mode }) => {
             return;
           }
 
-          if (requestPath === '/.netlify/functions/contact-challenge' && req.method === 'GET') {
+          if (requestPath === '/api/contact/challenge' && req.method === 'GET') {
             try {
               const { createAltchaChallenge } = await import('./rag/security/altcha.ts');
               const challenge = await createAltchaChallenge();
@@ -116,7 +116,7 @@ export default defineConfig(({ mode }) => {
             return;
           }
 
-          if (requestPath === '/.netlify/functions/contact-verify' && req.method === 'POST') {
+          if (requestPath === '/api/contact/verify' && req.method === 'POST') {
             let body = '';
             for await (const chunk of req) body += chunk;
 
@@ -162,7 +162,7 @@ export default defineConfig(({ mode }) => {
             return;
           }
 
-          if (req.url !== '/.netlify/functions/ask' || req.method !== 'POST') {
+          if (requestPath !== '/api/assistant/ask' || req.method !== 'POST') {
             return next();
           }
 

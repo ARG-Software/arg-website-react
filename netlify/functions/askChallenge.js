@@ -7,7 +7,8 @@ const CORS_HEADERS = {
 };
 
 export const config = {
-  path: '/.netlify/functions/ask-challenge',
+  path: '/api/assistant/challenge',
+  method: ['GET', 'OPTIONS'],
   rateLimit: {
     windowLimit: 30,
     windowSize: 60,
@@ -15,12 +16,12 @@ export const config = {
   },
 };
 
-export async function handler(event) {
-  if (event.httpMethod === 'OPTIONS') {
+export default async function handler(request) {
+  if (request.method === 'OPTIONS') {
     return createResponse(204, '');
   }
 
-  if (event.httpMethod !== 'GET') {
+  if (request.method !== 'GET') {
     return createResponse(405, { error: { code: 'method_not_allowed', message: 'Method not allowed' } });
   }
 
@@ -49,12 +50,13 @@ export async function handler(event) {
 }
 
 function createResponse(statusCode, body) {
-  return {
-    statusCode,
+  const responseBody = statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);
+
+  return new Response(responseBody, {
+    status: statusCode,
     headers: {
       ...CORS_HEADERS,
       'Content-Type': 'application/json',
     },
-    body: typeof body === 'string' ? body : JSON.stringify(body),
-  };
+  });
 }

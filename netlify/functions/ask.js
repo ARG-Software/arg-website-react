@@ -12,7 +12,8 @@ const CORS_HEADERS = {
 };
 
 export const config = {
-  path: '/.netlify/functions/ask',
+  path: '/api/assistant/ask',
+  method: ['POST', 'OPTIONS'],
   rateLimit: {
     windowLimit: 6,
     windowSize: 60,
@@ -29,19 +30,19 @@ function getRateLimitStore() {
   return rateLimitStore;
 }
 
-export async function handler(event) {
-  if (event.httpMethod === 'OPTIONS') {
+export default async function handler(request) {
+  if (request.method === 'OPTIONS') {
     return createResponse(204, '');
   }
 
-  if (event.httpMethod !== 'POST') {
+  if (request.method !== 'POST') {
     return createResponse(405, createErrorBody('method_not_allowed', 'Method not allowed'));
   }
 
   let payload;
 
   try {
-    payload = JSON.parse(event.body || '{}');
+    payload = await request.json();
   } catch {
     return createResponse(400, createErrorBody('invalid_json', 'Invalid JSON body'));
   }
@@ -63,7 +64,7 @@ export async function handler(event) {
     return createResponse(403, createErrorBody('bot_verification_failed', 'Verification failed'));
   }
 
-  const clientIp = event.headers['x-nf-client-connection-ip'] || 'unknown';
+  const clientIp = request.headers.get('x-nf-client-connection-ip') || 'unknown';
 
   try {
     const rateLimitConfig = getRateLimitConfig();
@@ -120,14 +121,15 @@ function createErrorBody(code, message) {
 }
 
 function createResponse(statusCode, body) {
-  return {
-    statusCode,
+  const responseBody = statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);
+
+  return new Response(responseBody, {
+    status: statusCode,
     headers: {
       ...CORS_HEADERS,
       'Content-Type': 'application/json',
     },
-    body: typeof body === 'string' ? body : JSON.stringify(body),
-  };
+  });
 }
 
 function isClientError(error) {

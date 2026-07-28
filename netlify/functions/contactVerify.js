@@ -7,7 +7,8 @@ const CORS_HEADERS = {
 };
 
 export const config = {
-  path: '/.netlify/functions/contact-verify',
+  path: '/api/contact/verify',
+  method: ['POST', 'OPTIONS'],
   rateLimit: {
     windowLimit: 10,
     windowSize: 60,
@@ -15,19 +16,19 @@ export const config = {
   },
 };
 
-export async function handler(event) {
-  if (event.httpMethod === 'OPTIONS') {
+export default async function handler(request) {
+  if (request.method === 'OPTIONS') {
     return createResponse(204, '');
   }
 
-  if (event.httpMethod !== 'POST') {
+  if (request.method !== 'POST') {
     return createResponse(405, createErrorBody('method_not_allowed', 'Method not allowed'));
   }
 
   let altcha;
 
   try {
-    altcha = JSON.parse(event.body || '{}').altcha;
+    altcha = (await request.json()).altcha;
   } catch {
     return createResponse(400, createErrorBody('invalid_json', 'Invalid JSON body'));
   }
@@ -59,12 +60,13 @@ function createErrorBody(code, message) {
 }
 
 function createResponse(statusCode, body) {
-  return {
-    statusCode,
+  const responseBody = statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);
+
+  return new Response(responseBody, {
+    status: statusCode,
     headers: {
       ...CORS_HEADERS,
       'Content-Type': 'application/json',
     },
-    body: typeof body === 'string' ? body : JSON.stringify(body),
-  };
+  });
 }

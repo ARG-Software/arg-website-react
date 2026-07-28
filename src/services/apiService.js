@@ -1,8 +1,8 @@
 const API_ENDPOINTS = Object.freeze({
-  ASSISTANT_ASK: '/.netlify/functions/ask',
-  ASSISTANT_CHALLENGE: '/.netlify/functions/ask-challenge',
-  CONTACT_CHALLENGE: '/.netlify/functions/contact-challenge',
-  CONTACT_VERIFY: '/.netlify/functions/contact-verify',
+  ASSISTANT_ASK: '/api/assistant/ask',
+  ASSISTANT_CHALLENGE: '/api/assistant/challenge',
+  CONTACT_CHALLENGE: '/api/contact/challenge',
+  CONTACT_VERIFY: '/api/contact/verify',
 });
 
 export function getContactChallengeEndpoint() {
