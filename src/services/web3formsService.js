@@ -1,4 +1,4 @@
-import { submitVerifiedContactForm as submitVerifiedContactFormRequest } from '@services/apiService';
+import { verifyContactAltcha } from '@services/apiService';
 import { getWeb3FormsAccessKey, getWeb3FormsEndpoint } from '@services/linksService';
 
 function appendFields(formData, fields = {}) {
@@ -21,7 +21,7 @@ export async function submitWeb3Form(fields, { subject, source, formName, errorM
   if (formName) formData.set('form_name', formName);
 
   if (formName === 'contact_page_brief') {
-    return submitContactPageBrief(formData, errorMessage);
+    await verifyContactPageBrief(formData, errorMessage);
   }
 
   const response = await fetch(getWeb3FormsEndpoint(), {
@@ -37,11 +37,17 @@ export async function submitWeb3Form(fields, { subject, source, formName, errorM
   return { success: true, data, formData };
 }
 
-async function submitContactPageBrief(formData, errorMessage) {
-  formData.delete('access_key');
-  const data = await submitVerifiedContactFormRequest(Object.fromEntries(formData.entries()), {
-    errorMessage,
-  });
+async function verifyContactPageBrief(formData, errorMessage) {
+  if (formData.get('botcheck')) {
+    throw new Error('Unable to submit this form');
+  }
 
-  return { success: true, data, formData };
+  const altcha = formData.get('altcha');
+
+  if (!altcha) {
+    throw new Error(errorMessage || 'Please complete the verification challenge.');
+  }
+
+  await verifyContactAltcha(String(altcha), { errorMessage });
+  formData.delete('altcha');
 }
