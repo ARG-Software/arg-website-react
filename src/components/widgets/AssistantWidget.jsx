@@ -109,6 +109,21 @@ function AssistantActions({ actions }) {
   );
 }
 
+function AssistantChatMessage({ message }) {
+  const isAssistantMessage = message.role === 'assistant';
+  const className = isAssistantMessage
+    ? 'aw-message aw-message--assistant'
+    : 'aw-message aw-message--user';
+
+  return (
+    <div className={className}>
+      <p>{message.content}</p>
+      {isAssistantMessage && <AssistantLinkList links={getAssistantLinks(message)} />}
+      {isAssistantMessage && <AssistantActions actions={message.actions} />}
+    </div>
+  );
+}
+
 export function AssistantWidget(props) {
   const {
     panelState,
@@ -335,17 +350,9 @@ export function AssistantWidget(props) {
             </div>
           )}
 
-          {messages.map((msg, index) => {
-            const isAssistantMessage = msg.role === 'assistant';
-
-            return (
-              <div key={`chat-${index}`} className={`aw-message aw-message--${msg.role}`}>
-                <p>{msg.content}</p>
-                {isAssistantMessage && <AssistantLinkList links={getAssistantLinks(msg)} />}
-                {isAssistantMessage && <AssistantActions actions={msg.actions} />}
-              </div>
-            );
-          })}
+          {messages.map((msg, index) => (
+            <AssistantChatMessage key={`chat-${index}`} message={msg} />
+          ))}
 
           {loading && <PendingStatus message={pendingStatus} />}
 
