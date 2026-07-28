@@ -76,7 +76,6 @@ export function useAssistantWidgetController({
   const inputRef = useRef(null);
   const leadCaptureStartedRef = useRef(false);
   const leadDismissHandledRef = useRef(false);
-  const [leadDismissed, setLeadDismissed] = useState(false);
 
   const isOpen = panelState !== 'closed';
   const { getPayload, consumePayload } = useAssistantSecurity({ isOpen });
@@ -118,7 +117,6 @@ export function useAssistantWidgetController({
     },
   });
 
-  const showPrompts = !isLeadActive && (messages.length === 0 || leadDismissed);
   const showLeadPrompts = isLeadActive && leadStep === LEAD_STEPS.OFFER;
   const canClearConversation =
     messages.length > 0 || leadMessages.length > 0 || inputValue.length > 0 || Boolean(error);
@@ -295,7 +293,6 @@ export function useAssistantWidgetController({
       setLeadMessages([]);
       leadCaptureStartedRef.current = false;
       leadDismissHandledRef.current = false;
-      setLeadDismissed(false);
       trackAssistantEvent('close', { source });
     },
     [setError, cancelLeadCapture, leadStep, LEAD_STEPS, dismissLeadCaptureOnce]
@@ -318,7 +315,6 @@ export function useAssistantWidgetController({
     }
     leadCaptureStartedRef.current = true;
     leadDismissHandledRef.current = false;
-    setLeadDismissed(false);
     setError(null);
     startLeadCapture();
     setLeadMessages([getLeadAssistantMessage(assistantContent.messages.leadCaptureOffer)]);
@@ -353,7 +349,6 @@ export function useAssistantWidgetController({
     setError(null);
     leadCaptureStartedRef.current = false;
     leadDismissHandledRef.current = false;
-    setLeadDismissed(false);
     trackAssistantEvent('clear_conversation', {
       had_history: messages.length > 0 || leadMessages.length > 0,
     });
@@ -418,7 +413,6 @@ export function useAssistantWidgetController({
       if (isLeadActive) {
         const action = getPromptAction(prompt);
         const result = handleLeadInput(prompt, action);
-        if (result.type === 'declined') setLeadDismissed(true);
         addLeadResultMessages(result, prompt);
         setInputValue('');
         return;
@@ -464,7 +458,6 @@ export function useAssistantWidgetController({
   const handleLeadCancel = useCallback(() => {
     handleLeadInput('cancel', 'cancel');
     dismissLeadCaptureOnce(false);
-    setLeadDismissed(true);
     setLeadMessages(prev => [
       ...prev,
       getLeadUserMessage('cancel'),
@@ -483,7 +476,6 @@ export function useAssistantWidgetController({
     setLeadMessages([]);
     leadCaptureStartedRef.current = false;
     leadDismissHandledRef.current = false;
-    setLeadDismissed(false);
     trackAssistantEvent('close', { source: 'lead_capture_dont_show_again' });
   }, [cancelLeadCapture, dismissLeadCaptureOnce, leadStep, LEAD_STEPS.SUCCESS, setError]);
 
@@ -499,9 +491,9 @@ export function useAssistantWidgetController({
     pendingStatus,
     leadStep,
     isLeadActive,
+    mobileViewport,
     leadError,
     LEAD_STEPS,
-    showPrompts,
     showLeadPrompts,
     canClearConversation,
     inputPlaceholder,

@@ -122,9 +122,9 @@ export function AssistantWidget(props) {
     pendingStatus,
     leadStep,
     isLeadActive,
+    mobileViewport,
     leadError,
     LEAD_STEPS,
-    showPrompts,
     showLeadPrompts,
     inputPlaceholder,
     isInputDisabled,
@@ -200,7 +200,7 @@ export function AssistantWidget(props) {
                 <path d="M3 6h18M8 6V4h8v2M7 6l1 14h8l1-14" />
               </svg>
             </button>
-            {panelState !== 'fullscreen' && (
+            {!mobileViewport && panelState !== 'fullscreen' && (
               <button
                 className="aw-header__btn"
                 onClick={toggleFullscreen}
@@ -221,7 +221,7 @@ export function AssistantWidget(props) {
                 </svg>
               </button>
             )}
-            {panelState === 'fullscreen' && (
+            {!mobileViewport && panelState === 'fullscreen' && (
               <button
                 className="aw-header__btn"
                 onClick={toggleFullscreen}
@@ -267,6 +267,21 @@ export function AssistantWidget(props) {
         <div className="aw-messages">
           <div className="aw-message aw-message--welcome">
             <p>{assistantContent.messages.welcome}</p>
+            {!isLeadActive && (
+              <div className="aw-prompts aw-prompts--inline">
+                {assistantContent.quickPrompts.map(prompt => (
+                  <button
+                    key={prompt}
+                    className="aw-prompt"
+                    onClick={() => handleQuickPrompt(prompt)}
+                    type="button"
+                    disabled={loading}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {leadMessages.map((msg, index) => (
@@ -332,21 +347,6 @@ export function AssistantWidget(props) {
 
           <div ref={messagesEndRef} />
         </div>
-
-        {showPrompts && (
-          <div className="aw-prompts">
-            {assistantContent.quickPrompts.map(prompt => (
-              <button
-                key={prompt}
-                className="aw-prompt"
-                onClick={() => handleQuickPrompt(prompt)}
-                type="button"
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
-        )}
 
         {showLeadPrompts && (
           <div className="aw-prompts">

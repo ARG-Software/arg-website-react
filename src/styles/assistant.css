@@ -381,6 +381,10 @@
   padding: 0 16px 16px;
 }
 
+.aw-prompts--inline {
+  padding: 12px 0 0;
+}
+
 .aw-prompt {
   background: transparent;
   border: 1.5px solid #0c002e;
@@ -397,6 +401,16 @@
 .aw-prompt:hover {
   background: #0c002e;
   color: #ffffff;
+}
+
+.aw-prompt:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.aw-prompt:disabled:hover {
+  background: transparent;
+  color: #0c002e;
 }
 
 .aw-prompt--muted {
