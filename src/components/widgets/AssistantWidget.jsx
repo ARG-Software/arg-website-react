@@ -141,8 +141,10 @@ export function AssistantWidget(props) {
     handleLeadConfirm,
     handleLeadEdit,
     handleLeadCancel,
+    handleLeadDismissForTwoDays,
     retrySubmit,
   } = useAssistantWidgetController(props);
+  const [leadAcceptPrompt, leadChatPrompt] = assistantContent.leadCaptureQuickPrompts;
 
   return (
     <>
@@ -348,16 +350,31 @@ export function AssistantWidget(props) {
 
         {showLeadPrompts && (
           <div className="aw-prompts">
-            {assistantContent.leadCaptureQuickPrompts.map(prompt => (
+            {leadAcceptPrompt && (
               <button
-                key={prompt}
                 className="aw-prompt"
-                onClick={() => handleQuickPrompt(prompt)}
+                onClick={() => handleQuickPrompt(leadAcceptPrompt)}
                 type="button"
               >
-                {prompt}
+                {leadAcceptPrompt}
               </button>
-            ))}
+            )}
+            <button
+              className="aw-prompt aw-prompt--muted"
+              onClick={handleLeadDismissForTwoDays}
+              type="button"
+            >
+              {assistantContent.labels.dontShowAgain}
+            </button>
+            {leadChatPrompt && (
+              <button
+                className="aw-prompt"
+                onClick={() => handleQuickPrompt(leadChatPrompt)}
+                type="button"
+              >
+                {leadChatPrompt}
+              </button>
+            )}
           </div>
         )}
 

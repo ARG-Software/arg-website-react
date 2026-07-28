@@ -10,8 +10,7 @@
   ],
   "leadCaptureQuickPrompts": [
     "Yes, send email",
-    "No thanks",
-    "Ask Gaspar instead"
+    "Talk to Gaspar"
   ],
   "messages": {
     "welcome": "Hi, I'm Gaspar, ARG's AI assistant. Ask me about our work, our research, or how to get in touch.",
@@ -19,7 +18,7 @@
     "leadCaptureEmail": "What email should we reply to?",
     "leadCaptureMessagePrompt": "Want to add a message? You can also say \"skip\".",
     "leadCaptureSuccess": "Done. We'll reply within 48h. Thanks for reaching out!",
-    "leadCaptureDeclined": "No problem. I won't show this again for 2 days. Feel free to ask me anything else.",
+    "leadCaptureDeclined": "No problem. Feel free to ask me anything else.",
     "leadCaptureCancelled": "No problem. Feel free to ask me anything else.",
     "multipleEmails": "I found multiple emails. Please enter just one email address.",
     "noEmailFound": "I couldn't find a valid email address. Please enter your email.",
@@ -55,9 +54,10 @@
     "edit": "Edit",
     "cancel": "Cancel",
     "skip": "Skip",
-    "chat": "Ask Gaspar instead",
+    "chat": "Talk to Gaspar",
     "tryAgain": "Try Again",
-    "relatedLinks": "Related links"
+    "relatedLinks": "Related links",
+    "dontShowAgain": "Don't show me again"
   },
   "placeholders": {
     "question": "Ask a question...",

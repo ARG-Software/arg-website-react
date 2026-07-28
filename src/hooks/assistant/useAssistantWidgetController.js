@@ -8,6 +8,10 @@ import { useAssistantLeadCapture } from './useAssistantLeadCapture';
 import { useAssistantSecurity } from './useAssistantSecurity';
 
 const LEAD_SOURCE = 'lead_capture';
+const LEAD_DISMISS_MODES = {
+  SESSION: 'session',
+  TWO_DAYS: 'expiry',
+};
 
 function useMobileFullscreen() {
   const [mobileViewport, setMobileViewport] = useState(() => {
@@ -42,8 +46,7 @@ function getLeadConfirmMessage(email, message) {
 
 function getPromptAction(prompt) {
   if (prompt === assistantContent.leadCaptureQuickPrompts[0]) return 'accept';
-  if (prompt === assistantContent.leadCaptureQuickPrompts[1]) return 'decline';
-  if (prompt === assistantContent.leadCaptureQuickPrompts[2]) return 'chat';
+  if (prompt === assistantContent.leadCaptureQuickPrompts[1]) return 'chat';
   return null;
 }
 
@@ -81,10 +84,10 @@ export function useAssistantWidgetController({
     useAssistantChat({ getPayload, consumePayload });
 
   const dismissLeadCaptureOnce = useCallback(
-    (reopenAsChat = false) => {
+    (reopenAsChat = false, mode = LEAD_DISMISS_MODES.SESSION) => {
       if (leadDismissHandledRef.current) return;
       leadDismissHandledRef.current = true;
-      onLeadCaptureDismiss?.({ reopenAsChat });
+      onLeadCaptureDismiss?.({ reopenAsChat, mode });
     },
     [onLeadCaptureDismiss]
   );
@@ -469,6 +472,21 @@ export function useAssistantWidgetController({
     ]);
   }, [handleLeadInput, dismissLeadCaptureOnce]);
 
+  const handleLeadDismissForTwoDays = useCallback(() => {
+    if (leadCaptureStartedRef.current && leadStep !== LEAD_STEPS.SUCCESS) {
+      dismissLeadCaptureOnce(false, LEAD_DISMISS_MODES.TWO_DAYS);
+    }
+
+    setPanelState('closed');
+    setError(null);
+    cancelLeadCapture();
+    setLeadMessages([]);
+    leadCaptureStartedRef.current = false;
+    leadDismissHandledRef.current = false;
+    setLeadDismissed(false);
+    trackAssistantEvent('close', { source: 'lead_capture_dont_show_again' });
+  }, [cancelLeadCapture, dismissLeadCaptureOnce, leadStep, LEAD_STEPS.SUCCESS, setError]);
+
   return {
     panelState,
     isOpen,
@@ -501,6 +519,7 @@ export function useAssistantWidgetController({
     handleLeadConfirm,
     handleLeadEdit,
     handleLeadCancel,
+    handleLeadDismissForTwoDays,
     retrySubmit,
   };
 }

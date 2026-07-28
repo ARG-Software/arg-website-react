@@ -4,19 +4,14 @@ import {
   ALREADY_SUBSCRIBED_KEY,
   LEAD_CAPTURE_DISMISS_EXPIRY_KEY,
   LEAD_CAPTURE_DISMISS_EXPIRY_MS,
-  LEAD_CAPTURE_DISMISSED_CONTEXT_KEY,
-  MOBILE_BREAKPOINT,
+  LEAD_CAPTURE_SESSION_DISMISSED_KEY,
 } from '@constants/ui';
-import { isMobile } from '../utils/helpers';
 import { trackEvent } from '../utils/analytics';
 
-const DEFAULT_DELAY_MS = 15000;
-const MIN_VISIBLE_RATIO = 0.15;
-const SECTION_LOOKUP_RETRY_MS = 150;
-const SECTION_LOOKUP_MAX_ATTEMPTS = 20;
+const DEFAULT_IDLE_DELAY_MS = 10000;
 const CONTACT_PATH = '/contact';
-const EXCLUDED_SECTION_IDS = new Set(['contact']);
-const EXCLUDED_CLASS_NAMES = ['hero', 'intro', 'page-header', 'page-cta-wrapper'];
+const TWO_DAY_DISMISS = 'expiry';
+const SESSION_DISMISS = 'session';
 
 function normalizePath(pathname) {
   return pathname.replace(/\/+$/, '') || '/';
@@ -26,9 +21,32 @@ function isContactPath(pathname) {
   return normalizePath(pathname) === CONTACT_PATH;
 }
 
+function getClientStorage(name) {
+  if (typeof window === 'undefined') return null;
+  return window[name];
+}
+
+function getStorageItem(storage, key) {
+  try {
+    return storage?.getItem(key) || null;
+  } catch {
+    return null;
+  }
+}
+
+function setStorageItem(storage, key, value) {
+  try {
+    storage?.setItem(key, value);
+  } catch {
+    /* storage unavailable */
+  }
+}
+
 function isDismissedWithExpiry() {
   try {
-    const data = JSON.parse(localStorage.getItem(LEAD_CAPTURE_DISMISS_EXPIRY_KEY));
+    const data = JSON.parse(
+      getStorageItem(getClientStorage('localStorage'), LEAD_CAPTURE_DISMISS_EXPIRY_KEY)
+    );
 
     if (!data?.dismissedAt) return false;
 
@@ -39,194 +57,90 @@ function isDismissedWithExpiry() {
 }
 
 function isLeadCaptureSuppressed() {
-  return localStorage.getItem(ALREADY_SUBSCRIBED_KEY) || isDismissedWithExpiry();
-}
-
-function getDismissedContextKey() {
-  try {
-    return JSON.parse(sessionStorage.getItem(LEAD_CAPTURE_DISMISSED_CONTEXT_KEY))?.key || '';
-  } catch {
-    return '';
-  }
-}
-
-function setDismissedContext(context) {
-  sessionStorage.setItem(
-    LEAD_CAPTURE_DISMISSED_CONTEXT_KEY,
-    JSON.stringify({ key: context.key, path: context.path, section: context.section })
+  return Boolean(
+    getStorageItem(getClientStorage('localStorage'), ALREADY_SUBSCRIBED_KEY) ||
+    getStorageItem(getClientStorage('sessionStorage'), LEAD_CAPTURE_SESSION_DISMISSED_KEY) ||
+    isDismissedWithExpiry()
   );
-}
-
-function isExcludedSection(section) {
-  const className = section.className?.toString().toLowerCase() || '';
-
-  return (
-    EXCLUDED_SECTION_IDS.has(section.id) ||
-    section.dataset.leadCaptureExclude === 'true' ||
-    EXCLUDED_CLASS_NAMES.some(name => className.includes(name))
-  );
-}
-
-function getSectionLabel(section, index) {
-  if (section.id) return section.id;
-
-  const className = section.className?.toString().trim().split(/\s+/)[0];
-  return className || `section-${index + 1}`;
-}
-
-function getEligibleSections() {
-  return Array.from(document.querySelectorAll('main section')).filter(
-    section => !isExcludedSection(section)
-  );
-}
-
-function createContext(path, section, index) {
-  const sectionLabel = getSectionLabel(section, index);
-
-  return {
-    path,
-    section: sectionLabel,
-    key: `${path}#${sectionLabel}`,
-  };
 }
 
 export function useLeadCaptureVisibility({
-  delayMs = DEFAULT_DELAY_MS,
+  delayMs = DEFAULT_IDLE_DELAY_MS,
   isSuppressed = false,
 } = {}) {
   const location = useLocation();
   const normalizedPath = normalizePath(location.pathname);
-  const [visibleContext, setVisibleContext] = useState(null);
-  const [currentContext, setCurrentContext] = useState(null);
-  const [dismissedContextKey, setDismissedContextKey] = useState(getDismissedContextKey);
-  const [mobileViewport, setMobileViewport] = useState(isMobile);
-  const isVisible =
-    visibleContext?.path === normalizedPath &&
+  const [visiblePath, setVisiblePath] = useState(null);
+  const [inMemoryDismissed, setInMemoryDismissed] = useState(false);
+  const visible =
+    visiblePath === normalizedPath &&
     !isContactPath(location.pathname) &&
-    !mobileViewport &&
     !isSuppressed &&
+    !inMemoryDismissed &&
     !isLeadCaptureSuppressed();
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
-    const onChange = event => {
-      setMobileViewport(event.matches);
-      if (event.matches) {
-        setVisibleContext(current => (current ? null : current));
-      }
-    };
-    mql.addEventListener('change', onChange);
-    return () => mql.removeEventListener('change', onChange);
-  }, []);
 
   useEffect(() => {
     if (
       isContactPath(location.pathname) ||
       isLeadCaptureSuppressed() ||
-      mobileViewport ||
-      isSuppressed
+      isSuppressed ||
+      inMemoryDismissed
     )
       return;
 
-    let observer;
-    let retryTimer;
-    let attempts = 0;
+    let idleTimer;
+    let hasShown = false;
 
-    function setupObserver() {
-      const sections = getEligibleSections();
-      const visibleSections = new Map();
+    function showLeadCapture() {
+      if (hasShown || isLeadCaptureSuppressed() || isSuppressed || inMemoryDismissed) return;
 
-      if (!sections.length) {
-        attempts += 1;
-        if (attempts < SECTION_LOOKUP_MAX_ATTEMPTS) {
-          retryTimer = setTimeout(setupObserver, SECTION_LOOKUP_RETRY_MS);
-        }
-        return;
-      }
-
-      observer = new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
-            if (entry.intersectionRatio >= MIN_VISIBLE_RATIO) {
-              visibleSections.set(entry.target, entry.intersectionRatio);
-            } else {
-              visibleSections.delete(entry.target);
-            }
-          });
-
-          const [section] =
-            Array.from(visibleSections.entries()).sort((a, b) => b[1] - a[1])[0] || [];
-          if (!section) {
-            setCurrentContext(null);
-            return;
-          }
-
-          const nextContext = createContext(normalizedPath, section, sections.indexOf(section));
-          setCurrentContext(current => (current?.key === nextContext.key ? current : nextContext));
-        },
-        { threshold: [0, MIN_VISIBLE_RATIO, 0.35, 0.6] }
-      );
-
-      sections.forEach(section => observer.observe(section));
-    }
-
-    setupObserver();
-
-    return () => {
-      clearTimeout(retryTimer);
-      observer?.disconnect();
-    };
-  }, [location.pathname, normalizedPath, mobileViewport, isSuppressed]);
-
-  useEffect(() => {
-    if (!currentContext || isVisible || isLeadCaptureSuppressed() || mobileViewport || isSuppressed)
-      return;
-    if (currentContext.path !== normalizedPath) return;
-    if (currentContext.key === dismissedContextKey) return;
-
-    const timer = setTimeout(() => {
+      hasShown = true;
       trackEvent('lead_capture', {
         action: 'impression',
-        page_path: currentContext.path,
-        section: currentContext.section,
+        page_path: normalizedPath,
+        source: 'idle_timer',
       });
-      setVisibleContext(currentContext);
-    }, delayMs);
-
-    return () => clearTimeout(timer);
-  }, [
-    currentContext,
-    delayMs,
-    dismissedContextKey,
-    isVisible,
-    normalizedPath,
-    mobileViewport,
-    isSuppressed,
-  ]);
-
-  function dismiss() {
-    const dismissedContext = visibleContext || currentContext;
-
-    localStorage.setItem(
-      LEAD_CAPTURE_DISMISS_EXPIRY_KEY,
-      JSON.stringify({ dismissedAt: Date.now() })
-    );
-
-    if (dismissedContext) {
-      setDismissedContext(dismissedContext);
-      setDismissedContextKey(dismissedContext.key);
-      trackEvent('lead_capture', {
-        action: 'dismiss',
-        page_path: dismissedContext.path,
-        section: dismissedContext.section,
-      });
-    } else {
-      trackEvent('lead_capture', { action: 'dismiss' });
+      setVisiblePath(normalizedPath);
     }
 
-    setVisibleContext(null);
+    function resetIdleTimer() {
+      if (hasShown) return;
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(showLeadCapture, delayMs);
+    }
+
+    resetIdleTimer();
+    window.addEventListener('scroll', resetIdleTimer, { passive: true });
+    window.addEventListener('wheel', resetIdleTimer, { passive: true });
+    window.addEventListener('touchmove', resetIdleTimer, { passive: true });
+
+    return () => {
+      clearTimeout(idleTimer);
+      window.removeEventListener('scroll', resetIdleTimer);
+      window.removeEventListener('wheel', resetIdleTimer);
+      window.removeEventListener('touchmove', resetIdleTimer);
+    };
+  }, [delayMs, inMemoryDismissed, isSuppressed, location.pathname, normalizedPath]);
+
+  function dismiss(mode = SESSION_DISMISS) {
+    if (mode === TWO_DAY_DISMISS) {
+      setStorageItem(
+        getClientStorage('localStorage'),
+        LEAD_CAPTURE_DISMISS_EXPIRY_KEY,
+        JSON.stringify({ dismissedAt: Date.now() })
+      );
+    } else {
+      setStorageItem(getClientStorage('sessionStorage'), LEAD_CAPTURE_SESSION_DISMISSED_KEY, '1');
+    }
+
+    trackEvent('lead_capture', {
+      action: mode === TWO_DAY_DISMISS ? 'dismiss_two_days' : 'dismiss_session',
+      page_path: normalizedPath,
+      source: 'idle_timer',
+    });
+    setVisiblePath(null);
+    setInMemoryDismissed(true);
   }
 
-  return { visible: isVisible, dismiss };
+  return { visible, dismiss };
 }
