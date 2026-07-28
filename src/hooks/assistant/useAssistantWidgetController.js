@@ -392,9 +392,10 @@ export function useAssistantWidgetController({
 
       trackAssistantEvent('submit', {
         has_history: messages.length > 0,
-        question_length: inputValue.length,
+        question_length: trimmed.length,
       });
-      submitQuestion(inputValue).then(() => setInputValue(''));
+      setInputValue('');
+      submitQuestion(trimmed);
     },
     [
       addLeadResultMessages,
@@ -420,7 +421,8 @@ export function useAssistantWidgetController({
 
       trackAssistantEvent('quick_prompt', { prompt_text: prompt });
       trackAssistantEvent('submit', { has_history: false, question_length: prompt.length });
-      submitQuestion(prompt).then(() => setInputValue(''));
+      setInputValue('');
+      submitQuestion(prompt);
     },
     [addLeadResultMessages, handleLeadInput, isLeadActive, submitQuestion]
   );

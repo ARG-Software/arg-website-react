@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import assistantContent from '@data/assistant.json';
+import AppLink from '@components/navigation/AppLink';
 import { useAssistantWidgetController } from '@hooks/assistant/useAssistantWidgetController';
 import { getAssistantActionDetails } from '@services/assistantActionsService';
 import { trackAssistantEvent } from '@utils/analytics';
@@ -34,14 +34,14 @@ function AssistantLinkList({ links }) {
         const onClick = () => trackAssistantLinkClick(link);
 
         return internalPath ? (
-          <Link
+          <AppLink
             key={`${link.url}-${link.title}`}
             className="aw-source-link"
             to={internalPath}
             onClick={onClick}
           >
             {link.title}
-          </Link>
+          </AppLink>
         ) : link.url ? (
           <a
             key={`${link.url}-${link.title}`}
@@ -335,13 +335,17 @@ export function AssistantWidget(props) {
             </div>
           )}
 
-          {messages.map((msg, index) => (
-            <div key={`chat-${index}`} className={`aw-message aw-message--${msg.role}`}>
-              <p>{msg.content}</p>
-              <AssistantLinkList links={getAssistantLinks(msg)} />
-              <AssistantActions actions={msg.actions} />
-            </div>
-          ))}
+          {messages.map((msg, index) => {
+            const isAssistantMessage = msg.role === 'assistant';
+
+            return (
+              <div key={`chat-${index}`} className={`aw-message aw-message--${msg.role}`}>
+                <p>{msg.content}</p>
+                {isAssistantMessage && <AssistantLinkList links={getAssistantLinks(msg)} />}
+                {isAssistantMessage && <AssistantActions actions={msg.actions} />}
+              </div>
+            );
+          })}
 
           {loading && <PendingStatus message={pendingStatus} />}
 
