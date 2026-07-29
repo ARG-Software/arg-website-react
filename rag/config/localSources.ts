@@ -92,6 +92,15 @@ export const LOCAL_SOURCE_ENTRIES = [
     url: '/contact/',
     label: 'ARG links and contact options',
   },
+  {
+    kind: 'json',
+    filePath: 'src/data/assistant.json',
+    sourceType: 'homepage',
+    sourceKey: 'assistant-profile',
+    title: 'Gaspar',
+    url: '/',
+    label: 'Gaspar assistant profile',
+  },
   ASSISTANT_POLICY_SOURCE,
   {
     kind: 'projects_json',

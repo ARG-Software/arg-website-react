@@ -1787,6 +1787,38 @@ test('team questions retrieve the public team source without embeddings', async 
   assert.deepEqual(supabase.calls.matchChunks, []);
 });
 
+test('Gaspar profile questions retrieve the assistant profile source without embeddings', async () => {
+  const gaspar = source('gaspar-id', 'Gaspar', null, 'homepage', 'assistant-profile');
+  const supabase = createSupabase({
+    sources: [gaspar],
+    chunks: [
+      chunk(
+        'gaspar-id',
+        'assistant-profile',
+        'Gaspar was born in Caniço, Madeira, in 2019. Gaspar likes working at ARG and likes to play, walk, enjoy the views, and eat.'
+      ),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for Gaspar profile questions');
+  });
+
+  const result = await askQuestion({
+    question: 'Do you like working at ARG?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Does Gaspar like working at ARG?', {
+      plan: { mode: 'direct_evidence', entity: 'Gaspar', subject: 'assistant profile' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['assistant-profile']);
+  assert.match(result.contexts[0]?.content ?? '', /Caniço, Madeira/u);
+  assert.deepEqual(supabase.calls.matchChunks, []);
+});
+
 test('an unresolved personal pronoun asks for clarification', async () => {
   const result = await askQuestion({
     question: 'Does he know Python?',
