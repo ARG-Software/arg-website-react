@@ -7,6 +7,7 @@ import { Navbar } from '@components/navigation/Navbar';
 import { Pill } from '@components/pills/Pill';
 import { SEO } from '@components/seo/SEO';
 import { arrowSvg } from '@components/icons/SocialIcons';
+import { InlineLinkText } from '@components/widgets/InlineLinkText';
 import { ShuffleText } from '@components/widgets/ShuffleText';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useNextProjectSection } from '@hooks/useNextProjectSection';
@@ -182,7 +183,10 @@ export default function ProjectDetailPage() {
                       data-animate="fade-up"
                       data-animate-delay="200"
                     >
-                      {project.description}
+                      <InlineLinkText
+                        text={project.description}
+                        linkClassName="prp-inline-link"
+                      />
                     </p>
                   )}
                 </div>

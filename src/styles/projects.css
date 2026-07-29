@@ -187,6 +187,21 @@
   word-break: break-word;
 }
 
+.prp-inline-link {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 0.0625rem;
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+  transition: opacity 0.2s ease;
+}
+
+.prp-inline-link:hover,
+.prp-inline-link:focus-visible {
+  opacity: 0.65;
+}
+
 /* ============================================
    Metadata List
    ============================================ */
