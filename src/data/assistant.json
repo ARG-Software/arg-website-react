@@ -16,6 +16,7 @@
     "welcome": "Hi, I'm Gaspar, ARG's AI assistant. Ask me about our work, our research, or how to get in touch.",
     "leadCaptureOffer": "Want to send ARG a quick email? I can collect your email and message here.",
     "leadCaptureEmail": "What email should we reply to?",
+    "leadCaptureEdit": "Let's update the details. Enter the reply email again. You can add or change the message next.",
     "leadCaptureMessagePrompt": "Want to add a message? You can also say \"skip\".",
     "leadCaptureSuccess": "Done. We'll reply within 48h. Thanks for reaching out!",
     "leadCaptureDeclined": "No problem. Feel free to ask me anything else.",
@@ -32,8 +33,12 @@
       "label": "Book a meeting",
       "external": true
     },
-    "email_hello": {
-      "label": "Tell Gaspar to contact us",
+    "gaspar_message": {
+      "label": "Send message through Gaspar",
+      "external": false
+    },
+    "contact_form": {
+      "label": "Open contact form",
       "external": false
     },
     "email_hr": {
@@ -51,7 +56,7 @@
     "sendResponse": "Send response",
     "sendQuestion": "Send question",
     "send": "Send",
-    "edit": "Edit",
+    "edit": "Edit details",
     "cancel": "Cancel",
     "skip": "Skip",
     "chat": "Talk to Gaspar",

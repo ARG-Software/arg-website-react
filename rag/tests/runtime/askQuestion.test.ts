@@ -201,7 +201,11 @@ test('a hybrid mode client-hiring question retrieves FAQ evidence and project ac
   });
 
   assert.deepEqual(result.contexts.map(context => context.sourceKey), ['faq']);
-  assert.deepEqual(result.actions, [{ type: 'book_meeting' }, { type: 'email_hello' }]);
+  assert.deepEqual(result.actions, [
+    { type: 'book_meeting' },
+    { type: 'gaspar_message' },
+    { type: 'contact_form' },
+  ]);
   assert.ok(supabase.calls.matchChunks.some(call => call.sourceTypes?.includes('faq')));
 });
 
@@ -1180,7 +1184,7 @@ test('an unresolved personal pronoun asks for clarification', async () => {
   });
 
   assert.match(result.answer, /Who do you mean/u);
-  assert.deepEqual(result.actions, [{ type: 'email_hello' }]);
+  assert.deepEqual(result.actions, [{ type: 'gaspar_message' }, { type: 'contact_form' }]);
 });
 
 test('runtime retrieval switches to the fallback index after a primary quota error', async () => {

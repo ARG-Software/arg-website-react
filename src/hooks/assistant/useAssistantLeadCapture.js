@@ -63,9 +63,9 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
     setLeadError('');
   }, []);
 
-  const startLeadCapture = useCallback(() => {
+  const startLeadCapture = useCallback((initialStep = LEAD_STEPS.OFFER) => {
     if (successTimerRef.current) clearTimeout(successTimerRef.current);
-    setLeadStep(LEAD_STEPS.OFFER);
+    setLeadStep(initialStep);
     setCapturedEmail('');
     setCapturedMessage('');
     setLeadError('');
@@ -173,13 +173,15 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
         const { email, message, hasEmail, multipleEmails } = extractEmailAndMessage(trimmed);
 
         if (multipleEmails) {
-          setLeadError('Multiple emails found. Please enter just one.');
-          return { type: 'no_email_found', input: trimmed };
+          const message = 'Multiple emails found. Please enter just one.';
+          setLeadError(message);
+          return { type: 'multiple_emails', message };
         }
 
         if (!hasEmail) {
-          setLeadError('Please enter a valid email, or close the chat to discard.');
-          return { type: 'no_email_found', input: trimmed };
+          const message = 'Please enter a valid email, or close the chat to discard.';
+          setLeadError(message);
+          return { type: 'no_email_found', message };
         }
 
         setCapturedEmail(email);
@@ -195,7 +197,7 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
       }
 
       if (leadStep === LEAD_STEPS.MESSAGE) {
-        if (action === 'skip') {
+        if (action === 'skip' || trimmed.toLowerCase() === 'skip') {
           setCapturedMessage('');
           setLeadStep(LEAD_STEPS.CONFIRM);
           return { type: 'message_skipped' };

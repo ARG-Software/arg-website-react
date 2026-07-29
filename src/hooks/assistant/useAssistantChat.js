@@ -23,20 +23,18 @@ function getErrorMessage(code) {
 export function useAssistantChat({ getPayload, consumePayload }) {
   const location = useLocation();
   const activeSection = useActiveHomepageSection(location.pathname);
-  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pendingStatus, setPendingStatus] = useState(null);
 
   const submitQuestion = useCallback(
-    async question => {
+    async (question, chatHistory = []) => {
       const trimmed = question.trim();
-      if (!trimmed || loading) return;
+      if (!trimmed || loading) return null;
 
       setLoading(true);
       setError(null);
       setPendingStatus('Preparing secure chat...');
-      setMessages(prev => [...prev, { role: 'user', content: trimmed }]);
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 25000);
@@ -49,7 +47,7 @@ export function useAssistantChat({ getPayload, consumePayload }) {
         } catch {
           setError(getErrorMessage('bot_verification_failed'));
           trackAssistantEvent('error', { error_code: 'bot_verification_failed' });
-          return;
+          return { success: false };
         }
 
         setPendingStatus('Searching ARG knowledge...');
@@ -57,7 +55,7 @@ export function useAssistantChat({ getPayload, consumePayload }) {
         const response = await submitAssistantQuestion(
           {
             question: trimmed,
-            messages: messages.map(m => ({ role: m.role, content: m.content })),
+            messages: chatHistory,
             pageContext: {
               pathname: location.pathname,
               title: document.title,
@@ -86,7 +84,7 @@ export function useAssistantChat({ getPayload, consumePayload }) {
 
           setError(getErrorMessage(code));
           trackAssistantEvent('error', { error_code: code });
-          return;
+          return { success: false };
         }
 
         const data = await response.json();
@@ -95,46 +93,44 @@ export function useAssistantChat({ getPayload, consumePayload }) {
           const code = data.error?.code || 'answer_failed';
           setError(getErrorMessage(code));
           trackAssistantEvent('error', { error_code: code });
-          return;
+          return { success: false };
         }
 
-        setMessages(prev => [
-          ...prev,
-          {
-            role: 'assistant',
-            content: data.answer,
-            citations: data.citations || [],
-            articleRecommendations: data.articleRecommendations || [],
-            actions: data.actions || [],
-          },
-        ]);
+        const message = {
+          role: 'assistant',
+          content: data.answer,
+          citations: data.citations || [],
+          articleRecommendations: data.articleRecommendations || [],
+          actions: data.actions || [],
+        };
 
         trackAssistantEvent('answer', {
           has_citations: (data.citations || []).length > 0,
           citation_count: (data.citations || []).length,
           action_count: (data.actions || []).length,
         });
+
+        return { success: true, message };
       } catch (error) {
         const code = error.name === 'AbortError' ? 'request_timeout' : 'network_error';
         setError(getErrorMessage(code));
         trackAssistantEvent('error', { error_code: code });
+        return { success: false };
       } finally {
         clearTimeout(timeout);
         setLoading(false);
         setPendingStatus(null);
       }
     },
-    [activeSection, consumePayload, getPayload, loading, location.pathname, messages]
+    [activeSection, consumePayload, getPayload, loading, location.pathname]
   );
 
   const resetChat = useCallback(() => {
-    setMessages([]);
     setError(null);
     setPendingStatus(null);
   }, []);
 
   return {
-    messages,
     loading,
     error,
     pendingStatus,

@@ -1,5 +1,5 @@
 import assistantContent from '@data/assistant.json';
-import AppLink from '@components/navigation/AppLink';
+import { ChatbotLink } from '@components/navigation/ChatbotLink';
 import { useAssistantWidgetController } from '@hooks/assistant/useAssistantWidgetController';
 import { getAssistantActionDetails } from '@services/assistantActionsService';
 import { trackAssistantEvent } from '@utils/analytics';
@@ -34,14 +34,14 @@ function AssistantLinkList({ links }) {
         const onClick = () => trackAssistantLinkClick(link);
 
         return internalPath ? (
-          <AppLink
+          <ChatbotLink
             key={`${link.url}-${link.title}`}
             className="aw-source-link"
-            to={internalPath}
+            href={internalPath}
             onClick={onClick}
           >
             {link.title}
-          </AppLink>
+          </ChatbotLink>
         ) : link.url ? (
           <a
             key={`${link.url}-${link.title}`}
@@ -76,6 +76,7 @@ function AssistantActions({ actions }) {
         if (!details) return null;
 
         const trackClick = () => trackAssistantEvent('action_click', { action_type: action.type });
+        const internalPath = getInternalAssistantPath(details.href);
 
         if (details.onClick) {
           return (
@@ -90,6 +91,19 @@ function AssistantActions({ actions }) {
             >
               {details.label}
             </button>
+          );
+        }
+
+        if (internalPath) {
+          return (
+            <ChatbotLink
+              key={`${action.type}-${index}`}
+              className="aw-action"
+              href={internalPath}
+              onClick={trackClick}
+            >
+              {details.label}
+            </ChatbotLink>
           );
         }
 
@@ -109,17 +123,59 @@ function AssistantActions({ actions }) {
   );
 }
 
-function AssistantChatMessage({ message }) {
+function AssistantChatMessage({
+  message,
+  isLeadActive,
+  leadStep,
+  LEAD_STEPS,
+  handleLeadConfirm,
+  handleLeadEdit,
+  handleLeadCancel,
+}) {
   const isAssistantMessage = message.role === 'assistant';
+  const isLeadMessage = message.source === 'lead_capture';
   const className = isAssistantMessage
     ? 'aw-message aw-message--assistant'
     : 'aw-message aw-message--user';
 
   return (
     <div className={className}>
-      <p>{message.content}</p>
-      {isAssistantMessage && <AssistantLinkList links={getAssistantLinks(message)} />}
-      {isAssistantMessage && <AssistantActions actions={message.actions} />}
+      <p style={isLeadMessage ? { whiteSpace: 'pre-line' } : undefined}>{message.content}</p>
+      {isAssistantMessage && !isLeadMessage && (
+        <AssistantLinkList links={getAssistantLinks(message)} />
+      )}
+      {isAssistantMessage && !isLeadMessage && <AssistantActions actions={message.actions} />}
+      {message.showConfirmButtons && isLeadActive && (
+        <div className="aw-actions">
+          <button
+            className="aw-action"
+            onClick={handleLeadConfirm}
+            type="button"
+            disabled={leadStep === LEAD_STEPS.SUBMITTING}
+          >
+            {assistantContent.labels.send}
+          </button>
+          <button
+            className="aw-action"
+            onClick={handleLeadEdit}
+            type="button"
+            disabled={leadStep === LEAD_STEPS.SUBMITTING}
+          >
+            {assistantContent.labels.edit}
+          </button>
+          <button
+            className="aw-action"
+            onClick={handleLeadCancel}
+            type="button"
+            disabled={leadStep === LEAD_STEPS.SUBMITTING}
+          >
+            {assistantContent.labels.cancel}
+          </button>
+        </div>
+      )}
+      {message.isLoading && leadStep === LEAD_STEPS.SUBMITTING && (
+        <PendingStatus message={assistantContent.messages.sending} />
+      )}
     </div>
   );
 }
@@ -131,7 +187,6 @@ export function AssistantWidget(props) {
     inputValue,
     setInputValue,
     messages,
-    leadMessages,
     loading,
     error,
     pendingStatus,
@@ -299,41 +354,17 @@ export function AssistantWidget(props) {
             )}
           </div>
 
-          {leadMessages.map((msg, index) => (
-            <div key={`lead-${index}`} className={`aw-message aw-message--${msg.role}`}>
-              <p style={{ whiteSpace: 'pre-line' }}>{msg.content}</p>
-              {msg.showConfirmButtons && isLeadActive && (
-                <div className="aw-actions">
-                  <button
-                    className="aw-action"
-                    onClick={handleLeadConfirm}
-                    type="button"
-                    disabled={leadStep === LEAD_STEPS.SUBMITTING}
-                  >
-                    {assistantContent.labels.send}
-                  </button>
-                  <button
-                    className="aw-action"
-                    onClick={handleLeadEdit}
-                    type="button"
-                    disabled={leadStep === LEAD_STEPS.SUBMITTING}
-                  >
-                    {assistantContent.labels.edit}
-                  </button>
-                  <button
-                    className="aw-action"
-                    onClick={handleLeadCancel}
-                    type="button"
-                    disabled={leadStep === LEAD_STEPS.SUBMITTING}
-                  >
-                    {assistantContent.labels.cancel}
-                  </button>
-                </div>
-              )}
-              {msg.isLoading && leadStep === LEAD_STEPS.SUBMITTING && (
-                <PendingStatus message={assistantContent.messages.sending} />
-              )}
-            </div>
+          {messages.map((msg, index) => (
+            <AssistantChatMessage
+              key={`${msg.source || 'chat'}-${index}`}
+              message={msg}
+              isLeadActive={isLeadActive}
+              leadStep={leadStep}
+              LEAD_STEPS={LEAD_STEPS}
+              handleLeadConfirm={handleLeadConfirm}
+              handleLeadEdit={handleLeadEdit}
+              handleLeadCancel={handleLeadCancel}
+            />
           ))}
 
           {leadStep === LEAD_STEPS.ERROR && (
@@ -349,10 +380,6 @@ export function AssistantWidget(props) {
               </div>
             </div>
           )}
-
-          {messages.map((msg, index) => (
-            <AssistantChatMessage key={`chat-${index}`} message={msg} />
-          ))}
 
           {loading && <PendingStatus message={pendingStatus} />}
 

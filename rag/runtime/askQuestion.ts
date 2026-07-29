@@ -90,7 +90,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
       answer: createPersonClarification(intent.language),
       citations: [],
       articleRecommendations: [],
-      actions: [{ type: 'email_hello' }],
+      actions: [{ type: 'gaspar_message' }, { type: 'contact_form' }],
       contexts: [],
     };
   }
