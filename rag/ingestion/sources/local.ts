@@ -192,6 +192,21 @@ async function loadTeamProfileSources(rootDir: string): Promise<RagSource[]> {
         `Publicly described collaborator disciplines: ${about.collaborators.disciplines.join(', ')}.`,
       ].join('\n\n'),
     }),
+    createSource({
+      sourceType: 'about',
+      sourceKey: 'arg-team-capabilities',
+      title: 'ARG Team Capabilities',
+      url: '/about-us/',
+      path: aboutPath,
+      metadata: { source_files: sourceFiles, evidence_scope: 'company' },
+      content: [
+        'ARG Team Capabilities',
+        'Team-level capability summary derived from public ARG website content.',
+        'The team combines backend systems, frontend applications, mobile development, cloud infrastructure, software architecture, product development, and technical leadership.',
+        'The team has public experience with architecture-first delivery, scalable systems, backend design, frontend execution, APIs, QA automation, deployment, operational maintenance, code reviews, pair programming, testing, CI/CD, observability, refactoring legacy systems, DDD, CQRS, and SOLID-oriented design.',
+        'Publicly described technologies and platforms include TypeScript, JavaScript, Node.js, React, Angular, .NET, C#, PostgreSQL, MySQL, MongoDB, Docker, AWS, Kafka, Elasticsearch, Kibana, Redis, GraphQL, Fastify, Storybook, GitHub Actions, Argo CD, and Datadog.',
+      ].join('\n\n'),
+    }),
   ];
 
   for (const person of about.founders.people) {

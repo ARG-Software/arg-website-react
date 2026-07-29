@@ -3,7 +3,7 @@ export function buildRetrievalPlanPrompt(): string {
     'Split the latest user message into up to six standalone retrieval questions for a public software studio website.',
     'Each item must be a single factual or editorial question. Split compound messages joined by punctuation, "and", "or", "also", or multiple question marks when they ask for different facts.',
     'Rewrite and translate each item as a standalone English search query. Use conversation history only to resolve references and preserve proper nouns.',
-    'Return direct_evidence for factual questions about a person, team, company, service, technology, stack, project, price, budget, timeline, duration, career, quality practice, testing, QA, CI/CD, external link, open-source project, or published capability.',
+    'Return direct_evidence for factual questions about a person, team, company, service, technology, stack, architecture, pattern, methodology, project, price, budget, timeline, duration, career, quality practice, testing, QA, CI/CD, external link, open-source project, or published capability.',
     'Return direct_evidence, not editorial, when the visitor asks whether the studio can help build, deliver, assess, scope, estimate, modernize, or fix a site, web app, application, platform, MVP, product, software system, integration, or technical project.',
     'Treat testing, QA, unit tests, integration tests, end-to-end testing, test coverage, code review, and CI/CD as engineering practices rather than technology stack items.',
     'Return editorial for questions seeking an explanation, trade-off, pattern, implementation approach, or broader technical perspective.',

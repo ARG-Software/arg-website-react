@@ -1337,6 +1337,101 @@ test('blog-only technology evidence supports knowledge without official project 
   assert.equal(result.answer, 'Grounded answer.');
 });
 
+test('company-level CQRS questions retrieve team and blog evidence without individual attribution', async () => {
+  const joseContext = {
+    ...matchRow(
+      'about',
+      'jose-antunes',
+      'José Antunes',
+      'José Antunes has a professional background with CQRS.'
+    ),
+    sourceMetadata: { person_key: 'jose', evidence_scope: 'individual_public' },
+  };
+  const supabase = createSupabase({
+    rpcRows: [
+      matchRow(
+        'about',
+        'about',
+        'About ARG Software',
+        'José worked on architecture-heavy platforms with DDD/CQRS.'
+      ),
+      joseContext,
+      matchRow(
+        'about',
+        'arg-team-capabilities',
+        'ARG Team Capabilities',
+        'ARG team-level capability evidence includes architecture-first delivery, DDD, CQRS, and backend design.'
+      ),
+      matchRow(
+        'blog_post',
+        'cqrs-without-mediatr',
+        'CQRS without MediatR in .NET',
+        'Blog post\nTitle: CQRS without MediatR in .NET\nThe article discusses CQRS implementation trade-offs.'
+      ),
+    ],
+  });
+
+  const result = await askQuestion({
+    question: 'Have you worked with CQRS?',
+    config: { ...config, matchCount: 6 },
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Have ARG Software worked with CQRS?', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'CQRS' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.ok(result.contexts.some(context => context.sourceKey === 'arg-team-capabilities'));
+  assert.ok(result.contexts.some(context => context.sourceKey === 'cqrs-without-mediatr'));
+  assert.ok(result.contexts.every(context => context.sourceKey !== 'jose-antunes'));
+  assert.ok(result.contexts.every(context => context.sourceKey !== 'about'));
+  assert.deepEqual(result.articleRecommendations.map(article => article.title), [
+    'CQRS without MediatR in .NET',
+  ]);
+});
+
+test('named-person CQRS questions can retrieve that person evidence', async () => {
+  const jose = source('jose-id', 'José Antunes', null, 'about', 'jose-antunes', {
+    person_key: 'jose',
+  });
+  const supabase = createSupabase({
+    sources: [jose],
+    rpcRows: [
+      {
+        ...matchRow(
+          'about',
+          'jose-antunes',
+          'José Antunes',
+          'José Antunes has architecture and CQRS experience.'
+        ),
+        sourceMetadata: { person_key: 'jose', evidence_scope: 'individual_public' },
+      },
+      matchRow(
+        'blog_post',
+        'cqrs-without-mediatr',
+        'CQRS without MediatR in .NET',
+        'Blog post\nTitle: CQRS without MediatR in .NET\nCQRS implementation trade-offs.'
+      ),
+    ],
+  });
+
+  const result = await askQuestion({
+    question: 'Does Jose know CQRS?',
+    config: { ...config, matchCount: 6 },
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Does Jose know CQRS?', {
+      plan: { mode: 'direct_evidence', entity: 'Jose', subject: 'CQRS' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.ok(result.contexts.some(context => context.sourceKey === 'jose-antunes'));
+  assert.ok(result.contexts.every(context => context.sourceKey !== 'cqrs-without-mediatr'));
+  assert.deepEqual(result.articleRecommendations, []);
+});
+
 test('testing questions are treated as quality practice rather than stack technology', async () => {
   const supabase = createSupabase({
     rpcRows: [

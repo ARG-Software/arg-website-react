@@ -8,7 +8,7 @@ export function createArticleRecommendations(
   route: RetrievalRoute,
   siteUrl: string
 ): ArticleRecommendation[] {
-  if (route.kind !== 'blog') {
+  if (route.kind !== 'blog' && !hasFirstPartyBlogContext(contexts)) {
     return [];
   }
 
@@ -35,6 +35,10 @@ export function createArticleRecommendations(
   }
 
   return recommendations;
+}
+
+function hasFirstPartyBlogContext(contexts: RetrievedContext[]): boolean {
+  return contexts.some(context => context.sourceType === 'blog_post' && context.origin === 'first_party');
 }
 
 export function mergeArticleRecommendations(

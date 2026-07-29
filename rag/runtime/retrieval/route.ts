@@ -40,7 +40,7 @@ const PROJECT_BUDGET_PATTERN = /\b(?:project budget|budget|cost|price|pricing)\b
 const PROJECT_DURATION_PATTERN =
   /\b(?:project duration|how long|timeline|duration|took|take|months?|years?|delivery time)\b/i;
 const TECHNOLOGY_QUALITY_PATTERN =
-  /\b(?:ai|automation|architecture|backend|ci\/cd|cicd|cloud|code review|database|devops|frontend|framework|integration tests?|language|mobile|observability|platform|qa|quality|scalability|security|stack|technology|testing|tests?|tool|unit tests?)\b/i;
+  /\b(?:ai|automation|architecture|backend|ci\/cd|cicd|cloud|code review|cqrs|database|ddd|devops|frontend|framework|integration tests?|language|methodolog(?:y|ies)|mobile|observability|patterns?|platform|qa|quality|scalability|security|stack|technology|testing|tests?|tool|unit tests?)\b/i;
 const GASPAR_PROFILE_PATTERN =
   /\b(?:gaspar|assistant profile|assistant identity|your name|who are you|where were you born|nationality|ascendence|free time|do you like working at arg|likes? working at arg)\b/i;
 const KNOWN_PROJECT_NAMES = [

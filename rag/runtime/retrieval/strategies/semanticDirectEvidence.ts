@@ -17,8 +17,10 @@ import { retrieveContextsForOrigin } from '../vectorSearch.js';
 import {
   filterExactTechnologyEvidence,
   isExactTechnologySubject,
+  retrieveLexicalExactBlogTechnologyEvidence,
   retrieveLexicalExactTechnologyEvidence,
   shouldUseBlogTechnologyEvidence,
+  isTechnicalWritingSubject,
 } from './exactTechnology.js';
 import {
   findPersonSource,
@@ -81,17 +83,30 @@ export async function retrieveDirectEvidenceContexts({
 
   const entitySource =
     !person && route.entity ? await findDirectSource(readRepository, route.entity) : null;
-  const isCompanyQuestion = isCompanyEntity(route.entity);
+  const isCompanyQuestion = isCompanyOrTeamEntity(route.entity);
+  const shouldExcludeIndividualEvidence = !person && (!entitySource || isCompanyQuestion);
+  const shouldExcludeNamedIndividualContent =
+    shouldExcludeIndividualEvidence && isTechnicalCapabilityRoute(route);
 
   if (route.subject && !person && (!entitySource || isCompanyQuestion)) {
-    const lexicalExactTechnologyEvidence = await retrieveLexicalExactTechnologyEvidence(
-      readRepository,
-      config,
-      route.subject
+    const lexicalExactTechnologyEvidence = filterIndividualContextsForCompanyLevelQuestion(
+      await retrieveLexicalExactTechnologyEvidence(readRepository, config, route.subject),
+      shouldExcludeNamedIndividualContent
     );
 
     if (lexicalExactTechnologyEvidence.length > 0) {
-      return lexicalExactTechnologyEvidence;
+      const lexicalBlogTechnologyEvidence = shouldUseLexicalBlogTechnologyEvidence(
+        route,
+        person,
+        entitySource
+      )
+        ? await retrieveLexicalExactBlogTechnologyEvidence(readRepository, config, route.subject)
+        : [];
+
+      return mergePrioritizedContexts(
+        [lexicalExactTechnologyEvidence, lexicalBlogTechnologyEvidence],
+        config.matchCount
+      );
     }
   }
 
@@ -120,15 +135,28 @@ export async function retrieveDirectEvidenceContexts({
     return entityEvidence;
   }
 
-  const officialEvidence = search
-    ? await retrieveSemanticEvidenceForOrigin(
-        readRepository,
-        config,
-        search,
-        OFFICIAL_WEBSITE_SOURCE_TYPES,
-        FIRST_PARTY_ORIGIN
+  const officialEvidence = shouldExcludeIndividualEvidence
+    ? filterIndividualContextsForCompanyLevelQuestion(
+        search
+          ? await retrieveSemanticEvidenceForOrigin(
+              readRepository,
+              config,
+              search,
+              OFFICIAL_WEBSITE_SOURCE_TYPES,
+              FIRST_PARTY_ORIGIN
+            )
+          : [],
+        shouldExcludeNamedIndividualContent
       )
-    : [];
+    : search
+      ? await retrieveSemanticEvidenceForOrigin(
+          readRepository,
+          config,
+          search,
+          OFFICIAL_WEBSITE_SOURCE_TYPES,
+          FIRST_PARTY_ORIGIN
+        )
+      : [];
   const faqEvidence = search
     ? await retrieveSemanticEvidenceForOrigin(
         readRepository,
@@ -224,12 +252,14 @@ async function retrieveSemanticEvidence(
     fallbackEmbeddingProvider,
     semanticSearch
   );
-  const officialEvidence = await retrieveSemanticEvidenceForOrigin(
-    readRepository,
-    config,
-    search,
-    OFFICIAL_WEBSITE_SOURCE_TYPES,
-    FIRST_PARTY_ORIGIN
+  const officialEvidence = filterIndividualContextsForCompanyLevelQuestion(
+    await retrieveSemanticEvidenceForOrigin(
+      readRepository,
+      config,
+      search,
+      OFFICIAL_WEBSITE_SOURCE_TYPES,
+      FIRST_PARTY_ORIGIN
+    )
   );
   const faqEvidence = await retrieveSemanticEvidenceForOrigin(
     readRepository,
@@ -302,4 +332,53 @@ function mergePrioritizedContexts(
   }
 
   return Array.from(contextsByChunk.values()).slice(0, matchCount);
+}
+
+function isCompanyOrTeamEntity(entity: string): boolean {
+  return isCompanyEntity(entity) || /\b(?:company|team|studio|we|us|you|your)\b/iu.test(entity.trim());
+}
+
+function shouldUseLexicalBlogTechnologyEvidence(
+  route: RetrievalRoute,
+  person: RagSourceRecord | null,
+  entitySource: RagSourceRecord | null
+): boolean {
+  return shouldUseBlogTechnologyEvidence(route, person, entitySource) && isTechnicalWritingSubject(route.subject);
+}
+
+function isTechnicalCapabilityRoute(route: RetrievalRoute): boolean {
+  return route.kind === 'technology_quality' || isExactTechnologySubject(route.subject);
+}
+
+function filterIndividualContextsForCompanyLevelQuestion(
+  contexts: RetrievedContext[],
+  excludeNamedIndividualContent = false
+): RetrievedContext[] {
+  return contexts.filter(
+    context => !isIndividualEvidenceContext(context, excludeNamedIndividualContent)
+  );
+}
+
+function isIndividualEvidenceContext(
+  context: RetrievedContext,
+  excludeNamedIndividualContent: boolean
+): boolean {
+  const evidenceScope = context.sourceMetadata.evidence_scope;
+  return (
+    typeof context.sourceMetadata.person_key === 'string' ||
+    (typeof evidenceScope === 'string' && evidenceScope.startsWith('individual_')) ||
+    (excludeNamedIndividualContent && isNamedAboutContent(context))
+  );
+}
+
+function isNamedAboutContent(context: RetrievedContext): boolean {
+  if (context.sourceType !== 'about') {
+    return false;
+  }
+
+  if (context.sourceKey === 'arg-team' || context.sourceKey === 'arg-team-capabilities') {
+    return false;
+  }
+
+  return /(?:jose|josé|rui)/iu.test(context.content);
 }
