@@ -1998,7 +1998,7 @@ test('Gaspar profile questions retrieve the assistant profile source without emb
       chunk(
         'gaspar-id',
         'assistant-profile',
-        'Gaspar was born in Caniço, Madeira, in 2019. Gaspar likes working at ARG and likes to play, walk, enjoy the views, and eat.'
+        'I was born in Caniço, Madeira, in 2019. I like working at ARG and like to play, walk, enjoy the views, and eat.'
       ),
     ],
   });
@@ -2019,6 +2019,97 @@ test('Gaspar profile questions retrieve the assistant profile source without emb
 
   assert.deepEqual(result.contexts.map(context => context.sourceKey), ['assistant-profile']);
   assert.match(result.contexts[0]?.content ?? '', /Caniço, Madeira/u);
+  assert.deepEqual(supabase.calls.matchChunks, []);
+});
+
+test('direct AI identity questions retrieve Gaspar profile source without embeddings', async () => {
+  const gaspar = source('gaspar-id', 'Gaspar', null, 'homepage', 'assistant-profile');
+  const supabase = createSupabase({
+    sources: [gaspar],
+    chunks: [
+      chunk(
+        'gaspar-id',
+        'assistant-profile',
+        'My name is Gaspar. I was born in Caniço, Madeira, in 2019.'
+      ),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for direct Gaspar identity questions');
+  });
+
+  const result = await askQuestion({
+    question: 'Are you an AI assistant?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Is Gaspar an AI assistant?', {
+      plan: { mode: 'direct_evidence', entity: 'Gaspar', subject: 'assistant profile' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['assistant-profile']);
+  assert.match(result.contexts[0]?.content ?? '', /My name is Gaspar/u);
+  assert.deepEqual(supabase.calls.matchChunks, []);
+});
+
+test('Portuguese Gaspar identity questions retrieve the assistant profile source without embeddings', async () => {
+  const gaspar = source('gaspar-id', 'Gaspar', null, 'homepage', 'assistant-profile');
+  const supabase = createSupabase({
+    sources: [gaspar],
+    chunks: [
+      chunk(
+        'gaspar-id',
+        'assistant-profile',
+        'My name is Gaspar. I was born in Caniço, Madeira, in 2019.'
+      ),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for Portuguese Gaspar identity questions');
+  });
+
+  const result = await askQuestion({
+    question: 'Quem és tu?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Who is Gaspar?', {
+      language: 'pt-PT',
+      plan: { mode: 'direct_evidence', entity: 'Gaspar', subject: 'assistant profile' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['assistant-profile']);
+  assert.match(result.contexts[0]?.content ?? '', /My name is Gaspar/u);
+  assert.deepEqual(supabase.calls.matchChunks, []);
+});
+
+test('Portuguese colleague questions retrieve the public team source without embeddings', async () => {
+  const team = source('team-id', 'ARG Team', null, 'about', 'arg-team');
+  const supabase = createSupabase({
+    sources: [team],
+    chunks: [chunk('team-id', 'arg-team', 'José Antunes and Rui Rocha are ARG co-founders.')],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for colleague questions');
+  });
+
+  const result = await askQuestion({
+    question: 'E quem são os teus colegas?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Who are the team members of ARG?', {
+      language: 'pt-PT',
+      plan: { mode: 'direct_evidence', entity: 'ARG Team', subject: '' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['arg-team']);
   assert.deepEqual(supabase.calls.matchChunks, []);
 });
 

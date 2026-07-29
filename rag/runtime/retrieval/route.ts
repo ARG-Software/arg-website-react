@@ -42,7 +42,7 @@ const PROJECT_DURATION_PATTERN =
 const TECHNOLOGY_QUALITY_PATTERN =
   /\b(?:ai|automation|architecture|backend|ci\/cd|cicd|cloud|code review|cqrs|database|ddd|devops|frontend|framework|integration tests?|language|methodolog(?:y|ies)|mobile|observability|patterns?|platform|qa|quality|scalability|security|stack|technology|testing|tests?|tool|unit tests?)\b/i;
 const GASPAR_PROFILE_PATTERN =
-  /\b(?:gaspar|assistant profile|assistant identity|your name|who are you|where were you born|nationality|ascendence|free time|do you like working at arg|likes? working at arg)\b/i;
+  /\b(?:gaspar|assistant profile|assistant identity|your name|who are you|ai assistant|artificial intelligence|robot|chatbot|language model|real dog|where were you born|nationality|ascendence|free time|do you like working at arg|likes? working at arg)\b/i;
 const KNOWN_PROJECT_NAMES = [
   "People's Clearinghouse",
   'Royalty Flush',
