@@ -94,7 +94,8 @@ export class DeepSeekAnswerClient implements AnswerProvider {
 
   async classifyQuestionIntent(
     question: string,
-    messages: ChatMessage[]
+    messages: ChatMessage[],
+    pageContext: PageContext | null
   ): Promise<QuestionIntentResult> {
     const config = this.getConfig();
     const data = await createChatCompletion({
@@ -106,6 +107,7 @@ export class DeepSeekAnswerClient implements AnswerProvider {
           role: 'system',
           content: buildIntentPrompt(config.companyName),
         },
+        ...buildPageContextMessages(pageContext),
         ...buildHistoryMessages(messages),
         {
           role: 'user',

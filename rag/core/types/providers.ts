@@ -8,7 +8,11 @@ export interface EmbeddingProvider {
 }
 
 export interface AnswerProvider {
-  classifyQuestionIntent(question: string, messages: ChatMessage[]): Promise<QuestionIntentResult>;
+  classifyQuestionIntent(
+    question: string,
+    messages: ChatMessage[],
+    pageContext: PageContext | null
+  ): Promise<QuestionIntentResult>;
   planRetrieval(
     question: string,
     messages: ChatMessage[],

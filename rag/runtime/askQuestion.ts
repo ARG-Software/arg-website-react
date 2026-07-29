@@ -57,7 +57,8 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
   const context = createRuntimeContext(input);
   const intent = await context.answerProvider.classifyQuestionIntent(
     context.question,
-    context.messages
+    context.messages,
+    context.pageContext
   );
 
   if (intent.intent !== 'rag_question') {

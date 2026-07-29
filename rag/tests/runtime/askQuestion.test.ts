@@ -286,6 +286,37 @@ test('fintech questions use official project evidence before technical blog retr
   );
 });
 
+test('published project architecture questions retrieve the named project evidence', async () => {
+  const mojaloop = source('mojaloop-id', 'Mojaloop', null, 'project', 'mojaloop');
+  const supabase = createSupabase({
+    sources: [mojaloop],
+    rpcRows: [
+      matchRow(
+        'project',
+        'mojaloop',
+        'Mojaloop',
+        'Mojaloop vNext was redesigned around microservices and zero-trust service boundaries.'
+      ),
+    ],
+  });
+
+  const result = await askQuestion({
+    question: 'O Mojaloop usa micro serviços?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Does Mojaloop use microservices?', {
+      language: 'pt-PT',
+      plan: { mode: 'direct_evidence', entity: 'Mojaloop', subject: 'microservices architecture' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.equal(result.contexts[0]?.sourceKey, 'mojaloop');
+  assert.match(result.contexts[0]?.content ?? '', /microservices/u);
+  assert.ok(supabase.calls.matchChunks.some(call => call.sourceKeys?.includes('mojaloop')));
+});
+
 test('a hybrid mode client-hiring question retrieves FAQ evidence and project actions', async () => {
   const faq = source('faq-id', 'Frequently Asked Questions', null, 'faq', 'faq');
   const supabase = createSupabase({
@@ -351,6 +382,36 @@ test('external link questions retrieve the site-links source without embeddings'
 
   assert.equal(result.contexts[0]?.sourceKey, 'site-links');
   assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('website build service enquiries retrieve ARG service evidence rather than link actions', async () => {
+  const services = source('home-services-id', 'ARG Services', null, 'homepage', 'home:services');
+  const supabase = createSupabase({
+    sources: [services],
+    rpcRows: [
+      matchRow(
+        'homepage',
+        'home:services',
+        'ARG Services',
+        'ARG services include software engineering, frontend, backend, architecture, and product delivery.'
+      ),
+    ],
+  });
+
+  const result = await askQuestion({
+    question: 'Preciso de ajuda a fazer um site. Podes ajudar me?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Can ARG Software help build a website?', {
+      language: 'pt-PT',
+      plan: { mode: 'editorial', entity: 'ARG Software', subject: 'website development' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.equal(result.contexts[0]?.sourceKey, 'home:services');
+  assert.ok(supabase.calls.matchChunks.some(call => call.sourceTypes?.includes('homepage')));
 });
 
 test('general pricing questions retrieve FAQ pricing context without policy facts', async () => {
@@ -576,6 +637,53 @@ test('project page context resolves this-project duration questions', async () =
   assert.match(result.contexts[0]?.content ?? '', /Vector: budget \$20K - \$100K; duration 13 Months/u);
   assert.match(answerQuestion, /Resolved current-page reference: Vector project duration/u);
   assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('project page context resolves translated current-project questions', async () => {
+  let classifiedPageContext: unknown = null;
+  let answerQuestion = '';
+  const mojaloop = source('mojaloop-id', 'Mojaloop', null, 'project', 'mojaloop');
+  const supabase = createSupabase({
+    sources: [mojaloop],
+    rpcRows: [
+      matchRow(
+        'project',
+        'mojaloop',
+        'Mojaloop',
+        'Mojaloop is an open-source payment switch rebuilt around bank-ready payment infrastructure.'
+      ),
+    ],
+  });
+
+  const result = await askQuestion({
+    question: 'Podes falar me mais sobre este projeto?',
+    pageContext: { pathname: '/projects/mojaloop/', title: 'Mojaloop - Use Case | Arg Software' },
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Tell me more about this project', {
+      language: 'pt-PT',
+      plan: { mode: 'direct_evidence', entity: '', subject: 'project overview' },
+      onClassifyIntent(_question, pageContext) {
+        classifiedPageContext = pageContext;
+      },
+      onGenerateAnswer(question) {
+        answerQuestion = question;
+      },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.equal(result.contexts[0]?.sourceKey, 'mojaloop');
+  assert.match(answerQuestion, /Resolved current-page reference: Mojaloop project overview/u);
+  assert.deepEqual(classifiedPageContext, {
+    pathname: '/projects/mojaloop/',
+    title: 'Mojaloop - Use Case | Arg Software',
+    pageKind: 'project',
+    projectSlug: 'mojaloop',
+    projectName: 'Mojaloop',
+    sourceKeys: ['mojaloop'],
+  });
 });
 
 test('project page context does not hijack general timeline questions', async () => {

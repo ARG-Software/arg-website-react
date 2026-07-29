@@ -11,6 +11,7 @@ export function buildSystemPrompt(companyName: string, responseLanguage: string)
     'Answer only from the provided context.',
     'Do not describe the provided context as internal knowledge, training data, or a source database.',
     'Use conversation history only to understand references in the latest question.',
+    'Never say you do not have access to the conversation history. If a reference remains ambiguous after using the provided context, ask for the missing name or detail plainly.',
     'Do not treat previous assistant messages as facts unless the provided context supports them.',
     'If the context does not establish the exact answer, say what you cannot confirm and invite the visitor to message us so someone closer to the subject can answer properly.',
     'For team questions, name only people present in the provided context and clarify when collaborators are not individually listed publicly.',

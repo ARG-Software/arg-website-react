@@ -29,7 +29,7 @@ const CAREERS_PATTERN = /\b(?:career|careers|job|jobs|hiring|hire|apply|applicat
 const ENGAGEMENT_DURATION_PATTERN =
   /\b(?:work(?:ed|ing)? with|collaborat(?:ed|ion|ing)? with|engagement|partnership|client relationship)\b.{0,80}\b(?:duration|timeline|how long|months?|years?|ongoing|took|last(?:ed)?)\b|\b(?:duration|timeline|how long|months?|years?|ongoing|took|last(?:ed)?)\b.{0,80}\b(?:work(?:ed|ing)? with|collaborat(?:ed|ion|ing)? with|engagement|partnership|client relationship)\b/i;
 const EXTERNAL_LINK_PATTERN =
-  /\b(?:github|git hub|linkedin|linked in|medium|portfolio|website|site|rss|atom|feed|email|e-mail|contact|book(?:ing)?|calendar|call|meeting|brief|form)\b.{0,50}\b(?:link|url|where|show|send|open|visit|profile|page|email|contact|book|download)?\b/i;
+  /\b(?:github|git hub|linkedin|linked in|medium|portfolio|rss|atom|feed)\b.{0,50}\b(?:link|url|where|show|send|open|visit|profile|page|download)\b|\b(?:link|url|where|show|send|open|visit|profile|page|download)\b.{0,50}\b(?:github|git hub|linkedin|linked in|medium|portfolio|rss|atom|feed|website|site)\b|\b(?:website|site)\b.{0,50}\b(?:link|url|visit|open|official)\b|\b(?:email|e-mail|contact|book(?:ing)?|calendar|call|meeting|brief|form)\b/i;
 const GENERAL_PRICING_PATTERN =
   /\b(?:budget|cost|price|pricing|hourly|rate|minimum|starts? at|estimate|quote)\b/i;
 const GENERAL_TIMELINE_PATTERN =

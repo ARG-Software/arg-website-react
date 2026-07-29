@@ -24,6 +24,8 @@ const CONTEXTUAL_REFERENCE_PATTERN =
 const PROJECT_DURATION_PATTERN =
   /\b(?:how much time|how long|time|duration|timeline|took|take|months?|years?|delivery time)\b/i;
 const PROJECT_BUDGET_PATTERN = /\b(?:budget|cost|price|pricing)\b/i;
+const SERVICE_ENQUIRY_PATTERN =
+  /\b(?:assess|build|create|deliver|develop|estimate|fix|help|make|modernize|quote|scope|want|need)\b.{0,80}\b(?:app|application|mvp|platform|product|project|site|software|system|web(?:site)?|web app)\b|\b(?:app|application|mvp|platform|product|project|site|software|system|web(?:site)?|web app)\b.{0,80}\b(?:assess|build|create|deliver|develop|estimate|fix|help|make|modernize|quote|scope)\b/i;
 
 export interface RoutedRetrievalItem {
   plan: RetrievalQuestionPlan;
@@ -66,7 +68,7 @@ function createRetrievalItems(
     .flatMap(item => createTechnologySubjectItems(item, question))
     .map(item => ({
       query: item.query || question,
-      mode: shouldUseDirectEvidenceForTechnology(question, item)
+      mode: shouldUseDirectEvidenceForTechnology(question, item) || isServiceEnquiry(item)
         ? ('direct_evidence' as const)
         : item.mode,
       entity: item.entity,
@@ -129,6 +131,10 @@ function isContextualReference(value: string): boolean {
 
 function isCompanyEntityName(value: string): boolean {
   return !value || /\b(?:arg|arg software|company|team|studio|you|your)\b/i.test(value.trim());
+}
+
+function isServiceEnquiry(item: RetrievalQuestionPlan): boolean {
+  return SERVICE_ENQUIRY_PATTERN.test(`${item.query} ${item.subject}`);
 }
 
 function getPageContextLabel(pageContext: PageContext): string {

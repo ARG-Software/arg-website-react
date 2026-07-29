@@ -9,6 +9,7 @@ export interface FakeAnswerProviderBehavior {
   generatedAnswer?: string;
   insufficientContextAnswer?: string;
   intentFallbackResponse?: string;
+  onClassifyIntent?: (question: string, pageContext: unknown) => void;
   onGenerateAnswer?: (question: string) => void;
 }
 
@@ -24,6 +25,7 @@ export function createFakeAnswerProvider(
     generatedAnswer = 'Grounded answer.',
     insufficientContextAnswer = 'Please send us a message so we can help.',
     intentFallbackResponse = 'Please ask about our website.',
+    onClassifyIntent,
     onGenerateAnswer,
   } = behavior;
 
@@ -36,7 +38,8 @@ export function createFakeAnswerProvider(
   };
 
   return {
-    async classifyQuestionIntent() {
+    async classifyQuestionIntent(question, _messages, pageContext) {
+      onClassifyIntent?.(question, pageContext);
       return { intent, response: intentResponse, language };
     },
     async planRetrieval() {
