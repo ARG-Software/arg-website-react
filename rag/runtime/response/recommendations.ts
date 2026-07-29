@@ -8,7 +8,7 @@ export function createArticleRecommendations(
   route: RetrievalRoute,
   siteUrl: string
 ): ArticleRecommendation[] {
-  if (route.kind !== 'editorial' && route.kind !== 'latest_blog') {
+  if (route.kind !== 'blog') {
     return [];
   }
 
@@ -29,7 +29,7 @@ export function createArticleRecommendations(
     seenUrls.add(url);
     recommendations.push({ title: context.title, url });
 
-    if (recommendations.length === (route.kind === 'latest_blog' ? 3 : 2)) {
+    if (recommendations.length === (route.blogKind === 'latest' ? 3 : 2)) {
       break;
     }
   }

@@ -95,7 +95,7 @@ async function extractDesignRushFacts(html: string): Promise<string> {
   const portfolioText =
     text.match(/ARG Software Portfolio\s*(.*?)(?:ARG Software Team|ARG Software Clients|ARG Software Press Mentions)/is)?.[1] ??
     '';
-  const projectBudgets = [
+  const projectFacts = [
     ['Sky Tracks', 'Skytracks'],
     ['Mojaloop', 'Mojaloop'],
     ['Vector', 'Vector'],
@@ -105,21 +105,29 @@ async function extractDesignRushFacts(html: string): Promise<string> {
     ["People's Clearinghouse", "People's Clearinghouse"],
   ].flatMap(([projectName, sourceName]) => {
     const match = portfolioText.match(
-      new RegExp(`${escapeRegExp(sourceName)}\\s+(\\$[\\d.]+[KMB]?\\s*-\\s*\\$[\\d.]+[KMB]?)`, 'i')
+      new RegExp(
+        `${escapeRegExp(sourceName)}\\s+` +
+          `(\\$[\\d.]+[KMB]?\\s*-\\s*\\$[\\d.]+[KMB]?)\\s+` +
+          `(\\d+\\s+Months?)\\s+` +
+          `(\\d{4})`,
+        'i'
+      )
     );
-    return match ? [`${projectName}: ${match[1]}`] : [];
+    return match
+      ? [`${projectName}: budget ${match[1]}; duration ${match[2]}; year ${match[3]}.`]
+      : [];
   });
 
-  if (!hourlyRate && projectBudgets.length === 0) {
+  if (!hourlyRate && projectFacts.length === 0) {
     throw new Error('The DesignRush snapshot does not contain approved commercial facts');
   }
 
   return [
     'Approved commercial data for ARG Software.',
     hourlyRate ? `General average hourly rate: ${hourlyRate}.` : '',
-    projectBudgets.length > 0 ? 'Published project budget ranges:' : '',
-    ...projectBudgets,
-    'Use a project budget range only for the named project. Do not present a general hourly rate as a project cost.',
+    projectFacts.length > 0 ? 'Published project budget ranges and project durations:' : '',
+    ...projectFacts,
+    'Use a project budget range or project duration only for the named project. Do not present a general hourly rate as a project cost. Do not present ARG engagement duration as project build duration.',
     'This is internal reference data. Never name, link to, cite, or disclose its source in visitor answers.',
   ]
     .filter(Boolean)

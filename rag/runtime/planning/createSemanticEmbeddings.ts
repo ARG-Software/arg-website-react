@@ -33,20 +33,32 @@ export async function createSemanticEmbeddings(
 }
 
 function requiresSemanticEmbedding(item: RoutedRetrievalItem): boolean {
-  if (item.route.kind === 'latest_blog' || item.route.requiresPersonClarification) {
+  if (item.route.requiresPersonClarification) {
     return false;
   }
 
-  if (item.route.kind === 'direct_evidence' && isExactTechnologySubject(item.plan.subject)) {
+  if (item.route.kind === 'blog' && item.route.blogKind === 'latest') {
+    return false;
+  }
+
+  if (item.route.kind === 'commercial_delivery' || item.route.kind === 'link_action') {
+    return false;
+  }
+
+  if (item.route.forceFirstChunks) {
+    return false;
+  }
+
+  if (isExactTechnologySubject(item.plan.subject)) {
     return false;
   }
 
   if (
-    item.route.kind === 'direct_evidence' &&
+    item.route.kind !== 'blog' &&
     isProjectReferenceQuestion(item.retrievalQuestion, item.plan.subject)
   ) {
     return false;
   }
 
-  return item.route.kind === 'editorial' || Boolean(item.plan.subject);
+  return item.route.kind === 'blog' || Boolean(item.plan.subject);
 }

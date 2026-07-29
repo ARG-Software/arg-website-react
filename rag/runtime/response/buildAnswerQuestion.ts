@@ -5,6 +5,16 @@ export function buildAnswerQuestion(
   results: RetrievalItemResult[]
 ): string {
   if (results.length <= 1) {
+    const resolvedQuestion = results[0]?.retrievalQuestion;
+
+    if (resolvedQuestion && resolvedQuestion !== originalQuestion) {
+      return [
+        originalQuestion,
+        '',
+        `Resolved current-page reference: ${resolvedQuestion}`,
+      ].join('\n');
+    }
+
     return originalQuestion;
   }
 

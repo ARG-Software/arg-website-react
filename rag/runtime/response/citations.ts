@@ -40,7 +40,14 @@ export function createCitations(contexts: RetrievedContext[], siteUrl: string): 
 }
 
 function isNavigableFirstPartyContext(context: RetrievedContext, siteUrl: string): boolean {
-  if (context.origin !== 'first_party' || context.sourceType === 'local_document' || !context.url) {
+  if (context.origin !== 'first_party' || !context.url) {
+    return false;
+  }
+
+  if (
+    context.sourceType === 'local_document' &&
+    context.sourceMetadata?.documentKind !== 'portfolio'
+  ) {
     return false;
   }
 

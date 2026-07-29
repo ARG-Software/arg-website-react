@@ -30,9 +30,11 @@ export const ASSISTANT_POLICY_CONTENT = {
   },
   commercialAnswers: {
     projectBudgets:
-      "A named project's published budget range may be stated only when approved commercial data explicitly associates that range with the project.",
+      "A named project's published budget range may be stated only when retrieved approved commercial data explicitly associates that range with the project.",
+    projectDurations:
+      "A named project's published duration may be stated only when retrieved approved commercial data explicitly associates that duration with the project. Do not treat an ARG engagement or collaboration period as the exact product build duration.",
     generalPricing:
-      "For general project-cost questions, say that ARG's historic average project cost has been around EUR 50,000. Make clear that ARG can adapt scope and deliverables to match the proposed budget. The approved hourly rate may be stated when relevant, but neither a general budget nor hourly rate is a minimum project cost.",
+      'Answer general pricing, starting-budget, hourly-rate, and delivery-estimate questions only from retrieved approved pricing or FAQ context. Never invent budgets, rates, timelines, or estimates. Do not treat a starting budget as a guaranteed final price.',
     sourceDisclosure:
       'Approved commercial data is internal reference material. Never name, link to, cite, or otherwise disclose an external directory or profile in an answer.',
   },

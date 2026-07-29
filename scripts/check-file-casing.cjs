@@ -29,6 +29,7 @@ const RULES = [
     extensions: ['.js'],
     pattern: /^use[A-Z][A-Za-z0-9]*\.js$/,
     description: 'usePascalThing.js',
+    excludeDirectories: ['utils'],
   },
   {
     root: 'src/services',
@@ -92,12 +93,20 @@ const violations = RULES.flatMap(rule => {
   const directory = path.join(ROOT_DIR, rule.root);
   return listFiles(directory)
     .filter(filePath => rule.extensions.includes(path.extname(filePath)))
+    .filter(filePath => !isInExcludedDirectory(filePath, rule.excludeDirectories ?? []))
     .filter(filePath => !rule.pattern.test(path.basename(filePath)))
     .map(filePath => ({
       filePath: path.relative(ROOT_DIR, filePath).replace(/\\/g, '/'),
       expected: rule.description,
     }));
 });
+
+function isInExcludedDirectory(filePath, excludedDirectories) {
+  if (excludedDirectories.length === 0) return false;
+
+  const parts = path.relative(ROOT_DIR, filePath).split(path.sep);
+  return parts.some(part => excludedDirectories.includes(part));
+}
 
 if (violations.length > 0) {
   console.error('Filename casing check failed:\n');

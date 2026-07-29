@@ -3,9 +3,10 @@
     {
       "id": "pricing",
       "q": "How much does custom software development cost?",
-      "schemaAnswer": "Our typical rate is around 70 EUR/USD per hour, but pricing depends on the project. Ongoing work can be hourly or monthly, smaller scoped projects can use an initial fee and final delivery payment, and larger scopes can be split by milestones. Before estimating, we define workflows, technical risks, architecture direction, and a realistic delivery range.",
+      "schemaAnswer": "Project budgets usually start around EUR 10,000, but the final estimate depends on the application, scope, complexity, integrations, timeline, and delivery model. We review each case individually before giving a concrete proposal. Ongoing work can be hourly or monthly, smaller scoped projects can use an initial fee and final delivery payment, and larger scopes can be split by milestones.",
       "answer": [
-        { "type": "paragraph", "text": "Our typical rate is around 70 EUR/USD per hour, but we do not force every project into the same pricing model." },
+        { "type": "paragraph", "text": "Project budgets usually start around EUR 10,000, but we do not force every project into the same pricing model." },
+        { "type": "paragraph", "text": "The final estimate depends on the application, scope, complexity, integrations, timeline, and delivery model. We review each case individually before giving a concrete proposal." },
         { "type": "paragraph", "text": "For ongoing or evolving work, hourly or monthly collaboration can make sense. For smaller, well-defined projects, we can agree on an initial fee to start and a final payment on delivery. For larger scopes, payments can be split by milestones or deliverables." },
         { "type": "paragraph", "text": "Each case is reviewed individually. Before estimating, we usually define:" },
         { "type": "list", "items": ["The core workflows", "The technical risks", "The architecture direction", "A realistic delivery range"] },

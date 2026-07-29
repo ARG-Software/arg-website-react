@@ -6,6 +6,24 @@ const MAX_HISTORY_MESSAGE_LENGTH = 2000;
 const MAX_PAGE_PATH_LENGTH = 200;
 const MAX_PAGE_TITLE_LENGTH = 200;
 
+const PROJECT_NAMES_BY_SLUG: Record<string, string> = {
+  dokutar: 'Dokutar',
+  mojaloop: 'Mojaloop',
+  'peoples-clearinghouse': "People's Clearinghouse",
+  'royalty-flush': 'Royalty Flush',
+  'sky-tracks': 'Sky Tracks',
+  'tv-cine': 'TV Cine',
+  vector: 'Vector',
+};
+
+const STATIC_PAGE_SOURCE_KEYS: Record<string, string[]> = {
+  '/about-us': ['about', 'arg-team', 'jose-antunes', 'rui-rocha'],
+  '/careers': ['careers-page', 'jobs'],
+  '/contact': ['site-links'],
+  '/partners': ['partners-page'],
+  '/working-with-us': ['working-with-us'],
+};
+
 export class RagValidationError extends Error {
   code: string;
 
@@ -128,6 +146,8 @@ export function normalizePageContext(pageContext: unknown): PageContext | null {
   }
 
   const projectMatch = normalizedPathname.match(/^\/projects\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/i);
+  const blogMatch = normalizedPathname.match(/^\/blog\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/i);
+  const normalizedStaticPath = normalizedPathname.replace(/\/+$/, '') || '/';
   const normalizedActiveSection =
     normalizedPathname === '/' && typeof activeSection === 'string'
       ? getHomepageSectionScope(activeSection)
@@ -140,10 +160,54 @@ export function normalizePageContext(pageContext: unknown): PageContext | null {
     );
   }
 
+  const projectSlug = projectMatch?.[1].toLowerCase();
+  const blogSlug = blogMatch?.[1].toLowerCase();
+  const staticSourceKeys = STATIC_PAGE_SOURCE_KEYS[normalizedStaticPath];
+  const activeSectionSourceKeys = normalizedActiveSection
+    ? normalizedActiveSection.sourceKey === 'home:faq'
+      ? ['home:faq', 'faq']
+      : [normalizedActiveSection.sourceKey]
+    : null;
+
   return {
     pathname: normalizedPathname,
     title: normalizedTitle,
-    ...(projectMatch ? { projectSlug: projectMatch[1].toLowerCase() } : {}),
+    ...(projectSlug
+      ? {
+          pageKind: 'project' as const,
+          projectSlug,
+          projectName: PROJECT_NAMES_BY_SLUG[projectSlug] ?? getTitleEntity(normalizedTitle, projectSlug),
+          sourceKeys: [projectSlug],
+        }
+      : {}),
+    ...(blogSlug
+      ? { pageKind: 'blog_post' as const, blogSlug, sourceKeys: [blogSlug] }
+      : {}),
+    ...(!projectSlug && !blogSlug && normalizedPathname === '/'
+      ? {
+          pageKind: 'homepage' as const,
+          ...(activeSectionSourceKeys ? { sourceKeys: activeSectionSourceKeys } : {}),
+        }
+      : {}),
+    ...(!projectSlug && !blogSlug && staticSourceKeys
+      ? { pageKind: 'static_page' as const, sourceKeys: staticSourceKeys }
+      : {}),
     ...(normalizedActiveSection ? { activeSection: activeSection as PageContext['activeSection'] } : {}),
   };
+}
+
+function getTitleEntity(title: string, fallbackSlug: string): string {
+  const cleanedTitle = title
+    .replace(/\s*\|\s*Arg Software\s*$/i, '')
+    .replace(/\s*-\s*Use Case\s*$/i, '')
+    .trim();
+
+  if (cleanedTitle) {
+    return cleanedTitle;
+  }
+
+  return fallbackSlug
+    .split('-')
+    .map(part => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(' ');
 }

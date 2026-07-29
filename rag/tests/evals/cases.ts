@@ -156,7 +156,7 @@ export const ragEvalPromptBank: Record<string, string[]> = {
   ],
   pricingAndHiring: [
     'how much does a project cost?',
-    'is 50k your minimum budget?',
+    'is 10k your minimum budget?',
     'what is your hourly rate?',
     'can you work in hybrid mode?',
     'can I hire one senior engineer?',
@@ -255,8 +255,8 @@ const commonSources = [
 const commonChunks = [
   chunk('homepage-id', 'homepage', 'ARG Software builds secure, scalable digital platforms for fintech, open payments, music technology, media, SaaS, and high-growth technology companies.'),
   chunk('about-id', 'about', 'ARG Software was founded by Jose Antunes and Rui Rocha after years of working together across engineering, telecom, product, architecture, and international projects.'),
-  chunk('assistant-policy-id', 'assistant-policy', 'ARG\'s historic average project cost has been around EUR 50,000. ARG can adapt scope and deliverables to match the proposed budget. The typical rate is around 70 EUR/USD per hour.'),
-  chunk('faq-id', 'faq', 'ARG is remote-first. Hybrid mode, recurring on-site sessions, or a different collaboration rhythm are assessed case by case.'),
+  chunk('assistant-policy-id', 'assistant-policy', 'Answer pricing and timeline questions only from retrieved approved pricing, FAQ, project, or commercial-reference context. Do not invent budgets or durations.'),
+  chunk('faq-id', 'faq', 'Project budgets usually start around EUR 10,000, but the final estimate depends on the application, scope, complexity, integrations, timeline, and delivery model. ARG is remote-first. Hybrid mode, recurring on-site sessions, or a different collaboration rhythm are assessed case by case.'),
   chunk('mojaloop-id', 'mojaloop', 'Mojaloop vNext was rebuilt as an open-source payment switch with microservices, zero-trust service boundaries, ISO/payment-message compatibility, and high-volume payment processing.'),
   chunk('peoples-clearinghouse-id', 'peoples-clearinghouse', 'People\'s Clearinghouse extended Mojaloop vNext into a community-owned payment network. Lookup and quote workflows averaged roughly 200-300 ms, with ledger transfers around 770 ms.'),
   chunk('sky-tracks-id', 'sky-tracks', 'Sky Tracks migrated to Angular, reduced latency, connected external instruments, and stabilized browser-based music production workflows.'),
@@ -368,11 +368,11 @@ export const executableRagEvalCases: RagEvalCase[] = [
     rpcRows: [
       match('project', 'mojaloop', 'Mojaloop', 'Mojaloop project work included a payment-switch rebuild.'),
       match('project', 'sky-tracks', 'Sky Tracks', 'Sky Tracks migrated the product frontend to Angular.'),
-      match('working_with_us', 'assistant-policy', 'Assistant Response Policy', 'Historic average project cost has been around EUR 50,000 and the rate is around 70 EUR/USD per hour.'),
+      match('faq', 'faq', 'Frequently Asked Questions', 'Project budgets usually start around EUR 10,000, but final estimates depend on the application and are reviewed case by case.'),
     ],
     matchCount: 6,
     expected: {
-      sourceKeys: ['mojaloop', 'sky-tracks', 'assistant-policy'],
+      sourceKeys: ['mojaloop', 'sky-tracks', 'faq'],
       generatedQuestionPatterns: [
         /What did ARG Software do on Mojaloop\? \(context retrieved\)/u,
         /Does ARG Software use Angular\? \(context retrieved\)/u,
@@ -582,14 +582,19 @@ export const executableRagEvalCases: RagEvalCase[] = [
       entity: 'ARG Software',
       subject: 'project budget and minimum project cost',
     },
-    rpcRows: [
-      match('working_with_us', 'assistant-policy', 'Assistant Response Policy', 'Historic average project cost has been around EUR 50,000. The approved hourly rate may be stated when relevant, but neither a general budget nor hourly rate is a minimum project cost.'),
+    sources: [source('faq-id', 'faq', 'Frequently Asked Questions', 'faq', '/#faq')],
+    chunks: [
+      chunk(
+        'faq-id',
+        'faq',
+        'Project budgets usually start around EUR 10,000, but final estimates depend on the application and are reviewed case by case.'
+      ),
     ],
     generatedAnswer:
-      'Our historic average project cost has been around EUR 50,000, and we can adapt scope and deliverables to the proposed budget. That is not a minimum project cost.',
+      'Projects usually start around EUR 10,000, but the final estimate depends on the application and is reviewed case by case. That is not a guaranteed final price.',
     expected: {
-      sourceKeys: ['assistant-policy'],
-      answerPatterns: [/EUR 50,000/u, /not a minimum project cost/u],
+      sourceKeys: ['faq'],
+      answerPatterns: [/EUR 10,000/u, /case by case|reviewed case by case|not a guaranteed final price/u],
       generatedQuestionPatterns: [/So your minimum budget is 250k, right\?/u],
     },
   },

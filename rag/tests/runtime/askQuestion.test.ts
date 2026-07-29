@@ -13,6 +13,66 @@ import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from '../.
 
 const config = createTestConfig({ matchCount: 1 });
 
+const APPROVED_PROJECT_COMMERCIAL_FACTS = [
+  {
+    projectName: 'Sky Tracks',
+    sourceKey: 'sky-tracks',
+    budget: '$20K - $100K',
+    duration: '12 Months',
+    year: '2022',
+    engagementTimeline: '1 Year',
+  },
+  {
+    projectName: 'Mojaloop',
+    sourceKey: 'mojaloop',
+    budget: '$100K - $250K',
+    duration: '24 Months',
+    year: '2024',
+    engagementTimeline: 'Ongoing',
+  },
+  {
+    projectName: 'Vector',
+    sourceKey: 'vector',
+    budget: '$20K - $100K',
+    duration: '13 Months',
+    year: '2024',
+    engagementTimeline: '6 Months',
+  },
+  {
+    projectName: 'Dokutar',
+    sourceKey: 'dokutar',
+    budget: '$20K - $100K',
+    duration: '24 Months',
+    year: '2022',
+    engagementTimeline: '2 Years',
+  },
+  {
+    projectName: 'TV Cine',
+    sourceKey: 'tv-cine',
+    budget: '$5K - $20K',
+    duration: '3 Months',
+    year: '2022',
+    engagementTimeline: '1 Year',
+  },
+  {
+    projectName: "People's Clearinghouse",
+    sourceKey: 'peoples-clearinghouse',
+    budget: '$20K - $100K',
+    duration: '12 Months',
+    year: '2026',
+    engagementTimeline: '3 Years',
+  },
+];
+
+const APPROVED_COMMERCIAL_DATA_CONTENT = [
+  'Approved commercial data for ARG Software.',
+  'Published project budget ranges and project durations:',
+  ...APPROVED_PROJECT_COMMERCIAL_FACTS.map(
+    fact => `${fact.projectName}: budget ${fact.budget}; duration ${fact.duration}; year ${fact.year}.`
+  ),
+  'Use a project budget range or project duration only for the named project. Do not present ARG engagement duration as project build duration.',
+].join('\n');
+
 test('latest articles retrieve the newest three dated blog posts without embeddings', async () => {
   const sources = [
     source('old', 'Old post', 'June 1, 2026'),
@@ -47,15 +107,26 @@ test('latest articles retrieve the newest three dated blog posts without embeddi
   assert.equal(supabase.calls.matchChunks.length, 0);
 });
 
-test('an article-discovery plan uses the latest-blog route', () => {
-  assert.equal(
-    resolveRetrievalRoute('What are the most recent blog posts?', {
-      mode: 'article_discovery',
-      entity: '',
-      subject: 'blog posts',
-    }).kind,
-    'latest_blog'
-  );
+test('an article-discovery plan uses the blog latest route', () => {
+  const route = resolveRetrievalRoute('What are the most recent blog posts?', {
+    mode: 'article_discovery',
+    entity: '',
+    subject: 'blog posts',
+  });
+
+  assert.equal(route.kind, 'blog');
+  assert.equal(route.blogKind, 'latest');
+});
+
+test('article-discovery routes non-latest article questions as blog topic discovery', () => {
+  const route = resolveRetrievalRoute('Do you have articles about architecture?', {
+    mode: 'article_discovery',
+    entity: '',
+    subject: 'architecture articles',
+  });
+
+  assert.equal(route.kind, 'blog');
+  assert.equal(route.blogKind, 'topic_discovery');
 });
 
 test('a follow-up about an article uses editorial route and retrieves blog content', async () => {
@@ -98,9 +169,57 @@ test('a follow-up about an article uses editorial route and retrieves blog conte
       'what does The Stack Nobody Hypes, but Serious CTOs Keep Choosing talk about?',
       { mode: 'editorial', entity: '', subject: '' }
     ).kind,
-    'editorial'
+    'blog'
   );
   assert.ok(result.answer.length > 0);
+});
+
+test('commercial route precedence separates pricing, MVP timelines, project duration, and engagement duration', () => {
+  const plan = { mode: 'direct_evidence' as const, entity: 'ARG Software', subject: '' };
+
+  const pricingRoute = resolveRetrievalRoute('How much does a project cost?', {
+    ...plan,
+    subject: 'project pricing',
+  });
+  const mvpRoute = resolveRetrievalRoute('How long does it take to build an MVP?', {
+    ...plan,
+    subject: 'MVP delivery estimate',
+  });
+  const projectDurationRoute = resolveRetrievalRoute('How long did Vector take?', {
+    ...plan,
+    subject: 'project duration',
+  });
+  const engagementRoute = resolveRetrievalRoute('How long did ARG work with Vector?', {
+    ...plan,
+    subject: 'engagement duration',
+  });
+
+  assert.equal(pricingRoute.kind, 'commercial_delivery');
+  assert.equal(pricingRoute.commercialKind, 'general_pricing');
+  assert.equal(mvpRoute.kind, 'commercial_delivery');
+  assert.equal(mvpRoute.commercialKind, 'timeline_estimate');
+  assert.equal(projectDurationRoute.kind, 'commercial_delivery');
+  assert.equal(projectDurationRoute.commercialKind, 'project_duration');
+  assert.equal(projectDurationRoute.entity, 'Vector');
+  assert.equal(engagementRoute.kind, 'commercial_delivery');
+  assert.equal(engagementRoute.commercialKind, 'engagement_duration');
+  assert.equal(engagementRoute.entity, 'Vector');
+});
+
+test('link-action routing retrieves links but does not hijack pricing requests', () => {
+  const plan = { mode: 'direct_evidence' as const, entity: 'ARG Software', subject: '' };
+  const githubRoute = resolveRetrievalRoute('Can you send me your GitHub link?', {
+    ...plan,
+    subject: 'GitHub link',
+  });
+  const pricingRoute = resolveRetrievalRoute('Can you send me a pricing quote?', {
+    ...plan,
+    subject: 'pricing quote',
+  });
+
+  assert.equal(githubRoute.kind, 'link_action');
+  assert.equal(pricingRoute.kind, 'commercial_delivery');
+  assert.equal(pricingRoute.commercialKind, 'general_pricing');
 });
 
 test('blog metadata remains retrievable through the general route', async () => {
@@ -148,7 +267,7 @@ test('fintech questions use official project evidence before technical blog retr
       entity: 'ARG Software',
       subject: 'fintech',
     }).kind,
-    'direct_evidence'
+    'company_services'
   );
   assert.equal(contexts[0]?.sourceType, 'project');
   assert.deepEqual(supabase.calls.matchChunks[0]?.sourceTypes, [
@@ -207,6 +326,503 @@ test('a hybrid mode client-hiring question retrieves FAQ evidence and project ac
     { type: 'contact_form' },
   ]);
   assert.ok(supabase.calls.matchChunks.some(call => call.sourceTypes?.includes('faq')));
+});
+
+test('external link questions retrieve the site-links source without embeddings', async () => {
+  const siteLinks = source('site-links-id', 'ARG Links and Contact Options', null, 'homepage', 'site-links');
+  const supabase = createSupabase({
+    sources: [siteLinks],
+    chunks: [chunk('site-links-id', 'site-links', 'socials github: https://github.com/ARG-Software')],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for link actions');
+  });
+
+  const result = await askQuestion({
+    question: 'What is your GitHub link?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('GitHub link', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'GitHub link' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.equal(result.contexts[0]?.sourceKey, 'site-links');
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('general pricing questions retrieve FAQ pricing context without policy facts', async () => {
+  const faq = source('faq-id', 'Frequently Asked Questions', null, 'faq', 'faq');
+  const supabase = createSupabase({
+    sources: [faq],
+    chunks: [
+      chunk(
+        'faq-id',
+        'faq',
+        'Project budgets usually start around EUR 10,000, but final estimates depend on the application and are reviewed case by case.'
+      ),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for general pricing');
+  });
+
+  const result = await askQuestion({
+    question: 'How much does a project cost?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Pricing answer', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'project pricing' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.equal(result.contexts[0]?.sourceKey, 'faq');
+  assert.match(result.contexts[0]?.content ?? '', /EUR 10,000/u);
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('general MVP timeline questions retrieve FAQ timeline context', async () => {
+  const faq = source('faq-id', 'Frequently Asked Questions', null, 'faq', 'faq');
+  const supabase = createSupabase({
+    sources: [faq],
+    chunks: [chunk('faq-id', 'faq', 'Most focused MVPs take 8 to 14 weeks, depending on complexity.')],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for timeline estimates');
+  });
+
+  const result = await askQuestion({
+    question: 'How long does it take to build an MVP?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Timeline answer', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'MVP delivery estimate' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.equal(result.contexts[0]?.sourceKey, 'faq');
+  assert.match(result.contexts[0]?.content ?? '', /8 to 14 weeks/u);
+  assert.deepEqual(supabase.calls.findChunksByText[0]?.terms, ['Most focused MVPs', '8 to 14 weeks']);
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('named project budgets and durations retrieve approved commercial facts only', async () => {
+  const designRush = {
+    ...source('designrush-id', 'Approved Commercial Data', null, 'external_page', 'designrush'),
+    origin: 'trusted_external' as const,
+    url: 'https://www.designrush.com/agency/profile/arg-software',
+  };
+  const projectSources = APPROVED_PROJECT_COMMERCIAL_FACTS.map(fact =>
+    source(`${fact.sourceKey}-id`, fact.projectName, null, 'project', fact.sourceKey)
+  );
+  const supabase = createSupabase({
+    sources: [designRush, ...projectSources],
+    chunks: [
+      chunk('designrush-id', 'designrush', APPROVED_COMMERCIAL_DATA_CONTENT),
+      ...APPROVED_PROJECT_COMMERCIAL_FACTS.map(fact =>
+        chunk(
+          `${fact.sourceKey}-id`,
+          fact.sourceKey,
+          `project ${fact.projectName} timeline: ${fact.engagementTimeline}`
+        )
+      ),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for commercial facts');
+  });
+
+  for (const fact of APPROVED_PROJECT_COMMERCIAL_FACTS) {
+    const budgetResult = await askQuestion({
+      question: `What was the ${fact.projectName} budget?`,
+      config,
+      readRepository: supabase.repository,
+      answerProvider: createAnswerProvider(`${fact.projectName} budget`, {
+        plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'project budget' },
+      }),
+      embeddingProvider,
+      fallbackEmbeddingProvider: embeddingProvider,
+    });
+    const durationResult = await askQuestion({
+      question: `How long did ${fact.projectName} take?`,
+      config,
+      readRepository: supabase.repository,
+      answerProvider: createAnswerProvider(`${fact.projectName} duration`, {
+        plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'project duration' },
+      }),
+      embeddingProvider,
+      fallbackEmbeddingProvider: embeddingProvider,
+    });
+
+    assert.equal(budgetResult.contexts[0]?.sourceKey, 'designrush');
+    assert.ok(budgetResult.contexts[0]?.content.includes(`${fact.projectName}: budget ${fact.budget}`));
+    assert.equal(durationResult.contexts[0]?.sourceKey, 'designrush');
+    assert.ok(durationResult.contexts[0]?.content.includes(`duration ${fact.duration}`));
+    assert.doesNotMatch(
+      durationResult.contexts[0]?.content ?? '',
+      new RegExp(`project ${fact.projectName} timeline: ${fact.engagementTimeline}`, 'u')
+    );
+  }
+
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('project duration questions do not fall back to engagement timeline when commercial facts are missing', async () => {
+  const designRush = {
+    ...source('designrush-id', 'Approved Commercial Data', null, 'external_page', 'designrush'),
+    origin: 'trusted_external' as const,
+    url: 'https://www.designrush.com/agency/profile/arg-software',
+  };
+  const royaltyFlush = source(
+    'royalty-flush-id',
+    'Royalty Flush',
+    null,
+    'project',
+    'royalty-flush'
+  );
+  const supabase = createSupabase({
+    sources: [designRush, royaltyFlush],
+    chunks: [
+      chunk('designrush-id', 'designrush', APPROVED_COMMERCIAL_DATA_CONTENT),
+      chunk('royalty-flush-id', 'royalty-flush', 'project Royalty Flush timeline: 1 Year'),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for commercial facts');
+  });
+
+  const result = await askQuestion({
+    question: 'How long did Royalty Flush take?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Royalty Flush duration', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'project duration' },
+      insufficientContextAnswer: 'No approved project duration is available.',
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.equal(result.contexts.length, 0);
+  assert.equal(result.answer, 'No approved project duration is available.');
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('engagement duration questions retrieve official project engagement context', async () => {
+  const vector = source('vector-id', 'Vector', null, 'project', 'vector');
+  const supabase = createSupabase({
+    sources: [vector],
+    chunks: [chunk('vector-id', 'vector', 'project Vector timeline: 6 Months')],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for engagement duration');
+  });
+
+  const result = await askQuestion({
+    question: 'How long did ARG work with Vector?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Vector engagement', {
+      plan: { mode: 'direct_evidence', entity: 'Vector', subject: 'engagement duration' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.equal(result.contexts[0]?.sourceKey, 'vector');
+  assert.match(result.contexts[0]?.content ?? '', /6 Months/u);
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('project page context resolves this-project duration questions', async () => {
+  let answerQuestion = '';
+  const designRush = {
+    ...source('designrush-id', 'Approved Commercial Data', null, 'external_page', 'designrush'),
+    origin: 'trusted_external' as const,
+  };
+  const supabase = createSupabase({
+    sources: [designRush, source('vector-id', 'Vector', null, 'project', 'vector')],
+    chunks: [
+      chunk('designrush-id', 'designrush', APPROVED_COMMERCIAL_DATA_CONTENT),
+      chunk('vector-id', 'vector', 'project Vector timeline: 6 Months'),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for contextual project duration');
+  });
+
+  const result = await askQuestion({
+    question: 'How much time did it took to do this project?',
+    pageContext: { pathname: '/projects/vector/', title: 'Vector - Use Case | Arg Software' },
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('How much time did it took to do this project?', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'project duration' },
+      onGenerateAnswer(question) {
+        answerQuestion = question;
+      },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.equal(result.contexts[0]?.sourceKey, 'designrush');
+  assert.match(result.contexts[0]?.content ?? '', /Vector: budget \$20K - \$100K; duration 13 Months/u);
+  assert.match(answerQuestion, /Resolved current-page reference: Vector project duration/u);
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('project page context does not hijack general timeline questions', async () => {
+  const faq = source('faq-id', 'Frequently Asked Questions', null, 'faq', 'faq');
+  const supabase = createSupabase({
+    sources: [faq],
+    chunks: [chunk('faq-id', 'faq', 'Most focused MVPs take 8 to 14 weeks, depending on complexity.')],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for general MVP timelines');
+  });
+
+  const result = await askQuestion({
+    question: 'How much does an MVP usually take?',
+    pageContext: { pathname: '/projects/vector/', title: 'Vector - Use Case | Arg Software' },
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('MVP delivery estimate', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'MVP delivery estimate' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.equal(result.contexts[0]?.sourceKey, 'faq');
+  assert.match(result.contexts[0]?.content ?? '', /8 to 14 weeks/u);
+});
+
+test('homepage active-section context retrieves the visible section source', async () => {
+  const services = source('home-services-id', 'ARG Services', null, 'homepage', 'home:services');
+  const cases = source('home-projects-id', 'Homepage Projects', null, 'homepage', 'home:projects');
+  const supabase = createSupabase({
+    sources: [services, cases],
+    chunks: [
+      chunk('home-services-id', 'home-services', 'ARG Services section: engineering, architecture, cloud, AI, and product delivery.'),
+      chunk('home-projects-id', 'home-projects', 'Homepage Projects section: fintech, media, and trading platform work.'),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for contextual homepage sections');
+  });
+
+  const servicesResult = await askQuestion({
+    question: 'Tell me more about this section',
+    pageContext: { pathname: '/', title: 'ARG Software', activeSection: 'services' },
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Tell me more about this section', {
+      plan: { mode: 'direct_evidence', entity: '', subject: 'section' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+  const casesResult = await askQuestion({
+    question: 'What kind of work is shown here?',
+    pageContext: { pathname: '/', title: 'ARG Software', activeSection: 'cases' },
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('What kind of work is shown here?', {
+      plan: { mode: 'direct_evidence', entity: '', subject: 'work examples' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(servicesResult.contexts.map(context => context.sourceKey), ['home:services']);
+  assert.deepEqual(casesResult.contexts.map(context => context.sourceKey), ['home:projects']);
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('homepage faq section context retrieves faq sources for this-section budget questions', async () => {
+  const homeFaq = source('home-faq-id', 'Homepage FAQ', null, 'homepage', 'home:faq');
+  const faq = source('faq-id', 'Frequently Asked Questions', null, 'faq', 'faq');
+  const supabase = createSupabase({
+    sources: [homeFaq, faq],
+    chunks: [
+      chunk('home-faq-id', 'home-faq', 'Homepage FAQ section: budget, timeline, and collaboration questions.'),
+      chunk('faq-id', 'faq', 'Project budgets usually start around EUR 10,000 and are reviewed case by case.'),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for contextual FAQ section');
+  });
+
+  const result = await askQuestion({
+    question: 'What does this section say about budget?',
+    pageContext: { pathname: '/', title: 'ARG Software', activeSection: 'faq' },
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('What does this section say about budget?', {
+      plan: { mode: 'direct_evidence', entity: '', subject: 'budget' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['home:faq', 'faq']);
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('static page context retrieves page-specific sources', async () => {
+  const sources = [
+    source('working-id', 'Working With Us', null, 'working_with_us', 'working-with-us'),
+    source('careers-id', 'Careers Page', null, 'careers', 'careers-page'),
+    source('jobs-id', 'Jobs and Hiring Traits', null, 'careers', 'jobs'),
+    source('about-id', 'About ARG Software', null, 'about', 'about'),
+    source('team-id', 'ARG Team', null, 'about', 'arg-team'),
+    source('links-id', 'ARG Links and Contact Options', null, 'homepage', 'site-links'),
+    source('partners-id', 'Partners Page', null, 'partner', 'partners-page'),
+  ];
+  const supabase = createSupabase({
+    sources,
+    chunks: [
+      chunk('working-id', 'working', 'Working With Us page: fit, collaboration model, and delivery process.'),
+      chunk('careers-id', 'careers', 'Careers page: hiring information and candidate traits.'),
+      chunk('jobs-id', 'jobs', 'Jobs and Hiring Traits: open roles and application details.'),
+      chunk('about-id', 'about', 'About ARG Software: origin story and studio background.'),
+      chunk('team-id', 'team', 'ARG Team: José Antunes and Rui Rocha.'),
+      chunk('links-id', 'links', 'ARG Links and Contact Options: hello email, meeting, and project brief.'),
+      chunk('partners-id', 'partners', 'Partners Page: client and partner relationships.'),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for contextual static pages');
+  });
+
+  const cases = [
+    {
+      path: '/working-with-us/',
+      title: 'Working With Us',
+      question: 'What does this page say about working together?',
+      expected: ['working-with-us'],
+    },
+    {
+      path: '/careers/',
+      title: 'Careers',
+      question: 'What roles or hiring info are on this page?',
+      expected: ['careers-page', 'jobs'],
+    },
+    {
+      path: '/about-us/',
+      title: 'About Us',
+      question: 'Who are the people behind this page?',
+      expected: ['about', 'arg-team'],
+    },
+    {
+      path: '/contact/',
+      title: 'Contact',
+      question: 'How can I use this page to contact you?',
+      expected: ['site-links'],
+    },
+    {
+      path: '/partners/',
+      title: 'Partners',
+      question: 'What is shown on this page?',
+      expected: ['partners-page'],
+    },
+  ];
+
+  for (const item of cases) {
+    const result = await askQuestion({
+      question: item.question,
+      pageContext: { pathname: item.path, title: item.title },
+      config,
+      readRepository: supabase.repository,
+      answerProvider: createAnswerProvider(item.question, {
+        plan: { mode: 'direct_evidence', entity: '', subject: 'page content' },
+      }),
+      embeddingProvider,
+      fallbackEmbeddingProvider: embeddingProvider,
+    });
+
+    assert.deepEqual(result.contexts.map(context => context.sourceKey), item.expected);
+  }
+
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('blog page context retrieves the current article source', async () => {
+  const article = source(
+    'article-id',
+    'The Stack Nobody Hypes, but Serious CTOs Keep Choosing',
+    'July 1, 2026',
+    'blog_post',
+    'the-stack-nobody-hypes'
+  );
+  const supabase = createSupabase({
+    sources: [article],
+    chunks: [chunk('article-id', 'article', 'Article content: a practical stack for serious CTOs.')],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for contextual blog article');
+  });
+
+  const result = await askQuestion({
+    question: 'What is this article about?',
+    pageContext: {
+      pathname: '/blog/the-stack-nobody-hypes/',
+      title: 'The Stack Nobody Hypes, but Serious CTOs Keep Choosing',
+    },
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('What is this article about?', {
+      plan: { mode: 'editorial', entity: '', subject: 'article summary' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['the-stack-nobody-hypes']);
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('open-source questions search only the portfolio PDF source', async () => {
+  const supabase = createSupabase({
+    rpcRows: [
+      matchRow(
+        'local_document',
+        'portfolio-pdf',
+        'ARG Software Portfolio',
+        "People's Clearinghouse is a client project that extends Mojaloop vNext."
+      ),
+      matchRow(
+        'local_document',
+        'portfolio-pdf',
+        'ARG Software Portfolio',
+        'Our Open Source Projects\nNx-Monorepo-Boilerplate\nBrowser Extension Boilerplate\nClean-Architecture'
+      ),
+    ],
+  });
+
+  const result = await askQuestion({
+    question: 'Does ARG have open source projects?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Open source answer', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'open source projects' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.equal(result.contexts[0]?.sourceKey, 'portfolio-pdf');
+  assert.match(result.contexts[0]?.content ?? '', /Our Open Source Projects/u);
+  assert.doesNotMatch(result.contexts[0]?.content ?? '', /People's Clearinghouse/u);
+  assert.deepEqual(supabase.calls.matchChunks[0]?.sourceKeys, ['portfolio-pdf']);
+  assert.equal(supabase.calls.matchChunks[0]?.sourceTypes, null);
 });
 
 test('top referenced project questions retrieve ranked public project evidence', async () => {
@@ -996,13 +1612,13 @@ test('compound questions retrieve separate semantic contexts with one embedding 
         'José Antunes',
         'José CV professional background evidence.'
       ),
-      matchRow('project', 'mojaloop', 'Mojaloop', 'Mojaloop project duration evidence.'),
+      matchRow('project', 'mojaloop', 'Mojaloop', 'Mojaloop project work evidence.'),
     ],
   });
   const embeddingBatches: string[][] = [];
 
   const result = await askQuestion({
-    question: 'What is Jose background? How long did you worked in mojaloop project?',
+    question: 'What is Jose background? What did you work on in the Mojaloop project?',
     config: { ...config, matchCount: 6 },
     readRepository: supabase.repository,
     answerProvider: createAnswerProvider('unused', {
@@ -1015,10 +1631,10 @@ test('compound questions retrieve separate semantic contexts with one embedding 
             subject: 'background',
           },
           {
-            query: 'Mojaloop project duration',
+            query: 'Mojaloop project work',
             mode: 'direct_evidence',
             entity: 'Mojaloop',
-            subject: 'project duration',
+            subject: 'project work',
           },
         ],
       },
@@ -1030,7 +1646,7 @@ test('compound questions retrieve separate semantic contexts with one embedding 
     fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
   });
 
-  assert.deepEqual(embeddingBatches, [['José Antunes background', 'Mojaloop project duration']]);
+  assert.deepEqual(embeddingBatches, [['José Antunes background', 'Mojaloop project work']]);
   assert.ok(result.contexts.some(context => context.sourceKey === 'jose-antunes'));
   assert.ok(result.contexts.some(context => context.sourceKey === 'jose-antunes-cv'));
   assert.ok(result.contexts.some(context => context.sourceKey === 'mojaloop'));

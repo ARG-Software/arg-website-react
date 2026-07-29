@@ -13,6 +13,10 @@ export interface PromptMessage {
 export interface PageContext {
   pathname: string;
   title: string;
+  pageKind?: 'project' | 'homepage' | 'static_page' | 'blog_post';
   projectSlug?: string;
+  projectName?: string;
+  blogSlug?: string;
   activeSection?: HomepageSectionId;
+  sourceKeys?: string[];
 }

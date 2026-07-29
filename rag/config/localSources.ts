@@ -83,6 +83,15 @@ export const LOCAL_SOURCE_ENTRIES = [
     url: '/#faq',
     label: 'faq',
   },
+  {
+    kind: 'json',
+    filePath: 'src/data/siteLinks.json',
+    sourceType: 'homepage',
+    sourceKey: 'site-links',
+    title: 'ARG Links and Contact Options',
+    url: '/contact/',
+    label: 'ARG links and contact options',
+  },
   ASSISTANT_POLICY_SOURCE,
   {
     kind: 'projects_json',

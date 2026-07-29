@@ -83,7 +83,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
     context.messages,
     context.pageContext
   );
-  const routedItems = createRoutedRetrievalItems(plan, context.question);
+  const routedItems = createRoutedRetrievalItems(plan, context.question, context.pageContext);
 
   if (routedItems.every(item => item.route.requiresPersonClarification)) {
     return {
@@ -182,8 +182,13 @@ export async function retrieveRelevantChunks(
     context.messages,
     context.pageContext
   );
-  const query = input.retrievalQuestion?.trim() || plan.query || context.question;
-  const route = resolveRetrievalRoute(query, plan);
+  const routedItem = createRoutedRetrievalItems(
+    { ...plan, query: input.retrievalQuestion?.trim() || plan.query },
+    context.question,
+    context.pageContext
+  )[0];
+  const query = routedItem?.retrievalQuestion || context.question;
+  const route = routedItem?.route || resolveRetrievalRoute(query, plan);
 
   if (route.requiresPersonClarification) {
     return [];
