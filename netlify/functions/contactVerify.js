@@ -1,10 +1,7 @@
 import { verifyAltchaPayload } from '../../rag/security/altcha.ts';
+import { createCorsHeaders, createOriginGuardResponse } from './apiOrigin.js';
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+const ALLOWED_METHODS = 'POST, OPTIONS';
 
 export const config = {
   path: '/api/contact/verify',
@@ -17,12 +14,19 @@ export const config = {
 };
 
 export default async function handler(request) {
+  const originGuardResponse = createOriginGuardResponse(request, ALLOWED_METHODS);
+  if (originGuardResponse) return originGuardResponse;
+
   if (request.method === 'OPTIONS') {
-    return createResponse(204, '');
+    return createResponse(request, 204, '');
   }
 
   if (request.method !== 'POST') {
-    return createResponse(405, createErrorBody('method_not_allowed', 'Method not allowed'));
+    return createResponse(
+      request,
+      405,
+      createErrorBody('method_not_allowed', 'Method not allowed')
+    );
   }
 
   let altcha;
@@ -30,24 +34,36 @@ export default async function handler(request) {
   try {
     altcha = (await request.json()).altcha;
   } catch {
-    return createResponse(400, createErrorBody('invalid_json', 'Invalid JSON body'));
+    return createResponse(request, 400, createErrorBody('invalid_json', 'Invalid JSON body'));
   }
 
   try {
     if (!altcha) {
-      return createResponse(403, createErrorBody('bot_verification_failed', 'Verification required'));
+      return createResponse(
+        request,
+        403,
+        createErrorBody('bot_verification_failed', 'Verification required')
+      );
     }
 
     const altchaResult = await verifyAltchaPayload(String(altcha));
 
     if (!altchaResult.verified) {
-      return createResponse(403, createErrorBody('bot_verification_failed', 'Verification failed'));
+      return createResponse(
+        request,
+        403,
+        createErrorBody('bot_verification_failed', 'Verification failed')
+      );
     }
   } catch {
-    return createResponse(403, createErrorBody('bot_verification_failed', 'Verification failed'));
+    return createResponse(
+      request,
+      403,
+      createErrorBody('bot_verification_failed', 'Verification failed')
+    );
   }
 
-  return createResponse(200, { verified: true });
+  return createResponse(request, 200, { verified: true });
 }
 
 function createErrorBody(code, message) {
@@ -59,13 +75,14 @@ function createErrorBody(code, message) {
   };
 }
 
-function createResponse(statusCode, body) {
-  const responseBody = statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);
+function createResponse(request, statusCode, body) {
+  const responseBody =
+    statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);
 
   return new Response(responseBody, {
     status: statusCode,
     headers: {
-      ...CORS_HEADERS,
+      ...createCorsHeaders(request, ALLOWED_METHODS),
       'Content-Type': 'application/json',
     },
   });

@@ -4,12 +4,9 @@ import { verifyAltchaChallenge } from '../../rag/security/altcha.ts';
 import { checkRateLimits, getRateLimitConfig } from '../../rag/security/rateLimit.ts';
 import { SupabaseRateLimitStore } from '../../rag/security/rateLimitStores.ts';
 import { createSupabaseServiceClient } from '../../rag/clients/supabaseClient.ts';
+import { createCorsHeaders, createOriginGuardResponse } from './apiOrigin.js';
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+const ALLOWED_METHODS = 'POST, OPTIONS';
 
 export const config = {
   path: '/api/assistant/ask',
@@ -31,12 +28,19 @@ function getRateLimitStore() {
 }
 
 export default async function handler(request) {
+  const originGuardResponse = createOriginGuardResponse(request, ALLOWED_METHODS);
+  if (originGuardResponse) return originGuardResponse;
+
   if (request.method === 'OPTIONS') {
-    return createResponse(204, '');
+    return createResponse(request, 204, '');
   }
 
   if (request.method !== 'POST') {
-    return createResponse(405, createErrorBody('method_not_allowed', 'Method not allowed'));
+    return createResponse(
+      request,
+      405,
+      createErrorBody('method_not_allowed', 'Method not allowed')
+    );
   }
 
   let payload;
@@ -44,12 +48,16 @@ export default async function handler(request) {
   try {
     payload = await request.json();
   } catch {
-    return createResponse(400, createErrorBody('invalid_json', 'Invalid JSON body'));
+    return createResponse(request, 400, createErrorBody('invalid_json', 'Invalid JSON body'));
   }
 
   try {
     if (!payload.altcha?.challenge || !payload.altcha?.solution) {
-      return createResponse(403, createErrorBody('bot_verification_failed', 'Verification required'));
+      return createResponse(
+        request,
+        403,
+        createErrorBody('bot_verification_failed', 'Verification required')
+      );
     }
 
     const altchaResult = await verifyAltchaChallenge({
@@ -58,10 +66,18 @@ export default async function handler(request) {
     });
 
     if (!altchaResult.verified) {
-      return createResponse(403, createErrorBody('bot_verification_failed', 'Verification failed'));
+      return createResponse(
+        request,
+        403,
+        createErrorBody('bot_verification_failed', 'Verification failed')
+      );
     }
   } catch {
-    return createResponse(403, createErrorBody('bot_verification_failed', 'Verification failed'));
+    return createResponse(
+      request,
+      403,
+      createErrorBody('bot_verification_failed', 'Verification failed')
+    );
   }
 
   const clientIp = request.headers.get('x-nf-client-connection-ip') || 'unknown';
@@ -72,6 +88,7 @@ export default async function handler(request) {
 
     if (!rateLimitResult.allowed) {
       return createResponse(
+        request,
         429,
         createErrorBody('rate_limited', 'Too many requests. Please try again later.')
       );
@@ -87,7 +104,7 @@ export default async function handler(request) {
       pageContext: payload.pageContext,
     });
 
-    return createResponse(200, {
+    return createResponse(request, 200, {
       answer: result.answer,
       citations: result.citations,
       articleRecommendations: result.articleRecommendations,
@@ -107,7 +124,7 @@ export default async function handler(request) {
       console.error(error);
     }
 
-    return createResponse(statusCode, errorBody);
+    return createResponse(request, statusCode, errorBody);
   }
 }
 
@@ -120,13 +137,14 @@ function createErrorBody(code, message) {
   };
 }
 
-function createResponse(statusCode, body) {
-  const responseBody = statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);
+function createResponse(request, statusCode, body) {
+  const responseBody =
+    statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);
 
   return new Response(responseBody, {
     status: statusCode,
     headers: {
-      ...CORS_HEADERS,
+      ...createCorsHeaders(request, ALLOWED_METHODS),
       'Content-Type': 'application/json',
     },
   });
