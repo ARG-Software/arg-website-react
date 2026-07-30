@@ -1,5 +1,5 @@
 import { createAltchaChallenge } from '../../rag/security/altcha.ts';
-import { createCorsHeaders, createOriginGuardResponse } from './apiOrigin.js';
+import { createCorsHeaders, createOriginGuardResponse } from '../shared/apiOrigin.js';
 
 const ALLOWED_METHODS = 'GET, OPTIONS';
 

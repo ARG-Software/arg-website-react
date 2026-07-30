@@ -4,7 +4,7 @@ import { verifyAltchaChallenge } from '../../rag/security/altcha.ts';
 import { checkRateLimits, getRateLimitConfig } from '../../rag/security/rateLimit.ts';
 import { SupabaseRateLimitStore } from '../../rag/security/rateLimitStores.ts';
 import { createSupabaseServiceClient } from '../../rag/clients/supabaseClient.ts';
-import { createCorsHeaders, createOriginGuardResponse } from './apiOrigin.js';
+import { createCorsHeaders, createOriginGuardResponse } from '../shared/apiOrigin.js';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 

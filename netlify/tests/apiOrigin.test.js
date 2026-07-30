@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createCorsHeaders, createOriginGuardResponse, isAllowedOrigin } from './apiOrigin.js';
+import {
+  createCorsHeaders,
+  createOriginGuardResponse,
+  isAllowedOrigin,
+} from '../shared/apiOrigin.js';
 
 test('allows configured production origins', () => {
   assert.equal(isAllowedOrigin('https://arg.software'), true);
