@@ -65,3 +65,27 @@ export interface CareersJson {
     cards: CareersFounderCard[];
   };
 }
+
+export interface SiteLinksJson {
+  calendar?: {
+    project?: string;
+  };
+  forms?: {
+    projectBrief?: string;
+  };
+  emails?: {
+    hello?: string;
+  };
+  socials?: {
+    github?: string;
+    linkedin?: string;
+    medium?: string;
+  };
+  feeds?: {
+    rss?: string;
+    atom?: string;
+  };
+  assets?: {
+    portfolio?: string;
+  };
+}

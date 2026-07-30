@@ -64,13 +64,15 @@ function AssistantLinkList({ links }) {
 }
 
 function AssistantActions({ actions }) {
-  if (!actions || actions.length === 0) {
+  const visibleActions = actions?.filter(action => !action.autoStart) || [];
+
+  if (visibleActions.length === 0) {
     return null;
   }
 
   return (
     <div className="aw-actions">
-      {actions.map((action, index) => {
+      {visibleActions.map((action, index) => {
         const details = getAssistantActionDetails(action.type);
 
         if (!details) return null;

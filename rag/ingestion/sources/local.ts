@@ -13,6 +13,7 @@ import type {
   HomepageJson,
   PartnersJson,
   ProjectJson,
+  SiteLinksJson,
 } from './local-content.js';
 import type {
   InlineJsonManifestEntry,
@@ -93,6 +94,10 @@ async function loadHomepageSectionSources(
 async function loadJsonSource(filePath: string, options: JsonManifestEntry): Promise<RagSource> {
   const sourceKey = options.sourceKey ?? path.basename(filePath, path.extname(filePath));
   const json = await readJsonFile(filePath);
+  const content =
+    sourceKey === 'site-links'
+      ? formatSiteLinksSource(json as SiteLinksJson, options.label)
+      : flattenJsonToText(json, options.label);
 
   return createSource({
     sourceType: options.sourceType,
@@ -101,8 +106,25 @@ async function loadJsonSource(filePath: string, options: JsonManifestEntry): Pro
     url: options.url,
     path: filePath,
     metadata: { ...(options.metadata ?? {}), source_file: filePath },
-    content: flattenJsonToText(json, options.label),
+    content,
   });
+}
+
+function formatSiteLinksSource(siteLinks: SiteLinksJson, label = 'ARG links and contact options'): string {
+  return [
+    `${label}: Visitors can send a message through Gaspar here in the assistant.`,
+    `${label}: Primary general email: ${siteLinks.emails?.hello}.`,
+    `${label}: Book a meeting: ${siteLinks.calendar?.project}.`,
+    `${label}: Contact form and project brief: ${siteLinks.forms?.projectBrief}.`,
+    `${label}: GitHub: ${siteLinks.socials?.github}.`,
+    `${label}: LinkedIn: ${siteLinks.socials?.linkedin}.`,
+    `${label}: Medium: ${siteLinks.socials?.medium}.`,
+    `${label}: Portfolio: ${siteLinks.assets?.portfolio}.`,
+    `${label}: RSS feed: ${siteLinks.feeds?.rss}.`,
+    `${label}: Atom feed: ${siteLinks.feeds?.atom}.`,
+  ]
+    .filter(line => !line.endsWith(': undefined.'))
+    .join('\n');
 }
 
 function loadInlineJsonSource(rootDir: string, options: InlineJsonManifestEntry): RagSource {

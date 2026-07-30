@@ -8,8 +8,10 @@ import { FakeRagReadRepository } from '../fakes/FakeRagReadRepository.js';
 import { createContextFixture as matchRow } from '../fixtures/contexts.js';
 import { createTestConfig } from '../fixtures/config.js';
 import { createChunkFixture as chunk, createSourceFixture as source } from '../fixtures/sources.js';
+import { loadLocalSources } from '../../ingestion/sources/local.js';
 import { buildInsufficientContextPrompt } from '../../prompts/insufficientContext.js';
 import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from '../../runtime/askQuestion.js';
+import { createAssistantActions } from '../../runtime/response/actions.js';
 
 const config = createTestConfig({ matchCount: 1 });
 
@@ -382,6 +384,109 @@ test('external link questions retrieve the site-links source without embeddings'
 
   assert.equal(result.contexts[0]?.sourceKey, 'site-links');
   assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('site-links RAG source exposes Gaspar messaging and one general email', async () => {
+  const sources = await loadLocalSources(process.cwd(), {
+    all: false,
+    force: false,
+    fallbackOnly: false,
+    sourceKeys: ['site-links'],
+    filePaths: [],
+    urls: [],
+  });
+  const siteLinks = sources.find(item => item.sourceKey === 'site-links');
+
+  assert.ok(siteLinks);
+  assert.match(siteLinks.content, /send a message through Gaspar/u);
+  assert.match(siteLinks.content, /hello@arg\.software/u);
+  assert.doesNotMatch(siteLinks.content, /info@arg\.software/u);
+});
+
+test('direct message-through-Gaspar questions request lead capture auto-start', () => {
+  const questions = [
+    'Can I send a message through you?',
+    'Can I send a message through Gaspar?',
+    'I want to send you a message',
+    'Can you pass a message to the ARG team?',
+    'Can I do it through you?',
+  ];
+
+  for (const question of questions) {
+    assert.deepEqual(createAssistantActions(question), [
+      { type: 'gaspar_message', autoStart: true },
+    ]);
+  }
+});
+
+test('message wording false positives do not auto-start lead capture', () => {
+  const falsePositiveQuestions = [
+    'Can you send me information about ARG?',
+    'Can you send me your portfolio?',
+    'Can you send me your GitHub link?',
+    'Can I message Rui directly?',
+    'Send a message explaining CQRS',
+    'Can you forward this article to me?',
+    "What's the message of ARG as a company?",
+  ];
+
+  for (const question of falsePositiveQuestions) {
+    assert.ok(
+      !createAssistantActions(question).some(
+        action => action.type === 'gaspar_message' && action.autoStart
+      ),
+      `${question} should not auto-start lead capture`
+    );
+  }
+});
+
+test('HR message request keeps careers action instead of Gaspar lead capture', () => {
+  assert.deepEqual(createAssistantActions('Can I send a message to HR?'), [{ type: 'email_hr' }]);
+});
+
+test('contact questions put Gaspar messaging before alternatives', async () => {
+  const embeddingProvider = createEmbeddingProvider(() => [[0.1, 0.2]]);
+
+  const result = await askQuestion({
+    question: 'How can I contact you?',
+    config,
+    readRepository: createSupabase({}).repository,
+    answerProvider: createAnswerProvider('ARG contact options', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'contact options' },
+      insufficientContextAnswer:
+        'You can send a message through me here. You can also book a meeting, open the contact form, or email hello@arg.software.',
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.actions, [
+    { type: 'gaspar_message' },
+    { type: 'book_meeting' },
+    { type: 'contact_form' },
+  ]);
+  assert.match(result.answer, /message through me here/u);
+  assert.match(result.answer, /hello@arg\.software/u);
+  assert.doesNotMatch(result.answer, /info@arg\.software/u);
+});
+
+test('direct Gaspar message requests auto-start through the runtime response', async () => {
+  const embeddingProvider = createEmbeddingProvider(() => [[0.1, 0.2]]);
+
+  const result = await askQuestion({
+    question: 'Can I send a message through you?',
+    config,
+    readRepository: createSupabase({}).repository,
+    answerProvider: createAnswerProvider('ARG contact options', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'contact options' },
+      insufficientContextAnswer:
+        'Yes, you can send a message through me here. I will ask for your reply email and message.',
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.actions, [{ type: 'gaspar_message', autoStart: true }]);
 });
 
 test('website build service enquiries retrieve ARG service evidence rather than link actions', async () => {

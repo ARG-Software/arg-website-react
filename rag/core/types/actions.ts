@@ -2,4 +2,5 @@ export type AssistantActionType = 'book_meeting' | 'gaspar_message' | 'contact_f
 
 export interface AssistantAction {
   type: AssistantActionType;
+  autoStart?: boolean;
 }

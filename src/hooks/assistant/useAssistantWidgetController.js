@@ -33,6 +33,10 @@ function getChatHistory(messages) {
     .map(({ role, content }) => ({ role, content }));
 }
 
+function shouldAutoStartLeadCapture(actions) {
+  return actions?.some(action => action.type === 'gaspar_message' && action.autoStart) || false;
+}
+
 function useMobileFullscreen() {
   const [mobileViewport, setMobileViewport] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -124,6 +128,26 @@ export function useAssistantWidgetController({
     [capturedEmail, leadError]
   );
 
+  const startLeadCaptureFlow = useCallback(
+    ({ skipOffer = false } = {}) => {
+      const initialStep = skipOffer ? LEAD_STEPS.EMAIL : undefined;
+      const initialMessage = skipOffer
+        ? assistantContent.messages.leadCaptureEmail
+        : assistantContent.messages.leadCaptureOffer;
+
+      if (panelState === 'closed') {
+        setPanelState(getPanelStateForViewport(mobileViewport));
+      }
+      leadCaptureStartedRef.current = true;
+      leadDismissHandledRef.current = false;
+      setError(null);
+      startLeadCapture(initialStep);
+      setMessages(prev => [...prev, getLeadAssistantMessage(initialMessage)]);
+      trackAssistantEvent('open', { source: LEAD_SOURCE });
+    },
+    [LEAD_STEPS.EMAIL, panelState, mobileViewport, startLeadCapture, setError]
+  );
+
   const submitChatMessage = useCallback(
     async question => {
       const chatHistory = getChatHistory(messages);
@@ -133,10 +157,16 @@ export function useAssistantWidgetController({
       const result = await submitQuestion(question, chatHistory);
 
       if (result?.success && result.message) {
-        setMessages(prev => [...prev, getChatAssistantMessage(result.message)]);
+        const assistantMessage = getChatAssistantMessage(result.message);
+
+        setMessages(prev => [...prev, assistantMessage]);
+
+        if (!isLeadActive && shouldAutoStartLeadCapture(assistantMessage.actions)) {
+          startLeadCaptureFlow({ skipOffer: true });
+        }
       }
     },
-    [messages, submitQuestion]
+    [isLeadActive, messages, startLeadCaptureFlow, submitQuestion]
   );
 
   const submitCurrentLead = useCallback(async () => {
@@ -229,26 +259,6 @@ export function useAssistantWidgetController({
     window.addEventListener('gaspar:open', handleGasparOpen);
     return () => window.removeEventListener('gaspar:open', handleGasparOpen);
   }, [open]);
-
-  const startLeadCaptureFlow = useCallback(
-    ({ skipOffer = false } = {}) => {
-      const initialStep = skipOffer ? LEAD_STEPS.EMAIL : undefined;
-      const initialMessage = skipOffer
-        ? assistantContent.messages.leadCaptureEmail
-        : assistantContent.messages.leadCaptureOffer;
-
-      if (panelState === 'closed') {
-        setPanelState(getPanelStateForViewport(mobileViewport));
-      }
-      leadCaptureStartedRef.current = true;
-      leadDismissHandledRef.current = false;
-      setError(null);
-      startLeadCapture(initialStep);
-      setMessages(prev => [...prev, getLeadAssistantMessage(initialMessage)]);
-      trackAssistantEvent('open', { source: LEAD_SOURCE });
-    },
-    [LEAD_STEPS.EMAIL, panelState, mobileViewport, startLeadCapture, setError]
-  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
