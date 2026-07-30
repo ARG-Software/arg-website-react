@@ -44,6 +44,10 @@ function isNavigableFirstPartyContext(context: RetrievedContext, siteUrl: string
     return false;
   }
 
+  if (context.sourceKey === 'assistant-profile') {
+    return false;
+  }
+
   if (
     context.sourceType === 'local_document' &&
     context.sourceMetadata?.documentKind !== 'portfolio'

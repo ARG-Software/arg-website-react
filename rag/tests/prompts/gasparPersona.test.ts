@@ -20,6 +20,24 @@ test('answer prompt establishes Gaspar as the first-person speaker', () => {
   assert.doesNotMatch(prompt, /You are the public website assistant/u);
 });
 
+test('Gaspar prompts handle visitor names conversationally', () => {
+  const answerPrompt = buildSystemPrompt(COMPANY_NAME, 'en');
+  const smallTalkPrompt = buildIntentFallbackPrompt(COMPANY_NAME, 'small_talk', 'en');
+  const intentPrompt = buildIntentPrompt(COMPANY_NAME);
+
+  assert.match(answerPrompt, /ask for their name/u);
+  assert.match(answerPrompt, /address them by that name naturally/u);
+  assert.match(answerPrompt, /do not immediately pivot to generic help copy/u);
+
+  assert.match(smallTalkPrompt, /address them by that name naturally/u);
+  assert.match(smallTalkPrompt, /ask for their name/u);
+  assert.match(smallTalkPrompt, /does not make the response feel transactional/u);
+
+  assert.match(intentPrompt, /visitor name introductions/u);
+  assert.match(intentPrompt, /just the visitor sharing their name/u);
+  assert.match(intentPrompt, /do not immediately pivot to generic help copy/u);
+});
+
 test('fallback prompt keeps small-talk and unsupported responses in Gaspar persona', () => {
   const smallTalkPrompt = buildIntentFallbackPrompt(COMPANY_NAME, 'small_talk', 'en');
   const unsupportedPrompt = buildIntentFallbackPrompt(COMPANY_NAME, 'unsupported', 'en');

@@ -12,6 +12,7 @@ import { loadLocalSources } from '../../ingestion/sources/local.js';
 import { buildInsufficientContextPrompt } from '../../prompts/insufficientContext.js';
 import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from '../../runtime/askQuestion.js';
 import { createAssistantActions } from '../../runtime/response/actions.js';
+import { createCitations } from '../../runtime/response/citations.js';
 
 const config = createTestConfig({ matchCount: 1 });
 
@@ -2125,6 +2126,25 @@ test('Gaspar profile questions retrieve the assistant profile source without emb
   assert.deepEqual(result.contexts.map(context => context.sourceKey), ['assistant-profile']);
   assert.match(result.contexts[0]?.content ?? '', /Caniço, Madeira/u);
   assert.deepEqual(supabase.calls.matchChunks, []);
+});
+
+test('Gaspar profile citations are suppressed even when the source has a homepage URL', () => {
+  const citations = createCitations(
+    [
+      {
+        ...matchRow(
+          'homepage',
+          'assistant-profile',
+          'Gaspar',
+          'My name is Gaspar. I was born in Canico, Madeira, in 2019.'
+        ),
+        url: 'https://arg.software/',
+      },
+    ],
+    config.siteUrl
+  );
+
+  assert.deepEqual(citations, []);
 });
 
 test('direct AI identity questions retrieve Gaspar profile source without embeddings', async () => {
