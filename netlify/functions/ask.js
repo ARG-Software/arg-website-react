@@ -1,4 +1,4 @@
-import { RagValidationError, askQuestion } from '../../rag/runtime/askQuestion.ts';
+import { RagValidationError, askQuestion } from '../../rag/runtime/ask/askQuestion.ts';
 import { GeminiEmbeddingQuotaError } from '../../rag/clients/gemini.ts';
 import { verifyAltchaChallenge } from '../../rag/security/altcha.ts';
 import { checkRateLimits, getRateLimitConfig } from '../../rag/security/rateLimit.ts';

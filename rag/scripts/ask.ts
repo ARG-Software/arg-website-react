@@ -1,6 +1,6 @@
 import { loadLocalEnv } from '../config/env.js';
 import type { ChatMessage, PageContext } from '../core/types/chat.js';
-import { askQuestion, retrieveRelevantChunks } from '../runtime/askQuestion.js';
+import { askQuestion, retrieveRelevantChunks } from '../runtime/ask/askQuestion.js';
 
 loadLocalEnv();
 

@@ -94,7 +94,9 @@ export default defineConfig(({ mode }) => {
             try {
               const requestUrl = new URL(req.url || '', 'http://localhost');
               const language = requestUrl.searchParams.get('language') || 'en';
-              const { getAssistantUiCopy } = await import('./rag/runtime/assistantUiCopy.ts');
+              const { getAssistantUiCopy } = await import(
+                './rag/runtime/assistantUiCopy/getAssistantUiCopy.ts'
+              );
               const result = await getAssistantUiCopy(language);
 
               res.setHeader('Content-Type', 'application/json');
@@ -263,7 +265,7 @@ export default defineConfig(({ mode }) => {
               entry.count += 1;
             }
 
-            const { askQuestion } = await import('./rag/runtime/askQuestion.ts');
+            const { askQuestion } = await import('./rag/runtime/ask/askQuestion.ts');
             const result = await askQuestion({
               question: payload.question,
               messages: payload.messages,

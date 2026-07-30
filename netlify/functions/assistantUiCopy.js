@@ -1,4 +1,4 @@
-import { getAssistantUiCopy } from '../../rag/runtime/assistantUiCopy.ts';
+import { getAssistantUiCopy } from '../../rag/runtime/assistantUiCopy/getAssistantUiCopy.ts';
 import { createCorsHeaders, createOriginGuardResponse } from '../shared/apiOrigin.js';
 
 const ALLOWED_METHODS = 'GET, OPTIONS';

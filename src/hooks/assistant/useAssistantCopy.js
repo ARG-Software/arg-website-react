@@ -9,7 +9,7 @@ import {
   normalizeAssistantLanguage,
   readCachedAssistantCopy,
   writeCachedAssistantCopy,
-} from '@utils/assistantCopy';
+} from './utils/assistantCopy';
 
 export function useAssistantCopy() {
   const [activeLanguage, setActiveLanguageState] = useState(getBrowserAssistantLanguage);

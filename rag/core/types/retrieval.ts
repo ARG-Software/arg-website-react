@@ -1,11 +1,25 @@
 import type { RagSourceType } from './source.js';
 
-export type QuestionIntent = 'small_talk' | 'rag_question' | 'unsupported';
+export type ConversationTransformTask =
+  | 'shorten_previous_answer'
+  | 'simplify_previous_answer'
+  | 'format_previous_answer'
+  | 'expand_previous_answer'
+  | 'translate_previous_answer';
+
+export type QuestionIntent =
+  | 'small_talk'
+  | 'rag_question'
+  | 'unsupported'
+  | 'conversation_transform';
+
+export type FallbackQuestionIntent = Exclude<QuestionIntent, 'rag_question' | 'conversation_transform'>;
 
 export interface QuestionIntentResult {
   intent: QuestionIntent;
   response: string;
   language: string;
+  task?: ConversationTransformTask;
 }
 
 export type RetrievalMode = 'direct_evidence' | 'editorial' | 'article_discovery';

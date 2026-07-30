@@ -302,6 +302,10 @@
   margin: 0;
 }
 
+.aw-message--assistant p {
+  white-space: pre-line;
+}
+
 .aw-message--user {
   align-self: flex-end;
   background: #0c002e;

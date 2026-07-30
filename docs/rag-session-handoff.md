@@ -1084,14 +1084,14 @@ Live checks confirmed latest-article retrieval and recommendations, blog metadat
 Current RAG structure highlights:
 
 - Focused domain types live under `rag/core/types/`.
-- Runtime orchestration entrypoint is `rag/runtime/askQuestion.ts`.
-- Public ask endpoints in `netlify/functions/ask.js` and `vite.config.js` import `askQuestion.ts`.
+- Ask runtime orchestration entrypoint is `rag/runtime/ask/askQuestion.ts`.
+- Public ask endpoints in `netlify/functions/ask.js` and `vite.config.js` import `rag/runtime/ask/askQuestion.ts`.
 - Runtime read access goes through `rag/repositories/RagReadRepository.ts`.
 - Supabase table names and RPC names are isolated in `rag/repositories/supabase/SupabaseRagReadRepository.ts` and `SupabaseRagWriteRepository.ts`.
 - Tests live under `rag/tests/`; scripts live under `rag/scripts/`.
 - Shared fakes and fixtures live under `rag/tests/fakes/` and `rag/tests/fixtures/`.
-- Retrieval strategies live under `rag/runtime/retrieval/strategies/`.
-- Technology normalization, compound question splitting, and exact evidence lookup live under `rag/runtime/retrieval/technology/`.
+- Retrieval strategies live under `rag/runtime/ask/retrieval/strategies/`.
+- Technology normalization, compound question splitting, and exact evidence lookup live under `rag/runtime/ask/retrieval/technology/`.
 
 Important behavior from the refactor:
 

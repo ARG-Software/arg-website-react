@@ -1,6 +1,10 @@
 import { getDeepSeekConfig, getSiteConfig } from '../config/env.js';
 import { buildSystemPrompt } from '../prompts/answering.js';
 import {
+  buildConversationTransformPrompt,
+  buildConversationTransformUserPrompt,
+} from '../prompts/conversationTransform.js';
+import {
   buildHistoryMessages,
   buildPageContextMessages,
   buildUserPrompt,
@@ -15,7 +19,8 @@ import type { RagConfig } from '../core/types/config.js';
 import type { RetrievedContext } from '../core/types/context.js';
 import type { AnswerProvider } from '../core/types/providers.js';
 import type {
-  QuestionIntent,
+  ConversationTransformTask,
+  FallbackQuestionIntent,
   QuestionIntentResult,
   RetrievalPlan,
 } from '../core/types/retrieval.js';
@@ -147,7 +152,7 @@ export class DeepSeekAnswerClient implements AnswerProvider {
 
   async generateIntentFallbackResponse(
     question: string,
-    intent: Exclude<QuestionIntent, 'rag_question'>,
+    intent: FallbackQuestionIntent,
     responseLanguage: string
   ): Promise<string> {
     const config = this.getConfig();
@@ -163,6 +168,32 @@ export class DeepSeekAnswerClient implements AnswerProvider {
         {
           role: 'user',
           content: question,
+        },
+      ],
+    });
+
+    return data.choices?.[0]?.message?.content?.trim() ?? '';
+  }
+
+  async rewritePreviousAnswer(
+    instruction: string,
+    previousAnswer: string,
+    task: ConversationTransformTask,
+    responseLanguage: string
+  ): Promise<string> {
+    const config = this.getConfig();
+    const data = await createChatCompletion({
+      config,
+      temperature: 0.2,
+      errorPrefix: 'DeepSeek conversation transform request failed',
+      messages: [
+        {
+          role: 'system',
+          content: buildConversationTransformPrompt(task, responseLanguage),
+        },
+        {
+          role: 'user',
+          content: buildConversationTransformUserPrompt(instruction, previousAnswer),
         },
       ],
     });

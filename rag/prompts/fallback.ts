@@ -1,9 +1,9 @@
-import type { QuestionIntent } from '../core/types/retrieval.js';
+import type { FallbackQuestionIntent } from '../core/types/retrieval.js';
 import { buildResponseLanguageInstruction } from './responseLanguage.js';
 
 export function buildIntentFallbackPrompt(
   companyName: string,
-  intent: Exclude<QuestionIntent, 'rag_question'>,
+  intent: FallbackQuestionIntent,
   responseLanguage: string
 ): string {
   return [

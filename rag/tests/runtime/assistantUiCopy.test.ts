@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { getAssistantUiCopy, readAssistantSourceCopy } from '../../runtime/assistantUiCopy.js';
+import {
+  getAssistantUiCopy,
+  readAssistantSourceCopy,
+} from '../../runtime/assistantUiCopy/getAssistantUiCopy.js';
 
 test('assistant UI copy exposes the manual copy version', () => {
   const source = readAssistantSourceCopy();
@@ -18,4 +21,23 @@ test('English assistant UI copy returns without calling translation', async () =
   assert.equal(result.direction, 'ltr');
   assert.equal(result.copyVersion, '2026-07-30-1');
   assert.equal(result.copy.labels.send, 'Send');
+});
+
+test('non-English assistant UI copy uses the injected translator', async () => {
+  const result = await getAssistantUiCopy('pt', {
+    translator: {
+      async translateAssistantUiCopy() {
+        return {
+          labels: {
+            send: 'Enviar',
+          },
+        };
+      },
+    },
+  });
+
+  assert.equal(result.language, 'pt-PT');
+  assert.equal(result.direction, 'ltr');
+  assert.equal(result.copy.labels.send, 'Enviar');
+  assert.equal(result.copy.labels.clear, 'Clear conversation');
 });

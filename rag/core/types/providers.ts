@@ -1,6 +1,12 @@
 import type { ChatMessage, PageContext } from './chat.js';
+import type { AssistantUiCopy } from './assistantUiCopy.js';
 import type { RetrievedContext } from './context.js';
-import type { QuestionIntent, QuestionIntentResult, RetrievalPlan } from './retrieval.js';
+import type {
+  ConversationTransformTask,
+  FallbackQuestionIntent,
+  QuestionIntentResult,
+  RetrievalPlan,
+} from './retrieval.js';
 
 export interface EmbeddingProvider {
   embedText(text: string): Promise<number[]>;
@@ -31,7 +37,20 @@ export interface AnswerProvider {
   ): Promise<string>;
   generateIntentFallbackResponse(
     question: string,
-    intent: Exclude<QuestionIntent, 'rag_question'>,
+    intent: FallbackQuestionIntent,
     responseLanguage: string
   ): Promise<string>;
+  rewritePreviousAnswer(
+    instruction: string,
+    previousAnswer: string,
+    task: ConversationTransformTask,
+    responseLanguage: string
+  ): Promise<string>;
+}
+
+export interface AssistantUiCopyTranslator {
+  translateAssistantUiCopy(
+    source: AssistantUiCopy,
+    language: string
+  ): Promise<Partial<AssistantUiCopy>>;
 }

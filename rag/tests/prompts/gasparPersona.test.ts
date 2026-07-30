@@ -71,6 +71,16 @@ test('intent prompt requires direct response text to be spoken by Gaspar', () =>
   assert.doesNotMatch(prompt, /^You route messages for [^.]*public website assistant\./u);
 });
 
+test('intent prompt separates answer rewrites from source-grounded summaries', () => {
+  const prompt = buildIntentPrompt(COMPANY_NAME);
+
+  assert.match(prompt, /conversation_transform means/u);
+  assert.match(prompt, /make it brief/u);
+  assert.match(prompt, /I did not understand/u);
+  assert.match(prompt, /Do not use conversation_transform when the visitor asks to summarize or explain a specific source/u);
+  assert.match(prompt, /article or blog summaries/u);
+});
+
 test('retrieval planner treats direct AI and robot questions as Gaspar profile questions', () => {
   const prompt = buildRetrievalPlanPrompt();
 

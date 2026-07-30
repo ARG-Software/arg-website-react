@@ -1,4 +1,5 @@
 import type {
+  ConversationTransformTask,
   QuestionIntentResult,
   RetrievalMode,
   RetrievalPlan,
@@ -7,6 +8,14 @@ import type {
 
 const RAG_INTENT = 'rag_question';
 const RETRIEVAL_MODES: RetrievalMode[] = ['direct_evidence', 'editorial', 'article_discovery'];
+const QUESTION_INTENTS = ['small_talk', RAG_INTENT, 'unsupported', 'conversation_transform'];
+const CONVERSATION_TRANSFORM_TASKS: ConversationTransformTask[] = [
+  'shorten_previous_answer',
+  'simplify_previous_answer',
+  'format_previous_answer',
+  'expand_previous_answer',
+  'translate_previous_answer',
+];
 
 export function parseIntentResponse(content: string | undefined): QuestionIntentResult {
   if (!content) {
@@ -16,9 +25,11 @@ export function parseIntentResponse(content: string | undefined): QuestionIntent
   try {
     const parsed = JSON.parse(content);
 
-    if (!['small_talk', RAG_INTENT, 'unsupported'].includes(parsed.intent)) {
+    if (!QUESTION_INTENTS.includes(parsed.intent)) {
       return { intent: RAG_INTENT, response: '', language: '' };
     }
+
+    const task = parseConversationTransformTask(parsed.task);
 
     return {
       intent: parsed.intent,
@@ -27,10 +38,20 @@ export function parseIntentResponse(content: string | undefined): QuestionIntent
         typeof parsed.language === 'string' && parsed.language.length <= 20
           ? parsed.language.trim()
           : '',
+      ...(parsed.intent === 'conversation_transform'
+        ? { task: task || 'simplify_previous_answer' }
+        : {}),
     };
   } catch {
     return { intent: RAG_INTENT, response: '', language: '' };
   }
+}
+
+function parseConversationTransformTask(value: unknown): ConversationTransformTask | null {
+  return typeof value === 'string' &&
+    CONVERSATION_TRANSFORM_TASKS.includes(value as ConversationTransformTask)
+    ? (value as ConversationTransformTask)
+    : null;
 }
 
 export function parseRetrievalPlan(content: string | undefined): RetrievalPlan {

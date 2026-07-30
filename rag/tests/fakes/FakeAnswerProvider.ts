@@ -1,5 +1,9 @@
 import type { AnswerProvider } from '../../core/types/providers.js';
-import type { QuestionIntent, RetrievalPlan } from '../../core/types/retrieval.js';
+import type {
+  ConversationTransformTask,
+  QuestionIntent,
+  RetrievalPlan,
+} from '../../core/types/retrieval.js';
 
 export interface FakeAnswerProviderBehavior {
   intent?: QuestionIntent;
@@ -9,8 +13,15 @@ export interface FakeAnswerProviderBehavior {
   generatedAnswer?: string;
   insufficientContextAnswer?: string;
   intentFallbackResponse?: string;
+  rewrittenAnswer?: string;
+  transformTask?: ConversationTransformTask;
   onClassifyIntent?: (question: string, pageContext: unknown) => void;
   onGenerateAnswer?: (question: string) => void;
+  onRewritePreviousAnswer?: (
+    instruction: string,
+    previousAnswer: string,
+    task: ConversationTransformTask
+  ) => void;
 }
 
 export function createFakeAnswerProvider(
@@ -25,8 +36,11 @@ export function createFakeAnswerProvider(
     generatedAnswer = 'Grounded answer.',
     insufficientContextAnswer = 'Please send us a message so we can help.',
     intentFallbackResponse = 'Please ask about our website.',
+    rewrittenAnswer = 'Rewritten answer.',
+    transformTask,
     onClassifyIntent,
     onGenerateAnswer,
+    onRewritePreviousAnswer,
   } = behavior;
 
   const retrievalPlan: RetrievalPlan = {
@@ -40,7 +54,7 @@ export function createFakeAnswerProvider(
   return {
     async classifyQuestionIntent(question, _messages, pageContext) {
       onClassifyIntent?.(question, pageContext);
-      return { intent, response: intentResponse, language };
+      return { intent, response: intentResponse, language, ...(transformTask ? { task: transformTask } : {}) };
     },
     async planRetrieval() {
       return retrievalPlan;
@@ -54,6 +68,10 @@ export function createFakeAnswerProvider(
     },
     async generateIntentFallbackResponse() {
       return intentFallbackResponse;
+    },
+    async rewritePreviousAnswer(instruction, previousAnswer, task) {
+      onRewritePreviousAnswer?.(instruction, previousAnswer, task);
+      return rewrittenAnswer;
     },
   };
 }

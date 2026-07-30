@@ -10,9 +10,9 @@ import { createTestConfig } from '../fixtures/config.js';
 import { createChunkFixture as chunk, createSourceFixture as source } from '../fixtures/sources.js';
 import { loadLocalSources } from '../../ingestion/sources/local.js';
 import { buildInsufficientContextPrompt } from '../../prompts/insufficientContext.js';
-import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from '../../runtime/askQuestion.js';
-import { createAssistantActions } from '../../runtime/response/actions.js';
-import { createCitations } from '../../runtime/response/citations.js';
+import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from '../../runtime/ask/askQuestion.js';
+import { createAssistantActions } from '../../runtime/ask/response/actions.js';
+import { createCitations } from '../../runtime/ask/response/citations.js';
 
 const config = createTestConfig({ matchCount: 1 });
 
@@ -488,6 +488,61 @@ test('direct Gaspar message requests auto-start through the runtime response', a
   });
 
   assert.deepEqual(result.actions, [{ type: 'gaspar_message', autoStart: true }]);
+});
+
+test('conversation transform rewrites the previous assistant answer without retrieval', async () => {
+  const supabase = createSupabase({});
+  let rewriteRequest: unknown = null;
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for conversation transforms');
+  });
+
+  const result = await askQuestion({
+    question: 'make it brief',
+    messages: [
+      { role: 'user', content: 'I want to know more about ARG' },
+      { role: 'assistant', content: 'ARG Software is a senior-led software studio. Long answer.' },
+    ],
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Unused retrieval query', {
+      intent: 'conversation_transform',
+      transformTask: 'shorten_previous_answer',
+      rewrittenAnswer: 'ARG Software is a senior-led software studio.',
+      onRewritePreviousAnswer(instruction, previousAnswer, task) {
+        rewriteRequest = { instruction, previousAnswer, task };
+      },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.equal(result.answer, 'we are a senior-led software studio.');
+  assert.deepEqual(result.citations, []);
+  assert.deepEqual(result.actions, []);
+  assert.deepEqual(rewriteRequest, {
+    instruction: 'make it brief',
+    previousAnswer: 'ARG Software is a senior-led software studio. Long answer.',
+    task: 'shorten_previous_answer',
+  });
+  assert.equal(supabase.calls.matchChunks.length, 0);
+});
+
+test('conversation transform without a previous answer asks for clarification', async () => {
+  const result = await askQuestion({
+    question: "I didn't understand",
+    config,
+    readRepository: createSupabase({}).repository,
+    answerProvider: createAnswerProvider('Unused retrieval query', {
+      intent: 'conversation_transform',
+      transformTask: 'simplify_previous_answer',
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.match(result.answer, /what you want clarified/u);
+  assert.deepEqual(result.contexts, []);
 });
 
 test('website build service enquiries retrieve ARG service evidence rather than link actions', async () => {
@@ -2176,6 +2231,64 @@ test('direct AI identity questions retrieve Gaspar profile source without embedd
 
   assert.deepEqual(result.contexts.map(context => context.sourceKey), ['assistant-profile']);
   assert.match(result.contexts[0]?.content ?? '', /My name is Gaspar/u);
+  assert.deepEqual(supabase.calls.matchChunks, []);
+});
+
+test('human language questions route to Gaspar profile instead of technology support', () => {
+  const questions = [
+    'Falas russo?',
+    'Que idiomas falas?',
+    'Do you speak Russian?',
+    'Can you answer in Dutch?',
+    'Parles français?',
+    'Hablas alemán?',
+  ];
+
+  for (const question of questions) {
+    const route = resolveRetrievalRoute(question, {
+      mode: 'direct_evidence',
+      entity: '',
+      subject: 'Russian',
+    });
+
+    assert.equal(route.entity, 'Gaspar');
+    assert.equal(route.subject, 'assistant profile');
+    assert.deepEqual(route.sourceKeys, ['assistant-profile']);
+    assert.equal(route.forceFirstChunks, true);
+  }
+});
+
+test('human language questions retrieve the assistant profile source without embeddings', async () => {
+  const gaspar = source('gaspar-id', 'Gaspar', null, 'homepage', 'assistant-profile');
+  const supabase = createSupabase({
+    sources: [gaspar],
+    chunks: [
+      chunk(
+        'gaspar-id',
+        'assistant-profile',
+        'I can try to answer visitors in the language they use or request. The ARG team mainly communicates in Portuguese and English.'
+      ),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for Gaspar language questions');
+  });
+
+  const result = await askQuestion({
+    question: 'Falas francês?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Can Gaspar answer in French?', {
+      language: 'pt-PT',
+      plan: { mode: 'direct_evidence', entity: '', subject: '' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['assistant-profile']);
+  assert.equal(result.language, 'pt-PT');
+  assert.match(result.contexts[0]?.content ?? '', /language they use or request/u);
   assert.deepEqual(supabase.calls.matchChunks, []);
 });
 

@@ -7,7 +7,7 @@ import {
   getAssistantLinks,
   getInternalAssistantPath,
   trackAssistantLinkClick,
-} from '@utils/assistantLinks';
+} from '@hooks/assistant/utils/assistantLinks';
 
 function PendingStatus({ message }) {
   return (

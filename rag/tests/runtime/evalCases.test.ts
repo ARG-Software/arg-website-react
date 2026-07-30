@@ -16,7 +16,7 @@ import { FakeRagReadRepository } from '../fakes/FakeRagReadRepository.js';
 import { createTestConfig } from '../fixtures/config.js';
 import type { ChunkFixture } from '../fixtures/sources.js';
 import type { RagSourceRecord } from '../../repositories/RagReadRepository.js';
-import { askQuestion } from '../../runtime/askQuestion.js';
+import { askQuestion } from '../../runtime/ask/askQuestion.js';
 
 const config = createTestConfig();
 
