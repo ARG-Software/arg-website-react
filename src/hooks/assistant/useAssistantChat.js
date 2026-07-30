@@ -99,6 +99,7 @@ export function useAssistantChat({ getPayload, consumePayload }) {
         const message = {
           role: 'assistant',
           content: data.answer,
+          language: data.language,
           citations: data.citations || [],
           articleRecommendations: data.articleRecommendations || [],
           actions: data.actions || [],

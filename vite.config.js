@@ -90,6 +90,33 @@ export default defineConfig(({ mode }) => {
             return;
           }
 
+          if (requestPath === '/api/assistant/ui-copy' && req.method === 'GET') {
+            try {
+              const requestUrl = new URL(req.url || '', 'http://localhost');
+              const language = requestUrl.searchParams.get('language') || 'en';
+              const { getAssistantUiCopy } = await import('./rag/runtime/assistantUiCopy.ts');
+              const result = await getAssistantUiCopy(language);
+
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify(result));
+            } catch (error) {
+              const isConfigError =
+                error instanceof Error &&
+                error.message.startsWith('Missing required environment variable:');
+              res.statusCode = isConfigError ? 503 : 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(
+                JSON.stringify({
+                  error: {
+                    code: isConfigError ? 'configuration_error' : 'translation_unavailable',
+                    message: 'Assistant UI translation is temporarily unavailable',
+                  },
+                })
+              );
+            }
+            return;
+          }
+
           if (requestPath === '/api/contact/challenge' && req.method === 'GET') {
             try {
               const { createAltchaChallenge } = await import('./rag/security/altcha.ts');
@@ -247,6 +274,7 @@ export default defineConfig(({ mode }) => {
             res.end(
               JSON.stringify({
                 answer: result.answer,
+                language: result.language,
                 citations: result.citations,
                 articleRecommendations: result.articleRecommendations,
                 actions: result.actions,

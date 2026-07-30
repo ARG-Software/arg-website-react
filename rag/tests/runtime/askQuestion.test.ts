@@ -2208,6 +2208,7 @@ test('Portuguese Gaspar identity questions retrieve the assistant profile source
   });
 
   assert.deepEqual(result.contexts.map(context => context.sourceKey), ['assistant-profile']);
+  assert.equal(result.language, 'pt-PT');
   assert.match(result.contexts[0]?.content ?? '', /My name is Gaspar/u);
   assert.deepEqual(supabase.calls.matchChunks, []);
 });

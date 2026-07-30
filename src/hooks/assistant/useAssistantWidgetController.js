@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MOBILE_BREAKPOINT } from '@constants/ui';
-import assistantContent from '@data/assistant.json';
 import { trackAssistantEvent } from '@utils/analytics';
 import { isMobile } from '@utils/helpers';
 import { useAssistantChat } from './useAssistantChat';
+import { useAssistantCopy } from './useAssistantCopy';
 import { useAssistantLeadCapture } from './useAssistantLeadCapture';
 import { useAssistantSecurity } from './useAssistantSecurity';
 import {
@@ -69,6 +69,8 @@ export function useAssistantWidgetController({
   const inputRef = useRef(null);
   const leadCaptureStartedRef = useRef(false);
   const leadDismissHandledRef = useRef(false);
+  const { activeLanguage, assistantCopy, assistantDirection, setActiveLanguage } =
+    useAssistantCopy();
 
   const isOpen = panelState !== 'closed';
   const { getPayload, consumePayload } = useAssistantSecurity({ isOpen });
@@ -102,11 +104,12 @@ export function useAssistantWidgetController({
     submitLead,
     LEAD_STEPS,
   } = useAssistantLeadCapture({
+    copy: assistantCopy,
     onDismiss: handleHookDismiss,
     onComplete: () => {
       setMessages(prev => [
         ...prev.filter(message => !message.isLoading),
-        getLeadAssistantMessage(assistantContent.messages.leadCaptureSuccess),
+        getLeadAssistantMessage(assistantCopy.messages.leadCaptureSuccess),
       ]);
       onLeadCaptureComplete?.();
     },
@@ -114,7 +117,12 @@ export function useAssistantWidgetController({
 
   const showLeadPrompts = isLeadActive && leadStep === LEAD_STEPS.OFFER;
   const canClearConversation = messages.length > 0 || inputValue.length > 0 || Boolean(error);
-  const inputPlaceholder = getInputPlaceholder({ isLeadActive, leadStep, LEAD_STEPS });
+  const inputPlaceholder = getInputPlaceholder({
+    isLeadActive,
+    leadStep,
+    LEAD_STEPS,
+    copy: assistantCopy,
+  });
   const isInputDisabled = loading && !isLeadActive;
   const isSubmitDisabled = (loading && !isLeadActive) || !inputValue.trim();
   const isClearDisabled = loading || !canClearConversation;
@@ -122,18 +130,24 @@ export function useAssistantWidgetController({
   const addLeadResultMessages = useCallback(
     (result, userContent) => {
       setMessages(prev =>
-        getLeadMessagesForResult(prev, result, { capturedEmail, leadError, userContent })
+        getLeadMessagesForResult(prev, result, {
+          capturedEmail,
+          copy: assistantCopy,
+          leadError,
+          userContent,
+        })
       );
     },
-    [capturedEmail, leadError]
+    [assistantCopy, capturedEmail, leadError]
   );
 
   const startLeadCaptureFlow = useCallback(
-    ({ skipOffer = false } = {}) => {
+    ({ skipOffer = false, copyOverride } = {}) => {
+      const copy = copyOverride || assistantCopy;
       const initialStep = skipOffer ? LEAD_STEPS.EMAIL : undefined;
       const initialMessage = skipOffer
-        ? assistantContent.messages.leadCaptureEmail
-        : assistantContent.messages.leadCaptureOffer;
+        ? copy.messages.leadCaptureEmail
+        : copy.messages.leadCaptureOffer;
 
       if (panelState === 'closed') {
         setPanelState(getPanelStateForViewport(mobileViewport));
@@ -145,7 +159,7 @@ export function useAssistantWidgetController({
       setMessages(prev => [...prev, getLeadAssistantMessage(initialMessage)]);
       trackAssistantEvent('open', { source: LEAD_SOURCE });
     },
-    [LEAD_STEPS.EMAIL, panelState, mobileViewport, startLeadCapture, setError]
+    [LEAD_STEPS.EMAIL, assistantCopy, panelState, mobileViewport, startLeadCapture, setError]
   );
 
   const submitChatMessage = useCallback(
@@ -157,16 +171,19 @@ export function useAssistantWidgetController({
       const result = await submitQuestion(question, chatHistory);
 
       if (result?.success && result.message) {
+        const nextCopy = result.message.language
+          ? await setActiveLanguage(result.message.language)
+          : assistantCopy;
         const assistantMessage = getChatAssistantMessage(result.message);
 
         setMessages(prev => [...prev, assistantMessage]);
 
         if (!isLeadActive && shouldAutoStartLeadCapture(assistantMessage.actions)) {
-          startLeadCaptureFlow({ skipOffer: true });
+          startLeadCaptureFlow({ skipOffer: true, copyOverride: nextCopy });
         }
       }
     },
-    [isLeadActive, messages, startLeadCaptureFlow, submitQuestion]
+    [assistantCopy, isLeadActive, messages, setActiveLanguage, startLeadCaptureFlow, submitQuestion]
   );
 
   const submitCurrentLead = useCallback(async () => {
@@ -194,11 +211,11 @@ export function useAssistantWidgetController({
       startLeadCapture();
       setMessages(prev => [
         ...prev,
-        getLeadAssistantMessage(assistantContent.messages.leadCaptureOffer),
+        getLeadAssistantMessage(assistantCopy.messages.leadCaptureOffer),
       ]);
       trackAssistantEvent('open', { source: LEAD_SOURCE });
     });
-  }, [leadCaptureVisible, mobileViewport, panelState, startLeadCapture, setError]);
+  }, [assistantCopy, leadCaptureVisible, mobileViewport, panelState, startLeadCapture, setError]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -349,9 +366,9 @@ export function useAssistantWidgetController({
   );
 
   const handleQuickPrompt = useCallback(
-    prompt => {
+    (prompt, promptAction = null) => {
       if (isLeadActive) {
-        const action = getPromptAction(prompt);
+        const action = promptAction || getPromptAction(prompt, assistantCopy);
         const result = handleLeadInput(prompt, action);
         addLeadResultMessages(result, prompt);
         setInputValue('');
@@ -363,7 +380,7 @@ export function useAssistantWidgetController({
       setInputValue('');
       submitChatMessage(prompt);
     },
-    [addLeadResultMessages, handleLeadInput, isLeadActive, submitChatMessage]
+    [addLeadResultMessages, assistantCopy, handleLeadInput, isLeadActive, submitChatMessage]
   );
 
   const handleLeadConfirm = useCallback(() => {
@@ -378,10 +395,10 @@ export function useAssistantWidgetController({
 
     setMessages(prev => [
       ...prev.filter(message => !message.isLoading),
-      getLeadAssistantMessage(assistantContent.messages.sending, { isLoading: true }),
+      getLeadAssistantMessage(assistantCopy.messages.sending, { isLoading: true }),
     ]);
     submitCurrentLead();
-  }, [leadStep, LEAD_STEPS.SUBMITTING, submitCurrentLead]);
+  }, [assistantCopy, leadStep, LEAD_STEPS.SUBMITTING, submitCurrentLead]);
 
   const handleLeadEdit = useCallback(() => {
     const result = handleLeadInput('edit', 'edit');
@@ -392,8 +409,14 @@ export function useAssistantWidgetController({
     handleLeadInput('cancel', 'cancel');
     dismissLeadCaptureOnce(false);
     cancelLeadCapture();
-    addLeadResultMessages({ type: 'cancelled' }, 'cancel');
-  }, [addLeadResultMessages, cancelLeadCapture, handleLeadInput, dismissLeadCaptureOnce]);
+    addLeadResultMessages({ type: 'cancelled' }, assistantCopy.labels.cancel);
+  }, [
+    addLeadResultMessages,
+    assistantCopy,
+    cancelLeadCapture,
+    handleLeadInput,
+    dismissLeadCaptureOnce,
+  ]);
 
   const handleLeadDismissForTwoDays = useCallback(() => {
     if (leadCaptureStartedRef.current && leadStep !== LEAD_STEPS.SUCCESS) {
@@ -411,6 +434,9 @@ export function useAssistantWidgetController({
   return {
     panelState,
     isOpen,
+    activeLanguage,
+    assistantCopy,
+    assistantDirection,
     inputValue,
     setInputValue,
     messages,

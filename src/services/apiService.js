@@ -1,6 +1,7 @@
 const API_ENDPOINTS = Object.freeze({
   ASSISTANT_ASK: '/api/assistant/ask',
   ASSISTANT_CHALLENGE: '/api/assistant/challenge',
+  ASSISTANT_UI_COPY: '/api/assistant/ui-copy',
   CONTACT_CHALLENGE: '/api/contact/challenge',
   CONTACT_VERIFY: '/api/contact/verify',
 });
@@ -31,6 +32,15 @@ export function submitAssistantQuestion(payload, { signal } = {}) {
     headers: { 'Content-Type': 'application/json' },
     signal,
     body: JSON.stringify(payload),
+  });
+}
+
+export function fetchAssistantUiCopy(language, { signal } = {}) {
+  const params = new URLSearchParams({ language });
+
+  return fetch(`${API_ENDPOINTS.ASSISTANT_UI_COPY}?${params.toString()}`, {
+    method: 'GET',
+    signal,
   });
 }
 

@@ -11,12 +11,14 @@ import {
 
 export function createAnswerResult({
   answer,
+  language,
   question,
   contexts,
   retrievalResults,
   siteUrl,
 }: {
   answer: string;
+  language: string;
   question: string;
   contexts: RetrievedContext[];
   retrievalResults: RetrievalItemResult[];
@@ -24,6 +26,7 @@ export function createAnswerResult({
 }): AskQuestionResult {
   return {
     answer: normalizeAssistantAnswer(answer),
+    language,
     citations: createCitations(contexts, siteUrl),
     articleRecommendations: mergeArticleRecommendations(
       retrievalResults.map(result =>

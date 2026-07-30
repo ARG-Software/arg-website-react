@@ -22,13 +22,13 @@ function PendingStatus({ message }) {
   );
 }
 
-function AssistantLinkList({ links }) {
+function AssistantLinkList({ links, copy }) {
   if (links.length === 0) {
     return null;
   }
 
   return (
-    <div className="aw-source-links" aria-label={assistantContent.labels.relatedLinks}>
+    <div className="aw-source-links" aria-label={copy.labels.relatedLinks}>
       {links.map(link => {
         const internalPath = getInternalAssistantPath(link.url);
         const onClick = () => trackAssistantLinkClick(link);
@@ -63,7 +63,7 @@ function AssistantLinkList({ links }) {
   );
 }
 
-function AssistantActions({ actions }) {
+function AssistantActions({ actions, copy }) {
   const visibleActions = actions?.filter(action => !action.autoStart) || [];
 
   if (visibleActions.length === 0) {
@@ -73,7 +73,7 @@ function AssistantActions({ actions }) {
   return (
     <div className="aw-actions">
       {visibleActions.map((action, index) => {
-        const details = getAssistantActionDetails(action.type);
+        const details = getAssistantActionDetails(action.type, copy);
 
         if (!details) return null;
 
@@ -133,6 +133,7 @@ function AssistantChatMessage({
   handleLeadConfirm,
   handleLeadEdit,
   handleLeadCancel,
+  copy,
 }) {
   const isAssistantMessage = message.role === 'assistant';
   const isLeadMessage = message.source === 'lead_capture';
@@ -144,9 +145,11 @@ function AssistantChatMessage({
     <div className={className}>
       <p style={isLeadMessage ? { whiteSpace: 'pre-line' } : undefined}>{message.content}</p>
       {isAssistantMessage && !isLeadMessage && (
-        <AssistantLinkList links={getAssistantLinks(message)} />
+        <AssistantLinkList links={getAssistantLinks(message)} copy={copy} />
       )}
-      {isAssistantMessage && !isLeadMessage && <AssistantActions actions={message.actions} />}
+      {isAssistantMessage && !isLeadMessage && (
+        <AssistantActions actions={message.actions} copy={copy} />
+      )}
       {message.showConfirmButtons && isLeadActive && (
         <div className="aw-actions">
           <button
@@ -155,7 +158,7 @@ function AssistantChatMessage({
             type="button"
             disabled={leadStep === LEAD_STEPS.SUBMITTING}
           >
-            {assistantContent.labels.send}
+            {copy.labels.send}
           </button>
           <button
             className="aw-action"
@@ -163,7 +166,7 @@ function AssistantChatMessage({
             type="button"
             disabled={leadStep === LEAD_STEPS.SUBMITTING}
           >
-            {assistantContent.labels.edit}
+            {copy.labels.edit}
           </button>
           <button
             className="aw-action"
@@ -171,12 +174,12 @@ function AssistantChatMessage({
             type="button"
             disabled={leadStep === LEAD_STEPS.SUBMITTING}
           >
-            {assistantContent.labels.cancel}
+            {copy.labels.cancel}
           </button>
         </div>
       )}
       {message.isLoading && leadStep === LEAD_STEPS.SUBMITTING && (
-        <PendingStatus message={assistantContent.messages.sending} />
+        <PendingStatus message={copy.messages.sending} />
       )}
     </div>
   );
@@ -186,6 +189,9 @@ export function AssistantWidget(props) {
   const {
     panelState,
     isOpen,
+    activeLanguage,
+    assistantCopy,
+    assistantDirection,
     inputValue,
     setInputValue,
     messages,
@@ -216,14 +222,14 @@ export function AssistantWidget(props) {
     handleLeadDismissForTwoDays,
     retrySubmit,
   } = useAssistantWidgetController(props);
-  const [leadAcceptPrompt, leadChatPrompt] = assistantContent.leadCaptureQuickPrompts;
+  const [leadAcceptPrompt, leadChatPrompt] = assistantCopy.leadCaptureQuickPrompts;
 
   return (
     <>
       <button
         className={`aw-trigger${isOpen ? ' aw-trigger--hidden' : ''}`}
         onClick={() => open('trigger_button')}
-        aria-label={assistantContent.labels.open}
+        aria-label={assistantCopy.labels.open}
         type="button"
       >
         <span className="aw-trigger__icon">
@@ -234,8 +240,10 @@ export function AssistantWidget(props) {
       <div
         className={`aw-panel${panelState === 'open' ? ' aw-panel--open' : ''}${panelState === 'fullscreen' ? ' aw-panel--open aw-panel--fullscreen' : ''}`}
         role="dialog"
-        aria-label={assistantContent.labels.dialog}
+        aria-label={assistantCopy.labels.dialog}
         aria-hidden={!isOpen}
+        lang={activeLanguage}
+        dir={assistantDirection}
         data-lenis-prevent
       >
         <div className="aw-header">
@@ -247,7 +255,7 @@ export function AssistantWidget(props) {
               <div className="aw-header__title">{assistantContent.name}</div>
               <div className="aw-header__status">
                 <span className="aw-header__dot" />
-                {assistantContent.statusText}
+                {assistantCopy.statusText}
               </div>
             </div>
           </div>
@@ -255,7 +263,7 @@ export function AssistantWidget(props) {
             <button
               className="aw-header__btn"
               onClick={handleClearConversation}
-              aria-label={assistantContent.labels.clear}
+              aria-label={assistantCopy.labels.clear}
               type="button"
               disabled={isClearDisabled}
             >
@@ -276,7 +284,7 @@ export function AssistantWidget(props) {
               <button
                 className="aw-header__btn"
                 onClick={toggleFullscreen}
-                aria-label={assistantContent.labels.expand}
+                aria-label={assistantCopy.labels.expand}
                 type="button"
               >
                 <svg
@@ -297,7 +305,7 @@ export function AssistantWidget(props) {
               <button
                 className="aw-header__btn"
                 onClick={toggleFullscreen}
-                aria-label={assistantContent.labels.minimize}
+                aria-label={assistantCopy.labels.minimize}
                 type="button"
               >
                 <svg
@@ -317,7 +325,7 @@ export function AssistantWidget(props) {
             <button
               className="aw-header__btn"
               onClick={() => close('close_button')}
-              aria-label={assistantContent.labels.close}
+              aria-label={assistantCopy.labels.close}
               type="button"
             >
               <svg
@@ -338,10 +346,10 @@ export function AssistantWidget(props) {
 
         <div className="aw-messages">
           <div className="aw-message aw-message--welcome">
-            <p>{assistantContent.messages.welcome}</p>
+            <p>{assistantCopy.messages.welcome}</p>
             {!isLeadActive && (
               <div className="aw-prompts aw-prompts--inline">
-                {assistantContent.quickPrompts.map(prompt => (
+                {assistantCopy.quickPrompts.map(prompt => (
                   <button
                     key={prompt}
                     className="aw-prompt"
@@ -366,6 +374,7 @@ export function AssistantWidget(props) {
               handleLeadConfirm={handleLeadConfirm}
               handleLeadEdit={handleLeadEdit}
               handleLeadCancel={handleLeadCancel}
+              copy={assistantCopy}
             />
           ))}
 
@@ -374,10 +383,10 @@ export function AssistantWidget(props) {
               <p>{leadError}</p>
               <div className="aw-actions">
                 <button className="aw-action" onClick={retrySubmit} type="button">
-                  {assistantContent.labels.tryAgain}
+                  {assistantCopy.labels.tryAgain}
                 </button>
                 <button className="aw-action" onClick={handleLeadCancel} type="button">
-                  {assistantContent.labels.cancel}
+                  {assistantCopy.labels.cancel}
                 </button>
               </div>
             </div>
@@ -404,7 +413,7 @@ export function AssistantWidget(props) {
               onClick={handleLeadDismissForTwoDays}
               type="button"
             >
-              {assistantContent.labels.dontShowAgain}
+              {assistantCopy.labels.dontShowAgain}
             </button>
             {leadChatPrompt && (
               <button
@@ -436,9 +445,7 @@ export function AssistantWidget(props) {
               type="submit"
               disabled={isSubmitDisabled}
               aria-label={
-                isLeadActive
-                  ? assistantContent.labels.sendResponse
-                  : assistantContent.labels.sendQuestion
+                isLeadActive ? assistantCopy.labels.sendResponse : assistantCopy.labels.sendQuestion
               }
             >
               <svg

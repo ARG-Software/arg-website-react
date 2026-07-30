@@ -11,10 +11,15 @@ export function getLeadUserMessage(content) {
   return { role: 'user', content, source: LEAD_SOURCE };
 }
 
-export function getLeadConfirmMessage(email, message) {
-  return getLeadAssistantMessage(`Send this to ARG?\nEmail: ${email}\nMessage: ${message}`, {
-    showConfirmButtons: true,
-  });
+export function getLeadConfirmMessage(email, message, copy = assistantContent) {
+  const labels = copy.leadConfirm;
+
+  return getLeadAssistantMessage(
+    `${labels.title}\n${labels.emailLabel}: ${email}\n${labels.messageLabel}: ${message}`,
+    {
+      showConfirmButtons: true,
+    }
+  );
 }
 
 export function disableLeadConfirmButtons(messages) {
@@ -24,7 +29,8 @@ export function disableLeadConfirmButtons(messages) {
 }
 
 export function getLeadMessagesForResult(prevMessages, result, context = {}) {
-  const copy = assistantContent.messages;
+  const assistantCopy = context.copy || assistantContent;
+  const copy = assistantCopy.messages;
   const userContent = context.userContent;
   const userMessage = getLeadUserMessage(userContent);
 
@@ -36,7 +42,11 @@ export function getLeadMessagesForResult(prevMessages, result, context = {}) {
     case 'email_captured':
       return [...prevMessages, userMessage, getLeadAssistantMessage(copy.leadCaptureMessagePrompt)];
     case 'lead_captured':
-      return [...prevMessages, userMessage, getLeadConfirmMessage(result.email, result.message)];
+      return [
+        ...prevMessages,
+        userMessage,
+        getLeadConfirmMessage(result.email, result.message, assistantCopy),
+      ];
     case 'multiple_emails':
       return [
         ...prevMessages,
@@ -52,27 +62,27 @@ export function getLeadMessagesForResult(prevMessages, result, context = {}) {
     case 'message_skipped':
       return [
         ...prevMessages,
-        getLeadUserMessage('skip'),
-        getLeadConfirmMessage(context.capturedEmail, copy.noMessageAdded),
+        getLeadUserMessage(assistantCopy.labels.skip),
+        getLeadConfirmMessage(context.capturedEmail, copy.noMessageAdded, assistantCopy),
       ];
     case 'message_captured':
       return [
         ...prevMessages,
         userMessage,
-        getLeadConfirmMessage(context.capturedEmail, result.message),
+        getLeadConfirmMessage(context.capturedEmail, result.message, assistantCopy),
       ];
     case 'cancelled':
       return [...prevMessages, userMessage, getLeadAssistantMessage(copy.leadCaptureCancelled)];
     case 'submitting':
       return [
         ...prevMessages,
-        getLeadUserMessage('send'),
+        getLeadUserMessage(assistantCopy.labels.send),
         getLeadAssistantMessage(copy.sending, { isLoading: true }),
       ];
     case 'editing':
       return [
         ...disableLeadConfirmButtons(prevMessages),
-        getLeadUserMessage('edit'),
+        getLeadUserMessage(assistantCopy.labels.edit),
         getLeadAssistantMessage(copy.leadCaptureEdit),
       ];
     case 'empty':

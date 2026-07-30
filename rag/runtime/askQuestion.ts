@@ -24,6 +24,7 @@ import { createAssistantActions, createInsufficientContextActions } from './resp
 import { buildAnswerQuestion } from './response/buildAnswerQuestion.js';
 import { createAnswerResult } from './response/createAnswer.js';
 import { normalizeAssistantAnswer } from './response/normalizeAnswer.js';
+import { normalizeLanguage } from '../utils/language.js';
 import { createPersonClarification } from './response/personClarification.js';
 import { createUnconfirmedTechnologyAnswer } from './response/unconfirmedTechnologyAnswer.js';
 
@@ -60,6 +61,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
     context.messages,
     context.pageContext
   );
+  const responseLanguage = normalizeLanguage(intent.language);
 
   if (intent.intent !== 'rag_question') {
     const answer =
@@ -67,11 +69,12 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
       (await context.answerProvider.generateIntentFallbackResponse(
         context.question,
         intent.intent,
-        intent.language
+        responseLanguage
       ));
 
     return {
       answer: normalizeAssistantAnswer(answer),
+      language: responseLanguage,
       citations: [],
       articleRecommendations: [],
       actions: createAssistantActions(context.question),
@@ -88,7 +91,8 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
 
   if (routedItems.every(item => item.route.requiresPersonClarification)) {
     return {
-      answer: createPersonClarification(intent.language),
+      answer: createPersonClarification(responseLanguage),
+      language: responseLanguage,
       citations: [],
       articleRecommendations: [],
       actions: [{ type: 'gaspar_message' }, { type: 'contact_form' }],
@@ -130,12 +134,13 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
   if (contexts.length === 0) {
     const unconfirmedTechnologyAnswer = createUnconfirmedTechnologyAnswer(
       retrievalResults,
-      intent.language
+      responseLanguage
     );
 
     if (unconfirmedTechnologyAnswer) {
       return {
         answer: unconfirmedTechnologyAnswer,
+        language: responseLanguage,
         citations: [],
         articleRecommendations: [],
         actions: createInsufficientContextActions(context.question),
@@ -146,11 +151,12 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
     const answer = await context.answerProvider.generateInsufficientContextAnswer(
       context.question,
       context.messages,
-      intent.language
+      responseLanguage
     );
 
     return {
       answer: normalizeAssistantAnswer(answer),
+      language: responseLanguage,
       citations: [],
       articleRecommendations: [],
       actions: createInsufficientContextActions(context.question),
@@ -162,11 +168,12 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
     buildAnswerQuestion(context.question, retrievalResults),
     context.messages,
     contexts,
-    intent.language
+    responseLanguage
   );
 
   return createAnswerResult({
     answer,
+    language: responseLanguage,
     question: context.question,
     contexts,
     retrievalResults,

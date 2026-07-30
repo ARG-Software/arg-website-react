@@ -106,6 +106,7 @@ export default async function handler(request) {
 
     return createResponse(request, 200, {
       answer: result.answer,
+      language: result.language,
       citations: result.citations,
       articleRecommendations: result.articleRecommendations,
       actions: result.actions,

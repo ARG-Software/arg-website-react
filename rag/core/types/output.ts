@@ -16,6 +16,7 @@ export interface ArticleRecommendation {
 
 export interface AskQuestionResult {
   answer: string;
+  language: string;
   citations: Citation[];
   articleRecommendations: ArticleRecommendation[];
   actions: AssistantAction[];

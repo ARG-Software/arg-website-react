@@ -23,8 +23,8 @@ function triggerLeadCapture() {
   }
 }
 
-export function getAssistantActionDetails(actionType) {
-  const action = assistantContent.actions[actionType];
+export function getAssistantActionDetails(actionType, assistantCopy = assistantContent) {
+  const action = assistantCopy.actions[actionType];
 
   if (!action) return null;
 

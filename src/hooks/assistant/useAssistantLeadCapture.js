@@ -49,7 +49,7 @@ function extractEmailAndMessage(input) {
 
 const SUCCESS_RESET_MS = 3000;
 
-export function useAssistantLeadCapture({ onDismiss, onComplete }) {
+export function useAssistantLeadCapture({ copy, onDismiss, onComplete }) {
   const [leadStep, setLeadStep] = useState(null);
   const [capturedEmail, setCapturedEmail] = useState('');
   const [capturedMessage, setCapturedMessage] = useState('');
@@ -96,13 +96,13 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
 
     try {
       if (!capturedEmail) {
-        throw new Error('Please enter your email before sending.');
+        throw new Error(copy.messages.noEmailFound);
       }
 
       const result = await submitWeb3Form(
         {
           email: capturedEmail,
-          message: capturedMessage || 'No message added.',
+          message: capturedMessage || copy.messages.noMessageAdded,
           from_name: 'Gaspar lead capture',
           botcheck: '',
         },
@@ -125,7 +125,7 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
       successTimerRef.current = setTimeout(resetToNormal, SUCCESS_RESET_MS);
       return result;
     } catch (error) {
-      const message = 'Something went wrong. Please try again.';
+      const message = copy.messages.answerFailed || 'Something went wrong. Please try again.';
       setLeadStep(LEAD_STEPS.ERROR);
       setLeadError(message);
       trackEvent('lead_capture', { action: 'error', source: 'assistant' });
@@ -134,7 +134,7 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
         error,
       };
     }
-  }, [capturedEmail, capturedMessage, onComplete, resetToNormal]);
+  }, [capturedEmail, capturedMessage, copy.messages, onComplete, resetToNormal]);
 
   const handleInput = useCallback(
     (input, action) => {
@@ -173,13 +173,13 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
         const { email, message, hasEmail, multipleEmails } = extractEmailAndMessage(trimmed);
 
         if (multipleEmails) {
-          const message = 'Multiple emails found. Please enter just one.';
+          const message = copy.messages.multipleEmails;
           setLeadError(message);
           return { type: 'multiple_emails', message };
         }
 
         if (!hasEmail) {
-          const message = 'Please enter a valid email, or close the chat to discard.';
+          const message = copy.messages.noEmailFound;
           setLeadError(message);
           return { type: 'no_email_found', message };
         }
@@ -197,7 +197,10 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
       }
 
       if (leadStep === LEAD_STEPS.MESSAGE) {
-        if (action === 'skip' || trimmed.toLowerCase() === 'skip') {
+        const normalizedInput = trimmed.toLowerCase();
+        const skipWords = copy.leadCaptureSkipWords.map(word => word.toLowerCase());
+
+        if (action === 'skip' || skipWords.includes(normalizedInput)) {
           setCapturedMessage('');
           setLeadStep(LEAD_STEPS.CONFIRM);
           return { type: 'message_skipped' };
@@ -212,7 +215,7 @@ export function useAssistantLeadCapture({ onDismiss, onComplete }) {
 
       return { type: 'blocked' };
     },
-    [leadStep, declineLeadCapture]
+    [copy.leadCaptureSkipWords, copy.messages, leadStep, declineLeadCapture]
   );
 
   return {
