@@ -183,10 +183,7 @@ export default function ProjectDetailPage() {
                       data-animate="fade-up"
                       data-animate-delay="200"
                     >
-                      <InlineLinkText
-                        text={project.description}
-                        linkClassName="prp-inline-link"
-                      />
+                      <InlineLinkText text={project.description} linkClassName="prp-inline-link" />
                     </p>
                   )}
                 </div>
