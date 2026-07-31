@@ -1,7 +1,7 @@
-import { deepSeekAnswerClient } from '../clients/deepseek.js';
-import { deepSeekAssistantUiCopyTranslator } from '../clients/deepseekAssistantUiCopyTranslator.js';
-import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../clients/gemini.js';
-import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
+import { deepSeekAnswerClient } from './llm/deepseek/DeepSeekAnswerProvider.js';
+import { deepSeekAssistantUiCopyTranslator } from './llm/deepseek/DeepSeekAssistantUiCopyTranslator.js';
+import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from './embeddings/gemini/GeminiEmbeddingProvider.js';
+import { createSupabaseServiceClient } from './db/supabase/SupabaseClientFactory.js';
 import { getRagConfig } from '../config/env.js';
 import type { AskQuestionInput } from '../runtime/ask/askQuestion.js';
 import {
@@ -9,7 +9,7 @@ import {
   retrieveRelevantChunks as retrieveRelevantChunksUseCase,
 } from '../runtime/ask/askQuestion.js';
 import { getAssistantUiCopy as getAssistantUiCopyUseCase } from '../runtime/assistantUiCopy/getAssistantUiCopy.js';
-import { SupabaseRagReadRepository } from '../repositories/supabase/SupabaseRagReadRepository.js';
+import { SupabaseRagReadRepository } from './db/supabase/SupabaseRagReadRepository.js';
 
 export function createRagRuntime() {
   const config = getRagConfig();

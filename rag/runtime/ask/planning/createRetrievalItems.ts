@@ -3,8 +3,10 @@ import type { RetrievedContext } from '../../../core/types/context.js';
 import type {
   RetrievalPlan,
   RetrievalQuestionPlan,
+} from '../../../domain/retrieval/RetrievalPlan.js';
+import type {
   RetrievalRoute,
-} from '../../../core/types/retrieval.js';
+} from '../../../domain/retrieval/RetrievalRoute.js';
 import { resolveRetrievalRoute } from '../retrieval/route.js';
 import { extractTechnologyName } from '../retrieval/technology/normalizeTechnology.js';
 import {

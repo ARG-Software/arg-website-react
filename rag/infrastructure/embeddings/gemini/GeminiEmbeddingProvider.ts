@@ -1,11 +1,11 @@
-import { getGeminiConfig, getGeminiFallbackEmbeddingConfig } from '../config/env.js';
-import type { RagConfig } from '../core/types/config.js';
-import type { EmbeddingProvider } from '../core/types/providers.js';
+import { getGeminiConfig, getGeminiFallbackEmbeddingConfig } from '../../../config/env.js';
+import type { RagConfig } from '../../../core/types/config.js';
+import type { EmbeddingProvider } from '../../../domain/providers/ProviderPorts.js';
 import {
   EmbeddingQuotaExceededError,
   isEmbeddingQuotaExceededError,
-} from '../domain/providers/ProviderErrors.js';
-import { sleep } from '../shared/async.js';
+} from '../../../domain/providers/ProviderErrors.js';
+import { sleep } from '../../../shared/async.js';
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const MAX_RETRIES = 1;

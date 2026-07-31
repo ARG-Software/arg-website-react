@@ -1,11 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { RagSourceEmbeddings, UpsertSourceResult } from '../../ingestion/types.js';
-import type { RagSource } from '../../core/types/source.js';
-import { toEmbeddingLiteral } from '../../infrastructure/db/supabase/vector.js';
-import { chunkText } from '../../ingestion/processing/chunking.js';
-import { createSourceHash, normalizeText } from '../../ingestion/processing/text.js';
-import type { RagWriteRepository } from '../RagWriteRepository.js';
+import type { RagSourceEmbeddings, UpsertSourceResult } from '../../../ingestion/types.js';
+import type { RagSource } from '../../../core/types/source.js';
+import { toEmbeddingLiteral } from './vector.js';
+import { chunkText } from '../../../ingestion/processing/chunking.js';
+import { createSourceHash, normalizeText } from '../../../ingestion/processing/text.js';
+import type { RagWriteRepository } from '../../../repositories/RagWriteRepository.js';
 
 export class SupabaseRagWriteRepository implements RagWriteRepository {
   constructor(private readonly supabase: SupabaseClient) {}

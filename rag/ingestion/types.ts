@@ -1,4 +1,4 @@
-import type { EmbeddingProvider } from '../core/types/providers.js';
+import type { EmbeddingProvider } from '../domain/providers/ProviderPorts.js';
 import type { RagSource, RagSourceType } from '../core/types/source.js';
 import type { RagWriteRepository } from '../repositories/RagWriteRepository.js';
 

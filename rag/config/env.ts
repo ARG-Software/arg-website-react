@@ -1,6 +1,15 @@
 import { config as loadDotenv } from 'dotenv';
 
-import type { EnvOptions, RagConfig } from '../core/types/config.js';
+import type {
+  ChunkingConfig,
+  DeepSeekConfig,
+  EnvOptions,
+  GeminiEmbeddingConfig,
+  RagConfig,
+  RetrievalConfig,
+  SiteConfig,
+  SupabaseConfig,
+} from '../core/types/config.js';
 
 const DEFAULTS: Record<string, string> = {
   EMBEDDING_DIMENSIONS: '768',
@@ -75,7 +84,7 @@ export function getRagConfig(): RagConfig {
   };
 }
 
-export function getSupabaseConfig(): Pick<RagConfig, 'supabaseUrl' | 'supabaseServiceRoleKey'> {
+export function getSupabaseConfig(): SupabaseConfig {
   return {
     supabaseUrl: getRequiredEnv('DATABASE_URL'),
     supabaseServiceRoleKey: getRequiredEnv('DATABASE_SERVICE_ROLE_KEY'),
@@ -83,11 +92,8 @@ export function getSupabaseConfig(): Pick<RagConfig, 'supabaseUrl' | 'supabaseSe
 }
 
 export function getGeminiConfig(): Pick<
-  RagConfig,
-  | 'geminiApiKey'
-  | 'geminiEmbeddingModel'
-  | 'geminiEmbeddingDimensions'
-  | 'geminiEmbeddingRequestDelayMs'
+  GeminiEmbeddingConfig,
+  'geminiApiKey' | 'geminiEmbeddingModel' | 'geminiEmbeddingDimensions' | 'geminiEmbeddingRequestDelayMs'
 > {
   return {
     geminiApiKey: getRequiredEnv('EMBEDDING_API_KEY'),
@@ -98,7 +104,7 @@ export function getGeminiConfig(): Pick<
 }
 
 export function getGeminiFallbackEmbeddingConfig(): Pick<
-  RagConfig,
+  GeminiEmbeddingConfig,
   | 'geminiApiKey'
   | 'geminiFallbackEmbeddingModel'
   | 'geminiFallbackEmbeddingDimensions'
@@ -112,31 +118,28 @@ export function getGeminiFallbackEmbeddingConfig(): Pick<
   };
 }
 
-export function getDeepSeekConfig(): Pick<RagConfig, 'deepseekApiKey' | 'deepseekModel'> {
+export function getDeepSeekConfig(): DeepSeekConfig {
   return {
     deepseekApiKey: getRequiredEnv('AI_MODEL_API_KEY'),
     deepseekModel: getRequiredEnv('AI_MODEL'),
   };
 }
 
-export function getSiteConfig(): Pick<RagConfig, 'siteUrl' | 'companyName'> {
+export function getSiteConfig(): SiteConfig {
   return {
     siteUrl: getRequiredEnv('RAG_SITE_URL'),
     companyName: getRequiredEnv('RAG_COMPANY_NAME'),
   };
 }
 
-export function getChunkingConfig(): Pick<RagConfig, 'chunkSize' | 'chunkOverlap'> {
+export function getChunkingConfig(): ChunkingConfig {
   return {
     chunkSize: getRequiredNumberEnv('RAG_CHUNK_SIZE'),
     chunkOverlap: getRequiredNumberEnv('RAG_CHUNK_OVERLAP'),
   };
 }
 
-export function getRetrievalConfig(): Pick<
-  RagConfig,
-  'matchCount' | 'similarityThreshold' | 'fallbackSimilarityThreshold'
-> {
+export function getRetrievalConfig(): RetrievalConfig {
   return {
     matchCount: getRequiredNumberEnv('RAG_MATCH_COUNT'),
     similarityThreshold: getRequiredNumberEnv('RAG_SIMILARITY_THRESHOLD'),

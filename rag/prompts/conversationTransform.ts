@@ -1,4 +1,4 @@
-import type { ConversationTransformTask } from '../core/types/retrieval.js';
+import type { ConversationTransformTask } from '../domain/conversation/ConversationTransform.js';
 import { buildResponseLanguageInstruction } from './shared.js';
 
 const TASK_INSTRUCTIONS: Record<ConversationTransformTask, string> = {

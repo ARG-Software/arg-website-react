@@ -1,5 +1,5 @@
-import { geminiFallbackEmbeddingClient } from '../clients/gemini.js';
-import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
+import { geminiFallbackEmbeddingClient } from '../infrastructure/embeddings/gemini/GeminiEmbeddingProvider.js';
+import { createSupabaseServiceClient } from '../infrastructure/db/supabase/SupabaseClientFactory.js';
 import { loadLocalEnv } from '../config/env.js';
 import { toEmbeddingLiteral } from '../infrastructure/db/supabase/vector.js';
 

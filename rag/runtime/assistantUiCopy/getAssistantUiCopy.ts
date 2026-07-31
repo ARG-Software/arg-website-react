@@ -2,7 +2,7 @@ import type {
   AssistantUiCopy,
   AssistantUiCopyResponse,
 } from '../../core/types/assistantUiCopy.js';
-import type { AssistantUiCopyTranslator } from '../../core/types/providers.js';
+import type { AssistantUiCopyTranslator } from '../../domain/providers/ProviderPorts.js';
 import { getTextDirection, normalizeLanguage } from '../../utils/language.js';
 import { normalizeTranslatedAssistantUiCopy } from '../../application/assistantUiCopy/normalization.js';
 import { readAssistantSourceCopy } from './sourceCopy.js';

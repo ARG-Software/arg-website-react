@@ -1,5 +1,5 @@
-import type { EmbeddingProvider } from '../../../core/types/providers.js';
-import type { EmbeddingIndex } from '../../../core/types/retrieval.js';
+import type { EmbeddingProvider } from '../../../domain/providers/ProviderPorts.js';
+import type { EmbeddingIndex } from '../../../domain/providers/EmbeddingIndex.js';
 import { isEmbeddingQuotaExceededError } from '../../../domain/providers/ProviderErrors.js';
 
 export interface QueryEmbedding {

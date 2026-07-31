@@ -1,10 +1,14 @@
 import type {
   ConversationTransformTask,
+} from '../../../domain/conversation/ConversationTransform.js';
+import type {
   QuestionIntentResult,
+} from '../../../domain/conversation/QuestionIntent.js';
+import type {
   RetrievalMode,
   RetrievalPlan,
   RetrievalQuestionPlan,
-} from '../../../core/types/retrieval.js';
+} from '../../../domain/retrieval/RetrievalPlan.js';
 
 const RAG_INTENT = 'rag_question';
 const RETRIEVAL_MODES: RetrievalMode[] = ['direct_evidence', 'editorial', 'article_discovery'];

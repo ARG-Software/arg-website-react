@@ -1,9 +1,13 @@
-import type { AnswerProvider } from '../../core/types/providers.js';
+import type { AnswerProvider } from '../../domain/providers/ProviderPorts.js';
 import type {
   ConversationTransformTask,
+} from '../../domain/conversation/ConversationTransform.js';
+import type {
   QuestionIntent,
+} from '../../domain/conversation/QuestionIntent.js';
+import type {
   RetrievalPlan,
-} from '../../core/types/retrieval.js';
+} from '../../domain/retrieval/RetrievalPlan.js';
 
 export interface FakeAnswerProviderBehavior {
   intent?: QuestionIntent;

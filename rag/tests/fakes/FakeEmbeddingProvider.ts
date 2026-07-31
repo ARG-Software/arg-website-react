@@ -1,4 +1,4 @@
-import type { EmbeddingProvider } from '../../core/types/providers.js';
+import type { EmbeddingProvider } from '../../domain/providers/ProviderPorts.js';
 
 export function createFakeEmbeddingProvider(
   embedTexts: (texts: string[]) => number[][] | Promise<number[][]>

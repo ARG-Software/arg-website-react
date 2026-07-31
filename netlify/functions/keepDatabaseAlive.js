@@ -1,4 +1,4 @@
-import { createSupabaseServiceClient } from '../../rag/clients/supabaseClient.ts';
+import { createSupabaseServiceClient } from '../../rag/infrastructure/db/supabase/SupabaseClientFactory.ts';
 
 export default async () => {
   const startedAt = Date.now();

@@ -1,12 +1,12 @@
-import type { ChatMessage, PageContext } from './chat.js';
-import type { AssistantUiCopy } from './assistantUiCopy.js';
-import type { RetrievedContext } from './context.js';
+import type { AssistantUiCopy } from '../assistant/AssistantUiCopy.js';
+import type { ChatMessage, PageContext } from '../conversation/ChatMessage.js';
+import type { RetrievedContext } from '../retrieval/RetrievedContext.js';
+import type { ConversationTransformTask } from '../conversation/ConversationTransform.js';
 import type {
-  ConversationTransformTask,
   FallbackQuestionIntent,
   QuestionIntentResult,
-  RetrievalPlan,
-} from './retrieval.js';
+} from '../conversation/QuestionIntent.js';
+import type { RetrievalPlan } from '../retrieval/RetrievalPlan.js';
 
 export interface EmbeddingProvider {
   embedText(text: string): Promise<number[]>;

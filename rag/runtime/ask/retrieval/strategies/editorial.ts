@@ -1,7 +1,7 @@
 import type { RagConfig } from '../../../../core/types/config.js';
 import type { RetrievedContext } from '../../../../core/types/context.js';
-import type { EmbeddingProvider } from '../../../../core/types/providers.js';
-import type { RetrievalRoute } from '../../../../core/types/retrieval.js';
+import type { EmbeddingProvider } from '../../../../domain/providers/ProviderPorts.js';
+import type { RetrievalRoute } from '../../../../domain/retrieval/RetrievalRoute.js';
 import type { RagReadRepository } from '../../../../repositories/RagReadRepository.js';
 import { resolveSemanticSearch, type SemanticSearchInput } from '../embeddings.js';
 import { retrieveContextsForOrigin } from '../vectorSearch.js';

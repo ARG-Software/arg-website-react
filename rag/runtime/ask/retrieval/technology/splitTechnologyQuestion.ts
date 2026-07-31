@@ -1,4 +1,4 @@
-import type { RetrievalQuestionPlan } from '../../../../core/types/retrieval.js';
+import type { RetrievalQuestionPlan } from '../../../../domain/retrieval/RetrievalPlan.js';
 import { normalizeName } from './normalizeTechnology.js';
 
 const ENGINEERING_PRACTICE_PATTERN =

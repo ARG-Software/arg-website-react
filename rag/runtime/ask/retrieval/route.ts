@@ -1,8 +1,9 @@
-import type { RetrievalPlan, RetrievalRoute } from '../../../core/types/retrieval.js';
+import type { RetrievalPlan } from '../../../domain/retrieval/RetrievalPlan.js';
+import type { RetrievalRoute } from '../../../domain/retrieval/RetrievalRoute.js';
 import type { RagSourceType } from '../../../core/types/source.js';
 import { normalizeName } from '../../../shared/text.js';
 
-export type { RetrievalRoute, RetrievalRouteKind } from '../../../core/types/retrieval.js';
+export type { RetrievalRoute, RetrievalRouteKind } from '../../../domain/retrieval/RetrievalRoute.js';
 
 export const BLOG_SOURCE_TYPES: RagSourceType[] = ['blog_post'];
 export const OFFICIAL_WEBSITE_SOURCE_TYPES: RagSourceType[] = [

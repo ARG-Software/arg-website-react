@@ -1,5 +1,5 @@
-import type { EmbeddingProvider } from '../../../core/types/providers.js';
-import type { EmbeddingIndex } from '../../../core/types/retrieval.js';
+import type { EmbeddingProvider } from '../../../domain/providers/ProviderPorts.js';
+import type { EmbeddingIndex } from '../../../domain/providers/EmbeddingIndex.js';
 import { createQueryEmbeddings } from '../retrieval/embeddings.js';
 import { isExactTechnologySubject } from '../retrieval/strategies/exactTechnology.js';
 import { isProjectReferenceQuestion } from '../retrieval/strategies/projectReferences.js';

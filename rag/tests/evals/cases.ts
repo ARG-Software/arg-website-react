@@ -1,6 +1,7 @@
 import type { AssistantActionType } from '../../core/types/actions.js';
 import type { ChatMessage, PageContext } from '../../core/types/chat.js';
-import type { QuestionIntent, RetrievalPlan } from '../../core/types/retrieval.js';
+import type { QuestionIntent } from '../../domain/conversation/QuestionIntent.js';
+import type { RetrievalPlan } from '../../domain/retrieval/RetrievalPlan.js';
 import type {
   RagSourceMetadata,
   RagSourceOrigin,

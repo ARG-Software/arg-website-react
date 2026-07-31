@@ -1,6 +1,6 @@
 import type { RetrievedContext } from '../../../core/types/context.js';
 import type { ArticleRecommendation } from '../../../core/types/output.js';
-import type { RetrievalRoute } from '../../../core/types/retrieval.js';
+import type { RetrievalRoute } from '../../../domain/retrieval/RetrievalRoute.js';
 import { resolveUrl } from '../../../utils/url.js';
 
 export function createArticleRecommendations(

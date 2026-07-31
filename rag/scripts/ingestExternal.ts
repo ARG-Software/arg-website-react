@@ -1,11 +1,11 @@
-import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
-import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../clients/gemini.js';
+import { createSupabaseServiceClient } from '../infrastructure/db/supabase/SupabaseClientFactory.js';
+import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../infrastructure/embeddings/gemini/GeminiEmbeddingProvider.js';
 import { loadLocalEnv } from '../config/env.js';
 import type { IngestSourceResult } from '../ingestion/types.js';
 import { ingestSource } from '../ingestion/ingestPipeline.js';
 import type { ExternalSourceManifestEntry } from '../ingestion/manifest.js';
 import { loadExternalSource, loadExternalSourceEntries } from '../ingestion/sources/external.js';
-import { SupabaseRagWriteRepository } from '../repositories/supabase/SupabaseRagWriteRepository.js';
+import { SupabaseRagWriteRepository } from '../infrastructure/db/supabase/SupabaseRagWriteRepository.js';
 import { sleep } from '../shared/async.js';
 import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
 
