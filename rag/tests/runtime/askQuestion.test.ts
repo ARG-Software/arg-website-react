@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { GeminiEmbeddingQuotaError } from '../../clients/gemini.js';
+import { EmbeddingQuotaExceededError } from '../../domain/providers/ProviderErrors.js';
 import { createFakeAnswerProvider as createAnswerProvider } from '../fakes/FakeAnswerProvider.js';
 import { createFakeEmbeddingProvider as createEmbeddingProvider } from '../fakes/FakeEmbeddingProvider.js';
 import { FakeRagReadRepository } from '../fakes/FakeRagReadRepository.js';
@@ -2382,7 +2382,7 @@ test('runtime retrieval switches to the fallback index after a primary quota err
       plan: { mode: 'direct_evidence', entity: '', subject: 'Python architecture' },
     }),
     embeddingProvider: createEmbeddingProvider(() => {
-      throw new GeminiEmbeddingQuotaError('primary');
+      throw new EmbeddingQuotaExceededError('test', 'primary');
     }),
     fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
   });

@@ -1,14 +1,9 @@
-import { deepSeekAnswerClient } from '../../clients/deepseek.js';
-import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../../clients/gemini.js';
-import { createSupabaseServiceClient } from '../../clients/supabaseClient.js';
-import { getRagConfig } from '../../config/env.js';
 import type { ChatMessage, PageContext } from '../../core/types/chat.js';
 import type { RagConfig } from '../../core/types/config.js';
 import type { RetrievedContext } from '../../core/types/context.js';
 import type { AskQuestionResult } from '../../core/types/output.js';
 import type { AnswerProvider, EmbeddingProvider } from '../../core/types/providers.js';
 import type { RagReadRepository } from '../../repositories/RagReadRepository.js';
-import { SupabaseRagReadRepository } from '../../repositories/supabase/SupabaseRagReadRepository.js';
 import {
   normalizeMessages,
   normalizePageContext,
@@ -27,6 +22,7 @@ import { normalizeAssistantAnswer } from './response/normalizeAnswer.js';
 import { normalizeLanguage } from '../../utils/language.js';
 import { createPersonClarification } from './response/personClarification.js';
 import { createUnconfirmedTechnologyAnswer } from './response/unconfirmedTechnologyAnswer.js';
+import { resolveLanguagePolicy } from '../../domain/assistant/LanguagePolicy.js';
 
 export { RagValidationError, resolveRetrievalRoute };
 export type { RetrievalRoute, RetrievalRouteKind } from './retrieval/route.js';
@@ -41,6 +37,7 @@ export interface AskQuestionInput {
   answerProvider?: AnswerProvider;
   embeddingProvider?: EmbeddingProvider;
   fallbackEmbeddingProvider?: EmbeddingProvider;
+  preferredLanguage?: string;
 }
 
 interface RuntimeContext {
@@ -61,7 +58,13 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
     context.messages,
     context.pageContext
   );
-  const responseLanguage = normalizeLanguage(intent.language);
+  const languagePolicy = resolveLanguagePolicy({
+    question: context.question,
+    detectedLanguage: normalizeLanguage(intent.language),
+    preferredLanguage: input.preferredLanguage,
+  });
+  const responseLanguage = languagePolicy.responseLanguage;
+  const languagePreference = createLanguagePreferenceResult(languagePolicy);
 
   if (intent.intent === 'conversation_transform') {
     const previousAnswer = getLatestAssistantAnswer(context.messages);
@@ -70,6 +73,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
       return {
         answer: 'Please ask me what you want clarified, and I will make it easier to follow.',
         language: responseLanguage,
+        ...languagePreference,
         citations: [],
         articleRecommendations: [],
         actions: [],
@@ -87,6 +91,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
     return {
       answer: normalizeAssistantAnswer(answer),
       language: responseLanguage,
+      ...languagePreference,
       citations: [],
       articleRecommendations: [],
       actions: [],
@@ -106,6 +111,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
     return {
       answer: normalizeAssistantAnswer(answer),
       language: responseLanguage,
+      ...languagePreference,
       citations: [],
       articleRecommendations: [],
       actions: createAssistantActions(context.question),
@@ -124,6 +130,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
     return {
       answer: createPersonClarification(responseLanguage),
       language: responseLanguage,
+      ...languagePreference,
       citations: [],
       articleRecommendations: [],
       actions: [{ type: 'gaspar_message' }, { type: 'contact_form' }],
@@ -170,8 +177,9 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
 
     if (unconfirmedTechnologyAnswer) {
       return {
-        answer: unconfirmedTechnologyAnswer,
-        language: responseLanguage,
+          answer: unconfirmedTechnologyAnswer,
+          language: responseLanguage,
+          ...languagePreference,
         citations: [],
         articleRecommendations: [],
         actions: createInsufficientContextActions(context.question),
@@ -188,6 +196,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
     return {
       answer: normalizeAssistantAnswer(answer),
       language: responseLanguage,
+      ...languagePreference,
       citations: [],
       articleRecommendations: [],
       actions: createInsufficientContextActions(context.question),
@@ -205,11 +214,27 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
   return createAnswerResult({
     answer,
     language: responseLanguage,
+    languagePreference,
     question: context.question,
     contexts,
     retrievalResults,
     siteUrl: context.config.siteUrl,
   });
+}
+
+function createLanguagePreferenceResult(
+  languagePolicy: ReturnType<typeof resolveLanguagePolicy>
+): Pick<AskQuestionResult, 'languagePreference'> {
+  if (languagePolicy.preferenceAction === 'none') {
+    return {};
+  }
+
+  return {
+    languagePreference: {
+      action: languagePolicy.preferenceAction,
+      ...(languagePolicy.preferredLanguage ? { language: languagePolicy.preferredLanguage } : {}),
+    },
+  };
 }
 
 function getLatestAssistantAnswer(messages: ChatMessage[]): string | null {
@@ -258,22 +283,33 @@ function createRuntimeContext({
   question,
   messages,
   pageContext,
-  config = getRagConfig(),
+  config,
   readRepository,
-  answerProvider = deepSeekAnswerClient,
-  embeddingProvider = geminiEmbeddingClient,
-  fallbackEmbeddingProvider = geminiFallbackEmbeddingClient,
+  answerProvider,
+  embeddingProvider,
+  fallbackEmbeddingProvider,
 }: AskQuestionInput): RuntimeContext {
+  const runtimeConfig = requireDependency(config, 'RAG config');
+
   return {
     question: normalizeQuestion(question),
     messages: normalizeMessages(messages),
     pageContext: normalizePageContext(pageContext),
-    config,
-    readRepository:
-      readRepository ??
-      new SupabaseRagReadRepository(createSupabaseServiceClient(config), config.siteUrl),
-    answerProvider,
-    embeddingProvider,
-    fallbackEmbeddingProvider,
+    config: runtimeConfig,
+    readRepository: requireDependency(readRepository, 'RAG read repository'),
+    answerProvider: requireDependency(answerProvider, 'answer provider'),
+    embeddingProvider: requireDependency(embeddingProvider, 'embedding provider'),
+    fallbackEmbeddingProvider: requireDependency(
+      fallbackEmbeddingProvider,
+      'fallback embedding provider'
+    ),
   };
+}
+
+function requireDependency<T>(dependency: T | undefined, label: string): T {
+  if (!dependency) {
+    throw new Error(`${label} is required`);
+  }
+
+  return dependency;
 }

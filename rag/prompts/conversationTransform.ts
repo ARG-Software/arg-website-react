@@ -1,5 +1,5 @@
 import type { ConversationTransformTask } from '../core/types/retrieval.js';
-import { buildResponseLanguageInstruction } from './responseLanguage.js';
+import { buildResponseLanguageInstruction } from './shared.js';
 
 const TASK_INSTRUCTIONS: Record<ConversationTransformTask, string> = {
   shorten_previous_answer: 'Make the previous answer shorter and more direct.',

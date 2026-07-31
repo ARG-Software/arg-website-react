@@ -1,11 +1,10 @@
-import { deepSeekAssistantUiCopyTranslator } from '../../clients/deepseekAssistantUiCopyTranslator.js';
 import type {
   AssistantUiCopy,
   AssistantUiCopyResponse,
 } from '../../core/types/assistantUiCopy.js';
 import type { AssistantUiCopyTranslator } from '../../core/types/providers.js';
 import { getTextDirection, normalizeLanguage } from '../../utils/language.js';
-import { normalizeTranslatedAssistantUiCopy } from '../../utils/assistantUiCopy.js';
+import { normalizeTranslatedAssistantUiCopy } from '../../application/assistantUiCopy/normalization.js';
 import { readAssistantSourceCopy } from './sourceCopy.js';
 
 const translationCache = new Map<string, AssistantUiCopyResponse>();
@@ -14,7 +13,7 @@ export { readAssistantSourceCopy };
 
 export async function getAssistantUiCopy(
   language: string | undefined,
-  { translator = deepSeekAssistantUiCopyTranslator }: { translator?: AssistantUiCopyTranslator } = {}
+  { translator }: { translator?: AssistantUiCopyTranslator } = {}
 ): Promise<AssistantUiCopyResponse> {
   const source = readAssistantSourceCopy();
   const normalizedLanguage = normalizeLanguage(language);
@@ -26,6 +25,10 @@ export async function getAssistantUiCopy(
 
   const cached = translationCache.get(cacheKey);
   if (cached) return cached;
+
+  if (!translator) {
+    throw new Error('assistant UI copy translator is required');
+  }
 
   const translated = await translator.translateAssistantUiCopy(source, normalizedLanguage);
   const response = createResponse(

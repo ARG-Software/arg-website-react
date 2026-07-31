@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RetrievedContext } from '../../core/types/context.js';
 import type { EmbeddingIndex } from '../../core/types/retrieval.js';
 import type { RagSourceOrigin } from '../../core/types/source.js';
-import { toEmbeddingLiteral } from '../../utils/embeddings.js';
+import { toEmbeddingLiteral } from '../../infrastructure/db/supabase/vector.js';
 import { resolveUrl } from '../../utils/url.js';
 import type {
   FindChunksByTextInput,

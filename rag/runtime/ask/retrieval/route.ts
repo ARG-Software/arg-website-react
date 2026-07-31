@@ -1,5 +1,6 @@
 import type { RetrievalPlan, RetrievalRoute } from '../../../core/types/retrieval.js';
 import type { RagSourceType } from '../../../core/types/source.js';
+import { normalizeName } from '../../../shared/text.js';
 
 export type { RetrievalRoute, RetrievalRouteKind } from '../../../core/types/retrieval.js';
 
@@ -224,11 +225,4 @@ function resolveProjectEntity(routeText: string, entity: string): string {
   );
 
   return match ?? '';
-}
-
-function normalizeName(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
 }

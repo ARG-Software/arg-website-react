@@ -1,4 +1,4 @@
-import type { RagSourceEmbeddings, UpsertSourceResult } from '../core/types/ingestion.js';
+import type { RagSourceEmbeddings, UpsertSourceResult } from '../ingestion/types.js';
 import type { RagSource } from '../core/types/source.js';
 
 export interface RagWriteRepository {

@@ -1,9 +1,12 @@
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
+import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../clients/gemini.js';
 import { loadLocalEnv } from '../config/env.js';
-import type { IngestSourceResult } from '../core/types/ingestion.js';
+import type { IngestSourceResult } from '../ingestion/types.js';
 import type { RagSource } from '../core/types/source.js';
 import { ingestSource } from '../ingestion/ingestPipeline.js';
 import { loadLocalSources } from '../ingestion/sources/local.js';
+import { SupabaseRagWriteRepository } from '../repositories/supabase/SupabaseRagWriteRepository.js';
+import { sleep } from '../shared/async.js';
 import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
 
 loadLocalEnv();
@@ -18,6 +21,7 @@ if (!hasSourceFilters(selection)) {
 }
 
 const supabase = createSupabaseServiceClient();
+const repository = new SupabaseRagWriteRepository(supabase);
 const sources = await loadLocalSources(process.cwd(), selection);
 const results: IngestSourceResult[] = [];
 const failures: Array<{ source: RagSource; error: unknown }> = [];
@@ -30,8 +34,10 @@ if (sources.length === 0) {
 for (const source of sources) {
   try {
     const result = await ingestSource({
-      supabase,
       source,
+      repository,
+      embeddingProvider: geminiEmbeddingClient,
+      fallbackEmbeddingProvider: geminiFallbackEmbeddingClient,
       dryRun,
       force: selection.force,
       fallbackOnly: selection.fallbackOnly,
@@ -77,10 +83,4 @@ function getErrorMessage(error: unknown): string {
 function getEmbeddingRequestDelayMs(): number {
   const value = Number(process.env.EMBEDDING_REQUEST_DELAY_MS ?? 0);
   return Number.isFinite(value) && value > 0 ? value : 0;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
 }

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { GeminiEmbeddingQuotaError } from '../../clients/gemini.js';
+import { EmbeddingQuotaExceededError } from '../../domain/providers/ProviderErrors.js';
 import { ingestSource } from '../../ingestion/ingestPipeline.js';
 import { redactCvContent } from '../../ingestion/processing/redaction.js';
 import { createSourceHash } from '../../ingestion/processing/text.js';
@@ -69,7 +69,7 @@ test('primary quota exhaustion persists fallback embeddings', async () => {
   let fallbackUpdates = 0;
   let upserts = 0;
   const primaryProvider = createProvider(() => {
-    throw new GeminiEmbeddingQuotaError('primary-model');
+    throw new EmbeddingQuotaExceededError('test', 'primary-model');
   });
   const fallbackProvider = createProvider(() => {
     fallbackCalls += 1;
@@ -105,7 +105,7 @@ test('fallback quota exhaustion persists primary embeddings', async () => {
   let upserts = 0;
   const primaryProvider = createProvider(() => [[0.5, 0.6]]);
   const fallbackProvider = createProvider(() => {
-    throw new GeminiEmbeddingQuotaError('fallback-model');
+    throw new EmbeddingQuotaExceededError('test', 'fallback-model');
   });
   const repository = createRepository({
     upsertSource: async (sourceWithChunks, embeddings) => {

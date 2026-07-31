@@ -8,11 +8,11 @@ import {
   buildHistoryMessages,
   buildPageContextMessages,
   buildUserPrompt,
-} from '../prompts/contextFormatting.js';
+} from '../infrastructure/llm/deepseek/messageFormatting.js';
 import { buildIntentFallbackPrompt } from '../prompts/fallback.js';
 import { buildInsufficientContextPrompt } from '../prompts/insufficientContext.js';
 import { buildIntentPrompt } from '../prompts/intent.js';
-import { parseIntentResponse, parseRetrievalPlan } from '../prompts/parsers.js';
+import { parseIntentResponse, parseRetrievalPlan } from '../infrastructure/llm/deepseek/outputParsers.js';
 import { buildRetrievalPlanPrompt } from '../prompts/retrievalPlan.js';
 import type { ChatMessage, PageContext, PromptMessage } from '../core/types/chat.js';
 import type { RagConfig } from '../core/types/config.js';

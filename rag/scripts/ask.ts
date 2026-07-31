@@ -1,6 +1,6 @@
 import { loadLocalEnv } from '../config/env.js';
 import type { ChatMessage, PageContext } from '../core/types/chat.js';
-import { askQuestion, retrieveRelevantChunks } from '../runtime/ask/askQuestion.js';
+import { createRagRuntime } from '../infrastructure/createRagRuntime.js';
 
 loadLocalEnv();
 
@@ -22,6 +22,7 @@ try {
   const messages = parseMessages();
   const pageContext = parsePageContext();
   const question = getQuestion();
+  const runtime = createRagRuntime();
 
   if (!question) {
     console.error(
@@ -31,7 +32,7 @@ try {
   }
 
   if (retrieveOnly) {
-    const contexts = await retrieveRelevantChunks({ question, messages, pageContext });
+    const contexts = await runtime.retrieveRelevantChunks({ question, messages, pageContext });
     console.log(`\nQuestion: ${question}\n`);
     console.log(`Retrieved chunks: ${contexts.length}`);
 
@@ -44,7 +45,7 @@ try {
     process.exit(0);
   }
 
-  const result = await askQuestion({ question, messages, pageContext });
+  const result = await runtime.askQuestion({ question, messages, pageContext });
   console.log(`\nQuestion: ${question}\n`);
   console.log(`Answer:\n${result.answer}\n`);
 

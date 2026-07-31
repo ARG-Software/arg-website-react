@@ -64,6 +64,7 @@ export function useAssistantWidgetController({
   const mobileViewport = useMobileFullscreen();
   const [panelState, setPanelState] = useState('closed');
   const [inputValue, setInputValue] = useState('');
+  const [preferredLanguage, setPreferredLanguage] = useState('');
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -77,6 +78,7 @@ export function useAssistantWidgetController({
   const { loading, error, pendingStatus, setError, submitQuestion, resetChat } = useAssistantChat({
     getPayload,
     consumePayload,
+    preferredLanguage,
   });
 
   const dismissLeadCaptureOnce = useCallback(
@@ -171,6 +173,13 @@ export function useAssistantWidgetController({
       const result = await submitQuestion(question, chatHistory);
 
       if (result?.success && result.message) {
+        const languagePreference = result.message.languagePreference;
+        if (languagePreference?.action === 'set' && languagePreference.language) {
+          setPreferredLanguage(languagePreference.language);
+        } else if (languagePreference?.action === 'clear') {
+          setPreferredLanguage('');
+        }
+
         const nextCopy = result.message.language
           ? await setActiveLanguage(result.message.language)
           : assistantCopy;
@@ -302,6 +311,7 @@ export function useAssistantWidgetController({
     cancelLeadCapture();
     setMessages([]);
     setInputValue('');
+    setPreferredLanguage('');
     setError(null);
     leadCaptureStartedRef.current = false;
     leadDismissHandledRef.current = false;

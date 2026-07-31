@@ -1,29 +1,18 @@
 import { getGeminiConfig, getGeminiFallbackEmbeddingConfig } from '../config/env.js';
 import type { RagConfig } from '../core/types/config.js';
 import type { EmbeddingProvider } from '../core/types/providers.js';
+import {
+  EmbeddingQuotaExceededError,
+  isEmbeddingQuotaExceededError,
+} from '../domain/providers/ProviderErrors.js';
+import { sleep } from '../shared/async.js';
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const MAX_RETRIES = 1;
 const REQUEST_TIMEOUT_MS = 10000;
 const MAX_BATCH_SIZE = 100;
 
-export class GeminiEmbeddingQuotaError extends Error {
-  code = 'embedding_quota_exceeded';
-
-  constructor(model?: string) {
-    super(`Gemini embedding quota exceeded${model ? ` for ${model}` : ''}`);
-    this.name = 'GeminiEmbeddingQuotaError';
-  }
-}
-
-export function isGeminiEmbeddingQuotaError(error: unknown): error is GeminiEmbeddingQuotaError {
-  return (
-    error instanceof GeminiEmbeddingQuotaError ||
-    (error instanceof Error &&
-      (error.name === 'GeminiEmbeddingQuotaError' ||
-        'code' in error && error.code === 'embedding_quota_exceeded'))
-  );
-}
+export { EmbeddingQuotaExceededError, isEmbeddingQuotaExceededError };
 
 export interface GeminiEmbeddingConfig {
   geminiApiKey: string;
@@ -193,7 +182,7 @@ async function fetchWithRetry<T extends GeminiEmbeddingResponse | GeminiBatchEmb
     }
 
     if (response.status === 429 && isQuotaExhausted(lastResponseText)) {
-      throw new GeminiEmbeddingQuotaError(model);
+      throw new EmbeddingQuotaExceededError('Gemini', model);
     }
 
     if (response.status !== 429 || attempt === MAX_RETRIES) {
@@ -225,10 +214,4 @@ async function fetchWithTimeout(url: string, init: RequestInit): Promise<Respons
   } finally {
     clearTimeout(timeout);
   }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
 }

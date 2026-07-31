@@ -20,6 +20,14 @@ test('answer prompt establishes Gaspar as the first-person speaker', () => {
   assert.doesNotMatch(prompt, /You are the public website assistant/u);
 });
 
+test('answer prompt applies assistant language policy', () => {
+  const prompt = buildSystemPrompt(COMPANY_NAME, 'pt-PT');
+
+  assert.match(prompt, /answer in any human language, answer positively/u);
+  assert.match(prompt, /Do not infer native language or fluency/u);
+  assert.match(prompt, /birthplace, nationality, or ascendence/u);
+});
+
 test('Gaspar prompts handle visitor names conversationally', () => {
   const answerPrompt = buildSystemPrompt(COMPANY_NAME, 'en');
   const smallTalkPrompt = buildIntentFallbackPrompt(COMPANY_NAME, 'small_talk', 'en');

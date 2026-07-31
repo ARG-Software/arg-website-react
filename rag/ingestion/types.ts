@@ -1,18 +1,15 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-
-import type { RagWriteRepository } from '../../repositories/RagWriteRepository.js';
-import type { EmbeddingProvider } from './providers.js';
-import type { RagSource, RagSourceType } from './source.js';
+import type { EmbeddingProvider } from '../core/types/providers.js';
+import type { RagSource, RagSourceType } from '../core/types/source.js';
+import type { RagWriteRepository } from '../repositories/RagWriteRepository.js';
 
 export interface IngestSourceInput {
-  supabase?: SupabaseClient | null;
   source: RagSource;
   dryRun?: boolean;
   force?: boolean;
   fallbackOnly?: boolean;
   embeddingProvider?: EmbeddingProvider;
   fallbackEmbeddingProvider?: EmbeddingProvider;
-  repository?: RagWriteRepository;
+  repository: RagWriteRepository;
 }
 
 export interface IngestSourceResult {

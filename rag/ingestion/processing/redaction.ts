@@ -1,4 +1,5 @@
 import { normalizeText } from './text.js';
+import { escapeRegExp } from '../../shared/regex.js';
 
 const CV_REDACTIONS = [
   /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,
@@ -44,8 +45,4 @@ export function redactCvContent(content: string, literals: string[] = []): strin
   }
 
   return normalized;
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

@@ -1,5 +1,5 @@
-import type { ChatMessage, PageContext, PromptMessage } from '../core/types/chat.js';
-import type { RetrievedContext } from '../core/types/context.js';
+import type { ChatMessage, PageContext, PromptMessage } from '../../../core/types/chat.js';
+import type { RetrievedContext } from '../../../core/types/context.js';
 
 export function buildHistoryMessages(messages: ChatMessage[]): PromptMessage[] {
   return messages.map(message => ({

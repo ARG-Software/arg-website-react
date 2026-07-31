@@ -94,10 +94,8 @@ export default defineConfig(({ mode }) => {
             try {
               const requestUrl = new URL(req.url || '', 'http://localhost');
               const language = requestUrl.searchParams.get('language') || 'en';
-              const { getAssistantUiCopy } = await import(
-                './rag/runtime/assistantUiCopy/getAssistantUiCopy.ts'
-              );
-              const result = await getAssistantUiCopy(language);
+              const { createRagRuntime } = await import('./rag/infrastructure/createRagRuntime.ts');
+              const result = await createRagRuntime().getAssistantUiCopy(language);
 
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify(result));
@@ -265,11 +263,12 @@ export default defineConfig(({ mode }) => {
               entry.count += 1;
             }
 
-            const { askQuestion } = await import('./rag/runtime/ask/askQuestion.ts');
-            const result = await askQuestion({
+            const { createRagRuntime } = await import('./rag/infrastructure/createRagRuntime.ts');
+            const result = await createRagRuntime().askQuestion({
               question: payload.question,
               messages: payload.messages,
               pageContext: payload.pageContext,
+              preferredLanguage: payload.preferredLanguage,
             });
 
             res.setHeader('Content-Type', 'application/json');
@@ -277,6 +276,7 @@ export default defineConfig(({ mode }) => {
               JSON.stringify({
                 answer: result.answer,
                 language: result.language,
+                languagePreference: result.languagePreference,
                 citations: result.citations,
                 articleRecommendations: result.articleRecommendations,
                 actions: result.actions,

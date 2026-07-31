@@ -38,13 +38,7 @@ const TECHNOLOGY_SEARCH_TERMS = new Map([
 ]);
 
 export function normalizeName(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9 ]/gu, ' ')
-    .replace(/\s+/gu, ' ')
-    .trim();
+  return normalizeTextName(value);
 }
 
 export function isCompanyEntity(entity: string): boolean {
@@ -126,3 +120,4 @@ function toTitleCaseTechnology(value: string): string {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }
+import { normalizeName as normalizeTextName } from '../../../../shared/text.js';

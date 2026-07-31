@@ -12,6 +12,7 @@ import {
 export function createAnswerResult({
   answer,
   language,
+  languagePreference,
   question,
   contexts,
   retrievalResults,
@@ -19,6 +20,7 @@ export function createAnswerResult({
 }: {
   answer: string;
   language: string;
+  languagePreference?: Pick<AskQuestionResult, 'languagePreference'>;
   question: string;
   contexts: RetrievedContext[];
   retrievalResults: RetrievalItemResult[];
@@ -27,6 +29,7 @@ export function createAnswerResult({
   return {
     answer: normalizeAssistantAnswer(answer),
     language,
+    ...languagePreference,
     citations: createCitations(contexts, siteUrl),
     articleRecommendations: mergeArticleRecommendations(
       retrievalResults.map(result =>

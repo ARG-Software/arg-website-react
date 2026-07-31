@@ -20,7 +20,7 @@ function getErrorMessage(code) {
   return ERROR_MESSAGES[code] || ERROR_MESSAGES.answer_failed;
 }
 
-export function useAssistantChat({ getPayload, consumePayload }) {
+export function useAssistantChat({ getPayload, consumePayload, preferredLanguage }) {
   const location = useLocation();
   const activeSection = useActiveHomepageSection(location.pathname);
   const [loading, setLoading] = useState(false);
@@ -61,6 +61,7 @@ export function useAssistantChat({ getPayload, consumePayload }) {
               title: document.title,
               ...(activeSection ? { activeSection } : {}),
             },
+            ...(preferredLanguage ? { preferredLanguage } : {}),
             altcha,
           },
           { signal: controller.signal }
@@ -100,6 +101,7 @@ export function useAssistantChat({ getPayload, consumePayload }) {
           role: 'assistant',
           content: data.answer,
           language: data.language,
+          languagePreference: data.languagePreference,
           citations: data.citations || [],
           articleRecommendations: data.articleRecommendations || [],
           actions: data.actions || [],
@@ -123,7 +125,7 @@ export function useAssistantChat({ getPayload, consumePayload }) {
         setPendingStatus(null);
       }
     },
-    [activeSection, consumePayload, getPayload, loading, location.pathname]
+    [activeSection, consumePayload, getPayload, loading, location.pathname, preferredLanguage]
   );
 
   const resetChat = useCallback(() => {

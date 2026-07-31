@@ -7,7 +7,7 @@ import {
   readString,
   readStringArray,
   readStringRecord,
-} from '../../utils/assistantUiCopy.js';
+} from '../../application/assistantUiCopy/normalization.js';
 
 const ASSISTANT_COPY_PATH = resolve(process.cwd(), 'src/data/assistant.json');
 

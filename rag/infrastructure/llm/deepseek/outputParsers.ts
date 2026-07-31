@@ -4,7 +4,7 @@ import type {
   RetrievalMode,
   RetrievalPlan,
   RetrievalQuestionPlan,
-} from '../core/types/retrieval.js';
+} from '../../../core/types/retrieval.js';
 
 const RAG_INTENT = 'rag_question';
 const RETRIEVAL_MODES: RetrievalMode[] = ['direct_evidence', 'editorial', 'article_discovery'];

@@ -26,11 +26,6 @@ export function stripMarkdown(value: unknown): string {
     .trim();
 }
 
-export function createContentHash(value: unknown): string {
-  const text = normalizeText(value);
-  return createHash('sha256').update(text).digest('hex');
-}
-
 export function createSourceHash(source: RagSource): string {
   return createHash('sha256')
     .update(

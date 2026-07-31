@@ -1,7 +1,7 @@
 import { geminiFallbackEmbeddingClient } from '../clients/gemini.js';
 import { createSupabaseServiceClient } from '../clients/supabaseClient.js';
 import { loadLocalEnv } from '../config/env.js';
-import { toEmbeddingLiteral } from '../utils/embeddings.js';
+import { toEmbeddingLiteral } from '../infrastructure/db/supabase/vector.js';
 
 const PAGE_SIZE = 100;
 

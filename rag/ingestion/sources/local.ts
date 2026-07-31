@@ -22,7 +22,7 @@ import type {
   JsonManifestEntry,
 } from '../manifest.js';
 import { HOMEPAGE_SECTION_SCOPES, LOCAL_SOURCE_ENTRIES } from '../../config/localSources.js';
-import type { IngestionRunOptions } from '../../core/types/ingestion.js';
+import type { IngestionRunOptions } from '../types.js';
 import type { RagSource, RagSourceMetadata } from '../../core/types/source.js';
 
 const PERSON_SOURCE_KEYS: Record<string, string> = {

@@ -1,7 +1,7 @@
 import { getDeepSeekConfig } from '../config/env.js';
 import type { AssistantUiCopyTranslator } from '../core/types/providers.js';
 import { buildAssistantUiCopyTranslationPrompt } from '../prompts/assistantUiCopyTranslation.js';
-import { parseTranslatedAssistantUiCopy } from '../utils/assistantUiCopy.js';
+import { parseTranslatedAssistantUiCopy } from '../application/assistantUiCopy/normalization.js';
 
 const DEEPSEEK_CHAT_URL = 'https://api.deepseek.com/chat/completions';
 

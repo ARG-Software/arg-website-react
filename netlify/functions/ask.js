@@ -1,5 +1,6 @@
-import { RagValidationError, askQuestion } from '../../rag/runtime/ask/askQuestion.ts';
-import { GeminiEmbeddingQuotaError } from '../../rag/clients/gemini.ts';
+import { RagValidationError } from '../../rag/runtime/ask/askQuestion.ts';
+import { EmbeddingQuotaExceededError } from '../../rag/domain/providers/ProviderErrors.ts';
+import { createRagRuntime } from '../../rag/infrastructure/createRagRuntime.ts';
 import { verifyAltchaChallenge } from '../../rag/security/altcha.ts';
 import { checkRateLimits, getRateLimitConfig } from '../../rag/security/rateLimit.ts';
 import { SupabaseRateLimitStore } from '../../rag/security/rateLimitStores.ts';
@@ -98,15 +99,17 @@ export default async function handler(request) {
   }
 
   try {
-    const result = await askQuestion({
+    const result = await createRagRuntime().askQuestion({
       question: payload.question,
       messages: payload.messages,
       pageContext: payload.pageContext,
+      preferredLanguage: payload.preferredLanguage,
     });
 
     return createResponse(request, 200, {
       answer: result.answer,
       language: result.language,
+      languagePreference: result.languagePreference,
       citations: result.citations,
       articleRecommendations: result.articleRecommendations,
       actions: result.actions,
@@ -156,7 +159,7 @@ function isClientError(error) {
 }
 
 function isServiceUnavailable(error) {
-  return isConfigurationError(error) || error instanceof GeminiEmbeddingQuotaError;
+  return isConfigurationError(error) || error instanceof EmbeddingQuotaExceededError;
 }
 
 function isConfigurationError(error) {
@@ -166,7 +169,7 @@ function isConfigurationError(error) {
 }
 
 function getServiceErrorCode(error) {
-  if (error instanceof GeminiEmbeddingQuotaError) {
+  if (error instanceof EmbeddingQuotaExceededError) {
     return error.code;
   }
 

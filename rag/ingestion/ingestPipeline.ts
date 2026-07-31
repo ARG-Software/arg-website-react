@@ -1,25 +1,19 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-
-import {
-  geminiEmbeddingClient,
-  geminiFallbackEmbeddingClient,
-  isGeminiEmbeddingQuotaError,
-} from '../clients/gemini.js';
-import { SupabaseRagWriteRepository } from '../repositories/supabase/SupabaseRagWriteRepository.js';
-import type { IngestSourceInput, IngestSourceResult } from '../core/types/ingestion.js';
+import type { IngestSourceInput, IngestSourceResult } from './types.js';
+import { isEmbeddingQuotaExceededError } from '../domain/providers/ProviderErrors.js';
 import { chunkText } from './processing/chunking.js';
 import { createSourceHash, normalizeText } from './processing/text.js';
 
 export async function ingestSource({
-  supabase,
   source,
   dryRun = false,
   force = false,
   fallbackOnly = false,
-  embeddingProvider = geminiEmbeddingClient,
-  fallbackEmbeddingProvider = geminiFallbackEmbeddingClient,
-  repository,
+  embeddingProvider,
+  fallbackEmbeddingProvider,
+  repository: sourceRepository,
 }: IngestSourceInput): Promise<IngestSourceResult> {
+  const primaryProvider = requireDependency(embeddingProvider, 'embedding provider');
+  const fallbackProvider = requireDependency(fallbackEmbeddingProvider, 'fallback embedding provider');
   const content = normalizeText(source.content);
   const chunks = chunkText(content);
 
@@ -33,12 +27,6 @@ export async function ingestSource({
       reason: 'empty_content',
     };
   }
-
-  if (!repository && !supabase) {
-    throw new Error('A RAG source repository or Supabase client is required for ingestion checks');
-  }
-
-  const sourceRepository = repository ?? new SupabaseRagWriteRepository(supabase as SupabaseClient);
 
   if (!fallbackOnly) {
     const contentHash = createSourceHash(source);
@@ -71,7 +59,7 @@ export async function ingestSource({
   const sourceWithChunks = { ...source, chunks };
 
   if (fallbackOnly) {
-    const fallbackEmbeddings = await fallbackEmbeddingProvider.embedTexts(chunks);
+    const fallbackEmbeddings = await fallbackProvider.embedTexts(chunks);
     const result = await sourceRepository.updateFallbackEmbeddings(sourceWithChunks, fallbackEmbeddings);
 
     return {
@@ -85,13 +73,13 @@ export async function ingestSource({
 
   let primaryEmbeddings: number[][];
   try {
-    primaryEmbeddings = await embeddingProvider.embedTexts(chunks);
+    primaryEmbeddings = await primaryProvider.embedTexts(chunks);
   } catch (error) {
-    if (!isGeminiEmbeddingQuotaError(error)) {
+    if (!isEmbeddingQuotaExceededError(error)) {
       throw error;
     }
 
-    const fallbackEmbeddings = await fallbackEmbeddingProvider.embedTexts(chunks);
+    const fallbackEmbeddings = await fallbackProvider.embedTexts(chunks);
     const result = await sourceRepository.updateFallbackEmbeddings(sourceWithChunks, fallbackEmbeddings);
 
     return {
@@ -105,9 +93,9 @@ export async function ingestSource({
 
   let fallbackEmbeddings: number[][] | null;
   try {
-    fallbackEmbeddings = await fallbackEmbeddingProvider.embedTexts(chunks);
+    fallbackEmbeddings = await fallbackProvider.embedTexts(chunks);
   } catch (error) {
-    if (!isGeminiEmbeddingQuotaError(error)) {
+    if (!isEmbeddingQuotaExceededError(error)) {
       throw error;
     }
 
@@ -125,4 +113,12 @@ export async function ingestSource({
     title: source.title,
     chunkCount: result.chunkCount,
   };
+}
+
+function requireDependency<T>(dependency: T | undefined, label: string): T {
+  if (!dependency) {
+    throw new Error(`${label} is required`);
+  }
+
+  return dependency;
 }

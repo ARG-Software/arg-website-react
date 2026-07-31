@@ -3,6 +3,7 @@ import type { RetrievedContext } from '../../../../core/types/context.js';
 import type { CommercialDeliveryKind, RetrievalRoute } from '../../../../core/types/retrieval.js';
 import type { RagSourceType } from '../../../../core/types/source.js';
 import type { RagReadRepository, RagSourceRecord } from '../../../../repositories/RagReadRepository.js';
+import { normalizeName } from '../../../../shared/text.js';
 
 const DESIGNRUSH_SOURCE_KEY = 'designrush';
 const FAQ_SOURCE_KEY = 'faq';
@@ -131,11 +132,4 @@ function hasNamedCommercialFact(
   }
 
   return true;
-}
-
-function normalizeName(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
 }

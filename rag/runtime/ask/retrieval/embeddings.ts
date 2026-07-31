@@ -1,6 +1,6 @@
-import { GeminiEmbeddingQuotaError } from '../../../clients/gemini.js';
 import type { EmbeddingProvider } from '../../../core/types/providers.js';
 import type { EmbeddingIndex } from '../../../core/types/retrieval.js';
+import { isEmbeddingQuotaExceededError } from '../../../domain/providers/ProviderErrors.js';
 
 export interface QueryEmbedding {
   embedding: number[];
@@ -41,7 +41,7 @@ export async function createQueryEmbedding(
       index: 'primary',
     };
   } catch (error) {
-    if (!(error instanceof GeminiEmbeddingQuotaError)) {
+    if (!isEmbeddingQuotaExceededError(error)) {
       throw error;
     }
 
@@ -63,7 +63,7 @@ export async function createQueryEmbeddings(
       index: 'primary',
     };
   } catch (error) {
-    if (!(error instanceof GeminiEmbeddingQuotaError)) {
+    if (!isEmbeddingQuotaExceededError(error)) {
       throw error;
     }
 
