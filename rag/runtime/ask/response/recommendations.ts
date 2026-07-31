@@ -1,5 +1,5 @@
 import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
-import type { ArticleRecommendation } from '../../../core/types/output.js';
+import type { ArticleRecommendation } from '../../../domain/assistant/AssistantResponse.js';
 import type { RetrievalRoute } from '../../../domain/retrieval/RetrievalRoute.js';
 import { resolveUrl } from '../../../utils/url.js';
 

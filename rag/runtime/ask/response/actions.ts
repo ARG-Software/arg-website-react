@@ -1,4 +1,4 @@
-import type { AssistantAction } from '../../../core/types/actions.js';
+import type { AssistantAction } from '../../../domain/assistant/AssistantAction.js';
 
 const PROJECT_CONTACT_QUESTION_PATTERN =
   /\b(?:book|meeting|call|contact|email|reach|talk|speak|discuss|project|service|services|brief|scope|proposal|quote|estimate|budget|pricing|cost|collaborat(?:e|ion)|get started)\b/i;

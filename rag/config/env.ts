@@ -9,7 +9,7 @@ import type {
   RetrievalConfig,
   SiteConfig,
   SupabaseConfig,
-} from '../core/types/config.js';
+} from './RagConfig.js';
 
 const DEFAULTS: Record<string, string> = {
   EMBEDDING_DIMENSIONS: '768',

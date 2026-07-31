@@ -1,4 +1,4 @@
-import type { RagConfig } from '../../../../core/types/config.js';
+import type { RagConfig } from '../../../../config/RagConfig.js';
 import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
 import type { EmbeddingProvider } from '../../../../domain/providers/ProviderPorts.js';
 import type { RagReadRepository } from '../../../../repositories/RagReadRepository.js';

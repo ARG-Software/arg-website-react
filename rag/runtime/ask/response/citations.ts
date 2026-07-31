@@ -1,5 +1,5 @@
 import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
-import type { Citation } from '../../../core/types/output.js';
+import type { Citation } from '../../../domain/assistant/AssistantResponse.js';
 import { resolveUrl } from '../../../utils/url.js';
 
 export function createCitations(contexts: RetrievedContext[], siteUrl: string): Citation[] {

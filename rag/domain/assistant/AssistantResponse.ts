@@ -1,6 +1,6 @@
-import type { AssistantAction } from './actions.js';
-import type { RagSourceType } from '../../domain/content/RagSource.js';
-import type { RetrievedContext } from '../../domain/retrieval/RetrievedContext.js';
+import type { RagSourceType } from '../content/RagSource.js';
+import type { RetrievedContext } from '../retrieval/RetrievedContext.js';
+import type { AssistantAction } from './AssistantAction.js';
 
 export interface Citation {
   title: string;

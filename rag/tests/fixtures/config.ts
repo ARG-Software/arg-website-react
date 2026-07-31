@@ -1,4 +1,4 @@
-import type { RagConfig } from '../../core/types/config.js';
+import type { RagConfig } from '../../config/RagConfig.js';
 
 export function createTestConfig(overrides: Partial<RagConfig> = {}): RagConfig {
   return {

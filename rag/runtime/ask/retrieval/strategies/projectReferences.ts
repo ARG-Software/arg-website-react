@@ -1,4 +1,4 @@
-import type { RagConfig } from '../../../../core/types/config.js';
+import type { RagConfig } from '../../../../config/RagConfig.js';
 import type { RagSourceMetadata } from '../../../../domain/content/RagSource.js';
 import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
 import type { RagReadRepository, RagSourceRecord } from '../../../../repositories/RagReadRepository.js';

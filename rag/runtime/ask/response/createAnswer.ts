@@ -1,5 +1,5 @@
 import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
-import type { AskQuestionResult } from '../../../core/types/output.js';
+import type { AskQuestionResult } from '../../../domain/assistant/AssistantResponse.js';
 import type { RetrievalItemResult } from '../planning/createRetrievalItems.js';
 import { createAssistantActions } from './actions.js';
 import { createCitations } from './citations.js';

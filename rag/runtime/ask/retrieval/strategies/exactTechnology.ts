@@ -1,5 +1,5 @@
 import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
-import type { RagConfig } from '../../../../core/types/config.js';
+import type { RagConfig } from '../../../../config/RagConfig.js';
 import type { RetrievalRoute } from '../../../../domain/retrieval/RetrievalRoute.js';
 import type { RagSourceType } from '../../../../domain/content/RagSource.js';
 import type { RagReadRepository, RagSourceRecord } from '../../../../repositories/RagReadRepository.js';

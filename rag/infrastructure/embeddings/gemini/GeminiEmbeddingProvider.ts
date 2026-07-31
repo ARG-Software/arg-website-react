@@ -1,5 +1,5 @@
 import { getGeminiConfig, getGeminiFallbackEmbeddingConfig } from '../../../config/env.js';
-import type { RagConfig } from '../../../core/types/config.js';
+import type { RagConfig } from '../../../config/RagConfig.js';
 import type { EmbeddingProvider } from '../../../domain/providers/ProviderPorts.js';
 import {
   EmbeddingQuotaExceededError,
