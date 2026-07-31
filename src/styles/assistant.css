@@ -373,12 +373,17 @@
 }
 
 .aw-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   background: #0c002e;
   border-radius: 999px;
   color: #ffffff;
   font: 600 12px/1.15 Neuemontreal, sans-serif;
   min-height: 34px;
   padding: 8px 12px;
+  text-align: center;
   text-decoration: none;
   transition: opacity 0.15s;
 }
@@ -401,12 +406,18 @@
 }
 
 .aw-prompt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   background: transparent;
   border: 1.5px solid #0c002e;
   border-radius: 999px;
   color: #0c002e;
   font: 600 11px/1 Neuemontreal, sans-serif;
+  min-height: 34px;
   padding: 8px 14px;
+  text-align: center;
   cursor: pointer;
   transition:
     background 0.15s,
