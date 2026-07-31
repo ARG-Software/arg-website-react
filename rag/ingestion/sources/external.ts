@@ -5,7 +5,7 @@ import { EXTERNAL_SOURCE_ENTRIES } from '../../config/externalSources.js';
 import { extractHtmlText, fetchExternalHtml } from '../extractors/html.js';
 import { createSource } from '../sourceFactory.js';
 import type { IngestionRunOptions } from '../types.js';
-import type { RagSource } from '../../core/types/source.js';
+import type { RagSource } from '../../domain/content/RagSource.js';
 import type { ExternalSourceManifestEntry } from '../manifest.js';
 import { escapeRegExp } from '../../shared/regex.js';
 

@@ -1,5 +1,5 @@
 import { loadLocalEnv } from '../config/env.js';
-import type { ChatMessage, PageContext } from '../core/types/chat.js';
+import type { ChatMessage, PageContext } from '../domain/conversation/ChatMessage.js';
 import { createRagRuntime } from '../infrastructure/createRagRuntime.js';
 
 loadLocalEnv();

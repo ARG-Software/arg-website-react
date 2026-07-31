@@ -1,5 +1,5 @@
 import type { EmbeddingProvider } from '../domain/providers/ProviderPorts.js';
-import type { RagSource, RagSourceType } from '../core/types/source.js';
+import type { RagSource, RagSourceType } from '../domain/content/RagSource.js';
 import type { RagWriteRepository } from '../repositories/RagWriteRepository.js';
 
 export interface IngestSourceInput {

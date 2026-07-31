@@ -1,9 +1,9 @@
 import type { RagConfig } from '../../../core/types/config.js';
-import type { RetrievedContext } from '../../../core/types/context.js';
+import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
 import type { EmbeddingProvider } from '../../../domain/providers/ProviderPorts.js';
 import type { EmbeddingIndex } from '../../../domain/providers/EmbeddingIndex.js';
 import type { RetrievalRoute } from '../../../domain/retrieval/RetrievalRoute.js';
-import type { RagSourceType } from '../../../core/types/source.js';
+import type { RagSourceType } from '../../../domain/content/RagSource.js';
 import type { RagReadRepository } from '../../../repositories/RagReadRepository.js';
 import { retrieveCommercialDeliveryContexts } from './strategies/commercialDelivery.js';
 import { retrieveEditorialContexts } from './strategies/editorial.js';

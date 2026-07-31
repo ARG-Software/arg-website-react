@@ -1,4 +1,4 @@
-import type { RetrievedContext } from '../../../../core/types/context.js';
+import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
 import type { RagReadRepository } from '../../../../repositories/RagReadRepository.js';
 
 const SITE_LINKS_SOURCE_KEY = 'site-links';

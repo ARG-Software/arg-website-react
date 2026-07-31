@@ -1,7 +1,7 @@
-import type { RetrievedContext } from '../../../../core/types/context.js';
+import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
 import type { RagConfig } from '../../../../core/types/config.js';
 import type { RetrievalRoute } from '../../../../domain/retrieval/RetrievalRoute.js';
-import type { RagSourceType } from '../../../../core/types/source.js';
+import type { RagSourceType } from '../../../../domain/content/RagSource.js';
 import type { RagReadRepository, RagSourceRecord } from '../../../../repositories/RagReadRepository.js';
 import { getTechnologySearchTerms, isCompanyEntity } from '../technology/normalizeTechnology.js';
 import {

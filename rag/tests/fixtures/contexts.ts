@@ -1,5 +1,5 @@
-import type { RetrievedContext } from '../../core/types/context.js';
-import type { RagSourceOrigin, RagSourceType } from '../../core/types/source.js';
+import type { RagSourceOrigin, RagSourceType } from '../../domain/content/RagSource.js';
+import type { RetrievedContext } from '../../domain/retrieval/RetrievedContext.js';
 
 export function createContextFixture(
   sourceType: RagSourceType,

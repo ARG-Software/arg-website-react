@@ -2,7 +2,7 @@ import { createSupabaseServiceClient } from '../infrastructure/db/supabase/Supab
 import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../infrastructure/embeddings/gemini/GeminiEmbeddingProvider.js';
 import { loadLocalEnv } from '../config/env.js';
 import type { IngestSourceResult } from '../ingestion/types.js';
-import type { RagSource } from '../core/types/source.js';
+import type { RagSource } from '../domain/content/RagSource.js';
 import { ingestSource } from '../ingestion/ingestPipeline.js';
 import { loadLocalSources } from '../ingestion/sources/local.js';
 import { SupabaseRagWriteRepository } from '../infrastructure/db/supabase/SupabaseRagWriteRepository.js';

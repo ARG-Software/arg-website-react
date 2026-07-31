@@ -1,6 +1,6 @@
 import type { RetrievalPlan } from '../../../domain/retrieval/RetrievalPlan.js';
 import type { RetrievalRoute } from '../../../domain/retrieval/RetrievalRoute.js';
-import type { RagSourceType } from '../../../core/types/source.js';
+import type { RagSourceType } from '../../../domain/content/RagSource.js';
 import { normalizeName } from '../../../shared/text.js';
 
 export type { RetrievalRoute, RetrievalRouteKind } from '../../../domain/retrieval/RetrievalRoute.js';

@@ -1,5 +1,5 @@
-import type { RetrievedContext } from '../../core/types/context.js';
-import type { RagSourceOrigin } from '../../core/types/source.js';
+import type { RagSourceOrigin } from '../../domain/content/RagSource.js';
+import type { RetrievedContext } from '../../domain/retrieval/RetrievedContext.js';
 import type {
   FindChunksByTextInput,
   FindSourcesInput,

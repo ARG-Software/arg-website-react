@@ -23,7 +23,7 @@ import type {
 } from '../manifest.js';
 import { HOMEPAGE_SECTION_SCOPES, LOCAL_SOURCE_ENTRIES } from '../../config/localSources.js';
 import type { IngestionRunOptions } from '../types.js';
-import type { RagSource, RagSourceMetadata } from '../../core/types/source.js';
+import type { RagSource, RagSourceMetadata } from '../../domain/content/RagSource.js';
 
 const PERSON_SOURCE_KEYS: Record<string, string> = {
   jose: 'jose-antunes',

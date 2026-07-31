@@ -1,4 +1,4 @@
-import type { RetrievedContext } from '../../../../core/types/context.js';
+import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
 import type { RagReadRepository, RagSourceRecord } from '../../../../repositories/RagReadRepository.js';
 
 export async function retrieveLatestBlogContexts(

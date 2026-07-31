@@ -1,4 +1,4 @@
-import type { RagSourceMetadata, RagSourceType } from '../../core/types/source.js';
+import type { RagSourceMetadata, RagSourceType } from '../../domain/content/RagSource.js';
 import type { RagSourceRecord } from '../../repositories/RagReadRepository.js';
 
 export interface ChunkFixture {

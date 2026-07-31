@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import type { RagSource } from '../../core/types/source.js';
+import type { RagSource } from '../../domain/content/RagSource.js';
 
 export function normalizeText(value: unknown): string {
   return String(value ?? '')

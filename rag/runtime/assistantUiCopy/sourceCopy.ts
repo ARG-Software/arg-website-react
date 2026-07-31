@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import type { AssistantSourceCopy } from '../../core/types/assistantUiCopy.js';
+import type { AssistantSourceCopy } from '../../domain/assistant/AssistantUiCopy.js';
 import {
   readActionCopy,
   readString,

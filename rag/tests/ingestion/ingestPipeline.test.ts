@@ -7,7 +7,7 @@ import { redactCvContent } from '../../ingestion/processing/redaction.js';
 import { createSourceHash } from '../../ingestion/processing/text.js';
 import { createFakeEmbeddingProvider as createProvider } from '../fakes/FakeEmbeddingProvider.js';
 import { createFakeRagWriteRepository as createRepository } from '../fakes/FakeRagWriteRepository.js';
-import type { RagSource } from '../../core/types/source.js';
+import type { RagSource } from '../../domain/content/RagSource.js';
 
 const source: RagSource = {
   sourceType: 'blog_post',

@@ -1,6 +1,6 @@
-import type { ChatMessage, PageContext } from '../../core/types/chat.js';
+import type { ChatMessage, PageContext } from '../../domain/conversation/ChatMessage.js';
 import type { RagConfig } from '../../core/types/config.js';
-import type { RetrievedContext } from '../../core/types/context.js';
+import type { RetrievedContext } from '../../domain/retrieval/RetrievedContext.js';
 import type { AskQuestionResult } from '../../core/types/output.js';
 import type { AnswerProvider, EmbeddingProvider } from '../../domain/providers/ProviderPorts.js';
 import type { RagReadRepository } from '../../repositories/RagReadRepository.js';

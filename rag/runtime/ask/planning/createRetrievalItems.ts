@@ -1,5 +1,5 @@
-import type { PageContext } from '../../../core/types/chat.js';
-import type { RetrievedContext } from '../../../core/types/context.js';
+import type { PageContext } from '../../../domain/conversation/ChatMessage.js';
+import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
 import type {
   RetrievalPlan,
   RetrievalQuestionPlan,

@@ -14,9 +14,9 @@ import { buildInsufficientContextPrompt } from '../../../prompts/insufficientCon
 import { buildIntentPrompt } from '../../../prompts/intent.js';
 import { parseIntentResponse, parseRetrievalPlan } from './outputParsers.js';
 import { buildRetrievalPlanPrompt } from '../../../prompts/retrievalPlan.js';
-import type { ChatMessage, PageContext, PromptMessage } from '../../../core/types/chat.js';
+import type { ChatMessage, PageContext, PromptMessage } from '../../../domain/conversation/ChatMessage.js';
 import type { RagConfig } from '../../../core/types/config.js';
-import type { RetrievedContext } from '../../../core/types/context.js';
+import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
 import type { AnswerProvider } from '../../../domain/providers/ProviderPorts.js';
 import { createDeepSeekChatCompletion } from './DeepSeekChatClient.js';
 import type {

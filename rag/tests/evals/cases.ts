@@ -1,12 +1,12 @@
 import type { AssistantActionType } from '../../core/types/actions.js';
-import type { ChatMessage, PageContext } from '../../core/types/chat.js';
+import type { ChatMessage, PageContext } from '../../domain/conversation/ChatMessage.js';
 import type { QuestionIntent } from '../../domain/conversation/QuestionIntent.js';
 import type { RetrievalPlan } from '../../domain/retrieval/RetrievalPlan.js';
 import type {
   RagSourceMetadata,
   RagSourceOrigin,
   RagSourceType,
-} from '../../core/types/source.js';
+} from '../../domain/content/RagSource.js';
 
 export interface EvalSourceRow {
   id: string;

@@ -1,4 +1,4 @@
-import type { RetrievedContext } from '../../../core/types/context.js';
+import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
 import type { Citation } from '../../../core/types/output.js';
 import { resolveUrl } from '../../../utils/url.js';
 

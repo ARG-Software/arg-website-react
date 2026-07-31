@@ -1,6 +1,6 @@
-import type { RetrievedContext } from '../core/types/context.js';
+import type { RetrievedContext } from '../domain/retrieval/RetrievedContext.js';
 import type { EmbeddingIndex } from '../domain/providers/EmbeddingIndex.js';
-import type { RagSourceMetadata, RagSourceOrigin, RagSourceType } from '../core/types/source.js';
+import type { RagSourceMetadata, RagSourceOrigin, RagSourceType } from '../domain/content/RagSource.js';
 
 export interface RagSourceRecord {
   id: string;

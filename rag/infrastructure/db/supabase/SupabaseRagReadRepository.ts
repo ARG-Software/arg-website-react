@@ -1,8 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { RetrievedContext } from '../../../core/types/context.js';
+import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
 import type { EmbeddingIndex } from '../../../domain/providers/EmbeddingIndex.js';
-import type { RagSourceOrigin } from '../../../core/types/source.js';
+import type { RagSourceOrigin } from '../../../domain/content/RagSource.js';
 import { toEmbeddingLiteral } from './vector.js';
 import { resolveUrl } from '../../../utils/url.js';
 import type {

@@ -9,7 +9,7 @@ import {
   type EvalSourceRow,
   type RagEvalCase,
 } from '../evals/cases.js';
-import type { RetrievedContext } from '../../core/types/context.js';
+import type { RetrievedContext } from '../../domain/retrieval/RetrievedContext.js';
 import { createFakeAnswerProvider } from '../fakes/FakeAnswerProvider.js';
 import { createFakeEmbeddingProvider } from '../fakes/FakeEmbeddingProvider.js';
 import { FakeRagReadRepository } from '../fakes/FakeRagReadRepository.js';

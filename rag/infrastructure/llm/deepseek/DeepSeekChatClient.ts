@@ -1,5 +1,5 @@
 import type { RagConfig } from '../../../core/types/config.js';
-import type { PromptMessage } from '../../../core/types/chat.js';
+import type { PromptMessage } from '../../../domain/conversation/ChatMessage.js';
 
 const DEEPSEEK_CHAT_URL = 'https://api.deepseek.com/chat/completions';
 
