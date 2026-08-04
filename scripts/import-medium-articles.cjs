@@ -11,8 +11,9 @@ const BLOG_DIR = path.resolve('src/blog');
 const IMAGE_ROOT = path.resolve('public/images/blog');
 const ARTICLES_LINKS_FILE = path.resolve('external/articlelinks.txt');
 const DRAFT_ARTICLES_LINKS_FILE = path.resolve('external/draft-articlelinks.txt');
-const MEDIUM_BROWSER_PROFILE_DIR = path.resolve('.medium-browser-profile');
+const DEFAULT_MEDIUM_BROWSER_PROFILE_DIR = path.resolve('.medium-browser-profile');
 const SOURCE_ARG = process.argv[2] || '';
+const MEDIUM_IMPORT_RETRY_MS = Number(process.env.MEDIUM_IMPORT_RETRY_MS || 0);
 
 const BROWSER_HEADERS = {
   'user-agent':
@@ -22,6 +23,12 @@ const BROWSER_HEADERS = {
 
 const waitForEnter = message =>
   new Promise(resolve => {
+    if (MEDIUM_IMPORT_RETRY_MS > 0) {
+      process.stdout.write(`${message} Retrying in ${Math.ceil(MEDIUM_IMPORT_RETRY_MS / 1000)}s...\n`);
+      setTimeout(resolve, MEDIUM_IMPORT_RETRY_MS);
+      return;
+    }
+
     process.stdout.write(message);
     process.stdin.resume();
     process.stdin.once('data', () => {
@@ -82,6 +89,57 @@ const sanitizeText = value =>
     .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
+
+const sanitizeMarkdownText = value =>
+  stripTags(value)
+    .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
+    .replace(/\s+/g, ' ');
+
+const escapeMarkdownLinkText = value =>
+  sanitizeMarkdownText(value)
+    .replace(/\\/g, '\\\\')
+    .replace(/\[/g, '\\[')
+    .replace(/\]/g, '\\]')
+    .trim();
+
+const escapeMarkdownLinkUrl = value => String(value || '').trim().replace(/\)/g, '%29');
+
+const getMarkupUrl = markup => {
+  const url = markup?.href || markup?.url || markup?.link || markup?.metadata?.href || '';
+  const normalized = decodeEntities(url).trim();
+
+  if (!/^(?:https?:|mailto:)/i.test(normalized)) return '';
+  return normalized;
+};
+
+const applyParagraphLinks = paragraph => {
+  const text = String(paragraph?.text || '');
+  const linkMarkups = (paragraph?.markups || [])
+    .map(markup => ({
+      start: Number(markup.start),
+      end: Number(markup.end),
+      url: getMarkupUrl(markup),
+    }))
+    .filter(markup => markup.url && Number.isFinite(markup.start) && Number.isFinite(markup.end) && markup.end > markup.start)
+    .sort((a, b) => a.start - b.start || a.end - b.end);
+
+  if (!linkMarkups.length) return sanitizeMarkdownText(text).trim();
+
+  let cursor = 0;
+  let markdown = '';
+
+  linkMarkups.forEach(markup => {
+    if (markup.start < cursor) return;
+
+    markdown += sanitizeMarkdownText(text.slice(cursor, markup.start));
+    markdown += `[${escapeMarkdownLinkText(text.slice(markup.start, markup.end))}](${escapeMarkdownLinkUrl(markup.url)})`;
+    cursor = markup.end;
+  });
+
+  markdown += sanitizeMarkdownText(text.slice(cursor));
+
+  return markdown.replace(/\s+/g, ' ').trim();
+};
 
 const sanitizeTitle = value =>
   sanitizeText(value)
@@ -366,6 +424,12 @@ const convertHtmlToMarkdown = html => {
   });
 
   text = text
+    .replace(/<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, value) => {
+      const label = escapeMarkdownLinkText(value);
+      const url = escapeMarkdownLinkUrl(decodeEntities(href));
+
+      return label && /^(?:https?:|mailto:)/i.test(url) ? `[${label}](${url})` : label;
+    })
     .replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, (_, value) => `\n\n## ${stripTags(value)}\n\n`)
     .replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, (_, value) => `\n\n## ${stripTags(value)}\n\n`)
     .replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, (_, value) => `\n\n## ${stripTags(value)}\n\n`)
@@ -376,7 +440,6 @@ const convertHtmlToMarkdown = html => {
       return `\n\n${items.join('\n')}\n\n`;
     })
     .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, value) => `\n\n${stripTags(value).replace(/\n+/g, ' ')}\n\n`)
-    .replace(/<a\b[^>]*>([\s\S]*?)<\/a>/gi, '$1')
     .replace(/<\/?(?:strong|b|em|i|code)\b[^>]*>/gi, '')
     .replace(/<[^>]+>/g, '');
 
@@ -528,19 +591,25 @@ const loadPlaywrightChromium = () => {
 const createMediumBrowserSession = async () => {
   const browser = resolveMediumBrowser();
   const chromium = loadPlaywrightChromium();
+  const userDataDir = process.env.MEDIUM_BROWSER_USER_DATA_DIR || DEFAULT_MEDIUM_BROWSER_PROFILE_DIR;
+  const profileDirectory = process.env.MEDIUM_BROWSER_PROFILE_DIRECTORY;
+  const browserArgs = ['--start-maximized'];
 
-  fs.mkdirSync(MEDIUM_BROWSER_PROFILE_DIR, { recursive: true });
+  if (profileDirectory) browserArgs.push(`--profile-directory=${profileDirectory}`);
+  fs.mkdirSync(userDataDir, { recursive: true });
 
-  const context = await chromium.launchPersistentContext(MEDIUM_BROWSER_PROFILE_DIR, {
+  const context = await chromium.launchPersistentContext(userDataDir, {
     executablePath: browser.path,
     headless: false,
     viewport: null,
-    args: ['--start-maximized'],
+    ignoreDefaultArgs: ['--disable-extensions'],
+    args: browserArgs,
   });
   const page = context.pages()[0] || (await context.newPage());
 
   console.log(`[medium-import] Draft browser: ${browser.name} (${browser.path})`);
-  console.log(`[medium-import] Browser profile: ${MEDIUM_BROWSER_PROFILE_DIR}`);
+  console.log(`[medium-import] Browser user data: ${userDataDir}`);
+  if (profileDirectory) console.log(`[medium-import] Browser profile directory: ${profileDirectory}`);
 
   return { context, page };
 };
@@ -586,7 +655,9 @@ const fetchFullPostWithBrowser = async (session, url) => {
     console.warn(`[medium-import] Initial page load warning for ${url}: ${error.message}`);
   });
 
-  for (let attempt = 1; attempt <= 2; attempt += 1) {
+  const maxAttempts = MEDIUM_IMPORT_RETRY_MS > 0 ? 20 : 2;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     const errors = [];
 
     for (const jsonUrl of jsonUrls) {
@@ -600,7 +671,7 @@ const fetchFullPostWithBrowser = async (session, url) => {
       }
     }
 
-    if (attempt === 1) {
+    if (attempt < maxAttempts) {
       console.log('[medium-import] Medium did not expose the draft JSON yet. If the browser shows login or a challenge, complete it there.');
       await waitForEnter('[medium-import] Press Enter here to retry the draft import...');
       continue;
@@ -703,7 +774,7 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title) => {
       continue;
     }
 
-    const text = sanitizeText(paragraph.text);
+    const text = applyParagraphLinks(paragraph);
     if (normalizeHeading(text) === 'about the author') break;
     if (normalizeTitle(text) === normalizeTitle(title)) continue;
 
@@ -1027,10 +1098,18 @@ const importFromDraftShareLinksFile = async filePath => {
 
       let post;
       try {
-        post = await fetchFullPostWithBrowser(await getBrowserSession(), url);
+        post = await fetchFullPost(postId);
       } catch (error) {
-        skipped.push({ url, reason: `browser fetch failed: ${error.message}` });
-        continue;
+        console.warn(`[medium-import] Public fetch failed for ${url}: ${error.message}`);
+      }
+
+      if (!post) {
+        try {
+          post = await fetchFullPostWithBrowser(await getBrowserSession(), url);
+        } catch (error) {
+          skipped.push({ url, reason: `browser fetch failed: ${error.message}` });
+          continue;
+        }
       }
 
       if (!post) {

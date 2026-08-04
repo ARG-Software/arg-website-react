@@ -146,6 +146,7 @@ vite.config.ts.timestamp-*
 mockups
 todos
 .medium-browser-profile/
+external/html/
 public/files/cvs
 public/files/sites
 .rag-private/

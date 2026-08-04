@@ -482,6 +482,24 @@
   text-wrap: pretty;
 }
 
+.bp-lead a,
+.bp-p a,
+.bp-callout a,
+.bp-list-item a {
+  color: #7904fd;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.16em;
+}
+
+.bp-lead a:hover,
+.bp-p a:hover,
+.bp-callout a:hover,
+.bp-list-item a:hover {
+  color: #c924d7;
+}
+
 .bp-h2 {
   align-items: center;
   color: #0c002e;

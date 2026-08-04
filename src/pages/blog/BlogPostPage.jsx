@@ -10,6 +10,7 @@ import { SocialShareButtons } from '@components/actions/SocialShareButtons';
 import { ArticleSidebar } from '@components/navigation/ArticleSidebar';
 import { SimpleCarousel } from '@components/navigation/SimpleCarousel';
 import { Pill } from '@components/pills/Pill';
+import { InlineLinkText } from '@components/widgets/InlineLinkText';
 import AppLink from '@components/navigation/AppLink';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
@@ -102,13 +103,13 @@ const renderBlock = (block, i) => {
     case 'lead':
       return (
         <p key={i} className="bp-lead">
-          {block.text}
+          <InlineLinkText text={block.text} />
         </p>
       );
     case 'paragraph':
       return (
         <p key={i} className="bp-p">
-          {block.text}
+          <InlineLinkText text={block.text} />
         </p>
       );
     case 'heading':
@@ -128,7 +129,8 @@ const renderBlock = (block, i) => {
         <ol key={i} className="bp-list bp-list--ordered">
           {block.items.map((item, j) => (
             <li key={j} className="bp-list-item">
-              {item.label ? <span className="bp-list-label">{item.label}</span> : null} {item.text}
+              {item.label ? <span className="bp-list-label">{item.label}</span> : null}{' '}
+              <InlineLinkText text={item.text} />
             </li>
           ))}
         </ol>
@@ -136,7 +138,7 @@ const renderBlock = (block, i) => {
     case 'callout':
       return (
         <blockquote key={i} className="bp-callout">
-          {block.text}
+          <InlineLinkText text={block.text} />
         </blockquote>
       );
     case 'code':
@@ -146,7 +148,8 @@ const renderBlock = (block, i) => {
         <ul key={i} className="bp-list">
           {block.items.map((item, j) => (
             <li key={j} className="bp-list-item">
-              {item.label ? <span className="bp-list-label">{item.label}</span> : null} {item.text}
+              {item.label ? <span className="bp-list-label">{item.label}</span> : null}{' '}
+              <InlineLinkText text={item.text} />
             </li>
           ))}
         </ul>
