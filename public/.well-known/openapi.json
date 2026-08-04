@@ -1,0 +1,311 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ARG Software Public Website API",
+    "version": "1.0.0",
+    "description": "Public API-like endpoints used by the ARG Software website assistant, contact verification flow, and read-only agent discovery."
+  },
+  "servers": [
+    {
+      "url": "https://arg.software"
+    }
+  ],
+  "paths": {
+    "/api/assistant/challenge": {
+      "get": {
+        "summary": "Create an assistant ALTCHA challenge",
+        "description": "Returns a proof-of-work challenge required before asking the website assistant.",
+        "responses": {
+          "200": {
+            "description": "Challenge created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantChallengeResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/assistant/ask": {
+      "post": {
+        "summary": "Ask the ARG website assistant",
+        "description": "Accepts a verified question for Gaspar, the ARG website assistant. Intended for the website UI and protected with ALTCHA, origin checks, and rate limits.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantQuestionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Assistant answer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantAnswerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/assistant/ui-copy": {
+      "get": {
+        "summary": "Get localized assistant UI copy",
+        "parameters": [
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Localized assistant copy"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/contact/challenge": {
+      "get": {
+        "summary": "Create a contact-form ALTCHA challenge",
+        "responses": {
+          "200": {
+            "description": "Contact challenge created"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/contact/verify": {
+      "post": {
+        "summary": "Verify a contact-form ALTCHA payload",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["altcha"],
+                "properties": {
+                  "altcha": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["verified"],
+                  "properties": {
+                    "verified": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/mcp": {
+      "post": {
+        "summary": "Read-only MCP endpoint",
+        "description": "Exposes Model Context Protocol tools for public ARG Software information.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "MCP JSON-RPC response"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AssistantChallengeResponse": {
+        "type": "object",
+        "required": ["challenge"],
+        "properties": {
+          "challenge": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "AssistantQuestionRequest": {
+        "type": "object",
+        "required": ["question", "altcha"],
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "pageContext": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "preferredLanguage": {
+            "type": "string"
+          },
+          "altcha": {
+            "type": "object",
+            "required": ["challenge", "solution"],
+            "properties": {
+              "challenge": {
+                "type": "string"
+              },
+              "solution": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "AssistantAnswerResponse": {
+        "type": "object",
+        "required": ["answer", "language"],
+        "properties": {
+          "answer": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "languagePreference": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "citations": {
+            "type": "array"
+          },
+          "articleRecommendations": {
+            "type": "array"
+          },
+          "actions": {
+            "type": "array"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": ["code", "message"],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Invalid request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Verification or origin check failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "Rate limit exceeded",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "ServiceUnavailable": {
+        "description": "Service temporarily unavailable",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}

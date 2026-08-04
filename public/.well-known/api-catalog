@@ -1,0 +1,79 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://arg.software/api/assistant/ask",
+      "service-desc": [
+        {
+          "href": "https://arg.software/.well-known/openapi.json",
+          "type": "application/openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://arg.software/docs/api.md",
+          "type": "text/markdown"
+        }
+      ]
+    },
+    {
+      "anchor": "https://arg.software/api/assistant/challenge",
+      "service-desc": [
+        {
+          "href": "https://arg.software/.well-known/openapi.json",
+          "type": "application/openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://arg.software/docs/api.md",
+          "type": "text/markdown"
+        }
+      ]
+    },
+    {
+      "anchor": "https://arg.software/api/contact/challenge",
+      "service-desc": [
+        {
+          "href": "https://arg.software/.well-known/openapi.json",
+          "type": "application/openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://arg.software/docs/api.md",
+          "type": "text/markdown"
+        }
+      ]
+    },
+    {
+      "anchor": "https://arg.software/api/contact/verify",
+      "service-desc": [
+        {
+          "href": "https://arg.software/.well-known/openapi.json",
+          "type": "application/openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://arg.software/docs/api.md",
+          "type": "text/markdown"
+        }
+      ]
+    },
+    {
+      "anchor": "https://arg.software/mcp",
+      "service-desc": [
+        {
+          "href": "https://arg.software/.well-known/mcp/server-card.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://arg.software/docs/api.md",
+          "type": "text/markdown"
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,7 @@ Allow: /llm.txt
 Allow: /llms.txt
 Allow: /full-llm.txt
 Allow: /llms-full.txt
+Content-Signal: ai-train=no, search=yes, ai-input=yes
 Disallow: /404.html
 Disallow: /404
 

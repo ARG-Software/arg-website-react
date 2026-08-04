@@ -1,0 +1,18 @@
+{
+  "serverInfo": {
+    "name": "ARG Software Public Discovery MCP",
+    "version": "1.0.0"
+  },
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "https://arg.software/mcp"
+  },
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    },
+    "resources": {},
+    "prompts": {}
+  },
+  "description": "Read-only MCP server exposing public ARG Software company, services, projects, blog discovery, and contact metadata."
+}

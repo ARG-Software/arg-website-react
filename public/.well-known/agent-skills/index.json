@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "arg-public-discovery",
+      "type": "skill-md",
+      "description": "Discover ARG Software's public services, projects, articles, LLM context, and contact paths.",
+      "url": "https://arg.software/.well-known/agent-skills/arg-public-discovery/SKILL.md",
+      "digest": "sha256:6d7faf5de81e50d047dbcd6432f661a0267766e4b75214f5ef7f8edfeda9569a"
+    }
+  ]
+}

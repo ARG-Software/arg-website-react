@@ -9,6 +9,10 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+[[edge_functions]]
+  function = "markdownNegotiation"
+  path = "/*"
+
 [[plugins]]
   package = "@netlify/plugin-lighthouse"
 

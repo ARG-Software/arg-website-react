@@ -10,9 +10,53 @@
 # HTML pages — revalidate on each request but allow bfcache
 /index.html
   Cache-Control: no-cache
+  Link: </.well-known/api-catalog>; rel="api-catalog"
+  Link: </.well-known/openapi.json>; rel="service-desc"; type="application/openapi+json"
+  Link: </docs/api.md>; rel="service-doc"; type="text/markdown"
+  Link: </llms.txt>; rel="describedby"; type="text/plain"
+  Link: </llms-full.txt>; rel="describedby"; type="text/plain"
+  Link: </auth.md>; rel="describedby"; type="text/markdown"
+  Link: </.well-known/agent-skills/index.json>; rel="describedby"; type="application/json"
+  Link: </.well-known/mcp/server-card.json>; rel="describedby"; type="application/json"
 
 /
   Cache-Control: no-cache
+  Link: </.well-known/api-catalog>; rel="api-catalog"
+  Link: </.well-known/openapi.json>; rel="service-desc"; type="application/openapi+json"
+  Link: </docs/api.md>; rel="service-doc"; type="text/markdown"
+  Link: </llms.txt>; rel="describedby"; type="text/plain"
+  Link: </llms-full.txt>; rel="describedby"; type="text/plain"
+  Link: </auth.md>; rel="describedby"; type="text/markdown"
+  Link: </.well-known/agent-skills/index.json>; rel="describedby"; type="application/json"
+  Link: </.well-known/mcp/server-card.json>; rel="describedby"; type="application/json"
+
+/auth.md
+  Cache-Control: no-cache
+  Content-Type: text/markdown; charset=utf-8
+
+/docs/api.md
+  Cache-Control: no-cache
+  Content-Type: text/markdown; charset=utf-8
+
+/.well-known/api-catalog
+  Cache-Control: no-cache
+  Content-Type: application/linkset+json; charset=utf-8
+
+/.well-known/openapi.json
+  Cache-Control: no-cache
+  Content-Type: application/openapi+json; charset=utf-8
+
+/.well-known/agent-skills/index.json
+  Cache-Control: no-cache
+  Content-Type: application/json; charset=utf-8
+
+/.well-known/agent-skills/arg-public-discovery/SKILL.md
+  Cache-Control: no-cache
+  Content-Type: text/markdown; charset=utf-8
+
+/.well-known/mcp/server-card.json
+  Cache-Control: no-cache
+  Content-Type: application/json; charset=utf-8
 
 /llms.txt
   Cache-Control: no-cache

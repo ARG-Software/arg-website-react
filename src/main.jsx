@@ -9,6 +9,7 @@ import { LenisProvider } from './providers/LenisProvider.jsx';
 import { TransitionProvider } from './providers/TransitionProvider.jsx';
 import { CookieConsent } from '@components/overlays/CookieConsent';
 import { WidgetManager } from '@components/widgets/WidgetManager';
+import { WebMCPProvider } from '@providers/WebMCPProvider';
 import { ErrorBoundary } from '@components/layout/ErrorBoundary';
 import { lazyWithRetry } from '@utils/lazyWithRetry';
 import './styles/base.css';
@@ -82,6 +83,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           </LenisProvider>
         </RAFProvider>
         <WidgetManager />
+        <WebMCPProvider />
         <CookieConsent />
       </BrowserRouter>
     </HelmetProvider>
