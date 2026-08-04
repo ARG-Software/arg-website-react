@@ -24,7 +24,7 @@ export const STATIC_PAGES = [
       'Arg Software partners with teams across fintech, open payments, music technology, Web3, consultancy, and industry platforms.',
       'Our partners include the Interledger Foundation, a global nonprofit building an open interoperable payment network enabling seamless currency-agnostic transactions for the 1.4 billion people excluded from traditional banking.',
       'We work with the Mojaloop Foundation, building open-source interoperable payment systems that bring affordable digital financial services to unbanked populations worldwide.',
-      'Our technology partners include ThreeSigma, a research-driven blockchain and decentralised finance advisory firm, and SkyTracks, a cloud-based music production platform enabling real-time collaboration between musicians and audio engineers.',
+      'Our technology partners include Cyberbones, a Portugal-based systems architecture and technical leadership consultancy, ThreeSigma, a research-driven blockchain and decentralised finance advisory firm, and SkyTracks, a cloud-based music production platform enabling real-time collaboration between musicians and audio engineers.',
       'We also partner with Angry Ventures, a hands-on venture studio that builds and scales digital products, and North Music Group, a music rights management company providing modern tools for catalogue management and royalty tracking.',
     ],
   },

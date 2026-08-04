@@ -174,6 +174,7 @@ Arg Software has partnered with organizations across fintech, open payments, Web
 - Interledger Foundation: global nonprofit building an open, interoperable payment network through the Interledger Protocol.
 - People's Clearinghouse: social-sector payment infrastructure for community banks and credit unions in rural Mexico.
 - Mojaloop Foundation: open-source foundation building interoperable payment systems for financial inclusion.
+- Cyberbones: Portugal-based systems architecture and technical leadership consultancy focused on scalable distributed systems, technical audits, fractional leadership, and senior engineering support. Partnered with Arg Software from 2021 to 2026.
 - ThreeSigma: research-driven blockchain and decentralized finance advisory firm.
 - Angry Ventures: venture studio building and scaling digital products.
 - mb-netzwerk: German digital consultancy focused on tax documentation and business process automation.

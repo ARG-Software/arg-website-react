@@ -40,6 +40,10 @@
 - Royalty Flush: https://arg.software/projects/royalty-flush/
 - Vector: https://arg.software/projects/vector/
 
+## Selected Partners
+
+- Cyberbones: systems architecture and technical leadership consultancy, partnered with Arg Software from 2021 to 2026.
+
 ## Key Pages
 
 - Working with Arg Software: https://arg.software/working-with-us/

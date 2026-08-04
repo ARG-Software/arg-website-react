@@ -42,6 +42,19 @@
       }
     },
     {
+      "name": "Cyberbones",
+      "slug": "cyberbones",
+      "logo": "/images/partners/cyberbones.svg",
+      "category": "Consultancy",
+      "industry": "Systems Architecture & Technical Leadership",
+      "description": "A Portugal-based systems architecture consultancy focused on scalable distributed systems, technical audits, fractional leadership, and senior engineering support that helps teams build robust platforms and become more autonomous.",
+      "link": "https://cyberbones.io/",
+      "timeline": {
+        "startYear": 2021,
+        "durationYears": 6
+      }
+    },
+    {
       "name": "ThreeSigma",
       "slug": "threesigma",
       "logo": "/images/partners/threesigma.webp",

@@ -18,7 +18,6 @@ export function ProjectItem({
   liveLink,
   liveLinkLabel = 'View Live Site',
   links,
-  logos,
   stack,
   animate = false,
   animationPreset = 'fade-up',
@@ -128,31 +127,6 @@ export function ProjectItem({
           <div className="padding-bottom padding-30"></div>
           <p className="test_item_paragraph text-align-center is-bold">{solutionBold}</p>
           <p className="test_item_paragraph text-align-center">{solutionText}</p>
-          <div className="padding-bottom padding-30"></div>
-          <div className="projects_item_logo-wrap">
-            <div role="list" className="projects_item_list">
-              {logos?.map((logo, i) => (
-                <button
-                  key={i}
-                  role="listitem"
-                  className="projects_list_logo"
-                  type="button"
-                  aria-label={logo.name}
-                >
-                  <img
-                    loading="lazy"
-                    src={logo.src}
-                    alt={logo.name}
-                    className="projects_logo_image"
-                    width="80"
-                    height="40"
-                  />
-                  <span className="projects_logo_tooltip">{logo.name}</span>
-                </button>
-              ))}
-            </div>
-            <p className="projects_logo-hint">Tap a logo to check the stack name</p>
-          </div>
           <div className="padding-bottom padding-42"></div>
           <div className="projects_item_stack">
             <div className="projects_stack_text is-medium">Tech Stack:</div>
