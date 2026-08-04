@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>ARG Software</title>
+  <defs>
+    <linearGradient id="arg-mark-gradient" x1="67" y1="89" x2="445" y2="423" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ec0923" />
+      <stop offset="0.25" stop-color="#e21157" />
+      <stop offset="0.5" stop-color="#d01fb3" />
+      <stop offset="0.75" stop-color="#a015e5" />
+      <stop offset="1" stop-color="#8306ff" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#21183b" />
+  <rect x="203" y="89" width="242" height="84" fill="url(#arg-mark-gradient)" />
+  <rect x="67" y="173" width="161" height="85" fill="url(#arg-mark-gradient)" />
+  <rect x="126" y="258" width="239" height="85" fill="url(#arg-mark-gradient)" />
+  <rect x="365" y="343" width="80" height="80" fill="url(#arg-mark-gradient)" />
+</svg>
