@@ -45,6 +45,7 @@
       "name": "Cyberbones",
       "slug": "cyberbones",
       "logo": "/images/partners/cyberbones.svg",
+      "logoSmall": "/images/partners/cyberbones-small.webp",
       "category": "Consultancy",
       "industry": "Systems Architecture & Technical Leadership",
       "description": "A Portugal-based systems architecture consultancy focused on scalable distributed systems, technical audits, fractional leadership, and senior engineering support that helps teams build robust platforms and become more autonomous.",
