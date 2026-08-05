@@ -145,7 +145,10 @@ export default function PartnersPage() {
         {selectedClient && (
           <div className="pc-drawer-content">
             <div className="pc-drawer-logo">
-              <img src={selectedClient.logo} alt={selectedClient.name} />
+              <img
+                src={selectedClient.logoSmall || selectedClient.logo}
+                alt={selectedClient.name}
+              />
             </div>
             <div className="pc-drawer-info">
               <div className="pc-drawer-header">
