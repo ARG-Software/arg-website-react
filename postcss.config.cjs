@@ -90,6 +90,7 @@ module.exports = {
               /infinity_/,
               /about_/,
               /section_/,
+              /^section-spacer--/,
               /container/,
               /padding-/,
               /overflow-/,
