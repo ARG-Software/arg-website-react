@@ -4,14 +4,13 @@ import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { SEO } from '@components/seo/SEO';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
-import { Marquee } from '@components/layout/Marquee';
-import { SectionDivider } from '@components/layout/SectionDivider';
-import AppLink from '@components/navigation/AppLink';
-import { arrowSvg } from '@components/icons/SocialIcons';
+import { SectionSpacer } from '@components/layout/SectionSpacer';
 import { HOMEPAGE_BLOG_POSTS_COUNT } from '@constants/config';
 import { buildFAQPageSchema } from '@utils/structuredData';
 import { HeroSection } from './sections/HeroSection';
+import { PartnersSection } from './sections/PartnersSection';
 import { StudioOverviewSection } from './sections/StudioOverviewSection';
+import { ServicesMarqueeSection } from './sections/ServicesMarqueeSection';
 import { ServicesSection } from './sections/ServicesSection';
 import { ProjectsSection } from './sections/ProjectsSection';
 import { TestimonialsSection } from './sections/TestimonialsSection';
@@ -22,7 +21,6 @@ import { SocialSection } from './sections/SocialSection';
 import { FAQSection } from './sections/FAQSection';
 import { ContactSection } from './sections/ContactSection';
 import PROJECTS from '../../data/projects.json';
-import PARTNERS from '../../data/partners.json';
 import HOMEPAGE from '../../data/homePage.json';
 import FAQ from '../../data/faq.json';
 
@@ -39,86 +37,12 @@ export default function HomePage() {
         <main className="main-wrapper">
           <HeroSection content={HOMEPAGE.hero} />
 
-          <section
-            id="partners"
-            className="partners_wrap background-color-white padding-section-compact border-radius-top"
-            data-animate-scope
-            data-animate-trigger="scroll"
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="50"
-          >
-            <Marquee
-              items={PARTNERS.clients}
-              renderItem={(c, index) => (
-                <span
-                  className="partners_logo_wrap"
-                  data-animate="fade-up"
-                  data-animate-order={index}
-                >
-                  <img
-                    src={c.logoSmall || c.logo}
-                    alt={c.name}
-                    className="partners_logo"
-                    loading="lazy"
-                  />
-                </span>
-              )}
-              getItemKey={c => c.slug}
-              repetitions={4}
-              outerClassName="partners_marquee-outer"
-              trackClassName="partners_marquee-track"
-              setClassName="partners_marquee-set"
-            />
-
-            <div
-              className="partners_contain container padding-global"
-              data-animate="fade-up"
-              data-animate-order="1"
-              style={{
-                paddingTop: '2rem',
-                paddingBottom: '2.5rem',
-                display: 'flex',
-                justifyContent: 'flex-end',
-              }}
-            >
-              <AppLink to="/partners/" className="text-button text-button--align-end meet-up-align">
-                <div className="text-button_list is-dark">
-                  <div className="text-button_text">{HOMEPAGE.partners.cta.label}</div>
-                  <div className="arrow_icon-embed">{arrowSvg}</div>
-                </div>
-                <div className="text-button_list is-animated is-dark">
-                  <div className="text-button_text meet-text">
-                    {HOMEPAGE.partners.cta.hoverLabel}
-                  </div>
-                  <div className="arrow_icon-embed">{arrowSvg}</div>
-                </div>
-              </AppLink>
-            </div>
-
-            <SectionDivider variant="default" hideOnMobile={false} />
-          </section>
-
+          <PartnersSection />
+          <SectionSpacer color="white" size="lg" />
           <StudioOverviewSection />
-
-          <div
-            className="section_infinity background-color-gray overflow-hidden"
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-          >
-            <Marquee repetitions={2} trackClassName="infinity_list">
-              <p className="infinity_text" data-animate="fade-up">
-                {HOMEPAGE.infinityBand.map(service => (
-                  <span className="infinity_item" key={service}>
-                    <span className="infinity_label">{service}</span>
-                    <span className="infinity_dot" aria-hidden="true">
-                      •
-                    </span>
-                  </span>
-                ))}
-              </p>
-            </Marquee>
-          </div>
-
+          <SectionSpacer color="white" size="lg" multiplier={2} />
+          <ServicesMarqueeSection />
+          <SectionSpacer color="white" size="lg" />
           <ServicesSection content={HOMEPAGE.services} />
           <ProjectsSection projects={PROJECTS} content={HOMEPAGE.projects} />
           <TestimonialsSection testimonials={HOMEPAGE.testimonials} />
