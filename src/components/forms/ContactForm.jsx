@@ -1,5 +1,5 @@
 import { useWeb3Form } from '@hooks/useWeb3Form';
-import { FormCard, FormSubmitButton } from './FormCard';
+import { FormCard, FormSubmitButton } from '@ui/forms/FormCard.jsx';
 
 function getFieldId(formName, field) {
   return field.id || `${formName}-${field.name}`;

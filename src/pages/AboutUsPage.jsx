@@ -4,14 +4,14 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA } from '@utils/analytics';
 import { getProjectBriefFormLink } from '../services/linksService';
 import { Navbar } from '@components/navigation/Navbar';
-import { BaseCard } from '@components/cards/BaseCard';
+import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { Footer } from '@components/layout/Footer';
 import { CTASection } from '@components/layout/CTASection';
-import { SectionDivider } from '@components/layout/SectionDivider';
+import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
-import { Pill } from '@components/pills/Pill';
-import { VerticalTimeline } from '@components/grids/VerticalTimeline';
+import { Pill } from '@ui/pills/Pill.jsx';
+import { VerticalTimeline } from '@ui/grids/VerticalTimeline.jsx';
 import ABOUT_DATA from '../data/about.json';
 import '../styles/about.css';
 

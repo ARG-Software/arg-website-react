@@ -3,7 +3,7 @@ const DEFAULT_ALLOWED_ORIGINS = ['https://arg.software', 'https://www.arg.softwa
 export function createCorsHeaders(request, allowedMethods) {
   const origin = getRequestOrigin(request);
   const headers = {
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Authorization, Content-Type',
     'Access-Control-Allow-Methods': allowedMethods,
     Vary: 'Origin',
   };

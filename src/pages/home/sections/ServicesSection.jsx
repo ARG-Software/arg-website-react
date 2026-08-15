@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useThreeSphereBackground } from '../../../hooks/useThreeSphereBackground';
-import { SectionDivider } from '../../../components/layout/SectionDivider';
+import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import HOMEPAGE from '../../../data/homePage.json';
 
 export function ServicesSection({ className = '', content = HOMEPAGE.services }) {

@@ -132,59 +132,6 @@
   filter: grayscale(1) brightness(0.75) opacity(0.65);
 }
 
-/* ── Drawer Overlay ── */
-.pc-drawer-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 999;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.pc-drawer-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(12, 0, 46, 0.55);
-  backdrop-filter: blur(4px);
-  animation: pcFadeIn 0.3s ease both;
-}
-
-.pc-drawer-panel {
-  position: relative;
-  width: 100%;
-  max-width: 89rem;
-  max-height: 50vh;
-  background: #fff;
-  border-radius: 1.25rem 1.25rem 0 0;
-  padding: 3rem 4.75rem;
-  overflow-y: auto;
-  animation: pcSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-  box-shadow: 0 -0.5rem 3rem rgba(12, 0, 46, 0.15);
-}
-
-.pc-drawer-close {
-  position: absolute;
-  top: 1.5rem;
-  right: 2rem;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: none;
-  background: #f0f0f2;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1.25rem;
-  color: #0c002e;
-  transition: background 0.2s ease;
-}
-
-.pc-drawer-close:hover {
-  background: #e0e0e5;
-}
-
 .pc-drawer-content {
   display: flex;
   gap: 3rem;
@@ -275,16 +222,6 @@
 
 .pc-drawer-link-arrow:hover {
   color: #474747;
-}
-
-@keyframes pcFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes pcSlideUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -516,31 +453,6 @@
 }
 
 @media screen and (max-width: 767px) {
-  .pc-drawer-overlay {
-    align-items: flex-end;
-  }
-
-  .pc-drawer-panel {
-    max-width: 100%;
-    max-height: 82vh;
-    padding: 1.25rem 1.25rem 1.5rem;
-    border-radius: 0.875rem 0.875rem 0 0;
-    overscroll-behavior: contain;
-  }
-
-  .pc-drawer-close {
-    top: 0.75rem;
-    right: 0.75rem;
-    width: 2rem;
-    height: 2rem;
-    font-size: 1rem;
-  }
-
-  .pc-drawer-close svg {
-    width: 14px;
-    height: 14px;
-  }
-
   .pc-drawer-content {
     flex-direction: column;
     gap: 0.875rem;
@@ -595,11 +507,6 @@
     padding: 1.5rem;
     min-height: 120px;
     border-radius: 0.75rem;
-  }
-
-  .pc-drawer-panel {
-    max-height: 78vh;
-    padding: 1rem 1rem 1.25rem;
   }
 
   .pc-drawer-content {

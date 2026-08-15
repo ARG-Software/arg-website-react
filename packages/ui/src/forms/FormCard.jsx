@@ -1,4 +1,4 @@
-import { arrowSvg } from '../icons/SocialIcons';
+import { AnimatedArrowButton } from '../buttons/AnimatedArrowButton.jsx';
 
 export function FormCard({ title, description, children, submit, className = '', ...formProps }) {
   const formClassName = ['form-card', className].filter(Boolean).join(' ');
@@ -26,19 +26,14 @@ export function FormSubmitButton({
   type = 'submit',
   disabled = false,
 }) {
-  const buttonClassName = ['button-base', 'button-contact', 'form-card__submit-button', className]
-    .filter(Boolean)
-    .join(' ');
-
   return (
-    <button className={buttonClassName} type={type} disabled={disabled}>
-      <span className="button-base_text_wrap">
-        <span className="button-base__button-text">{children}</span>
-        <span className="button-base__button-text is-animated">{hoverText}</span>
-      </span>
-      <span className="arrow_icon-embed" aria-hidden="true">
-        {arrowSvg}
-      </span>
-    </button>
+    <AnimatedArrowButton
+      className={`form-card__submit-button ${className}`.trim()}
+      type={type}
+      disabled={disabled}
+      hoverText={hoverText}
+    >
+      {children}
+    </AnimatedArrowButton>
   );
 }

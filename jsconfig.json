@@ -15,8 +15,9 @@
       "@utils/*": ["src/utils/*"],
       "@services/*": ["src/services/*"],
       "@data/*": ["src/data/*"],
-      "@styles/*": ["src/styles/*"]
+      "@styles/*": ["src/styles/*"],
+      "@ui/*": ["packages/ui/src/*"]
     }
   },
-  "include": ["src/**/*", "vite.config.js", "plugins/**/*"]
+  "include": ["src/**/*", "packages/ui/**/*", "vite.config.js", "plugins/**/*"]
 }

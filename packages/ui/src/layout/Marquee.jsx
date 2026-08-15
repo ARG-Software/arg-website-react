@@ -26,7 +26,7 @@ export function Marquee({
 
   const startAnimation = useCallback(() => {
     const track = trackRef.current;
-    if (!track) return;
+    if (!track) return undefined;
     const halfWidth = track.scrollWidth / 2;
 
     const tick = timestamp => {
@@ -74,6 +74,8 @@ export function Marquee({
 
       return () => observerRef.current?.disconnect();
     }
+
+    return undefined;
   }, [revealOnScroll]);
 
   useEffect(() => {

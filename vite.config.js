@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => {
       '@services': fileURLToPath(new URL('./src/services', import.meta.url)),
       '@data': fileURLToPath(new URL('./src/data', import.meta.url)),
       '@styles': fileURLToPath(new URL('./src/styles', import.meta.url)),
+      '@ui': fileURLToPath(new URL('./packages/ui/src', import.meta.url)),
     },
   },
   plugins: [

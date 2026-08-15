@@ -1,6 +1,6 @@
 import { Breadcrumb } from '../navigation/Breadcrumb';
 import AppLink from '../navigation/AppLink';
-import { arrowSvg } from '../icons/SocialIcons';
+import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 
 const SIZE_CLASSES = {
   default: '',

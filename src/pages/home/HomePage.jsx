@@ -4,7 +4,7 @@ import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { SEO } from '@components/seo/SEO';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
-import { SectionSpacer } from '@components/layout/SectionSpacer';
+import { SectionSpacer } from '@ui/layout/SectionSpacer.jsx';
 import { HOMEPAGE_BLOG_POSTS_COUNT } from '@constants/config';
 import { buildFAQPageSchema } from '@utils/structuredData';
 import { HeroSection } from './sections/HeroSection';

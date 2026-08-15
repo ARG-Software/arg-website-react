@@ -70,7 +70,7 @@ export function Pagination({
         if (item === 'gap') {
           return (
             <span key={`gap-${index}`} className="blp-pagination-ellipsis" aria-hidden="true">
-              …
+              ...
             </span>
           );
         }

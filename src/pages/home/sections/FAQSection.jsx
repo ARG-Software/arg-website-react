@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { arrowSvg } from '../../../components/icons/SocialIcons';
+import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { trackFAQOpen } from '../../../utils/analytics';
 import HOMEPAGE from '../../../data/homePage.json';
 import FAQ from '../../../data/faq.json';

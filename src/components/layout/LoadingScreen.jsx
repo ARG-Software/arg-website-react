@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { isMobile } from '../../utils/helpers';
-import { arrowSvg } from '../icons/SocialIcons';
-import { PillButton } from '../pills/Pill';
+import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import { PillButton } from '@ui/pills/Pill.jsx';
 import '../../styles/loadingscreen.css';
 
 const COLORS = ['#F0060D', '#C924D7', '#7904FD'];

@@ -1,4 +1,4 @@
-import { Marquee } from '../../../components/layout/Marquee';
+import { Marquee } from '@ui/layout/Marquee.jsx';
 import HOMEPAGE from '../../../data/homePage.json';
 
 export function ServicesMarqueeSection({ className = '', items = HOMEPAGE.infinityBand }) {

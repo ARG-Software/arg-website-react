@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import AppLink from '../../../components/navigation/AppLink';
 import { CounterWidget } from '../../../components/widgets/CounterWidget';
-import { SectionDivider } from '../../../components/layout/SectionDivider';
-import { arrowSvg } from '../../../components/icons/SocialIcons';
+import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
+import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { isMobile } from '../../../utils/helpers';
 import HOMEPAGE from '../../../data/homePage.json';
 

@@ -5,7 +5,7 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.elfsight.com https://*.elfsightcdn.com https://unpkg.com https://www.googletagmanager.com https://*.googletagmanager.com; style-src 'self' 'unsafe-inline' https://*.elfsightcdn.com; img-src 'self' data: blob: https://*.elfsightcdn.com https://www.googletagmanager.com https://*.googletagmanager.com https://arg.software; font-src 'self' data: https://*.elfsightcdn.com; connect-src 'self' https://*.elfsight.com https://*.elfsightcdn.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://api.web3forms.com https://arg.software; media-src 'self' blob:; worker-src 'self' blob:; frame-src https://*.elfsight.com https://arg.software; frame-ancestors 'self'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.elfsight.com https://*.elfsightcdn.com https://unpkg.com https://www.googletagmanager.com https://*.googletagmanager.com; style-src 'self' 'unsafe-inline' https://*.elfsightcdn.com; img-src 'self' data: blob: https://*.elfsightcdn.com https://www.googletagmanager.com https://*.googletagmanager.com https://arg.software; font-src 'self' data: https://*.elfsightcdn.com; connect-src 'self' https://*.elfsight.com https://*.elfsightcdn.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://api.web3forms.com https://*.supabase.co https://arg.software; media-src 'self' blob:; worker-src 'self' blob:; frame-src https://*.elfsight.com https://arg.software; frame-ancestors 'self'; base-uri 'self'; form-action 'self'
 
 # HTML pages — revalidate on each request but allow bfcache
 /index.html
@@ -112,6 +112,14 @@
 
 /working-with-us
   Cache-Control: no-cache
+
+/admin
+  Cache-Control: no-cache
+  X-Robots-Tag: noindex, nofollow
+
+/admin/*
+  Cache-Control: no-cache
+  X-Robots-Tag: noindex, nofollow
 
 # Hashed JS/CSS assets — immutable cache
 /assets/*

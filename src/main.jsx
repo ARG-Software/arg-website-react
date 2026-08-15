@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { LoadingProvider } from './providers/LoadingProvider.jsx';
 import { RAFProvider } from './providers/RAFProvider.jsx';
-import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useParams } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import HomePage from './pages/home/HomePage.jsx';
 import { LenisProvider } from './providers/LenisProvider.jsx';
@@ -13,9 +13,9 @@ import { WebMCPProvider } from '@providers/WebMCPProvider';
 import { ErrorBoundary } from '@components/layout/ErrorBoundary';
 import { lazyWithRetry } from '@utils/lazyWithRetry';
 import './styles/base.css';
+import '@ui/styles.css';
 import './styles/home.css';
 import './styles/components.css';
-import './styles/assistant.css';
 import './styles/legal.css';
 import './styles/effects.css';
 
@@ -30,6 +30,7 @@ const BlogPage = lazyWithRetry(() => import('./pages/blog/BlogPage.jsx'));
 const BlogPostPage = lazyWithRetry(() => import('./pages/blog/BlogPostPage.jsx'));
 const PrivacyPage = lazyWithRetry(() => import('./pages/PrivacyPage.jsx'));
 const TermsPage = lazyWithRetry(() => import('./pages/TermsPage.jsx'));
+const AdminPage = lazyWithRetry(() => import('./pages/admin/AdminPage.jsx'));
 const NotFoundPage = lazyWithRetry(() => import('./pages/NotFoundPage.jsx'));
 
 function BlogPostPageWrapper() {
@@ -40,6 +41,22 @@ function BlogPostPageWrapper() {
 function ProjectDetailPageWrapper() {
   const { slug } = useParams();
   return <ProjectDetailPage key={slug} />;
+}
+
+function GlobalOverlays() {
+  const location = useLocation();
+
+  if (location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
+  return (
+    <>
+      <WidgetManager />
+      <WebMCPProvider />
+      <CookieConsent />
+    </>
+  );
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -75,6 +92,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     <Route path="/privacy/" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
                     <Route path="/terms/" element={<TermsPage />} />
+                    <Route path="/admin" element={<AdminPage />} />
+                    <Route path="/admin/" element={<AdminPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </Suspense>
@@ -82,9 +101,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </TransitionProvider>
           </LenisProvider>
         </RAFProvider>
-        <WidgetManager />
-        <WebMCPProvider />
-        <CookieConsent />
+        <GlobalOverlays />
       </BrowserRouter>
     </HelmetProvider>
   </LoadingProvider>

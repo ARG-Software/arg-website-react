@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { arrowSvg } from '../icons/SocialIcons';
+import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import AppLink from '../navigation/AppLink';
 import { isMobile } from '../../utils/helpers';
 

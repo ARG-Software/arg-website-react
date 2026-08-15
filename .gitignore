@@ -81,6 +81,7 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+storybook-static/
 
 # Local source assets used to generate optimized public images
 source-images/
@@ -147,6 +148,8 @@ mockups
 todos
 .medium-browser-profile/
 external/html/
+external/*.xls
+external/*.xlsx
 public/files/cvs
 public/files/sites
 .rag-private/

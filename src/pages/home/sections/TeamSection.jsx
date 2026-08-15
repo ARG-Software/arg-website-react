@@ -1,5 +1,5 @@
 import React from 'react';
-import { linkedinSvg } from '../../../components/icons/SocialIcons';
+import { linkedinSvg } from '@ui/icons/SocialIcons.jsx';
 import { trackSocial } from '../../../utils/analytics';
 import { getPersonLinkedInLink, PERSON_KEYS } from '../../../services/linksService';
 import HOMEPAGE from '../../../data/homePage.json';

@@ -4,7 +4,8 @@ import {
   formatTimelineDuration,
   formatTimelineRange,
   getTimelineYearColumns,
-} from '../../utils/timeline';
+} from '../utils/timeline.js';
+import { AnimatedArrowButton } from '../buttons/AnimatedArrowButton.jsx';
 
 function formatTimelineTooltip(row) {
   const range = row.ongoing ? `Since ${row.startYear}` : formatTimelineRange(row);
@@ -112,19 +113,17 @@ export function Timeline({
             );
           })}
           <div className="pt-row pt-row-cta">
-            <a
+            <AnimatedArrowButton
               href={ctaLink}
-              className="button-base button-contact pt-row-cta-card"
+              className="pt-row-cta-card"
               style={{ gridColumn: `${finalYearStartColumn} / -1` }}
               {...ctaAttrs}
               onClick={onCtaClick}
+              hoverText={ctaButtonText}
               {...rowAttrs(timelineRows.length + 3)}
             >
-              <div className="button-base_text_wrap">
-                <div className="button-base__button-text">{ctaText}</div>
-                <div className="button-base__button-text is-animated">{ctaButtonText}</div>
-              </div>
-            </a>
+              {ctaText}
+            </AnimatedArrowButton>
           </div>
         </div>
       </div>
@@ -151,18 +150,16 @@ export function Timeline({
             </div>
           );
         })}
-        <a
+        <AnimatedArrowButton
           href={ctaLink}
-          className="button-base button-contact pt-mobile-cta"
+          className="pt-mobile-cta"
           {...ctaAttrs}
           onClick={onCtaClick}
+          hoverText={ctaButtonText}
           {...cardAttrs(timelineRows.length + 1)}
         >
-          <div className="button-base_text_wrap">
-            <div className="button-base__button-text">{ctaText}</div>
-            <div className="button-base__button-text is-animated">{ctaButtonText}</div>
-          </div>
-        </a>
+          {ctaText}
+        </AnimatedArrowButton>
       </div>
     </div>
   );

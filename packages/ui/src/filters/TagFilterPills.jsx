@@ -1,4 +1,4 @@
-import { PillButton } from '../pills/Pill';
+import { PillButton } from '../pills/Pill.jsx';
 
 export function TagFilterPills({
   tags = [],

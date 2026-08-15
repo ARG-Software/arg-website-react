@@ -1,7 +1,7 @@
 import AppLink from '../../../components/navigation/AppLink';
-import { arrowSvg } from '../../../components/icons/SocialIcons';
-import { Marquee } from '../../../components/layout/Marquee';
-import { SectionDivider } from '../../../components/layout/SectionDivider';
+import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import { Marquee } from '@ui/layout/Marquee.jsx';
+import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import HOMEPAGE from '../../../data/homePage.json';
 import PARTNERS from '../../../data/partners.json';
 

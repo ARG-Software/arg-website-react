@@ -1,9 +1,9 @@
-import { AtomIcon } from '../icons/AtomIcon';
-import { BlueskyIcon } from '../icons/BlueskyIcon';
-import { CopyIcon } from '../icons/CopyIcon';
-import { LinkedInIcon } from '../icons/LinkedInIcon';
-import { RssIcon } from '../icons/RssIcon';
-import { XIcon } from '../icons/XIcon';
+import { AtomIcon } from '@ui/icons/AtomIcon.jsx';
+import { BlueskyIcon } from '@ui/icons/BlueskyIcon.jsx';
+import { CopyIcon } from '@ui/icons/CopyIcon.jsx';
+import { LinkedInIcon } from '@ui/icons/LinkedInIcon.jsx';
+import { RssIcon } from '@ui/icons/RssIcon.jsx';
+import { XIcon } from '@ui/icons/XIcon.jsx';
 
 const ACTION_ICONS = {
   atom: AtomIcon,

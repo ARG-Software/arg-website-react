@@ -27,6 +27,12 @@
 /projects/:slug   /projects/:slug/       301
 /blog/:slug       /blog/:slug/           301
 
+# Admin SPA route — protected by Supabase Auth + server-side admin API checks
+
+/admin            /admin/                301
+/admin/           /index.html            200
+/admin/*          /index.html            200
+
 # Legacy URL redirects (prevents 404 from old article paths)
 
 /articles/:slug   /blog/:slug/   301

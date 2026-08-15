@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { arrowSvg } from '../../../components/icons/SocialIcons';
+import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { trackEvent, trackMailto } from '../../../utils/analytics';
 import { TransitionContext } from '../../../providers/TransitionProvider';
-import { SectionDivider } from '../../../components/layout/SectionDivider';
+import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { useWaterRipple } from '../../../hooks/useWaterRipple';
 import { EMAIL_KEYS, getMailtoLink } from '../../../services/linksService';
 

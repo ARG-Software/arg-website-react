@@ -1,4 +1,4 @@
-import { BaseCard } from './BaseCard';
+import { BaseCard } from '@ui/cards/BaseCard.jsx';
 
 export function FounderCard({
   founder,

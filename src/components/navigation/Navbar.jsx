@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState, useRef, useCallback } from 'react';
+import { Navbar as UiNavbar } from '@ui/navigation/Navbar.jsx';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
 import { trackCTA } from '../../utils/analytics';
@@ -133,62 +134,19 @@ export function Navbar({ variant = 'transparent', position = 'absolute' }) {
 
   return (
     <>
-      <div
-        className="nav_wrap padding-global"
-        data-animate-scope
-        data-animate-default-stagger="300"
-        data-animation="default"
-        data-easing2="ease-in"
-        data-easing="ease-in"
-        data-collapse="all"
-        role="banner"
-        data-no-scroll="1"
-        data-duration="400"
-        style={navStyle}
-      >
-        <div className="nav_contain container" style={{ background: 'transparent' }}>
-          <div style={{ opacity: 1 }} className="nav-component">
-            <AppLink
-              to="/"
-              aria-label="Arg Software"
-              className="nav_logo-wrapper"
-              data-animate="fade-up"
-              data-animate-trigger="load"
-              data-animate-order="0"
-            >
-              <div className="nav_logo_icon">
-                <Logo />
-              </div>
-            </AppLink>
-
-            <div
-              className="nav_buttons-wrapper"
-              data-animate="fade-up"
-              data-animate-trigger="load"
-              data-animate-order="1"
-            >
-              <a
-                href={getProjectBookingLink()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="button-base"
-                onClick={() => trackCTA('book_meeting', 'navbar')}
-              >
-                <div className="button-base_text_wrap">
-                  <div className="button-base__button-text">Book a Meeting</div>
-                  <div className="button-base__button-text is-animated">No commitment</div>
-                </div>
-              </a>
-              <div className={`nav-hamburger${menuOpen ? ' is-open' : ''}`} onClick={toggleMenu}>
-                <div className="menu-icon z-index-2">
-                  <div className="menu_icon-line is--top"></div>
-                  <div className="menu_icon-line is--bottom"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <UiNavbar
+        logo={<Logo />}
+        menuOpen={menuOpen}
+        navStyle={navStyle}
+        meetingHref={getProjectBookingLink()}
+        onMeetingClick={() => trackCTA('book_meeting', 'navbar')}
+        onMenuToggle={toggleMenu}
+        renderHomeLink={({ children, className, ...props }) => (
+          <AppLink to="/" className={className} {...props}>
+            {children}
+          </AppLink>
+        )}
+      />
 
       <NavMenu isOpen={menuOpen} isClosing={isClosing} onClose={closeMenu} />
     </>

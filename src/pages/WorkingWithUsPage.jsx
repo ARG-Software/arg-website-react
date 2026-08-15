@@ -3,18 +3,17 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA } from '@utils/analytics';
 import { getProjectBriefFormLink } from '../services/linksService';
 import { Navbar } from '@components/navigation/Navbar';
-import { BaseCard } from '@components/cards/BaseCard';
+import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { Footer } from '@components/layout/Footer';
 import { CTASection } from '@components/layout/CTASection';
-import { SectionDivider } from '@components/layout/SectionDivider';
-import { SectionTicker } from '@components/layout/SectionTicker';
+import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
+import { SectionTicker } from '@ui/layout/SectionTicker.jsx';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { TechStackConsole } from '@components/widgets/TechStackConsole';
-import { StepProgressTimeline } from '@components/grids/StepProgressTimeline';
+import { StepProgressTimeline } from '@ui/grids/StepProgressTimeline.jsx';
 import WORKING_WITH_US from '../data/workingWithUs.json';
 import '../styles/careers.css';
-import '../styles/step-progress-timeline.css';
 
 const CONVERSATION_STEP_INTERVAL_MS = 6000;
 

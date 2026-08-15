@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { BaseCard } from '@components/cards/BaseCard';
-import { ImageGallery } from '@components/grids/ImageGallery';
+import { BaseCard } from '@ui/cards/BaseCard.jsx';
+import { ImageGallery } from '@ui/grids/ImageGallery.jsx';
 import { Navbar } from '@components/navigation/Navbar';
-import { Pill } from '@components/pills/Pill';
+import { Pill } from '@ui/pills/Pill.jsx';
 import { SEO } from '@components/seo/SEO';
-import { arrowSvg } from '@components/icons/SocialIcons';
+import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { InlineLinkText } from '@components/widgets/InlineLinkText';
 import { ShuffleText } from '@components/widgets/ShuffleText';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
