@@ -1,5 +1,3 @@
-import { AnimatedArrowButton } from '../buttons/AnimatedArrowButton.jsx';
-
 export function Navbar({
   logo,
   menuOpen = false,
@@ -42,16 +40,18 @@ export function Navbar({
             data-animate-trigger="load"
             data-animate-order="1"
           >
-            <AnimatedArrowButton
+            <a
               href={meetingHref}
               target="_blank"
               rel="noopener noreferrer"
-              variant="outline"
-              hoverText={meetingHoverLabel}
+              className="button-base"
               onClick={onMeetingClick}
             >
-              {meetingLabel}
-            </AnimatedArrowButton>
+              <span className="button-base_text_wrap">
+                <span className="button-base__button-text">{meetingLabel}</span>
+                <span className="button-base__button-text is-animated">{meetingHoverLabel}</span>
+              </span>
+            </a>
             <button
               className={`nav-hamburger${menuOpen ? ' is-open' : ''}`}
               onClick={onMenuToggle}
