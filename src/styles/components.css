@@ -626,13 +626,13 @@
   position: absolute !important;
   top: 0 !important;
   left: 50% !important;
-  transform: translate(-50%, 100%) !important;
+  transform: translate(-50%, 125%) !important;
   width: max-content !important;
   text-align: center !important;
 }
 
 .nav_buttons-wrapper .button-base:hover .button-base__button-text:not(.is-animated) {
-  transform: translateY(-100%) !important;
+  transform: translateY(-125%) !important;
 }
 
 .nav_buttons-wrapper .button-base:hover .button-base__button-text.is-animated {
@@ -728,12 +728,12 @@
   position: static !important;
   text-align: center !important;
   top: auto !important;
-  transform: translateY(100%) !important;
+  transform: translateY(125%) !important;
   width: max-content !important;
 }
 
 .button-base:not(.nav_buttons-wrapper *):hover .button-base__button-text:not(.is-animated) {
-  transform: translateY(-100%) !important;
+  transform: translateY(-125%) !important;
 }
 
 .button-base:not(.nav_buttons-wrapper *):hover .button-base__button-text.is-animated {
@@ -784,11 +784,11 @@
   left: auto !important;
   position: static !important;
   top: auto !important;
-  transform: translateY(100%) !important;
+  transform: translateY(125%) !important;
 }
 
 .text-button:hover .text-button_list:not(.is-animated) {
-  transform: translateY(-100%) !important;
+  transform: translateY(-125%) !important;
 }
 
 .text-button:hover .text-button_list.is-animated {

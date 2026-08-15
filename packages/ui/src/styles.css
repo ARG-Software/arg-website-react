@@ -2303,12 +2303,12 @@
   position: absolute;
   text-align: center;
   top: 0;
-  transform: translate(-50%, 100%);
+  transform: translate(-50%, 125%);
   width: max-content;
 }
 
 .button-base:hover .button-base__button-text:not(.is-animated) {
-  transform: translateY(-100%);
+  transform: translateY(-125%);
 }
 
 .button-base:hover .button-base__button-text.is-animated {
