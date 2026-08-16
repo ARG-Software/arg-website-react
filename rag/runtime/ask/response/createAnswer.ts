@@ -1,5 +1,6 @@
 import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
 import type { AskQuestionResult } from '../../../domain/assistant/AssistantResponse.js';
+import type { PageContext } from '../../../domain/conversation/ChatMessage.js';
 import type { RetrievalItemResult } from '../planning/createRetrievalItems.js';
 import { createAssistantActions } from './actions.js';
 import { createCitations } from './citations.js';
@@ -17,6 +18,7 @@ export function createAnswerResult({
   contexts,
   retrievalResults,
   siteUrl,
+  pageContext,
 }: {
   answer: string;
   language: string;
@@ -25,12 +27,13 @@ export function createAnswerResult({
   contexts: RetrievedContext[];
   retrievalResults: RetrievalItemResult[];
   siteUrl: string;
+  pageContext?: PageContext | null;
 }): AskQuestionResult {
   return {
     answer: normalizeAssistantAnswer(answer),
     language,
     ...languagePreference,
-    citations: createCitations(contexts, siteUrl),
+    citations: createCitations(contexts, siteUrl, pageContext),
     articleRecommendations: mergeArticleRecommendations(
       retrievalResults.map(result =>
         createArticleRecommendations(result.contexts, result.route, siteUrl)

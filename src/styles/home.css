@@ -1178,7 +1178,7 @@
 @media screen and (max-width: 767px) {
   .projects_list {
     grid-row-gap: 4.5rem;
-    grid-template-columns: minmax(200px, 1fr);
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 }
 

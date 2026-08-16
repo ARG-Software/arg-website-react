@@ -66,7 +66,7 @@ export const ATTRIBUTE_PRESETS = {
   // Slide in from right
   [ANIMATION_PRESETS.slideInRight]: {
     initialOpacity: '0',
-    initialTransform: 'translate3d(100%, 0, 0)',
+    initialTransform: 'translate3d(4rem, 0, 0)',
     transition:
       'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
     threshold: 0.1,

@@ -77,6 +77,17 @@
   .blp-filter-bar {
     margin-top: 4rem;
   }
+
+  .blp-topic-filter .tag-filter__pills {
+    flex-wrap: wrap;
+    overflow: visible;
+    padding-bottom: 0;
+    scroll-snap-type: none;
+  }
+
+  .blp-topic-filter .tag-filter__pill {
+    flex: 0 1 auto;
+  }
 }
 
 .blp-inner {

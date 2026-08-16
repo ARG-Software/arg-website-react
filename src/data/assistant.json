@@ -48,7 +48,7 @@
       "external": true
     },
     "gaspar_message": {
-      "label": "Send message through Gaspar",
+      "label": "Want me to contact the team?",
       "external": false
     },
     "contact_form": {

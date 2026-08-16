@@ -1,8 +1,13 @@
 import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
 import type { Citation } from '../../../domain/assistant/AssistantResponse.js';
+import type { PageContext } from '../../../domain/conversation/ChatMessage.js';
 import { resolveUrl } from '../../../utils/url.js';
 
-export function createCitations(contexts: RetrievedContext[], siteUrl: string): Citation[] {
+export function createCitations(
+  contexts: RetrievedContext[],
+  siteUrl: string,
+  pageContext?: PageContext | null
+): Citation[] {
   if (
     contexts.some(
       context => context.origin === 'trusted_external' || context.sourceKey === 'assistant-policy'
@@ -16,6 +21,10 @@ export function createCitations(contexts: RetrievedContext[], siteUrl: string): 
 
   for (const context of contexts) {
     if (!isNavigableFirstPartyContext(context, siteUrl)) {
+      continue;
+    }
+
+    if (isCurrentPageContext(context, siteUrl, pageContext)) {
       continue;
     }
 
@@ -37,6 +46,30 @@ export function createCitations(contexts: RetrievedContext[], siteUrl: string): 
   }
 
   return citations;
+}
+
+function isCurrentPageContext(
+  context: RetrievedContext,
+  siteUrl: string,
+  pageContext?: PageContext | null
+): boolean {
+  if (!pageContext?.pathname || !context.url) {
+    return false;
+  }
+
+  const contextPath = getComparablePath(context.url, siteUrl);
+  const currentPath = getComparablePath(pageContext.pathname, siteUrl);
+
+  return Boolean(contextPath && currentPath && contextPath === currentPath);
+}
+
+function getComparablePath(url: string, siteUrl: string): string | null {
+  try {
+    const pathname = new URL(url, siteUrl).pathname.replace(/\/+$/, '');
+    return pathname || '/';
+  } catch {
+    return null;
+  }
 }
 
 function isNavigableFirstPartyContext(context: RetrievedContext, siteUrl: string): boolean {

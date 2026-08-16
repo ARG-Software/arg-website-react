@@ -354,11 +354,7 @@ test('a hybrid mode client-hiring question retrieves FAQ evidence and project ac
   });
 
   assert.deepEqual(result.contexts.map(context => context.sourceKey), ['faq']);
-  assert.deepEqual(result.actions, [
-    { type: 'book_meeting' },
-    { type: 'gaspar_message' },
-    { type: 'contact_form' },
-  ]);
+  assert.deepEqual(result.actions, [{ type: 'gaspar_message' }]);
   assert.ok(supabase.calls.matchChunks.some(call => call.sourceTypes?.includes('faq')));
 });
 
@@ -2202,6 +2198,32 @@ test('Gaspar profile citations are suppressed even when the source has a homepag
   assert.deepEqual(citations, []);
 });
 
+test('current page citations are suppressed while keeping other related links', () => {
+  const citations = createCitations(
+    [
+      {
+        ...matchRow('project', 'dokutar', 'Dokutar', 'Dokutar project details.'),
+        url: 'https://arg.software/projects/dokutar/',
+      },
+      {
+        ...matchRow('project', 'mojaloop', 'Mojaloop', 'Mojaloop project details.'),
+        url: 'https://arg.software/projects/mojaloop/',
+      },
+    ],
+    config.siteUrl,
+    {
+      pathname: '/projects/dokutar/',
+      title: 'Dokutar | Arg Software',
+      pageKind: 'project',
+      projectSlug: 'dokutar',
+      projectName: 'Dokutar',
+      sourceKeys: ['dokutar'],
+    }
+  );
+
+  assert.deepEqual(citations.map(citation => citation.sourceKey), ['mojaloop']);
+});
+
 test('direct AI identity questions retrieve Gaspar profile source without embeddings', async () => {
   const gaspar = source('gaspar-id', 'Gaspar', null, 'homepage', 'assistant-profile');
   const supabase = createSupabase({
@@ -2365,7 +2387,7 @@ test('an unresolved personal pronoun asks for clarification', async () => {
   });
 
   assert.match(result.answer, /Who do you mean/u);
-  assert.deepEqual(result.actions, [{ type: 'gaspar_message' }, { type: 'contact_form' }]);
+  assert.deepEqual(result.actions, [{ type: 'gaspar_message' }]);
 });
 
 test('runtime retrieval switches to the fallback index after a primary quota error', async () => {

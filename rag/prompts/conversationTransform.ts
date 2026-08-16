@@ -2,7 +2,8 @@ import type { ConversationTransformTask } from '../domain/conversation/Conversat
 import { buildResponseLanguageInstruction } from './shared.js';
 
 const TASK_INSTRUCTIONS: Record<ConversationTransformTask, string> = {
-  shorten_previous_answer: 'Make the previous answer shorter and more direct.',
+  shorten_previous_answer:
+    'Rewrite the previous answer as a concise summary. Keep only the main point and key outcome. Prefer 2-4 short sentences. Remove repeated structure, lists, CTAs, and secondary details unless the visitor explicitly asks for them.',
   simplify_previous_answer: 'Explain the previous answer in simpler words without talking down to the visitor.',
   format_previous_answer: 'Reformat the previous answer so it is easier to scan.',
   expand_previous_answer: 'Expand the previous answer with clearer explanation, without adding new facts.',

@@ -133,7 +133,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
       ...languagePreference,
       citations: [],
       articleRecommendations: [],
-      actions: [{ type: 'gaspar_message' }, { type: 'contact_form' }],
+      actions: [{ type: 'gaspar_message' }],
       contexts: [],
     };
   }
@@ -219,6 +219,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
     contexts,
     retrievalResults,
     siteUrl: context.config.siteUrl,
+    pageContext: context.pageContext,
   });
 }
 

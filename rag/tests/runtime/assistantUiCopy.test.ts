@@ -10,7 +10,7 @@ test('assistant UI copy exposes the manual copy version', () => {
   const source = readAssistantSourceCopy();
 
   assert.equal(source.copyVersion, '2026-07-30-1');
-  assert.equal(source.actions.gaspar_message.label, 'Send message through Gaspar');
+  assert.equal(source.actions.gaspar_message.label, 'Want me to contact the team?');
   assert.equal(source.leadConfirm.title, 'Send this to ARG?');
 });
 
