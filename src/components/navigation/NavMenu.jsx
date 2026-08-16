@@ -51,7 +51,10 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
   const featuredProjects = useMemo(() => {
     const count = selectedWork?.desktopCount ?? 4;
     const seed = getRotationSeed(selectedWork?.rotationSeed);
-    return pickFeaturedProjects(count, seed);
+    return pickFeaturedProjects(count, seed).map(project => ({
+      ...project,
+      to: `/projects/${project.slug}/`,
+    }));
   }, [selectedWork?.desktopCount, selectedWork?.rotationSeed]);
 
   const handleClose = useCallback(() => {
