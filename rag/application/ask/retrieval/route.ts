@@ -45,7 +45,7 @@ const PROJECT_DURATION_PATTERN =
 const TECHNOLOGY_QUALITY_PATTERN =
   /\b(?:ai|automation|architecture|backend|ci\/cd|cicd|cloud|code review|cqrs|database|ddd|devops|frontend|framework|integration tests?|language|methodolog(?:y|ies)|mobile|observability|patterns?|platform|qa|quality|scalability|security|stack|technology|testing|tests?|tool|unit tests?)\b/i;
 const GASPAR_PROFILE_PATTERN =
-  /\b(?:gaspar|assistant profile|assistant identity|your name|who are you|ai assistant|artificial intelligence|robot|chatbot|language model|real dog|where were you born|nationality|ascendence|free time|do you like working at arg|likes? working at arg)\b/i;
+  /\b(?:gaspar|assistant profile|assistant identity|your name|who are you|ai assistant|artificial intelligence|robot|chatbot|language model|real cat|where were you born|nationality|ascendence|free time|do you like working at arg|likes? working at arg)\b/i;
 const GASPAR_HUMAN_LANGUAGE_PATTERN =
   /\b(?:human\s+languages?|languages?\s+(?:can\s+)?(?:you|gaspar)\s+(?:speak|understand|answer|reply|respond|use)|(?:can|could|do|will)\s+(?:you|gaspar)\s+(?:answer|reply|respond)\s+in\b|(?:can|could|do)\s+(?:you|gaspar)\s+speak\s+(?!to\b|with\b)|(?:que|quais)\s+(?:idiomas?|l[ií]nguas?)\s+(?:falas|fala|entendes|compreendes|usas)|(?:falas|fala)\s+(?!com\b|sobre\b|de\b|da\b|do\b|a\b|ao\b|para\b)|(?:respondes|responder|entendes|compreendes)\s+em\b|(?:parles|parlez)\s+(?!avec\b)|(?:hablas|habla)\s+(?!con\b))\b/i;
 const KNOWN_PROJECT_NAMES = getKnownProjectNames();
