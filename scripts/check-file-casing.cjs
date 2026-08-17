@@ -73,6 +73,73 @@ const RULES = [
     pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/,
     description: 'kebab-case.md',
   },
+  {
+    root: 'rag/domain',
+    extensions: ['.ts'],
+    pattern: /^[A-Z][A-Za-z0-9]*\.ts$/,
+    description: 'PascalCase.ts',
+  },
+  {
+    root: 'rag/application/ports',
+    extensions: ['.ts'],
+    pattern: /^[A-Z][A-Za-z0-9]*\.ts$/,
+    description: 'PascalCase.ts',
+  },
+  {
+    root: 'rag/application',
+    extensions: ['.ts'],
+    pattern: /^[a-z][A-Za-z0-9]*\.ts$/,
+    description: 'camelCase.ts',
+    excludeDirectories: ['ports'],
+  },
+  {
+    root: 'rag/infrastructure/ingestion',
+    extensions: ['.ts'],
+    pattern: /^(?:[a-z][A-Za-z0-9]*|[A-Z][A-Za-z0-9]*Types)\.ts$/,
+    description: 'camelCase.ts or PascalCaseTypes.ts',
+  },
+  {
+    root: 'rag/infrastructure/embeddings',
+    extensions: ['.ts'],
+    pattern: /^(?:[a-z][A-Za-z0-9]*Config|[A-Z][A-Za-z0-9]*Provider)\.ts$/,
+    description: 'camelCaseConfig.ts or PascalCaseProvider.ts',
+  },
+  {
+    root: 'rag/infrastructure/llm',
+    extensions: ['.ts'],
+    pattern: /^(?:[a-z][A-Za-z0-9]*Config|[A-Z][A-Za-z0-9]*(?:Provider|Translator|Client))\.ts$/,
+    description: 'camelCaseConfig.ts or PascalCase provider/client module',
+  },
+  {
+    root: 'rag/infrastructure/repositories',
+    extensions: ['.ts'],
+    pattern: /^(?:[a-z][A-Za-z0-9]*|[A-Z][A-Za-z0-9]*(?:Repository|Factory))\.ts$/,
+    description: 'camelCase.ts or PascalCase repository/factory module',
+  },
+  {
+    root: 'rag/infrastructure/security',
+    extensions: ['.ts'],
+    pattern: /^[a-z][A-Za-z0-9]*\.ts$/,
+    description: 'camelCase.ts',
+  },
+  {
+    root: 'rag/apps',
+    extensions: ['.ts'],
+    pattern: /^[a-z][A-Za-z0-9]*\.ts$/,
+    description: 'camelCase.ts',
+  },
+  {
+    root: 'rag/scripts',
+    extensions: ['.ts'],
+    pattern: /^[a-z][A-Za-z0-9]*\.ts$/,
+    description: 'camelCase.ts',
+  },
+  {
+    root: 'rag/tests',
+    extensions: ['.ts'],
+    pattern: /^(?:[A-Z][A-Za-z0-9]*|[a-z][A-Za-z0-9]*)(?:\.test)?\.ts$/,
+    description: 'PascalCase.ts, camelCase.ts, or camelCase.test.ts',
+  },
 ];
 
 function listFiles(directory) {

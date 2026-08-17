@@ -6,7 +6,7 @@ import { extractHtmlText, fetchExternalHtml } from '../extractors/extractHtmlTex
 import { createSource } from '../../../application/ingestion/sourceFactory.js';
 import type { IngestionRunOptions } from '../../../application/ingestion/types.js';
 import type { RagSource } from '../../../domain/content/RagSource.js';
-import type { ExternalSourceManifestEntry } from '../sourceManifestTypes.js';
+import type { ExternalSourceManifestEntry } from '../SourceManifestTypes.js';
 import { escapeRegExp } from '../../../application/common/regex.js';
 
 export async function loadTrustedExternalSourceEntries(

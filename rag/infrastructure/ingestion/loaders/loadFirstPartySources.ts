@@ -14,13 +14,13 @@ import type {
   PartnersJson,
   ProjectJson,
   SiteLinksJson,
-} from '../siteDataTypes.js';
+} from '../SiteDataTypes.js';
 import type {
   InlineJsonManifestEntry,
   LocalDocumentManifestEntry,
   LocalManifestEntry,
   JsonManifestEntry,
-} from '../sourceManifestTypes.js';
+} from '../SourceManifestTypes.js';
 import { HOMEPAGE_SECTION_SCOPES } from '../../../application/sourceConfig.js';
 import { getFirstPartySourceEntries } from '../sourceManifestConfig.js';
 import type { IngestionRunOptions } from '../../../application/ingestion/types.js';

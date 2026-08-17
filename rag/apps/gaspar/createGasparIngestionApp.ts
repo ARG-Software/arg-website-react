@@ -8,7 +8,7 @@ import {
   loadTrustedExternalSource,
   loadTrustedExternalSourceEntries,
 } from '../../infrastructure/ingestion/loaders/loadTrustedExternalSources.js';
-import type { ExternalSourceManifestEntry } from '../../infrastructure/ingestion/sourceManifestTypes.js';
+import type { ExternalSourceManifestEntry } from '../../infrastructure/ingestion/SourceManifestTypes.js';
 import { createSupabaseServiceClient } from '../../infrastructure/repositories/supabase/SupabaseClientFactory.js';
 import { SupabaseRagWriteRepository } from '../../infrastructure/repositories/supabase/SupabaseRagWriteRepository.js';
 

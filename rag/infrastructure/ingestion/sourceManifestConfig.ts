@@ -5,7 +5,7 @@ import type {
   ExternalSourceManifestEntry,
   InlineJsonManifestEntry,
   LocalManifestEntry,
-} from './sourceManifestTypes.js';
+} from './SourceManifestTypes.js';
 
 interface AssistantPolicySourceConfig {
   kind: 'assistant_policy';
