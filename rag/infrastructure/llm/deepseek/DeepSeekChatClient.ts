@@ -1,9 +1,9 @@
-import type { RagConfig } from '../../../config/RagConfig.js';
+import type { DeepSeekConfig } from './deepSeekConfig.js';
 import type { PromptMessage } from '../../../domain/conversation/ChatMessage.js';
 
 const DEEPSEEK_CHAT_URL = 'https://api.deepseek.com/chat/completions';
 
-export type DeepSeekChatConfig = Pick<RagConfig, 'deepseekApiKey' | 'deepseekModel'>;
+export type DeepSeekChatConfig = DeepSeekConfig;
 
 export interface DeepSeekChatCompletionResponse {
   choices?: Array<{
@@ -27,11 +27,11 @@ export async function createDeepSeekChatCompletion({
   const response = await fetch(DEEPSEEK_CHAT_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${config.deepseekApiKey}`,
+      Authorization: `Bearer ${config.apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: config.deepseekModel,
+      model: config.model,
       temperature,
       messages,
       thinking: { type: 'disabled' },

@@ -10,6 +10,8 @@ export const ASSISTANT_POLICY_CONTENT = {
       'ARG does not provide branding, graphic design, logo design, web design, UX/UI design, or product design as direct in-house services. When a software project needs design, ARG can coordinate with trusted external design partners.',
     embeddedSystems:
       'Hardware, robotics, firmware, and embedded-systems work are not publicly listed ARG specialisms. ARG assesses these requests case by case based on the requirements, delivery setup, and available specialist support. Do not promise delivery before that assessment; invite prospective clients to book a meeting or contact ARG with their requirements.',
+    businessSystems:
+      'CRM, CMS, and ERP requests are business-system, integration, and product-architecture questions, not programming-language or framework stack questions. For CRM, distinguish integrating existing systems such as HubSpot, Salesforce, Pipedrive, or Zoho from building a custom customer workflow product. For CMS, distinguish headless or existing CMS platforms such as Strapi, Contentful, Sanity, or WordPress from custom admin or back-office tools. For ERP, distinguish integrating systems such as Odoo, SAP, Oracle NetSuite, or Microsoft Dynamics from building custom internal operations software. ARG can assess these needs case by case from workflow, data model, permissions, reporting, automation, and integration requirements.',
     evidence:
       'Do not infer a capability from a directory category, a blog article, a technology mention, or a project interface implementation. Only state a capability when this policy or an official ARG service source explicitly supports it.',
   },
@@ -47,6 +49,7 @@ export const ASSISTANT_POLICY_CONTENT = {
 export function getAssistantPolicyInstructions(): string[] {
   return [
     ASSISTANT_POLICY_CONTENT.assistantProfile.humanLanguages,
+    ASSISTANT_POLICY_CONTENT.capabilities.businessSystems,
     ASSISTANT_POLICY_CONTENT.capabilities.evidence,
     ASSISTANT_POLICY_CONTENT.technologyStack.goLanguageEvidence,
     ASSISTANT_POLICY_CONTENT.sourcePriority.blogs,

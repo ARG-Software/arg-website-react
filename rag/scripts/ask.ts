@@ -1,6 +1,6 @@
 import { loadLocalEnv } from '../config/env.js';
 import type { ChatMessage, PageContext } from '../domain/conversation/ChatMessage.js';
-import { createRagRuntime } from '../infrastructure/createRagRuntime.js';
+import { createGasparApp } from '../apps/gaspar/createGasparApp.js';
 
 loadLocalEnv();
 
@@ -22,7 +22,7 @@ try {
   const messages = parseMessages();
   const pageContext = parsePageContext();
   const question = getQuestion();
-  const runtime = createRagRuntime();
+  const application = createGasparApp();
 
   if (!question) {
     console.error(
@@ -32,7 +32,7 @@ try {
   }
 
   if (retrieveOnly) {
-    const contexts = await runtime.retrieveRelevantChunks({ question, messages, pageContext });
+    const contexts = await application.retrieveRelevantChunks({ question, messages, pageContext });
     console.log(`\nQuestion: ${question}\n`);
     console.log(`Retrieved chunks: ${contexts.length}`);
 
@@ -45,7 +45,7 @@ try {
     process.exit(0);
   }
 
-  const result = await runtime.askQuestion({ question, messages, pageContext });
+  const result = await application.askQuestion({ question, messages, pageContext });
   console.log(`\nQuestion: ${question}\n`);
   console.log(`Answer:\n${result.answer}\n`);
 

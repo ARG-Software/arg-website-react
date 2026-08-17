@@ -87,7 +87,10 @@ function buildLeadPrompts(controller, leadAcceptPrompt, leadChatPrompt) {
 }
 
 function buildChatbotMessages(controller) {
-  const messages = controller.messages.map(message => buildChatbotMessage(message, controller));
+  const latestLeadAssistantIndex = getLatestLeadAssistantMessageIndex(controller.messages);
+  const messages = controller.messages.map((message, index) =>
+    buildChatbotMessage(message, controller, index === latestLeadAssistantIndex)
+  );
 
   if (controller.leadStep === controller.LEAD_STEPS.ERROR) {
     messages.push({
@@ -103,7 +106,18 @@ function buildChatbotMessages(controller) {
   return messages;
 }
 
-function buildChatbotMessage(message, controller) {
+function getLatestLeadAssistantMessageIndex(messages) {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message.role === 'assistant' && message.source === 'lead_capture' && !message.isLoading) {
+      return index;
+    }
+  }
+
+  return -1;
+}
+
+function buildChatbotMessage(message, controller, isLatestLeadAssistantMessage = false) {
   const isLeadMessage = message.source === 'lead_capture';
 
   return {
@@ -114,7 +128,9 @@ function buildChatbotMessage(message, controller) {
     linksLabel: controller.assistantCopy.labels.relatedLinks,
     links: message.role === 'assistant' && !isLeadMessage ? buildLinkNodes(message) : [],
     actions:
-      message.role === 'assistant' && !isLeadMessage ? buildActionNodes(message, controller) : [],
+      message.role === 'assistant'
+        ? buildActionNodes(message, controller, isLatestLeadAssistantMessage)
+        : [],
     pendingMessage:
       message.isLoading && controller.leadStep === controller.LEAD_STEPS.SUBMITTING
         ? controller.assistantCopy.messages.sending
@@ -167,10 +183,29 @@ function renderAssistantLink(link) {
   );
 }
 
-function buildActionNodes(message, controller) {
+function buildActionNodes(message, controller, isLatestLeadAssistantMessage = false) {
+  if (message.source === 'lead_capture') {
+    return buildLeadActionNodes(message, controller, isLatestLeadAssistantMessage);
+  }
+
   const visibleActions = message.actions?.filter(action => !action.autoStart) || [];
 
-  if (message.showConfirmButtons && controller.isLeadActive) {
+  return visibleActions
+    .map((action, index) => {
+      const details = getAssistantActionDetails(action.type, controller.assistantCopy);
+      if (!details) return null;
+
+      return {
+        node: renderAssistantAction(details, action.type, index),
+      };
+    })
+    .filter(Boolean);
+}
+
+function buildLeadActionNodes(message, controller, isLatestLeadAssistantMessage) {
+  if (!controller.isLeadActive || !isLatestLeadAssistantMessage) return [];
+
+  if (message.showConfirmButtons) {
     return [
       buildButtonAction(controller.assistantCopy.labels.send, controller.handleLeadConfirm, {
         disabled: controller.leadStep === controller.LEAD_STEPS.SUBMITTING,
@@ -184,16 +219,9 @@ function buildActionNodes(message, controller) {
     ];
   }
 
-  return visibleActions
-    .map((action, index) => {
-      const details = getAssistantActionDetails(action.type, controller.assistantCopy);
-      if (!details) return null;
+  if (controller.leadStep === controller.LEAD_STEPS.SUBMITTING) return [];
 
-      return {
-        node: renderAssistantAction(details, action.type, index),
-      };
-    })
-    .filter(Boolean);
+  return [buildButtonAction(controller.assistantCopy.labels.cancel, controller.handleLeadCancel)];
 }
 
 function renderAssistantAction(details, actionType, index) {

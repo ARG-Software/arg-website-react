@@ -1,15 +1,8 @@
 import { config as loadDotenv } from 'dotenv';
 
-import type {
-  ChunkingConfig,
-  DeepSeekConfig,
-  EnvOptions,
-  GeminiEmbeddingConfig,
-  RagConfig,
-  RetrievalConfig,
-  SiteConfig,
-  SupabaseConfig,
-} from './RagConfig.js';
+interface EnvOptions {
+  required?: boolean;
+}
 
 const DEFAULTS: Record<string, string> = {
   EMBEDDING_DIMENSIONS: '768',
@@ -70,83 +63,6 @@ export function loadLocalEnv(path = '.env'): Record<string, string> {
   return result.parsed ?? {};
 }
 
-export function getRagConfig(): RagConfig {
-  validateRequiredEnv();
-
-  return {
-    ...getSupabaseConfig(),
-    ...getGeminiConfig(),
-    ...getGeminiFallbackEmbeddingConfig(),
-    ...getDeepSeekConfig(),
-    ...getSiteConfig(),
-    ...getChunkingConfig(),
-    ...getRetrievalConfig(),
-  };
-}
-
-export function getSupabaseConfig(): SupabaseConfig {
-  return {
-    supabaseUrl: getRequiredEnv('DATABASE_URL'),
-    supabaseServiceRoleKey: getRequiredEnv('DATABASE_SERVICE_ROLE_KEY'),
-  };
-}
-
-export function getGeminiConfig(): Pick<
-  GeminiEmbeddingConfig,
-  'geminiApiKey' | 'geminiEmbeddingModel' | 'geminiEmbeddingDimensions' | 'geminiEmbeddingRequestDelayMs'
-> {
-  return {
-    geminiApiKey: getRequiredEnv('EMBEDDING_API_KEY'),
-    geminiEmbeddingModel: getRequiredEnv('EMBEDDING_MODEL'),
-    geminiEmbeddingDimensions: getRequiredNumberEnv('EMBEDDING_DIMENSIONS'),
-    geminiEmbeddingRequestDelayMs: getRequiredNumberEnv('EMBEDDING_REQUEST_DELAY_MS'),
-  };
-}
-
-export function getGeminiFallbackEmbeddingConfig(): Pick<
-  GeminiEmbeddingConfig,
-  | 'geminiApiKey'
-  | 'geminiFallbackEmbeddingModel'
-  | 'geminiFallbackEmbeddingDimensions'
-  | 'geminiEmbeddingRequestDelayMs'
-> {
-  return {
-    geminiApiKey: getRequiredEnv('EMBEDDING_API_KEY'),
-    geminiFallbackEmbeddingModel: getRequiredEnv('FALLBACK_EMBEDDING_MODEL'),
-    geminiFallbackEmbeddingDimensions: getRequiredNumberEnv('FALLBACK_EMBEDDING_DIMENSIONS'),
-    geminiEmbeddingRequestDelayMs: getRequiredNumberEnv('EMBEDDING_REQUEST_DELAY_MS'),
-  };
-}
-
-export function getDeepSeekConfig(): DeepSeekConfig {
-  return {
-    deepseekApiKey: getRequiredEnv('AI_MODEL_API_KEY'),
-    deepseekModel: getRequiredEnv('AI_MODEL'),
-  };
-}
-
-export function getSiteConfig(): SiteConfig {
-  return {
-    siteUrl: getRequiredEnv('RAG_SITE_URL'),
-    companyName: getRequiredEnv('RAG_COMPANY_NAME'),
-  };
-}
-
-export function getChunkingConfig(): ChunkingConfig {
-  return {
-    chunkSize: getRequiredNumberEnv('RAG_CHUNK_SIZE'),
-    chunkOverlap: getRequiredNumberEnv('RAG_CHUNK_OVERLAP'),
-  };
-}
-
-export function getRetrievalConfig(): RetrievalConfig {
-  return {
-    matchCount: getRequiredNumberEnv('RAG_MATCH_COUNT'),
-    similarityThreshold: getRequiredNumberEnv('RAG_SIMILARITY_THRESHOLD'),
-    fallbackSimilarityThreshold: getRequiredNumberEnv('RAG_FALLBACK_SIMILARITY_THRESHOLD'),
-  };
-}
-
 export function validateRequiredEnv(): void {
   const missing = REQUIRED_ENV.filter(name => !process.env[name]);
 
@@ -155,10 +71,10 @@ export function validateRequiredEnv(): void {
   }
 }
 
-function getRequiredEnv(name: string): string {
+export function getRequiredEnv(name: string): string {
   return getEnv(name, { required: true }) as string;
 }
 
-function getRequiredNumberEnv(name: string): number {
+export function getRequiredNumberEnv(name: string): number {
   return getNumberEnv(name, { required: true }) as number;
 }

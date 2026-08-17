@@ -1,15 +1,8 @@
-import { createSupabaseServiceClient } from '../../rag/infrastructure/db/supabase/SupabaseClientFactory.ts';
+import { createGasparMaintenanceApp } from '../../rag/apps/gaspar/createGasparMaintenanceApp.ts';
 
 export default async () => {
   const startedAt = Date.now();
-  const supabase = createSupabaseServiceClient();
-
-  const { error } = await supabase.from('rag_sources').select('id').limit(1);
-
-  if (error) {
-    console.error('Database keepalive failed:', error.message);
-    throw error;
-  }
+  await createGasparMaintenanceApp().keepDatabaseAlive();
 
   console.log('Database keepalive completed', {
     durationMs: Date.now() - startedAt,

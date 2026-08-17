@@ -1,12 +1,8 @@
-import { createSupabaseServiceClient } from '../infrastructure/db/supabase/SupabaseClientFactory.js';
-import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../infrastructure/embeddings/gemini/GeminiEmbeddingProvider.js';
 import { loadLocalEnv } from '../config/env.js';
-import type { IngestSourceResult } from '../ingestion/types.js';
+import { createGasparIngestionApp } from '../apps/gaspar/createGasparIngestionApp.js';
+import type { IngestSourceResult } from '../application/ingestion/types.js';
 import type { RagSource } from '../domain/content/RagSource.js';
-import { ingestSource } from '../ingestion/ingestPipeline.js';
-import { loadLocalSources } from '../ingestion/sources/local.js';
-import { SupabaseRagWriteRepository } from '../infrastructure/db/supabase/SupabaseRagWriteRepository.js';
-import { sleep } from '../shared/async.js';
+import { sleep } from '../application/common/time.js';
 import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
 
 loadLocalEnv();
@@ -20,24 +16,19 @@ if (!hasSourceFilters(selection)) {
   process.exit(1);
 }
 
-const supabase = createSupabaseServiceClient();
-const repository = new SupabaseRagWriteRepository(supabase);
-const sources = await loadLocalSources(process.cwd(), selection);
+const ingestionApp = createGasparIngestionApp();
+const sources = await ingestionApp.loadFirstPartySources(process.cwd(), selection);
 const results: IngestSourceResult[] = [];
 const failures: Array<{ source: RagSource; error: unknown }> = [];
 
 if (sources.length === 0) {
-  console.log('No local sources matched the selected filters. Nothing to ingest.');
+  console.log('No first-party sources matched the selected filters. Nothing to ingest.');
   process.exit(0);
 }
 
 for (const source of sources) {
   try {
-    const result = await ingestSource({
-      source,
-      repository,
-      embeddingProvider: geminiEmbeddingClient,
-      fallbackEmbeddingProvider: geminiFallbackEmbeddingClient,
+    const result = await ingestionApp.ingestSource(source, {
       dryRun,
       force: selection.force,
       fallbackOnly: selection.fallbackOnly,
@@ -59,7 +50,7 @@ const skipped = results.filter(result => result.skipped);
 const unchanged = skipped.filter(result => result.reason === 'unchanged_content');
 const chunkCount = ingested.reduce((total, result) => total + result.chunkCount, 0);
 
-console.log('\nLocal ingestion summary');
+console.log('\nFirst-party ingestion summary');
 console.log(`sources loaded: ${sources.length}`);
 console.log(`sources ${dryRun ? 'ready' : 'ingested'}: ${ingested.length}`);
 console.log(`sources skipped: ${skipped.length}`);

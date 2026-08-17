@@ -1,10 +1,10 @@
-import { RagValidationError } from '../../rag/runtime/ask/askQuestion.ts';
-import { EmbeddingQuotaExceededError } from '../../rag/domain/providers/ProviderErrors.ts';
-import { createRagRuntime } from '../../rag/infrastructure/createRagRuntime.ts';
-import { verifyAltchaChallenge } from '../../rag/security/altcha.ts';
-import { checkRateLimits, getRateLimitConfig } from '../../rag/security/rateLimit.ts';
-import { SupabaseRateLimitStore } from '../../rag/security/rateLimitStores.ts';
-import { createSupabaseServiceClient } from '../../rag/infrastructure/db/supabase/SupabaseClientFactory.ts';
+import { RagValidationError } from '../../rag/application/ask/askQuestion.ts';
+import { EmbeddingQuotaExceededError } from '../../rag/application/ports/ProviderErrors.ts';
+import { createGasparApp } from '../../rag/apps/gaspar/createGasparApp.ts';
+import {
+  createGasparAskRateLimiterApp,
+  createGasparHumanVerificationApp,
+} from '../../rag/apps/gaspar/createGasparSecurityApp.ts';
 import { createCorsHeaders, createOriginGuardResponse } from '../shared/apiOrigin.js';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
@@ -19,13 +19,13 @@ export const config = {
   },
 };
 
-let rateLimitStore;
+let askRateLimiter;
 
-function getRateLimitStore() {
-  if (!rateLimitStore) {
-    rateLimitStore = new SupabaseRateLimitStore(createSupabaseServiceClient());
+function getAskRateLimiter() {
+  if (!askRateLimiter) {
+    askRateLimiter = createGasparAskRateLimiterApp();
   }
-  return rateLimitStore;
+  return askRateLimiter;
 }
 
 export default async function handler(request) {
@@ -61,7 +61,7 @@ export default async function handler(request) {
       );
     }
 
-    const altchaResult = await verifyAltchaChallenge({
+    const altchaResult = await createGasparHumanVerificationApp().verifyChallenge({
       challenge: payload.altcha.challenge,
       solution: payload.altcha.solution,
     });
@@ -84,8 +84,7 @@ export default async function handler(request) {
   const clientIp = request.headers.get('x-nf-client-connection-ip') || 'unknown';
 
   try {
-    const rateLimitConfig = getRateLimitConfig();
-    const rateLimitResult = await checkRateLimits(clientIp, getRateLimitStore(), rateLimitConfig);
+    const rateLimitResult = await getAskRateLimiter().check(clientIp);
 
     if (!rateLimitResult.allowed) {
       return createResponse(
@@ -99,7 +98,7 @@ export default async function handler(request) {
   }
 
   try {
-    const result = await createRagRuntime().askQuestion({
+    const result = await createGasparApp().askQuestion({
       question: payload.question,
       messages: payload.messages,
       pageContext: payload.pageContext,

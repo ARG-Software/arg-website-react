@@ -1,23 +1,23 @@
-import { getDeepSeekConfig, getSiteConfig } from '../../../config/env.js';
-import { buildSystemPrompt } from '../../../prompts/answering.js';
+import { getSiteConfig } from '../../../application/ragConfig.js';
+import { buildSystemPrompt } from '../../../application/prompts/answering.js';
 import {
   buildConversationTransformPrompt,
   buildConversationTransformUserPrompt,
-} from '../../../prompts/conversationTransform.js';
+} from '../../../application/prompts/conversationTransform.js';
 import {
   buildHistoryMessages,
   buildPageContextMessages,
   buildUserPrompt,
-} from './messageFormatting.js';
-import { buildIntentFallbackPrompt } from '../../../prompts/fallback.js';
-import { buildInsufficientContextPrompt } from '../../../prompts/insufficientContext.js';
-import { buildIntentPrompt } from '../../../prompts/intent.js';
-import { parseIntentResponse, parseRetrievalPlan } from './outputParsers.js';
-import { buildRetrievalPlanPrompt } from '../../../prompts/retrievalPlan.js';
+} from '../../../application/prompts/messageFormatting.js';
+import { buildIntentFallbackPrompt } from '../../../application/prompts/fallback.js';
+import { buildInsufficientContextPrompt } from '../../../application/prompts/insufficientContext.js';
+import { buildIntentPrompt } from '../../../application/prompts/intent.js';
+import { parseIntentResponse, parseRetrievalPlan } from '../../../application/prompts/outputParsers.js';
+import { buildRetrievalPlanPrompt } from '../../../application/prompts/retrievalPlan.js';
 import type { ChatMessage, PageContext, PromptMessage } from '../../../domain/conversation/ChatMessage.js';
-import type { RagConfig } from '../../../config/RagConfig.js';
+import { getDeepSeekConfig, type DeepSeekConfig } from './deepSeekConfig.js';
 import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
-import type { AnswerProvider } from '../../../domain/providers/ProviderPorts.js';
+import type { AnswerProvider } from '../../../application/ports/ProviderPorts.js';
 import { createDeepSeekChatCompletion } from './DeepSeekChatClient.js';
 import type {
   ConversationTransformTask,
@@ -30,7 +30,7 @@ import type {
   RetrievalPlan,
 } from '../../../domain/retrieval/RetrievalPlan.js';
 
-type DeepSeekAnswerConfig = Pick<RagConfig, 'deepseekApiKey' | 'deepseekModel' | 'companyName'>;
+type DeepSeekAnswerConfig = DeepSeekConfig & { companyName: string };
 
 export class DeepSeekAnswerClient implements AnswerProvider {
   constructor(private readonly config?: DeepSeekAnswerConfig) {}

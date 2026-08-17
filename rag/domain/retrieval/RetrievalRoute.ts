@@ -1,4 +1,3 @@
-import type { EmbeddingIndex } from '../providers/EmbeddingIndex.js';
 import type { RagSourceType } from '../content/RagSource.js';
 
 export type RetrievalRouteKind =
@@ -34,5 +33,3 @@ export interface RetrievalRoute {
   commercialKind?: CommercialDeliveryKind;
   requiresPersonClarification?: boolean;
 }
-
-export type { EmbeddingIndex };

@@ -1,4 +1,4 @@
-import { verifyAltchaPayload } from '../../rag/security/altcha.ts';
+import { createGasparHumanVerificationApp } from '../../rag/apps/gaspar/createGasparSecurityApp.ts';
 import { createCorsHeaders, createOriginGuardResponse } from '../shared/apiOrigin.js';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
@@ -46,7 +46,7 @@ export default async function handler(request) {
       );
     }
 
-    const altchaResult = await verifyAltchaPayload(String(altcha));
+    const altchaResult = await createGasparHumanVerificationApp().verifyPayload(String(altcha));
 
     if (!altchaResult.verified) {
       return createResponse(

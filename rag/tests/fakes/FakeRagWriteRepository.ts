@@ -1,4 +1,4 @@
-import type { RagWriteRepository } from '../../repositories/RagWriteRepository.js';
+import type { RagWriteRepository } from '../../application/ports/RagWriteRepository.js';
 
 export function createFakeRagWriteRepository(
   overrides: Partial<RagWriteRepository> = {}

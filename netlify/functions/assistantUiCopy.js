@@ -1,4 +1,4 @@
-import { createRagRuntime } from '../../rag/infrastructure/createRagRuntime.ts';
+import { createGasparApp } from '../../rag/apps/gaspar/createGasparApp.ts';
 import { createCorsHeaders, createOriginGuardResponse } from '../shared/apiOrigin.js';
 
 const ALLOWED_METHODS = 'GET, OPTIONS';
@@ -30,7 +30,7 @@ export default async function handler(request) {
   try {
     const url = new URL(request.url);
     const language = url.searchParams.get('language') || 'en';
-    return createResponse(request, 200, await createRagRuntime().getAssistantUiCopy(language));
+    return createResponse(request, 200, await createGasparApp().getAssistantUiCopy(language));
   } catch (error) {
     console.error(error);
     return createResponse(request, 503, {

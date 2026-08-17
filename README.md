@@ -17,7 +17,7 @@ Live at **[arg.software](https://arg.software)**
 | **3D** | Three.js (404 page, sphere backgrounds) |
 | **SEO** | Custom Vite prerender plugin + react-helmet-async |
 | **Analytics** | GA4, centralized modular tracking |
-| **Assistant/RAG** | Netlify Functions + Supabase pgvector + DeepSeek + Gemini embeddings |
+| **Assistant/RAG** | Netlify Functions + Supabase pgvector + provider adapters |
 | **Lint/Format** | ESLint 9 + Prettier |
 
 ---
@@ -44,7 +44,7 @@ npm run preview      # Preview production build
 │   └── functions/                # Assistant/contact API functions and scheduled jobs
 ├── supabase/
 │   └── migrations/               # RAG schema, vector search, and rate-limit tables
-├── rag/                          # Gaspar assistant RAG domain, runtime, adapters, ingestion, tests
+├── rag/                          # Gaspar assistant apps, domain, application, infrastructure, ingestion, tests
 ├── scripts/
 │   └── import-medium-articles.cjs # Medium blog post importer
 ├── public/                       # Static assets (fonts, images, redirects, LLM metadata)
@@ -105,11 +105,11 @@ npm run preview      # Preview production build
 | `npm run format` | Prettier format |
 | `npm run blog:import:medium` | Import published Medium articles into `src/blog/` |
 | `npm run blog:import:medium:drafts` | Import Medium drafts |
-| `npm run sync:blog` | Import Medium posts and re-index local RAG sources |
+| `npm run sync:blog` | Import Medium posts and re-index first-party RAG sources |
 | `npm run rag:ingest:local` | Index local website/blog/project/private sources into Supabase |
 | `npm run rag:ingest:external` | Index configured trusted external sources |
 | `npm run rag:embeddings:rebuild:fallback` | Rebuild fallback embedding vectors |
-| `npm run rag:ask:test` | Ask Gaspar from the CLI using the same runtime wiring |
+| `npm run rag:ask:test` | Ask Gaspar from the CLI using the same app wiring |
 | `npm run rag:test` | Run the RAG test and eval suite |
 | `npm run typecheck:rag` | Type-check the TypeScript RAG code |
 | `npm run supabase:link` | Link the local Supabase CLI project |
@@ -173,38 +173,39 @@ The `AppLink` component (SPA navigation) supports optional `trackEvent`/`trackDa
 
 ## Gaspar RAG Assistant
 
-Gaspar is the site assistant exposed through `src/components/widgets/AssistantWidget.jsx` and served by Netlify Functions. It uses Supabase as the source store/vector index, DeepSeek for answer generation and classification, and Gemini for primary/fallback embeddings.
+Gaspar is the site assistant exposed through `src/components/widgets/AssistantWidget.jsx` and served by Netlify Functions. It uses a mounted app under `rag/apps/gaspar/` to wire application use cases to concrete infrastructure adapters.
 
 ### Runtime Architecture
 
-The RAG code is organized by dependency direction rather than by vendor:
+The RAG code is organized by dependency direction rather than by provider:
 
 | Layer | Path | Responsibility |
 |---|---|---|
-| **Domain** | `rag/domain/` | Provider-agnostic types and policies: assistant actions/responses, language policy, conversation intent, retrieval plans/routes, content/source types, provider ports/errors |
-| **Runtime** | `rag/runtime/` | Use-case flow for asking questions, validating input, routing retrieval, creating citations/actions/recommendations, and serving assistant UI copy |
-| **Application** | `rag/application/` | Cross-runtime application helpers such as assistant UI copy normalization |
-| **Repositories** | `rag/repositories/` | Read/write repository ports used by runtime and ingestion |
-| **Infrastructure** | `rag/infrastructure/` | DeepSeek, Gemini, Supabase adapters, row mapping, vector helpers, and `createRagRuntime()` composition root |
-| **Ingestion** | `rag/ingestion/` | Source manifests, extractors, redaction, chunking, content hashing, and indexing pipeline |
-| **Security** | `rag/security/` | ALTCHA challenge verification and Supabase-backed rate limits |
-| **Prompts** | `rag/prompts/` | Provider-agnostic prompt builders for intent, retrieval planning, answering, fallback, and UI translation |
+| **Apps** | `rag/apps/` | Concrete app mounts that compose application use cases with infrastructure adapters |
+| **Domain** | `rag/domain/` | Provider-agnostic types and policies: assistant actions/responses, language policy, conversation intent, retrieval plans/routes, and content/source types |
+| **Application** | `rag/application/` | Use cases, ports, ingestion pipeline, retrieval orchestration, assistant UI copy, config value types, common helpers, and provider-agnostic prompts |
+| **Application Ports** | `rag/application/ports/` | Interfaces implemented by infrastructure: answer provider, embedding provider, RAG read/write repositories, provider errors, and embedding index types |
+| **Infrastructure** | `rag/infrastructure/` | Provider, repository, security, source-loading, extraction, and manifest adapters |
+| **Prompts** | `rag/application/prompts/` | Provider-agnostic prompt builders for intent, retrieval planning, answering, fallback, and UI translation |
+| **Ingestion Loaders** | `rag/infrastructure/ingestion/loaders/` | First-party and trusted-external source loaders that create `RagSource` objects |
+| **Ingestion Extractors** | `rag/infrastructure/ingestion/extractors/` | PDF, HTML, Markdown, and JSON text extraction helpers |
+| **Ingestion Manifests** | `rag/infrastructure/ingestion/manifests/` | First-party and trusted-external source definitions and manifest types |
 | **Tests** | `rag/tests/` | Unit tests, route/eval coverage, ingestion tests, security tests, and fakes |
 
-The domain layer does not import DeepSeek, Gemini, Supabase, or framework code. Provider-specific behavior is isolated under `rag/infrastructure/`, and `rag/infrastructure/createRagRuntime.ts` wires concrete adapters into the runtime use cases.
+The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `rag/infrastructure/`, and `rag/apps/gaspar/` wires those adapters into application use cases.
 
 ### Ask Flow
 
 1. `POST /api/assistant/ask` is handled by `netlify/functions/ask.js`.
-2. The function enforces origin checks, ALTCHA verification, and rate limits before calling `createRagRuntime().askQuestion()`.
-3. The runtime validates input, applies language preference policy, classifies intent, plans retrieval, resolves a retrieval route, retrieves context from Supabase/vector search, and generates the answer.
+2. The function enforces origin checks, ALTCHA verification, and rate limits before calling `createGasparApp().askQuestion()`.
+3. The application use case validates input, applies language preference policy, classifies intent, plans retrieval, resolves a retrieval route, retrieves context through repository ports, and generates the answer through provider ports.
 4. The response returns answer text, resolved language, optional language preference updates, citations, article recommendations, and assistant actions such as `book_meeting`, `gaspar_message`, `contact_form`, or `email_hr`.
 
 ### Source And Indexing Model
 
-Gaspar reads from Supabase, not directly from website files at request time. Local and external sources are ingested into `rag_sources`/`rag_chunks` tables with metadata, chunk hashes, primary embeddings, and fallback embeddings.
+Gaspar reads from the configured RAG repository, not directly from website files at request time. First-party and trusted-external sources are ingested into `rag_sources`/`rag_chunks` tables with metadata, chunk hashes, primary embeddings, and fallback embeddings.
 
-Local ingestion covers public site content, blog posts, project data, static pages, curated assistant profile content, and private source material under `rag/.rag_private/`. Private content is processed through redaction rules before indexing where appropriate.
+First-party ingestion covers public site content, blog posts, project data, static pages, curated assistant profile content, and private source material under `rag/.rag_private/`. Private content is processed through redaction rules before indexing where appropriate.
 
 Useful ingestion commands:
 
@@ -224,11 +225,11 @@ Required RAG environment variables:
 |---|---|
 | `DATABASE_URL` | Supabase project URL |
 | `DATABASE_SERVICE_ROLE_KEY` | Supabase service-role key used by server-side RAG jobs/functions |
-| `EMBEDDING_API_KEY` | Gemini embedding API key |
+| `EMBEDDING_API_KEY` | Embedding provider API key |
 | `EMBEDDING_MODEL` | Primary embedding model |
 | `FALLBACK_EMBEDDING_MODEL` | Fallback embedding model |
-| `AI_MODEL_API_KEY` | DeepSeek API key |
-| `AI_MODEL` | DeepSeek model name |
+| `AI_MODEL_API_KEY` | Answer provider API key |
+| `AI_MODEL` | Answer provider model name |
 | `ALTCHA_HMAC_KEY` | Server-side ALTCHA signing/verification key |
 
 Optional tuning variables include `RAG_SITE_URL`, `RAG_COMPANY_NAME`, `RAG_CHUNK_SIZE`, `RAG_CHUNK_OVERLAP`, `RAG_MATCH_COUNT`, `RAG_SIMILARITY_THRESHOLD`, `RAG_FALLBACK_SIMILARITY_THRESHOLD`, `EMBEDDING_REQUEST_DELAY_MS`, `ALTCHA_COST`, `ALTCHA_COUNTER_MIN`, `ALTCHA_COUNTER_MAX`, and `RAG_ASK_RATE_LIMIT_SALT`.

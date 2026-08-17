@@ -1,4 +1,4 @@
-import { createAltchaChallenge } from '../../rag/security/altcha.ts';
+import { createGasparHumanVerificationApp } from '../../rag/apps/gaspar/createGasparSecurityApp.ts';
 import { createCorsHeaders, createOriginGuardResponse } from '../shared/apiOrigin.js';
 
 const ALLOWED_METHODS = 'GET, OPTIONS';
@@ -28,7 +28,7 @@ export default async function handler(request) {
   }
 
   try {
-    const challenge = await createAltchaChallenge();
+    const challenge = await createGasparHumanVerificationApp().createChallenge();
 
     return createResponse(request, 200, challenge);
   } catch (error) {

@@ -1,6 +1,6 @@
-import { getDeepSeekConfig } from '../../../config/env.js';
-import type { AssistantUiCopyTranslator } from '../../../domain/providers/ProviderPorts.js';
-import { buildAssistantUiCopyTranslationPrompt } from '../../../prompts/assistantUiCopyTranslation.js';
+import { getDeepSeekConfig } from './deepSeekConfig.js';
+import type { AssistantUiCopyTranslator } from '../../../application/ports/ProviderPorts.js';
+import { buildAssistantUiCopyTranslationPrompt } from '../../../application/prompts/assistantUiCopyTranslation.js';
 import { parseTranslatedAssistantUiCopy } from '../../../application/assistantUiCopy/normalization.js';
 import { createDeepSeekChatCompletion } from './DeepSeekChatClient.js';
 

@@ -1,11 +1,14 @@
-import { getGeminiConfig, getGeminiFallbackEmbeddingConfig } from '../../../config/env.js';
-import type { RagConfig } from '../../../config/RagConfig.js';
-import type { EmbeddingProvider } from '../../../domain/providers/ProviderPorts.js';
+import {
+  getGeminiConfig,
+  getGeminiFallbackEmbeddingConfig,
+  type GeminiEmbeddingConfig,
+} from './geminiConfig.js';
+import type { EmbeddingProvider } from '../../../application/ports/ProviderPorts.js';
 import {
   EmbeddingQuotaExceededError,
   isEmbeddingQuotaExceededError,
-} from '../../../domain/providers/ProviderErrors.js';
-import { sleep } from '../../../shared/async.js';
+} from '../../../application/ports/ProviderErrors.js';
+import { sleep } from '../../../application/common/time.js';
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const MAX_RETRIES = 1;
@@ -14,19 +17,7 @@ const MAX_BATCH_SIZE = 100;
 
 export { EmbeddingQuotaExceededError, isEmbeddingQuotaExceededError };
 
-export interface GeminiEmbeddingConfig {
-  geminiApiKey: string;
-  model: string;
-  dimensions: number;
-  requestDelayMs: number;
-}
-
 type GeminiEmbeddingConfigSource = () => GeminiEmbeddingConfig;
-
-type PrimaryGeminiEmbeddingConfig = Pick<
-  RagConfig,
-  'geminiApiKey' | 'geminiEmbeddingModel' | 'geminiEmbeddingDimensions' | 'geminiEmbeddingRequestDelayMs'
->;
 
 interface GeminiEmbeddingResponse {
   embedding?: {
@@ -72,7 +63,7 @@ export class GeminiEmbeddingClient implements EmbeddingProvider {
 
   private async embedTextContent(text: string): Promise<number[]> {
     const config = this.getConfig();
-    const url = `${GEMINI_API_BASE}/models/${config.model}:embedContent?key=${config.geminiApiKey}`;
+    const url = `${GEMINI_API_BASE}/models/${config.model}:embedContent?key=${config.apiKey}`;
     const data = await fetchWithRetry<GeminiEmbeddingResponse>(
       url,
       {
@@ -95,7 +86,7 @@ export class GeminiEmbeddingClient implements EmbeddingProvider {
 
   private async embedBatch(texts: string[]): Promise<number[][]> {
     const config = this.getConfig();
-    const url = `${GEMINI_API_BASE}/models/${config.model}:batchEmbedContents?key=${config.geminiApiKey}`;
+    const url = `${GEMINI_API_BASE}/models/${config.model}:batchEmbedContents?key=${config.apiKey}`;
     const data = await fetchWithRetry<GeminiBatchEmbeddingResponse>(
       url,
       {
@@ -133,25 +124,11 @@ export const geminiEmbeddingClient = new GeminiEmbeddingClient();
 export const geminiFallbackEmbeddingClient = new GeminiEmbeddingClient(getFallbackEmbeddingConfig);
 
 function getPrimaryEmbeddingConfig(): GeminiEmbeddingConfig {
-  const config: PrimaryGeminiEmbeddingConfig = getGeminiConfig();
-
-  return {
-    geminiApiKey: config.geminiApiKey,
-    model: config.geminiEmbeddingModel,
-    dimensions: config.geminiEmbeddingDimensions,
-    requestDelayMs: config.geminiEmbeddingRequestDelayMs,
-  };
+  return getGeminiConfig();
 }
 
 function getFallbackEmbeddingConfig(): GeminiEmbeddingConfig {
-  const config = getGeminiFallbackEmbeddingConfig();
-
-  return {
-    geminiApiKey: config.geminiApiKey,
-    model: config.geminiFallbackEmbeddingModel,
-    dimensions: config.geminiFallbackEmbeddingDimensions,
-    requestDelayMs: config.geminiEmbeddingRequestDelayMs,
-  };
+  return getGeminiFallbackEmbeddingConfig();
 }
 
 async function fetchWithRetry<T extends GeminiEmbeddingResponse | GeminiBatchEmbeddingResponse>(

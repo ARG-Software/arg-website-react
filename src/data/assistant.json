@@ -34,7 +34,7 @@
     "leadCaptureMessagePrompt": "Want to add a message? You can also say \"skip\".",
     "leadCaptureSuccess": "Done. We'll reply within 48h. Thanks for reaching out!",
     "leadCaptureDeclined": "No problem. Feel free to ask me anything else.",
-    "leadCaptureCancelled": "No problem. Feel free to ask me anything else.",
+    "leadCaptureCancelled": "No problem. I cancelled that.",
     "multipleEmails": "I found multiple emails. Please enter just one email address.",
     "noEmailFound": "I couldn't find a valid email address. Please enter your email.",
     "emptyResponse": "Please enter a valid response.",

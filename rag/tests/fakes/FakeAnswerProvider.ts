@@ -1,4 +1,4 @@
-import type { AnswerProvider } from '../../domain/providers/ProviderPorts.js';
+import type { AnswerProvider } from '../../application/ports/ProviderPorts.js';
 import type {
   ConversationTransformTask,
 } from '../../domain/conversation/ConversationTransform.js';

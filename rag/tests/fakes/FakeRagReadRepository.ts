@@ -6,8 +6,8 @@ import type {
   MatchChunksInput,
   RagReadRepository,
   RagSourceRecord,
-} from '../../repositories/RagReadRepository.js';
-import { resolveUrl } from '../../utils/url.js';
+} from '../../application/ports/RagReadRepository.js';
+import { resolveUrl } from '../../application/common/url.js';
 import type { ChunkFixture } from '../fixtures/sources.js';
 
 const TEST_SITE_URL = 'https://arg.software';

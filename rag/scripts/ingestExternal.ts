@@ -1,12 +1,7 @@
-import { createSupabaseServiceClient } from '../infrastructure/db/supabase/SupabaseClientFactory.js';
-import { geminiEmbeddingClient, geminiFallbackEmbeddingClient } from '../infrastructure/embeddings/gemini/GeminiEmbeddingProvider.js';
 import { loadLocalEnv } from '../config/env.js';
-import type { IngestSourceResult } from '../ingestion/types.js';
-import { ingestSource } from '../ingestion/ingestPipeline.js';
-import type { ExternalSourceManifestEntry } from '../ingestion/manifest.js';
-import { loadExternalSource, loadExternalSourceEntries } from '../ingestion/sources/external.js';
-import { SupabaseRagWriteRepository } from '../infrastructure/db/supabase/SupabaseRagWriteRepository.js';
-import { sleep } from '../shared/async.js';
+import { createGasparIngestionApp } from '../apps/gaspar/createGasparIngestionApp.js';
+import type { IngestSourceResult } from '../application/ingestion/types.js';
+import { sleep } from '../application/common/time.js';
 import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
 
 loadLocalEnv();
@@ -20,26 +15,21 @@ if (!hasSourceFilters(selection)) {
   process.exit(1);
 }
 
-const allowlist = await loadExternalSourceEntries(process.cwd(), selection);
+const ingestionApp = createGasparIngestionApp();
+const allowlist = await ingestionApp.loadTrustedExternalSourceEntries(process.cwd(), selection);
 
 if (allowlist.length === 0) {
-  console.log('External ingestion allowlist is empty. Nothing to ingest.');
+  console.log('Trusted external ingestion allowlist is empty. Nothing to ingest.');
   process.exit(0);
 }
 
-const supabase = createSupabaseServiceClient();
-const repository = new SupabaseRagWriteRepository(supabase);
 const results: IngestSourceResult[] = [];
-const failures: Array<{ item: ExternalSourceManifestEntry; error: unknown }> = [];
+const failures: Array<{ item: { url: string }; error: unknown }> = [];
 
 for (const item of allowlist) {
   try {
-    const source = await loadExternalSource(item);
-    const result = await ingestSource({
-      source,
-      repository,
-      embeddingProvider: geminiEmbeddingClient,
-      fallbackEmbeddingProvider: geminiFallbackEmbeddingClient,
+    const source = await ingestionApp.loadTrustedExternalSource(item);
+    const result = await ingestionApp.ingestSource(source, {
       dryRun,
       force: selection.force,
       fallbackOnly: selection.fallbackOnly,
@@ -61,7 +51,7 @@ const skipped = results.filter(result => result.skipped);
 const unchanged = skipped.filter(result => result.reason === 'unchanged_content');
 const chunkCount = ingested.reduce((total, result) => total + result.chunkCount, 0);
 
-console.log('\nExternal ingestion summary');
+console.log('\nTrusted external ingestion summary');
 console.log(`urls loaded: ${allowlist.length}`);
 console.log(`sources ${dryRun ? 'ready' : 'ingested'}: ${ingested.length}`);
 console.log(`sources skipped: ${skipped.length}`);
