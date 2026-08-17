@@ -3,7 +3,6 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
 import type { EmbeddingIndex } from '../../../application/ports/EmbeddingIndex.js';
 import type { RagSourceOrigin } from '../../../domain/content/RagSource.js';
-import { toEmbeddingLiteral } from './vector.js';
 import { resolveUrl } from '../../../application/common/url.js';
 import type {
   FindChunksByTextInput,
@@ -206,4 +205,8 @@ function toSourceRecord(row: DirectSourceRow): RagSourceRecord {
 
 function normalizeTextSearchTerm(term: string): string {
   return term.replace(/[%_,]/gu, ' ').replace(/\s+/gu, ' ').trim();
+}
+
+function toEmbeddingLiteral(values: number[]): string {
+  return `[${values.join(',')}]`;
 }
