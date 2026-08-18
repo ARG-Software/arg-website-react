@@ -2,7 +2,7 @@ import { config as loadDotenv } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import XLSX from 'xlsx';
 
-import { encryptOutreachPayload } from '../netlify/implementations/admin/outreachCrypto.js';
+import { encryptOutreachPayload } from '../backend/admin/infrastructure/crypto/outreachPayloadCipher.js';
 
 loadDotenv({ path: '.env', quiet: true });
 

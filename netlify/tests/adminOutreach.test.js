@@ -7,7 +7,7 @@ import {
   createHttpError,
   getHttpErrorBody,
   getHttpErrorStatus,
-} from '../implementations/admin/outreach.js';
+} from '../../backend/admin/api/adminOutreachApi.js';
 
 test('creates admin responses with admin allowed methods', async () => {
   const request = new Request('https://arg.software/api/admin/outreach', {

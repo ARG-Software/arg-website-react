@@ -4,9 +4,20 @@ const ALGORITHM = 'aes-256-gcm';
 const KEY_BYTES = 32;
 const NONCE_BYTES = 12;
 
-export function encryptOutreachPayload(payload) {
-  const keyVersion = getActiveOutreachKeyVersion();
-  const key = getOutreachKey(keyVersion);
+export function createOutreachPayloadCipher(env = process.env) {
+  return {
+    encrypt(payload) {
+      return encryptOutreachPayload(payload, env);
+    },
+    decrypt(row) {
+      return decryptOutreachPayload(row, env);
+    },
+  };
+}
+
+export function encryptOutreachPayload(payload, env = process.env) {
+  const keyVersion = getActiveOutreachKeyVersion(env);
+  const key = getOutreachKey(keyVersion, env);
   const nonce = crypto.randomBytes(NONCE_BYTES);
   const cipher = crypto.createCipheriv(ALGORITHM, key, nonce);
   const plaintext = Buffer.from(JSON.stringify(payload), 'utf8');
@@ -20,8 +31,8 @@ export function encryptOutreachPayload(payload) {
   };
 }
 
-export function decryptOutreachPayload(row) {
-  const key = getOutreachKey(row.payload_key_version);
+export function decryptOutreachPayload(row, env = process.env) {
+  const key = getOutreachKey(row.payload_key_version, env);
   const decipher = crypto.createDecipheriv(
     ALGORITHM,
     key,
@@ -37,8 +48,8 @@ export function decryptOutreachPayload(row) {
   return JSON.parse(plaintext.toString('utf8'));
 }
 
-export function getActiveOutreachKeyVersion() {
-  const version = Number(process.env.OUTREACH_ENCRYPTION_KEY_ACTIVE_VERSION || '1');
+export function getActiveOutreachKeyVersion(env = process.env) {
+  const version = Number(env.OUTREACH_ENCRYPTION_KEY_ACTIVE_VERSION || '1');
 
   if (!Number.isInteger(version) || version < 1) {
     throw new Error('OUTREACH_ENCRYPTION_KEY_ACTIVE_VERSION must be a positive integer');
@@ -47,9 +58,8 @@ export function getActiveOutreachKeyVersion() {
   return version;
 }
 
-function getOutreachKey(version) {
-  const value =
-    process.env[`OUTREACH_ENCRYPTION_KEY_V${version}`] || process.env.OUTREACH_ENCRYPTION_KEY;
+function getOutreachKey(version, env) {
+  const value = env[`OUTREACH_ENCRYPTION_KEY_V${version}`] || env.OUTREACH_ENCRYPTION_KEY;
 
   if (!value) {
     throw new Error(`Missing outreach encryption key for version ${version}`);

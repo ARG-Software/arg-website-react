@@ -5,7 +5,7 @@ import {
   decryptOutreachPayload,
   encryptOutreachPayload,
   getActiveOutreachKeyVersion,
-} from '../implementations/admin/outreachCrypto.js';
+} from '../../backend/admin/infrastructure/crypto/outreachPayloadCipher.js';
 
 const TEST_KEY = Buffer.alloc(32, 7).toString('base64');
 
