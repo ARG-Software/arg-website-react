@@ -3,8 +3,8 @@
    ============================================ */
 
 /**
- * Fire a GA4 event.  Safe to call even when gtag hasn't loaded yet or
- * consent hasn't been granted — gtag silently queues the hit.
+ * Fire a GA4 event. Safe to call even when gtag hasn't loaded yet;
+ * gtag queues the hit once the bootstrap script exists.
  */
 export function trackEvent(eventName, params = {}) {
   if (typeof window.gtag === 'function') {

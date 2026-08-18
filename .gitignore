@@ -154,3 +154,6 @@ public/files/cvs
 public/files/sites
 .rag-private/
 rag/.rag_private/
+
+.opencode
+.storybook
