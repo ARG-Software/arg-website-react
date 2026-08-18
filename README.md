@@ -44,7 +44,9 @@ npm run preview      # Preview production build
 │   └── functions/                # Assistant/contact API functions and scheduled jobs
 ├── supabase/
 │   └── migrations/               # RAG schema, vector search, and rate-limit tables
-├── rag/                          # Gaspar assistant apps, domain, application, infrastructure, ingestion, tests
+├── backend/
+│   ├── admin/                    # Admin API, domain, application, and infrastructure
+│   └── rag/                      # Gaspar assistant apps, domain, application, infrastructure, ingestion, tests
 ├── scripts/
 │   └── import-medium-articles.cjs # Medium blog post importer
 ├── public/                       # Static assets (fonts, images, redirects, LLM metadata)
@@ -111,7 +113,8 @@ npm run preview      # Preview production build
 | `npm run rag:embeddings:rebuild:fallback` | Rebuild fallback embedding vectors |
 | `npm run rag:ask:test` | Ask Gaspar from the CLI using the same app wiring |
 | `npm run rag:test` | Run the RAG test and eval suite |
-| `npm run test:netlify` | Run Netlify implementation and endpoint wiring tests |
+| `npm run test:backend` | Run backend JS API and Netlify adapter wiring tests |
+| `npm run test:netlify` | Compatibility alias for `npm run test:backend` |
 | `npm run typecheck:rag` | Type-check the TypeScript RAG code |
 | `npm run supabase:link` | Link the local Supabase CLI project |
 | `npm run supabase:push` | Push Supabase migrations |
@@ -175,7 +178,7 @@ The `AppLink` component (SPA navigation) supports optional `trackEvent`/`trackDa
 
 ## Gaspar RAG Assistant
 
-Gaspar is the site assistant exposed through `src/components/widgets/AssistantWidget.jsx` and served by Netlify Functions. It uses a mounted app under `rag/apps/gaspar/` to wire application use cases to concrete infrastructure adapters.
+Gaspar is the site assistant exposed through `src/components/widgets/AssistantWidget.jsx` and served by Netlify Functions. It uses a mounted app under `backend/rag/apps/gaspar/` to wire application use cases to concrete infrastructure adapters.
 
 ### Runtime Architecture
 
@@ -183,18 +186,18 @@ The RAG code is organized by dependency direction rather than by provider:
 
 | Layer | Path | Responsibility |
 |---|---|---|
-| **Apps** | `rag/apps/` | Concrete app mounts that compose application use cases with infrastructure adapters |
-| **Domain** | `rag/domain/` | Provider-agnostic types and policies: assistant actions/responses, language policy, conversation intent, retrieval plans/routes, and content/source types |
-| **Application** | `rag/application/` | Use cases, ports, ingestion pipeline, retrieval orchestration, assistant UI copy, config value types, common helpers, and provider-agnostic prompts |
-| **Application Ports** | `rag/application/ports/` | Interfaces implemented by infrastructure: answer provider, embedding provider, RAG read/write repositories, provider errors, and embedding index types |
-| **Infrastructure** | `rag/infrastructure/` | Provider, repository, security, source-loading, extraction, and manifest adapters |
-| **Prompts** | `rag/application/prompts/` | Provider-agnostic prompt builders for intent, retrieval planning, answering, fallback, and UI translation |
-| **Ingestion Loaders** | `rag/infrastructure/ingestion/loaders/` | First-party and trusted-external source loaders that create `RagSource` objects |
-| **Ingestion Extractors** | `rag/infrastructure/ingestion/extractors/` | PDF, HTML, Markdown, and JSON text extraction helpers |
-| **Ingestion Manifests** | `rag/infrastructure/ingestion/manifests/` | First-party and trusted-external source definitions and manifest types |
-| **Tests** | `rag/tests/` | Unit tests, route/eval coverage, ingestion tests, security tests, and fakes |
+| **Apps** | `backend/rag/apps/` | Concrete app mounts that compose application use cases with infrastructure adapters |
+| **Domain** | `backend/rag/domain/` | Provider-agnostic types and policies: assistant actions/responses, language policy, conversation intent, retrieval plans/routes, and content/source types |
+| **Application** | `backend/rag/application/` | Use cases, ports, ingestion pipeline, retrieval orchestration, assistant UI copy, config value types, common helpers, and provider-agnostic prompts |
+| **Application Ports** | `backend/rag/application/ports/` | Interfaces implemented by infrastructure: answer provider, embedding provider, RAG read/write repositories, provider errors, and embedding index types |
+| **Infrastructure** | `backend/rag/infrastructure/` | Provider, repository, security, source-loading, extraction, and manifest adapters |
+| **Prompts** | `backend/rag/application/prompts/` | Provider-agnostic prompt builders for intent, retrieval planning, answering, fallback, and UI translation |
+| **Ingestion Loaders** | `backend/rag/infrastructure/ingestion/loaders/` | First-party and trusted-external source loaders that create `RagSource` objects |
+| **Ingestion Extractors** | `backend/rag/infrastructure/ingestion/extractors/` | PDF, HTML, Markdown, and JSON text extraction helpers |
+| **Ingestion Manifests** | `backend/rag/infrastructure/ingestion/manifests/` | First-party and trusted-external source definitions and manifest types |
+| **Tests** | `backend/rag/tests/` | Unit tests, route/eval coverage, ingestion tests, security tests, and fakes |
 
-The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `rag/infrastructure/`, and `rag/apps/gaspar/` wires those adapters into application use cases.
+The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `backend/rag/infrastructure/`, and `backend/rag/apps/gaspar/` wires those adapters into application use cases.
 
 ### Ask Flow
 
@@ -207,7 +210,7 @@ The domain and application layers do not import concrete provider or repository 
 
 Gaspar reads from the configured RAG repository, not directly from website files at request time. First-party and trusted-external sources are ingested into `rag_sources`/`rag_chunks` tables with metadata, chunk hashes, primary embeddings, and fallback embeddings.
 
-First-party ingestion covers public site content, blog posts, project data, static pages, curated assistant profile content, and private source material under `rag/.rag_private/`. Private content is processed through redaction rules before indexing where appropriate.
+First-party ingestion covers public site content, blog posts, project data, static pages, curated assistant profile content, and private source material under `backend/rag/.rag_private/`. Private content is processed through redaction rules before indexing where appropriate.
 
 Useful ingestion commands:
 

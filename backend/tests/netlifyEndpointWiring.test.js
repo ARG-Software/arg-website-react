@@ -1,0 +1,66 @@
+import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+const ROOT_DIR = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
+const BACKEND_DIR = join(ROOT_DIR, 'backend');
+const NETLIFY_DIR = join(ROOT_DIR, 'netlify');
+
+test('uses security function names and removes old contact function files', () => {
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/security-challenge.js')), true);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/security-verify.js')), true);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/contact-challenge.js')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/contact-verify.js')), false);
+});
+
+test('backend security API exposes the security routes', () => {
+  assert.match(
+    readBackendFile('rag/api/securityChallengeApi.js'),
+    /path:\s*'\/api\/security\/challenge'/
+  );
+  assert.match(
+    readBackendFile('rag/api/securityVerifyApi.js'),
+    /path:\s*'\/api\/security\/verify'/
+  );
+});
+
+test('function files instantiate backend API modules', () => {
+  assert.match(readNetlifyFile('functions/security-challenge.js'), /createSecurityChallengeApi/);
+  assert.match(readNetlifyFile('functions/security-verify.js'), /createSecurityVerifyApi/);
+  assert.match(readNetlifyFile('functions/admin-outreach.js'), /createAdminOutreachApi/);
+  assert.match(readNetlifyFile('functions/assistant-ask.js'), /createAssistantAskApi/);
+});
+
+test('netlify implementation and test folders are removed', () => {
+  assert.equal(existsSync(join(NETLIFY_DIR, 'implementations')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'tests')), false);
+});
+
+test('netlify functions do not reference removed implementation folders or old contact routes', () => {
+  const files = [
+    'functions/admin-outreach.js',
+    'functions/assistant-ask.js',
+    'functions/assistant-challenge.js',
+    'functions/assistant-ui-copy.js',
+    'functions/mcp.js',
+    'functions/maintenance-keep-database-alive.js',
+    'functions/security-challenge.js',
+    'functions/security-verify.js',
+  ];
+
+  for (const file of files) {
+    const content = readNetlifyFile(file);
+    assert.doesNotMatch(content, /\.\.\/implementations|netlify\/implementations/);
+    assert.doesNotMatch(content, /\/api\/contact\//);
+  }
+});
+
+function readBackendFile(path) {
+  return readFileSync(join(BACKEND_DIR, path), 'utf8');
+}
+
+function readNetlifyFile(path) {
+  return readFileSync(join(NETLIFY_DIR, path), 'utf8');
+}

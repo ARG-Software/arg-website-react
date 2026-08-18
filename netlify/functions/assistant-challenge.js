@@ -1,4 +1,8 @@
-export {
+import {
   config,
-  handleAssistantChallenge as default,
-} from '../implementations/security/assistantChallenge.js';
+  createAssistantChallengeApi,
+} from '../../backend/rag/api/assistantChallengeApi.js';
+
+export { config };
+
+export default createAssistantChallengeApi({ env: process.env });

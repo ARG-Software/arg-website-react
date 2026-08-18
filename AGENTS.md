@@ -35,6 +35,9 @@ and comprehensive Google Analytics 4 instrumentation.
 ├── scripts/
 │   └── import-medium-articles.cjs  # Medium blog post importer
 ├── package.json            # Dependencies & scripts
+├── backend/                # Portable backend apps outside Netlify adapters
+│   ├── admin/              # Admin API, domain, application, and infrastructure
+│   └── rag/                # Gaspar apps, domain, application, infrastructure, ingestion, tests
 ├── public/                 # Static assets served as-is
 │   ├── _redirects          # Netlify redirects (GA4 proxy, LLM aliases, trailing-slash, legacy)
 │   ├── _headers            # Netlify headers

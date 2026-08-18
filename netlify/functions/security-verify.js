@@ -1,4 +1,5 @@
-export {
-  config,
-  handleSecurityVerify as default,
-} from '../implementations/security/securityVerify.js';
+import { config, createSecurityVerifyApi } from '../../backend/rag/api/securityVerifyApi.js';
+
+export { config };
+
+export default createSecurityVerifyApi({ env: process.env });

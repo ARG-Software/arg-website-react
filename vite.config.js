@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => {
           if (requestPath === '/api/assistant/challenge' && req.method === 'GET') {
             try {
               const { createGasparHumanVerificationApp } = await import(
-                './rag/apps/gaspar/createGasparSecurityApp.ts'
+                './backend/rag/apps/gaspar/createGasparSecurityApp.ts'
               );
               const challenge = await createGasparHumanVerificationApp().createChallenge();
               res.setHeader('Content-Type', 'application/json');
@@ -97,7 +97,7 @@ export default defineConfig(({ mode }) => {
             try {
               const requestUrl = new URL(req.url || '', 'http://localhost');
               const language = requestUrl.searchParams.get('language') || 'en';
-              const { createGasparApp } = await import('./rag/apps/gaspar/createGasparApp.ts');
+              const { createGasparApp } = await import('./backend/rag/apps/gaspar/createGasparApp.ts');
               const result = await createGasparApp().getAssistantUiCopy(language);
 
               res.setHeader('Content-Type', 'application/json');
@@ -123,7 +123,7 @@ export default defineConfig(({ mode }) => {
           if (requestPath === '/api/security/challenge' && req.method === 'GET') {
             try {
               const { createGasparHumanVerificationApp } = await import(
-                './rag/apps/gaspar/createGasparSecurityApp.ts'
+                './backend/rag/apps/gaspar/createGasparSecurityApp.ts'
               );
               const challenge = await createGasparHumanVerificationApp().createChallenge();
               res.setHeader('Content-Type', 'application/json');
@@ -167,7 +167,7 @@ export default defineConfig(({ mode }) => {
               }
 
               const { createGasparHumanVerificationApp } = await import(
-                './rag/apps/gaspar/createGasparSecurityApp.ts'
+                './backend/rag/apps/gaspar/createGasparSecurityApp.ts'
               );
               const altchaResult = await createGasparHumanVerificationApp().verifyPayload(String(altcha));
 
@@ -219,7 +219,7 @@ export default defineConfig(({ mode }) => {
 
             try {
               const { createGasparHumanVerificationApp } = await import(
-                './rag/apps/gaspar/createGasparSecurityApp.ts'
+                './backend/rag/apps/gaspar/createGasparSecurityApp.ts'
               );
               const altchaResult = await createGasparHumanVerificationApp().verifyChallenge({
                 challenge: payload.altcha.challenge,
@@ -272,7 +272,7 @@ export default defineConfig(({ mode }) => {
               entry.count += 1;
             }
 
-            const { createGasparApp } = await import('./rag/apps/gaspar/createGasparApp.ts');
+            const { createGasparApp } = await import('./backend/rag/apps/gaspar/createGasparApp.ts');
             const result = await createGasparApp().askQuestion({
               question: payload.question,
               messages: payload.messages,

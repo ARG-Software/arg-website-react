@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["rag/**/*.ts"]
+  "include": ["backend/rag/**/*.ts"]
 }

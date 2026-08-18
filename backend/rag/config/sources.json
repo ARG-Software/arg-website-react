@@ -1,0 +1,71 @@
+{
+  "homepageSectionScopes": {
+    "hero": { "sourceKey": "home:hero", "dataKey": "hero", "title": "Homepage Hero" },
+    "partners": { "sourceKey": "home:partners", "dataKey": "partners", "title": "Homepage Partners" },
+    "overview": { "sourceKey": "home:overview", "dataKey": "overview", "title": "Homepage Overview" },
+    "services": { "sourceKey": "home:services", "dataKey": "services", "title": "ARG Services" },
+    "cases": { "sourceKey": "home:projects", "dataKey": "projects", "title": "Homepage Projects" },
+    "testimonials": { "sourceKey": "home:testimonials", "dataKey": "testimonials", "title": "Client Testimonials" },
+    "working-with-us": { "sourceKey": "home:work", "dataKey": "workStats", "title": "Working With ARG" },
+    "team": { "sourceKey": "home:team", "dataKey": "team", "title": "ARG Team" },
+    "blog-promo": { "sourceKey": "home:blog", "dataKey": "blogPromo", "title": "Homepage Blog" },
+    "social": { "sourceKey": "home:social", "dataKey": "social", "title": "Homepage Social" },
+    "faq": { "sourceKey": "home:faq", "dataKey": "faq", "title": "Homepage FAQ" },
+    "contact": { "sourceKey": "home:contact", "dataKey": "contact", "title": "Homepage Contact" }
+  },
+  "staticPageSourceKeys": {
+    "/about-us": ["about", "arg-team", "jose-antunes", "rui-rocha"],
+    "/careers": ["careers-page", "jobs"],
+    "/contact": ["site-links"],
+    "/partners": ["partners-page"],
+    "/working-with-us": ["working-with-us"]
+  },
+  "projects": [
+    { "slug": "dokutar", "name": "Dokutar" },
+    { "slug": "mojaloop", "name": "Mojaloop" },
+    { "slug": "peoples-clearinghouse", "name": "People's Clearinghouse" },
+    { "slug": "royalty-flush", "name": "Royalty Flush" },
+    { "slug": "sky-tracks", "name": "Sky Tracks", "aliases": ["Skytracks"] },
+    { "slug": "tv-cine", "name": "TV Cine" },
+    { "slug": "vector", "name": "Vector" }
+  ],
+  "firstPartySources": [
+    { "kind": "json", "filePath": "src/data/homePage.json", "sourceType": "homepage", "sourceKey": "homepage", "title": "Homepage", "url": "/", "label": "homepage" },
+    { "kind": "json", "filePath": "src/data/about.json", "sourceType": "about", "sourceKey": "about", "title": "About ARG Software", "url": "/about-us/", "label": "about" },
+    { "kind": "json", "filePath": "src/data/partnersPage.json", "sourceType": "partner", "sourceKey": "partners-page", "title": "Partners Page", "url": "/partners/", "label": "partners page" },
+    { "kind": "json", "filePath": "src/data/jobs.json", "sourceType": "careers", "sourceKey": "jobs", "title": "Jobs and Hiring Traits", "url": "/careers/", "label": "jobs" },
+    { "kind": "json", "filePath": "src/data/careersPage.json", "sourceType": "careers", "sourceKey": "careers-page", "title": "Careers Page", "url": "/careers/", "label": "careers page" },
+    { "kind": "json", "filePath": "src/data/workingWithUs.json", "sourceType": "working_with_us", "sourceKey": "working-with-us", "title": "Working With Us", "url": "/working-with-us/", "label": "working with us" },
+    { "kind": "json", "filePath": "src/data/faq.json", "sourceType": "faq", "sourceKey": "faq", "title": "Frequently Asked Questions", "url": "/#faq", "label": "faq" },
+    { "kind": "json", "filePath": "src/data/siteLinks.json", "sourceType": "homepage", "sourceKey": "site-links", "title": "ARG Links and Contact Options", "url": "/contact/", "label": "ARG links and contact options" },
+    { "kind": "json", "filePath": "src/data/assistant.json", "sourceType": "homepage", "sourceKey": "assistant-profile", "title": "Gaspar", "url": "/", "label": "Gaspar assistant profile" },
+    { "kind": "assistant_policy", "sourceType": "working_with_us", "sourceKey": "assistant-policy", "title": "Assistant Response Policy", "label": "assistant response policy", "virtualPath": "backend/rag/config/sources.json#assistant-policy" },
+    { "kind": "projects_json", "filePath": "src/data/projects.json" },
+    { "kind": "partners_json", "filePath": "src/data/partners.json" },
+    { "kind": "markdown_dir", "filePath": "src/blog" },
+    { "kind": "local_document", "format": "pdf", "filePath": "public/files/portfolio.pdf", "sourceKey": "portfolio-pdf", "title": "ARG Software Portfolio", "citationUrl": "/files/portfolio.pdf", "documentKind": "portfolio" },
+    { "kind": "local_document", "format": "pdf", "filePath": "backend/rag/.rag_private/cvs/Jose_Francisco_Antunes_ATS_CV_2026.pdf", "sourceKey": "jose-antunes-cv", "title": "José Antunes", "citationUrl": "/about-us/", "documentKind": "cv", "personKey": "jose", "redaction": { "profile": "cv", "manualReview": true } },
+    { "kind": "local_document", "format": "pdf", "filePath": "backend/rag/.rag_private/cvs/Rui_Rocha_ATS_CV_2026.pdf", "sourceKey": "rui-rocha-cv", "title": "Rui Rocha", "citationUrl": "/about-us/", "documentKind": "cv", "personKey": "rui", "redaction": { "profile": "cv", "manualReview": true } }
+  ],
+  "trustedExternalSources": [
+    {
+      "sourceKey": "designrush",
+      "url": "https://www.designrush.com/agency/profile/arg-software",
+      "title": "Approved Commercial Data",
+      "snapshotPath": "backend/rag/.rag_private/sites/design_rush/ARG Software Reviews _ View Portfolios _ DesignRush.html",
+      "trusted": true,
+      "extractor": "designRushCommercialFacts",
+      "extraction": {
+        "projects": [
+          { "projectName": "Sky Tracks", "sourceName": "Skytracks" },
+          { "projectName": "Mojaloop", "sourceName": "Mojaloop" },
+          { "projectName": "Vector", "sourceName": "Vector" },
+          { "projectName": "Dokutar", "sourceName": "Dokutar" },
+          { "projectName": "TV Cine", "sourceName": "TV Cine" },
+          { "projectName": "Royalty Flush", "sourceName": "Royalty Flush" },
+          { "projectName": "People's Clearinghouse", "sourceName": "People's Clearinghouse" }
+        ]
+      }
+    }
+  ]
+}

@@ -1,4 +1,5 @@
-export {
-  config,
-  handleSecurityChallenge as default,
-} from '../implementations/security/securityChallenge.js';
+import { config, createSecurityChallengeApi } from '../../backend/rag/api/securityChallengeApi.js';
+
+export { config };
+
+export default createSecurityChallengeApi({ env: process.env });

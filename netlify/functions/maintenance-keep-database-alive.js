@@ -1,4 +1,8 @@
-export {
+import {
   config,
-  handleKeepDatabaseAlive as default,
-} from '../implementations/maintenance/keepDatabaseAlive.js';
+  createKeepDatabaseAliveApi,
+} from '../../backend/rag/api/keepDatabaseAliveApi.js';
+
+export { config };
+
+export default createKeepDatabaseAliveApi({ env: process.env });

@@ -1,4 +1,5 @@
-export {
-  config,
-  handlePublicDiscoveryMcp as default,
-} from '../implementations/mcp/publicDiscoveryMcp.js';
+import { config, createPublicDiscoveryMcpApi } from '../../backend/public/api/publicDiscoveryMcpApi.js';
+
+export { config };
+
+export default createPublicDiscoveryMcpApi();
