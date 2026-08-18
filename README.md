@@ -111,6 +111,7 @@ npm run preview      # Preview production build
 | `npm run rag:embeddings:rebuild:fallback` | Rebuild fallback embedding vectors |
 | `npm run rag:ask:test` | Ask Gaspar from the CLI using the same app wiring |
 | `npm run rag:test` | Run the RAG test and eval suite |
+| `npm run test:netlify` | Run Netlify implementation and endpoint wiring tests |
 | `npm run typecheck:rag` | Type-check the TypeScript RAG code |
 | `npm run supabase:link` | Link the local Supabase CLI project |
 | `npm run supabase:push` | Push Supabase migrations |
@@ -131,6 +132,7 @@ Vite config defines these import aliases (see `vite.config.js`):
 | `@services` | `src/services` |
 | `@data` | `src/data` |
 | `@styles` | `src/styles` |
+| `@ui` | `packages/ui/src` |
 
 ---
 
@@ -256,11 +258,11 @@ The `dist/` directory is deployed to Netlify. Netlify redirects in `public/_redi
 - **Legacy redirects**: `/team` → `/partners/`, `/articles/:slug` → `/blog/:slug/`
 - **SPA fallback**: all unmatched routes serve `404.html`
 
-Netlify Functions also serve assistant/contact endpoints and scheduled maintenance:
+Netlify Functions also serve assistant/security endpoints and scheduled maintenance:
 - `GET /api/assistant/challenge`: ALTCHA challenge for Gaspar requests
 - `POST /api/assistant/ask`: Gaspar RAG endpoint with ALTCHA and rate limiting
 - `GET /api/assistant/ui-copy`: localized assistant widget copy
-- `GET /api/contact/challenge` and `POST /api/contact/verify`: ALTCHA flow for contact submissions
+- `GET /api/security/challenge` and `POST /api/security/verify`: ALTCHA flow for protected form submissions
 - Scheduled `maintenance-keep-database-alive`: periodically touches Supabase so the RAG database remains warm
 
 ---

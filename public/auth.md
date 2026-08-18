@@ -15,7 +15,7 @@ Agents may use the public discovery resources below without registration:
 
 ## Protected Actions
 
-The public website assistant and contact verification endpoints use ALTCHA verification, origin checks, and rate limits. They are intended for the website UI and are not an OAuth-protected API product.
+The public website assistant and security verification endpoints use ALTCHA verification, origin checks, and rate limits. They are intended for the website UI and are not an OAuth-protected API product.
 
 ARG does not currently provide programmatic credentials, client registration, or delegated authorization for agents.
 

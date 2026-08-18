@@ -3,7 +3,7 @@
   "info": {
     "title": "ARG Software Public Website API",
     "version": "1.0.0",
-    "description": "Public API-like endpoints used by the ARG Software website assistant, contact verification flow, and read-only agent discovery."
+    "description": "Public API-like endpoints used by the ARG Software website assistant, human verification flow, and read-only agent discovery."
   },
   "servers": [
     {
@@ -96,12 +96,12 @@
         }
       }
     },
-    "/api/contact/challenge": {
+    "/api/security/challenge": {
       "get": {
-        "summary": "Create a contact-form ALTCHA challenge",
+        "summary": "Create a security ALTCHA challenge",
         "responses": {
           "200": {
-            "description": "Contact challenge created"
+            "description": "Security challenge created"
           },
           "503": {
             "$ref": "#/components/responses/ServiceUnavailable"
@@ -109,9 +109,9 @@
         }
       }
     },
-    "/api/contact/verify": {
+    "/api/security/verify": {
       "post": {
-        "summary": "Verify a contact-form ALTCHA payload",
+        "summary": "Verify a security ALTCHA payload",
         "requestBody": {
           "required": true,
           "content": {

@@ -1,10 +1,11 @@
-import { createGasparHumanVerificationApp } from '../../rag/apps/gaspar/createGasparSecurityApp.ts';
-import { createCorsHeaders, createOriginGuardResponse } from '../shared/apiOrigin.js';
+import { createGasparHumanVerificationApp } from '../../../rag/apps/gaspar/createGasparSecurityApp.ts';
+import { createOriginGuardResponse } from '../common/apiOrigin.js';
+import { createJsonResponse } from '../common/httpJson.js';
 
 const ALLOWED_METHODS = 'GET, OPTIONS';
 
 export const config = {
-  path: '/api/contact/challenge',
+  path: '/api/security/challenge',
   method: ['GET', 'OPTIONS'],
   rateLimit: {
     windowLimit: 30,
@@ -13,7 +14,7 @@ export const config = {
   },
 };
 
-export default async function handler(request) {
+export async function handleSecurityChallenge(request) {
   const originGuardResponse = createOriginGuardResponse(request, ALLOWED_METHODS);
   if (originGuardResponse) return originGuardResponse;
 
@@ -43,7 +44,7 @@ export default async function handler(request) {
       error: {
         code: isConfigurationError ? 'configuration_error' : 'challenge_failed',
         message: isConfigurationError
-          ? 'Contact verification is temporarily unavailable'
+          ? 'Security verification is temporarily unavailable'
           : 'Unable to create verification challenge',
       },
     });
@@ -51,14 +52,5 @@ export default async function handler(request) {
 }
 
 function createResponse(request, statusCode, body) {
-  const responseBody =
-    statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);
-
-  return new Response(responseBody, {
-    status: statusCode,
-    headers: {
-      ...createCorsHeaders(request, ALLOWED_METHODS),
-      'Content-Type': 'application/json',
-    },
-  });
+  return createJsonResponse(request, ALLOWED_METHODS, statusCode, body);
 }

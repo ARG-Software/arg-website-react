@@ -5,7 +5,7 @@ import {
   createCorsHeaders,
   createOriginGuardResponse,
   isAllowedOrigin,
-} from '../shared/apiOrigin.js';
+} from '../implementations/common/apiOrigin.js';
 
 test('allows configured production origins', () => {
   assert.equal(isAllowedOrigin('https://arg.software'), true);

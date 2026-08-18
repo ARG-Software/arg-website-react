@@ -2,7 +2,8 @@ import crypto from 'node:crypto';
 
 import { createClient } from '@supabase/supabase-js';
 
-import { createCorsHeaders, createOriginGuardResponse } from './apiOrigin.js';
+import { createOriginGuardResponse } from '../common/apiOrigin.js';
+import { createErrorBody, createJsonResponse } from '../common/httpJson.js';
 import { decryptOutreachPayload, encryptOutreachPayload } from './outreachCrypto.js';
 
 export const ADMIN_ALLOWED_METHODS = 'GET, POST, OPTIONS';
@@ -35,7 +36,50 @@ const STATUS_VALUES = new Set([
   'not_relevant',
 ]);
 
+export const config = {
+  path: '/api/admin/outreach',
+  method: ['GET', 'POST', 'OPTIONS'],
+};
+
 let supabase;
+
+export async function handleAdminOutreach(request) {
+  try {
+    const guard = await guardAdminRequest(request);
+    if (guard.response) return guard.response;
+
+    if (request.method === 'GET') {
+      const records = await listOutreachRecords(guard.client);
+      return createAdminResponse(request, 200, { records });
+    }
+
+    if (request.method === 'POST') {
+      const payload = await request.json();
+      const record = await updateOutreachRecord(
+        guard.client,
+        payload.id,
+        payload.changes,
+        guard.user.email
+      );
+
+      return createAdminResponse(request, 200, { record });
+    }
+
+    return createAdminResponse(
+      request,
+      405,
+      createErrorBody('method_not_allowed', 'Method not allowed')
+    );
+  } catch (error) {
+    const statusCode = getHttpErrorStatus(error);
+
+    if (statusCode === 500) {
+      console.error(error);
+    }
+
+    return createAdminResponse(request, statusCode, getHttpErrorBody(error));
+  }
+}
 
 export async function guardAdminRequest(request) {
   const originGuardResponse = createOriginGuardResponse(request, ADMIN_ALLOWED_METHODS);
@@ -48,7 +92,11 @@ export async function guardAdminRequest(request) {
   const token = getBearerToken(request);
   if (!token) {
     return {
-      response: createAdminResponse(request, 401, createErrorBody('unauthenticated', 'Login required')),
+      response: createAdminResponse(
+        request,
+        401,
+        createErrorBody('unauthenticated', 'Login required')
+      ),
     };
   }
 
@@ -57,13 +105,21 @@ export async function guardAdminRequest(request) {
 
   if (error || !data.user?.email) {
     return {
-      response: createAdminResponse(request, 401, createErrorBody('unauthenticated', 'Login expired')),
+      response: createAdminResponse(
+        request,
+        401,
+        createErrorBody('unauthenticated', 'Login expired')
+      ),
     };
   }
 
   if (!getAllowedAdminEmails().has(data.user.email.toLowerCase())) {
     return {
-      response: createAdminResponse(request, 403, createErrorBody('forbidden', 'Admin access denied')),
+      response: createAdminResponse(
+        request,
+        403,
+        createErrorBody('forbidden', 'Admin access denied')
+      ),
     };
   }
 
@@ -120,21 +176,10 @@ export async function updateOutreachRecord(client, id, changes, actorEmail) {
 }
 
 export function createAdminResponse(request, statusCode, body) {
-  const responseBody =
-    statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);
-
-  return new Response(responseBody, {
-    status: statusCode,
-    headers: {
-      ...createCorsHeaders(request, ADMIN_ALLOWED_METHODS),
-      'Content-Type': 'application/json',
-    },
-  });
+  return createJsonResponse(request, ADMIN_ALLOWED_METHODS, statusCode, body);
 }
 
-export function createErrorBody(code, message) {
-  return { error: { code, message } };
-}
+export { createErrorBody };
 
 export function createHttpError(statusCode, code, message) {
   const error = new Error(message);
@@ -235,7 +280,11 @@ function requiredEnv(name) {
   const value = process.env[name];
 
   if (!value) {
-    throw createHttpError(503, 'configuration_error', `Missing required environment variable: ${name}`);
+    throw createHttpError(
+      503,
+      'configuration_error',
+      `Missing required environment variable: ${name}`
+    );
   }
 
   return value;

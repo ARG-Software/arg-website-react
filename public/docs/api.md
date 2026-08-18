@@ -1,6 +1,6 @@
 # ARG Software API Notes
 
-ARG Software exposes a small public API surface for the website assistant, contact-form verification, and read-only agent discovery.
+ARG Software exposes a small public API surface for the website assistant, human verification, and read-only agent discovery.
 
 ## Discovery
 
@@ -19,10 +19,10 @@ ARG Software exposes a small public API surface for the website assistant, conta
 
 The assistant API is intended for the ARG website UI. It is protected with ALTCHA verification, origin checks, and rate limits.
 
-## Contact Verification Endpoints
+## Security Verification Endpoints
 
-- `GET /api/contact/challenge` returns an ALTCHA challenge for contact-form verification.
-- `POST /api/contact/verify` verifies an ALTCHA payload before a contact-form submission.
+- `GET /api/security/challenge` returns an ALTCHA challenge for browser-side human verification.
+- `POST /api/security/verify` verifies an ALTCHA payload before protected form submissions.
 
 ## MCP Endpoint
 

@@ -2,7 +2,7 @@ import { config as loadDotenv } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import XLSX from 'xlsx';
 
-import { encryptOutreachPayload } from '../netlify/shared/outreachCrypto.js';
+import { encryptOutreachPayload } from '../netlify/implementations/admin/outreachCrypto.js';
 
 loadDotenv({ path: '.env', quiet: true });
 
@@ -98,7 +98,8 @@ function normalizeRow(row, sourceRound) {
     status,
     date_sent: toDateString(row['Date Sent']),
     follow_up_date: toDateString(row['Follow-up Date']),
-    reply_summary: response && response.toLowerCase() !== 'no' ? `Response marked: ${response}` : '',
+    reply_summary:
+      response && response.toLowerCase() !== 'no' ? `Response marked: ${response}` : '',
     notes: clean(row.Notes),
     source_round: sourceRound,
   };

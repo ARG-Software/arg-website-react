@@ -1,14 +1,4 @@
-import { createGasparMaintenanceApp } from '../../rag/apps/gaspar/createGasparMaintenanceApp.ts';
-
-export default async () => {
-  const startedAt = Date.now();
-  await createGasparMaintenanceApp().keepDatabaseAlive();
-
-  console.log('Database keepalive completed', {
-    durationMs: Date.now() - startedAt,
-  });
-};
-
-export const config = {
-  schedule: '0 9 */3 * *',
-};
+export {
+  config,
+  handleKeepDatabaseAlive as default,
+} from '../implementations/maintenance/keepDatabaseAlive.js';

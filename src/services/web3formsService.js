@@ -1,4 +1,4 @@
-import { verifyContactAltcha } from '@services/apiService';
+import { verifySecurityAltcha } from '@services/apiService';
 import { getWeb3FormsAccessKey, getWeb3FormsEndpoint } from '@services/linksService';
 
 function appendFields(formData, fields = {}) {
@@ -48,6 +48,6 @@ async function verifyContactPageBrief(formData, errorMessage) {
     throw new Error(errorMessage || 'Please complete the verification challenge.');
   }
 
-  await verifyContactAltcha(String(altcha), { errorMessage });
+  await verifySecurityAltcha(String(altcha), { errorMessage });
   formData.delete('altcha');
 }

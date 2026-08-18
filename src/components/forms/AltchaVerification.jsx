@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import 'altcha';
-import { getContactChallengeEndpoint } from '@services/apiService';
+import { getSecurityChallengeEndpoint } from '@services/apiService';
 
-const CONTACT_CHALLENGE_ENDPOINT = getContactChallengeEndpoint();
+const SECURITY_CHALLENGE_ENDPOINT = getSecurityChallengeEndpoint();
 
 export function AltchaVerification({ onStateChange }) {
   const widgetRef = useRef(null);
@@ -26,7 +26,7 @@ export function AltchaVerification({ onStateChange }) {
     <altcha-widget
       ref={widgetRef}
       auto="off"
-      challenge={CONTACT_CHALLENGE_ENDPOINT}
+      challenge={SECURITY_CHALLENGE_ENDPOINT}
       name="altcha"
       type="checkbox"
       workers="2"

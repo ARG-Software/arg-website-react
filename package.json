@@ -42,6 +42,7 @@
     "rag:embeddings:rebuild:fallback": "tsx rag/scripts/rebuildFallbackEmbeddings.ts",
     "rag:ask:test": "tsx rag/scripts/ask.ts",
     "rag:test": "tsx --test \"rag/tests/**/*.test.ts\"",
+    "test:netlify": "node --test \"netlify/tests/**/*.test.js\"",
     "supabase:link": "node supabase/scripts.js link",
     "supabase:push": "node supabase/scripts.js push"
   },

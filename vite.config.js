@@ -120,7 +120,7 @@ export default defineConfig(({ mode }) => {
             return;
           }
 
-          if (requestPath === '/api/contact/challenge' && req.method === 'GET') {
+          if (requestPath === '/api/security/challenge' && req.method === 'GET') {
             try {
               const { createGasparHumanVerificationApp } = await import(
                 './rag/apps/gaspar/createGasparSecurityApp.ts'
@@ -139,7 +139,7 @@ export default defineConfig(({ mode }) => {
                   error: {
                     code: isConfigError ? 'configuration_error' : 'challenge_failed',
                     message: isConfigError
-                      ? 'Contact verification is temporarily unavailable'
+                      ? 'Security verification is temporarily unavailable'
                       : 'Unable to create verification challenge',
                   },
                 })
@@ -148,7 +148,7 @@ export default defineConfig(({ mode }) => {
             return;
           }
 
-          if (requestPath === '/api/contact/verify' && req.method === 'POST') {
+          if (requestPath === '/api/security/verify' && req.method === 'POST') {
             let body = '';
             for await (const chunk of req) body += chunk;
 

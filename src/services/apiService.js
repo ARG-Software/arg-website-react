@@ -2,12 +2,12 @@ const API_ENDPOINTS = Object.freeze({
   ASSISTANT_ASK: '/api/assistant/ask',
   ASSISTANT_CHALLENGE: '/api/assistant/challenge',
   ASSISTANT_UI_COPY: '/api/assistant/ui-copy',
-  CONTACT_CHALLENGE: '/api/contact/challenge',
-  CONTACT_VERIFY: '/api/contact/verify',
+  SECURITY_CHALLENGE: '/api/security/challenge',
+  SECURITY_VERIFY: '/api/security/verify',
 });
 
-export function getContactChallengeEndpoint() {
-  return API_ENDPOINTS.CONTACT_CHALLENGE;
+export function getSecurityChallengeEndpoint() {
+  return API_ENDPOINTS.SECURITY_CHALLENGE;
 }
 
 export async function fetchAssistantChallenge() {
@@ -44,8 +44,8 @@ export function fetchAssistantUiCopy(language, { signal } = {}) {
   });
 }
 
-export async function verifyContactAltcha(altcha, { errorMessage } = {}) {
-  const response = await fetch(API_ENDPOINTS.CONTACT_VERIFY, {
+export async function verifySecurityAltcha(altcha, { errorMessage } = {}) {
+  const response = await fetch(API_ENDPOINTS.SECURITY_VERIFY, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
