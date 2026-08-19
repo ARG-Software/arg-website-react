@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
@@ -8,16 +7,20 @@
     "allowSyntheticDefaultImports": true,
     "checkJs": false,
     "paths": {
-      "@components/*": ["src/components/*"],
-      "@hooks/*": ["src/hooks/*"],
-      "@constants/*": ["src/constants/*"],
-      "@providers/*": ["src/providers/*"],
-      "@utils/*": ["src/utils/*"],
-      "@services/*": ["src/services/*"],
-      "@data/*": ["src/data/*"],
-      "@styles/*": ["src/styles/*"],
-      "@ui/*": ["packages/ui/src/*"]
+      "@components/*": ["./src/components/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@providers/*": ["./src/providers/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@services/*": ["./src/services/*"],
+      "@data/*": ["./src/data/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@ui/*": ["./packages/ui/src/*"],
+      "@backend/*": ["./backend/*"],
+      "@backend-rag/*": ["./backend/rag/*"],
+      "@backend-admin/*": ["./backend/admin/*"],
+      "@backend-shared/*": ["./backend/shared/*"]
     }
   },
-  "include": ["src/**/*", "packages/ui/**/*", "vite.config.js", "plugins/**/*"]
+  "include": ["src/**/*", "packages/ui/**/*", "backend/**/*", "vite.config.js", "plugins/**/*"]
 }
