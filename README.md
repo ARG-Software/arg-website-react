@@ -93,8 +93,27 @@ npm run preview      # Preview production build
 | `npm run test:backend` | Run backend JS API and Netlify adapter wiring tests |
 | `npm run test:netlify` | Compatibility alias for `npm run test:backend` |
 | `npm run typecheck:rag` | Type-check the TypeScript RAG code |
-| `npm run database:rag:push` | Push only RAG migrations to the RAG database project |
-| `npm run database:admin:push` | Push only admin/outreach migrations to the admin database project |
+| `npm run database:rag:push` | Optional CLI push for only RAG migrations |
+| `npm run database:admin:push` | Optional CLI push for only admin/outreach migrations |
+
+---
+
+## Local API Development
+
+`npm run dev` serves the SPA and local API routes from Vite on port 3000. Do not use Netlify Dev for normal local development.
+
+Local API routes are mounted through `plugins/local-api-dev/`, which converts Vite's Node request/response objects to standard Fetch `Request`/`Response` objects. The adapter loads backend API modules with Vite's SSR loader, so existing JS and TS backend modules are transformed by Vite instead of being reimplemented in `vite.config.js`.
+
+Current local routes:
+
+- `/api/assistant/challenge`
+- `/api/assistant/ask`
+- `/api/assistant/ui-copy`
+- `/api/security/challenge`
+- `/api/security/verify`
+- `/api/admin/outreach`
+
+Production still uses the committed Netlify function adapters in `netlify/functions/`.
 
 ---
 

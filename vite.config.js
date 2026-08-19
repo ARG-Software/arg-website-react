@@ -3,6 +3,7 @@ import { fileURLToPath, URL } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import seoPrerender from './plugins/seo-prerender/index.js';
+import { localApiDev } from './plugins/local-api-dev/index.js';
 
 
 export default defineConfig(({ mode }) => {
@@ -55,289 +56,38 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    // Local API endpoints: challenge + ask with ALTCHA verification and in-memory rate limiting
-    {
-      name: 'local-ask-endpoint',
-      apply: 'serve',
-      configureServer(server) {
-        const devRateLimitBuckets = new Map();
-
-        server.middlewares.use(async (req, res, next) => {
-          const requestPath = req.url?.split('?')[0];
-
-          if (requestPath === '/api/assistant/challenge' && req.method === 'GET') {
-            try {
-              const { createGasparDependencies } = await import(
-                './src/backend/rag/apps/di/createGasparDependencies.ts'
-              );
-              const challenge = await createGasparDependencies()
-                .createHumanVerificationDependencies()
-                .createChallenge();
-              res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ challenge }));
-            } catch (error) {
-              const isConfigError =
-                error instanceof Error &&
-                error.message.startsWith('Missing required environment variable:');
-              res.statusCode = isConfigError ? 503 : 500;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(
-                JSON.stringify({
-                  error: {
-                    code: isConfigError ? 'configuration_error' : 'challenge_failed',
-                    message: isConfigError
-                      ? 'Assistant configuration is unavailable'
-                      : 'Unable to create verification challenge',
-                  },
-                })
-              );
-            }
-            return;
-          }
-
-          if (requestPath === '/api/assistant/ui-copy' && req.method === 'GET') {
-            try {
-              const requestUrl = new URL(req.url || '', 'http://localhost');
-              const language = requestUrl.searchParams.get('language') || 'en';
-              const { getAssistantUiCopy } = await import(
-                './src/backend/rag/application/assistantUiCopy/getAssistantUiCopy.ts'
-              );
-              const { createGasparDependencies } = await import(
-                './src/backend/rag/apps/di/createGasparDependencies.ts'
-              );
-              const result = await getAssistantUiCopy(
-                language,
-                createGasparDependencies().createAssistantUiCopyDependencies()
-              );
-
-              res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify(result));
-            } catch (error) {
-              const isConfigError =
-                error instanceof Error &&
-                error.message.startsWith('Missing required environment variable:');
-              res.statusCode = isConfigError ? 503 : 500;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(
-                JSON.stringify({
-                  error: {
-                    code: isConfigError ? 'configuration_error' : 'translation_unavailable',
-                    message: 'Assistant UI translation is temporarily unavailable',
-                  },
-                })
-              );
-            }
-            return;
-          }
-
-          if (requestPath === '/api/security/challenge' && req.method === 'GET') {
-            try {
-              const { createGasparDependencies } = await import(
-                './src/backend/rag/apps/di/createGasparDependencies.ts'
-              );
-              const challenge = await createGasparDependencies()
-                .createHumanVerificationDependencies()
-                .createChallenge();
-              res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify(challenge));
-            } catch (error) {
-              const isConfigError =
-                error instanceof Error &&
-                error.message.startsWith('Missing required environment variable:');
-              res.statusCode = isConfigError ? 503 : 500;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(
-                JSON.stringify({
-                  error: {
-                    code: isConfigError ? 'configuration_error' : 'challenge_failed',
-                    message: isConfigError
-                      ? 'Security verification is temporarily unavailable'
-                      : 'Unable to create verification challenge',
-                  },
-                })
-              );
-            }
-            return;
-          }
-
-          if (requestPath === '/api/security/verify' && req.method === 'POST') {
-            let body = '';
-            for await (const chunk of req) body += chunk;
-
-            try {
-              const { altcha } = JSON.parse(body || '{}');
-
-              if (!altcha) {
-                res.statusCode = 403;
-                res.setHeader('Content-Type', 'application/json');
-                res.end(
-                  JSON.stringify({
-                    error: { code: 'bot_verification_failed', message: 'Verification required' },
-                  })
-                );
-                return;
-              }
-
-              const { createGasparDependencies } = await import(
-                './src/backend/rag/apps/di/createGasparDependencies.ts'
-              );
-              const altchaResult = await createGasparDependencies()
-                .createHumanVerificationDependencies()
-                .verifyPayload(String(altcha));
-
-              if (!altchaResult.verified) {
-                res.statusCode = 403;
-                res.setHeader('Content-Type', 'application/json');
-                res.end(
-                  JSON.stringify({
-                    error: { code: 'bot_verification_failed', message: 'Verification failed' },
-                  })
-                );
-                return;
-              }
-
-              res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ verified: true }));
-            } catch {
-              res.statusCode = 403;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(
-                JSON.stringify({
-                  error: { code: 'bot_verification_failed', message: 'Verification failed' },
-                })
-              );
-            }
-            return;
-          }
-
-          if (requestPath !== '/api/assistant/ask' || req.method !== 'POST') {
-            return next();
-          }
-
-          let body = '';
-          for await (const chunk of req) body += chunk;
-
-          try {
-            const payload = JSON.parse(body || '{}');
-
-            if (!payload.altcha?.challenge || !payload.altcha?.solution) {
-              res.statusCode = 403;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(
-                JSON.stringify({
-                  error: { code: 'bot_verification_failed', message: 'Verification required' },
-                })
-              );
-              return;
-            }
-
-            try {
-              const { createGasparDependencies } = await import(
-                './src/backend/rag/apps/di/createGasparDependencies.ts'
-              );
-              const altchaResult = await createGasparDependencies()
-                .createHumanVerificationDependencies()
-                .verifyChallenge({
-                  challenge: payload.altcha.challenge,
-                  solution: payload.altcha.solution,
-                });
-
-              if (!altchaResult.verified) {
-                res.statusCode = 403;
-                res.setHeader('Content-Type', 'application/json');
-                res.end(
-                  JSON.stringify({
-                    error: { code: 'bot_verification_failed', message: 'Verification failed' },
-                  })
-                );
-                return;
-              }
-            } catch {
-              res.statusCode = 403;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(
-                JSON.stringify({
-                  error: { code: 'bot_verification_failed', message: 'Verification failed' },
-                })
-              );
-              return;
-            }
-
-            const clientIp =
-              req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-              req.socket?.remoteAddress ||
-              'unknown';
-            const now = Math.floor(Date.now() / 1000);
-            const minuteBucket = `dev:${clientIp}:m:${Math.floor(now / 60)}`;
-            const entry = devRateLimitBuckets.get(minuteBucket);
-
-            if (entry && entry.count >= 6) {
-              res.statusCode = 429;
-              res.setHeader('Content-Type', 'application/json');
-              res.end(
-                JSON.stringify({
-                  error: { code: 'rate_limited', message: 'Too many requests. Please try again later.' },
-                })
-              );
-              return;
-            }
-
-            if (!entry || entry.windowStart + 60 <= now) {
-              devRateLimitBuckets.set(minuteBucket, { count: 1, windowStart: now });
-            } else {
-              entry.count += 1;
-            }
-
-            const { askQuestion } = await import('./src/backend/rag/application/ask/askQuestion.ts');
-            const { createGasparDependencies } = await import(
-              './src/backend/rag/apps/di/createGasparDependencies.ts'
-            );
-            const result = await askQuestion({
-              ...createGasparDependencies().createAskQuestionDependencies(),
-              question: payload.question,
-              messages: payload.messages,
-              pageContext: payload.pageContext,
-              preferredLanguage: payload.preferredLanguage,
-            });
-
-            res.setHeader('Content-Type', 'application/json');
-            res.end(
-              JSON.stringify({
-                answer: result.answer,
-                language: result.language,
-                languagePreference: result.languagePreference,
-                citations: result.citations,
-                articleRecommendations: result.articleRecommendations,
-                actions: result.actions,
-              })
-            );
-          } catch (error) {
-            const isConfigurationError =
-              error instanceof Error &&
-              error.message.startsWith('Missing required environment variables:');
-            const statusCode = isConfigurationError
-              ? 503
-              : error?.name === 'RagValidationError'
-                ? 400
-                : 500;
-            res.statusCode = statusCode;
-            res.setHeader('Content-Type', 'application/json');
-            res.end(
-              JSON.stringify({
-                error: {
-                  code: isConfigurationError ? 'configuration_error' : error?.code || 'answer_failed',
-                  message: isConfigurationError
-                    ? 'Assistant configuration is unavailable'
-                    : statusCode === 500
-                      ? 'Unable to answer the question'
-                      : error.message,
-                },
-              })
-            );
-          }
-        });
+    localApiDev([
+      {
+        path: '/api/assistant/challenge',
+        module: '/src/backend/rag/apps/gaspar/assistantChallengeApi.js',
+        createApi: 'createAssistantChallengeApi',
       },
-    },
+      {
+        path: '/api/assistant/ask',
+        module: '/src/backend/rag/apps/gaspar/assistantAskApi.js',
+        createApi: 'createAssistantAskApi',
+      },
+      {
+        path: '/api/assistant/ui-copy',
+        module: '/src/backend/rag/apps/gaspar/assistantUiCopyApi.js',
+        createApi: 'createAssistantUiCopyApi',
+      },
+      {
+        path: '/api/security/challenge',
+        module: '/src/backend/rag/apps/gaspar/securityChallengeApi.js',
+        createApi: 'createSecurityChallengeApi',
+      },
+      {
+        path: '/api/security/verify',
+        module: '/src/backend/rag/apps/gaspar/securityVerifyApi.js',
+        createApi: 'createSecurityVerifyApi',
+      },
+      {
+        path: '/api/admin/outreach',
+        module: '/src/backend/admin/apps/adminOutreachApi.js',
+        createApi: 'createAdminOutreachApi',
+      },
+    ]),
     // SPA fallback: serve index.html for routes without file extensions
     {
       name: 'spa-fallback',

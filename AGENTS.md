@@ -265,7 +265,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - Dev server: port 3000, auto-open browser
 - Path aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`
 - Manual chunks: `vendor` (React/Router/Helmet), `three`, `gsap`, `hljs`
-- Local endpoint middleware: `GET /api/assistant/challenge` + `POST /api/assistant/ask` (assistant, with ALTCHA verification + in-memory rate limiting) and `GET /api/security/challenge` + `POST /api/security/verify` (ALTCHA verification for protected forms) — mirrors production security
+- Local API routes: mounted through `plugins/local-api-dev/`, loaded with Vite SSR transforms, and delegated to backend API factories for assistant, security, and admin outreach endpoints
 - SPA fallback middleware for dev server
 - CSS preload injection plugin
 - Production: drops `console` and `debugger` statements

@@ -27,18 +27,33 @@ Generate a 32-byte base64 key with:
 openssl rand -base64 32
 ```
 
+## Local Development
+
+Run the admin app with the regular Vite dev server:
+
+```bash
+npm run dev
+```
+
+The `/api/admin/outreach` endpoint is served locally by `plugins/local-api-dev/`. The adapter loads `src/backend/admin/apps/adminOutreachApi.js` through Vite and calls the same backend API factory used by the Netlify production function, so local development does not require Netlify Dev or redirect rewrites.
+
+Production remains backed by `netlify/functions/admin-outreach.js`.
+
 ## Admin Users
 
 Supabase Auth stores the admin login email/password. The `public.admin_users` table controls
 which authenticated users can access the admin API.
 
-Push migrations before bootstrapping users:
+Apply the admin migrations before bootstrapping users. If applying migrations manually, run the
+SQL files in `supabase/admin/migrations/` in filename order.
+
+Optional CLI migration command:
 
 ```bash
 npm run database:admin:push
 ```
 
-This command uses only `supabase/admin/migrations` and requires these dev-only variables:
+The CLI command uses only `supabase/admin/migrations` and requires these environment variables:
 
 - `ADMIN_DATABASE_PROJECT_REF`
 - `ADMIN_DATABASE_ACCESS_TOKEN`
