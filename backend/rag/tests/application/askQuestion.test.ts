@@ -2472,7 +2472,62 @@ test('an unresolved personal pronoun asks for clarification', async () => {
   });
 
   assert.match(result.answer, /Who do you mean/u);
+  assert.equal(result.language, 'en');
   assert.deepEqual(result.actions, [{ type: 'gaspar_message' }]);
+});
+
+test('person clarification is generated in the response language', async () => {
+  const generatedClarifications: Array<{ question: string; responseLanguage: string }> = [];
+  const result = await askQuestion({
+    question: 'Does he know Python?',
+    preferredLanguage: 'ja',
+    config,
+    readRepository: createSupabase({}).repository,
+    answerProvider: createAnswerProvider('Does he know Python?', {
+      personClarificationAnswer: '誰のことですか？公開情報を確認できるように、その人の名前を教えてください。',
+      onGeneratePersonClarification(question, responseLanguage) {
+        generatedClarifications.push({ question, responseLanguage });
+      },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => {
+      throw new Error('Embeddings must not be generated for unresolved people');
+    }),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.match(result.answer, /誰のことですか/u);
+  assert.equal(result.language, 'ja');
+  assert.deepEqual(generatedClarifications, [
+    { question: 'Does he know Python?', responseLanguage: 'ja' },
+  ]);
+});
+
+test('person clarification uses detected Portuguese and Spanish languages', async () => {
+  const generatedLanguages: string[] = [];
+
+  for (const language of ['pt-PT', 'es']) {
+    const result = await askQuestion({
+      question: 'Does he know Python?',
+      config,
+      readRepository: createSupabase({}).repository,
+      answerProvider: createAnswerProvider('Does he know Python?', {
+        language,
+        personClarificationAnswer: `clarification in ${language}`,
+        onGeneratePersonClarification(_question, responseLanguage) {
+          generatedLanguages.push(responseLanguage);
+        },
+      }),
+      embeddingProvider: createEmbeddingProvider(() => {
+        throw new Error('Embeddings must not be generated for unresolved people');
+      }),
+      fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    });
+
+    assert.equal(result.answer, `clarification in ${language}`);
+    assert.equal(result.language, language);
+  }
+
+  assert.deepEqual(generatedLanguages, ['pt-PT', 'es']);
 });
 
 test('runtime retrieval switches to the fallback index after a primary quota error', async () => {

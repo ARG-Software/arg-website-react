@@ -40,6 +40,7 @@ export interface AnswerProvider {
     intent: FallbackQuestionIntent,
     responseLanguage: string
   ): Promise<string>;
+  generatePersonClarification(question: string, responseLanguage: string): Promise<string>;
   rewritePreviousAnswer(
     instruction: string,
     previousAnswer: string,

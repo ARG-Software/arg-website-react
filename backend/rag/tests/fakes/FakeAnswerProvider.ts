@@ -17,10 +17,12 @@ export interface FakeAnswerProviderBehavior {
   generatedAnswer?: string;
   insufficientContextAnswer?: string;
   intentFallbackResponse?: string;
+  personClarificationAnswer?: string;
   rewrittenAnswer?: string;
   transformTask?: ConversationTransformTask;
   onClassifyIntent?: (question: string, pageContext: unknown) => void;
   onGenerateAnswer?: (question: string) => void;
+  onGeneratePersonClarification?: (question: string, responseLanguage: string) => void;
   onRewritePreviousAnswer?: (
     instruction: string,
     previousAnswer: string,
@@ -40,10 +42,12 @@ export function createFakeAnswerProvider(
     generatedAnswer = 'Grounded answer.',
     insufficientContextAnswer = 'Please send us a message so we can help.',
     intentFallbackResponse = 'Please ask about our website.',
+    personClarificationAnswer = 'Who do you mean? Please tell me the person name.',
     rewrittenAnswer = 'Rewritten answer.',
     transformTask,
     onClassifyIntent,
     onGenerateAnswer,
+    onGeneratePersonClarification,
     onRewritePreviousAnswer,
   } = behavior;
 
@@ -72,6 +76,10 @@ export function createFakeAnswerProvider(
     },
     async generateIntentFallbackResponse() {
       return intentFallbackResponse;
+    },
+    async generatePersonClarification(question, responseLanguage) {
+      onGeneratePersonClarification?.(question, responseLanguage);
+      return personClarificationAnswer;
     },
     async rewritePreviousAnswer(instruction, previousAnswer, task) {
       onRewritePreviousAnswer?.(instruction, previousAnswer, task);

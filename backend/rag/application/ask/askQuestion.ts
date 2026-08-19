@@ -20,7 +20,6 @@ import { buildAnswerQuestion } from './response/buildAnswerQuestion.js';
 import { createAnswerResult } from './response/createAnswer.js';
 import { normalizeAssistantAnswer } from './response/normalizeAnswer.js';
 import { normalizeLanguage } from '../common/language.js';
-import { createPersonClarification } from './response/personClarification.js';
 import { createUnconfirmedTechnologyAnswer } from './response/unconfirmedTechnologyAnswer.js';
 import { resolveLanguagePolicy } from '../assistant/languagePolicy.js';
 
@@ -127,8 +126,13 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
   const routedItems = createRoutedRetrievalItems(plan, context.question, context.pageContext);
 
   if (routedItems.every(item => item.route.requiresPersonClarification)) {
+    const answer = await context.answerProvider.generatePersonClarification(
+      context.question,
+      responseLanguage
+    );
+
     return {
-      answer: createPersonClarification(responseLanguage),
+      answer: normalizeAssistantAnswer(answer),
       language: responseLanguage,
       ...languagePreference,
       citations: [],

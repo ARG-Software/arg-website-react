@@ -12,6 +12,7 @@ import {
 import { buildIntentFallbackPrompt } from '../../../application/prompts/fallback.js';
 import { buildInsufficientContextPrompt } from '../../../application/prompts/insufficientContext.js';
 import { buildIntentPrompt } from '../../../application/prompts/intent.js';
+import { buildPersonClarificationPrompt } from '../../../application/prompts/personClarification.js';
 import { parseIntentResponse, parseRetrievalPlan } from '../../../application/prompts/outputParsers.js';
 import { buildRetrievalPlanPrompt } from '../../../application/prompts/retrievalPlan.js';
 import type { ChatMessage, PageContext, PromptMessage } from '../../../domain/conversation/ChatMessage.js';
@@ -152,6 +153,27 @@ export class DeepSeekAnswerClient implements AnswerProvider {
         {
           role: 'system',
           content: buildIntentFallbackPrompt(config.companyName, intent, responseLanguage),
+        },
+        {
+          role: 'user',
+          content: question,
+        },
+      ],
+    });
+
+    return data.choices?.[0]?.message?.content?.trim() ?? '';
+  }
+
+  async generatePersonClarification(question: string, responseLanguage: string): Promise<string> {
+    const config = this.getConfig();
+    const data = await createDeepSeekChatCompletion({
+      config,
+      temperature: 0.2,
+      errorPrefix: 'DeepSeek person clarification response request failed',
+      messages: [
+        {
+          role: 'system',
+          content: buildPersonClarificationPrompt(responseLanguage),
         },
         {
           role: 'user',
