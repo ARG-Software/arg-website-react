@@ -1,132 +1,146 @@
 .admin-page {
   min-height: 100vh;
-  padding: clamp(1.25rem, 4vw, 3rem);
+  padding: clamp(1.5rem, 5vw, 4rem);
   background:
-    radial-gradient(circle at top left, rgba(181, 255, 61, 0.16), transparent 32rem),
-    linear-gradient(135deg, #0c002e 0%, #17064a 48%, #050012 100%);
-  color: #fff;
+    radial-gradient(circle at 12% 0%, rgba(121, 4, 253, 0.08), transparent 36rem),
+    radial-gradient(circle at 88% 8%, rgba(201, 36, 215, 0.06), transparent 28rem),
+    linear-gradient(180deg, #ffffff 0%, #faf9fd 100%);
+  color: var(--arg-color-ink);
+  font-family: Neuemontreal, sans-serif;
 }
 
 .admin-header {
+  align-items: flex-start;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
   gap: 1.5rem;
-  max-width: 90rem;
-  margin: 0 auto 2rem;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+}
+
+.admin-header__brand {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-logo {
+  color: var(--arg-color-ink);
+  height: 2rem;
+  width: auto;
 }
 
 .admin-header h1 {
-  margin: 0.25rem 0 0.6rem;
-  color: #fff;
-  font-size: clamp(2.4rem, 7vw, 5.8rem);
-  line-height: 0.9;
-  letter-spacing: -0.06em;
+  color: var(--arg-color-ink);
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+  margin: 0;
 }
 
 .admin-header p {
-  max-width: 46rem;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--arg-color-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0.75rem 0 0;
+  max-width: 42rem;
 }
 
-.admin-kicker {
-  color: #b5ff3d !important;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.admin-stats-grid,
-.admin-workspace,
-.admin-content-grid,
-.admin-nav-wrap,
-.admin-settings-card {
-  max-width: 90rem;
-  margin: 0 auto;
+.admin-header__actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .admin-nav-wrap {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .admin-content-grid {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .admin-stats-grid {
   display: grid;
+  gap: 1rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .admin-workspace {
-  display: grid;
-  grid-template-columns: minmax(20rem, 0.85fr) minmax(0, 1.35fr);
-  gap: 1rem;
   align-items: start;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(20rem, 0.85fr) minmax(0, 1.35fr);
 }
 
 .admin-list-card,
 .admin-detail-card,
 .admin-login-card,
 .admin-settings-card {
-  padding: clamp(1rem, 3vw, 1.5rem);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
 }
 
 .admin-login-card {
-  max-width: 30rem;
   margin: 0 auto;
+  max-width: 30rem;
 }
 
 .admin-form,
 .admin-toolbar,
 .admin-detail-form {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .admin-toolbar {
   grid-template-columns: minmax(0, 1fr) minmax(10rem, 0.38fr);
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .admin-record-list {
   display: grid;
+  gap: 0.625rem;
   max-height: 42rem;
   overflow: auto;
   padding-right: 0.3rem;
-  gap: 0.55rem;
 }
 
 .admin-record-row {
-  display: flex;
-  width: 100%;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-  padding: 0.85rem;
-  text-align: left;
+  background: #fff;
+  border: 1px solid rgba(12, 0, 46, 0.08);
+  border-radius: 1.125rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(12, 0, 46, 0.03);
+  color: var(--arg-color-ink);
   cursor: pointer;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1rem;
+  text-align: left;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+  width: 100%;
 }
 
-.admin-record-row.is-selected,
-.admin-record-row:hover {
-  border-color: rgba(181, 255, 61, 0.55);
-  background: rgba(181, 255, 61, 0.1);
+.admin-record-row:hover,
+.admin-record-row.is-selected {
+  background: #fff;
+  border-color: rgba(121, 4, 253, 0.35);
+  box-shadow: 0 0.5rem 1.5rem rgba(121, 4, 253, 0.1);
+  transform: translateY(-0.125rem);
 }
 
 .admin-record-row span:first-child {
   display: grid;
+  gap: 0.35rem;
   min-width: 0;
-  gap: 0.25rem;
 }
 
 .admin-record-row strong,
@@ -139,40 +153,40 @@
 .admin-record-row small,
 .admin-muted,
 .admin-save-status {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--arg-color-muted);
 }
 
 .admin-detail-header {
   display: flex;
-  justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.25rem;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
 }
 
 .admin-detail-header h2 {
-  margin: 0.75rem 0 0.35rem;
-  color: #fff;
-  font-size: clamp(1.8rem, 4vw, 3rem);
+  color: var(--arg-color-ink);
+  font-size: clamp(1.6rem, 4vw, 2.75rem);
+  letter-spacing: -0.03em;
   line-height: 1;
+  margin: 0.75rem 0 0.35rem;
 }
 
 .admin-detail-header p {
+  color: var(--arg-color-muted);
   margin: 0;
-  color: rgba(255, 255, 255, 0.62);
 }
 
 .admin-detail-header__actions,
 .admin-detail-form__actions,
-.admin-header__actions,
 .admin-detail-status {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.65rem;
+  gap: 0.75rem;
 }
 
 .admin-detail-status {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .admin-detail-form {
@@ -185,14 +199,24 @@
 }
 
 .admin-error {
-  color: #ffb5c0;
+  color: #b42318;
 }
 
 .admin-page select option {
-  color: #0c002e;
+  color: var(--arg-color-ink);
 }
 
-@media (max-width: 980px) {
+@media (max-width: 64rem) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 48rem) {
   .admin-header,
   .admin-detail-header {
     align-items: flex-start;
@@ -200,9 +224,12 @@
   }
 
   .admin-stats-grid,
-  .admin-workspace,
   .admin-toolbar,
   .admin-detail-form {
     grid-template-columns: 1fr;
+  }
+
+  .admin-header h1 {
+    font-size: clamp(1.75rem, 10vw, 2.5rem);
   }
 }

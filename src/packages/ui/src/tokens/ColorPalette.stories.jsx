@@ -4,7 +4,6 @@ const TOKENS = [
   ['--arg-color-red', '#f0060d'],
   ['--arg-color-magenta', '#c924d7'],
   ['--arg-color-violet', '#7904fd'],
-  ['--arg-color-lime', '#b5ff3d'],
   ['--arg-color-surface', '#f3f3f7'],
 ];
 

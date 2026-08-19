@@ -245,7 +245,6 @@ Use existing design tokens:
 ```css
 --arg-color-ink
 --arg-color-white
---arg-color-lime
 --arg-color-red
 --arg-color-magenta
 --arg-color-violet

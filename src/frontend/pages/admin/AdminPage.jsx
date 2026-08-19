@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { Logo } from '@components/icons/Logo.jsx';
 import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
 import { AdminMetricChart } from '@ui/admin/AdminMetricChart.jsx';
 import { AdminNav } from '@ui/admin/AdminNav.jsx';
@@ -172,8 +173,8 @@ function AdminShell({ title, message, actions, nav, children }) {
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
       <header className="admin-header">
-        <div>
-          <p className="admin-kicker">ARG Software</p>
+        <div className="admin-header__brand">
+          <Logo className="admin-logo" />
           <h1>{title}</h1>
           {message && <p>{message}</p>}
         </div>
