@@ -170,6 +170,235 @@
   --size-text-button-icon: 1rem;
 }
 
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-nav a {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: var(--type-ui);
+  padding: 0.65rem 1rem;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin-nav a:hover,
+.admin-nav a.is-active {
+  background: rgba(181, 255, 61, 0.14);
+  border-color: rgba(181, 255, 61, 0.5);
+  color: var(--arg-color-white);
+}
+
+.admin-metric-chart,
+.admin-data-table {
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.admin-metric-chart__header,
+.admin-data-table__header,
+.admin-record-overlay__header {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.admin-metric-chart h2,
+.admin-data-table h2,
+.admin-record-overlay h2 {
+  color: var(--arg-color-white);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  line-height: 1;
+  margin: 0 0 0.35rem;
+}
+
+.admin-metric-chart p,
+.admin-data-table p,
+.admin-record-overlay p,
+.admin-data-table__empty {
+  color: var(--arg-color-muted-on-dark);
+  margin: 0;
+}
+
+.admin-metric-chart__header .ui-field {
+  min-width: 12rem;
+}
+
+.admin-metric-chart__plot {
+  align-items: end;
+  display: grid;
+  gap: 0.5rem;
+  grid-auto-columns: minmax(2.5rem, 1fr);
+  grid-auto-flow: column;
+  min-height: 16rem;
+  overflow-x: auto;
+  padding: 1rem 0 0.25rem;
+}
+
+.admin-metric-chart__group {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 2.5rem;
+}
+
+.admin-metric-chart__bars {
+  align-items: end;
+  display: grid;
+  gap: 0.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  height: 12rem;
+}
+
+.admin-metric-chart__bar {
+  background: var(--arg-color-lime);
+  border-radius: 999px 999px 0.25rem 0.25rem;
+  display: block;
+  height: max(0.2rem, var(--admin-chart-value));
+  min-width: 0.65rem;
+}
+
+.admin-metric-chart__bar--replied {
+  background: var(--arg-color-magenta);
+}
+
+.admin-metric-chart__label {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: var(--type-meta-small);
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-metric-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.admin-metric-chart__legend-item {
+  align-items: center;
+  color: var(--arg-color-muted-on-dark);
+  display: inline-flex;
+  font-size: var(--type-ui);
+  gap: 0.4rem;
+}
+
+.admin-metric-chart__legend-item::before {
+  background: var(--arg-color-lime);
+  border-radius: 999px;
+  content: '';
+  display: block;
+  height: 0.6rem;
+  width: 0.6rem;
+}
+
+.admin-metric-chart__legend-item--replied::before {
+  background: var(--arg-color-magenta);
+}
+
+.admin-data-table__scroll {
+  overflow-x: auto;
+}
+
+.admin-data-table table {
+  border-collapse: collapse;
+  min-width: 48rem;
+  width: 100%;
+}
+
+.admin-data-table th,
+.admin-data-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.9rem 0.75rem;
+  text-align: left;
+}
+
+.admin-data-table th {
+  color: rgba(255, 255, 255, 0.54);
+  font-size: var(--type-meta-small);
+  letter-spacing: var(--tracking-meta-wide);
+  text-transform: uppercase;
+}
+
+.admin-data-table td {
+  color: var(--arg-color-white);
+  vertical-align: middle;
+}
+
+.admin-data-table tbody tr {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.admin-data-table tbody tr:hover,
+.admin-data-table tbody tr:focus-visible {
+  background: rgba(181, 255, 61, 0.08);
+  outline: 0;
+}
+
+.admin-data-table__pagination.blp-pagination {
+  justify-content: flex-start;
+  padding-top: 1.25rem;
+}
+
+.admin-record-overlay {
+  align-items: stretch;
+  display: flex;
+  inset: 0;
+  justify-content: flex-end;
+  position: fixed;
+  z-index: 1000;
+}
+
+.admin-record-overlay__backdrop {
+  background: rgba(5, 0, 18, 0.72);
+  border: 0;
+  cursor: pointer;
+  inset: 0;
+  position: absolute;
+}
+
+.admin-record-overlay__panel.ui-card {
+  background: #12033c;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.5rem 0 0 1.5rem;
+  max-width: 54rem;
+  overflow-y: auto;
+  padding: clamp(1rem, 3vw, 2rem);
+  position: relative;
+  width: min(54rem, 100%);
+}
+
+.admin-record-overlay__actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+@media screen and (max-width: 768px) {
+  .admin-metric-chart__header,
+  .admin-data-table__header,
+  .admin-record-overlay__header {
+    flex-direction: column;
+  }
+
+  .admin-record-overlay__panel.ui-card {
+    border-radius: 1.25rem 1.25rem 0 0;
+    margin-top: 3rem;
+  }
+}
+
 /* Extracted ARG component library styles */
 
 .pill {

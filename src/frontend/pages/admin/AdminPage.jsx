@@ -1,19 +1,24 @@
-import { useDeferredValue, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useLocation, useNavigate } from 'react-router-dom';
 
+import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
+import { AdminMetricChart } from '@ui/admin/AdminMetricChart.jsx';
+import { AdminNav } from '@ui/admin/AdminNav.jsx';
+import { AdminRecordOverlay } from '@ui/admin/AdminRecordOverlay.jsx';
 import { UiButton } from '@ui/primitives/UiButton.jsx';
 import { UiCard } from '@ui/primitives/UiCard.jsx';
 import { UiField, UiSelect, UiTextarea } from '@ui/primitives/UiField.jsx';
 import { UiStat } from '@ui/primitives/UiStat.jsx';
 import { UiStatusPill } from '@ui/primitives/UiStatusPill.jsx';
 import { getSupabaseBrowserClient } from '../../admin/supabaseClient.js';
-import { fetchOutreachRecords, updateOutreachRecord } from '../../admin/outreachApi.js';
 import {
-  OUTREACH_STATUSES,
-  buildMailtoUrl,
-  getRecordSearchText,
-  getStatusLabel,
-} from '../../admin/outreach.js';
+  fetchOutreachChart,
+  fetchOutreachRecords,
+  fetchOutreachSummary,
+  updateOutreachRecord,
+} from '../../admin/outreachApi.js';
+import { OUTREACH_STATUSES, buildMailtoUrl, getStatusLabel } from '../../admin/outreach.js';
 import '@ui/styles.css';
 import '../../styles/admin.css';
 
@@ -34,7 +39,25 @@ const EMPTY_FORM = {
   notes: '',
 };
 
+const ADMIN_ROUTES = {
+  dashboard: '/admin/',
+  sent: '/admin/sent/',
+  notSent: '/admin/not-sent/',
+  settings: '/admin/settings/',
+};
+
+const CHART_RANGES = [
+  { value: 'all', label: 'All time' },
+  { value: '7d', label: 'Last 7 days' },
+  { value: '30d', label: 'Last 30 days' },
+  { value: 'monthly', label: 'Monthly' },
+];
+
+const PAGE_SIZE = 10;
+
 export default function AdminPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [clientState] = useState(() => {
     try {
       return { supabase: getSupabaseBrowserClient(), error: '' };
@@ -44,12 +67,9 @@ export default function AdminPage() {
   });
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(() => !clientState.error);
-  const [records, setRecords] = useState([]);
-  const [recordsError, setRecordsError] = useState('');
-  const [selectedId, setSelectedId] = useState('');
-  const [query, setQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const deferredQuery = useDeferredValue(query);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const view = getAdminView(location.pathname);
 
   useEffect(() => {
     if (!clientState.supabase) {
@@ -70,42 +90,15 @@ export default function AdminPage() {
     return () => subscription.subscription.unsubscribe();
   }, [clientState]);
 
-  useEffect(() => {
-    if (!session?.access_token) return;
-
-    let isCurrent = true;
-
-    fetchOutreachRecords(session.access_token)
-      .then(data => {
-        if (!isCurrent) return;
-        setRecords(data.records || []);
-        setSelectedId(currentId => currentId || data.records?.[0]?.id || '');
-      })
-      .catch(error => {
-        if (!isCurrent) return;
-        setRecordsError(error.message);
-      });
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [session?.access_token]);
-
   async function handleSignOut() {
     await clientState.supabase.auth.signOut();
-    setRecords([]);
-    setSelectedId('');
+    setSelectedRecord(null);
   }
 
   function handleRecordUpdated(record) {
-    setRecords(currentRecords =>
-      currentRecords.map(current => (current.id === record.id ? record : current))
-    );
+    setSelectedRecord(record);
+    setRefreshKey(current => current + 1);
   }
-
-  const filteredRecords = filterRecords(records, deferredQuery, statusFilter);
-  const selectedRecord = records.find(record => record.id === selectedId) || filteredRecords[0];
-  const stats = getStats(records);
 
   if (clientState.error) {
     return <AdminShell title="Admin configuration missing" message={clientState.error} />;
@@ -121,69 +114,57 @@ export default function AdminPage() {
 
   return (
     <AdminShell
-      title="Outreach admin"
-      message="Manage outbound agency outreach, edit custom drafts, track replies, and launch emails from your local client."
+      title={getAdminTitle(view)}
+      message="Manage outbound agency outreach, track replies, and maintain your admin account."
       actions={
         <UiButton onClick={handleSignOut} variant="secondary">
           Sign out
         </UiButton>
       }
+      nav={<AdminNav items={getAdminNavItems(location.pathname)} onNavigate={navigate} />}
     >
-      <div className="admin-stats-grid">
-        <UiStat label="Total" value={records.length} detail="Encrypted records" />
-        <UiStat label="Ready" value={stats.ready} detail="Can be sent" />
-        <UiStat label="Sent" value={stats.sent} detail="Date tracked" />
-        <UiStat label="Replies" value={stats.replied} detail="Needs review" />
-      </div>
-
-      <section className="admin-workspace">
-        <UiCard className="admin-list-card">
-          <div className="admin-toolbar">
-            <UiField
-              id="admin-search"
-              label="Search outreach"
-              placeholder="Company, contact, round, notes..."
-              value={query}
-              onChange={event => setQuery(event.target.value)}
-            />
-            <UiSelect
-              id="admin-status-filter"
-              label="Status"
-              value={statusFilter}
-              onChange={event => setStatusFilter(event.target.value)}
-            >
-              <option value="all">All statuses</option>
-              {OUTREACH_STATUSES.map(status => (
-                <option key={status.value} value={status.value}>
-                  {status.label}
-                </option>
-              ))}
-            </UiSelect>
-          </div>
-
-          {recordsError && <p className="admin-error">{recordsError}</p>}
-          {!records.length && !recordsError ? (
-            <p className="admin-muted">Loading encrypted outreach records...</p>
-          ) : (
-            <OutreachList
-              records={filteredRecords}
-              selectedId={selectedRecord?.id}
-              onSelect={setSelectedId}
-            />
-          )}
-        </UiCard>
-
-        <OutreachDetail
+      {view === 'dashboard' && (
+        <DashboardView
           accessToken={session.access_token}
-          record={selectedRecord}
-          onRecordUpdated={handleRecordUpdated}
+          refreshKey={refreshKey}
+          onSelectRecord={setSelectedRecord}
         />
-      </section>
+      )}
+      {view === 'sent' && (
+        <RecordsView
+          accessToken={session.access_token}
+          refreshKey={refreshKey}
+          title="Sent emails"
+          description="All outreach records with sent status."
+          query={{ status: 'sent' }}
+          emptyMessage="No sent outreach records found."
+          onSelectRecord={setSelectedRecord}
+        />
+      )}
+      {view === 'notSent' && (
+        <RecordsView
+          accessToken={session.access_token}
+          refreshKey={refreshKey}
+          title="Not sent emails"
+          description="Draft and ready outreach records only."
+          query={{ statuses: 'draft,ready' }}
+          emptyMessage="No draft or ready outreach records found."
+          onSelectRecord={setSelectedRecord}
+        />
+      )}
+      {view === 'settings' && <SettingsView supabase={clientState.supabase} session={session} />}
+
+      <OutreachEditor
+        accessToken={session.access_token}
+        record={selectedRecord}
+        onClose={() => setSelectedRecord(null)}
+        onRecordUpdated={handleRecordUpdated}
+      />
     </AdminShell>
   );
 }
 
-function AdminShell({ title, message, actions, children }) {
+function AdminShell({ title, message, actions, nav, children }) {
   return (
     <main className="admin-page">
       <Helmet>
@@ -198,6 +179,7 @@ function AdminShell({ title, message, actions, children }) {
         </div>
         {actions && <div className="admin-header__actions">{actions}</div>}
       </header>
+      {nav && <div className="admin-nav-wrap">{nav}</div>}
       {children}
     </main>
   );
@@ -257,34 +239,229 @@ function AdminLogin() {
   );
 }
 
-function OutreachList({ records, selectedId, onSelect }) {
-  if (!records.length) {
-    return <p className="admin-muted">No outreach records match this filter.</p>;
-  }
+function DashboardView({ accessToken, refreshKey, onSelectRecord }) {
+  const [summary, setSummary] = useState(null);
+  const [chartRange, setChartRange] = useState('30d');
+  const [chartPoints, setChartPoints] = useState([]);
+  const [tablePage, setTablePage] = useState(1);
+  const [tableData, setTableData] = useState(createEmptyTableData());
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    fetchOutreachSummary(accessToken)
+      .then(data => {
+        if (isCurrent) setSummary(data.summary);
+      })
+      .catch(error => {
+        if (isCurrent) setError(error.message);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [accessToken, refreshKey]);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    fetchOutreachChart(accessToken, chartRange)
+      .then(data => {
+        if (isCurrent) setChartPoints(data.points || []);
+      })
+      .catch(error => {
+        if (isCurrent) setError(error.message);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [accessToken, chartRange, refreshKey]);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    fetchOutreachRecords(accessToken, {
+      scope: 'recent_sent',
+      page: tablePage,
+      pageSize: PAGE_SIZE,
+    })
+      .then(data => {
+        if (isCurrent) setTableData(data);
+      })
+      .catch(error => {
+        if (isCurrent) setError(error.message);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [accessToken, tablePage, refreshKey]);
 
   return (
-    <div className="admin-record-list">
-      {records.map(record => (
-        <button
-          key={record.id}
-          className={`admin-record-row${record.id === selectedId ? ' is-selected' : ''}`}
-          type="button"
-          onClick={() => onSelect(record.id)}
-        >
-          <span>
-            <strong>{record.company_name || 'Untitled company'}</strong>
-            <small>
-              {record.contact_email || record.contact_info || record.website || 'No contact'}
-            </small>
-          </span>
-          <UiStatusPill status={record.status}>{getStatusLabel(record.status)}</UiStatusPill>
-        </button>
-      ))}
+    <div className="admin-content-grid">
+      {error && <p className="admin-error">{error}</p>}
+      <div className="admin-stats-grid">
+        <UiStat label="Total" value={summary?.total ?? '...'} detail="Encrypted records" />
+        <UiStat label="Ready" value={summary?.ready ?? '...'} detail="Can be sent" />
+        <UiStat label="Sent" value={summary?.sent ?? '...'} detail="Status is sent" />
+        <UiStat label="Replies" value={summary?.replied ?? '...'} detail="Status is replied" />
+      </div>
+      <AdminMetricChart
+        title="Sent vs replied"
+        description="Outbound volume and replies for the selected time range."
+        range={chartRange}
+        ranges={CHART_RANGES}
+        points={chartPoints}
+        onRangeChange={setChartRange}
+      />
+      <AdminDataTable
+        title="Latest sent"
+        description="Latest 30 sent records, paginated 10 per page."
+        columns={getRecordColumns()}
+        rows={tableData.records}
+        pagination={{ ...tableData.pagination, onPageChange: setTablePage }}
+        emptyMessage="No sent outreach records found."
+        onRowClick={onSelectRecord}
+      />
     </div>
   );
 }
 
-function OutreachDetail({ accessToken, record, onRecordUpdated }) {
+function RecordsView({
+  accessToken,
+  refreshKey,
+  title,
+  description,
+  query,
+  emptyMessage,
+  onSelectRecord,
+}) {
+  const [page, setPage] = useState(1);
+  const [tableData, setTableData] = useState(createEmptyTableData());
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    fetchOutreachRecords(accessToken, {
+      ...query,
+      page,
+      pageSize: PAGE_SIZE,
+    })
+      .then(data => {
+        if (!isCurrent) return;
+        setTableData(data);
+        setError('');
+      })
+      .catch(error => {
+        if (isCurrent) setError(error.message);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [accessToken, page, query, refreshKey]);
+
+  return (
+    <div className="admin-content-grid">
+      {error && <p className="admin-error">{error}</p>}
+      <AdminDataTable
+        title={title}
+        description={description}
+        columns={getRecordColumns()}
+        rows={tableData.records}
+        pagination={{ ...tableData.pagination, onPageChange: setPage }}
+        emptyMessage={emptyMessage}
+        onRowClick={onSelectRecord}
+      />
+    </div>
+  );
+}
+
+function SettingsView({ supabase, session }) {
+  const [name, setName] = useState(session.user?.user_metadata?.name || '');
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [status, setStatus] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setStatus('');
+
+    if (password && password !== passwordConfirm) {
+      setStatus('Passwords do not match.');
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      if (name.trim() !== (session.user?.user_metadata?.name || '')) {
+        const { error } = await supabase.auth.updateUser({ data: { name: name.trim() } });
+        if (error) throw error;
+      }
+
+      if (password) {
+        const { error } = await supabase.auth.updateUser({ password });
+        if (error) throw error;
+        setPassword('');
+        setPasswordConfirm('');
+      }
+
+      setStatus('Settings updated.');
+    } catch (error) {
+      setStatus(error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  return (
+    <UiCard className="admin-settings-card">
+      <form className="admin-form" onSubmit={handleSubmit}>
+        <UiField
+          id="admin-settings-email"
+          label="Email"
+          value={session.user?.email || ''}
+          disabled
+        />
+        <UiField
+          id="admin-settings-name"
+          label="Name"
+          value={name}
+          onChange={event => setName(event.target.value)}
+        />
+        <UiField
+          id="admin-settings-password"
+          label="New password"
+          type="password"
+          value={password}
+          onChange={event => setPassword(event.target.value)}
+          minLength={8}
+        />
+        <UiField
+          id="admin-settings-password-confirm"
+          label="Confirm new password"
+          type="password"
+          value={passwordConfirm}
+          onChange={event => setPasswordConfirm(event.target.value)}
+          minLength={8}
+        />
+        <div className="admin-detail-form__actions">
+          <UiButton type="submit" disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save settings'}
+          </UiButton>
+          {status && <span className="admin-save-status">{status}</span>}
+        </div>
+      </form>
+    </UiCard>
+  );
+}
+
+function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [status, setStatus] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -294,13 +471,7 @@ function OutreachDetail({ accessToken, record, onRecordUpdated }) {
     setStatus('');
   }, [record]);
 
-  if (!record) {
-    return (
-      <UiCard className="admin-detail-card">
-        <p className="admin-muted">Select a record to see the detail.</p>
-      </UiCard>
-    );
-  }
+  if (!record) return null;
 
   async function saveChanges(changes = form) {
     setIsSaving(true);
@@ -326,16 +497,13 @@ function OutreachDetail({ accessToken, record, onRecordUpdated }) {
   }
 
   return (
-    <UiCard className="admin-detail-card">
-      <div className="admin-detail-header">
-        <div>
-          <UiStatusPill status={form.status}>{getStatusLabel(form.status)}</UiStatusPill>
-          <h2>{form.company_name || 'Untitled company'}</h2>
-          <p>
-            {record.sourceRound} · row {record.sourceRowNumber}
-          </p>
-        </div>
-        <div className="admin-detail-header__actions">
+    <AdminRecordOverlay
+      isOpen
+      title={form.company_name || 'Untitled company'}
+      eyebrow={`${record.sourceRound || 'Unknown round'} · row ${record.sourceRowNumber || '-'}`}
+      onClose={onClose}
+      actions={
+        <>
           <UiButton onClick={openEmailClient} disabled={!form.contact_email && !form.contact_info}>
             Send email
           </UiButton>
@@ -346,9 +514,12 @@ function OutreachDetail({ accessToken, record, onRecordUpdated }) {
           >
             Mark sent
           </UiButton>
-        </div>
+        </>
+      }
+    >
+      <div className="admin-detail-status">
+        <UiStatusPill status={form.status}>{getStatusLabel(form.status)}</UiStatusPill>
       </div>
-
       <form
         className="admin-detail-form"
         onSubmit={event => {
@@ -451,29 +622,74 @@ function OutreachDetail({ accessToken, record, onRecordUpdated }) {
           {status && <span className="admin-save-status">{status}</span>}
         </div>
       </form>
-    </UiCard>
+    </AdminRecordOverlay>
   );
 }
 
-function filterRecords(records, query, statusFilter) {
-  const normalizedQuery = query.trim().toLowerCase();
-
-  return records.filter(record => {
-    const matchesStatus = statusFilter === 'all' || record.status === statusFilter;
-    const matchesQuery = !normalizedQuery || getRecordSearchText(record).includes(normalizedQuery);
-
-    return matchesStatus && matchesQuery;
-  });
-}
-
-function getStats(records) {
-  return records.reduce(
-    (stats, record) => {
-      if (record.status === 'ready') stats.ready += 1;
-      if (record.status === 'sent') stats.sent += 1;
-      if (record.status === 'replied') stats.replied += 1;
-      return stats;
+function getRecordColumns() {
+  return [
+    { key: 'company_name', label: 'Company' },
+    {
+      key: 'contact',
+      label: 'Contact',
+      render: record =>
+        record.contact_email || record.contact_info || record.website || 'No contact',
     },
-    { ready: 0, sent: 0, replied: 0 }
-  );
+    {
+      key: 'status',
+      label: 'Status',
+      render: record => (
+        <UiStatusPill status={record.status}>{getStatusLabel(record.status)}</UiStatusPill>
+      ),
+    },
+    { key: 'date_sent', label: 'Date sent', render: record => record.date_sent || '-' },
+    { key: 'follow_up_date', label: 'Follow up', render: record => record.follow_up_date || '-' },
+  ];
+}
+
+function createEmptyTableData() {
+  return {
+    records: [],
+    pagination: {
+      page: 1,
+      pageSize: PAGE_SIZE,
+      totalRecords: 0,
+      totalPages: 1,
+    },
+  };
+}
+
+function getAdminView(pathname) {
+  if (pathname.startsWith('/admin/sent')) return 'sent';
+  if (pathname.startsWith('/admin/not-sent')) return 'notSent';
+  if (pathname.startsWith('/admin/settings')) return 'settings';
+  return 'dashboard';
+}
+
+function getAdminTitle(view) {
+  if (view === 'sent') return 'Sent emails';
+  if (view === 'notSent') return 'Not sent emails';
+  if (view === 'settings') return 'Settings';
+  return 'Admin dashboard';
+}
+
+function getAdminNavItems(pathname) {
+  return [
+    {
+      href: ADMIN_ROUTES.dashboard,
+      label: 'Dashboard',
+      isActive: getAdminView(pathname) === 'dashboard',
+    },
+    { href: ADMIN_ROUTES.sent, label: 'Sent', isActive: getAdminView(pathname) === 'sent' },
+    {
+      href: ADMIN_ROUTES.notSent,
+      label: 'Not sent',
+      isActive: getAdminView(pathname) === 'notSent',
+    },
+    {
+      href: ADMIN_ROUTES.settings,
+      label: 'Settings',
+      isActive: getAdminView(pathname) === 'settings',
+    },
+  ];
 }

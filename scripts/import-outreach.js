@@ -31,8 +31,8 @@ if (isDryRun) {
   process.exit(0);
 }
 
-const supabaseUrl = requiredEnv('DATABASE_URL');
-const serviceRoleKey = requiredEnv('DATABASE_SERVICE_ROLE_KEY');
+const supabaseUrl = requiredEnv('ADMIN_DATABASE_URL');
+const serviceRoleKey = requiredEnv('ADMIN_DATABASE_SERVICE_ROLE_KEY');
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });

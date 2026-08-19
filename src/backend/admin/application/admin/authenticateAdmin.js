@@ -11,7 +11,7 @@ export async function authenticateAdmin(token, { adminAccessPolicy, identityProv
     throw createAdminError(401, 'unauthenticated', 'Login expired');
   }
 
-  if (!adminAccessPolicy.canAccess(user.email)) {
+  if (!(await adminAccessPolicy.canAccess(user.email))) {
     throw createAdminError(403, 'forbidden', 'Admin access denied');
   }
 

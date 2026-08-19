@@ -42,10 +42,8 @@ export function createAdminOutreachApi({
       const user = await authenticateAdmin(getBearerToken(request), dependencies);
 
       if (request.method === 'GET') {
-        const records = await listOutreachRecords(dependencies);
-        return http.createJsonResponse(request, 200, {
-          records: records.map(createOutreachRecordResponse),
-        });
+        const result = await listOutreachRecords(getOutreachQuery(request), dependencies);
+        return http.createJsonResponse(request, 200, createListResponse(result));
       }
 
       const payload = await readJsonBody(request);
@@ -111,4 +109,20 @@ function getBearerToken(request) {
   const authorization = request.headers.get('authorization') || '';
   const [, token] = authorization.match(/^Bearer\s+(.+)$/i) || [];
   return token || '';
+}
+
+function getOutreachQuery(request) {
+  const params = new URL(request.url).searchParams;
+  return Object.fromEntries(params.entries());
+}
+
+function createListResponse(result) {
+  if (result.records) {
+    return {
+      ...result,
+      records: result.records.map(createOutreachRecordResponse),
+    };
+  }
+
+  return result;
 }

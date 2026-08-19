@@ -93,8 +93,8 @@ npm run preview      # Preview production build
 | `npm run test:backend` | Run backend JS API and Netlify adapter wiring tests |
 | `npm run test:netlify` | Compatibility alias for `npm run test:backend` |
 | `npm run typecheck:rag` | Type-check the TypeScript RAG code |
-| `npm run supabase:link` | Link the local Supabase CLI project |
-| `npm run supabase:push` | Push Supabase migrations |
+| `npm run database:rag:push` | Push only RAG migrations to the RAG database project |
+| `npm run database:admin:push` | Push only admin/outreach migrations to the admin database project |
 
 ---
 

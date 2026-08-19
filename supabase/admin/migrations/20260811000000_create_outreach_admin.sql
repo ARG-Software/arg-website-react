@@ -24,6 +24,16 @@ create index outreach_records_source_round_idx on public.outreach_records (sourc
 create index outreach_audit_events_record_idx on public.outreach_audit_events (outreach_record_id);
 create index outreach_audit_events_created_at_idx on public.outreach_audit_events (created_at desc);
 
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
 create trigger set_outreach_records_updated_at
 before update on public.outreach_records
 for each row
