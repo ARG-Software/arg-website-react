@@ -2,14 +2,17 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { Logo } from '@components/icons/Logo.jsx';
 import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
 import { AdminMetricChart } from '@ui/admin/AdminMetricChart.jsx';
 import { AdminNav } from '@ui/admin/AdminNav.jsx';
+import { AdminProfileMenu } from '@ui/admin/AdminProfileMenu.jsx';
 import { AdminRecordOverlay } from '@ui/admin/AdminRecordOverlay.jsx';
+import { AmbientVideoBackground } from '@ui/layout/AmbientVideoBackground.jsx';
+import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
 import { UiButton } from '@ui/primitives/UiButton.jsx';
 import { UiCard } from '@ui/primitives/UiCard.jsx';
 import { UiField, UiSelect, UiTextarea } from '@ui/primitives/UiField.jsx';
+import { UiSpinner } from '@ui/primitives/UiSpinner.jsx';
 import { UiStat } from '@ui/primitives/UiStat.jsx';
 import { UiStatusPill } from '@ui/primitives/UiStatusPill.jsx';
 import { getSupabaseBrowserClient } from '../../admin/supabaseClient.js';
@@ -102,11 +105,21 @@ export default function AdminPage() {
   }
 
   if (clientState.error) {
-    return <AdminShell title="Admin configuration missing" message={clientState.error} />;
+    return (
+      <AdminShell>
+        <p className="admin-error">{clientState.error}</p>
+      </AdminShell>
+    );
   }
 
   if (authLoading) {
-    return <AdminShell title="Loading admin..." />;
+    return (
+      <AdminShell>
+        <div className="admin-loading">
+          <UiSpinner label="Loading admin…" />
+        </div>
+      </AdminShell>
+    );
   }
 
   if (!session) {
@@ -115,12 +128,13 @@ export default function AdminPage() {
 
   return (
     <AdminShell
-      title={getAdminTitle(view)}
-      message="Manage outbound agency outreach, track replies, and maintain your admin account."
       actions={
-        <UiButton onClick={handleSignOut} variant="secondary">
-          Sign out
-        </UiButton>
+        <AdminProfileMenu
+          items={[
+            { label: 'Settings', onClick: () => navigate(ADMIN_ROUTES.settings) },
+            { label: 'Log out', onClick: handleSignOut },
+          ]}
+        />
       }
       nav={<AdminNav items={getAdminNavItems(location.pathname)} onNavigate={navigate} />}
     >
@@ -165,22 +179,17 @@ export default function AdminPage() {
   );
 }
 
-function AdminShell({ title, message, actions, nav, children }) {
+function AdminShell({ actions, nav, children }) {
   return (
     <main className="admin-page">
       <Helmet>
-        <title>{title} | ARG Admin</title>
+        <title>ARG Admin</title>
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
       <header className="admin-header">
-        <div className="admin-header__brand">
-          <Logo className="admin-logo" />
-          <h1>{title}</h1>
-          {message && <p>{message}</p>}
-        </div>
+        {nav && <div className="admin-nav-wrap">{nav}</div>}
         {actions && <div className="admin-header__actions">{actions}</div>}
       </header>
-      {nav && <div className="admin-nav-wrap">{nav}</div>}
       {children}
     </main>
   );
@@ -211,32 +220,41 @@ function AdminLogin() {
   }
 
   return (
-    <AdminShell title="Admin login" message="Use your ARG admin Supabase account.">
-      <UiCard className="admin-login-card">
-        <form className="admin-form" onSubmit={handleSubmit}>
-          <UiField
-            id="admin-email"
-            label="Email"
-            type="email"
-            value={email}
-            onChange={event => setEmail(event.target.value)}
-            required
-          />
-          <UiField
-            id="admin-password"
-            label="Password"
-            type="password"
-            value={password}
-            onChange={event => setPassword(event.target.value)}
-            required
-          />
-          <UiButton type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Signing in...' : 'Sign in'}
-          </UiButton>
-          {status && <p className="admin-error">{status}</p>}
-        </form>
-      </UiCard>
-    </AdminShell>
+    <div className="admin-login-page">
+      <Helmet>
+        <title>Admin Backoffice | ARG</title>
+        <meta name="robots" content="noindex,nofollow" />
+      </Helmet>
+      <AmbientVideoBackground src="/videos/hero-video-opt.mp4" />
+      <div className="admin-login-center">
+        <ArgMarkIcon className="admin-login-mark" />
+        <h1 className="admin-login-title">Admin Backoffice</h1>
+        <UiCard className="admin-login-card">
+          <form className="admin-form" onSubmit={handleSubmit}>
+            <UiField
+              id="admin-email"
+              label="Email"
+              type="email"
+              value={email}
+              onChange={event => setEmail(event.target.value)}
+              required
+            />
+            <UiField
+              id="admin-password"
+              label="Password"
+              type="password"
+              value={password}
+              onChange={event => setPassword(event.target.value)}
+              required
+            />
+            <UiButton type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Signing in...' : 'Sign in'}
+            </UiButton>
+            {status && <p className="admin-error">{status}</p>}
+          </form>
+        </UiCard>
+      </div>
+    </div>
   );
 }
 
@@ -246,6 +264,7 @@ function DashboardView({ accessToken, refreshKey, onSelectRecord }) {
   const [chartPoints, setChartPoints] = useState([]);
   const [tablePage, setTablePage] = useState(1);
   const [tableData, setTableData] = useState(createEmptyTableData());
+  const [tableLoading, setTableLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -289,10 +308,14 @@ function DashboardView({ accessToken, refreshKey, onSelectRecord }) {
       pageSize: PAGE_SIZE,
     })
       .then(data => {
-        if (isCurrent) setTableData(data);
+        if (!isCurrent) return;
+        setTableData(data);
       })
       .catch(error => {
         if (isCurrent) setError(error.message);
+      })
+      .finally(() => {
+        if (isCurrent) setTableLoading(false);
       });
 
     return () => {
@@ -323,6 +346,7 @@ function DashboardView({ accessToken, refreshKey, onSelectRecord }) {
         columns={getRecordColumns()}
         rows={tableData.records}
         pagination={{ ...tableData.pagination, onPageChange: setTablePage }}
+        loading={tableLoading}
         emptyMessage="No sent outreach records found."
         onRowClick={onSelectRecord}
       />
@@ -341,6 +365,7 @@ function RecordsView({
 }) {
   const [page, setPage] = useState(1);
   const [tableData, setTableData] = useState(createEmptyTableData());
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -358,6 +383,9 @@ function RecordsView({
       })
       .catch(error => {
         if (isCurrent) setError(error.message);
+      })
+      .finally(() => {
+        if (isCurrent) setLoading(false);
       });
 
     return () => {
@@ -374,6 +402,7 @@ function RecordsView({
         columns={getRecordColumns()}
         rows={tableData.records}
         pagination={{ ...tableData.pagination, onPageChange: setPage }}
+        loading={loading}
         emptyMessage={emptyMessage}
         onRowClick={onSelectRecord}
       />
@@ -504,18 +533,12 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
       eyebrow={`${record.sourceRound || 'Unknown round'} · row ${record.sourceRowNumber || '-'}`}
       onClose={onClose}
       actions={
-        <>
-          <UiButton onClick={openEmailClient} disabled={!form.contact_email && !form.contact_info}>
-            Send email
-          </UiButton>
-          <UiButton
-            variant="secondary"
-            onClick={() => saveChanges({ ...form, status: 'sent' })}
-            disabled={isSaving}
-          >
-            Mark sent
-          </UiButton>
-        </>
+        <UiButton
+          onClick={openEmailClient}
+          disabled={form.status === 'sent' || (!form.contact_email && !form.contact_info)}
+        >
+          {form.status === 'sent' ? 'Already sent' : 'Send email'}
+        </UiButton>
       }
     >
       <div className="admin-detail-status">
@@ -667,13 +690,6 @@ function getAdminView(pathname) {
   return 'dashboard';
 }
 
-function getAdminTitle(view) {
-  if (view === 'sent') return 'Sent emails';
-  if (view === 'notSent') return 'Not sent emails';
-  if (view === 'settings') return 'Settings';
-  return 'Admin dashboard';
-}
-
 function getAdminNavItems(pathname) {
   return [
     {
@@ -686,11 +702,6 @@ function getAdminNavItems(pathname) {
       href: ADMIN_ROUTES.notSent,
       label: 'Not sent',
       isActive: getAdminView(pathname) === 'notSent',
-    },
-    {
-      href: ADMIN_ROUTES.settings,
-      label: 'Settings',
-      isActive: getAdminView(pathname) === 'settings',
     },
   ];
 }

@@ -1,12 +1,16 @@
 export { UiButton } from './primitives/UiButton.jsx';
 export { UiCard } from './primitives/UiCard.jsx';
 export { UiField, UiSelect, UiTextarea } from './primitives/UiField.jsx';
+export { UiSpinner } from './primitives/UiSpinner.jsx';
 export { UiStat } from './primitives/UiStat.jsx';
 export { UiStatusPill } from './primitives/UiStatusPill.jsx';
 export { AdminDataTable } from './admin/AdminDataTable.jsx';
 export { AdminMetricChart } from './admin/AdminMetricChart.jsx';
 export { AdminNav } from './admin/AdminNav.jsx';
+export { AdminProfileMenu } from './admin/AdminProfileMenu.jsx';
 export { AdminRecordOverlay } from './admin/AdminRecordOverlay.jsx';
+export { AmbientVideoBackground } from './layout/AmbientVideoBackground.jsx';
+export { ArgMarkIcon } from './icons/ArgMarkIcon.jsx';
 export { AnimatedArrowButton } from './buttons/AnimatedArrowButton.jsx';
 export { BaseCard } from './cards/BaseCard.jsx';
 export { Pill, PillButton } from './pills/Pill.jsx';

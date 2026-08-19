@@ -1,5 +1,6 @@
 import { Pagination } from '../navigation/Pagination.jsx';
 import { UiCard } from '../primitives/UiCard.jsx';
+import { UiSpinner } from '../primitives/UiSpinner.jsx';
 
 export function AdminDataTable({
   title,
@@ -9,6 +10,7 @@ export function AdminDataTable({
   getRowKey = row => row.id,
   onRowClick,
   pagination,
+  loading = false,
   emptyMessage = 'No records found.',
 }) {
   return (
@@ -20,7 +22,13 @@ export function AdminDataTable({
         </div>
       )}
 
-      {rows.length ? (
+      {loading && (
+        <div className="admin-data-table__loading">
+          <UiSpinner label="Loading records…" />
+        </div>
+      )}
+
+      {!loading && rows.length > 0 && (
         <div className="admin-data-table__scroll">
           <table>
             <thead>
@@ -50,9 +58,9 @@ export function AdminDataTable({
             </tbody>
           </table>
         </div>
-      ) : (
-        <p className="admin-data-table__empty">{emptyMessage}</p>
       )}
+
+      {!loading && rows.length === 0 && <p className="admin-data-table__empty">{emptyMessage}</p>}
 
       {pagination && (
         <Pagination
