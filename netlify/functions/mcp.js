@@ -1,4 +1,4 @@
-import { config, createPublicDiscoveryMcpApi } from '../../backend/public/api/publicDiscoveryMcpApi.js';
+import { config, createPublicDiscoveryMcpApi } from '../../src/backend/public/api/publicDiscoveryMcpApi.js';
 
 export { config };
 

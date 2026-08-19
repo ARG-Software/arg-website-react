@@ -7,20 +7,20 @@
     "allowSyntheticDefaultImports": true,
     "checkJs": false,
     "paths": {
-      "@components/*": ["./src/components/*"],
-      "@hooks/*": ["./src/hooks/*"],
-      "@constants/*": ["./src/constants/*"],
-      "@providers/*": ["./src/providers/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@services/*": ["./src/services/*"],
-      "@data/*": ["./src/data/*"],
-      "@styles/*": ["./src/styles/*"],
-      "@ui/*": ["./packages/ui/src/*"],
-      "@backend/*": ["./backend/*"],
-      "@backend-rag/*": ["./backend/rag/*"],
-      "@backend-admin/*": ["./backend/admin/*"],
-      "@backend-shared/*": ["./backend/shared/*"]
+      "@components/*": ["./src/frontend/components/*"],
+      "@hooks/*": ["./src/frontend/hooks/*"],
+      "@constants/*": ["./src/frontend/constants/*"],
+      "@providers/*": ["./src/frontend/providers/*"],
+      "@utils/*": ["./src/frontend/utils/*"],
+      "@services/*": ["./src/frontend/services/*"],
+      "@data/*": ["./src/frontend/data/*"],
+      "@styles/*": ["./src/frontend/styles/*"],
+      "@ui/*": ["./src/packages/ui/src/*"],
+      "@backend/*": ["./src/backend/*"],
+      "@backend-rag/*": ["./src/backend/rag/*"],
+      "@backend-admin/*": ["./src/backend/admin/*"],
+      "@backend-shared/*": ["./src/backend/shared/*"]
     }
   },
-  "include": ["src/**/*", "packages/ui/**/*", "backend/**/*", "vite.config.js", "plugins/**/*"]
+  "include": ["src/**/*", "vite.config.js", "plugins/**/*"]
 }

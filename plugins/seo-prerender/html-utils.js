@@ -1,6 +1,6 @@
 import { SITE_URL } from './constants.js';
-import { DEFAULT_AUTHOR } from '../../src/constants/seo.js';
-import { renderJsonLdScripts } from '../../src/utils/structuredData.js';
+import { DEFAULT_AUTHOR } from '../../src/frontend/constants/seo.js';
+import { renderJsonLdScripts } from '../../src/frontend/utils/structuredData.js';
 
 export function escapeHtml(str) {
   return str

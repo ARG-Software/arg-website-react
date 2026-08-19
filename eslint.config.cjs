@@ -65,7 +65,7 @@ module.exports = [
   },
   ...tseslint.configs.recommended.map(config => ({
     ...config,
-    files: ['backend/rag/**/*.ts'],
+    files: ['src/backend/rag/**/*.ts'],
     ignores: ['node_modules/**', 'dist/**'],
   })),
 ];

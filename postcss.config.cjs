@@ -13,7 +13,8 @@ module.exports = {
       ? [purgecss({
           content: [
             './index.html',
-            './src/**/*.{jsx,js,tsx,ts}',
+            './src/frontend/**/*.{jsx,js,tsx,ts}',
+            './src/packages/ui/src/**/*.{jsx,js,tsx,ts}',
           ],
           safelist: {
             standard: [

@@ -30,7 +30,7 @@ export function sortBlogPostsNewestFirst(a, b) {
 }
 
 export function loadBlogPosts() {
-  const articlesDir = path.resolve('src/blog');
+  const articlesDir = path.resolve('src/frontend/blog');
   if (!fs.existsSync(articlesDir)) {
     console.warn('[seo-prerender] blog/ directory not found, skipping blog posts.');
     return [];

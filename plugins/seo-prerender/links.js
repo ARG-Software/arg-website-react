@@ -10,7 +10,7 @@ let _projectLinksCache = null;
 
 export function loadProjectLinks() {
   if (_projectLinksCache) return _projectLinksCache;
-  const projectsPath = path.resolve('src/data/projects.json');
+  const projectsPath = path.resolve('src/frontend/data/projects.json');
   if (!fs.existsSync(projectsPath)) {
     _projectLinksCache = [];
     return _projectLinksCache;

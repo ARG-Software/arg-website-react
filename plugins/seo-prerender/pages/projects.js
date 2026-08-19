@@ -4,10 +4,10 @@ import { SITE_URL } from '../constants.js';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { replaceMetaTags } from '../html-utils.js';
 import { getProjectExtraLinks } from '../links.js';
-import { buildProjectSchema } from '../../../src/utils/structuredData.js';
+import { buildProjectSchema } from '../../../src/frontend/utils/structuredData.js';
 
 export function writeProjectPages({ distDir, baseHtml, generated }) {
-  const projectsPath = path.resolve('src/data/projects.json');
+  const projectsPath = path.resolve('src/frontend/data/projects.json');
   if (!fs.existsSync(projectsPath)) return generated;
 
   const projects = JSON.parse(fs.readFileSync(projectsPath, 'utf-8'));

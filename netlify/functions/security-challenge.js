@@ -1,4 +1,4 @@
-import { config, createSecurityChallengeApi } from '../../backend/rag/api/securityChallengeApi.js';
+import { config, createSecurityChallengeApi } from '../../src/backend/rag/api/securityChallengeApi.js';
 
 export { config };
 

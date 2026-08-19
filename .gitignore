@@ -153,7 +153,7 @@ external/*.xlsx
 public/files/cvs
 public/files/sites
 .rag-private/
-backend/rag/.rag_private/
+src/backend/rag/.rag_private/
 
 .opencode
 .storybook

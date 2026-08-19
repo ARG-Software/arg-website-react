@@ -1,4 +1,4 @@
-import { config, createAssistantUiCopyApi } from '../../backend/rag/api/assistantUiCopyApi.js';
+import { config, createAssistantUiCopyApi } from '../../src/backend/rag/api/assistantUiCopyApi.js';
 
 export { config };
 

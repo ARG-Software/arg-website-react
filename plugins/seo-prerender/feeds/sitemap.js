@@ -40,7 +40,7 @@ export function generateSitemap({ distDir, blogPostMetas }) {
     sitemapUrls.push(entry);
   }
 
-  const projectsPath = path.resolve('src/data/projects.json');
+  const projectsPath = path.resolve('src/frontend/data/projects.json');
   if (fs.existsSync(projectsPath)) {
     const projects = JSON.parse(fs.readFileSync(projectsPath, 'utf-8'));
     for (const project of projects) {

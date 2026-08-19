@@ -18,7 +18,7 @@ and comprehensive Google Analytics 4 instrumentation.
 | **Routing** | `react-router-dom` with both `/path` and `/path/` variants |
 | **SEO** | Custom Vite plugin prerenders 51 HTML files + generates sitemap/RSS/Atom |
 | **Styling** | Plain CSS files (no CSS-in-JS, no Tailwind) — organized by page/component |
-| **Analytics** | GA4 via gtag — all tracking centralized in `src/utils/analytics.js` |
+| **Analytics** | GA4 via gtag — all tracking centralized in `src/frontend/utils/analytics.js` |
 | **Build** | `npm run build` → lint:fix → Vite → prerender → image optimization |
 | **Lint** | ESLint 9 with React + React Hooks + Prettier plugins |
 | **Test** | No automated test suite currently configured |
@@ -32,133 +32,33 @@ and comprehensive Google Analytics 4 instrumentation.
 ├── vite.config.js          # Vite config — plugins, manualChunks, path aliases, SPA fallback
 ├── plugins/
 │   └── seo-prerender/      # Custom build plugin — prerendered pages + sitemap/RSS/Atom (see § 5)
-├── scripts/
-│   └── import-medium-articles.cjs  # Medium blog post importer
+├── scripts/                # Import and maintenance scripts
 ├── package.json            # Dependencies & scripts
-├── backend/                # Portable backend apps outside Netlify adapters
-│   ├── admin/              # Admin API, domain, application, and infrastructure
-│   └── rag/                # Gaspar apps, domain, application, infrastructure, ingestion, tests
 ├── public/                 # Static assets served as-is
-│   ├── _redirects          # Netlify redirects (GA4 proxy, LLM aliases, trailing-slash, legacy)
-│   ├── _headers            # Netlify headers
-│   ├── files/              # PDFs (portfolio.pdf)
-│   ├── fonts/              # Neue Montreal WOFF fonts
-│   ├── images/             # Blog images, partners, projects, homepage, og.jpg
-│   ├── icons/              # PWA icons
-│   ├── llms.txt            # LLM metadata
-│   ├── llms-full.txt       # Full LLM metadata
-│   ├── robots.txt          # Crawler directives
-│   └── videos/             # Video assets
+├── netlify/                # Netlify function and edge-function adapters
+├── supabase/               # Supabase config, migrations, and helper scripts
 └── src/
-    ├── main.jsx            # React entry — providers shell, route table, lazy imports
-    ├── animations/         # GSAP animation attribute presets
-    ├── blog/               # 34 Markdown blog posts with YAML frontmatter
-    ├── components/
-    │   ├── accordions/     # Accordion components
-    │   ├── actions/        # SocialShareButtons
-    │   ├── blog/           # Blog-specific components
-    │   ├── cards/          # BaseCard, FounderCard, ProjectItem
-    │   ├── careers/        # Careers-specific components
-    │   ├── filters/        # TagFilterPills
-    │   ├── forms/          # ContactForm, FormCard
-    │   ├── grids/          # FilterGrid, ImageGallery, Timeline, VerticalTimeline, StepProgressTimeline
-    │   ├── headers/        # PageHeader
-    │   ├── icons/          # Logo, SocialIcons, AtomIcon, BlueskyIcon, CopyIcon, etc.
-    │   ├── layout/         # CTASection, Footer, LoadingScreen, Marquee, SectionDivider, SectionTicker, ErrorBoundary, PageTransitionOverlay
-    │   ├── navigation/     # AppLink, Breadcrumb, Navbar, NavMenu, Pagination, SimpleCarousel, ArticleSidebar
-    │   ├── overlays/       # CookieConsent, Drawer
-    │   ├── widgets/        # AssistantWidget, WidgetManager, CounterWidget, ShuffleText, TechStackConsole
-    │   ├── pills/          # Pill, PillButton
-    │   ├── seo/            # SEO (react-helmet-async wrapper)
-    │   └── widgets/        # CounterWidget, ShuffleText, TechStackConsole
-    ├── constants/          # Shared constants (config, UI thresholds)
-    ├── data/               # JSON/JS data files
-    │   ├── about.json      # About page content
-    │   ├── faq.js          # FAQ items
-    │   ├── jobs.json       # Open job listings
-    │   ├── menu.json       # NavMenu configuration
-    │   ├── partners.json   # Partners/clients with timeline data
-    │   ├── projectGallery.js  # Project gallery images
-    │   ├── projects.json   # 7 project detail entries (slug, images, metrics, stack)
-    │   ├── services.json   # Services data
-    │   ├── siteLinks.json  # External links, emails, socials, share URLs
-    │   └── techStackConsole.json  # Tech stack console data
-    ├── hooks/
-    │   ├── useBlogSearch.js       # Blog list search + pagination + tag filtering
-    │   ├── useCountUp.js          # Animated number counter
-    │   ├── useHashScroll.js       # Hash fragment scroll handling
-    │   ├── useLeadCaptureVisibility.js  # Assistant lead capture visibility tracking
-    │   ├── useNextProjectSection.js  # Scroll-to-next-project CTA behavior
-    │   ├── useNotFoundPageScene.js   # Three.js 3D scene for 404 page
-    │   ├── useRAF.js              # requestAnimationFrame coordinator
-    │   ├── useScrollAnimations.js # Intersection Observer + GSAP scroll-triggered animations
-    │   ├── useThreeSphereBackground.js  # Three.js sphere background
-    │   ├── useTimeOnPage.js       # Fires time_on_page event on unmount (≥5s threshold)
-    │   ├── useWaterRipple.js      # Canvas water ripple effect
-    │   ├── useWeb3Form.js         # Web3Forms integration
-    │   └── assistant/             # Assistant-specific hooks (lead capture, security)
-    ├── pages/
-    │   ├── home/
-    │   │   ├── HomePage.jsx     # Main landing page — composes all sections
-    │   │   └── sections/        # Homepage section components
-    │   │       ├── HeroSection.jsx
-    │   │       ├── StudioOverviewSection.jsx
-    │   │       ├── ServicesSection.jsx
-    │   │       ├── ProjectsSection.jsx
-    │   │       ├── WorkStatsSection.jsx
-    │   │       ├── TestimonialsSection.jsx
-    │   │       ├── TeamSection.jsx
-    │   │       ├── SocialSection.jsx
-    │   │       ├── FAQSection.jsx
-    │   │       ├── BlogPromoSection.jsx
-    │   │       └── ContactSection.jsx
-    │   ├── blog/
-    │   │   ├── BlogPage.jsx      # Blog listing — search, pagination, tags
-    │   │   └── BlogPostPage.jsx  # Single post — Markdown rendering, TOC, sidebar
-    │   ├── AboutUsPage.jsx       # About — origin, story timeline, founders, beliefs
-    │   ├── CareersPage.jsx       # Job listing — accordion, apply links
-    │   ├── ContactPage.jsx       # Contact — form, direct links
-    │   ├── PartnersPage.jsx      # Partners listing — filter, drawer, timeline
-    │   ├── PrivacyPage.jsx
-    │   ├── ProjectDetailPage.jsx # Single project — hero, metrics, solution, images
-    │   ├── ProjectsPage.jsx      # Redirect to first project (not a listing page)
-    │   ├── TermsPage.jsx
-    │   ├── WorkingWithUsPage.jsx # How we work — fit checks, conversation steps
-    │   └── NotFoundPage.jsx      # 404 with Three.js animated scene
-    ├── providers/
-    │   ├── LenisProvider.jsx     # Smooth scroll provider
-    │   ├── LoadingProvider.jsx   # Site loading state
-    │   ├── RAFProvider.jsx       # requestAnimationFrame context
-    │   └── TransitionProvider.jsx# Page transition orchestrator
-    ├── services/
-    │   ├── apiService.js        # Centralized external API calls (assistant ask/challenge, contact submit)
-    │   ├── altchaService.js     # ALTCHA challenge pre-solving + payload caching (Web Workers)
-    │   ├── assistantActionsService.js  # Assistant CTA action mapping (e.g. email_hello → lead capture)
-    │   ├── linksService.js      # External link resolution, email, social, share URLs
-    │   └── web3formsService.js  # Web3Forms submission (lead capture, verified contact form)
-    ├── styles/
-    │   ├── base.css              # Global styles (original Webflow CSS)
-    │   ├── components.css        # Shared component styles
-    │   ├── home.css              # Homepage section styles
-    │   ├── blog.css              # Blog listing + post page styles
-    │   ├── projects.css          # Project detail page styles
-    │   ├── partners.css          # Partners page styles
-    │   ├── careers.css           # Careers + Working With Us styles
-    │   ├── about.css             # About page styles
-    │   ├── contact.css           # Contact page styles
-    │   ├── legal.css             # Privacy + Terms styles
-    │   ├── effects.css           # Animation effect styles
-    │   ├── elfsight.css          # Third-party widget styles
-    │   ├── loadingscreen.css     # Loading screen styles
-    │   ├── step-progress-timeline.css  # Step progress timeline styles
-    │   └── 404.css               # 404 page styles
-    └── utils/
-        ├── analytics.js          # Centralized GA4 tracking — all track* functions
-        ├── blog/                 # Blog utilities (article helpers, markdown, sorting, highlight)
-        ├── helpers.js            # General utility functions (isMobile, etc.)
-        ├── lazyWithRetry.js      # Lazy loading with retry on chunk failure
-        ├── structuredData.js     # JSON-LD structured data builders
-        └── timeline.js           # Timeline data helpers
+    ├── backend/
+    │   ├── admin/          # Admin API, domain, application, and infrastructure
+    │   ├── public/         # Public discovery/MCP API
+    │   ├── rag/            # Gaspar apps, domain, application, infrastructure, ingestion, tests
+    │   └── shared/         # Shared backend HTTP utilities
+    ├── frontend/
+    │   ├── main.jsx        # React entry — providers shell, route table, lazy imports
+    │   ├── animations/     # GSAP animation attribute presets
+    │   ├── blog/           # Markdown blog posts with YAML frontmatter
+    │   ├── components/     # App-specific React components
+    │   ├── constants/      # Shared frontend constants
+    │   ├── data/           # Frontend JSON/JS data files
+    │   ├── hooks/          # Custom React hooks
+    │   ├── pages/          # Route components
+    │   ├── providers/      # Context providers
+    │   ├── services/       # Frontend services
+    │   ├── styles/         # Frontend CSS files
+    │   ├── utils/          # Analytics, blog parser, helpers, structured data, lazy retry
+    │   └── workers/        # Frontend web workers
+    └── packages/
+        └── ui/             # Shared UI package and Storybook stories
 ```
 
 ---
@@ -166,7 +66,7 @@ and comprehensive Google Analytics 4 instrumentation.
 ## 3. Architecture Patterns
 
 ### 3.1 Routing
-- All routes are defined in `src/main.jsx`
+- All routes are defined in `src/frontend/main.jsx`
 - Both `/path` and `/path/` variants exist for each route
 - Blog posts: `/blog/:slug/` renders `BlogPostPage` with `slug` from URL params
 - Project detail: `/projects/:slug/` renders `ProjectDetailPage`
@@ -188,7 +88,7 @@ LoadingProvider → HelmetProvider → BrowserRouter →
 - `ErrorBoundary`: catches render errors
 
 ### 3.3 Page Transitions
-- `TransitionProvider` in `src/providers/TransitionProvider.jsx` handles all cross-page navigation
+- `TransitionProvider` in `src/frontend/providers/TransitionProvider.jsx` handles all cross-page navigation
 - Uses a horizontal/vertical overlay animation via GSAP
 - Automatically calls `trackPageView()` on every SPA route change
 - Calls `window.scrollTo(0, 0)` or custom Lenis scroll on navigation
@@ -201,7 +101,7 @@ const PartnersPage = lazyWithRetry(() => import('./pages/PartnersPage.jsx'));
 const BlogPage = lazyWithRetry(() => import('./pages/blog/BlogPage.jsx'));
 // ... etc
 ```
-`lazyWithRetry` (in `src/utils/lazyWithRetry.js`) wraps `React.lazy` with automatic retry on chunk load failure.
+`lazyWithRetry` (in `src/frontend/utils/lazyWithRetry.js`) wraps `React.lazy` with automatic retry on chunk load failure.
 
 ### 3.5 Path Aliases
 Vite config defines import aliases for cleaner imports:
@@ -221,17 +121,17 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Cleans up inline `transform` after animation to prevent CSS hover conflicts
 
 ### 3.7 Blog System
-- Posts are Markdown files in `src/blog/` with YAML frontmatter
+- Posts are Markdown files in `src/frontend/blog/` with YAML frontmatter
 - Naming convention: `{slug}.md` (e.g. `angular-5-to-19-migration.md`)
-- Parsed at build time and runtime via `src/utils/blog/`
+- Parsed at build time and runtime via `src/frontend/utils/blog/`
 - Metadata cached in `window.__BLOG_POSTS_METADATA__` after first load
 - Syntax highlighting via highlight.js on `BlogPostPage`
 - RSS/Atom feeds auto-generated by `plugins/seo-prerender/` at build time
 - Medium import: `npm run blog:import:medium` fetches from Medium feed
 
 ### 3.8 External Links Service
-- `src/services/linksService.js` centralizes all external URLs
-- Reads from `src/data/siteLinks.json`
+- `src/frontend/services/linksService.js` centralizes all external URLs
+- Reads from `src/frontend/data/siteLinks.json`
 - Provides typed getters: `getProjectBookingLink()`, `getNewsletterSubscribeLink()`, `getProjectBriefFormLink()`, etc.
 - Also provides email, social, and share URL builders
 - Never hardcode external URLs in components — always use this service
@@ -240,7 +140,7 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 
 ## 4. Analytics
 
-### 4.1 Centralized Tracking (`src/utils/analytics.js`)
+### 4.1 Centralized Tracking (`src/frontend/utils/analytics.js`)
 All GA4 events go through this module. Never call `window.gtag()` directly.
 
 | Function | Event | Parameters |
@@ -257,14 +157,14 @@ All GA4 events go through this module. Never call `window.gtag()` directly.
 | `trackBlogPostClick(slug, title, location)` | `blog_post_click` | `blog_post_slug`, `blog_post_title`, `link_location` |
 | `trackConsent(action)` | `cookie_consent` | `consent_action` |
 
-### 4.2 AppLink Component (`src/components/navigation/AppLink.jsx`)
+### 4.2 AppLink Component (`src/frontend/components/navigation/AppLink.jsx`)
 - Wraps React Router's `<Link>` with optional analytics props
 - Props: `trackEvent` (string), `trackData` (object)
 - Fires `trackEvent(trackEvent, trackData)` BEFORE navigation
 - Does NOT automatically track every click — explicit props required
 - Use for client-side navigation that needs analytics
 
-### 4.3 useTimeOnPage Hook (`src/hooks/useTimeOnPage.js`)
+### 4.3 useTimeOnPage Hook (`src/frontend/hooks/useTimeOnPage.js`)
 - Takes `pagePath` (string) and optional `minSeconds` (default 5)
 - Starts timer on mount, fires `time_on_page` event on unmount if threshold met
 - Built-in 5-second minimum to filter accidental bounces
@@ -290,7 +190,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 ### Key Config
 - `SITE_URL`: `https://arg.software`
 - `STATIC_PAGES`: Partners, Blog, Careers, Working with Us, About Us, Contact, Privacy, Terms (8 pages)
-- `PROJECTS`: 7 projects loaded from `src/data/projects.json`
+- `PROJECTS`: 7 projects loaded from `src/frontend/data/projects.json`
 - Sitemap priorities: blog `0.7`, projects `0.6`, pages `0.8`, privacy/terms `0.3`
 - Feeds only generated in production builds
 
@@ -322,7 +222,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - Analytics events: `snake_case`
 
 ### 6.3 CSS Scoping
-- Page-specific styles: separate CSS file in `src/styles/` (e.g. `partners.css`, `blog.css`)
+- Page-specific styles: separate CSS file in `src/frontend/styles/` (e.g. `partners.css`, `blog.css`)
 - Global styles: `base.css` (original Webflow CSS)
 - Component styles: `components.css`
 - Pattern: prefix classes with page/component abbreviation
@@ -390,15 +290,15 @@ Build output: `dist/` directory ready for deployment.
 ## 9. Common Tasks & Gotchas
 
 ### Adding a New Page
-1. Create the page component in `src/pages/`
-2. Add route in `src/main.jsx` (with and without trailing slash)
+1. Create the page component in `src/frontend/pages/`
+2. Add route in `src/frontend/main.jsx` (with and without trailing slash)
 3. Lazy-load with `lazyWithRetry()` if not homepage
 4. Add entry to `STATIC_PAGES` in `plugins/seo-prerender/constants.js` for prerendering + sitemap
 5. Add trailing-slash redirect in `public/_redirects`
 6. Add SEO metadata (title, description) in the page component
 
 ### Adding a New Blog Post
-1. Create `src/blog/{slug}.md` with YAML frontmatter:
+1. Create `src/frontend/blog/{slug}.md` with YAML frontmatter:
    ```yaml
    ---
    slug: my-post-slug
@@ -468,7 +368,7 @@ export default function MyPage() {
 
 ### Deprecated Code
 - `App.jsx` — Removed; routing is now in `main.jsx` directly.
-- Barrel exports (`src/components/index.js`, `src/hooks/index.js`) — Removed; use direct imports with aliases.
+- Barrel exports (`src/frontend/components/index.js`, `src/frontend/hooks/index.js`) — Removed; use direct imports with aliases.
 
 ---
 
@@ -476,23 +376,23 @@ export default function MyPage() {
 
 | File | Purpose |
 |---|---|
-| `src/main.jsx` | App entry — provider stack, route definitions |
-| `src/utils/analytics.js` | All GA4 tracking functions |
-| `src/services/linksService.js` | External link resolution, emails, socials, share URLs |
-| `src/components/navigation/AppLink.jsx` | Enhanced Link with analytics props |
-| `src/providers/TransitionProvider.jsx` | Page transitions + scroll + page view tracking |
+| `src/frontend/main.jsx` | App entry — provider stack, route definitions |
+| `src/frontend/utils/analytics.js` | All GA4 tracking functions |
+| `src/frontend/services/linksService.js` | External link resolution, emails, socials, share URLs |
+| `src/frontend/components/navigation/AppLink.jsx` | Enhanced Link with analytics props |
+| `src/frontend/providers/TransitionProvider.jsx` | Page transitions + scroll + page view tracking |
 | `plugins/seo-prerender/` | Build-time SEO — prerender, sitemap, RSS, Atom |
 | `plugins/seo-prerender/constants.js` | Static pages, nav links, site URL |
 | `vite.config.js` | Build config — plugins, chunks, aliases, SPA fallback |
 | `index.html` | HTML shell — OG tags, JSON-LD, GA4 bootstrap, font preloads |
-| `src/data/projects.json` | Project data (7 projects) |
-| `src/data/siteLinks.json` | All external URLs, emails, social links |
-| `src/utils/blog/` | Blog frontmatter parser + metadata loader |
-| `src/utils/lazyWithRetry.js` | Lazy loading with chunk retry |
+| `src/frontend/data/projects.json` | Project data (7 projects) |
+| `src/frontend/data/siteLinks.json` | All external URLs, emails, social links |
+| `src/frontend/utils/blog/` | Blog frontmatter parser + metadata loader |
+| `src/frontend/utils/lazyWithRetry.js` | Lazy loading with chunk retry |
 | `public/_redirects` | Netlify redirect rules |
 | `public/robots.txt` | Crawler directives |
 | `public/llms.txt` | LLM metadata |
-| `src/components/widgets/AssistantWidget.jsx` | Assistant widget UI, deterministic lead capture, and proactive offer flow |
-| `src/hooks/useLeadCaptureVisibility.js` | Lead-capture offer visibility rules for the assistant widget |
-| `src/services/assistantActionsService.js` | Assistant CTA action mapping (e.g. `email_hello` → in-chat lead capture) |
-| `src/workers/altchaPbkdf2Worker.js` | Web Worker used for browser-side ALTCHA proof-of-work solving |
+| `src/frontend/components/widgets/AssistantWidget.jsx` | Assistant widget UI, deterministic lead capture, and proactive offer flow |
+| `src/frontend/hooks/useLeadCaptureVisibility.js` | Lead-capture offer visibility rules for the assistant widget |
+| `src/frontend/services/assistantActionsService.js` | Assistant CTA action mapping (e.g. `email_hello` → in-chat lead capture) |
+| `src/frontend/workers/altchaPbkdf2Worker.js` | Web Worker used for browser-side ALTCHA proof-of-work solving |

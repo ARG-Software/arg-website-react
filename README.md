@@ -41,56 +41,33 @@ npm run preview      # Preview production build
 ├── plugins/
 │   └── seo-prerender/            # Custom SEO prerender + sitemap/RSS/Atom
 ├── netlify/
-│   └── functions/                # Assistant/contact API functions and scheduled jobs
+│   └── functions/                # Netlify adapters for backend APIs
 ├── supabase/
 │   └── migrations/               # RAG schema, vector search, and rate-limit tables
-├── backend/
-│   ├── admin/                    # Admin API, domain, application, and infrastructure
-│   └── rag/                      # Gaspar assistant apps, domain, application, infrastructure, ingestion, tests
-├── scripts/
-│   └── import-medium-articles.cjs # Medium blog post importer
+├── scripts/                      # Import and maintenance scripts
 ├── public/                       # Static assets (fonts, images, redirects, LLM metadata)
 └── src/
-    ├── main.jsx                  # App entry, provider tree, route definitions
-    ├── animations/               # GSAP animation presets
-    ├── blog/                     # 34 Markdown blog posts with YAML frontmatter
-    ├── components/
-    │   ├── accordions/           # Accordion components
-    │   ├── actions/              # SocialShareButtons
-    │   ├── blog/                 # Blog-specific components
-    │   ├── cards/                # BaseCard, FounderCard, ProjectItem
-    │   ├── careers/              # Careers-specific components
-    │   ├── filters/              # TagFilterPills
-    │   ├── forms/                # ContactForm, EmailCaptureForm, FormCard
-    │   ├── grids/                # FilterGrid, ImageGallery, Timeline, VerticalTimeline, StepProgressTimeline
-    │   ├── headers/              # PageHeader
-    │   ├── icons/                # Logo, SocialIcons, AtomIcon, BlueskyIcon, etc.
-    │   ├── layout/               # CTASection, Footer, LoadingScreen, Marquee, SectionDivider, ErrorBoundary
-    │   ├── navigation/           # AppLink, Breadcrumb, Navbar, NavMenu, Pagination, ArticleSidebar
-    │   ├── overlays/             # CookieConsent, Drawer
-    │   ├── pills/                # Pill, PillButton
-    │   ├── seo/                  # SEO component (react-helmet-async wrapper)
-    │   └── widgets/              # CounterWidget, ShuffleText, TechStackConsole
-    ├── constants/                # Shared constants (config, UI thresholds)
-    ├── data/                     # JSON/JS data files (about, faq, jobs, menu, partners, projects, services, sitelinks)
-    ├── hooks/                    # Custom hooks (useScrollAnimations, useBlogSearch, useHashScroll, etc.)
-    ├── pages/
-    │   ├── home/                 # HomePage + section components
-    │   ├── blog/                 # BlogPage (listing) + BlogPostPage (detail)
-    │   ├── AboutUsPage.jsx
-    │   ├── CareersPage.jsx
-    │   ├── ContactPage.jsx
-    │   ├── PartnersPage.jsx
-    │   ├── PrivacyPage.jsx
-    │   ├── ProjectDetailPage.jsx
-    │   ├── ProjectsPage.jsx
-    │   ├── TermsPage.jsx
-    │   ├── WorkingWithUsPage.jsx
-    │   └── NotFoundPage.jsx
-    ├── providers/                # Context providers (Loading, RAF, Lenis, Transition)
-    ├── services/                 # External link resolution (linksService.js)
-    ├── styles/                   # CSS files (base, components, home, blog, projects, partners, careers, etc.)
-    └── utils/                    # Analytics, blog parser, helpers, structured data, lazy retry
+    ├── backend/
+    │   ├── admin/                # Admin API, domain, application, and infrastructure
+    │   ├── public/               # Public discovery/MCP API
+    │   ├── rag/                  # Gaspar assistant apps, domain, ingestion, tests
+    │   └── shared/               # Shared backend HTTP utilities
+    ├── frontend/
+    │   ├── main.jsx              # App entry, provider tree, route definitions
+    │   ├── animations/           # GSAP animation presets
+    │   ├── blog/                 # Markdown blog posts with YAML frontmatter
+    │   ├── components/           # App-specific React components
+    │   ├── constants/            # Shared frontend constants
+    │   ├── data/                 # Frontend JSON/JS data files
+    │   ├── hooks/                # Custom React hooks
+    │   ├── pages/                # Route components
+    │   ├── providers/            # Context providers
+    │   ├── services/             # Frontend services
+    │   ├── styles/               # Frontend CSS files
+    │   ├── utils/                # Analytics, blog parser, structured data, lazy retry
+    │   └── workers/              # Frontend web workers
+    └── packages/
+        └── ui/                   # Shared UI package and Storybook stories
 ```
 
 ---
@@ -105,7 +82,7 @@ npm run preview      # Preview production build
 | `npm run lint` | ESLint check (no auto-fix) |
 | `npm run lint:fix` | ESLint auto-fix |
 | `npm run format` | Prettier format |
-| `npm run blog:import:medium` | Import published Medium articles into `src/blog/` |
+| `npm run blog:import:medium` | Import published Medium articles into `src/frontend/blog/` |
 | `npm run blog:import:medium:drafts` | Import Medium drafts |
 | `npm run sync:blog` | Import Medium posts and re-index first-party RAG sources |
 | `npm run rag:ingest:local` | Index local website/blog/project/private sources into Supabase |
@@ -127,15 +104,15 @@ Vite config defines these import aliases (see `vite.config.js`):
 
 | Alias | Resolves to |
 |---|---|
-| `@components` | `src/components` |
-| `@hooks` | `src/hooks` |
-| `@constants` | `src/constants` |
-| `@providers` | `src/providers` |
-| `@utils` | `src/utils` |
-| `@services` | `src/services` |
-| `@data` | `src/data` |
-| `@styles` | `src/styles` |
-| `@ui` | `packages/ui/src` |
+| `@components` | `src/frontend/components` |
+| `@hooks` | `src/frontend/hooks` |
+| `@constants` | `src/frontend/constants` |
+| `@providers` | `src/frontend/providers` |
+| `@utils` | `src/frontend/utils` |
+| `@services` | `src/frontend/services` |
+| `@data` | `src/frontend/data` |
+| `@styles` | `src/frontend/styles` |
+| `@ui` | `src/packages/ui/src` |
 
 ---
 
@@ -159,7 +136,7 @@ Also auto-generated at build time:
 
 ## Analytics
 
-All GA4 tracking is centralized in `src/utils/analytics.js`. Tracked events include:
+All GA4 tracking is centralized in `src/frontend/utils/analytics.js`. Tracked events include:
 - **Page views** (SPA route changes)
 - **CTA clicks** (booking, typeform, portfolio)
 - **Outbound link clicks** (external sites)
@@ -178,7 +155,7 @@ The `AppLink` component (SPA navigation) supports optional `trackEvent`/`trackDa
 
 ## Gaspar RAG Assistant
 
-Gaspar is the site assistant exposed through `src/components/widgets/AssistantWidget.jsx` and served by Netlify Functions. It uses a mounted app under `backend/rag/apps/gaspar/` to wire application use cases to concrete infrastructure adapters.
+Gaspar is the site assistant exposed through `src/frontend/components/widgets/AssistantWidget.jsx` and served by Netlify Functions. It uses a mounted app under `src/backend/rag/apps/gaspar/` to wire application use cases to concrete infrastructure adapters.
 
 ### Runtime Architecture
 
@@ -186,18 +163,18 @@ The RAG code is organized by dependency direction rather than by provider:
 
 | Layer | Path | Responsibility |
 |---|---|---|
-| **Apps** | `backend/rag/apps/` | Concrete app mounts that compose application use cases with infrastructure adapters |
-| **Domain** | `backend/rag/domain/` | Provider-agnostic types and policies: assistant actions/responses, language policy, conversation intent, retrieval plans/routes, and content/source types |
-| **Application** | `backend/rag/application/` | Use cases, ports, ingestion pipeline, retrieval orchestration, assistant UI copy, config value types, common helpers, and provider-agnostic prompts |
-| **Application Ports** | `backend/rag/application/ports/` | Interfaces implemented by infrastructure: answer provider, embedding provider, RAG read/write repositories, provider errors, and embedding index types |
-| **Infrastructure** | `backend/rag/infrastructure/` | Provider, repository, security, source-loading, extraction, and manifest adapters |
-| **Prompts** | `backend/rag/application/prompts/` | Provider-agnostic prompt builders for intent, retrieval planning, answering, fallback, and UI translation |
-| **Ingestion Loaders** | `backend/rag/infrastructure/ingestion/loaders/` | First-party and trusted-external source loaders that create `RagSource` objects |
-| **Ingestion Extractors** | `backend/rag/infrastructure/ingestion/extractors/` | PDF, HTML, Markdown, and JSON text extraction helpers |
-| **Ingestion Manifests** | `backend/rag/infrastructure/ingestion/manifests/` | First-party and trusted-external source definitions and manifest types |
-| **Tests** | `backend/rag/tests/` | Unit tests, route/eval coverage, ingestion tests, security tests, and fakes |
+| **Apps** | `src/backend/rag/apps/` | Concrete app mounts that compose application use cases with infrastructure adapters |
+| **Domain** | `src/backend/rag/domain/` | Provider-agnostic types and policies: assistant actions/responses, language policy, conversation intent, retrieval plans/routes, and content/source types |
+| **Application** | `src/backend/rag/application/` | Use cases, ports, ingestion pipeline, retrieval orchestration, assistant UI copy, config value types, common helpers, and provider-agnostic prompts |
+| **Application Ports** | `src/backend/rag/application/ports/` | Interfaces implemented by infrastructure: answer provider, embedding provider, RAG read/write repositories, provider errors, and embedding index types |
+| **Infrastructure** | `src/backend/rag/infrastructure/` | Provider, repository, security, source-loading, extraction, and manifest adapters |
+| **Prompts** | `src/backend/rag/application/prompts/` | Provider-agnostic prompt builders for intent, retrieval planning, answering, fallback, and UI translation |
+| **Ingestion Loaders** | `src/backend/rag/infrastructure/ingestion/loaders/` | First-party and trusted-external source loaders that create `RagSource` objects |
+| **Ingestion Extractors** | `src/backend/rag/infrastructure/ingestion/extractors/` | PDF, HTML, Markdown, and JSON text extraction helpers |
+| **Ingestion Manifests** | `src/backend/rag/infrastructure/ingestion/manifests/` | First-party and trusted-external source definitions and manifest types |
+| **Tests** | `src/backend/rag/tests/` | Unit tests, route/eval coverage, ingestion tests, security tests, and fakes |
 
-The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `backend/rag/infrastructure/`, and `backend/rag/apps/gaspar/` wires those adapters into application use cases.
+The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `src/backend/rag/infrastructure/`, and `src/backend/rag/apps/gaspar/` wires those adapters into application use cases.
 
 ### Ask Flow
 
@@ -210,7 +187,7 @@ The domain and application layers do not import concrete provider or repository 
 
 Gaspar reads from the configured RAG repository, not directly from website files at request time. First-party and trusted-external sources are ingested into `rag_sources`/`rag_chunks` tables with metadata, chunk hashes, primary embeddings, and fallback embeddings.
 
-First-party ingestion covers public site content, blog posts, project data, static pages, curated assistant profile content, and private source material under `backend/rag/.rag_private/`. Private content is processed through redaction rules before indexing where appropriate.
+First-party ingestion covers public site content, blog posts, project data, static pages, curated assistant profile content, and private source material under `src/backend/rag/.rag_private/`. Private content is processed through redaction rules before indexing where appropriate.
 
 Useful ingestion commands:
 

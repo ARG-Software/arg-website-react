@@ -3,11 +3,11 @@ import path from 'node:path';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { injectStructuredData } from '../html-utils.js';
 import { getHomepageExtraLinks } from '../links.js';
-import { DEFAULT_TITLE } from '../../../src/constants/seo.js';
-import { buildFAQPageSchema, buildWebPageSchema } from '../../../src/utils/structuredData.js';
+import { DEFAULT_TITLE } from '../../../src/frontend/constants/seo.js';
+import { buildFAQPageSchema, buildWebPageSchema } from '../../../src/frontend/utils/structuredData.js';
 
 const FAQ = JSON.parse(
-  fs.readFileSync(new URL('../../../src/data/faq.json', import.meta.url), 'utf8')
+  fs.readFileSync(new URL('../../../src/frontend/data/faq.json', import.meta.url), 'utf8')
 );
 
 export function writeHomepage({ distDir, baseHtml }) {

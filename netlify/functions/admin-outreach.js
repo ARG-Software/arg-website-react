@@ -1,4 +1,4 @@
-import { config, createAdminOutreachApi } from '../../backend/admin/api/adminOutreachApi.js';
+import { config, createAdminOutreachApi } from '../../src/backend/admin/api/adminOutreachApi.js';
 
 export { config };
 

@@ -3,8 +3,8 @@ import path from 'node:path';
 import { SITE_URL } from '../constants.js';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { replaceMetaTags, escapeHtml } from '../html-utils.js';
-import { DEFAULT_AUTHOR } from '../../../src/constants/seo.js';
-import { buildArticleSchema } from '../../../src/utils/structuredData.js';
+import { DEFAULT_AUTHOR } from '../../../src/frontend/constants/seo.js';
+import { buildArticleSchema } from '../../../src/frontend/utils/structuredData.js';
 
 export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) {
   let count = generated;

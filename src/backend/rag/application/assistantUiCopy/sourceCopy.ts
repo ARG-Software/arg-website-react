@@ -9,7 +9,7 @@ import {
   readStringRecord,
 } from '../../application/assistantUiCopy/normalization.js';
 
-const ASSISTANT_COPY_PATH = resolve(process.cwd(), 'src/data/assistant.json');
+const ASSISTANT_COPY_PATH = resolve(process.cwd(), 'src/frontend/data/assistant.json');
 
 export function readAssistantSourceCopy(): AssistantSourceCopy {
   const source = JSON.parse(readFileSync(ASSISTANT_COPY_PATH, 'utf8')) as Record<string, unknown>;

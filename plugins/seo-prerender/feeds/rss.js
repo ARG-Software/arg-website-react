@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { SITE_URL } from '../constants.js';
 import { escapeHtml } from '../html-utils.js';
-import { DEFAULT_AUTHOR } from '../../../src/constants/seo.js';
+import { DEFAULT_AUTHOR } from '../../../src/frontend/constants/seo.js';
 
 export function generateRss({ distDir, blogPostMetas }) {
   const rssItems = blogPostMetas

@@ -4,8 +4,8 @@ import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-const ROOT_DIR = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
-const BACKEND_DIR = join(ROOT_DIR, 'backend');
+const ROOT_DIR = dirname(dirname(dirname(dirname(fileURLToPath(import.meta.url)))));
+const BACKEND_DIR = join(ROOT_DIR, 'src/backend');
 const NETLIFY_DIR = join(ROOT_DIR, 'netlify');
 
 test('uses security function names and removes old contact function files', () => {
