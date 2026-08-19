@@ -1,6 +1,7 @@
 import { loadLocalEnv } from '../config/env.js';
 import type { ChatMessage, PageContext } from '../domain/conversation/ChatMessage.js';
-import { createGasparApp } from '../apps/gaspar/createGasparApp.js';
+import { askQuestion, retrieveRelevantChunks } from '../application/ask/askQuestion.js';
+import { createGasparDependencies } from '../apps/di/createGasparDependencies.js';
 
 loadLocalEnv();
 
@@ -22,7 +23,7 @@ try {
   const messages = parseMessages();
   const pageContext = parsePageContext();
   const question = getQuestion();
-  const application = createGasparApp();
+  const dependencies = createGasparDependencies();
 
   if (!question) {
     console.error(
@@ -32,7 +33,12 @@ try {
   }
 
   if (retrieveOnly) {
-    const contexts = await application.retrieveRelevantChunks({ question, messages, pageContext });
+    const contexts = await retrieveRelevantChunks({
+      ...dependencies.createAskQuestionDependencies(),
+      question,
+      messages,
+      pageContext,
+    });
     console.log(`\nQuestion: ${question}\n`);
     console.log(`Retrieved chunks: ${contexts.length}`);
 
@@ -45,7 +51,12 @@ try {
     process.exit(0);
   }
 
-  const result = await application.askQuestion({ question, messages, pageContext });
+  const result = await askQuestion({
+    ...dependencies.createAskQuestionDependencies(),
+    question,
+    messages,
+    pageContext,
+  });
   console.log(`\nQuestion: ${question}\n`);
   console.log(`Answer:\n${result.answer}\n`);
 

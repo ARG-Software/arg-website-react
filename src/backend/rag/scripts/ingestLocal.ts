@@ -1,5 +1,7 @@
 import { loadLocalEnv } from '../config/env.js';
-import { createGasparIngestionApp } from '../apps/gaspar/createGasparIngestionApp.js';
+import { createGasparDependencies } from '../apps/di/createGasparDependencies.js';
+import { ingestSource } from '../application/ingestion/ingestPipeline.js';
+import { loadFirstPartySources } from '../infrastructure/ingestion/loaders/loadFirstPartySources.js';
 import type { IngestSourceResult } from '../application/ingestion/types.js';
 import type { RagSource } from '../domain/content/RagSource.js';
 import { sleep } from '../application/common/time.js';
@@ -16,8 +18,8 @@ if (!hasSourceFilters(selection)) {
   process.exit(1);
 }
 
-const ingestionApp = createGasparIngestionApp();
-const sources = await ingestionApp.loadFirstPartySources(process.cwd(), selection);
+const dependencies = createGasparDependencies();
+const sources = await loadFirstPartySources(process.cwd(), selection);
 const results: IngestSourceResult[] = [];
 const failures: Array<{ source: RagSource; error: unknown }> = [];
 
@@ -28,7 +30,9 @@ if (sources.length === 0) {
 
 for (const source of sources) {
   try {
-    const result = await ingestionApp.ingestSource(source, {
+    const result = await ingestSource({
+      ...dependencies.createIngestSourceDependencies(),
+      source,
       dryRun,
       force: selection.force,
       fallbackOnly: selection.fallbackOnly,

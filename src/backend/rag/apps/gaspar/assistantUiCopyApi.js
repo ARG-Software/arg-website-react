@@ -1,5 +1,6 @@
-import { createGasparApp } from '../apps/gaspar/createGasparApp.ts';
-import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
+import { getAssistantUiCopy } from '../../application/assistantUiCopy/getAssistantUiCopy.ts';
+import { createApiHttp, createErrorBody } from '../../../shared/api/http.js';
+import { createGasparDependencies } from '../di/createGasparDependencies.ts';
 
 const ALLOWED_METHODS = 'GET, OPTIONS';
 
@@ -13,7 +14,10 @@ export const config = {
   },
 };
 
-export function createAssistantUiCopyApi({ env = process.env, gasparApp } = {}) {
+export function createAssistantUiCopyApi({
+  createDependencies = createGasparDependencies,
+  env = process.env,
+} = {}) {
   const http = createApiHttp({ allowedMethods: ALLOWED_METHODS, env });
 
   return async function handleAssistantUiCopy(request) {
@@ -38,7 +42,10 @@ export function createAssistantUiCopyApi({ env = process.env, gasparApp } = {}) 
       return http.createJsonResponse(
         request,
         200,
-        await getGasparApp().getAssistantUiCopy(language)
+        await getAssistantUiCopy(
+          language,
+          createDependencies({ env }).createAssistantUiCopyDependencies()
+        )
       );
     } catch (error) {
       console.error(error);
@@ -52,10 +59,6 @@ export function createAssistantUiCopyApi({ env = process.env, gasparApp } = {}) 
       );
     }
   };
-
-  function getGasparApp() {
-    return gasparApp || createGasparApp({ env });
-  }
 }
 
 export const handleAssistantUiCopy = createAssistantUiCopyApi();

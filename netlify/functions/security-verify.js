@@ -1,4 +1,4 @@
-import { config, createSecurityVerifyApi } from '../../src/backend/rag/api/securityVerifyApi.js';
+import { config, createSecurityVerifyApi } from '../../src/backend/rag/apps/gaspar/securityVerifyApi.js';
 
 export { config };
 

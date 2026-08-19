@@ -1,7 +1,7 @@
 import {
   config,
   createAssistantChallengeApi,
-} from '../../src/backend/rag/api/assistantChallengeApi.js';
+} from '../../src/backend/rag/apps/gaspar/assistantChallengeApi.js';
 
 export { config };
 

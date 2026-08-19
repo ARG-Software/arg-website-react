@@ -15,15 +15,17 @@ test('uses security function names and removes old contact function files', () =
   assert.equal(existsSync(join(NETLIFY_DIR, 'functions/contact-verify.js')), false);
 });
 
-test('backend security API exposes the security routes', () => {
+test('backend app APIs expose the security routes and old API folders are removed', () => {
   assert.match(
-    readBackendFile('rag/api/securityChallengeApi.js'),
+    readBackendFile('rag/apps/gaspar/securityChallengeApi.js'),
     /path:\s*'\/api\/security\/challenge'/
   );
   assert.match(
-    readBackendFile('rag/api/securityVerifyApi.js'),
+    readBackendFile('rag/apps/gaspar/securityVerifyApi.js'),
     /path:\s*'\/api\/security\/verify'/
   );
+  assert.equal(existsSync(join(BACKEND_DIR, 'rag/api')), false);
+  assert.equal(existsSync(join(BACKEND_DIR, 'admin/api')), false);
 });
 
 test('function files instantiate backend API modules', () => {

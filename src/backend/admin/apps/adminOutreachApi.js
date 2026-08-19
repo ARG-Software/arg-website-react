@@ -1,7 +1,10 @@
-import { createAdminApp } from '../apps/createAdminApp.js';
+import { authenticateAdmin } from '../application/admin/authenticateAdmin.js';
 import { createAdminError, getAdminErrorStatus } from '../application/errors.js';
+import { listOutreachRecords } from '../application/outreach/listOutreachRecords.js';
+import { updateOutreachRecord } from '../application/outreach/updateOutreachRecord.js';
 import { createOutreachRecordResponse } from '../domain/outreachRecord.js';
 import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
+import { createAdminDependencies } from './di/createAdminDependencies.js';
 
 export { createErrorBody };
 
@@ -12,7 +15,10 @@ export const config = {
   method: ['GET', 'POST', 'OPTIONS'],
 };
 
-export function createAdminOutreachApi({ app, env = process.env } = {}) {
+export function createAdminOutreachApi({
+  createDependencies = createAdminDependencies,
+  env = process.env,
+} = {}) {
   const http = createApiHttp({ allowedMethods: ADMIN_ALLOWED_METHODS, env });
 
   return async function handleAdminOutreachApi(request) {
@@ -32,22 +38,25 @@ export function createAdminOutreachApi({ app, env = process.env } = {}) {
         );
       }
 
-      const adminApp = app || createAdminApp({ env });
-      const user = await adminApp.authenticateAdmin(getBearerToken(request));
+      const dependencies = createDependencies({ env }).createOutreachDependencies();
+      const user = await authenticateAdmin(getBearerToken(request), dependencies);
 
       if (request.method === 'GET') {
-        const records = await adminApp.listOutreachRecords();
+        const records = await listOutreachRecords(dependencies);
         return http.createJsonResponse(request, 200, {
           records: records.map(createOutreachRecordResponse),
         });
       }
 
       const payload = await readJsonBody(request);
-      const record = await adminApp.updateOutreachRecord({
-        id: payload.id,
-        changes: payload.changes,
-        actorEmail: user.email,
-      });
+      const record = await updateOutreachRecord(
+        {
+          id: payload.id,
+          changes: payload.changes,
+          actorEmail: user.email,
+        },
+        dependencies
+      );
 
       return http.createJsonResponse(request, 200, {
         record: createOutreachRecordResponse(record),

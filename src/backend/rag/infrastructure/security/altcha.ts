@@ -4,28 +4,6 @@ import type { Challenge, Solution, VerifySolutionResult } from 'altcha-lib';
 import type { EnvSource } from '../../config/env.js';
 
 const CHALLENGE_TTL_MS = 5 * 60 * 1000;
-const CLEANUP_PROBABILITY = 0.02;
-
-interface StoredChallenge {
-  challenge: Challenge;
-  expiresAt: number;
-}
-
-const challengeStore = new Map<string, StoredChallenge>();
-
-function maybeCleanup(): void {
-  if (Math.random() > CLEANUP_PROBABILITY) {
-    return;
-  }
-
-  const now = Date.now();
-
-  for (const [key, entry] of challengeStore) {
-    if (entry.expiresAt <= now) {
-      challengeStore.delete(key);
-    }
-  }
-}
 
 function getAltchaCost(env: EnvSource): number {
   const value = Number(env.ALTCHA_COST);
@@ -55,15 +33,6 @@ export async function createAltchaChallenge(env: EnvSource = process.env): Promi
     expiresAt,
   });
 
-  const nonce = challenge.parameters.nonce;
-
-  challengeStore.set(nonce, {
-    challenge,
-    expiresAt: Date.now() + CHALLENGE_TTL_MS,
-  });
-
-  maybeCleanup();
-
   return challenge;
 }
 
@@ -72,11 +41,6 @@ export async function verifyAltchaChallenge(payload: {
   solution: Solution;
 }, env: EnvSource = process.env): Promise<VerifySolutionResult> {
   const hmacKey = getAltchaHmacKey(env);
-  const nonce = payload.challenge?.parameters?.nonce;
-
-  if (nonce) {
-    challengeStore.delete(nonce);
-  }
 
   return verifySolution({
     challenge: payload.challenge,

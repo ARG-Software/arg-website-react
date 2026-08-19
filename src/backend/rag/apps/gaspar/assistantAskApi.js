@@ -1,11 +1,8 @@
-import { RagValidationError } from '../application/ask/askQuestion.ts';
-import { EmbeddingQuotaExceededError } from '../application/ports/ProviderErrors.ts';
-import { createGasparApp } from '../apps/gaspar/createGasparApp.ts';
-import {
-  createGasparAskRateLimiterApp,
-  createGasparHumanVerificationApp,
-} from '../apps/gaspar/createGasparSecurityApp.ts';
-import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
+import { askQuestion, RagValidationError } from '../../application/ask/askQuestion.ts';
+import { EmbeddingQuotaExceededError } from '../../application/ports/ProviderErrors.ts';
+import { checkRateLimits } from '../../infrastructure/security/rateLimit.ts';
+import { createApiHttp, createErrorBody } from '../../../shared/api/http.js';
+import { createGasparDependencies } from '../di/createGasparDependencies.ts';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 
@@ -20,13 +17,10 @@ export const config = {
 };
 
 export function createAssistantAskApi({
-  askRateLimiterApp,
+  createDependencies = createGasparDependencies,
   env = process.env,
-  gasparApp,
-  humanVerificationApp,
 } = {}) {
   const http = createApiHttp({ allowedMethods: ALLOWED_METHODS, env });
-  let askRateLimiter = askRateLimiterApp;
 
   return async function handleAssistantAsk(request) {
     const originGuardResponse = http.createOriginGuardResponse(request);
@@ -56,6 +50,8 @@ export function createAssistantAskApi({
       );
     }
 
+    const dependencies = createDependencies({ env });
+
     try {
       if (!payload.altcha?.challenge || !payload.altcha?.solution) {
         return http.createJsonResponse(
@@ -65,7 +61,8 @@ export function createAssistantAskApi({
         );
       }
 
-      const altchaResult = await getHumanVerificationApp().verifyChallenge({
+      const humanVerification = dependencies.createHumanVerificationDependencies();
+      const altchaResult = await humanVerification.verifyChallenge({
         challenge: payload.altcha.challenge,
         solution: payload.altcha.solution,
       });
@@ -88,7 +85,12 @@ export function createAssistantAskApi({
     const clientIp = request.headers.get('x-nf-client-connection-ip') || 'unknown';
 
     try {
-      const rateLimitResult = await getAskRateLimiter().check(clientIp);
+      const rateLimitDependencies = dependencies.createRateLimitDependencies();
+      const rateLimitResult = await checkRateLimits(
+        clientIp,
+        rateLimitDependencies.store,
+        rateLimitDependencies.config
+      );
 
       if (!rateLimitResult.allowed) {
         return http.createJsonResponse(
@@ -102,7 +104,8 @@ export function createAssistantAskApi({
     }
 
     try {
-      const result = await getGasparApp().askQuestion({
+      const result = await askQuestion({
+        ...dependencies.createAskQuestionDependencies(),
         question: payload.question,
         messages: payload.messages,
         pageContext: payload.pageContext,
@@ -134,22 +137,6 @@ export function createAssistantAskApi({
       return http.createJsonResponse(request, statusCode, errorBody);
     }
   };
-
-  function getGasparApp() {
-    return gasparApp || createGasparApp({ env });
-  }
-
-  function getHumanVerificationApp() {
-    return humanVerificationApp || createGasparHumanVerificationApp({ env });
-  }
-
-  function getAskRateLimiter() {
-    if (!askRateLimiter) {
-      askRateLimiter = createGasparAskRateLimiterApp({ env });
-    }
-
-    return askRateLimiter;
-  }
 }
 
 export const handleAssistantAsk = createAssistantAskApi();

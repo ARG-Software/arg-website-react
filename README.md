@@ -179,7 +179,7 @@ The domain and application layers do not import concrete provider or repository 
 ### Ask Flow
 
 1. `POST /api/assistant/ask` is handled by `netlify/functions/assistant-ask.js`.
-2. The function enforces origin checks, ALTCHA verification, and rate limits before calling `createGasparApp().askQuestion()`.
+2. The function enforces origin checks, ALTCHA verification, and rate limits before calling the `askQuestion` use case with dependencies from `apps/di`.
 3. The application use case validates input, applies language preference policy, classifies intent, plans retrieval, resolves a retrieval route, retrieves context through repository ports, and generates the answer through provider ports.
 4. The response returns answer text, resolved language, optional language preference updates, citations, article recommendations, and assistant actions such as `book_meeting`, `gaspar_message`, `contact_form`, or `email_hr`.
 

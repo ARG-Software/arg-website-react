@@ -1,5 +1,5 @@
-import { createGasparHumanVerificationApp } from '../apps/gaspar/createGasparSecurityApp.ts';
-import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
+import { createApiHttp, createErrorBody } from '../../../shared/api/http.js';
+import { createGasparDependencies } from '../di/createGasparDependencies.ts';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 
@@ -13,7 +13,10 @@ export const config = {
   },
 };
 
-export function createSecurityVerifyApi({ env = process.env, humanVerificationApp } = {}) {
+export function createSecurityVerifyApi({
+  createDependencies = createGasparDependencies,
+  env = process.env,
+} = {}) {
   const http = createApiHttp({ allowedMethods: ALLOWED_METHODS, env });
 
   return async function handleSecurityVerify(request) {
@@ -53,7 +56,10 @@ export function createSecurityVerifyApi({ env = process.env, humanVerificationAp
         );
       }
 
-      const altchaResult = await getHumanVerificationApp().verifyPayload(String(altcha));
+      const humanVerification = createDependencies({
+        env,
+      }).createHumanVerificationDependencies();
+      const altchaResult = await humanVerification.verifyPayload(String(altcha));
 
       if (!altchaResult.verified) {
         return http.createJsonResponse(
@@ -72,10 +78,6 @@ export function createSecurityVerifyApi({ env = process.env, humanVerificationAp
 
     return http.createJsonResponse(request, 200, { verified: true });
   };
-
-  function getHumanVerificationApp() {
-    return humanVerificationApp || createGasparHumanVerificationApp({ env });
-  }
 }
 
 export const handleSecurityVerify = createSecurityVerifyApi();

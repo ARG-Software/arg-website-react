@@ -1,7 +1,7 @@
 import {
   config,
   createKeepDatabaseAliveApi,
-} from '../../src/backend/rag/api/keepDatabaseAliveApi.js';
+} from '../../src/backend/rag/apps/gaspar/keepDatabaseAliveApi.js';
 
 export { config };
 

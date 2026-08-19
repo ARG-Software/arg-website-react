@@ -1,10 +1,10 @@
-import { createGasparHumanVerificationApp } from '../apps/gaspar/createGasparSecurityApp.ts';
-import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
+import { createApiHttp, createErrorBody } from '../../../shared/api/http.js';
+import { createGasparDependencies } from '../di/createGasparDependencies.ts';
 
 const ALLOWED_METHODS = 'GET, OPTIONS';
 
 export const config = {
-  path: '/api/security/challenge',
+  path: '/api/assistant/challenge',
   method: ['GET', 'OPTIONS'],
   rateLimit: {
     windowLimit: 30,
@@ -13,10 +13,13 @@ export const config = {
   },
 };
 
-export function createSecurityChallengeApi({ env = process.env, humanVerificationApp } = {}) {
+export function createAssistantChallengeApi({
+  createDependencies = createGasparDependencies,
+  env = process.env,
+} = {}) {
   const http = createApiHttp({ allowedMethods: ALLOWED_METHODS, env });
 
-  return async function handleSecurityChallenge(request) {
+  return async function handleAssistantChallenge(request) {
     const originGuardResponse = http.createOriginGuardResponse(request);
     if (originGuardResponse) return originGuardResponse;
 
@@ -33,9 +36,12 @@ export function createSecurityChallengeApi({ env = process.env, humanVerificatio
     }
 
     try {
-      const challenge = await getHumanVerificationApp().createChallenge();
+      const humanVerification = createDependencies({
+        env,
+      }).createHumanVerificationDependencies();
+      const challenge = await humanVerification.createChallenge();
 
-      return http.createJsonResponse(request, 200, challenge);
+      return http.createJsonResponse(request, 200, { challenge });
     } catch (error) {
       const isConfigurationError =
         error instanceof Error &&
@@ -51,16 +57,12 @@ export function createSecurityChallengeApi({ env = process.env, humanVerificatio
         createErrorBody(
           isConfigurationError ? 'configuration_error' : 'challenge_failed',
           isConfigurationError
-            ? 'Security verification is temporarily unavailable'
+            ? 'Assistant service is temporarily unavailable'
             : 'Unable to create verification challenge'
         )
       );
     }
   };
-
-  function getHumanVerificationApp() {
-    return humanVerificationApp || createGasparHumanVerificationApp({ env });
-  }
 }
 
-export const handleSecurityChallenge = createSecurityChallengeApi();
+export const handleAssistantChallenge = createAssistantChallengeApi();

@@ -67,10 +67,12 @@ export default defineConfig(({ mode }) => {
 
           if (requestPath === '/api/assistant/challenge' && req.method === 'GET') {
             try {
-              const { createGasparHumanVerificationApp } = await import(
-                './src/backend/rag/apps/gaspar/createGasparSecurityApp.ts'
+              const { createGasparDependencies } = await import(
+                './src/backend/rag/apps/di/createGasparDependencies.ts'
               );
-              const challenge = await createGasparHumanVerificationApp().createChallenge();
+              const challenge = await createGasparDependencies()
+                .createHumanVerificationDependencies()
+                .createChallenge();
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ challenge }));
             } catch (error) {
@@ -97,8 +99,16 @@ export default defineConfig(({ mode }) => {
             try {
               const requestUrl = new URL(req.url || '', 'http://localhost');
               const language = requestUrl.searchParams.get('language') || 'en';
-              const { createGasparApp } = await import('./src/backend/rag/apps/gaspar/createGasparApp.ts');
-              const result = await createGasparApp().getAssistantUiCopy(language);
+              const { getAssistantUiCopy } = await import(
+                './src/backend/rag/application/assistantUiCopy/getAssistantUiCopy.ts'
+              );
+              const { createGasparDependencies } = await import(
+                './src/backend/rag/apps/di/createGasparDependencies.ts'
+              );
+              const result = await getAssistantUiCopy(
+                language,
+                createGasparDependencies().createAssistantUiCopyDependencies()
+              );
 
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify(result));
@@ -122,10 +132,12 @@ export default defineConfig(({ mode }) => {
 
           if (requestPath === '/api/security/challenge' && req.method === 'GET') {
             try {
-              const { createGasparHumanVerificationApp } = await import(
-                './src/backend/rag/apps/gaspar/createGasparSecurityApp.ts'
+              const { createGasparDependencies } = await import(
+                './src/backend/rag/apps/di/createGasparDependencies.ts'
               );
-              const challenge = await createGasparHumanVerificationApp().createChallenge();
+              const challenge = await createGasparDependencies()
+                .createHumanVerificationDependencies()
+                .createChallenge();
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify(challenge));
             } catch (error) {
@@ -166,10 +178,12 @@ export default defineConfig(({ mode }) => {
                 return;
               }
 
-              const { createGasparHumanVerificationApp } = await import(
-                './src/backend/rag/apps/gaspar/createGasparSecurityApp.ts'
+              const { createGasparDependencies } = await import(
+                './src/backend/rag/apps/di/createGasparDependencies.ts'
               );
-              const altchaResult = await createGasparHumanVerificationApp().verifyPayload(String(altcha));
+              const altchaResult = await createGasparDependencies()
+                .createHumanVerificationDependencies()
+                .verifyPayload(String(altcha));
 
               if (!altchaResult.verified) {
                 res.statusCode = 403;
@@ -218,13 +232,15 @@ export default defineConfig(({ mode }) => {
             }
 
             try {
-              const { createGasparHumanVerificationApp } = await import(
-                './src/backend/rag/apps/gaspar/createGasparSecurityApp.ts'
+              const { createGasparDependencies } = await import(
+                './src/backend/rag/apps/di/createGasparDependencies.ts'
               );
-              const altchaResult = await createGasparHumanVerificationApp().verifyChallenge({
-                challenge: payload.altcha.challenge,
-                solution: payload.altcha.solution,
-              });
+              const altchaResult = await createGasparDependencies()
+                .createHumanVerificationDependencies()
+                .verifyChallenge({
+                  challenge: payload.altcha.challenge,
+                  solution: payload.altcha.solution,
+                });
 
               if (!altchaResult.verified) {
                 res.statusCode = 403;
@@ -272,8 +288,12 @@ export default defineConfig(({ mode }) => {
               entry.count += 1;
             }
 
-            const { createGasparApp } = await import('./src/backend/rag/apps/gaspar/createGasparApp.ts');
-            const result = await createGasparApp().askQuestion({
+            const { askQuestion } = await import('./src/backend/rag/application/ask/askQuestion.ts');
+            const { createGasparDependencies } = await import(
+              './src/backend/rag/apps/di/createGasparDependencies.ts'
+            );
+            const result = await askQuestion({
+              ...createGasparDependencies().createAskQuestionDependencies(),
               question: payload.question,
               messages: payload.messages,
               pageContext: payload.pageContext,

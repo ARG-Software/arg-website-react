@@ -1,5 +1,10 @@
 import { loadLocalEnv } from '../config/env.js';
-import { createGasparIngestionApp } from '../apps/gaspar/createGasparIngestionApp.js';
+import { createGasparDependencies } from '../apps/di/createGasparDependencies.js';
+import { ingestSource } from '../application/ingestion/ingestPipeline.js';
+import {
+  loadTrustedExternalSource,
+  loadTrustedExternalSourceEntries,
+} from '../infrastructure/ingestion/loaders/loadTrustedExternalSources.js';
 import type { IngestSourceResult } from '../application/ingestion/types.js';
 import { sleep } from '../application/common/time.js';
 import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
@@ -15,8 +20,8 @@ if (!hasSourceFilters(selection)) {
   process.exit(1);
 }
 
-const ingestionApp = createGasparIngestionApp();
-const allowlist = await ingestionApp.loadTrustedExternalSourceEntries(process.cwd(), selection);
+const dependencies = createGasparDependencies();
+const allowlist = await loadTrustedExternalSourceEntries(process.cwd(), selection);
 
 if (allowlist.length === 0) {
   console.log('Trusted external ingestion allowlist is empty. Nothing to ingest.');
@@ -28,8 +33,10 @@ const failures: Array<{ item: { url: string }; error: unknown }> = [];
 
 for (const item of allowlist) {
   try {
-    const source = await ingestionApp.loadTrustedExternalSource(item);
-    const result = await ingestionApp.ingestSource(source, {
+    const source = await loadTrustedExternalSource(item);
+    const result = await ingestSource({
+      ...dependencies.createIngestSourceDependencies(),
+      source,
       dryRun,
       force: selection.force,
       fallbackOnly: selection.fallbackOnly,
