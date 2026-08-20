@@ -29,3 +29,25 @@ export const Default = {
     points,
   },
 };
+
+export const Light = {
+  args: {
+    title: 'Sent vs replied',
+    description: 'Outbound performance over the selected period.',
+    range: '7d',
+    ranges,
+    points,
+    tone: 'light',
+  },
+};
+
+export const Empty = {
+  args: {
+    title: 'Sent vs replied',
+    description: 'Outbound performance over the selected period.',
+    range: '7d',
+    ranges,
+    points: [],
+    tone: 'light',
+  },
+};

@@ -1,4 +1,4 @@
-export function AdminNav({ items, onNavigate }) {
+export function AdminNav({ items, onNavigate, trailing }) {
   return (
     <nav className="admin-nav" aria-label="Admin navigation">
       {items.map(item => (
@@ -15,6 +15,7 @@ export function AdminNav({ items, onNavigate }) {
           {item.label}
         </a>
       ))}
+      {trailing && <div className="admin-nav__trailing">{trailing}</div>}
     </nav>
   );
 }

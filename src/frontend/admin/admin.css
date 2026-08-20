@@ -7,11 +7,26 @@
 }
 
 .admin-header {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.admin-header__top {
   align-items: center;
   display: flex;
   gap: 1.5rem;
   justify-content: space-between;
-  margin-bottom: 2rem;
+}
+
+.admin-header__logo {
+  color: #fff;
+  display: block;
+  width: 4.5rem;
+}
+
+.admin-header__logo:hover {
+  opacity: 0.85;
 }
 
 .admin-nav-wrap {
@@ -102,6 +117,11 @@
 .admin-detail-form {
   display: grid;
   gap: 1rem;
+  text-align: left;
+}
+
+.admin-login-card .ui-field__label {
+  text-align: left;
 }
 
 .admin-toolbar {
@@ -198,6 +218,7 @@
 }
 
 .admin-detail-form .ui-field:has(textarea),
+.admin-detail-form .admin-detail-form__full,
 .admin-detail-form__actions {
   grid-column: 1 / -1;
 }
@@ -232,4 +253,78 @@
   .admin-detail-form {
     grid-template-columns: 1fr;
   }
+}
+
+.admin-loading-overlay {
+  align-items: center;
+  background: rgba(12, 0, 46, 0.5);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
+  z-index: 1100;
+}
+
+.admin-nav__trailing {
+  margin-left: auto;
+}
+
+.admin-nav__refresh {
+  align-items: center;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin-nav__refresh:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.admin-nav__refresh:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.admin-error-card {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-error-card .admin-error {
+  color: #f0060d;
+  margin: 0;
+}
+
+.admin-error-detail {
+  color: rgba(12, 0, 46, 0.62);
+  margin: 0;
+}
+
+.admin-retry {
+  align-self: flex-start;
+  background: #0c002e;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.6rem 1.1rem;
+  transition: background 0.2s ease;
+}
+
+.admin-retry:hover {
+  background: #1a0a4d;
 }

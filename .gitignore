@@ -114,6 +114,9 @@ source-images/
 # Serverless directories
 .serverless/
 
+# Netlify CLI build output
+.netlify/
+
 # FuseBox cache
 .fusebox/
 

@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => {
       '@services': fileURLToPath(new URL('./src/frontend/services', import.meta.url)),
       '@data': fileURLToPath(new URL('./src/frontend/data', import.meta.url)),
       '@styles': fileURLToPath(new URL('./src/frontend/styles', import.meta.url)),
+      '@admin': fileURLToPath(new URL('./src/frontend/admin', import.meta.url)),
       '@ui': fileURLToPath(new URL('./src/packages/ui/src', import.meta.url)),
     },
   },

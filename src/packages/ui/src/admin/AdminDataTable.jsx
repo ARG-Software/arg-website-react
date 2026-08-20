@@ -12,9 +12,10 @@ export function AdminDataTable({
   pagination,
   loading = false,
   emptyMessage = 'No records found.',
+  tone = 'default',
 }) {
   return (
-    <UiCard className="admin-data-table">
+    <UiCard className="admin-data-table" tone={tone}>
       {(title || description) && (
         <div className="admin-data-table__header">
           {title && <h2>{title}</h2>}

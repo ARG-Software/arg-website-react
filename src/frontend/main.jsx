@@ -30,7 +30,7 @@ const BlogPage = lazyWithRetry(() => import('./pages/blog/BlogPage.jsx'));
 const BlogPostPage = lazyWithRetry(() => import('./pages/blog/BlogPostPage.jsx'));
 const PrivacyPage = lazyWithRetry(() => import('./pages/PrivacyPage.jsx'));
 const TermsPage = lazyWithRetry(() => import('./pages/TermsPage.jsx'));
-const AdminPage = lazyWithRetry(() => import('./pages/admin/AdminPage.jsx'));
+const AdminPage = lazyWithRetry(() => import('@admin/AdminPage.jsx'));
 const NotFoundPage = lazyWithRetry(() => import('./pages/NotFoundPage.jsx'));
 
 function BlogPostPageWrapper() {
