@@ -177,8 +177,25 @@
 }
 
 .admin-altcha {
-  display: flex;
-  justify-content: center;
+  display: block;
+  width: 100%;
+}
+
+.admin-altcha altcha-widget {
+  --altcha-border-radius: 0.9rem;
+  --altcha-border-color: rgba(255, 255, 255, 0.22);
+  --altcha-border-width: 1px;
+  --altcha-checkbox-border-color: rgba(255, 255, 255, 0.68);
+  --altcha-color-base: rgba(18, 3, 60, 0.72);
+  --altcha-color-base-content: #fff;
+  --altcha-color-neutral: rgba(255, 255, 255, 0.72);
+  --altcha-color-neutral-content: #fff;
+  --altcha-color-primary: #c924d7;
+  --altcha-color-success: #22c55e;
+  --altcha-color-success-content: #fff;
+  --altcha-spinner-color: rgba(255, 255, 255, 0.72);
+  display: block;
+  width: 100%;
 }
 
 .admin-csv-actions {

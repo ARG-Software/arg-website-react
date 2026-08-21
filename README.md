@@ -224,8 +224,8 @@ Required RAG environment variables:
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | Supabase project URL |
-| `DATABASE_SERVICE_ROLE_KEY` | Supabase service-role key used by server-side RAG jobs/functions |
+| `RAG_DATABASE_URL` | Supabase project URL for RAG/Gaspar |
+| `RAG_DATABASE_SERVICE_ROLE_KEY` | Supabase service-role key used by server-side RAG jobs/functions |
 | `EMBEDDING_API_KEY` | Embedding provider API key |
 | `EMBEDDING_MODEL` | Primary embedding model |
 | `FALLBACK_EMBEDDING_MODEL` | Fallback embedding model |

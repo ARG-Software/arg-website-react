@@ -7,7 +7,7 @@ export interface SupabaseConfig {
 
 export function getSupabaseConfig(env: EnvSource = process.env): SupabaseConfig {
   return {
-    supabaseUrl: getRequiredEnv('DATABASE_URL', env),
-    supabaseServiceRoleKey: getRequiredEnv('DATABASE_SERVICE_ROLE_KEY', env),
+    supabaseUrl: getRequiredEnv('RAG_DATABASE_URL', env),
+    supabaseServiceRoleKey: getRequiredEnv('RAG_DATABASE_SERVICE_ROLE_KEY', env),
   };
 }

@@ -424,7 +424,7 @@ function AdminLogin({ supabase }) {
               required
             />
             <div className="admin-altcha">
-              <AltchaVerification onStateChange={setAltchaState} />
+              <AltchaVerification theme="business" onStateChange={setAltchaState} />
             </div>
             <UiButton type="submit" disabled={isSubmitting}>
               {isSubmitting
