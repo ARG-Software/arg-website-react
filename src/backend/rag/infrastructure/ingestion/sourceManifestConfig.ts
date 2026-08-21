@@ -1,6 +1,5 @@
-import { readFileSync } from 'node:fs';
-
 import { ASSISTANT_POLICY_CONTENT } from '../../domain/assistant/AssistantPolicy.js';
+import sourceManifestConfigJson from '../../config/sources.json' with { type: 'json' };
 import type {
   ExternalSourceManifestEntry,
   InlineJsonManifestEntry,
@@ -22,7 +21,7 @@ interface SourceManifestConfig {
   trustedExternalSources: ExternalSourceManifestEntry[];
 }
 
-const sourceManifestConfig = readSourceManifestConfig();
+const sourceManifestConfig = sourceManifestConfigJson as SourceManifestConfig;
 
 export function getFirstPartySourceEntries(): LocalManifestEntry[] {
   return sourceManifestConfig.firstPartySources.map(entry =>
@@ -47,8 +46,3 @@ function createAssistantPolicySource(entry: AssistantPolicySourceConfig): Inline
   };
 }
 
-function readSourceManifestConfig(): SourceManifestConfig {
-  return JSON.parse(
-    readFileSync(new URL('../../config/sources.json', import.meta.url), 'utf8')
-  ) as SourceManifestConfig;
-}

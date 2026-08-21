@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import languageConfigJson from '../config/languages.json' with { type: 'json' };
 
 const LANGUAGE_PATTERN = /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i;
 
@@ -8,7 +8,7 @@ interface LanguageConfig {
   aliases: Record<string, string>;
 }
 
-const languageConfig = readLanguageConfig();
+const languageConfig = languageConfigJson as LanguageConfig;
 const normalizedAliases = Object.fromEntries(
   Object.entries(languageConfig.aliases).map(([name, tag]) => [normalizeLanguageName(name), tag])
 );
@@ -62,6 +62,3 @@ function normalizeTagCase(tag: string): string {
   ].join('-');
 }
 
-function readLanguageConfig(): LanguageConfig {
-  return JSON.parse(readFileSync(new URL('../config/languages.json', import.meta.url), 'utf8')) as LanguageConfig;
-}

@@ -1,6 +1,4 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-
+import assistantSourceCopy from '../../../../frontend/data/assistant.json' with { type: 'json' };
 import type { AssistantSourceCopy } from '../../domain/assistant/AssistantUiCopy.js';
 import {
   readActionCopy,
@@ -9,10 +7,8 @@ import {
   readStringRecord,
 } from '../../application/assistantUiCopy/normalization.js';
 
-const ASSISTANT_COPY_PATH = resolve(process.cwd(), 'src/frontend/data/assistant.json');
-
 export function readAssistantSourceCopy(): AssistantSourceCopy {
-  const source = JSON.parse(readFileSync(ASSISTANT_COPY_PATH, 'utf8')) as Record<string, unknown>;
+  const source = assistantSourceCopy as Record<string, unknown>;
 
   return {
     copyVersion: readString(source.copyVersion, '1'),

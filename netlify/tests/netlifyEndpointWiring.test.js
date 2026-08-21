@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { build } from 'esbuild';
 
 const ROOT_DIR = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 const BACKEND_DIR = join(ROOT_DIR, 'src/backend');
@@ -88,6 +89,30 @@ test('netlify functions do not reference removed implementation folders or old c
   }
 });
 
+test('function-bound JSON config is imported instead of read from deployment paths', () => {
+  for (const file of [
+    'rag/application/sourceConfig.ts',
+    'rag/application/languageConfig.ts',
+    'rag/application/assistantUiCopy/sourceCopy.ts',
+    'rag/infrastructure/ingestion/sourceManifestConfig.ts',
+  ]) {
+    const content = readBackendFile(file);
+
+    assert.doesNotMatch(content, /readFileSync|process\.cwd\(\)|new URL\([^)]*\.json/);
+    assert.match(content, /from ['"].*\.json['"] with \{ type: ['"]json['"] \}/);
+  }
+});
+
+test('function bundles inline JSON config used during module load', async () => {
+  await assertFunctionBundleIncludesJsonConfig('functions/assistant-ask.js', [
+    'homepageSectionScopes',
+    'defaultLanguage',
+  ]);
+  await assertFunctionBundleIncludesJsonConfig('functions/assistant-ui-copy.js', [
+    'leadCaptureQuickPrompts',
+  ]);
+});
+
 function readBackendFile(path) {
   return readFileSync(join(BACKEND_DIR, path), 'utf8');
 }
@@ -98,4 +123,26 @@ function readNetlifyFile(path) {
 
 function readPublicFile(path) {
   return readFileSync(join(PUBLIC_DIR, path), 'utf8');
+}
+
+async function assertFunctionBundleIncludesJsonConfig(path, expectedTerms) {
+  const result = await build({
+    entryPoints: [join(NETLIFY_DIR, path)],
+    bundle: true,
+    platform: 'node',
+    format: 'esm',
+    target: 'node20',
+    write: false,
+    external: ['@netlify/functions'],
+  });
+  const bundle = result.outputFiles[0].text;
+
+  assert.doesNotMatch(
+    bundle,
+    /readFileSync\(new URL|readSourcesConfig|readLanguageConfig|ASSISTANT_COPY_PATH/
+  );
+
+  for (const term of expectedTerms) {
+    assert.match(bundle, new RegExp(term), `${path} should bundle JSON config term: ${term}`);
+  }
 }

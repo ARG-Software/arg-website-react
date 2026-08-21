@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import sourcesConfigJson from '../config/sources.json' with { type: 'json' };
 
 export interface HomepageSectionScope {
   sourceKey: string;
@@ -18,7 +18,7 @@ interface SourcesConfig {
   projects: ProjectReferenceConfig[];
 }
 
-const sourcesConfig = readSourcesConfig();
+const sourcesConfig = sourcesConfigJson as SourcesConfig;
 
 export const HOMEPAGE_SECTION_SCOPES = sourcesConfig.homepageSectionScopes;
 export type HomepageSectionId = keyof typeof HOMEPAGE_SECTION_SCOPES;
@@ -40,6 +40,3 @@ export function getKnownProjectNames(): string[] {
   return sourcesConfig.projects.flatMap(project => [project.name, ...(project.aliases ?? [])]);
 }
 
-function readSourcesConfig(): SourcesConfig {
-  return JSON.parse(readFileSync(new URL('../config/sources.json', import.meta.url), 'utf8')) as SourcesConfig;
-}
