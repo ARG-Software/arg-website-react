@@ -2,6 +2,7 @@
 seoTitle: Behavior-Driven Domain Models in TypeScript
 slug: from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript
 tag: Architecture
+tags: Architecture, Backend
 title: From Anemic Models to Behaviour-rich Aggregates: Behavior-Driven Design in TypeScript
 subtitle: There’s a class of bug that doesn’t really look like a bug. No stack trace. No obvious failure. Just a OrderService file with 300 lines of…
 intro: There’s a class of bug that doesn’t really look like a bug. No stack trace. No obvious failure. Just a OrderService file with 300 lines of…

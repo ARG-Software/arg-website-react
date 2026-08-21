@@ -1,7 +1,8 @@
 ---
 seoTitle: TypeScript 7 Rewritten in Go: What to Do
 slug: typescript-7-rewritten-in-go
-tag: Architecture
+tag: Backend
+tags: Backend, Architecture
 title: TypeScript 7.0 Is Being Rewritten in Go. Here's Why You Should Care (and What to Do Today)
 subtitle: TypeScript 7 is rewritten in Go for 10x faster builds. TypeScript 6.0 prepares your codebase. Install tsgo preview, and start preparing.
 intro: TypeScript 7 is rewritten in Go for 10x faster builds. TypeScript 6.0 prepares your codebase. Install tsgo preview, and start preparing.

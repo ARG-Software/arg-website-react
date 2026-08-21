@@ -2,6 +2,7 @@
 seoTitle: AI Does Not Replace Talent, It Exposes It
 slug: ai-doesnt-replace-talent-it-exposes-it
 tag: AI
+tags: AI, Engineering Culture
 title: The Great Professional Reckoning: AI Doesn't Replace Talent - It Exposes It
 subtitle: AI isn’t replacing jobs - it’s exposing real talent. Discover how the AI revolution is separating true expertise from those who aren’t.
 intro: AI isn’t replacing jobs - it’s exposing real talent. Discover how the AI revolution is separating true expertise from those who aren’t.

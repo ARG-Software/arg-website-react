@@ -130,13 +130,34 @@
 }
 
 .blp-row-tag {
-  font-size: var(--type-meta);
+  font-size: var(--type-meta-small);
   letter-spacing: var(--tracking-meta);
+  line-height: 1.35;
   text-transform: uppercase;
   color: #c924d7;
   font-family: Neuemontreal, sans-serif;
   font-weight: 500;
+  display: inline;
+  overflow-wrap: normal;
+}
+
+.blp-row-collection {
+  color: #555;
   display: inline-flex;
+  flex-direction: column;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-meta);
+  gap: 0.2rem;
+  letter-spacing: var(--tracking-meta);
+  line-height: 1.25;
+  margin-top: 0.35rem;
+  max-width: 11rem;
+  text-transform: none;
+}
+
+.blp-row-collection-label {
+  color: #aaa;
+  text-transform: uppercase;
 }
 
 .blp-row-date {
@@ -233,6 +254,11 @@
     align-items: center;
     gap: 0.75rem;
   }
+
+  .blp-row-collection {
+    max-width: none;
+  }
+
   .blp-row-date {
     margin-top: 0;
   }

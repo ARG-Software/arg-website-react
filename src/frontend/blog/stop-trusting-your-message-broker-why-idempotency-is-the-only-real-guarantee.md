@@ -2,6 +2,7 @@
 seoTitle: Stop Trusting Your Message Broker: Why Idempotency is the Only Real Guarantee
 slug: stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee
 tag: Reliability
+tags: Reliability, Architecture, Backend
 title: Stop Trusting Your Message Broker: Why Idempotency is the Only Real Guarantee
 subtitle: Stop relying on message ordering for correctness. Learn why idempotency is the only real safety net against data loss and duplicate charges
 intro: Stop relying on message ordering for correctness. Learn why idempotency is the only real safety net against data loss and duplicate charges

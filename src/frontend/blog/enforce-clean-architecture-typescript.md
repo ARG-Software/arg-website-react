@@ -2,6 +2,7 @@
 seoTitle: Enforce Clean Architecture in TypeScript
 slug: enforce-clean-architecture-typescript
 tag: Architecture
+tags: Architecture, Backend, Testing
 title: How to Actually Enforce Clean Architecture in TypeScript
 subtitle: Stop relying on PR reviews to enforce architecture. Learn how to use architecture tests to automatically enforce principles.
 intro: Stop relying on PR reviews to enforce architecture. Learn how to use architecture tests to automatically enforce principles.

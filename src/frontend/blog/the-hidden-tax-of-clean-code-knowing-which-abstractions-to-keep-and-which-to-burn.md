@@ -2,6 +2,7 @@
 seoTitle: The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (and Which to Burn)
 slug: the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn
 tag: Architecture
+tags: Architecture, Refactoring
 title: The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (and Which to Burn)
 subtitle: Stop over-engineering your .NET apps. Learn which Clean Architecture abstractions protect your domain and which just slow you down.
 intro: Stop over-engineering your .NET apps. Learn which Clean Architecture abstractions protect your domain and which just slow you down.

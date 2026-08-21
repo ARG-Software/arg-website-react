@@ -2,6 +2,7 @@
 seoTitle: Why .NET Still Matters for Modern Software
 slug: the-stack-nobody-hypes-but-serious-ctos-keep-choosing
 tag: Architecture
+tags: Architecture, Backend
 title: The Stack Nobody Hypes, but Serious CTOs Keep Choosing
 subtitle: Why Serious CTOs Still Choose .NET for Long-Lived, High-Stakes Software Systems Over Trendier Stacks
 intro: Why Serious CTOs Still Choose .NET for Long-Lived, High-Stakes Software Systems Over Trendier Stacks

@@ -1,7 +1,8 @@
 ---
 seoTitle: The Art of Pull Requests
 slug: the-art-of-pull-requests
-tag: Culture
+tag: Engineering Culture
+tags: Engineering Culture
 title: The Art of Pull Requests: How to Ship Faster Without Sacrificing Quality
 subtitle: Learn how to create clear, focused pull requests that speed up code reviews, improve collaboration, and help your team ship better.
 intro: Learn how to create clear, focused pull requests that speed up code reviews, improve collaboration, and help your team ship better.

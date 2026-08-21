@@ -35,6 +35,10 @@
 /projects         /projects/mojaloop/    301!
 /projects/        /projects/mojaloop/    301!
 /blog             /blog/                 301
+/blog/we-built-an-ai-assistant-that-sells-heres-the-architecture         /blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/         301!
+/blog/we-built-an-ai-assistant-that-sells-heres-the-architecture/        /blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/         301!
+/blog/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing      /blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/      301!
+/blog/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/     /blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/      301!
 /projects/:slug   /projects/:slug/       301
 /blog/:slug       /blog/:slug/           301
 

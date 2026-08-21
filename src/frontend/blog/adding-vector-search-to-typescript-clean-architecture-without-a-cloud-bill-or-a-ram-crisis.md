@@ -2,6 +2,7 @@
 seoTitle: Adding Vector Search to TypeScript Clean Architecture (Without a Cloud Bill or a RAM Crisis)
 slug: adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis
 tag: AI
+tags: AI, Architecture, Backend
 title: Adding Vector Search to TypeScript Clean Architecture (Without a Cloud Bill or a RAM Crisis)
 subtitle: Build low-cost RAG with TypeScript Clean Architecture, TurboVec, and a Python sidecar to add vector search without cloud fees or RAM bloat.
 intro: Build low-cost RAG with TypeScript Clean Architecture, TurboVec, and a Python sidecar to add vector search without cloud fees or RAM bloat.

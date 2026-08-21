@@ -1,6 +1,7 @@
 ---
 slug: testcontainers-best-practices-nestjs
 tag: Testing
+tags: Testing, Backend
 title: Testcontainers Best Practices for NestJS Integration Testing
 subtitle: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don’t do it right.
 intro: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don’t do it right.

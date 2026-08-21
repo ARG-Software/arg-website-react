@@ -16,14 +16,19 @@ export function useBlogSearch(posts, { debounceMs = 200, selectedTags = [] } = {
     const selectedTagSet = new Set(selectedTags);
     const q = debouncedQuery.toLowerCase();
 
-    return posts.filter(
-      post =>
-        (selectedTagSet.size === 0 || selectedTagSet.has(post.tag)) &&
-        (!q.trim() ||
-          post.title.toLowerCase().includes(q) ||
-          post.tag.toLowerCase().includes(q) ||
-          post.subtitle.toLowerCase().includes(q))
-    );
+    return posts.filter(post => {
+      const postTags = (post.tags || [post.tag]).filter(Boolean);
+      const matchesTags =
+        selectedTagSet.size === 0 || postTags.some(tag => selectedTagSet.has(tag));
+      const matchesQuery =
+        !q.trim() ||
+        (post.title || '').toLowerCase().includes(q) ||
+        postTags.join(' ').toLowerCase().includes(q) ||
+        (post.collectionTitle || '').toLowerCase().includes(q) ||
+        (post.subtitle || '').toLowerCase().includes(q);
+
+      return matchesTags && matchesQuery;
+    });
   }, [posts, debouncedQuery, selectedTags]);
 
   const isSearching = debouncedQuery !== '' && debouncedQuery !== searchQuery;

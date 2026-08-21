@@ -2,6 +2,7 @@
 seoTitle: Pure TypeScript DDD: Achieving True Persistence Ignorance with MikroORM
 slug: pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm
 tag: Architecture
+tags: Architecture, Backend
 title: Pure TypeScript DDD: Achieving True Persistence Ignorance with MikroORM
 subtitle: Decouple your business logic from your database. Discover how to build pure TypeScript DDD applications using MikroORM
 intro: Decouple your business logic from your database. Discover how to build pure TypeScript DDD applications using MikroORM

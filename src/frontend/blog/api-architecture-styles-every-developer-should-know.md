@@ -2,6 +2,7 @@
 seoTitle: API Architecture Styles for Developers
 slug: api-architecture-styles-every-developer-should-know
 tag: Architecture
+tags: Architecture, Backend
 title: API Architecture Styles Every Developer Should Know
 subtitle: Discover the pros and cons of REST, gRPC, GraphQL, WebSocket, SOAP, and MQTT. Discover the ideal API architecture style for your project.
 intro: Discover the pros and cons of REST, gRPC, GraphQL, WebSocket, SOAP, and MQTT. Discover the ideal API architecture style for your project.

@@ -2,6 +2,7 @@
 seoTitle: Clinejection: GitHub Supply Chain Attack
 slug: clinejection-github-issue-supply-chain-attack
 tag: Security
+tags: Security, AI, Engineering Culture
 title: "Clinejection: How a Simple GitHub Issue Could Have Hijacked 5 Million Developer Machines"
 subtitle: How a prompt injection in Cline’s AI triage hijacked GitHub CI/CD to threaten 5M users. Learn the mechanics of cache poisoning and AI…
 intro: How a prompt injection in Cline’s AI triage hijacked GitHub CI/CD to threaten 5M users. Learn the mechanics of cache poisoning and AI…

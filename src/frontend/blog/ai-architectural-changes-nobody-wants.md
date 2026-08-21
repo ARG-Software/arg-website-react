@@ -2,6 +2,7 @@
 seoTitle: AI Architectural Changes Nobody Wants
 slug: ai-architectural-changes-nobody-wants
 tag: AI
+tags: AI, Architecture
 title: Everyone Wants AI. Nobody Wants the Architectural Changes It Requires.
 subtitle: AI fails in production when systems aren’t designed for probabilistic behavior, data pipelines, and change. Architecture, is the way.
 intro: AI fails in production when systems aren’t designed for probabilistic behavior, data pipelines, and change. Architecture, is the way.

@@ -1,19 +1,22 @@
 ---
 seoTitle: RAG Pipeline Design: 3 LLM Calls Per Question Explained
-slug: three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing
+slug: building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing
 tag: AI
-title: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing
+tags: AI, Architecture
+title: Part 2: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing
 subtitle: Inside Gaspar’s 3-step LLM pipeline: classify, plan, and retrieve before answering. Built to avoid vague, generic, or made-up responses. 🧠
 intro: Inside Gaspar’s 3-step LLM pipeline: classify, plan, and retrieve before answering. Built to avoid vague, generic, or made-up responses. 🧠
 date: August 4, 2026
+dateModified: August 16, 2026
 readTime: 6 min read
-mediumUrl: https://medium.com/@arg-software/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-285c020b0daf
+mediumUrl: https://medium.com/p/285c020b0daf
+collection: building-gaspar
+collectionTitle: Building Gaspar - Anatomy of a Business AI Assistant
+collectionPart: 2
 ---
+![Part 2: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-header.webp)
 
-![Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing](/images/blog/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-header.webp)
-
-Part 2 of “Building Gaspar - Anatomy of a Business AI Assistant”.
-If you didn’t read part one, click [here](https://arg.software/blog/we-built-an-ai-assistant-that-sells-heres-the-architecture/).
+Part 2 of “Building Gaspar - Anatomy of a Business AI Assistant” If you didn’t read part one, click [here](https://arg.software/blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/).
 
 The first version of Gaspar was too simple.
 
@@ -39,7 +42,7 @@ Gaspar now runs a pipeline. A pipeline is just a sequence of steps, where each s
 
 For a full question about ARG, that means three separate LLM calls: classify → plan → answer. Simpler messages (small talk, off-topic requests, “rewrite that”) take shorter paths and skip some of these steps.
 
-![Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing](/images/blog/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-2.webp)
+![Part 2: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-2.webp)
 
 ## 🧩 Call 1: Figure out what the visitor actually wants
 
@@ -79,10 +82,10 @@ So Gaspar asks the model to break the message into smaller, standalone questions
 
 ```
 {
-  "questions": [
-    { "query": "What fintech projects has ARG completed?", "subject": "fintech" },
-    { "query": "Which ARG team members have Go experience?", "subject": "Go" }
-  ]
+"questions": [
+{ "query": "What fintech projects has ARG completed?", "subject": "fintech" },
+{ "query": "Which ARG team members have Go experience?", "subject": "Go" }
+]
 }
 ```
 
@@ -92,7 +95,7 @@ If planning fails for any reason, Gaspar falls back to a single search using the
 
 ## 🔍 Retrieval: Pick the right search strategy
 
-![Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing](/images/blog/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-3.webp)
+![Part 2: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-3.webp)
 
 This is where numerous RAG systems get lazy. They turn everything into a vector search.
 

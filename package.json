@@ -33,7 +33,7 @@
     "lint:backend:fix": "eslint src/backend --ext .js --fix",
     "typecheck:rag": "tsc --project tsconfig.rag.json",
     "check:file-casing": "node scripts/check-file-casing.cjs",
-    "blog:import:medium": "node scripts/import-medium-articles.cjs",
+    "blog:import:medium": "node scripts/import-medium-articles.cjs --published",
     "blog:import:medium:drafts": "node scripts/import-medium-articles.cjs --drafts",
     "outreach:import": "node scripts/import-outreach.js \"external/arg-outreach (1).xlsx\"",
     "outreach:import:dry-run": "node scripts/import-outreach.js \"external/arg-outreach (1).xlsx\" --dry-run",

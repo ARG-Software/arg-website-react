@@ -51,7 +51,9 @@ export default function BlogPage() {
   const blogTags = getBlogTags(blogPosts);
 
   const tagCounts = blogPosts.reduce((acc, post) => {
-    if (post.tag) acc[post.tag] = (acc[post.tag] || 0) + 1;
+    (post.tags || [post.tag]).filter(Boolean).forEach(tag => {
+      acc[tag] = (acc[tag] || 0) + 1;
+    });
     return acc;
   }, {});
 
@@ -179,7 +181,18 @@ export default function BlogPage() {
                               loading={i === 0 ? 'eager' : 'lazy'}
                             />
                           )}
-                          <span className="blp-row-tag">{article.tag}</span>
+                          <span className="blp-row-tag">
+                            {(article.tags || [article.tag])
+                              .filter(Boolean)
+                              .slice(0, 3)
+                              .join(' · ')}
+                          </span>
+                          {article.collectionTitle && (
+                            <span className="blp-row-collection">
+                              <span className="blp-row-collection-label">Collection</span>
+                              {article.collectionTitle}
+                            </span>
+                          )}
                           <span className="blp-row-date">{article.date}</span>
                         </div>
                         <div className="blp-row-body">

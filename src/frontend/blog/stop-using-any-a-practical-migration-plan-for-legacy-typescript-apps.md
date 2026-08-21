@@ -2,6 +2,7 @@
 seoTitle: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps
 slug: stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps
 tag: Refactoring
+tags: Refactoring, Backend
 title: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps
 subtitle: any is spreading through your legacy codebase. A risk-based migration plan covering unknown, Zod validation, strict mode, and ESLint
 intro: any is spreading through your legacy codebase. A risk-based migration plan covering unknown, Zod validation, strict mode, and ESLint

@@ -2,6 +2,7 @@
 seoTitle: Running AI Locally: A Complete Guide
 slug: running-ai-locally-complete-guide
 tag: AI
+tags: AI, DevOps
 title: Break Free from ChatGPT: Your Complete Guide to Running AI on Your Own Computer
 subtitle: Learn how to run AI locally on your own computer and break free from cloud tools like ChatGPT. Boost privacy, speed, and control with ease.
 intro: Learn how to run AI locally on your own computer and break free from cloud tools like ChatGPT. Boost privacy, speed, and control with ease.

@@ -11,17 +11,42 @@ export function parseDateToIso(date) {
 }
 
 export function getBlogTags(posts) {
-  return Array.from(new Set(posts.map(article => article.tag).filter(Boolean))).sort();
+  return Array.from(
+    new Set(posts.flatMap(article => article.tags || [article.tag]).filter(Boolean))
+  ).sort();
 }
 
 export function getRelatedPosts(posts, sourcePost, limit = 3) {
-  const related = posts.filter(
-    post => post.slug !== sourcePost.slug && post.tag === sourcePost.tag
+  const seenSlugs = new Set([sourcePost.slug]);
+  const addUniquePosts = candidates =>
+    candidates.filter(post => {
+      if (seenSlugs.has(post.slug)) return false;
+      seenSlugs.add(post.slug);
+      return true;
+    });
+
+  const collectionRelated = sourcePost.collection
+    ? addUniquePosts(
+        posts.filter(post => post.collection === sourcePost.collection).sort(sortByCollectionPart)
+      )
+    : [];
+
+  const sourceTags = new Set((sourcePost.tags || [sourcePost.tag]).filter(Boolean));
+  const tagRelated = addUniquePosts(
+    posts.filter(post => (post.tags || [post.tag]).filter(Boolean).some(tag => sourceTags.has(tag)))
   );
-  const fallback = posts.filter(
-    post => post.slug !== sourcePost.slug && post.tag !== sourcePost.tag
-  );
-  return [...related, ...fallback].slice(0, limit);
+  const fallback = addUniquePosts(posts);
+
+  return [...collectionRelated, ...tagRelated, ...fallback].slice(0, limit);
+}
+
+function sortByCollectionPart(postA, postB) {
+  const partA = Number.parseInt(postA.collectionPart, 10);
+  const partB = Number.parseInt(postB.collectionPart, 10);
+  if (Number.isFinite(partA) && Number.isFinite(partB) && partA !== partB) {
+    return partA - partB;
+  }
+  return sortBlogPostsNewestFirst(postA, postB);
 }
 
 export function getHeadingId(text) {

@@ -2,6 +2,7 @@
 seoTitle: API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide
 slug: api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide
 tag: Architecture
+tags: Architecture, Backend
 title: API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide
 subtitle: A guide for production-ready .NET Minimal APIs versioning, with practical examples following the best practices.
 intro: A guide for production-ready .NET Minimal APIs versioning, with practical examples following the best practices.

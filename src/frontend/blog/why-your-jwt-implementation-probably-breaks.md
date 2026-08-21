@@ -2,6 +2,7 @@
 seoTitle: The JWT Logout Problem: Why Stateless Auth Breaks
 slug: why-your-jwt-implementation-probably-breaks
 tag: Security
+tags: Security, Backend
 title: Why Your JWT Implementation Probably Breaks
 subtitle: Why stateless auth is a myth in production. How real engineers actually handle logout.
 intro: Why stateless auth is a myth in production. How real engineers actually handle logout.

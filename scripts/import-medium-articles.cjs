@@ -2,40 +2,58 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 
-const DEFAULT_FEED_URL = 'https://medium.com/feed/@arg-software';
-const MEDIUM_USER_ID = '765b171ba7b3';
-const MEDIUM_JSON_PREFIX = '])}while(1);</x>';
-const MEDIUM_STREAM_URL = `https://medium.com/_/api/users/${MEDIUM_USER_ID}/profile/stream`;
-const STREAM_SOURCES = ['latest', 'overview'];
 const BLOG_DIR = path.resolve('src/frontend/blog');
 const IMAGE_ROOT = path.resolve('public/images/blog');
-const ARTICLES_LINKS_FILE = path.resolve('external/articlelinks.txt');
-const DRAFT_ARTICLES_LINKS_FILE = path.resolve('external/draft-articlelinks.txt');
-const DEFAULT_MEDIUM_BROWSER_PROFILE_DIR = path.resolve('.medium-browser-profile');
-const SOURCE_ARG = process.argv[2] || '';
-const MEDIUM_IMPORT_RETRY_MS = Number(process.env.MEDIUM_IMPORT_RETRY_MS || 0);
+const ARTICLES_ROOT = path.resolve('external/articles');
+const PUBLISHED_DIR = path.join(ARTICLES_ROOT, 'published');
+const DRAFTS_DIR = path.join(ARTICLES_ROOT, 'drafts');
+const SOURCE_ARG = process.argv[2] || '--published';
+const MEDIUM_EDITOR_PAYLOAD = 'window["obvInit"](';
 
-const BROWSER_HEADERS = {
-  'user-agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36 ARG Software blog importer',
-  accept: 'application/json, text/plain, */*',
+const GASPAR_COLLECTION = {
+  collection: 'building-gaspar',
+  collectionTitle: 'Building Gaspar - Anatomy of a Business AI Assistant',
 };
 
-const waitForEnter = message =>
-  new Promise(resolve => {
-    if (MEDIUM_IMPORT_RETRY_MS > 0) {
-      process.stdout.write(`${message} Retrying in ${Math.ceil(MEDIUM_IMPORT_RETRY_MS / 1000)}s...\n`);
-      setTimeout(resolve, MEDIUM_IMPORT_RETRY_MS);
-      return;
-    }
+const COLLECTION_BY_MEDIUM_ID = {
+  '546eab676aef': { ...GASPAR_COLLECTION, collectionPart: 1 },
+  '285c020b0daf': { ...GASPAR_COLLECTION, collectionPart: 2 },
+  '10e7e6206c8e': { ...GASPAR_COLLECTION, collectionPart: 3 },
+  '93a4d22ff549': { ...GASPAR_COLLECTION, collectionPart: 4 },
+  '53e8ef15ae81': { ...GASPAR_COLLECTION, collectionPart: 5 },
+};
 
-    process.stdout.write(message);
-    process.stdin.resume();
-    process.stdin.once('data', () => {
-      process.stdin.pause();
-      resolve();
-    });
-  });
+const INTERNAL_BLOG_LINKS = {
+  'https://arg.software/blog/we-built-an-ai-assistant-that-sells-heres-the-architecture/':
+    'https://arg.software/blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/',
+  'https://arg.software/blog/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/':
+    'https://arg.software/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/',
+};
+
+const TYPO_REPLACEMENTS = [
+  {
+    pattern: /\bPart(\d+):/g,
+    replacement: 'Part $1:',
+    label: 'Formatted missing space in part label',
+  },
+  {
+    pattern: /\benoug\b/gi,
+    replacement: 'enough',
+    label: 'Fixed misspelling of enough',
+  },
+  {
+    pattern: /Minimum\s{2,}Cost/g,
+    replacement: 'Minimum Cost',
+    label: 'Collapsed double space in Minimum Cost',
+  },
+  {
+    pattern: /click\[/gi,
+    replacement: 'click [',
+    label: 'Inserted missing space before link text',
+  },
+];
+
+const typoFixes = [];
 
 const decodeEntities = value =>
   String(value || '')
@@ -72,14 +90,7 @@ const stripTags = value =>
     .trim();
 
 const stripCode = value =>
-  decodeEntities(
-    String(value || '')
-      .replace(/<br\s*\/?\s*>/gi, '\n')
-      .replace(/<mark[^>]*>([\s\S]*?)<\/mark>/gi, '$1')
-      .replace(/<[^>]+>/g, '')
-  )
-    .replace(/\u00a0/g, ' ')
-    .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
+  stripTags(value)
     .replace(/\r/g, '')
     .trim()
     .replace(/^\n+|\n+$/g, '');
@@ -95,6 +106,45 @@ const sanitizeMarkdownText = value =>
     .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
     .replace(/\s+/g, ' ');
 
+const sanitizeTitle = value =>
+  sanitizeText(value)
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const normalizeTitle = value =>
+  sanitizeTitle(value)
+    .toLowerCase()
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const normalizeComparableTitle = value => normalizeTitle(value).replace(/[^a-z0-9]+/g, '');
+
+const normalizeHeading = value =>
+  sanitizeText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+const slugify = value =>
+  sanitizeTitle(value)
+    .toLowerCase()
+    .replace(/[’']/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 90)
+    .replace(/-+$/g, '');
+
+const removePartPrefix = title => sanitizeTitle(title).replace(/^Part\s+\d+\s*:\s*/i, '');
+
+const escapeFrontmatter = value =>
+  String(value || '')
+    .replace(/\r?\n/g, ' ')
+    .replace(/"/g, "'")
+    .trim();
+
 const escapeMarkdownLinkText = value =>
   sanitizeMarkdownText(value)
     .replace(/\\/g, '\\\\')
@@ -104,9 +154,71 @@ const escapeMarkdownLinkText = value =>
 
 const escapeMarkdownLinkUrl = value => String(value || '').trim().replace(/\)/g, '%29');
 
+const formatDate = value =>
+  new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(value));
+
+const estimateReadTime = text =>
+  `${Math.max(4, Math.ceil(stripTags(text).split(/\s+/).filter(Boolean).length / 210))} min read`;
+
+const getTag = title => (title.toLowerCase().includes('ai') ? 'AI' : 'Architecture');
+
+const getPostTags = (post, title, subtitle) => {
+  const collection = COLLECTION_BY_MEDIUM_ID[post.id];
+  if (collection?.collectionPart === 4) return ['AI', 'Security', 'Architecture'];
+  if (collection?.collectionPart === 5) return ['AI', 'Reliability', 'Security'];
+  if (collection) return ['AI', 'Architecture'];
+
+  return [getTag(`${title} ${subtitle}`)];
+};
+
+const inferLang = hint => {
+  const normalized = String(hint || '').trim().toLowerCase();
+  const aliases = { ts: 'typescript', tsx: 'typescript', js: 'javascript', sh: 'bash', shell: 'bash', txt: 'text' };
+  return aliases[normalized] || normalized;
+};
+
+const applyTypoFixes = (value, context) => {
+  let nextValue = String(value || '');
+
+  TYPO_REPLACEMENTS.forEach(({ pattern, replacement, label }) => {
+    nextValue = nextValue.replace(pattern, match => {
+      const fixed = match.replace(pattern, replacement);
+      if (fixed !== match) {
+        typoFixes.push({ context, label, from: match, to: fixed });
+      }
+      return fixed;
+    });
+  });
+
+  return nextValue;
+};
+
+const unwrapMediumRedirect = url => {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.endsWith('medium.com') && parsed.pathname === '/r/') {
+      return parsed.searchParams.get('url') || url;
+    }
+  } catch (_error) {
+    return url;
+  }
+
+  return url;
+};
+
+const normalizeLinkUrl = url => {
+  const unwrapped = unwrapMediumRedirect(decodeEntities(url).trim());
+  return INTERNAL_BLOG_LINKS[unwrapped] || unwrapped;
+};
+
 const getMarkupUrl = markup => {
   const url = markup?.href || markup?.url || markup?.link || markup?.metadata?.href || '';
-  const normalized = decodeEntities(url).trim();
+  const normalized = normalizeLinkUrl(url);
 
   if (!/^(?:https?:|mailto:)/i.test(normalized)) return '';
   return normalized;
@@ -130,121 +242,14 @@ const applyParagraphLinks = paragraph => {
 
   linkMarkups.forEach(markup => {
     if (markup.start < cursor) return;
-
     markdown += sanitizeMarkdownText(text.slice(cursor, markup.start));
     markdown += `[${escapeMarkdownLinkText(text.slice(markup.start, markup.end))}](${escapeMarkdownLinkUrl(markup.url)})`;
     cursor = markup.end;
   });
 
   markdown += sanitizeMarkdownText(text.slice(cursor));
-
   return markdown.replace(/\s+/g, ' ').trim();
 };
-
-const sanitizeTitle = value =>
-  sanitizeText(value)
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-const normalizeTitle = value =>
-  sanitizeTitle(value)
-    .toLowerCase()
-    .replace(/[“”]/g, '"')
-    .replace(/[‘’]/g, "'")
-    .replace(/\s+/g, ' ')
-    .trim();
-
-const normalizeHeading = value =>
-  sanitizeText(value)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
-
-const slugify = value =>
-  sanitizeTitle(value)
-    .toLowerCase()
-    .replace(/[’']/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 90)
-    .replace(/-+$/g, '');
-
-const escapeFrontmatter = value =>
-  String(value || '')
-    .replace(/\r?\n/g, ' ')
-    .replace(/"/g, "'")
-    .trim();
-
-const getTag = (title, categories = []) => {
-  const haystack = `${title} ${categories.join(' ')}`.toLowerCase();
-
-  if (haystack.includes('ai') || haystack.includes('artificial-intelligence') || haystack.includes('vector')) return 'AI';
-  if (haystack.includes('typescript') && (haystack.includes('any') || haystack.includes('legacy'))) return 'Refactoring';
-  if (haystack.includes('testing') || haystack.includes('testcontainers')) return 'Testing';
-  if (haystack.includes('docker') || haystack.includes('kubernetes') || haystack.includes('message broker')) return 'DevOps';
-
-  return 'Architecture';
-};
-
-const inferLang = hint => {
-  if (!hint) return '';
-
-  const normalized = String(hint).toLowerCase();
-  const alias = {
-    ts: 'typescript',
-    tsx: 'typescript',
-    js: 'javascript',
-    py: 'python',
-    sh: 'bash',
-    shell: 'bash',
-    yml: 'yaml',
-    txt: 'text',
-    plain: 'text',
-  };
-  if (alias[normalized]) return alias[normalized];
-
-  const known = [
-    'typescript', 'javascript', 'csharp', 'cs', 'c#', 'bash', 'sh', 'json', 'yaml', 'sql',
-    'http', 'xml', 'html', 'ini', 'protobuf', 'graphql', 'powershell', 'text',
-  ];
-  if (known.includes(normalized)) {
-    return normalized === 'cs' || normalized === 'c#' ? 'csharp' : normalized;
-  }
-
-  return '';
-};
-
-const formatDate = value =>
-  new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(value));
-
-const estimateReadTime = text =>
-  `${Math.max(4, Math.ceil(stripTags(text).split(/\s+/).filter(Boolean).length / 210))} min read`;
-
-const extract = (item, tag) => {
-  const match = item.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`));
-  return match ? decodeEntities(match[1]).trim() : '';
-};
-
-const parseFeed = xml =>
-  [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(match => {
-    const item = match[1];
-
-    return {
-      title: sanitizeTitle(extract(item, 'title')),
-      link: stripTags(extract(item, 'link')).replace(/\?source=.*$/, ''),
-      guid: stripTags(extract(item, 'guid')),
-      pubDate: stripTags(extract(item, 'pubDate')),
-      description: sanitizeText(extract(item, 'description')),
-      categories: [...item.matchAll(/<category><!\[CDATA\[([\s\S]*?)\]\]><\/category>/g)].map(category => stripTags(category[1])),
-      html: decodeEntities(extract(item, 'content:encoded')),
-    };
-  });
 
 const parseFrontmatter = raw => {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
@@ -264,8 +269,8 @@ const parseFrontmatter = raw => {
 };
 
 const extractMediumId = value => {
-  const match = String(value || '').match(/(?:-|\/)([0-9a-f]{12})(?=[/?#]|$)/i);
-  return match ? match[1] : '';
+  const match = String(value || '').match(/(?:-|\/)([0-9a-f]{12})(?=[/?#]|$)|^([0-9a-f]{12})$/i);
+  return match ? match[1] || match[2] : '';
 };
 
 const readExistingPosts = () =>
@@ -280,7 +285,6 @@ const readExistingPosts = () =>
       return {
         file,
         fullPath,
-        raw,
         meta,
         id: extractMediumId(meta.mediumUrl),
         slug: meta.slug || file.replace(/\.md$/, ''),
@@ -288,479 +292,106 @@ const readExistingPosts = () =>
       };
     });
 
-const stripNumericFilenamePrefixes = () => {
-  fs.readdirSync(BLOG_DIR)
-    .filter(file => /^\d+-.*\.md$/.test(file))
-    .forEach(file => {
-      const targetFile = file.replace(/^\d+-/, '');
-      const sourcePath = path.join(BLOG_DIR, file);
-      const targetPath = path.join(BLOG_DIR, targetFile);
+const getSourceDir = () => {
+  if (SOURCE_ARG === '--drafts') return DRAFTS_DIR;
+  if (SOURCE_ARG === '--published' || !SOURCE_ARG) return PUBLISHED_DIR;
+  return path.resolve(SOURCE_ARG);
+};
 
-      if (fs.existsSync(targetPath)) {
-        throw new Error(`Cannot rename ${file}; ${targetFile} already exists.`);
+const findHtmlFiles = sourceDir => {
+  if (!fs.existsSync(sourceDir)) return [];
+  return fs
+    .readdirSync(sourceDir)
+    .filter(file => file.endsWith('.html'))
+    .map(file => path.join(sourceDir, file))
+    .sort();
+};
+
+const extractEditorPayload = html => {
+  const start = html.indexOf(MEDIUM_EDITOR_PAYLOAD);
+  if (start === -1) throw new Error('Missing Medium editor payload.');
+
+  let index = start + MEDIUM_EDITOR_PAYLOAD.length;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  let end = -1;
+
+  for (; index < html.length; index += 1) {
+    const character = html[index];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (character === '\\') escaped = true;
+      else if (character === '"') inString = false;
+      continue;
+    }
+
+    if (character === '"') {
+      inString = true;
+      continue;
+    }
+    if (character === '{') depth += 1;
+    if (character === '}') {
+      depth -= 1;
+      if (depth === 0) {
+        end = index + 1;
+        break;
       }
-
-      fs.renameSync(sourcePath, targetPath);
-    });
-};
-
-const stripAuthorSectionFromMarkdown = markdown => {
-  const source = String(markdown || '');
-  const stripped = source.replace(/\n##\s*About\s+the\s+Author[\s\S]*$/i, '');
-
-  return stripped === source ? source : stripped.trimEnd();
-};
-
-const cleanExistingAuthorSections = () => {
-  const cleaned = [];
-
-  readExistingPosts().forEach(post => {
-    const nextRaw = stripAuthorSectionFromMarkdown(post.raw);
-    if (nextRaw === post.raw) return;
-
-    fs.writeFileSync(post.fullPath, `${nextRaw}\n`, 'utf8');
-    cleaned.push(post.file);
-  });
-
-  return cleaned;
-};
-
-const cleanMediumHtml = html =>
-  String(html || '')
-    .replace(/<h[1-6][^>]*>\s*About\s+the\s+Author\s*<\/h[1-6]>[\s\S]*$/i, '')
-    .replace(/<hr>[\s\S]*$/i, '')
-    .replace(/<blockquote>[\s\S]*?Your Job Search[\s\S]*?<\/blockquote>\s*(?:<figure>[\s\S]*?<\/figure>)?/gi, '')
-    .replace(/<h3>\s*Thank you for being a part of the community[\s\S]*$/i, '')
-    .replace(/<img[^>]+medium\.com\/_\/stat[^>]*>/gi, '')
-    .replace(/<figure>\s*<img[^>]+max\/32\/[^>]*>\s*<\/figure>/gi, '');
-
-const getImageAttributes = img => {
-  const src = (img.match(/\ssrc="([^"]+)"/) || [])[1] || '';
-  const alt = (img.match(/\salt="([^"]*)"/) || [])[1] || '';
-
-  return { src: decodeEntities(src), alt: sanitizeTitle(alt) };
-};
-
-const shouldSkipImage = src =>
-  !src || /medium\.com\/_\/stat/.test(src) || /\/max\/32\//.test(src) || /\/fit\/c\/150\/150\//.test(src);
-
-const downloadImage = async (url, outputPath) => {
-  const response = await fetch(url, {
-    headers: {
-      ...BROWSER_HEADERS,
-      accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to download ${url}: ${response.status}`);
+    }
   }
 
-  const input = Buffer.from(await response.arrayBuffer());
-  await sharp(input).webp({ quality: 86 }).toFile(outputPath);
+  if (end === -1) throw new Error('Could not parse Medium editor payload.');
+  return JSON.parse(html.slice(start + MEDIUM_EDITOR_PAYLOAD.length, end)).value;
 };
 
-const localizeImages = async (html, articleSlug, title) => {
+const getExportAssetsDir = htmlPath => path.join(path.dirname(htmlPath), `${path.basename(htmlPath, '.html')}_files`);
+
+const findExportedImage = (assetsDir, imageId) => {
+  if (!imageId || !fs.existsSync(assetsDir)) return '';
+  const expectedFile = imageId.replace(/\*/g, '_');
+  const expectedBaseName = path.parse(expectedFile).name.toLowerCase();
+  const files = fs.readdirSync(assetsDir);
+  return (
+    files.find(file => file === expectedFile) ||
+    files.find(file => file.toLowerCase() === expectedFile.toLowerCase()) ||
+    files.find(file => path.parse(file).name.toLowerCase() === expectedBaseName) ||
+    ''
+  );
+};
+
+const cleanArticleImageDir = articleSlug => {
   const imageDir = path.join(IMAGE_ROOT, articleSlug);
-  fs.mkdirSync(imageDir, { recursive: true });
-
-  let index = 0;
-  const downloads = [];
-  const replaced = html.replace(/<figure>\s*(<img[^>]+>)\s*<\/figure>|(<img[^>]+>)/gi, (_match, figureImage, inlineImage) => {
-    const attrs = getImageAttributes(figureImage || inlineImage || '');
-    if (shouldSkipImage(attrs.src)) return '';
-
-    index += 1;
-    const baseName = index === 1 ? `${articleSlug}-header` : `${slugify(attrs.alt) || 'image'}-${index}`;
-    const fileName = `${baseName}.webp`;
-    const outputPath = path.join(imageDir, fileName);
-    const publicPath = `/images/blog/${articleSlug}/${fileName}`;
-    const alt = attrs.alt || title;
-
-    downloads.push(downloadImage(attrs.src, outputPath).catch(error => console.warn(error.message)));
-
-    return `\n\n![${alt}](${publicPath})\n\n`;
-  });
-
-  await Promise.all(downloads);
-  return replaced;
+  fs.rmSync(imageDir, { recursive: true, force: true });
 };
 
-const localizeMediumImage = async (paragraph, articleSlug, title, index) => {
-  const metadata = paragraph.metadata || {};
-  const imageId = metadata.id || metadata.imageId || '';
-  if (!imageId) return '';
-  if (metadata.originalWidth <= 64 && metadata.originalHeight <= 64) return '';
+const localizeMediumImage = async (paragraph, articleSlug, title, imageIndex, assetsDir) => {
+  const imageId = paragraph.metadata?.id || paragraph.metadata?.imageId || '';
+  const exportedFile = findExportedImage(assetsDir, imageId);
+  if (!exportedFile) return '';
 
   const imageDir = path.join(IMAGE_ROOT, articleSlug);
   fs.mkdirSync(imageDir, { recursive: true });
 
   const alt = sanitizeText(paragraph.text) || title;
-  const baseName = index === 1 ? `${articleSlug}-header` : `${slugify(alt) || 'image'}-${index}`;
+  const baseName = imageIndex === 1 ? `${articleSlug}-header` : `${slugify(alt) || 'image'}-${imageIndex}`;
   const fileName = `${baseName}.webp`;
+  const sourcePath = path.join(assetsDir, exportedFile);
   const outputPath = path.join(imageDir, fileName);
   const publicPath = `/images/blog/${articleSlug}/${fileName}`;
-  const imageUrl = `https://miro.medium.com/v2/resize:fit:1400/${imageId}`;
 
   try {
-    await downloadImage(imageUrl, outputPath);
+    await sharp(sourcePath).webp({ quality: 86 }).toFile(outputPath);
   } catch (error) {
-    console.warn(error.message);
+    console.warn(`[medium-import] Failed to process ${sourcePath}: ${error.message}`);
+    fs.copyFileSync(sourcePath, outputPath);
   }
 
   return `![${alt}](${publicPath})`;
 };
 
-const convertHtmlToMarkdown = html => {
-  let text = html;
-  const codeBlocks = [];
-
-  text = text.replace(/<pre[^>]*>([\s\S]*?)<\/pre>/gi, (_, codeHtml) => {
-    const code = stripCode(codeHtml).replace(/\n{3,}/g, '\n\n');
-    const lang = inferLang();
-    const token = `\n\n@@CODE_BLOCK_${codeBlocks.length}@@\n\n`;
-    codeBlocks.push(`\`\`\`${lang}\n${code}\n\`\`\``);
-    return token;
-  });
-
-  text = text
-    .replace(/<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, value) => {
-      const label = escapeMarkdownLinkText(value);
-      const url = escapeMarkdownLinkUrl(decodeEntities(href));
-
-      return label && /^(?:https?:|mailto:)/i.test(url) ? `[${label}](${url})` : label;
-    })
-    .replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, (_, value) => `\n\n## ${stripTags(value)}\n\n`)
-    .replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, (_, value) => `\n\n## ${stripTags(value)}\n\n`)
-    .replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, (_, value) => `\n\n## ${stripTags(value)}\n\n`)
-    .replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, (_, value) => `\n\n### ${stripTags(value)}\n\n`)
-    .replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, value) => `\n\n> ${stripTags(value).replace(/\n+/g, ' ')}\n\n`)
-    .replace(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/gi, (_, _type, value) => {
-      const items = [...value.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)].map(item => `- ${stripTags(item[1]).replace(/\n+/g, ' ')}`);
-      return `\n\n${items.join('\n')}\n\n`;
-    })
-    .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, value) => `\n\n${stripTags(value).replace(/\n+/g, ' ')}\n\n`)
-    .replace(/<\/?(?:strong|b|em|i|code)\b[^>]*>/gi, '')
-    .replace(/<[^>]+>/g, '');
-
-  text = decodeEntities(text)
-    .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
-    .replace(/\r/g, '')
-    .replace(/[ \t]+\n/g, '\n')
-    .replace(/\n[ \t]+/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-
-  codeBlocks.forEach((block, index) => {
-    text = text.replace(`@@CODE_BLOCK_${index}@@`, block);
-  });
-
-  return stripAuthorSectionFromMarkdown(text.replace(/\n{3,}/g, '\n\n').trim());
-};
-
-const createArticleDescription = markdown =>
-  markdown
-    .replace(/^!\[[^\]]*\]\([^)]*\)\s*/m, '')
-    .split(/\n\n/)
-    .find(block => block && !block.startsWith('#') && !block.startsWith('```') && !block.startsWith('>'))
-    ?.replace(/^[-*]\s+/gm, '')
-    .replace(/\s+/g, ' ') || '';
-
-const stripMediumJsonPrefix = text => {
-  if (!text.startsWith(MEDIUM_JSON_PREFIX)) return text;
-  return text.slice(MEDIUM_JSON_PREFIX.length);
-};
-
-const fetchText = async (url, headers = BROWSER_HEADERS) => {
-  const response = await fetch(url, { headers });
-  if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.status}`);
-  return response.text();
-};
-
-const fetchMediumJson = async url => JSON.parse(stripMediumJsonPrefix(await fetchText(url)));
-
-const toQueryString = params => {
-  const query = new URLSearchParams();
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null) return;
-    if (Array.isArray(value)) {
-      if (value.length) query.set(key, value.join(','));
-      return;
-    }
-    query.set(key, String(value));
-  });
-
-  return query.toString();
-};
-
-const readArticleLinksFile = filePath => {
-  if (!fs.existsSync(filePath)) return [];
-  return fs
-    .readFileSync(filePath, 'utf8')
-    .split(/\r?\n/)
-    .map(line => line.trim())
-    .filter(line => line && !line.startsWith('#'));
-};
-
-const readArticleLinksFileEntries = filePath => {
-  if (!fs.existsSync(filePath)) return [];
-
-  return fs.readFileSync(filePath, 'utf8').split(/\r?\n/).map(line => {
-    const value = line.trim();
-
-    return {
-      line,
-      value,
-      isLink: Boolean(value && !value.startsWith('#')),
-    };
-  });
-};
-
-const writeRemainingDraftArticleLinks = (filePath, entries, processedUrls) => {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-
-  const processed = new Set(processedUrls);
-  const remainingEntries = entries.filter(entry => !(entry.isLink && processed.has(entry.value)));
-  while (remainingEntries.length && !remainingEntries[remainingEntries.length - 1].line.trim()) {
-    remainingEntries.pop();
-  }
-
-  const contents = remainingEntries.length ? `${remainingEntries.map(entry => entry.line).join('\n')}\n` : '';
-  fs.writeFileSync(filePath, contents, 'utf8');
-
-  return remainingEntries.filter(entry => entry.isLink).map(entry => entry.value);
-};
-
-const isMediumArticleLink = value => {
-  try {
-    const url = new URL(value);
-    return url.hostname.endsWith('medium.com') && Boolean(extractMediumId(value));
-  } catch (_error) {
-    return false;
-  }
-};
-
-const buildMediumJsonUrlFromShareLink = value => {
-  const url = new URL(value);
-  url.searchParams.set('format', 'json');
-  return url.toString();
-};
-
-const getBrowserPathCandidates = () => {
-  const localAppData = process.env.LOCALAPPDATA;
-  const programFiles = process.env.ProgramFiles;
-  const programFilesX86 = process.env['ProgramFiles(x86)'];
-
-  return [
-    { name: 'Brave', path: process.env.MEDIUM_BROWSER_PATH },
-    { name: 'Brave', path: programFiles && path.join(programFiles, 'BraveSoftware/Brave-Browser/Application/brave.exe') },
-    { name: 'Brave', path: programFilesX86 && path.join(programFilesX86, 'BraveSoftware/Brave-Browser/Application/brave.exe') },
-    { name: 'Brave', path: localAppData && path.join(localAppData, 'BraveSoftware/Brave-Browser/Application/brave.exe') },
-    { name: 'Chrome', path: programFiles && path.join(programFiles, 'Google/Chrome/Application/chrome.exe') },
-    { name: 'Chrome', path: programFilesX86 && path.join(programFilesX86, 'Google/Chrome/Application/chrome.exe') },
-    { name: 'Chrome', path: localAppData && path.join(localAppData, 'Google/Chrome/Application/chrome.exe') },
-    { name: 'Brave', path: '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser' },
-    { name: 'Chrome', path: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' },
-    { name: 'Brave', path: '/usr/bin/brave-browser' },
-    { name: 'Chrome', path: '/usr/bin/google-chrome' },
-  ].filter(candidate => candidate.path);
-};
-
-const resolveMediumBrowser = () => {
-  if (process.env.MEDIUM_BROWSER_PATH && !fs.existsSync(process.env.MEDIUM_BROWSER_PATH)) {
-    throw new Error(`MEDIUM_BROWSER_PATH does not exist: ${process.env.MEDIUM_BROWSER_PATH}`);
-  }
-
-  const browser = getBrowserPathCandidates().find(candidate => fs.existsSync(candidate.path));
-  if (!browser) {
-    throw new Error('No supported browser found. Install Brave/Chrome or set MEDIUM_BROWSER_PATH to a Chromium-based browser executable.');
-  }
-
-  return browser;
-};
-
-const loadPlaywrightChromium = () => {
-  try {
-    return require('playwright-core').chromium;
-  } catch (_error) {
-    throw new Error('Draft imports require playwright-core. Run `npm install` before importing Medium drafts.');
-  }
-};
-
-const createMediumBrowserSession = async () => {
-  const browser = resolveMediumBrowser();
-  const chromium = loadPlaywrightChromium();
-  const userDataDir = process.env.MEDIUM_BROWSER_USER_DATA_DIR || DEFAULT_MEDIUM_BROWSER_PROFILE_DIR;
-  const profileDirectory = process.env.MEDIUM_BROWSER_PROFILE_DIRECTORY;
-  const browserArgs = ['--start-maximized'];
-
-  if (profileDirectory) browserArgs.push(`--profile-directory=${profileDirectory}`);
-  fs.mkdirSync(userDataDir, { recursive: true });
-
-  const context = await chromium.launchPersistentContext(userDataDir, {
-    executablePath: browser.path,
-    headless: false,
-    viewport: null,
-    ignoreDefaultArgs: ['--disable-extensions'],
-    args: browserArgs,
-  });
-  const page = context.pages()[0] || (await context.newPage());
-
-  console.log(`[medium-import] Draft browser: ${browser.name} (${browser.path})`);
-  console.log(`[medium-import] Browser user data: ${userDataDir}`);
-  if (profileDirectory) console.log(`[medium-import] Browser profile directory: ${profileDirectory}`);
-
-  return { context, page };
-};
-
-const buildMediumBrowserJsonUrls = url => {
-  const postId = extractMediumId(url);
-  return [...new Set([buildMediumJsonUrlFromShareLink(url), postId && `https://medium.com/p/${postId}?format=json`].filter(Boolean))];
-};
-
-const fetchMediumJsonInBrowserPage = async (page, url) =>
-  page.evaluate(async fetchUrl => {
-    const response = await fetch(fetchUrl, {
-      credentials: 'include',
-      headers: { accept: 'application/json, text/plain, */*' },
-    });
-
-    return {
-      ok: response.ok,
-      status: response.status,
-      contentType: response.headers.get('content-type') || '',
-      text: await response.text(),
-    };
-  }, url);
-
-const parseMediumBrowserPost = (response, postId, url) => {
-  if (!response.ok) {
-    throw new Error(`fetch failed: ${response.status} ${url}`);
-  }
-
-  try {
-    const data = JSON.parse(stripMediumJsonPrefix(response.text));
-    return data.payload?.value || data.payload?.references?.Post?.[postId];
-  } catch (_error) {
-    throw new Error(`invalid Medium JSON from ${url} (${response.contentType || 'unknown content type'})`);
-  }
-};
-
-const fetchFullPostWithBrowser = async (session, url) => {
-  const postId = extractMediumId(url);
-  const jsonUrls = buildMediumBrowserJsonUrls(url);
-
-  await session.page.goto(url, { waitUntil: 'domcontentloaded', timeout: 90000 }).catch(error => {
-    console.warn(`[medium-import] Initial page load warning for ${url}: ${error.message}`);
-  });
-
-  const maxAttempts = MEDIUM_IMPORT_RETRY_MS > 0 ? 20 : 2;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const errors = [];
-
-    for (const jsonUrl of jsonUrls) {
-      try {
-        const response = await fetchMediumJsonInBrowserPage(session.page, jsonUrl);
-        const post = parseMediumBrowserPost(response, postId, jsonUrl);
-        if (post) return post;
-        errors.push(`missing post payload from ${jsonUrl}`);
-      } catch (error) {
-        errors.push(error.message);
-      }
-    }
-
-    if (attempt < maxAttempts) {
-      console.log('[medium-import] Medium did not expose the draft JSON yet. If the browser shows login or a challenge, complete it there.');
-      await waitForEnter('[medium-import] Press Enter here to retry the draft import...');
-      continue;
-    }
-
-    throw new Error(errors.join('; '));
-  }
-
-  return null;
-};
-
-const writeArticleLinksFile = (filePath, urls) => {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  const unique = [...new Set(urls.filter(Boolean))].sort();
-  fs.writeFileSync(filePath, `${unique.join('\n')}\n`, 'utf8');
-  return unique;
-};
-
-const mergeArticleLinks = (existingUrls, discoveredUrls) => {
-  const set = new Set(existingUrls);
-  discoveredUrls.filter(Boolean).forEach(url => set.add(url));
-  return [...set].sort();
-};
-
-const buildUrlFromPost = post =>
-  post.mediumUrl || post.webCanonicalUrl || post.canonicalUrl || (post.id ? `https://medium.com/p/${post.id}` : '');
-
-const collectStreamPosts = async source => {
-  let next = { limit: 10, source };
-  const posts = new Map();
-
-  for (let page = 1; page <= 20; page += 1) {
-    const data = await fetchMediumJson(`${MEDIUM_STREAM_URL}?${toQueryString(next)}`);
-    Object.values(data.payload?.references?.Post || {}).forEach(post => {
-      if (post.inResponseToPostId) return;
-      posts.set(post.id, post);
-    });
-
-    next = data.payload?.paging?.next;
-    if (!next) break;
-  }
-
-  return posts;
-};
-
-const collectMediumPosts = async () => {
-  const posts = new Map();
-
-  for (const source of STREAM_SOURCES) {
-    const sourcePosts = await collectStreamPosts(source);
-    sourcePosts.forEach((post, id) => posts.set(id, post));
-  }
-
-  return [...posts.values()].sort((postA, postB) => postA.firstPublishedAt - postB.firstPublishedAt);
-};
-
-const fetchFullPost = async postId => {
-  const data = await fetchMediumJson(`https://medium.com/p/${postId}?format=json`);
-  return data.payload?.value;
-};
-
-const getPostUrl = post =>
-  post.sourceUrl || post.mediumUrl || post.webCanonicalUrl || post.canonicalUrl || `https://medium.com/p/${post.id}`;
-
-const getPostCategories = post => (post.virtuals?.tags || []).map(tag => tag.name || tag.slug).filter(Boolean);
-
-const getCuratedDescription = post =>
-  [
-    post.metaDescription,
-    post.seoDescription,
-    post.content?.subtitle,
-    post.virtuals?.subtitle,
-    post.previewContent2?.subtitle,
-  ]
-    .map(sanitizeText)
-    .find(Boolean) || '';
-
-const isPartialLockedPost = post => {
-  if (!post?.isSubscriptionLocked) return false;
-
+const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title, htmlPath) => {
   const paragraphs = post.content?.bodyModel?.paragraphs || [];
-  const bodyWords = paragraphs.reduce((count, paragraph) => count + sanitizeText(paragraph.text).split(/\s+/).filter(Boolean).length, 0);
-  const expectedWords = post.virtuals?.wordCount || 0;
-
-  return expectedWords > 0 && bodyWords < expectedWords * 0.7;
-};
-
-const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title) => {
-  const paragraphs = post.content?.bodyModel?.paragraphs || [];
+  const assetsDir = getExportAssetsDir(htmlPath);
   const blocks = [];
   let imageIndex = 0;
 
@@ -774,13 +405,13 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title) => {
       continue;
     }
 
-    const text = applyParagraphLinks(paragraph);
+    const text = applyTypoFixes(applyParagraphLinks(paragraph), `${post.id} body`);
     if (normalizeHeading(text) === 'about the author') break;
-    if (normalizeTitle(text) === normalizeTitle(title)) continue;
+    if (normalizeComparableTitle(text) === normalizeComparableTitle(title)) continue;
 
     if (paragraph.type === 4) {
       imageIndex += 1;
-      const image = await localizeMediumImage(paragraph, articleSlug, title, imageIndex);
+      const image = await localizeMediumImage(paragraph, articleSlug, title, imageIndex, assetsDir);
       if (image) blocks.push(image);
       continue;
     }
@@ -813,401 +444,133 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title) => {
   return blocks;
 };
 
-const convertPostToMarkdown = async (post, articleSlug, title) => {
-  const blocks = await getMarkdownBlocksFromParagraphs(post, articleSlug, title);
-  return stripAuthorSectionFromMarkdown(blocks.join('\n\n').replace(/\n{3,}/g, '\n\n').trim());
+const convertPostToMarkdown = async (post, articleSlug, title, htmlPath) => {
+  const blocks = await getMarkdownBlocksFromParagraphs(post, articleSlug, title, htmlPath);
+  return blocks.join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
 };
 
-const writePost = (post, markdown, subtitle) => {
-  const title = sanitizeTitle(post.title);
-  const slug = slugify(title);
-  const categories = getPostCategories(post);
-  const tag = getTag(title, categories);
-  const frontmatter = [
+const getPostUrl = post => `https://medium.com/p/${post.id}`;
+
+const getTimestamp = post => post.firstPublishedAt || post.latestPublishedAt || post.createdAt || post.updatedAt || Date.now();
+
+const getDateModified = post => (post.updatedAt ? formatDate(post.updatedAt) : '');
+
+const getSlug = (post, title) => {
+  const collection = COLLECTION_BY_MEDIUM_ID[post.id];
+  const titleSlug = slugify(removePartPrefix(title));
+  if (!collection) return slugify(title);
+
+  return `${collection.collection}-part-${collection.collectionPart}-${titleSlug}`;
+};
+
+const buildFrontmatter = (post, slug, title, markdown) => {
+  const collection = COLLECTION_BY_MEDIUM_ID[post.id];
+  const subtitle = applyTypoFixes(
+    sanitizeText(post.content?.subtitle || post.virtuals?.subtitle || post.previewContent2?.subtitle || ''),
+    `${post.id} subtitle`
+  );
+  const seoTitle = applyTypoFixes(sanitizeTitle(post.seoTitle || title), `${post.id} seoTitle`);
+  const tags = getPostTags(post, title, subtitle);
+  const lines = [
     '---',
-    `seoTitle: ${escapeFrontmatter(post.seoTitle || title)}`,
+    `seoTitle: ${escapeFrontmatter(seoTitle)}`,
     `slug: ${slug}`,
-    `tag: ${tag}`,
+    `tag: ${tags[0]}`,
+    `tags: ${tags.join(', ')}`,
     `title: ${escapeFrontmatter(title)}`,
     `subtitle: ${escapeFrontmatter(subtitle)}`,
     `intro: ${escapeFrontmatter(subtitle)}`,
-    `date: ${formatDate(post.firstPublishedAt || post.latestPublishedAt || post.createdAt)}`,
+    `date: ${formatDate(getTimestamp(post))}`,
+    `dateModified: ${getDateModified(post)}`,
     `readTime: ${estimateReadTime(markdown)}`,
     `mediumUrl: ${getPostUrl(post)}`,
-    '---',
-    '',
-  ].join('\n');
+  ];
+
+  if (collection) {
+    lines.push(`collection: ${collection.collection}`);
+    lines.push(`collectionTitle: ${escapeFrontmatter(collection.collectionTitle)}`);
+    lines.push(`collectionPart: ${collection.collectionPart}`);
+  }
+
+  lines.push('---', '');
+  return lines.join('\n');
+};
+
+const findExistingPost = (existingPosts, post, slug, title) =>
+  existingPosts.find(existing => existing.id === post.id) ||
+  existingPosts.find(existing => existing.slug === slug) ||
+  existingPosts.find(existing => normalizeTitle(existing.title) === normalizeTitle(title));
+
+const writePost = async (post, htmlPath, existingPosts) => {
+  const title = applyTypoFixes(sanitizeTitle(post.title), `${post.id} title`);
+  const slug = getSlug(post, title);
+  cleanArticleImageDir(slug);
+  const markdown = await convertPostToMarkdown(post, slug, title, htmlPath);
+
+  if (!markdown) throw new Error(`Empty markdown after conversion for ${post.id}`);
+
   const outputPath = path.join(BLOG_DIR, `${slug}.md`);
-
-  fs.writeFileSync(outputPath, `${frontmatter}${markdown}\n`, 'utf8');
-  return { title, slug, outputPath };
-};
-
-const writeRssPost = async item => {
-  const title = sanitizeTitle(item.title);
-  const slug = slugify(title);
-  const html = cleanMediumHtml(item.html);
-  const withLocalImages = await localizeImages(html, slug, title);
-  const markdown = convertHtmlToMarkdown(withLocalImages);
-  const subtitle = item.description || createArticleDescription(markdown);
-  const tag = getTag(title, item.categories);
-  const frontmatter = [
-    '---',
-    `seoTitle: ${escapeFrontmatter(title)}`,
-    `slug: ${slug}`,
-    `tag: ${tag}`,
-    `title: ${escapeFrontmatter(title)}`,
-    `subtitle: ${escapeFrontmatter(subtitle)}`,
-    `intro: ${escapeFrontmatter(subtitle)}`,
-    `date: ${formatDate(item.pubDate)}`,
-    `readTime: ${estimateReadTime(markdown)}`,
-    `mediumUrl: ${item.link}`,
-    '---',
-    '',
-  ].join('\n');
-  const outputPath = path.join(BLOG_DIR, `${slug}.md`);
-
-  fs.writeFileSync(outputPath, `${frontmatter}${markdown}\n`, 'utf8');
-  return { title, slug, outputPath };
-};
-
-const replaceFrontmatterFields = (raw, fields) => {
-  const newline = raw.includes('\r\n') ? '\r\n' : '\n';
-  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!match) return raw;
-
-  const lines = match[1].split(/\r?\n/);
-  const pending = new Map(Object.entries(fields).map(([key, value]) => [key, `${key}: ${escapeFrontmatter(value)}`]));
-  const nextLines = lines.map(line => {
-    const colon = line.indexOf(':');
-    if (colon === -1) return line;
-
-    const key = line.slice(0, colon).trim();
-    if (!pending.has(key)) return line;
-
-    const nextLine = pending.get(key);
-    pending.delete(key);
-    return nextLine;
-  });
-
-  pending.forEach(line => nextLines.push(line));
-
-  const nextFrontmatter = ['---', ...nextLines, '---'].join(newline);
-  return `${nextFrontmatter}${raw.slice(match[0].length)}`;
-};
-
-const removeFrontmatterFields = (raw, fieldNames) => {
-  const newline = raw.includes('\r\n') ? '\r\n' : '\n';
-  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!match) return raw;
-
-  const fieldSet = new Set(fieldNames);
-  const nextLines = match[1].split(/\r?\n/).filter(line => {
-    const colon = line.indexOf(':');
-    if (colon === -1) return true;
-    return !fieldSet.has(line.slice(0, colon).trim());
-  });
-
-  const nextFrontmatter = ['---', ...nextLines, '---'].join(newline);
-  return `${nextFrontmatter}${raw.slice(match[0].length)}`;
-};
-
-const cleanExistingExcerptFields = () => {
-  const cleaned = [];
-
-  readExistingPosts().forEach(post => {
-    const nextRaw = removeFrontmatterFields(post.raw, ['excerpt']);
-    if (nextRaw === post.raw) return;
-
-    fs.writeFileSync(post.fullPath, nextRaw, 'utf8');
-    cleaned.push(post.file);
-  });
-
-  return cleaned;
-};
-
-const findExistingPost = (existingPosts, post) => {
-  const postTitle = normalizeTitle(post.title);
-  const postSlug = slugify(post.title);
-
-  return existingPosts.find(existing => existing.id === post.id) ||
-    existingPosts.find(existing => normalizeTitle(existing.title) === postTitle) ||
-    existingPosts.find(existing => existing.slug === postSlug);
-};
-
-const refreshExistingPostMetadata = (existingPost, post) => {
-  const subtitle = getCuratedDescription(post);
-  if (!subtitle) return false;
-
-  const nextRaw = replaceFrontmatterFields(existingPost.raw, {
-    subtitle,
-    intro: subtitle,
-  });
-
-  if (nextRaw === existingPost.raw) return false;
-
-  fs.writeFileSync(existingPost.fullPath, nextRaw, 'utf8');
-  return true;
-};
-
-const importFromMediumJson = async () => {
-  const streamPosts = await collectMediumPosts();
-  const existingPosts = readExistingPosts();
-  const imported = [];
-  const updated = [];
-  const skipped = [];
-  const discoveredUrls = new Set();
-
-  for (const streamPost of streamPosts) {
-    const post = await fetchFullPost(streamPost.id);
-    if (!post) {
-      skipped.push({ id: streamPost.id, title: streamPost.title, reason: 'missing full post payload' });
-      continue;
-    }
-
-    const canonical = buildUrlFromPost(post);
-    if (canonical) discoveredUrls.add(canonical);
-
-    const existingPost = findExistingPost(existingPosts, post);
-    if (existingPost) {
-      if (refreshExistingPostMetadata(existingPost, post)) updated.push({ id: post.id, file: existingPost.file, title: sanitizeTitle(post.title) });
-      continue;
-    }
-
-    if (isPartialLockedPost(post)) {
-      skipped.push({ id: post.id, title: sanitizeTitle(post.title), reason: 'locked post only exposes partial preview content' });
-      continue;
-    }
-
-    const title = sanitizeTitle(post.title);
-    const slug = slugify(title);
-    const markdown = await convertPostToMarkdown(post, slug, title);
-    const subtitle = getCuratedDescription(post) || createArticleDescription(markdown);
-
-    if (!markdown) {
-      skipped.push({ id: post.id, title, reason: 'empty markdown after conversion' });
-      continue;
-    }
-
-    imported.push(writePost(post, markdown, subtitle));
+  const existingPost = findExistingPost(existingPosts, post, slug, title);
+  if (existingPost && existingPost.fullPath !== outputPath && fs.existsSync(existingPost.fullPath)) {
+    fs.unlinkSync(existingPost.fullPath);
   }
 
-  return { source: 'medium-json', discovered: streamPosts.length, discoveredUrls: [...discoveredUrls], imported, updated, skipped };
-};
-
-const importFromLinksFile = async filePath => {
-  const urls = readArticleLinksFile(filePath);
-  if (!urls.length) {
-    return { source: 'links-file', file: filePath, discovered: 0, imported: [], updated: [], skipped: [] };
-  }
-
-  const existingPosts = readExistingPosts();
-  const imported = [];
-  const updated = [];
-  const skipped = [];
-
-  for (const url of urls) {
-    const postId = extractMediumId(url);
-    if (!postId) {
-      skipped.push({ url, reason: 'no post id in url' });
-      continue;
-    }
-
-    let post;
-    try {
-      post = await fetchFullPost(postId);
-    } catch (error) {
-      skipped.push({ url, reason: `fetch failed: ${error.message}` });
-      continue;
-    }
-    if (!post) {
-      skipped.push({ url, reason: 'missing full post payload' });
-      continue;
-    }
-
-    post.sourceUrl = url;
-
-    const existingPost = findExistingPost(existingPosts, post);
-    if (existingPost) {
-      if (refreshExistingPostMetadata(existingPost, post)) updated.push({ id: post.id, file: existingPost.file, title: sanitizeTitle(post.title) });
-      continue;
-    }
-
-    if (isPartialLockedPost(post)) {
-      skipped.push({ id: post.id, title: sanitizeTitle(post.title), reason: 'locked post only exposes partial preview content' });
-      continue;
-    }
-
-    const title = sanitizeTitle(post.title);
-    const slug = slugify(title);
-    const markdown = await convertPostToMarkdown(post, slug, title);
-    const subtitle = getCuratedDescription(post) || createArticleDescription(markdown);
-
-    if (!markdown) {
-      skipped.push({ id: post.id, title, reason: 'empty markdown after conversion' });
-      continue;
-    }
-
-    imported.push(writePost(post, markdown, subtitle));
-  }
-
-  return { source: 'links-file', file: filePath, discovered: urls.length, imported, updated, skipped };
-};
-
-const importFromDraftShareLinksFile = async filePath => {
-  const entries = readArticleLinksFileEntries(filePath);
-  const urls = entries.filter(entry => entry.isLink).map(entry => entry.value);
-
-  if (!urls.length) {
-    return {
-      source: 'draft-share-links-file',
-      file: filePath,
-      discovered: 0,
-      imported: [],
-      updated: [],
-      skipped: [],
-      removedDraftLinks: 0,
-      remainingDraftLinks: 0,
-    };
-  }
-
-  const existingPosts = readExistingPosts();
-  const imported = [];
-  const updated = [];
-  const skipped = [];
-  const processedUrls = [];
-  let browserSession;
-
-  const getBrowserSession = async () => {
-    if (!browserSession) browserSession = await createMediumBrowserSession();
-    return browserSession;
-  };
-
-  try {
-    for (const url of urls) {
-      if (!isMediumArticleLink(url)) {
-        skipped.push({ url, reason: 'draft imports require a medium.com article link with a post id' });
-        continue;
-      }
-
-      const postId = extractMediumId(url);
-      if (!postId) {
-        skipped.push({ url, reason: 'no post id in url' });
-        continue;
-      }
-
-      let post;
-      try {
-        post = await fetchFullPost(postId);
-      } catch (error) {
-        console.warn(`[medium-import] Public fetch failed for ${url}: ${error.message}`);
-      }
-
-      if (!post) {
-        try {
-          post = await fetchFullPostWithBrowser(await getBrowserSession(), url);
-        } catch (error) {
-          skipped.push({ url, reason: `browser fetch failed: ${error.message}` });
-          continue;
-        }
-      }
-
-      if (!post) {
-        skipped.push({ url, reason: 'missing full post payload' });
-        continue;
-      }
-
-      post.sourceUrl = url;
-
-      const existingPost = findExistingPost(existingPosts, post);
-      if (existingPost) {
-        const changed = refreshExistingPostMetadata(existingPost, post);
-        updated.push({ id: post.id, file: existingPost.file, title: sanitizeTitle(post.title), changed });
-        processedUrls.push(url);
-        continue;
-      }
-
-      if (isPartialLockedPost(post)) {
-        skipped.push({ id: post.id, title: sanitizeTitle(post.title), reason: 'locked post only exposes partial preview content' });
-        continue;
-      }
-
-      const title = sanitizeTitle(post.title);
-      const slug = slugify(title);
-      const markdown = await convertPostToMarkdown(post, slug, title);
-      const subtitle = getCuratedDescription(post) || createArticleDescription(markdown);
-
-      if (!markdown) {
-        skipped.push({ id: post.id, title, reason: 'empty markdown after conversion' });
-        continue;
-      }
-
-      imported.push(writePost(post, markdown, subtitle));
-      processedUrls.push(url);
-    }
-  } finally {
-    if (browserSession) await browserSession.context.close();
-  }
-
-  const remainingDraftLinks = writeRemainingDraftArticleLinks(filePath, entries, processedUrls);
+  fs.writeFileSync(outputPath, `${buildFrontmatter(post, slug, title, markdown)}${markdown}\n`, 'utf8');
 
   return {
-    source: 'draft-share-links-file',
-    file: filePath,
-    discovered: urls.length,
+    id: post.id,
+    title,
+    slug,
+    file: path.relative(process.cwd(), outputPath),
+    action: existingPost ? 'updated' : 'imported',
+  };
+};
+
+const importFromLocalHtml = async sourceDir => {
+  const files = findHtmlFiles(sourceDir);
+  const existingPosts = readExistingPosts();
+  const imported = [];
+  const updated = [];
+  const skipped = [];
+
+  for (const htmlPath of files) {
+    try {
+      const post = extractEditorPayload(fs.readFileSync(htmlPath, 'utf8'));
+      if (!post?.id) {
+        skipped.push({ file: htmlPath, reason: 'missing post id' });
+        continue;
+      }
+
+      const result = await writePost(post, htmlPath, existingPosts);
+      if (result.action === 'updated') updated.push(result);
+      else imported.push(result);
+    } catch (error) {
+      skipped.push({ file: path.relative(process.cwd(), htmlPath), reason: error.message });
+    }
+  }
+
+  return {
+    source: 'local-medium-html',
+    folder: path.relative(process.cwd(), sourceDir),
+    discovered: files.length,
     imported,
     updated,
     skipped,
-    removedDraftLinks: processedUrls.length,
-    remainingDraftLinks: remainingDraftLinks.length,
+    typoFixes: typoFixes.filter(
+      (fix, index, fixes) =>
+        fixes.findIndex(candidate => candidate.context === fix.context && candidate.from === fix.from && candidate.to === fix.to) === index
+    ),
   };
 };
 
-const importFromRss = async feedUrl => {
-  const xml = await fetchText(feedUrl, { ...BROWSER_HEADERS, accept: 'application/rss+xml, application/xml, text/xml, */*' });
-  const items = parseFeed(xml);
-  const existingTitles = new Set(readExistingPosts().map(post => normalizeTitle(post.title)));
-  const missing = items.filter(item => !existingTitles.has(normalizeTitle(item.title)));
-  const imported = [];
-
-  for (const item of missing.reverse()) {
-    imported.push(await writeRssPost(item));
-  }
-
-  return { source: 'rss', feed: feedUrl, discovered: items.length, imported, updated: [], skipped: [] };
-};
-
 (async () => {
-  stripNumericFilenamePrefixes();
-  const cleanedAuthorSections = cleanExistingAuthorSections();
-  const cleanedExcerptFields = cleanExistingExcerptFields();
-
-  let result;
-  if (SOURCE_ARG === '--drafts') {
-    result = await importFromDraftShareLinksFile(DRAFT_ARTICLES_LINKS_FILE);
-  } else if (SOURCE_ARG.includes('/feed/')) {
-    result = await importFromRss(SOURCE_ARG || DEFAULT_FEED_URL);
-  } else {
-    const discovery = await importFromMediumJson();
-    const existingLinks = readArticleLinksFile(ARTICLES_LINKS_FILE);
-    const merged = mergeArticleLinks(existingLinks, discovery.discoveredUrls || []);
-    writeArticleLinksFile(ARTICLES_LINKS_FILE, merged);
-    result = await importFromLinksFile(ARTICLES_LINKS_FILE);
-    result.discoveredUrls = merged.length;
-    result.discovery = {
-      discovered: discovery.discovered,
-      imported: discovery.imported.length,
-      updated: discovery.updated.length,
-      skipped: discovery.skipped.length,
-    };
-  }
+  const sourceDir = getSourceDir();
+  const result = await importFromLocalHtml(sourceDir);
 
   console.log(
     JSON.stringify(
       {
         ...result,
-        cleanedAuthorSections,
-        cleanedExcerptFields,
         imported: result.imported.length,
         importedPosts: result.imported,
         updated: result.updated.length,

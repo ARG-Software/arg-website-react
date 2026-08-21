@@ -153,6 +153,8 @@ todos
 external/html/
 external/*.xls
 external/*.xlsx
+external/articles/drafts/*
+external/articles/published/*
 public/files/cvs
 public/files/sites
 .rag-private/
@@ -160,3 +162,4 @@ src/backend/rag/.rag_private/
 
 .opencode
 .storybook
+

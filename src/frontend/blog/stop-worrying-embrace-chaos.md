@@ -1,7 +1,8 @@
 ---
 seoTitle: Stop Worrying, Embrace the Chaos
 slug: stop-worrying-embrace-chaos
-tag: Culture
+tag: Engineering Culture
+tags: Engineering Culture
 title: How I Learned to Stop Worrying and Embrace the Chaos (Spoiler: I Didn't)
 subtitle: Stack Overflow is dying. Juniors aren’t hired. Tech debt is everywhere.
 intro: Stack Overflow is dying. Juniors aren’t hired. Tech debt is everywhere.

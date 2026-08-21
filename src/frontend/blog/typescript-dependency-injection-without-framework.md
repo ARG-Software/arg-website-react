@@ -2,6 +2,7 @@
 seoTitle: TypeScript DI Without a Framework
 slug: typescript-dependency-injection-without-framework
 tag: Architecture
+tags: Architecture, Backend
 title: TypeScript Dependency Injection Without the Framework (And Why You Might Prefer It)
 subtitle: Learn to build a type-safe DI container in TypeScript from scratch — no NestJS, no decorators, no reflect-metadata. Just pure TypeScript.
 intro: Learn to build a type-safe DI container in TypeScript from scratch — no NestJS, no decorators, no reflect-metadata. Just pure TypeScript.

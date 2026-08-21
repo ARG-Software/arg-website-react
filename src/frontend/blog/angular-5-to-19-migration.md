@@ -1,7 +1,8 @@
 ---
 seoTitle: Angular 5 to 19 Migration Guide
 slug: angular-5-to-19-migration
-tag: Refactoring
+tag: Frontend
+tags: Frontend, Refactoring
 title: Upgrading Angular Legacy Project Version 5 to 19
 subtitle: Upgrade Angular from v5 to v19 with ease! Learn the step-by-step migration strategy for modernizing legacy projects.
 intro: Upgrade Angular from v5 to v19 with ease! Learn the step-by-step migration strategy for modernizing legacy projects.

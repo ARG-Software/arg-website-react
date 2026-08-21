@@ -2,6 +2,7 @@
 seoTitle: Nx + NestJS Monorepo Boilerplate
 slug: nx-nestjs-monorepo-boilerplate
 tag: Architecture
+tags: Architecture, Backend
 title: Scaling with Confidence: A Practical Nx + NestJS Monorepo Boilerplate
 subtitle: Discover a scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems.
 intro: Discover a scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems.

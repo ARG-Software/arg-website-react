@@ -1,6 +1,7 @@
 ---
 slug: stop-hitting-claude-usage-limits
 tag: AI
+tags: AI
 title: Stop Hitting Claude's Usage Limits: How to Hack Your Tokens
 subtitle: Stop hitting Claude’s 5-hour limit. Learn how to master “Token Architecture”.
 intro: Stop hitting Claude’s 5-hour limit. Learn how to master “Token Architecture”.
