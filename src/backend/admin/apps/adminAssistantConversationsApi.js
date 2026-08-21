@@ -6,6 +6,7 @@ import {
 } from '../domain/assistantConversation.js';
 import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
 import { createAdminDependencies } from './di/createAdminDependencies.js';
+import { getAccessToken } from '../infrastructure/http/adminCookies.js';
 
 const ALLOWED_METHODS = 'GET, DELETE, OPTIONS';
 const DEFAULT_PAGE = 1;
@@ -43,7 +44,7 @@ export function createAdminAssistantConversationsApi({
       const dependencies = createDependencies({
         env,
       }).createAssistantConversationAdminDependencies();
-      await authenticateAdmin(getBearerToken(request), dependencies);
+      await authenticateAdmin(getAccessToken(request), dependencies);
 
       if (request.method === 'DELETE') {
         const id = getRequiredConversationId(request);
@@ -82,12 +83,6 @@ export function createAdminAssistantConversationsApi({
 }
 
 export const handleAdminAssistantConversations = createAdminAssistantConversationsApi();
-
-function getBearerToken(request) {
-  const authorization = request.headers.get('authorization') || '';
-  const [, token] = authorization.match(/^Bearer\s+(.+)$/i) || [];
-  return token || '';
-}
 
 function getConversationId(request) {
   return new URL(request.url).searchParams.get('id') || '';

@@ -17,6 +17,8 @@ export function createAdminLoginApi({
   const http = createApiHttp({ allowedMethods: ADMIN_LOGIN_ALLOWED_METHODS, env });
 
   return async function handleAdminLoginApi(request) {
+    const response = new Response(null);
+
     try {
       const originGuardResponse = http.createOriginGuardResponse(request);
       if (originGuardResponse) return originGuardResponse;
@@ -34,17 +36,26 @@ export function createAdminLoginApi({
       }
 
       const payload = await readJsonBody(request);
+      const dependencies = createDependencies({ env }).createLoginDependencies();
+
       const result = await loginAdmin(
         {
           email: payload.email,
           password: payload.password,
           altcha: payload.altcha,
           clientIp: getClientIp(request),
+          response: response,
         },
-        createDependencies({ env }).createLoginDependencies()
+        dependencies
       );
 
-      return http.createJsonResponse(request, 200, result);
+      const jsonResponse = http.createJsonResponse(request, 200, result);
+
+      response.headers.forEach((value, name) => {
+        jsonResponse.headers.append(name, value);
+      });
+
+      return jsonResponse;
     } catch (error) {
       const statusCode = getAdminErrorStatus(error);
 
@@ -52,13 +63,17 @@ export function createAdminLoginApi({
         console.error(error);
       }
 
-      const response = http.createJsonResponse(request, statusCode, getHttpErrorBody(error));
+      const errorResponse = http.createJsonResponse(request, statusCode, getHttpErrorBody(error));
+
+      response.headers.forEach((value, name) => {
+        errorResponse.headers.append(name, value);
+      });
 
       if (statusCode === 429 && error.retryAfterSeconds) {
-        response.headers.set('Retry-After', String(error.retryAfterSeconds));
+        errorResponse.headers.set('Retry-After', String(error.retryAfterSeconds));
       }
 
-      return response;
+      return errorResponse;
     }
   };
 }

@@ -108,6 +108,16 @@ export default defineConfig(({ mode }) => {
         module: '/src/backend/admin/apps/adminLoginApi.js',
         createApi: 'createAdminLoginApi',
       },
+      {
+        path: '/api/admin/session',
+        module: '/src/backend/admin/apps/adminSessionApi.js',
+        createApi: 'createAdminSessionApi',
+      },
+      {
+        path: '/api/admin/user',
+        module: '/src/backend/admin/apps/adminUserApi.js',
+        createApi: 'createAdminUserApi',
+      },
     ]),
     // SPA fallback: serve index.html for routes without file extensions
     {

@@ -23,4 +23,36 @@ export class SupabaseAdminIdentityProvider {
       user: { email: data.user.email },
     };
   }
+
+  async refreshSession(refreshToken) {
+    const { data, error } = await this.client.auth.refreshSession({
+      refresh_token: refreshToken,
+    });
+
+    if (error || !data.session || !data.user?.email) {
+      return { error };
+    }
+
+    return {
+      session: data.session,
+      user: { email: data.user.email },
+    };
+  }
+
+  async signOut(accessToken) {
+    try {
+      await this.client.auth.signOut({ accessToken });
+    } catch (error) {
+      // Ignore errors during sign out to ensure cookies can always be cleared
+      console.error('Supabase sign out failed', error);
+    }
+  }
+
+  async updateUser(accessToken, data) {
+    const { error } = await this.client.auth.updateUser(data, { accessToken });
+
+    if (error) {
+      throw error;
+    }
+  }
 }

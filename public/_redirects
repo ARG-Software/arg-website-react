@@ -21,6 +21,8 @@
 /api/security/challenge  /.netlify/functions/security-challenge  200
 /api/security/verify     /.netlify/functions/security-verify     200
 /api/admin/login         /.netlify/functions/admin-login         200
+/api/admin/session       /.netlify/functions/admin-session       200
+/api/admin/user          /.netlify/functions/admin-user          200
 /api/admin/outreach      /.netlify/functions/admin-outreach      200
 /api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200
 /api/admin/assistant-conversations    /.netlify/functions/admin-assistant-conversations 200

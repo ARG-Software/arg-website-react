@@ -6,6 +6,7 @@ import { updateOutreachRecord } from '../application/outreach/updateOutreachReco
 import { createOutreachRecordResponse } from '../domain/outreachRecord.js';
 import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
 import { createAdminDependencies } from './di/createAdminDependencies.js';
+import { getAccessToken } from '../infrastructure/http/adminCookies.js';
 
 export { createErrorBody };
 
@@ -40,7 +41,7 @@ export function createAdminOutreachApi({
       }
 
       const dependencies = createDependencies({ env }).createOutreachDependencies();
-      const user = await authenticateAdmin(getBearerToken(request), dependencies);
+      const user = await authenticateAdmin(getAccessToken(request), dependencies);
 
       if (request.method === 'GET') {
         const query = getOutreachQuery(request);
@@ -116,12 +117,6 @@ async function readJsonBody(request) {
   } catch {
     throw createAdminError(400, 'invalid_json', 'Invalid JSON body');
   }
-}
-
-function getBearerToken(request) {
-  const authorization = request.headers.get('authorization') || '';
-  const [, token] = authorization.match(/^Bearer\s+(.+)$/i) || [];
-  return token || '';
 }
 
 function getOutreachQuery(request) {

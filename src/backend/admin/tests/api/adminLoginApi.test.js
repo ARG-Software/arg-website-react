@@ -2,15 +2,24 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { createAdminLoginApi } from '../../apps/adminLoginApi.js';
+import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '../../infrastructure/http/adminCookies.js';
 
-test('logs in admins through the backend endpoint', async () => {
+test('logs in admins through the backend endpoint and sets cookies', async () => {
   const api = createTestApi();
   const response = await api(createLoginRequest());
   const body = await response.json();
 
   assert.equal(response.status, 200);
-  assert.equal(body.session.access_token, 'access-token');
   assert.equal(body.user.email, 'admin@arg.software');
+
+  const cookies = response.headers.getSetCookie();
+  assert.ok(cookies.some(c => c.startsWith(`${ACCESS_COOKIE_NAME}=access-token`)));
+  assert.ok(cookies.some(c => c.startsWith(`${REFRESH_COOKIE_NAME}=refresh-token`)));
+  assert.ok(cookies.some(c => c.includes('HttpOnly')));
+  assert.ok(cookies.some(c => c.includes('SameSite=Lax')));
+
+  // Ensure tokens are not in the JSON body
+  assert.equal(body.session, undefined);
 });
 
 test('rejects login when ALTCHA verification fails', async () => {
@@ -51,6 +60,7 @@ function createTestApi({ altchaVerified = true, rateLimitAllowed = true } = {}) 
               rateLimitAllowed ? { allowed: true } : { allowed: false, retryAfterSeconds: 60 },
           },
         },
+        env: { NODE_ENV: 'test' },
       }),
     }),
   });

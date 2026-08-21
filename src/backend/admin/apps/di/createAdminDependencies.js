@@ -60,6 +60,17 @@ function createAdminDependenciesWithClients({ env, createAuthClient, createServi
           }),
           store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit'),
         },
+        env,
+      };
+    },
+    createSessionDependencies() {
+      const authClient = createAuthClient(config);
+      const serviceClient = createServiceClient(config);
+      const adminUserRepository = new SupabaseAdminUserRepository(serviceClient);
+
+      return {
+        adminAccessPolicy: createAdminAccessPolicy(adminUserRepository),
+        identityProvider: new SupabaseAdminIdentityProvider(authClient),
       };
     },
     createMaintenanceDependencies() {

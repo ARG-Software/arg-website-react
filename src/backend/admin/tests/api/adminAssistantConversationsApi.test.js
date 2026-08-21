@@ -145,8 +145,8 @@ function createAdminRequest(search = '', options = {}) {
   return new Request(`https://arg.software/api/admin/assistant-conversations${search}`, {
     method: options.method || 'GET',
     headers: {
-      Authorization: 'Bearer token',
       Origin: 'https://arg.software',
+      Cookie: 'arg_admin_access=token',
     },
   });
 }

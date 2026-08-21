@@ -402,8 +402,8 @@ function createTestApi(records, repositoryOverrides = {}) {
 function createGetRequest(query = '') {
   return new Request(`https://arg.software/api/admin/outreach${query}`, {
     headers: {
-      Authorization: 'Bearer token',
       Origin: 'https://arg.software',
+      Cookie: 'arg_admin_access=token',
     },
   });
 }
@@ -412,9 +412,9 @@ function createPostRequest(body) {
   return new Request('https://arg.software/api/admin/outreach', {
     method: 'POST',
     headers: {
-      Authorization: 'Bearer token',
       'Content-Type': 'application/json',
       Origin: 'https://arg.software',
+      Cookie: 'arg_admin_access=token',
     },
     body: JSON.stringify(body),
   });
