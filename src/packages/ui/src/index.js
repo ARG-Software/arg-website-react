@@ -17,6 +17,7 @@ export { BaseCard } from './cards/BaseCard.jsx';
 export { Pill, PillButton } from './pills/Pill.jsx';
 export { TagFilterPills } from './filters/TagFilterPills.jsx';
 export { FormCard, FormSubmitButton } from './forms/FormCard.jsx';
+export { ConfirmDialog } from './overlays/ConfirmDialog.jsx';
 export { Drawer } from './overlays/Drawer.jsx';
 export { Pagination } from './navigation/Pagination.jsx';
 export { Breadcrumb } from './navigation/Breadcrumb.jsx';

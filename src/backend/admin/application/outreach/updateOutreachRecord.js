@@ -18,12 +18,15 @@ export async function updateOutreachRecord(input, { auditRepository, clock, outr
 
   const sanitizedChanges = sanitizeChanges(input.changes);
 
-  if (
-    record.payload.status === 'sent' &&
-    sanitizedChanges.status &&
-    sanitizedChanges.status !== record.payload.status
-  ) {
-    throw createAdminError(400, 'sent_status_locked', 'Sent outreach records cannot change status');
+  if (record.payload.status === 'sent') {
+    assertSentRecordLockedFieldUnchanged(record, sanitizedChanges, 'status', 'status');
+    assertSentRecordLockedFieldUnchanged(
+      record,
+      sanitizedChanges,
+      'contact_method',
+      'contact method'
+    );
+    assertSentRecordLockedFieldUnchanged(record, sanitizedChanges, 'date_sent', 'sent date');
   }
 
   const nextPayload = {
@@ -46,6 +49,16 @@ export async function updateOutreachRecord(input, { auditRepository, clock, outr
   });
 
   return updatedRecord;
+}
+
+function assertSentRecordLockedFieldUnchanged(record, changes, field, label) {
+  if (!(field in changes) || changes[field] === record.payload[field]) return;
+
+  throw createAdminError(
+    400,
+    `sent_${field}_locked`,
+    `Sent outreach records cannot change ${label}`
+  );
 }
 
 function sanitizeChanges(changes = {}) {

@@ -4,6 +4,10 @@ import XLSX from 'xlsx';
 
 import { normalizeContactMethod, normalizeStatus } from '../src/backend/admin/application/outreach/outreachCsv.js';
 import {
+  cleanSingleLine,
+  normalizeEmailDraft,
+} from '../src/backend/admin/domain/outreachRecord.js';
+import {
   createOutreachPayloadCipher,
   normalizeCompanyName,
   normalizeEmail,
@@ -120,8 +124,8 @@ function normalizeRow(row, sourceRound, sourceRowNumber) {
     contact_info: contactInfo,
     contact_method: normalizeContactMethod(row['Contact Method'], contactEmail),
     fit_reason: clean(row['Focus / Why Good Fit']),
-    email_subject: clean(row['Email Subject']),
-    email_body: clean(row['Email Draft']),
+    email_subject: cleanSingleLine(row['Email Subject']),
+    email_body: normalizeEmailDraft(row['Email Draft']),
     status: status.status,
     date_sent: dateSent,
     follow_up_date: toDateString(row['Follow-up Date']),

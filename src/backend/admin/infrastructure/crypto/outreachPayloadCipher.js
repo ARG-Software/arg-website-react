@@ -1,9 +1,12 @@
 import crypto from 'node:crypto';
 
+import { cleanSingleLine, normalizeEmailDraft } from '../../domain/outreachRecord.js';
+
 const ALGORITHM = 'aes-256-gcm';
 const KEY_BYTES = 32;
 const NONCE_BYTES = 12;
-const PROTECTED_FIELDS = ['company_name', 'contact_email'];
+const PROTECTED_FIELDS = ['company_name', 'contact_email', 'email_subject', 'email_body'];
+const OPTIONAL_ENCRYPTED_FIELDS = new Set(['contact_email', 'email_subject', 'email_body']);
 
 export function createOutreachPayloadCipher(env = process.env) {
   return {
@@ -23,14 +26,14 @@ export function encryptOutreachProtectedFields(payload, env = process.env) {
   const encrypted = {};
 
   for (const field of PROTECTED_FIELDS) {
-    const value = cleanDisplayValue(payload[field]);
+    const value = cleanEncryptedFieldValue(field, payload[field]);
 
-    if (!value && field === 'contact_email') {
-      encrypted.contact_email_key_version = null;
-      encrypted.contact_email_nonce = null;
-      encrypted.contact_email_ciphertext = null;
-      encrypted.contact_email_auth_tag = null;
-      encrypted.contact_email_blind_index = null;
+    if (!value && OPTIONAL_ENCRYPTED_FIELDS.has(field)) {
+      encrypted[`${field}_key_version`] = null;
+      encrypted[`${field}_nonce`] = null;
+      encrypted[`${field}_ciphertext`] = null;
+      encrypted[`${field}_auth_tag`] = null;
+      if (field === 'contact_email') encrypted.contact_email_blind_index = null;
       continue;
     }
 
@@ -39,7 +42,9 @@ export function encryptOutreachProtectedFields(payload, env = process.env) {
     encrypted[`${field}_nonce`] = fieldEnvelope.nonce;
     encrypted[`${field}_ciphertext`] = fieldEnvelope.ciphertext;
     encrypted[`${field}_auth_tag`] = fieldEnvelope.authTag;
-    encrypted[`${field}_blind_index`] = createOutreachBlindIndex(field, value, env);
+    if (field === 'company_name' || field === 'contact_email') {
+      encrypted[`${field}_blind_index`] = createOutreachBlindIndex(field, value, env);
+    }
   }
 
   return encrypted;
@@ -51,6 +56,10 @@ export function decryptOutreachProtectedFields(row, env = process.env) {
     contact_email: row.contact_email_ciphertext
       ? decryptOutreachValue(row, 'contact_email', env)
       : '',
+    email_subject: row.email_subject_ciphertext
+      ? decryptOutreachValue(row, 'email_subject', env)
+      : '',
+    email_body: row.email_body_ciphertext ? decryptOutreachValue(row, 'email_body', env) : '',
   };
 }
 
@@ -59,7 +68,7 @@ export function encryptOutreachValue(value, env = process.env) {
   const key = getOutreachKey(keyVersion, env);
   const nonce = crypto.randomBytes(NONCE_BYTES);
   const cipher = crypto.createCipheriv(ALGORITHM, key, nonce);
-  const plaintext = Buffer.from(cleanDisplayValue(value), 'utf8');
+  const plaintext = Buffer.from(String(value || ''), 'utf8');
   const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
 
   return {
@@ -139,13 +148,20 @@ function getOutreachKey(version, env) {
 }
 
 function getBlindIndexKey(env) {
-  const value = env.OUTREACH_BLIND_INDEX_KEY || env.OUTREACH_AUDIT_SALT;
+  const value = env.OUTREACH_BLIND_INDEX_KEY;
 
   if (!value) {
-    throw new Error('Missing outreach blind index key or audit salt');
+    throw new Error('Missing outreach blind index key');
   }
 
   return value;
+}
+
+function cleanEncryptedFieldValue(field, value) {
+  if (field === 'email_body') return normalizeEmailDraft(value);
+  if (field === 'email_subject') return cleanSingleLine(value);
+
+  return cleanDisplayValue(value);
 }
 
 function cleanDisplayValue(value) {

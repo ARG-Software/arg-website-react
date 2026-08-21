@@ -5,3 +5,9 @@ export function createSupabaseAdminClient(config) {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }
+
+export function createSupabaseAdminAuthClient(config) {
+  return createClient(config.databaseUrl, config.databaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}

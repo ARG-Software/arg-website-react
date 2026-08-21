@@ -1,4 +1,6 @@
 import {
+  cleanSingleLine,
+  normalizeEmailDraft,
   OUTREACH_CONTACT_METHOD_VALUES,
   OUTREACH_STATUS_VALUES,
 } from '../../domain/outreachRecord.js';
@@ -82,8 +84,8 @@ function normalizeCsvRow(row, clock) {
     contact_info: clean(row.contact_info),
     contact_method: contactMethod,
     fit_reason: clean(row.fit_reason),
-    email_subject: clean(row.email_subject),
-    email_body: clean(row.email_body),
+    email_subject: cleanSingleLine(row.email_subject),
+    email_body: normalizeEmailDraft(row.email_body),
     status: statusResult.status,
     date_sent: toDateString(row.date_sent),
     follow_up_date: toDateString(row.follow_up_date),

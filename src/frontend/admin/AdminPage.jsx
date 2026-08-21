@@ -17,6 +17,7 @@ import { AdminProfileMenu } from '@ui/admin/AdminProfileMenu.jsx';
 import { AdminRecordOverlay } from '@ui/admin/AdminRecordOverlay.jsx';
 import { AmbientVideoBackground } from '@ui/layout/AmbientVideoBackground.jsx';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
+import { ConfirmDialog } from '@ui/overlays/ConfirmDialog.jsx';
 import { Logo } from '@components/icons/Logo.jsx';
 import { UiButton } from '@ui/primitives/UiButton.jsx';
 import { UiCard } from '@ui/primitives/UiCard.jsx';
@@ -755,6 +756,7 @@ function HelpView() {
 function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
   const [form, setForm] = useState(() => (record ? { ...EMPTY_FORM, ...record } : EMPTY_FORM));
   const [status, setStatus] = useState('');
+  const [sendConfirmOpen, setSendConfirmOpen] = useState(false);
 
   const saveMutation = useMutation({
     mutationKey: ['outreach'],
@@ -786,12 +788,23 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
     setForm(current => ({ ...current, [field]: value }));
   }
 
-  async function openEmailClient() {
-    window.location.href = buildMailtoUrl(form);
+  function openEmailClient() {
+    setSendConfirmOpen(true);
+  }
 
-    if (window.confirm('Do you want to mark this email as sent?')) {
-      await saveChanges({ status: 'sent' });
-    }
+  function openEmailDraft() {
+    window.location.href = buildMailtoUrl(form);
+  }
+
+  function sendWithoutMarking() {
+    setSendConfirmOpen(false);
+    openEmailDraft();
+  }
+
+  async function markEmailAsSent() {
+    setSendConfirmOpen(false);
+    await saveChanges({ status: 'sent' });
+    openEmailDraft();
   }
 
   return (
@@ -848,6 +861,7 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
           id="contact-method"
           label="Contact method"
           value={form.contact_method}
+          disabled={isSentRecord}
           onChange={event => updateField('contact_method', event.target.value)}
         >
           <option value="email">Email</option>
@@ -871,6 +885,7 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
           label="Date sent"
           type="date"
           value={form.date_sent || ''}
+          disabled={isSentRecord}
           onChange={event => updateField('date_sent', event.target.value)}
         />
         <UiField
@@ -924,6 +939,17 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
           {status && <span className="admin-save-status">{status}</span>}
         </div>
       </form>
+      <ConfirmDialog
+        isOpen={sendConfirmOpen}
+        title="Mark this outreach email as sent?"
+        cancelLabel="Don't mark as sent"
+        confirmLabel="Mark as sent"
+        confirmDisabled={isSaving}
+        onCancel={sendWithoutMarking}
+        onConfirm={markEmailAsSent}
+      >
+        <p>Choose whether to lock the record as sent before opening the email draft.</p>
+      </ConfirmDialog>
     </AdminRecordOverlay>
   );
 }

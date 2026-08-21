@@ -276,6 +276,25 @@ test('imports CSV records with server-side row cap and validation', async () => 
   assert.equal(created[0].status, 'not_sent');
 });
 
+test('imports CSV email drafts without collapsing paragraphs', async () => {
+  const created = [];
+  const api = createTestApi([], {
+    createMany(payloads) {
+      created.push(...payloads);
+      return payloads.map((payload, index) => createRecord(index + 1, payload));
+    },
+  });
+  const csv = [
+    'company_name,email_subject,email_body,status',
+    'Acme," Hello\nthere ","First line  /n/nSecond line\\nThird line   ",not_sent',
+  ].join('\n');
+  const response = await api(createPostRequest({ action: 'import', csv }));
+
+  assert.equal(response.status, 200);
+  assert.equal(created[0].email_subject, 'Hello there');
+  assert.equal(created[0].email_body, 'First line\n\nSecond line\nThird line');
+});
+
 test('rejects status changes for already sent outreach records', async () => {
   const record = createRecord(1, { status: 'sent', date_sent: '2026-08-14' });
   const api = createTestApi([], {
@@ -284,9 +303,7 @@ test('rejects status changes for already sent outreach records', async () => {
       throw new Error('savePayload should not be called');
     },
   });
-  const response = await api(
-    createPostRequest({ id: record.id, changes: { status: 'not_sent' } })
-  );
+  const response = await api(createPostRequest({ id: record.id, changes: { status: 'not_sent' } }));
   const body = await response.json();
 
   assert.equal(response.status, 400);
@@ -307,6 +324,61 @@ test('allows sent outreach records to save unchanged status with other edits', a
   assert.equal(response.status, 200);
   assert.equal(body.record.status, 'sent');
   assert.equal(body.record.notes, 'Updated notes');
+});
+
+test('rejects contact method and sent date changes for already sent outreach records', async () => {
+  const record = createRecord(1, {
+    status: 'sent',
+    contact_method: 'email',
+    date_sent: '2026-08-14',
+  });
+  const api = createTestApi([], {
+    findById: () => record,
+    savePayload: () => {
+      throw new Error('savePayload should not be called');
+    },
+  });
+
+  const contactMethodResponse = await api(
+    createPostRequest({ id: record.id, changes: { contact_method: 'contact_form' } })
+  );
+  const contactMethodBody = await contactMethodResponse.json();
+  const dateSentResponse = await api(
+    createPostRequest({ id: record.id, changes: { date_sent: '2026-08-15' } })
+  );
+  const dateSentBody = await dateSentResponse.json();
+
+  assert.equal(contactMethodResponse.status, 400);
+  assert.equal(contactMethodBody.error.code, 'sent_contact_method_locked');
+  assert.equal(dateSentResponse.status, 400);
+  assert.equal(dateSentBody.error.code, 'sent_date_sent_locked');
+});
+
+test('allows sent outreach records to save unchanged sent lock fields', async () => {
+  const record = createRecord(1, {
+    status: 'sent',
+    contact_method: 'email',
+    date_sent: '2026-08-14',
+  });
+  const api = createTestApi([], {
+    findById: () => record,
+    savePayload: (_id, payload) => ({ ...record, payload }),
+  });
+  const response = await api(
+    createPostRequest({
+      id: record.id,
+      changes: {
+        status: 'sent',
+        contact_method: 'email',
+        date_sent: '2026-08-14',
+        notes: 'Full form save',
+      },
+    })
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.record.notes, 'Full form save');
 });
 
 function createTestApi(records, repositoryOverrides = {}) {
