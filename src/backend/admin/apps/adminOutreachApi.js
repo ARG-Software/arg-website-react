@@ -1,6 +1,7 @@
 import { authenticateAdmin } from '../application/admin/authenticateAdmin.js';
 import { createAdminError, getAdminErrorStatus } from '../application/errors.js';
 import { listOutreachRecords } from '../application/outreach/listOutreachRecords.js';
+import { createOutreachCsv, importOutreachCsv } from '../application/outreach/outreachCsv.js';
 import { updateOutreachRecord } from '../application/outreach/updateOutreachRecord.js';
 import { createOutreachRecordResponse } from '../domain/outreachRecord.js';
 import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
@@ -42,11 +43,23 @@ export function createAdminOutreachApi({
       const user = await authenticateAdmin(getBearerToken(request), dependencies);
 
       if (request.method === 'GET') {
-        const result = await listOutreachRecords(getOutreachQuery(request), dependencies);
+        const query = getOutreachQuery(request);
+        const result = await listOutreachRecords(query, dependencies);
+
+        if (query.scope === 'export' && query.format === 'csv') {
+          return createCsvResponse(request, http, createOutreachCsv(result.records || []));
+        }
+
         return http.createJsonResponse(request, 200, createListResponse(result));
       }
 
       const payload = await readJsonBody(request);
+
+      if (payload.action === 'import') {
+        const result = await importOutreachCsv(payload, dependencies);
+        return http.createJsonResponse(request, 200, createListResponse(result));
+      }
+
       const record = await updateOutreachRecord(
         {
           id: payload.id,
@@ -125,4 +138,15 @@ function createListResponse(result) {
   }
 
   return result;
+}
+
+function createCsvResponse(request, http, csv) {
+  return new Response(csv, {
+    status: 200,
+    headers: {
+      ...http.createCorsHeaders(request),
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': 'attachment; filename="outreach-records.csv"',
+    },
+  });
 }

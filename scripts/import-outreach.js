@@ -2,31 +2,32 @@ import { config as loadDotenv } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import XLSX from 'xlsx';
 
-import { encryptOutreachPayload } from '../src/backend/admin/infrastructure/crypto/outreachPayloadCipher.js';
+import { normalizeContactMethod, normalizeStatus } from '../src/backend/admin/application/outreach/outreachCsv.js';
+import {
+  createOutreachPayloadCipher,
+  normalizeCompanyName,
+  normalizeEmail,
+} from '../src/backend/admin/infrastructure/crypto/outreachPayloadCipher.js';
+import { toOutreachDatabaseRow } from '../src/backend/admin/infrastructure/supabase/outreachRows.js';
 
 loadDotenv({ path: '.env', quiet: true });
 
-const STATUS_VALUES = new Set([
-  'draft',
-  'ready',
-  'sent',
-  'replied',
-  'follow_up_needed',
-  'closed',
-  'not_relevant',
-]);
-
 const inputPath = process.argv[2];
 const isDryRun = process.argv.includes('--dry-run');
+const fallbackSentDateBase = getFallbackSentDateBase();
 
 if (!inputPath) {
   throw new Error('Usage: node scripts/import-outreach.js <workbook.xlsx> [--dry-run]');
 }
 
-const records = loadWorkbookRecords(inputPath);
+const importPlan = createImportPlan(loadWorkbookRecords(inputPath));
+const { records } = importPlan;
 
 if (isDryRun) {
   console.log(`Parsed ${records.length} outreach rows from ${inputPath}`);
+  if (importPlan.skippedDuplicates.length) {
+    console.log(`Skipped ${importPlan.skippedDuplicates.length} duplicate company/email rows`);
+  }
   console.table(summarizeByStatus(records));
   process.exit(0);
 }
@@ -36,17 +37,14 @@ const serviceRoleKey = requiredEnv('ADMIN_DATABASE_SERVICE_ROLE_KEY');
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
+const payloadCipher = createOutreachPayloadCipher(process.env);
 
-const rows = records.map(record => ({
-  source_round: record.sourceRound,
-  source_row_number: record.sourceRowNumber,
-  ...encryptOutreachPayload(record.payload),
-}));
+const rows = records.map(record => toOutreachDatabaseRow(record.payload, payloadCipher));
 
 for (const batch of chunk(rows, 100)) {
   const { error } = await supabase
     .from('outreach_records')
-    .upsert(batch, { onConflict: 'source_round,source_row_number' });
+    .upsert(batch, { onConflict: 'company_name_blind_index' });
 
   if (error) {
     throw error;
@@ -54,6 +52,32 @@ for (const batch of chunk(rows, 100)) {
 }
 
 console.log(`Imported ${rows.length} outreach records`);
+if (importPlan.skippedDuplicates.length) {
+  console.log(`Skipped ${importPlan.skippedDuplicates.length} duplicate company/email rows`);
+}
+
+function createImportPlan(inputRecords) {
+  const companyIndexes = new Set();
+  const emailIndexes = new Set();
+  const records = [];
+  const skippedDuplicates = [];
+
+  for (const record of inputRecords) {
+    const companyIndex = normalizeCompanyName(record.payload.company_name);
+    const emailIndex = normalizeEmail(record.payload.contact_email);
+
+    if (companyIndexes.has(companyIndex) || (emailIndex && emailIndexes.has(emailIndex))) {
+      skippedDuplicates.push(record);
+      continue;
+    }
+
+    companyIndexes.add(companyIndex);
+    if (emailIndex) emailIndexes.add(emailIndex);
+    records.push(record);
+  }
+
+  return { records, skippedDuplicates };
+}
 
 function loadWorkbookRecords(path) {
   const workbook = XLSX.readFile(path, { cellDates: true });
@@ -70,64 +94,54 @@ function loadWorkbookRecords(path) {
       if (!hasMeaningfulValue(row)) continue;
 
       const sourceRowNumber = Number(row.__rowNum__ || records.length + 1) + 1;
-      const payload = normalizeRow(row, sheetName);
+      const payload = normalizeRow(row, sheetName, sourceRowNumber);
 
-      records.push({ sourceRound: sheetName, sourceRowNumber, payload });
+      records.push({ payload });
     }
   }
 
   return records;
 }
 
-function normalizeRow(row, sourceRound) {
+function normalizeRow(row, sourceRound, sourceRowNumber) {
   const contactInfo = clean(row['Contact Info']);
-  const parsedContact = parseContactInfo(contactInfo);
   const response = clean(row['Response?']);
-  const status = normalizeStatus(row.Status, response, sourceRound);
+  const contactEmail = extractEmail(contactInfo);
+  const status = normalizeWorkbookStatus(row.Status, response, sourceRound);
+  const dateSent =
+    status.status === 'sent'
+      ? toDateString(row['Date Sent']) || createFallbackSentDate(sourceRowNumber)
+      : '';
 
   return {
     company_name: clean(row.Agency),
     website: clean(row.Website),
-    contact_name: parsedContact.name,
-    contact_email: parsedContact.email,
+    contact_email: contactEmail.toLowerCase(),
     contact_info: contactInfo,
-    contact_method: clean(row['Contact Method']) || (parsedContact.email ? 'Email' : ''),
+    contact_method: normalizeContactMethod(row['Contact Method'], contactEmail),
     fit_reason: clean(row['Focus / Why Good Fit']),
     email_subject: clean(row['Email Subject']),
     email_body: clean(row['Email Draft']),
-    status,
-    date_sent: toDateString(row['Date Sent']),
+    status: status.status,
+    date_sent: dateSent,
     follow_up_date: toDateString(row['Follow-up Date']),
+    reply_obtained: status.replyObtained,
     reply_summary:
       response && response.toLowerCase() !== 'no' ? `Response marked: ${response}` : '',
     notes: clean(row.Notes),
-    source_round: sourceRound,
   };
 }
 
-function parseContactInfo(value) {
-  const email = value.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0] || '';
-  const name = email
-    ? value
-        .replace(email, '')
-        .replace(/[<>()|,;-]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-    : '';
-
-  return { email, name };
-}
-
-function normalizeStatus(statusValue, responseValue, sourceRound) {
+function normalizeWorkbookStatus(statusValue, responseValue, sourceRound) {
   const status = clean(statusValue).toLowerCase();
   const response = clean(responseValue).toLowerCase();
 
-  if (response && response !== 'no') return 'replied';
-  if (status === 'sent' || sourceRound.toLowerCase() === 'already sent') return 'sent';
-  if (status === 'not sent') return 'ready';
-  if (STATUS_VALUES.has(status)) return status;
+  if (response && response !== 'no') return normalizeStatus('sent', true);
+  if (status === 'sent' || sourceRound.toLowerCase() === 'already sent') {
+    return normalizeStatus('sent', false);
+  }
 
-  return 'draft';
+  return normalizeStatus('not_sent', false);
 }
 
 function toDateString(value) {
@@ -162,8 +176,30 @@ function summarizeByStatus(items) {
   return items.reduce((summary, item) => {
     const status = item.payload.status;
     summary[status] = (summary[status] || 0) + 1;
+    if (item.payload.reply_obtained) {
+      summary.reply_obtained = (summary.reply_obtained || 0) + 1;
+    }
     return summary;
   }, {});
+}
+
+function extractEmail(value = '') {
+  return value.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0] || '';
+}
+
+function getFallbackSentDateBase() {
+  const configured = process.env.OUTREACH_IMPORT_FALLBACK_SENT_DATE;
+  if (configured) return configured;
+
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() - 30);
+  return date.toISOString().slice(0, 10);
+}
+
+function createFallbackSentDate(rowNumber) {
+  const date = new Date(`${fallbackSentDateBase}T00:00:00.000Z`);
+  date.setUTCDate(date.getUTCDate() + (rowNumber % 7));
+  return date.toISOString().slice(0, 10);
 }
 
 function requiredEnv(name) {

@@ -9,9 +9,9 @@ import { createSupabaseServiceClient } from '../../infrastructure/repositories/s
 import { SupabaseRagReadRepository } from '../../infrastructure/repositories/supabase/SupabaseRagReadRepository.js';
 import { SupabaseRagWriteRepository } from '../../infrastructure/repositories/supabase/SupabaseRagWriteRepository.js';
 import { getSupabaseConfig } from '../../infrastructure/repositories/supabase/supabaseConfig.js';
-import { createAltchaChallenge, verifyAltchaChallenge, verifyAltchaPayload } from '../../infrastructure/security/altcha.js';
-import { getRateLimitConfig } from '../../infrastructure/security/rateLimit.js';
-import { SupabaseRateLimitStore } from '../../infrastructure/security/rateLimitStores.js';
+import { createAltchaChallenge, verifyAltchaChallenge, verifyAltchaPayload } from '../../../shared/security/altcha.js';
+import { getRateLimitConfig } from '../../../shared/security/rateLimit.js';
+import { SupabaseRateLimitStore } from '../../../shared/security/rateLimitStores.js';
 import { DeepSeekAnswerClient } from '../../infrastructure/llm/deepseek/DeepSeekAnswerProvider.js';
 import { createDeepSeekAssistantUiCopyTranslator } from '../../infrastructure/llm/deepseek/DeepSeekAssistantUiCopyTranslator.js';
 import { getDeepSeekConfig } from '../../infrastructure/llm/deepseek/deepSeekConfig.js';
@@ -143,7 +143,10 @@ export function createGasparDependencies({ env = process.env }: GasparDependenci
   }
 
   function getCachedRateLimitConfig() {
-    rateLimitConfig ??= getRateLimitConfig(env);
+    rateLimitConfig ??= getRateLimitConfig(env, {
+      prefix: 'RAG_ASK',
+      defaultSalt: 'arg-ask-rate-limit',
+    });
     return rateLimitConfig;
   }
 }

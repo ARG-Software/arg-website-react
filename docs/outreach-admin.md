@@ -19,6 +19,7 @@ The `/admin/` route is a private outreach management app deployed with the publi
 - `ADMIN_DATABASE_SERVICE_ROLE_KEY`
 - `OUTREACH_ENCRYPTION_KEY_ACTIVE_VERSION`
 - `OUTREACH_ENCRYPTION_KEY_V1`
+- `OUTREACH_BLIND_INDEX_KEY` for company/email blind indexes. If omitted, the backend falls back to `OUTREACH_AUDIT_SALT`, but a dedicated key is preferred.
 - `OUTREACH_AUDIT_SALT`
 
 Generate a 32-byte base64 key with:

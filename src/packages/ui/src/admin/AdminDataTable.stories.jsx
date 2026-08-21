@@ -18,7 +18,7 @@ const rows = [
     id: '2',
     company_name: 'Media Engine',
     contact_email: 'team@media.example',
-    status: 'replied',
+    status: 'not_sent',
     date_sent: '2026-08-12',
   },
 ];

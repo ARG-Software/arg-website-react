@@ -10,6 +10,8 @@ export function AdminDataTable({
   getRowKey = row => row.id,
   onRowClick,
   pagination,
+  sort,
+  onSortChange,
   loading = false,
   emptyMessage = 'No records found.',
   tone = 'default',
@@ -36,7 +38,22 @@ export function AdminDataTable({
               <tr>
                 {columns.map(column => (
                   <th key={column.key} scope="col">
-                    {column.label}
+                    {column.sortable ? (
+                      <button
+                        type="button"
+                        className="admin-data-table__sort"
+                        onClick={() => onSortChange?.(column.key)}
+                      >
+                        {column.label}
+                        {sort?.sortBy === column.key && (
+                          <span aria-hidden="true">
+                            {sort.sortDirection === 'asc' ? ' ↑' : ' ↓'}
+                          </span>
+                        )}
+                      </button>
+                    ) : (
+                      column.label
+                    )}
                   </th>
                 ))}
               </tr>

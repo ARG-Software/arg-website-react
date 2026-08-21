@@ -24,12 +24,16 @@ import { UiField, UiSelect, UiTextarea } from '@ui/primitives/UiField.jsx';
 import { UiSpinner } from '@ui/primitives/UiSpinner.jsx';
 import { UiStat } from '@ui/primitives/UiStat.jsx';
 import { UiStatusPill } from '@ui/primitives/UiStatusPill.jsx';
+import { AltchaVerification } from '@components/forms/AltchaVerification.jsx';
 import { adminQueryClient } from './queryClient.js';
 import { getSupabaseBrowserClient } from './supabaseClient.js';
 import {
+  exportOutreachCsv,
   fetchOutreachChart,
   fetchOutreachRecords,
   fetchOutreachSummary,
+  importOutreachCsv,
+  loginAdmin,
   updateOutreachRecord,
 } from './outreachApi.js';
 import { OUTREACH_STATUSES, buildMailtoUrl, getStatusLabel } from './outreach.js';
@@ -39,16 +43,16 @@ import './admin.css';
 const EMPTY_FORM = {
   company_name: '',
   website: '',
-  contact_name: '',
   contact_email: '',
   contact_info: '',
   contact_method: '',
   fit_reason: '',
   email_subject: '',
   email_body: '',
-  status: 'draft',
+  status: 'not_sent',
   date_sent: '',
   follow_up_date: '',
+  reply_obtained: false,
   reply_summary: '',
   notes: '',
 };
@@ -68,6 +72,7 @@ const CHART_RANGES = [
 ];
 
 const PAGE_SIZE = 10;
+const ADMIN_INACTIVITY_TIMEOUT_MS = 60 * 60 * 1000;
 
 export default function AdminPage() {
   const location = useLocation();
@@ -105,8 +110,32 @@ export default function AdminPage() {
 
   async function handleSignOut() {
     await clientState.supabase.auth.signOut();
+    adminQueryClient.clear();
     setSelectedRecord(null);
   }
+
+  useEffect(() => {
+    if (!session || !clientState.supabase) return undefined;
+
+    let timeoutId;
+    const resetTimer = () => {
+      window.clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        clientState.supabase.auth.signOut();
+        adminQueryClient.clear();
+        setSelectedRecord(null);
+      }, ADMIN_INACTIVITY_TIMEOUT_MS);
+    };
+    const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+
+    resetTimer();
+    events.forEach(eventName => window.addEventListener(eventName, resetTimer, { passive: true }));
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      events.forEach(eventName => window.removeEventListener(eventName, resetTimer));
+    };
+  }, [clientState.supabase, session]);
 
   function handleRecordUpdated(record) {
     setSelectedRecord(record);
@@ -131,7 +160,7 @@ export default function AdminPage() {
   }
 
   if (!session) {
-    return <AdminLogin />;
+    return <AdminLogin supabase={clientState.supabase} />;
   }
 
   return (
@@ -244,9 +273,9 @@ function AdminWorkspace({
         <RecordsView
           accessToken={session.access_token}
           title="Not sent emails"
-          description="Draft and ready outreach records only."
-          query={{ statuses: 'draft,ready' }}
-          emptyMessage="No draft or ready outreach records found."
+          description="Outreach records that have not been sent yet."
+          query={{ status: 'not_sent' }}
+          emptyMessage="No not-sent outreach records found."
           onSelectRecord={onSelectRecord}
         />
       )}
@@ -263,9 +292,10 @@ function AdminWorkspace({
   );
 }
 
-function AdminLogin() {
+function AdminLogin({ supabase }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [altchaState, setAltchaState] = useState('unverified');
   const [status, setStatus] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -275,10 +305,24 @@ function AdminLogin() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await getSupabaseBrowserClient().auth.signInWithPassword({
+      const formData = new FormData(event.currentTarget);
+      const altcha = formData.get('altcha');
+
+      if (!altcha) {
+        throw new Error('Complete the verification before signing in.');
+      }
+
+      const data = await loginAdmin({
         email,
         password,
+        altcha,
       });
+
+      const { error } = await supabase.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+      });
+
       if (error) throw error;
     } catch (error) {
       setStatus(error.message);
@@ -315,8 +359,15 @@ function AdminLogin() {
               onChange={event => setPassword(event.target.value)}
               required
             />
+            <div className="admin-altcha">
+              <AltchaVerification onStateChange={setAltchaState} />
+            </div>
             <UiButton type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Signing in...' : 'Sign in'}
+              {isSubmitting
+                ? 'Signing in...'
+                : altchaState === 'verified'
+                  ? 'Sign in'
+                  : 'Verify to sign in'}
             </UiButton>
             {status && <p className="admin-error">{status}</p>}
           </form>
@@ -373,9 +424,9 @@ function DashboardView({ accessToken, onSelectRecord }) {
               tone="light"
             />
             <UiStat
-              label="Ready"
-              value={summary?.ready ?? '...'}
-              detail="Can be sent"
+              label="Not sent"
+              value={summary?.notSent ?? '...'}
+              detail="Not sent yet"
               tone="light"
             />
             <UiStat
@@ -386,17 +437,18 @@ function DashboardView({ accessToken, onSelectRecord }) {
             />
             <UiStat
               label="Replies"
-              value={summary?.replied ?? '...'}
-              detail="Status is replied"
+              value={summary?.repliesObtained ?? '...'}
+              detail="Replies obtained"
               tone="light"
             />
           </div>
           <AdminMetricChart
-            title="Sent vs replied"
-            description="Outbound volume and replies for the selected time range."
+            title="Sent and replies"
+            description="Outbound volume and reply outcomes for the selected time range."
             range={chartRange}
             ranges={CHART_RANGES}
             points={chartQuery.data?.points || []}
+            pie={chartQuery.data?.pie || []}
             onRangeChange={setChartRange}
             tone="light"
           />
@@ -425,16 +477,64 @@ function DashboardView({ accessToken, onSelectRecord }) {
 
 function RecordsView({ accessToken, title, description, query, emptyMessage, onSelectRecord }) {
   const [page, setPage] = useState(1);
-  const viewKey = JSON.stringify(query);
+  const [sort, setSort] = useState({ sortBy: 'created_at', sortDirection: 'desc' });
+  const [importStatus, setImportStatus] = useState('');
+  const viewKey = JSON.stringify({ query, sort });
 
   const recordsQuery = useQuery({
     queryKey: ['outreach', 'records', viewKey, page],
-    queryFn: () => fetchOutreachRecords(accessToken, { ...query, page, pageSize: PAGE_SIZE }),
+    queryFn: () =>
+      fetchOutreachRecords(accessToken, { ...query, ...sort, page, pageSize: PAGE_SIZE }),
     placeholderData: keepPreviousData,
   });
 
+  function handleSortChange(sortBy) {
+    setPage(1);
+    setSort(current => ({
+      sortBy,
+      sortDirection: current.sortBy === sortBy && current.sortDirection === 'asc' ? 'desc' : 'asc',
+    }));
+  }
+
+  async function handleExport() {
+    const csv = await exportOutreachCsv(accessToken);
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'outreach-records.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleImport(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setImportStatus('Importing...');
+
+    try {
+      const result = await importOutreachCsv(accessToken, await file.text());
+      setImportStatus(`Imported ${result.imported} records.`);
+      adminQueryClient.invalidateQueries({ queryKey: ['outreach'] });
+    } catch (error) {
+      setImportStatus(error.message);
+    } finally {
+      event.target.value = '';
+    }
+  }
+
   return (
     <div className="admin-content-grid">
+      <div className="admin-csv-actions">
+        <UiButton type="button" onClick={handleExport}>
+          Export CSV
+        </UiButton>
+        <label className="admin-csv-import">
+          <span>Import CSV</span>
+          <input type="file" accept=".csv,text/csv" onChange={handleImport} />
+        </label>
+        {importStatus && <span className="admin-save-status">{importStatus}</span>}
+      </div>
       {recordsQuery.isError ? (
         <ErrorCard error={recordsQuery.error} onRetry={() => recordsQuery.refetch()} />
       ) : (
@@ -443,6 +543,8 @@ function RecordsView({ accessToken, title, description, query, emptyMessage, onS
           description={description}
           columns={getRecordColumns()}
           rows={recordsQuery.data?.records || []}
+          sort={sort}
+          onSortChange={handleSortChange}
           pagination={{
             ...(recordsQuery.data?.pagination ?? createEmptyTableData().pagination),
             onPageChange: setPage,
@@ -627,24 +729,21 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
           onChange={event => updateField('website', event.target.value)}
         />
         <UiField
-          id="contact-name"
-          label="Contact name"
-          value={form.contact_name}
-          onChange={event => updateField('contact_name', event.target.value)}
-        />
-        <UiField
           id="contact-email"
           label="Contact email"
           type="email"
           value={form.contact_email}
           onChange={event => updateField('contact_email', event.target.value)}
         />
-        <UiField
+        <UiSelect
           id="contact-method"
           label="Contact method"
           value={form.contact_method}
           onChange={event => updateField('contact_method', event.target.value)}
-        />
+        >
+          <option value="email">Email</option>
+          <option value="contact_form">Contact form</option>
+        </UiSelect>
         <UiSelect
           id="status"
           label="Status"
@@ -671,6 +770,14 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
           value={form.follow_up_date || ''}
           onChange={event => updateField('follow_up_date', event.target.value)}
         />
+        <label className="admin-checkbox-field">
+          <input
+            type="checkbox"
+            checked={Boolean(form.reply_obtained)}
+            onChange={event => updateField('reply_obtained', event.target.checked)}
+          />
+          <span>Reply obtained</span>
+        </label>
         <UiTextarea
           id="fit-reason"
           label="Why good fit"
@@ -713,21 +820,28 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
 
 function getRecordColumns() {
   return [
-    { key: 'company_name', label: 'Company' },
+    { key: 'company_name', label: 'Company', sortable: true },
     {
-      key: 'contact',
+      key: 'contact_email',
       label: 'Contact',
+      sortable: true,
       render: record =>
         record.contact_email || record.contact_info || record.website || 'No contact',
     },
     {
       key: 'status',
       label: 'Status',
+      sortable: true,
       render: record => (
         <UiStatusPill status={record.status}>{getStatusLabel(record.status)}</UiStatusPill>
       ),
     },
-    { key: 'date_sent', label: 'Date sent', render: record => record.date_sent || '-' },
+    {
+      key: 'date_sent',
+      label: 'Date sent',
+      sortable: true,
+      render: record => record.date_sent || '-',
+    },
     { key: 'follow_up_date', label: 'Follow up', render: record => record.follow_up_date || '-' },
   ];
 }

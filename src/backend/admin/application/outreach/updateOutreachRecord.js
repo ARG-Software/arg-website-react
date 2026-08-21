@@ -1,4 +1,8 @@
-import { OUTREACH_FIELDS, OUTREACH_STATUS_VALUES } from '../../domain/outreachRecord.js';
+import {
+  OUTREACH_CONTACT_METHOD_VALUES,
+  OUTREACH_FIELDS,
+  OUTREACH_STATUS_VALUES,
+} from '../../domain/outreachRecord.js';
 import { createAdminError } from '../errors.js';
 
 export async function updateOutreachRecord(input, { auditRepository, clock, outreachRepository }) {
@@ -22,6 +26,8 @@ export async function updateOutreachRecord(input, { auditRepository, clock, outr
     nextPayload.date_sent = clock.today();
   }
 
+  validatePayload(nextPayload);
+
   const updatedRecord = await outreachRepository.savePayload(input.id, nextPayload);
 
   await auditRepository.recordUpdated({
@@ -39,6 +45,11 @@ function sanitizeChanges(changes = {}) {
   for (const [field, value] of Object.entries(changes)) {
     if (!OUTREACH_FIELDS.has(field)) continue;
 
+    if (field === 'reply_obtained') {
+      sanitized[field] = Boolean(value);
+      continue;
+    }
+
     sanitized[field] = typeof value === 'string' ? value.trim() : value || null;
   }
 
@@ -46,5 +57,27 @@ function sanitizeChanges(changes = {}) {
     throw createAdminError(400, 'invalid_status', 'Unsupported outreach status');
   }
 
+  if (sanitized.contact_method && !OUTREACH_CONTACT_METHOD_VALUES.has(sanitized.contact_method)) {
+    throw createAdminError(400, 'invalid_contact_method', 'Unsupported contact method');
+  }
+
   return sanitized;
+}
+
+function validatePayload(payload) {
+  if (!payload.company_name) {
+    throw createAdminError(400, 'missing_company_name', 'Company name is required');
+  }
+
+  if (!OUTREACH_STATUS_VALUES.has(payload.status)) {
+    throw createAdminError(400, 'invalid_status', 'Unsupported outreach status');
+  }
+
+  if (!OUTREACH_CONTACT_METHOD_VALUES.has(payload.contact_method)) {
+    throw createAdminError(400, 'invalid_contact_method', 'Unsupported contact method');
+  }
+
+  if (payload.status === 'sent' && !payload.date_sent) {
+    throw createAdminError(400, 'missing_sent_date', 'Sent records require a sent date');
+  }
 }

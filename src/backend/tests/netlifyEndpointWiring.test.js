@@ -31,6 +31,7 @@ test('backend app APIs expose the security routes and old API folders are remove
 test('function files instantiate backend API modules', () => {
   assert.match(readNetlifyFile('functions/security-challenge.js'), /createSecurityChallengeApi/);
   assert.match(readNetlifyFile('functions/security-verify.js'), /createSecurityVerifyApi/);
+  assert.match(readNetlifyFile('functions/admin-login.js'), /createAdminLoginApi/);
   assert.match(readNetlifyFile('functions/admin-outreach.js'), /createAdminOutreachApi/);
   assert.match(readNetlifyFile('functions/assistant-ask.js'), /createAssistantAskApi/);
 });
@@ -43,6 +44,7 @@ test('netlify implementation and test folders are removed', () => {
 test('netlify functions do not reference removed implementation folders or old contact routes', () => {
   const files = [
     'functions/admin-outreach.js',
+    'functions/admin-login.js',
     'functions/assistant-ask.js',
     'functions/assistant-challenge.js',
     'functions/assistant-ui-copy.js',

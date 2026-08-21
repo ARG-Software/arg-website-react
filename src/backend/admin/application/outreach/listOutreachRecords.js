@@ -5,7 +5,15 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 10;
 const MAX_PAGE_SIZE = 50;
 const RECENT_SENT_LIMIT = 30;
-const NOT_SENT_STATUSES = new Set(['draft', 'ready']);
+const SORTABLE_FIELDS = new Set([
+  'company_name',
+  'contact_email',
+  'created_at',
+  'updated_at',
+  'date_sent',
+  'status',
+  'contact_method',
+]);
 
 export async function listOutreachRecords(query = {}, { outreachRepository, clock } = {}) {
   const records = await outreachRepository.list();
@@ -21,7 +29,12 @@ export async function listOutreachRecords(query = {}, { outreachRepository, cloc
 
   const pagination = getPagination(query);
   const filteredRecords = filterRecords(records, query, scope);
-  const sortedRecords = sortRecords(filteredRecords, scope);
+  const sortedRecords = sortRecords(filteredRecords, query, scope);
+
+  if (scope === 'export') {
+    return { records: sortedRecords };
+  }
+
   const limitedRecords =
     scope === 'recent_sent' ? sortedRecords.slice(0, RECENT_SENT_LIMIT) : sortedRecords;
 
@@ -34,70 +47,114 @@ export async function listOutreachRecords(query = {}, { outreachRepository, cloc
 function createSummary(records) {
   return records.reduce(
     (summary, record) => {
-      const status = record.payload?.status || 'draft';
+      const payload = record.payload || {};
       summary.total += 1;
-      if (status === 'ready') summary.ready += 1;
-      if (status === 'sent') summary.sent += 1;
-      if (status === 'replied') summary.replied += 1;
-      if (NOT_SENT_STATUSES.has(status)) summary.notSent += 1;
+
+      if (payload.status === 'sent') {
+        summary.sent += 1;
+        if (payload.reply_obtained) {
+          summary.repliesObtained += 1;
+        } else {
+          summary.sentWithoutReply += 1;
+        }
+      } else {
+        summary.notSent += 1;
+      }
+
       return summary;
     },
-    { total: 0, ready: 0, sent: 0, replied: 0, notSent: 0 }
+    { total: 0, sent: 0, notSent: 0, repliesObtained: 0, sentWithoutReply: 0 }
   );
 }
 
 function filterRecords(records, query, scope) {
-  const statuses = getRequestedStatuses(query, scope);
+  const status = getRequestedStatus(query, scope);
+  const search = String(query.search || '')
+    .trim()
+    .toLowerCase();
 
-  if (!statuses.length) {
-    return records;
-  }
+  return records.filter(record => {
+    if (status && record.payload?.status !== status) return false;
+    if (!search) return true;
 
-  return records.filter(record => statuses.includes(record.payload?.status || 'draft'));
-}
-
-function getRequestedStatuses(query, scope) {
-  if (scope === 'recent_sent') {
-    return ['sent'];
-  }
-
-  const statuses = query.statuses
-    ? query.statuses
-        .split(',')
-        .map(status => status.trim())
-        .filter(Boolean)
-    : query.status
-      ? [query.status]
-      : [];
-
-  for (const status of statuses) {
-    if (!OUTREACH_STATUS_VALUES.has(status)) {
-      throw createAdminError(400, 'invalid_status', 'Unsupported outreach status');
-    }
-  }
-
-  return statuses;
-}
-
-function sortRecords(records, scope) {
-  const sortByRecentSent =
-    scope === 'recent_sent' || records.every(record => record.payload?.status === 'sent');
-
-  return [...records].sort((first, second) => {
-    if (sortByRecentSent) {
-      return compareDescending(getSentTimestamp(first), getSentTimestamp(second));
-    }
-
-    return compareDescending(Date.parse(first.createdAt || ''), Date.parse(second.createdAt || ''));
+    return getSearchText(record).includes(search);
   });
 }
 
-function getSentTimestamp(record) {
-  return Date.parse(record.payload?.date_sent || record.updatedAt || record.createdAt || '') || 0;
+function getRequestedStatus(query, scope) {
+  if (scope === 'recent_sent') return 'sent';
+  if (!query.status) return '';
+
+  const status = String(query.status).trim();
+
+  if (!OUTREACH_STATUS_VALUES.has(status)) {
+    throw createAdminError(400, 'invalid_status', 'Unsupported outreach status');
+  }
+
+  return status;
 }
 
-function compareDescending(first, second) {
-  return (second || 0) - (first || 0);
+function getSearchText(record) {
+  const payload = record.payload || {};
+
+  return [
+    payload.company_name,
+    payload.website,
+    payload.contact_email,
+    payload.contact_info,
+    payload.contact_method,
+    payload.fit_reason,
+    payload.email_subject,
+    payload.notes,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+}
+
+function sortRecords(records, query, scope) {
+  const sort = getSort(query, scope);
+  const direction = sort.direction === 'asc' ? 1 : -1;
+
+  return [...records].sort((first, second) => {
+    const comparison = compareValues(
+      getSortValue(first, sort.field),
+      getSortValue(second, sort.field)
+    );
+
+    return comparison * direction;
+  });
+}
+
+function getSort(query, scope) {
+  if (scope === 'recent_sent') {
+    return { field: 'date_sent', direction: 'desc' };
+  }
+
+  const field = String(query.sortBy || 'created_at');
+  const direction = String(query.sortDirection || 'desc').toLowerCase() === 'asc' ? 'asc' : 'desc';
+
+  if (!SORTABLE_FIELDS.has(field)) {
+    throw createAdminError(400, 'invalid_sort', 'Unsupported sort field');
+  }
+
+  return { field, direction };
+}
+
+function getSortValue(record, field) {
+  if (field === 'created_at') return Date.parse(record.createdAt || '') || 0;
+  if (field === 'updated_at') return Date.parse(record.updatedAt || '') || 0;
+  if (field === 'date_sent') return Date.parse(record.payload?.date_sent || '') || 0;
+
+  return String(record.payload?.[field] || '').toLowerCase();
+}
+
+function compareValues(first, second) {
+  if (typeof first === 'number' && typeof second === 'number') {
+    return first - second;
+  }
+
+  return String(first).localeCompare(String(second), undefined, { sensitivity: 'base' });
 }
 
 function getPagination(query) {
@@ -129,23 +186,28 @@ function createPagination(totalRecords, { page, pageSize }) {
 
 function createChartResponse(records, range, clock) {
   const now = getClockDate(clock);
-  const buckets = createBuckets(range, now, records);
+  const sentRecords = records.filter(record => record.payload?.status === 'sent');
+  const buckets = createBuckets(range, now, sentRecords);
+  const repliesObtained = sentRecords.filter(record => record.payload?.reply_obtained).length;
+  const sentWithoutReply = sentRecords.length - repliesObtained;
 
-  for (const record of records) {
-    const status = record.payload?.status;
-    if (status !== 'sent' && status !== 'replied') continue;
-
+  for (const record of sentRecords) {
     const date = parseRecordDate(record);
     const key = getBucketKey(date, buckets.granularity);
     const bucket = buckets.items.get(key);
     if (!bucket) continue;
 
-    bucket[status] += 1;
+    bucket.sent += 1;
+    if (record.payload?.reply_obtained) bucket.repliesObtained += 1;
   }
 
   return {
     range,
     points: [...buckets.items.values()],
+    pie: [
+      { label: 'Replies obtained', value: repliesObtained },
+      { label: 'Sent without reply', value: sentWithoutReply },
+    ],
   };
 }
 
@@ -158,17 +220,9 @@ function parseRecordDate(record) {
 }
 
 function createBuckets(range, now, records) {
-  if (range === '7d') {
-    return createDailyBuckets(now, 7);
-  }
-
-  if (range === '30d') {
-    return createDailyBuckets(now, 30);
-  }
-
-  if (range === 'monthly') {
-    return createMonthlyBuckets(now, 12);
-  }
+  if (range === '7d') return createDailyBuckets(now, 7);
+  if (range === '30d') return createDailyBuckets(now, 30);
+  if (range === 'monthly') return createMonthlyBuckets(now, 12);
 
   return createAllTimeBuckets(records);
 }
@@ -180,7 +234,7 @@ function createDailyBuckets(now, days) {
     const date = new Date(now);
     date.setUTCDate(date.getUTCDate() - offset);
     const key = getBucketKey(date, 'day');
-    items.set(key, { label: key, sent: 0, replied: 0 });
+    items.set(key, { label: key, sent: 0, repliesObtained: 0 });
   }
 
   return { granularity: 'day', items };
@@ -192,7 +246,7 @@ function createMonthlyBuckets(now, months) {
   for (let offset = months - 1; offset >= 0; offset -= 1) {
     const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - offset, 1));
     const key = getBucketKey(date, 'month');
-    items.set(key, { label: key, sent: 0, replied: 0 });
+    items.set(key, { label: key, sent: 0, repliesObtained: 0 });
   }
 
   return { granularity: 'month', items };
@@ -200,12 +254,11 @@ function createMonthlyBuckets(now, months) {
 
 function createAllTimeBuckets(records) {
   const keys = records
-    .filter(record => record.payload?.status === 'sent' || record.payload?.status === 'replied')
     .map(record => getBucketKey(parseRecordDate(record), 'month'))
     .filter(Boolean)
     .sort();
   const uniqueKeys = keys.length ? [...new Set(keys)] : [getBucketKey(new Date(), 'month')];
-  const items = new Map(uniqueKeys.map(key => [key, { label: key, sent: 0, replied: 0 }]));
+  const items = new Map(uniqueKeys.map(key => [key, { label: key, sent: 0, repliesObtained: 0 }]));
 
   return { granularity: 'month', items };
 }

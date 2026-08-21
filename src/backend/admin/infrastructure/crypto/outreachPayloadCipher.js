@@ -3,49 +3,113 @@ import crypto from 'node:crypto';
 const ALGORITHM = 'aes-256-gcm';
 const KEY_BYTES = 32;
 const NONCE_BYTES = 12;
+const PROTECTED_FIELDS = ['company_name', 'contact_email'];
 
 export function createOutreachPayloadCipher(env = process.env) {
   return {
-    encrypt(payload) {
-      return encryptOutreachPayload(payload, env);
+    encryptFields(payload) {
+      return encryptOutreachProtectedFields(payload, env);
     },
     decrypt(row) {
-      return decryptOutreachPayload(row, env);
+      return decryptOutreachProtectedFields(row, env);
+    },
+    createBlindIndex(field, value) {
+      return createOutreachBlindIndex(field, value, env);
     },
   };
 }
 
-export function encryptOutreachPayload(payload, env = process.env) {
+export function encryptOutreachProtectedFields(payload, env = process.env) {
+  const encrypted = {};
+
+  for (const field of PROTECTED_FIELDS) {
+    const value = cleanDisplayValue(payload[field]);
+
+    if (!value && field === 'contact_email') {
+      encrypted.contact_email_key_version = null;
+      encrypted.contact_email_nonce = null;
+      encrypted.contact_email_ciphertext = null;
+      encrypted.contact_email_auth_tag = null;
+      encrypted.contact_email_blind_index = null;
+      continue;
+    }
+
+    const fieldEnvelope = encryptOutreachValue(value, env);
+    encrypted[`${field}_key_version`] = fieldEnvelope.keyVersion;
+    encrypted[`${field}_nonce`] = fieldEnvelope.nonce;
+    encrypted[`${field}_ciphertext`] = fieldEnvelope.ciphertext;
+    encrypted[`${field}_auth_tag`] = fieldEnvelope.authTag;
+    encrypted[`${field}_blind_index`] = createOutreachBlindIndex(field, value, env);
+  }
+
+  return encrypted;
+}
+
+export function decryptOutreachProtectedFields(row, env = process.env) {
+  return {
+    company_name: decryptOutreachValue(row, 'company_name', env),
+    contact_email: row.contact_email_ciphertext
+      ? decryptOutreachValue(row, 'contact_email', env)
+      : '',
+  };
+}
+
+export function encryptOutreachValue(value, env = process.env) {
   const keyVersion = getActiveOutreachKeyVersion(env);
   const key = getOutreachKey(keyVersion, env);
   const nonce = crypto.randomBytes(NONCE_BYTES);
   const cipher = crypto.createCipheriv(ALGORITHM, key, nonce);
-  const plaintext = Buffer.from(JSON.stringify(payload), 'utf8');
+  const plaintext = Buffer.from(cleanDisplayValue(value), 'utf8');
   const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
 
   return {
-    payload_key_version: keyVersion,
-    payload_nonce: nonce.toString('base64'),
-    payload_ciphertext: ciphertext.toString('base64'),
-    payload_auth_tag: cipher.getAuthTag().toString('base64'),
+    keyVersion,
+    nonce: nonce.toString('base64'),
+    ciphertext: ciphertext.toString('base64'),
+    authTag: cipher.getAuthTag().toString('base64'),
   };
 }
 
-export function decryptOutreachPayload(row, env = process.env) {
-  const key = getOutreachKey(row.payload_key_version, env);
+export function decryptOutreachValue(row, field, env = process.env) {
+  const key = getOutreachKey(row[`${field}_key_version`], env);
   const decipher = crypto.createDecipheriv(
     ALGORITHM,
     key,
-    Buffer.from(row.payload_nonce, 'base64')
+    Buffer.from(row[`${field}_nonce`], 'base64')
   );
-  decipher.setAuthTag(Buffer.from(row.payload_auth_tag, 'base64'));
+  decipher.setAuthTag(Buffer.from(row[`${field}_auth_tag`], 'base64'));
 
   const plaintext = Buffer.concat([
-    decipher.update(Buffer.from(row.payload_ciphertext, 'base64')),
+    decipher.update(Buffer.from(row[`${field}_ciphertext`], 'base64')),
     decipher.final(),
   ]);
 
-  return JSON.parse(plaintext.toString('utf8'));
+  return plaintext.toString('utf8');
+}
+
+export function createOutreachBlindIndex(field, value, env = process.env) {
+  const normalizedValue =
+    field === 'contact_email' ? normalizeEmail(value) : normalizeCompanyName(value);
+
+  if (!normalizedValue) return null;
+
+  return crypto
+    .createHmac('sha256', getBlindIndexKey(env))
+    .update(`${field}:${normalizedValue}`)
+    .digest('hex');
+}
+
+export function normalizeCompanyName(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+}
+
+export function normalizeEmail(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase();
 }
 
 export function getActiveOutreachKeyVersion(env = process.env) {
@@ -72,6 +136,22 @@ function getOutreachKey(version, env) {
   }
 
   return key;
+}
+
+function getBlindIndexKey(env) {
+  const value = env.OUTREACH_BLIND_INDEX_KEY || env.OUTREACH_AUDIT_SALT;
+
+  if (!value) {
+    throw new Error('Missing outreach blind index key or audit salt');
+  }
+
+  return value;
+}
+
+function cleanDisplayValue(value) {
+  return String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function decodeKey(value) {

@@ -1,15 +1,10 @@
 export const OUTREACH_STATUSES = [
-  { value: 'draft', label: 'Draft' },
-  { value: 'ready', label: 'Ready' },
   { value: 'sent', label: 'Sent' },
-  { value: 'replied', label: 'Replied' },
-  { value: 'follow_up_needed', label: 'Follow-up needed' },
-  { value: 'closed', label: 'Closed' },
-  { value: 'not_relevant', label: 'Not relevant' },
+  { value: 'not_sent', label: 'Not sent' },
 ];
 
 export function getStatusLabel(status) {
-  return OUTREACH_STATUSES.find(item => item.value === status)?.label || status || 'Draft';
+  return OUTREACH_STATUSES.find(item => item.value === status)?.label || status || 'Not sent';
 }
 
 export function buildMailtoUrl(record) {
@@ -26,13 +21,11 @@ export function getRecordSearchText(record) {
   return [
     record.company_name,
     record.website,
-    record.contact_name,
     record.contact_email,
     record.contact_info,
     record.fit_reason,
     record.email_subject,
     record.notes,
-    record.sourceRound,
   ]
     .filter(Boolean)
     .join(' ')

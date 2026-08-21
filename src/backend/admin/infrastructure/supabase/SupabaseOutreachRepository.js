@@ -1,4 +1,4 @@
-import { toOutreachRecord } from './outreachRows.js';
+import { toOutreachDatabaseRow, toOutreachRecord } from './outreachRows.js';
 
 export class SupabaseOutreachRepository {
   constructor(client, payloadCipher) {
@@ -32,7 +32,7 @@ export class SupabaseOutreachRepository {
   async savePayload(id, payload) {
     const { data, error } = await this.client
       .from('outreach_records')
-      .update(this.payloadCipher.encrypt(payload))
+      .update(toOutreachDatabaseRow(payload, this.payloadCipher))
       .eq('id', id)
       .select('*')
       .single();
@@ -40,5 +40,16 @@ export class SupabaseOutreachRepository {
     if (error) throw error;
 
     return toOutreachRecord(data, this.payloadCipher);
+  }
+
+  async createMany(payloads) {
+    if (!payloads.length) return [];
+
+    const rows = payloads.map(payload => toOutreachDatabaseRow(payload, this.payloadCipher));
+    const { data, error } = await this.client.from('outreach_records').insert(rows).select('*');
+
+    if (error) throw error;
+
+    return data.map(row => toOutreachRecord(row, this.payloadCipher));
   }
 }

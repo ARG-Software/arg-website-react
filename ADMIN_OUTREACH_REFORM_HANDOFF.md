@@ -1,5 +1,73 @@
 # Admin Outreach Reform Handoff
 
+## Current Session Status — 2026-08-21
+
+The main reform work has been implemented in the working tree but not committed.
+
+Completed:
+
+- Added shared ALTCHA/rate-limit modules under `src/backend/shared/security/` with JS and TS entry points.
+- Updated Gaspar/RAG security imports to use shared security modules instead of owning the implementation.
+- Added admin login backend endpoint at `/api/admin/login` in `src/backend/admin/apps/adminLoginApi.js` and `netlify/functions/admin-login.js`.
+- Added admin login ALTCHA verification and login-attempt rate limiting using an admin-specific Supabase RPC/table.
+- Added admin 1-hour inactivity logout in `src/frontend/admin/AdminPage.jsx`.
+- Added migration `supabase/admin/migrations/20260821000000_reform_outreach_records.sql`.
+- Replaced full encrypted JSON payload with field-level encrypted `company_name` and `contact_email` plus blind indexes.
+- Kept `contact_email_blind_index` and its unique index. The user clarified this should stay for uniqueness/exact lookup; only contact/email sorting should be removed.
+- Removed persisted Excel source metadata and contact name from the app model/UI/import path.
+- Reduced status model to `sent` and `not_sent`; old `replied` maps to `sent` plus `reply_obtained = true`.
+- Restricted contact method to `email` and `contact_form`.
+- Added CSV export/import backend actions on `/api/admin/outreach`; import enforces max 30 rows server-side.
+- Updated `scripts/import-outreach.js` to ingest the workbook into the new schema and skip duplicate normalized company/email rows.
+- Added dashboard pie chart data/UI for `Replies obtained` vs `Sent without reply`.
+- Updated backend tests for login, import/export, summaries, chart data, encrypted field sorting, and blind indexes.
+- Added `OUTREACH_BLIND_INDEX_KEY` to `.env.example` and docs. Runtime currently falls back to `OUTREACH_AUDIT_SALT` if the dedicated key is not set, but a dedicated server-only key is preferred.
+
+Database/ingestion already run in this session:
+
+- `npm run database:admin:push` succeeded and applied `20260821000000_reform_outreach_records.sql`.
+- First `npm run outreach:import` failed because `OUTREACH_BLIND_INDEX_KEY` was missing; fallback to `OUTREACH_AUDIT_SALT` was then added.
+- Second `npm run outreach:import` succeeded: imported `489` outreach records and skipped `2` duplicate company/email rows.
+
+Verification already run and passed:
+
+- `npm run test:backend`
+- `npm run rag:test`
+- `npm run lint:all`
+- `npm run build`
+
+Important blind-index key note:
+
+- The imported remote rows currently use whichever key the importer used at runtime. In this session that was the fallback `OUTREACH_AUDIT_SALT`, because `OUTREACH_BLIND_INDEX_KEY` was absent in `.env`.
+- If `OUTREACH_BLIND_INDEX_KEY` is later set to a new dedicated value in Netlify/local env, the outreach table must be cleared/recreated and reingested with that same final key. Otherwise newly computed blind indexes will not match existing rows and logical duplicates can be created.
+- `OUTREACH_BLIND_INDEX_KEY` is a server/function/importer env var only. Do not expose it as `VITE_*`.
+
+Remaining user-requested follow-up work:
+
+1. Move CSV import/export controls to a global location near the admin `Refresh` button, not inside only Sent/Not Sent tabs.
+2. Add an `All emails` admin tab/route, likely `/admin/all/`, showing all outreach rows with no status filter.
+3. Fix the broken empty/error layout shown in the screenshot: the error card currently stretches/deforms when data is missing. Improve `ErrorCard` spacing/padding and `AdminDataTable` empty-state stability.
+4. Make the dashboard `Latest sent` table sortable too.
+5. Allow table sorting by `company_name`, `date_sent`, and `follow_up_date`.
+6. Remove contact/email ordering from the UI and backend allowed sort fields. Keep the contact email blind index and uniqueness constraint.
+7. Add backend sorting support for `follow_up_date` in `src/backend/admin/application/outreach/listOutreachRecords.js`.
+8. Add an admin database keep-alive scheduled function, similar to Gaspar's current RAG keep-alive.
+9. Move generic keep-alive logic from `src/backend/rag/application/maintenance/keepDatabaseAlive.ts` into a backend shared module, then make Gaspar and admin use that shared module.
+
+Suggested follow-up implementation plan:
+
+1. Update `AdminWorkspace` to own CSV import/export handlers and render them in `AdminNav` trailing area beside `Refresh` for all non-settings views.
+2. Add `ADMIN_ROUTES.all`, `getAdminView()` handling for `/admin/all`, and a nav item labelled `All emails`.
+3. Render `RecordsView` for `view === 'all'` with `query={{}}`, title `All emails`, and empty text `No outreach records found.`
+4. Lift common table sort state logic into both `DashboardView` and `RecordsView`; for dashboard include `sortBy/sortDirection` in the recent-sent query key and fetch query.
+5. Update `getRecordColumns()` so only `company_name`, `date_sent`, and `follow_up_date` are sortable. Remove `contact_email` sortable.
+6. Update backend `SORTABLE_FIELDS` to remove `contact_email` and add `follow_up_date`; add date parsing in `getSortValue()`.
+7. Improve `ErrorCard` and empty table CSS/classes in `src/frontend/admin/admin.css` and/or `src/packages/ui/src/styles.css`.
+8. Create shared keep-alive module, for example `src/backend/shared/maintenance/keepDatabaseAlive.ts` and possibly `.js` if consumed by JS Netlify wrappers/tests.
+9. Update `src/backend/rag/apps/gaspar/keepDatabaseAliveApi.js` to use the shared keep-alive with `tableName: 'rag_sources'`.
+10. Add admin keep-alive dependencies in `createAdminDependencies.js`, an admin keep-alive app/function, and wiring tests/docs.
+11. Re-run `npm run test:backend`, `npm run rag:test`, `npm run lint:all`, and `npm run build`.
+
 ## Context
 
 The admin outreach backoffice currently stores outreach records in `public.outreach_records` as a fully encrypted JSON payload plus Excel source metadata:

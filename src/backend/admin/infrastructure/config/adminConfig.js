@@ -5,6 +5,7 @@ export function getAdminConfig(env) {
     auditSalt: env.OUTREACH_AUDIT_SALT || 'outreach',
     databaseUrl: requiredEnv(env, 'ADMIN_DATABASE_URL'),
     databaseServiceRoleKey: requiredEnv(env, 'ADMIN_DATABASE_SERVICE_ROLE_KEY'),
+    loginRateLimitSalt: env.ADMIN_LOGIN_RATE_LIMIT_SALT || 'arg-admin-login-rate-limit',
   };
 }
 

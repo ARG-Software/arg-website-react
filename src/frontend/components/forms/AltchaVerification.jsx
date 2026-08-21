@@ -4,7 +4,10 @@ import { getSecurityChallengeEndpoint } from '@services/apiService';
 
 const SECURITY_CHALLENGE_ENDPOINT = getSecurityChallengeEndpoint();
 
-export function AltchaVerification({ onStateChange }) {
+export function AltchaVerification({
+  challengeEndpoint = SECURITY_CHALLENGE_ENDPOINT,
+  onStateChange,
+}) {
   const widgetRef = useRef(null);
 
   useEffect(() => {
@@ -26,7 +29,7 @@ export function AltchaVerification({ onStateChange }) {
     <altcha-widget
       ref={widgetRef}
       auto="off"
-      challenge={SECURITY_CHALLENGE_ENDPOINT}
+      challenge={challengeEndpoint}
       name="altcha"
       type="checkbox"
       workers="2"

@@ -17,7 +17,7 @@ export function ProductSummary() {
           <h1 className="storybook-title storybook-title--sm">Dense product status card.</h1>
         </div>
         <UiCard className="storybook-panel">
-          <UiStatusPill status="follow_up_needed">Needs review</UiStatusPill>
+          <UiStatusPill status="not_sent">Not sent</UiStatusPill>
           <h3 className="storybook-card-title">Integration health</h3>
           <UiStat label="Synced" value="114" detail="32 events tracked" />
         </UiCard>

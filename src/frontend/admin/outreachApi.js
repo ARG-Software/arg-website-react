@@ -1,4 +1,5 @@
 const ADMIN_OUTREACH_ENDPOINT = '/api/admin/outreach';
+const ADMIN_LOGIN_ENDPOINT = '/api/admin/login';
 
 export async function fetchOutreachRecords(accessToken, query = {}) {
   const response = await fetch(createOutreachUrl(query), {
@@ -35,6 +36,41 @@ export async function updateOutreachRecord(accessToken, id, changes) {
   });
 
   return readAdminResponse(response);
+}
+
+export async function loginAdmin({ email, password, altcha }) {
+  const response = await fetch(ADMIN_LOGIN_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, altcha }),
+  });
+
+  return readAdminResponse(response);
+}
+
+export async function importOutreachCsv(accessToken, csv) {
+  const response = await fetch(ADMIN_OUTREACH_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      ...createAuthHeaders(accessToken),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action: 'import', csv }),
+  });
+
+  return readAdminResponse(response);
+}
+
+export async function exportOutreachCsv(accessToken) {
+  const response = await fetch(createOutreachUrl({ scope: 'export', format: 'csv' }), {
+    headers: createAuthHeaders(accessToken),
+  });
+
+  if (!response.ok) {
+    await readAdminResponse(response);
+  }
+
+  return response.text();
 }
 
 function createAuthHeaders(accessToken) {

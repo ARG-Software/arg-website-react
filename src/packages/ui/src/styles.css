@@ -141,6 +141,11 @@
   color: #86efac;
 }
 
+.ui-status-pill--not_sent {
+  background: rgba(240, 6, 13, 0.18);
+  color: #ff8a8f;
+}
+
 :root {
   --arg-color-ink: #0c002e;
   --arg-color-white: #ffffff;
@@ -253,7 +258,14 @@
   min-width: 12rem;
 }
 
-.admin-metric-chart__plot {
+.admin-metric-chart__plots {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.6fr);
+}
+
+.admin-metric-chart__plot,
+.admin-metric-chart__pie {
   height: 20rem;
   width: 100%;
 }
@@ -298,6 +310,19 @@
   font-weight: 700;
   letter-spacing: var(--tracking-meta-wide);
   text-transform: uppercase;
+}
+
+.admin-data-table__sort {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  text-align: left;
+  text-transform: inherit;
 }
 
 .admin-data-table td {
@@ -552,6 +577,10 @@
   .admin-record-overlay__panel.ui-card {
     border-radius: 1.25rem;
     margin-top: 0;
+  }
+
+  .admin-metric-chart__plots {
+    grid-template-columns: 1fr;
   }
 }
 
