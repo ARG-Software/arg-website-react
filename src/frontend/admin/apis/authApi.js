@@ -1,3 +1,5 @@
+import { readAdminResponse } from './adminResponse.js';
+
 export async function loginAdmin({ email, password, altcha }) {
   const response = await fetch('/api/admin/login', {
     method: 'POST',
@@ -5,22 +7,13 @@ export async function loginAdmin({ email, password, altcha }) {
     body: JSON.stringify({ email, password, altcha }),
   });
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.error?.message || 'Login failed');
-  }
-
-  return response.json();
+  return readAdminResponse(response, 'Login failed');
 }
 
 export async function fetchSession() {
   const response = await fetch('/api/admin/session');
 
-  if (!response.ok) {
-    throw new Error('No active session');
-  }
-
-  return response.json();
+  return readAdminResponse(response, 'No active session');
 }
 
 export async function refreshSession() {
@@ -28,11 +21,7 @@ export async function refreshSession() {
     method: 'POST',
   });
 
-  if (!response.ok) {
-    throw new Error('Session refresh failed');
-  }
-
-  return response.json();
+  return readAdminResponse(response, 'Session refresh failed');
 }
 
 export async function signOut() {
@@ -48,10 +37,5 @@ export async function updateUser({ name, password }) {
     body: JSON.stringify({ name, password }),
   });
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.error?.message || 'Update failed');
-  }
-
-  return response.json();
+  return readAdminResponse(response, 'Update failed');
 }

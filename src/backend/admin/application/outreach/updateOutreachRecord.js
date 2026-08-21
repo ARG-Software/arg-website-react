@@ -18,29 +18,29 @@ export async function updateOutreachRecord(input, { auditRepository, clock, outr
 
   const sanitizedChanges = sanitizeChanges(input.changes);
 
-  if (record.payload.status === 'sent') {
+  if (record.status === 'sent') {
     assertSentRecordLockedFieldUnchanged(record, sanitizedChanges, 'status', 'status');
     assertSentRecordLockedFieldUnchanged(
       record,
       sanitizedChanges,
-      'contact_method',
+      'contactMethod',
       'contact method'
     );
-    assertSentRecordLockedFieldUnchanged(record, sanitizedChanges, 'date_sent', 'sent date');
+    assertSentRecordLockedFieldUnchanged(record, sanitizedChanges, 'dateSent', 'sent date');
   }
 
-  const nextPayload = {
-    ...record.payload,
+  const nextRecord = {
+    ...record,
     ...sanitizedChanges,
   };
 
-  if (nextPayload.status === 'sent' && !nextPayload.date_sent) {
-    nextPayload.date_sent = clock.today();
+  if (nextRecord.status === 'sent' && !nextRecord.dateSent) {
+    nextRecord.dateSent = clock.today();
   }
 
-  validatePayload(nextPayload);
+  validateRecord(nextRecord);
 
-  const updatedRecord = await outreachRepository.savePayload(input.id, nextPayload);
+  const updatedRecord = await outreachRepository.savePayload(input.id, nextRecord);
 
   await auditRepository.recordUpdated({
     recordId: input.id,
@@ -52,7 +52,7 @@ export async function updateOutreachRecord(input, { auditRepository, clock, outr
 }
 
 function assertSentRecordLockedFieldUnchanged(record, changes, field, label) {
-  if (!(field in changes) || changes[field] === record.payload[field]) return;
+  if (!(field in changes) || changes[field] === record[field]) return;
 
   throw createAdminError(
     400,
@@ -67,7 +67,7 @@ function sanitizeChanges(changes = {}) {
   for (const [field, value] of Object.entries(changes)) {
     if (!OUTREACH_FIELDS.has(field)) continue;
 
-    if (field === 'reply_obtained') {
+    if (field === 'replyObtained') {
       sanitized[field] = Boolean(value);
       continue;
     }
@@ -79,27 +79,27 @@ function sanitizeChanges(changes = {}) {
     throw createAdminError(400, 'invalid_status', 'Unsupported outreach status');
   }
 
-  if (sanitized.contact_method && !OUTREACH_CONTACT_METHOD_VALUES.has(sanitized.contact_method)) {
+  if (sanitized.contactMethod && !OUTREACH_CONTACT_METHOD_VALUES.has(sanitized.contactMethod)) {
     throw createAdminError(400, 'invalid_contact_method', 'Unsupported contact method');
   }
 
   return sanitized;
 }
 
-function validatePayload(payload) {
-  if (!payload.company_name) {
+function validateRecord(record) {
+  if (!record.companyName) {
     throw createAdminError(400, 'missing_company_name', 'Company name is required');
   }
 
-  if (!OUTREACH_STATUS_VALUES.has(payload.status)) {
+  if (!OUTREACH_STATUS_VALUES.has(record.status)) {
     throw createAdminError(400, 'invalid_status', 'Unsupported outreach status');
   }
 
-  if (!OUTREACH_CONTACT_METHOD_VALUES.has(payload.contact_method)) {
+  if (!OUTREACH_CONTACT_METHOD_VALUES.has(record.contactMethod)) {
     throw createAdminError(400, 'invalid_contact_method', 'Unsupported contact method');
   }
 
-  if (payload.status === 'sent' && !payload.date_sent) {
+  if (record.status === 'sent' && !record.dateSent) {
     throw createAdminError(400, 'missing_sent_date', 'Sent records require a sent date');
   }
 }

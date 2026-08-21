@@ -5,7 +5,7 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 10;
 const MAX_PAGE_SIZE = 50;
 const RECENT_SENT_LIMIT = 30;
-const SORTABLE_FIELDS = new Set(['company_name', 'date_sent', 'follow_up_date']);
+const SORTABLE_FIELDS = new Set(['companyName', 'dateSent', 'followUpDate']);
 
 export async function listOutreachRecords(query = {}, { outreachRepository, clock } = {}) {
   const records = await outreachRepository.list();
@@ -40,12 +40,11 @@ export async function listOutreachRecords(query = {}, { outreachRepository, cloc
 function createSummary(records) {
   return records.reduce(
     (summary, record) => {
-      const payload = record.payload || {};
       summary.total += 1;
 
-      if (payload.status === 'sent') {
+      if (record.status === 'sent') {
         summary.sent += 1;
-        if (payload.reply_obtained) {
+        if (record.replyObtained) {
           summary.repliesObtained += 1;
         } else {
           summary.sentWithoutReply += 1;
@@ -68,7 +67,7 @@ function filterRecords(records, query, scope) {
   const dateRange = getDateSentRange(query);
 
   return records.filter(record => {
-    if (status && record.payload?.status !== status) return false;
+    if (status && record.status !== status) return false;
     if (companyName && !getCompanySearchText(record).includes(companyName)) return false;
     if (!isDateSentInRange(record, dateRange)) return false;
 
@@ -90,7 +89,7 @@ function getRequestedStatus(query, scope) {
 }
 
 function getCompanySearchText(record) {
-  return String(record.payload?.company_name || '').toLowerCase();
+  return String(record.companyName || '').toLowerCase();
 }
 
 function getDateSentRange(query) {
@@ -109,7 +108,7 @@ function getDateFilter(value) {
 function isDateSentInRange(record, { from, to }) {
   if (!from && !to) return true;
 
-  const dateSent = getDateFilter(record.payload?.date_sent);
+  const dateSent = getDateFilter(record.dateSent);
   if (!dateSent) return false;
   if (from && dateSent < from) return false;
   if (to && dateSent > to) return false;
@@ -133,17 +132,17 @@ function sortRecords(records, query, scope) {
 
 function getLatestSentRecords(records) {
   return [...records]
-    .sort((first, second) => getSortValue(second, 'date_sent') - getSortValue(first, 'date_sent'))
+    .sort((first, second) => getSortValue(second, 'dateSent') - getSortValue(first, 'dateSent'))
     .slice(0, RECENT_SENT_LIMIT);
 }
 
 function getSort(query, scope) {
   if (scope === 'recent_sent' && !query.sortBy) {
-    return { field: 'date_sent', direction: 'desc' };
+    return { field: 'dateSent', direction: 'desc' };
   }
 
-  const field = String(query.sortBy || 'company_name');
-  const defaultDirection = field === 'company_name' ? 'asc' : 'desc';
+  const field = String(query.sortBy || 'companyName');
+  const defaultDirection = field === 'companyName' ? 'asc' : 'desc';
   const direction =
     String(query.sortDirection || defaultDirection).toLowerCase() === 'asc' ? 'asc' : 'desc';
 
@@ -155,10 +154,10 @@ function getSort(query, scope) {
 }
 
 function getSortValue(record, field) {
-  if (field === 'date_sent') return Date.parse(record.payload?.date_sent || '') || 0;
-  if (field === 'follow_up_date') return Date.parse(record.payload?.follow_up_date || '') || 0;
+  if (field === 'dateSent') return Date.parse(record.dateSent || '') || 0;
+  if (field === 'followUpDate') return Date.parse(record.followUpDate || '') || 0;
 
-  return String(record.payload?.[field] || '').toLowerCase();
+  return String(record[field] || '').toLowerCase();
 }
 
 function compareValues(first, second) {
@@ -198,9 +197,9 @@ function createPagination(totalRecords, { page, pageSize }) {
 
 function createChartResponse(records, range, clock) {
   const now = getClockDate(clock);
-  const sentRecords = records.filter(record => record.payload?.status === 'sent');
+  const sentRecords = records.filter(record => record.status === 'sent');
   const buckets = createBuckets(range, now, sentRecords);
-  const repliesObtained = sentRecords.filter(record => record.payload?.reply_obtained).length;
+  const repliesObtained = sentRecords.filter(record => record.replyObtained).length;
   const sentWithoutReply = sentRecords.length - repliesObtained;
 
   for (const record of sentRecords) {
@@ -210,7 +209,7 @@ function createChartResponse(records, range, clock) {
     if (!bucket) continue;
 
     bucket.sent += 1;
-    if (record.payload?.reply_obtained) bucket.repliesObtained += 1;
+    if (record.replyObtained) bucket.repliesObtained += 1;
   }
 
   return {
@@ -228,7 +227,7 @@ function getClockDate(clock) {
 }
 
 function parseRecordDate(record) {
-  return new Date(record.payload?.date_sent || record.updatedAt || record.createdAt || '');
+  return new Date(record.dateSent || record.updatedAt || record.createdAt || '');
 }
 
 function createBuckets(range, now, records) {

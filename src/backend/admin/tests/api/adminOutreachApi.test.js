@@ -57,7 +57,7 @@ test('hides unknown admin errors behind a generic response', () => {
 
 test('paginates outreach records from the backend', async () => {
   const api = createTestApi(createRecords(25));
-  const response = await api(createGetRequest('?page=2&pageSize=10&sortBy=date_sent'));
+  const response = await api(createGetRequest('?page=2&pageSize=10&sortBy=dateSent'));
   const body = await response.json();
 
   assert.equal(response.status, 200);
@@ -74,8 +74,8 @@ test('paginates outreach records from the backend', async () => {
 test('filters sent outreach records', async () => {
   const api = createTestApi([
     createRecord(1, { status: 'not_sent' }),
-    createRecord(2, { status: 'sent', date_sent: '2026-08-12' }),
-    createRecord(3, { status: 'sent', date_sent: '2026-08-13', reply_obtained: true }),
+    createRecord(2, { status: 'sent', dateSent: '2026-08-12' }),
+    createRecord(3, { status: 'sent', dateSent: '2026-08-13', replyObtained: true }),
   ]);
   const response = await api(createGetRequest('?status=sent&pageSize=10'));
   const body = await response.json();
@@ -90,7 +90,7 @@ test('filters sent outreach records', async () => {
 test('filters not-sent outreach records', async () => {
   const api = createTestApi([
     createRecord(1, { status: 'not_sent' }),
-    createRecord(2, { status: 'sent', date_sent: '2026-08-12' }),
+    createRecord(2, { status: 'sent', dateSent: '2026-08-12' }),
   ]);
   const response = await api(createGetRequest('?status=not_sent&pageSize=10'));
   const body = await response.json();
@@ -104,15 +104,15 @@ test('filters not-sent outreach records', async () => {
 
 test('filters outreach records by company name', async () => {
   const api = createTestApi([
-    createRecord(1, { company_name: 'ARG Software' }),
-    createRecord(2, { company_name: 'Acme Finance' }),
-    createRecord(3, { company_name: 'Media Alpha' }),
+    createRecord(1, { companyName: 'ARG Software' }),
+    createRecord(2, { companyName: 'Acme Finance' }),
+    createRecord(3, { companyName: 'Media Alpha' }),
   ]);
   const response = await api(createGetRequest('?companyName=arg&pageSize=10'));
   const body = await response.json();
 
   assert.deepEqual(
-    body.records.map(record => record.company_name),
+    body.records.map(record => record.companyName),
     ['ARG Software']
   );
   assert.equal(body.pagination.totalRecords, 1);
@@ -120,10 +120,10 @@ test('filters outreach records by company name', async () => {
 
 test('filters outreach records by sent date range', async () => {
   const api = createTestApi([
-    createRecord(1, { status: 'sent', date_sent: '2026-08-10' }),
-    createRecord(2, { status: 'sent', date_sent: '2026-08-12' }),
-    createRecord(3, { status: 'sent', date_sent: '2026-08-15' }),
-    createRecord(4, { status: 'not_sent', date_sent: '' }),
+    createRecord(1, { status: 'sent', dateSent: '2026-08-10' }),
+    createRecord(2, { status: 'sent', dateSent: '2026-08-12' }),
+    createRecord(3, { status: 'sent', dateSent: '2026-08-15' }),
+    createRecord(4, { status: 'not_sent', dateSent: '' }),
   ]);
   const response = await api(
     createGetRequest('?dateSentFrom=2026-08-11&dateSentTo=2026-08-14&pageSize=10')
@@ -131,7 +131,7 @@ test('filters outreach records by sent date range', async () => {
   const body = await response.json();
 
   assert.deepEqual(
-    body.records.map(record => record.date_sent),
+    body.records.map(record => record.dateSent),
     ['2026-08-12']
   );
   assert.equal(body.pagination.totalRecords, 1);
@@ -139,39 +139,37 @@ test('filters outreach records by sent date range', async () => {
 
 test('sorts company names before pagination', async () => {
   const api = createTestApi([
-    createRecord(1, { company_name: 'Zulu' }),
-    createRecord(2, { company_name: 'Alpha' }),
-    createRecord(3, { company_name: 'Mango' }),
+    createRecord(1, { companyName: 'Zulu' }),
+    createRecord(2, { companyName: 'Alpha' }),
+    createRecord(3, { companyName: 'Mango' }),
   ]);
-  const response = await api(createGetRequest('?sortBy=company_name&sortDirection=asc&pageSize=2'));
+  const response = await api(createGetRequest('?sortBy=companyName&sortDirection=asc&pageSize=2'));
   const body = await response.json();
 
   assert.deepEqual(
-    body.records.map(record => record.company_name),
+    body.records.map(record => record.companyName),
     ['Alpha', 'Mango']
   );
 });
 
 test('sorts follow-up dates before pagination', async () => {
   const api = createTestApi([
-    createRecord(1, { follow_up_date: '2026-08-16' }),
-    createRecord(2, { follow_up_date: '2026-08-15' }),
-    createRecord(3, { follow_up_date: '2026-08-17' }),
+    createRecord(1, { followUpDate: '2026-08-16' }),
+    createRecord(2, { followUpDate: '2026-08-15' }),
+    createRecord(3, { followUpDate: '2026-08-17' }),
   ]);
-  const response = await api(
-    createGetRequest('?sortBy=follow_up_date&sortDirection=asc&pageSize=2')
-  );
+  const response = await api(createGetRequest('?sortBy=followUpDate&sortDirection=asc&pageSize=2'));
   const body = await response.json();
 
   assert.deepEqual(
-    body.records.map(record => record.follow_up_date),
+    body.records.map(record => record.followUpDate),
     ['2026-08-15', '2026-08-16']
   );
 });
 
 test('rejects removed contact email sorting', async () => {
   const api = createTestApi(createRecords(1));
-  const response = await api(createGetRequest('?sortBy=contact_email'));
+  const response = await api(createGetRequest('?sortBy=contactEmail'));
   const body = await response.json();
 
   assert.equal(response.status, 400);
@@ -183,25 +181,25 @@ test('sorts the latest sent dashboard subset', async () => {
     ...Array.from({ length: 31 }, (_, index) =>
       createRecord(index + 1, {
         status: 'sent',
-        date_sent: `2026-08-${String(index + 1).padStart(2, '0')}`,
+        dateSent: `2026-08-${String(index + 1).padStart(2, '0')}`,
       })
     ),
-    createRecord(32, { status: 'sent', date_sent: '2026-01-01', company_name: 'Aged Alpha' }),
+    createRecord(32, { status: 'sent', dateSent: '2026-01-01', companyName: 'Aged Alpha' }),
   ]);
   const response = await api(
-    createGetRequest('?scope=recent_sent&sortBy=company_name&sortDirection=asc&pageSize=30')
+    createGetRequest('?scope=recent_sent&sortBy=companyName&sortDirection=asc&pageSize=30')
   );
   const body = await response.json();
 
   assert.equal(body.pagination.totalRecords, 30);
   assert.equal(
-    body.records.some(record => record.company_name === 'Aged Alpha'),
+    body.records.some(record => record.companyName === 'Aged Alpha'),
     false
   );
 });
 
 test('caps recent sent outreach records to latest 30', async () => {
-  const api = createTestApi(createRecords(36, { status: 'sent', date_sent: '2026-08-14' }));
+  const api = createTestApi(createRecords(36, { status: 'sent', dateSent: '2026-08-14' }));
   const response = await api(createGetRequest('?scope=recent_sent&page=4&pageSize=10'));
   const body = await response.json();
 
@@ -213,8 +211,8 @@ test('caps recent sent outreach records to latest 30', async () => {
 test('returns outreach summary counts', async () => {
   const api = createTestApi([
     createRecord(1, { status: 'not_sent' }),
-    createRecord(2, { status: 'sent', reply_obtained: false }),
-    createRecord(3, { status: 'sent', reply_obtained: true }),
+    createRecord(2, { status: 'sent', replyObtained: false }),
+    createRecord(3, { status: 'sent', replyObtained: true }),
   ]);
   const response = await api(createGetRequest('?scope=summary'));
   const body = await response.json();
@@ -230,9 +228,9 @@ test('returns outreach summary counts', async () => {
 
 test('returns outreach chart data and reply pie data', async () => {
   const api = createTestApi([
-    createRecord(1, { status: 'sent', date_sent: '2026-08-13' }),
-    createRecord(2, { status: 'sent', date_sent: '2026-08-13' }),
-    createRecord(3, { status: 'sent', date_sent: '2026-08-14', reply_obtained: true }),
+    createRecord(1, { status: 'sent', dateSent: '2026-08-13' }),
+    createRecord(2, { status: 'sent', dateSent: '2026-08-13' }),
+    createRecord(3, { status: 'sent', dateSent: '2026-08-14', replyObtained: true }),
     createRecord(4, { status: 'not_sent' }),
   ]);
   const response = await api(createGetRequest('?scope=chart&range=7d'));
@@ -248,55 +246,55 @@ test('returns outreach chart data and reply pie data', async () => {
 });
 
 test('exports all outreach records as CSV', async () => {
-  const api = createTestApi([createRecord(1, { company_name: 'CSV Co' })]);
+  const api = createTestApi([createRecord(1, { companyName: 'CSV Co' })]);
   const response = await api(createGetRequest('?scope=export&format=csv'));
   const body = await response.text();
 
   assert.equal(response.status, 200);
   assert.equal(response.headers.get('Content-Type'), 'text/csv; charset=utf-8');
-  assert.match(body, /^company_name,website,contact_email/);
+  assert.match(body, /^companyName,website,contactEmail/);
   assert.match(body, /CSV Co/);
 });
 
 test('imports CSV records with server-side row cap and validation', async () => {
   const created = [];
   const api = createTestApi([], {
-    createMany(payloads) {
-      created.push(...payloads);
-      return payloads.map((payload, index) => createRecord(index + 1, payload));
+    createMany(records) {
+      created.push(...records);
+      return records.map((record, index) => createRecord(index + 1, record));
     },
   });
-  const csv = 'company_name,contact_email,contact_method,status\nAcme,a@example.com,email,not_sent';
+  const csv = 'companyName,contactEmail,contactMethod,status\nAcme,a@example.com,email,not_sent';
   const response = await api(createPostRequest({ action: 'import', csv }));
   const body = await response.json();
 
   assert.equal(response.status, 200);
   assert.equal(body.imported, 1);
-  assert.equal(created[0].company_name, 'Acme');
+  assert.equal(created[0].companyName, 'Acme');
   assert.equal(created[0].status, 'not_sent');
 });
 
 test('imports CSV email drafts without collapsing paragraphs', async () => {
   const created = [];
   const api = createTestApi([], {
-    createMany(payloads) {
-      created.push(...payloads);
-      return payloads.map((payload, index) => createRecord(index + 1, payload));
+    createMany(records) {
+      created.push(...records);
+      return records.map((record, index) => createRecord(index + 1, record));
     },
   });
   const csv = [
-    'company_name,email_subject,email_body,status',
+    'companyName,emailSubject,emailBody,status',
     'Acme," Hello\nthere ","First line  /n/nSecond line\\nThird line   ",not_sent',
   ].join('\n');
   const response = await api(createPostRequest({ action: 'import', csv }));
 
   assert.equal(response.status, 200);
-  assert.equal(created[0].email_subject, 'Hello there');
-  assert.equal(created[0].email_body, 'First line\n\nSecond line\nThird line');
+  assert.equal(created[0].emailSubject, 'Hello there');
+  assert.equal(created[0].emailBody, 'First line\n\nSecond line\nThird line');
 });
 
 test('rejects status changes for already sent outreach records', async () => {
-  const record = createRecord(1, { status: 'sent', date_sent: '2026-08-14' });
+  const record = createRecord(1, { status: 'sent', dateSent: '2026-08-14' });
   const api = createTestApi([], {
     findById: () => record,
     savePayload: () => {
@@ -311,10 +309,10 @@ test('rejects status changes for already sent outreach records', async () => {
 });
 
 test('allows sent outreach records to save unchanged status with other edits', async () => {
-  const record = createRecord(1, { status: 'sent', date_sent: '2026-08-14' });
+  const record = createRecord(1, { status: 'sent', dateSent: '2026-08-14' });
   const api = createTestApi([], {
     findById: () => record,
-    savePayload: (_id, payload) => ({ ...record, payload }),
+    savePayload: (_id, nextRecord) => nextRecord,
   });
   const response = await api(
     createPostRequest({ id: record.id, changes: { status: 'sent', notes: 'Updated notes' } })
@@ -329,8 +327,8 @@ test('allows sent outreach records to save unchanged status with other edits', a
 test('rejects contact method and sent date changes for already sent outreach records', async () => {
   const record = createRecord(1, {
     status: 'sent',
-    contact_method: 'email',
-    date_sent: '2026-08-14',
+    contactMethod: 'email',
+    dateSent: '2026-08-14',
   });
   const api = createTestApi([], {
     findById: () => record,
@@ -340,37 +338,37 @@ test('rejects contact method and sent date changes for already sent outreach rec
   });
 
   const contactMethodResponse = await api(
-    createPostRequest({ id: record.id, changes: { contact_method: 'contact_form' } })
+    createPostRequest({ id: record.id, changes: { contactMethod: 'contact_form' } })
   );
   const contactMethodBody = await contactMethodResponse.json();
   const dateSentResponse = await api(
-    createPostRequest({ id: record.id, changes: { date_sent: '2026-08-15' } })
+    createPostRequest({ id: record.id, changes: { dateSent: '2026-08-15' } })
   );
   const dateSentBody = await dateSentResponse.json();
 
   assert.equal(contactMethodResponse.status, 400);
-  assert.equal(contactMethodBody.error.code, 'sent_contact_method_locked');
+  assert.equal(contactMethodBody.error.code, 'sent_contactMethod_locked');
   assert.equal(dateSentResponse.status, 400);
-  assert.equal(dateSentBody.error.code, 'sent_date_sent_locked');
+  assert.equal(dateSentBody.error.code, 'sent_dateSent_locked');
 });
 
 test('allows sent outreach records to save unchanged sent lock fields', async () => {
   const record = createRecord(1, {
     status: 'sent',
-    contact_method: 'email',
-    date_sent: '2026-08-14',
+    contactMethod: 'email',
+    dateSent: '2026-08-14',
   });
   const api = createTestApi([], {
     findById: () => record,
-    savePayload: (_id, payload) => ({ ...record, payload }),
+    savePayload: (_id, nextRecord) => nextRecord,
   });
   const response = await api(
     createPostRequest({
       id: record.id,
       changes: {
         status: 'sent',
-        contact_method: 'email',
-        date_sent: '2026-08-14',
+        contactMethod: 'email',
+        dateSent: '2026-08-14',
         notes: 'Full form save',
       },
     })
@@ -420,11 +418,11 @@ function createPostRequest(body) {
   });
 }
 
-function createRecords(count, payload = {}) {
-  return Array.from({ length: count }, (_, index) => createRecord(index + 1, payload));
+function createRecords(count, overrides = {}) {
+  return Array.from({ length: count }, (_, index) => createRecord(index + 1, overrides));
 }
 
-function createRecord(number, payload = {}) {
+function createRecord(number, overrides = {}) {
   const date = new Date(Date.UTC(2026, 7, 30));
   date.setUTCDate(date.getUTCDate() - number);
   const timestamp = date.toISOString();
@@ -433,14 +431,20 @@ function createRecord(number, payload = {}) {
     id: `record-${number}`,
     createdAt: timestamp,
     updatedAt: timestamp,
-    payload: {
-      company_name: `Company ${number}`,
-      contact_email: `company-${number}@example.com`,
-      contact_method: 'email',
-      status: 'not_sent',
-      date_sent: '',
-      reply_obtained: false,
-      ...payload,
-    },
+    companyName: `Company ${number}`,
+    website: '',
+    contactEmail: `company-${number}@example.com`,
+    contactInfo: '',
+    contactMethod: 'email',
+    fitReason: '',
+    emailSubject: '',
+    emailBody: '',
+    status: 'not_sent',
+    dateSent: '',
+    followUpDate: '',
+    replyObtained: false,
+    replySummary: '',
+    notes: '',
+    ...overrides,
   };
 }

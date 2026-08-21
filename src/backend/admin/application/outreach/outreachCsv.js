@@ -7,28 +7,26 @@ import {
 import { createAdminError } from '../errors.js';
 
 export const OUTREACH_CSV_FIELDS = [
-  'company_name',
+  'companyName',
   'website',
-  'contact_email',
-  'contact_info',
-  'contact_method',
-  'fit_reason',
-  'email_subject',
-  'email_body',
+  'contactEmail',
+  'contactInfo',
+  'contactMethod',
+  'fitReason',
+  'emailSubject',
+  'emailBody',
   'status',
-  'date_sent',
-  'follow_up_date',
-  'reply_obtained',
-  'reply_summary',
+  'dateSent',
+  'followUpDate',
+  'replyObtained',
+  'replySummary',
   'notes',
 ];
 
 const MAX_IMPORT_ROWS = 30;
 
 export function createOutreachCsv(records) {
-  const rows = records.map(record =>
-    OUTREACH_CSV_FIELDS.map(field => record.payload?.[field] ?? '')
-  );
+  const rows = records.map(record => OUTREACH_CSV_FIELDS.map(field => record[field] ?? ''));
 
   return [OUTREACH_CSV_FIELDS, ...rows].map(row => row.map(escapeCsvCell).join(',')).join('\n');
 }
@@ -41,7 +39,7 @@ export async function importOutreachCsv(input, { outreachRepository, clock }) {
   }
 
   const errors = [];
-  const payloads = [];
+  const records = [];
 
   rows.forEach((row, index) => {
     const result = normalizeCsvRow(row, clock);
@@ -51,7 +49,7 @@ export async function importOutreachCsv(input, { outreachRepository, clock }) {
       return;
     }
 
-    payloads.push(result.payload);
+    records.push(result.record);
   });
 
   if (errors.length) {
@@ -59,8 +57,8 @@ export async function importOutreachCsv(input, { outreachRepository, clock }) {
   }
 
   try {
-    const records = await outreachRepository.createMany(payloads);
-    return { imported: records.length, records, errors: [] };
+    const createdRecords = await outreachRepository.createMany(records);
+    return { imported: createdRecords.length, records: createdRecords, errors: [] };
   } catch (error) {
     if (isDuplicateError(error)) {
       throw createAdminError(
@@ -72,39 +70,6 @@ export async function importOutreachCsv(input, { outreachRepository, clock }) {
 
     throw error;
   }
-}
-
-function normalizeCsvRow(row, clock) {
-  const statusResult = normalizeStatus(row.status, row.reply_obtained);
-  const contactMethod = normalizeContactMethod(row.contact_method, row.contact_email);
-  const payload = {
-    company_name: clean(row.company_name),
-    website: clean(row.website),
-    contact_email: clean(row.contact_email).toLowerCase(),
-    contact_info: clean(row.contact_info),
-    contact_method: contactMethod,
-    fit_reason: clean(row.fit_reason),
-    email_subject: cleanSingleLine(row.email_subject),
-    email_body: normalizeEmailDraft(row.email_body),
-    status: statusResult.status,
-    date_sent: toDateString(row.date_sent),
-    follow_up_date: toDateString(row.follow_up_date),
-    reply_obtained: statusResult.replyObtained,
-    reply_summary: clean(row.reply_summary),
-    notes: clean(row.notes),
-  };
-
-  if (!payload.company_name) return { error: 'Company name is required' };
-  if (!OUTREACH_STATUS_VALUES.has(payload.status)) return { error: 'Unsupported status' };
-  if (!OUTREACH_CONTACT_METHOD_VALUES.has(payload.contact_method)) {
-    return { error: 'Unsupported contact method' };
-  }
-
-  if (payload.status === 'sent' && !payload.date_sent) {
-    payload.date_sent = clock.today();
-  }
-
-  return { payload };
 }
 
 export function normalizeStatus(value, replyValue = false) {
@@ -131,6 +96,39 @@ export function normalizeContactMethod(value, contactEmail = '') {
   if (!method) return clean(contactEmail) ? 'email' : 'contact_form';
 
   return clean(contactEmail) ? 'email' : 'contact_form';
+}
+
+function normalizeCsvRow(row, clock) {
+  const statusResult = normalizeStatus(row.status, row.replyObtained);
+  const contactMethod = normalizeContactMethod(row.contactMethod, row.contactEmail);
+  const record = {
+    companyName: clean(row.companyName),
+    website: clean(row.website),
+    contactEmail: clean(row.contactEmail).toLowerCase(),
+    contactInfo: clean(row.contactInfo),
+    contactMethod,
+    fitReason: clean(row.fitReason),
+    emailSubject: cleanSingleLine(row.emailSubject),
+    emailBody: normalizeEmailDraft(row.emailBody),
+    status: statusResult.status,
+    dateSent: toDateString(row.dateSent),
+    followUpDate: toDateString(row.followUpDate),
+    replyObtained: statusResult.replyObtained,
+    replySummary: clean(row.replySummary),
+    notes: clean(row.notes),
+  };
+
+  if (!record.companyName) return { error: 'Company name is required' };
+  if (!OUTREACH_STATUS_VALUES.has(record.status)) return { error: 'Unsupported status' };
+  if (!OUTREACH_CONTACT_METHOD_VALUES.has(record.contactMethod)) {
+    return { error: 'Unsupported contact method' };
+  }
+
+  if (record.status === 'sent' && !record.dateSent) {
+    record.dateSent = clock.today();
+  }
+
+  return { record };
 }
 
 function parseCsv(csv) {
@@ -180,10 +178,23 @@ function parseCsvRows(csv) {
 }
 
 function normalizeHeader(value) {
-  return clean(value)
+  const words = clean(value)
+    .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_|_$/g, '');
+    .replace(/^_|_$/g, '')
+    .split('_')
+    .filter(Boolean);
+
+  if (!words.length) return '';
+
+  return (
+    words[0] +
+    words
+      .slice(1)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join('')
+  );
 }
 
 function escapeCsvCell(value) {

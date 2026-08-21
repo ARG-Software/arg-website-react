@@ -7,7 +7,7 @@ test('login dependencies keep auth sign-in separate from privileged admin checks
   const env = {
     ADMIN_DATABASE_URL: 'https://admin-project.supabase.co',
     ADMIN_DATABASE_SERVICE_ROLE_KEY: 'service-role-key',
-    VITE_ADMIN_DATABASE_ANON_KEY: 'anon-key',
+    ADMIN_DATABASE_ANON_KEY: 'anon-key',
     ALTCHA_HMAC_KEY: 'altcha-hmac-key',
   };
   const calls = [];

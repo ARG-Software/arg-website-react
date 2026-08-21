@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { LoadingProvider } from './providers/LoadingProvider.jsx';
 import { RAFProvider } from './providers/RAFProvider.jsx';
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useParams } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import HomePage from './pages/home/HomePage.jsx';
 import { LenisProvider } from './providers/LenisProvider.jsx';
@@ -18,6 +18,7 @@ import './styles/home.css';
 import './styles/components.css';
 import './styles/legal.css';
 import './styles/effects.css';
+import './admin/admin.css';
 
 const PartnersPage = lazyWithRetry(() => import('./pages/PartnersPage.jsx'));
 const ProjectsPage = lazyWithRetry(() => import('./pages/ProjectsPage.jsx'));
@@ -30,11 +31,8 @@ const BlogPage = lazyWithRetry(() => import('./pages/blog/BlogPage.jsx'));
 const BlogPostPage = lazyWithRetry(() => import('./pages/blog/BlogPostPage.jsx'));
 const PrivacyPage = lazyWithRetry(() => import('./pages/PrivacyPage.jsx'));
 const TermsPage = lazyWithRetry(() => import('./pages/TermsPage.jsx'));
-const AdminPage = lazyWithRetry(() => import('@admin/pages/AdminPage.jsx'));
-const OutreachPage = lazyWithRetry(() => import('@admin/pages/OutreachPage.jsx'));
-const AssistantPage = lazyWithRetry(() => import('@admin/pages/AssistantPage.jsx'));
-const SettingsPage = lazyWithRetry(() => import('@admin/pages/SettingsPage.jsx'));
-const HelpPage = lazyWithRetry(() => import('@admin/pages/HelpPage.jsx'));
+const AdminPage = lazyWithRetry(() => import('@admin/AdminPage.jsx'));
+const LoginPage = lazyWithRetry(() => import('@admin/pages/LoginPage.jsx'));
 const NotFoundPage = lazyWithRetry(() => import('./pages/NotFoundPage.jsx'));
 
 function BlogPostPageWrapper() {
@@ -96,15 +94,22 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     <Route path="/privacy/" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
                     <Route path="/terms/" element={<TermsPage />} />
-                    <Route path="/admin" element={<AdminPage />}>
-                      <Route index element={<Navigate to="/admin/outreach" replace />} />
-                      <Route path="outreach" element={<OutreachPage />} />
-                      <Route path="assistant" element={<AssistantPage />} />
-                      <Route path="settings" element={<SettingsPage />} />
-                      <Route path="help" element={<HelpPage />} />
-                      <Route path="*" element={<Navigate to="/admin/outreach" replace />} />
-                    </Route>
-                    <Route path="/admin/*" element={<AdminPage />} />
+                    <Route path="/admin/login" element={<LoginPage />} />
+                    <Route path="/admin/login/" element={<LoginPage />} />
+                    <Route path="/admin" element={<AdminPage />} />
+                    <Route path="/admin/" element={<AdminPage />} />
+                    <Route path="/admin/all" element={<AdminPage />} />
+                    <Route path="/admin/all/" element={<AdminPage />} />
+                    <Route path="/admin/sent" element={<AdminPage />} />
+                    <Route path="/admin/sent/" element={<AdminPage />} />
+                    <Route path="/admin/not-sent" element={<AdminPage />} />
+                    <Route path="/admin/not-sent/" element={<AdminPage />} />
+                    <Route path="/admin/ai-bot" element={<AdminPage />} />
+                    <Route path="/admin/ai-bot/" element={<AdminPage />} />
+                    <Route path="/admin/help" element={<AdminPage />} />
+                    <Route path="/admin/help/" element={<AdminPage />} />
+                    <Route path="/admin/settings" element={<AdminPage />} />
+                    <Route path="/admin/settings/" element={<AdminPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </Suspense>

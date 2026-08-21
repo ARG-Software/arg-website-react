@@ -1,3 +1,5 @@
+import { readAdminResponse } from './adminResponse.js';
+
 const ADMIN_ASSISTANT_CONVERSATIONS_ENDPOINT = '/api/admin/assistant-conversations';
 
 export async function fetchAssistantConversations(query = {}) {
@@ -35,14 +37,4 @@ function createAssistantConversationsUrl(query) {
   return search
     ? `${ADMIN_ASSISTANT_CONVERSATIONS_ENDPOINT}?${search}`
     : ADMIN_ASSISTANT_CONVERSATIONS_ENDPOINT;
-}
-
-async function readAdminResponse(response) {
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw new Error(data.error?.message || 'Admin request failed');
-  }
-
-  return data;
 }

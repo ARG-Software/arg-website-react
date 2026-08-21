@@ -1,3 +1,5 @@
+import { readAdminResponse } from './adminResponse.js';
+
 const ADMIN_OUTREACH_ENDPOINT = '/api/admin/outreach';
 
 export async function fetchOutreachRecords(query = {}) {
@@ -63,14 +65,4 @@ function createOutreachUrl(query) {
 
   const search = params.toString();
   return search ? `${ADMIN_OUTREACH_ENDPOINT}?${search}` : ADMIN_OUTREACH_ENDPOINT;
-}
-
-async function readAdminResponse(response) {
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw new Error(data.error?.message || 'Admin request failed');
-  }
-
-  return data;
 }

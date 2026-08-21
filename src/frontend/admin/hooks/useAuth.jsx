@@ -52,9 +52,9 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!data?.user,
     isLoading,
     error,
-    login: loginMutation.isLoading ? undefined : login,
-    signOut: signOutMutation.isLoading ? undefined : signOut,
-    isLoginLoading: loginMutation.isLoading,
+    login: loginMutation.isPending ? undefined : login,
+    signOut: signOutMutation.isPending ? undefined : signOut,
+    isLoginLoading: loginMutation.isPending,
     loginError: loginMutation.error,
   };
 

@@ -13,8 +13,7 @@ The `/admin/` route is a private outreach management app deployed with the publi
 
 ## Required Env
 
-- `VITE_ADMIN_DATABASE_URL`
-- `VITE_ADMIN_DATABASE_ANON_KEY`
+- `ADMIN_DATABASE_ANON_KEY`
 - `ADMIN_DATABASE_URL`
 - `ADMIN_DATABASE_SERVICE_ROLE_KEY`
 - `OUTREACH_ENCRYPTION_KEY_ACTIVE_VERSION`

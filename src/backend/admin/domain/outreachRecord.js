@@ -1,17 +1,17 @@
 export const OUTREACH_FIELDS = new Set([
-  'company_name',
+  'companyName',
   'website',
-  'contact_email',
-  'contact_info',
-  'contact_method',
-  'fit_reason',
-  'email_subject',
-  'email_body',
+  'contactEmail',
+  'contactInfo',
+  'contactMethod',
+  'fitReason',
+  'emailSubject',
+  'emailBody',
   'status',
-  'date_sent',
-  'follow_up_date',
-  'reply_obtained',
-  'reply_summary',
+  'dateSent',
+  'followUpDate',
+  'replyObtained',
+  'replySummary',
   'notes',
 ]);
 
@@ -38,10 +38,5 @@ export function cleanSingleLine(value) {
 }
 
 export function createOutreachRecordResponse(record) {
-  return {
-    id: record.id,
-    createdAt: record.createdAt,
-    updatedAt: record.updatedAt,
-    ...record.payload,
-  };
+  return record;
 }

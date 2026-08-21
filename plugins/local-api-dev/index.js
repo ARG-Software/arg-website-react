@@ -103,7 +103,17 @@ async function readRequestBody(req) {
 
 async function writeFetchResponse(res, response) {
   res.statusCode = response.status;
-  response.headers.forEach((value, name) => res.setHeader(name, value));
+
+  const setCookie = response.headers.getSetCookie?.();
+  if (setCookie?.length) {
+    res.setHeader('Set-Cookie', setCookie);
+  }
+
+  response.headers.forEach((value, name) => {
+    if (name.toLowerCase() !== 'set-cookie') {
+      res.setHeader(name, value);
+    }
+  });
 
   if (!response.body) {
     res.end();
