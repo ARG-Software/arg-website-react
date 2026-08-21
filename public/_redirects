@@ -22,6 +22,8 @@
 /api/security/verify     /.netlify/functions/security-verify     200
 /api/admin/login         /.netlify/functions/admin-login         200
 /api/admin/outreach      /.netlify/functions/admin-outreach      200
+/api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200
+/api/admin/assistant-conversations    /.netlify/functions/admin-assistant-conversations 200
 /mcp                     /.netlify/functions/mcp                 200
 
 # Trailing-slash canonicalization — fixes Ahrefs "3XX in sitemap" errors

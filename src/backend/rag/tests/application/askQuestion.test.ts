@@ -225,6 +225,40 @@ test('link-action routing retrieves links but does not hijack pricing requests',
   assert.equal(pricingRoute.commercialKind, 'general_pricing');
 });
 
+test('legal pages load from shared legal JSON as separate RAG sources', async () => {
+  const sources = await loadFirstPartySources(process.cwd(), {
+    all: false,
+    force: false,
+    fallbackOnly: false,
+    sourceKeys: ['privacy-policy', 'terms-of-service'],
+    filePaths: [],
+    urls: [],
+  });
+
+  assert.deepEqual(
+    sources.map(sourceItem => sourceItem.sourceKey),
+    ['privacy-policy', 'terms-of-service']
+  );
+  assert.match(sources[0]?.content ?? '', /AI assistant conversations are encrypted at rest/u);
+  assert.doesNotMatch(sources[0]?.content ?? '', /Limitation of Liability/u);
+  assert.match(sources[1]?.content ?? '', /Terms of Service/u);
+  assert.doesNotMatch(sources[1]?.content ?? '', /AI assistant conversations are encrypted at rest/u);
+});
+
+test('legal policy routing sends privacy and terms questions to legal sources', () => {
+  const plan = { mode: 'direct_evidence' as const, entity: 'ARG Software', subject: '' };
+  const privacyRoute = resolveRetrievalRoute('Guardas o histórico das conversas?', plan);
+  const termsRoute = resolveRetrievalRoute('What are your terms of service?', plan);
+
+  assert.equal(privacyRoute.kind, 'company_services');
+  assert.deepEqual(privacyRoute.sourceKeys, ['privacy-policy']);
+  assert.equal(privacyRoute.forceFirstChunks, undefined);
+
+  assert.equal(termsRoute.kind, 'company_services');
+  assert.deepEqual(termsRoute.sourceKeys, ['terms-of-service']);
+  assert.equal(termsRoute.forceFirstChunks, undefined);
+});
+
 test('blog metadata remains retrievable through the general route', async () => {
   const supabase = createSupabase({
     rpcRows: [matchRow('blog_post', 'blog-post', 'Blog post', 'Blog post\nTitle: Blog post')],

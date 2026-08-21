@@ -52,7 +52,7 @@ export function Footer({
                 data-animate-order={animate ? '2' : undefined}
               />
 
-              <div className="footer-bottom" data-animate-order={animate ? '3' : undefined}>
+              <div className="footer-bottom" data-animate="">
                 {legalLinks.map(link =>
                   renderFooterLink(link, renderLink, renderExternalLink, 'footer-bottom__link')
                 )}

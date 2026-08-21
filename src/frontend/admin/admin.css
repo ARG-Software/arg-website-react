@@ -19,6 +19,13 @@
   justify-content: space-between;
 }
 
+.admin-header__main {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
 .admin-header__logo {
   color: #fff;
   display: block;
@@ -38,6 +45,35 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+.admin-header-nav {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-header-nav a {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: var(--type-ui);
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.65rem 1.125rem;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin-header-nav a:hover,
+.admin-header-nav a.is-active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: #fff;
 }
 
 .admin-loading {
@@ -338,6 +374,22 @@
 .admin-detail-form .admin-detail-form__full,
 .admin-detail-form__actions {
   grid-column: 1 / -1;
+}
+
+.admin-conversation-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-conversation-meta span {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.82rem;
+  padding: 0.4rem 0.7rem;
 }
 
 .admin-error {

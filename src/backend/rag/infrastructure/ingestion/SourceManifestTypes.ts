@@ -5,6 +5,7 @@ export interface JsonManifestEntry {
   filePath: string;
   sourceType: RagSourceType;
   sourceKey?: string;
+  dataKey?: string;
   title?: string;
   url?: string;
   label?: string;

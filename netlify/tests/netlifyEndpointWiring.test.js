@@ -36,6 +36,18 @@ test('function files instantiate backend API modules', () => {
   assert.match(readNetlifyFile('functions/admin-login.js'), /createAdminLoginApi/);
   assert.match(readNetlifyFile('functions/admin-outreach.js'), /createAdminOutreachApi/);
   assert.match(
+    readNetlifyFile('functions/assistant-conversation-log.js'),
+    /createAssistantConversationLogApi/
+  );
+  assert.match(
+    readNetlifyFile('functions/admin-assistant-conversations.js'),
+    /createAdminAssistantConversationsApi/
+  );
+  assert.match(
+    readNetlifyFile('functions/assistant-conversations-retention.js'),
+    /createAssistantConversationsRetentionApi/
+  );
+  assert.match(
     readNetlifyFile('functions/maintenance-keep-database-alive.js'),
     /createKeepDatabaseAliveApi/
   );
@@ -56,6 +68,8 @@ test('public redirects expose function endpoints before the 404 fallback', () =>
     '/api/security/verify     /.netlify/functions/security-verify     200',
     '/api/admin/login         /.netlify/functions/admin-login         200',
     '/api/admin/outreach      /.netlify/functions/admin-outreach      200',
+    '/api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200',
+    '/api/admin/assistant-conversations    /.netlify/functions/admin-assistant-conversations 200',
     '/mcp                     /.netlify/functions/mcp                 200',
   ]) {
     const redirectIndex = redirects.indexOf(redirect);
@@ -72,7 +86,10 @@ test('removed netlify implementation folder stays removed', () => {
 test('netlify functions do not reference removed implementation folders or old contact routes', () => {
   const files = [
     'functions/admin-outreach.js',
+    'functions/admin-assistant-conversations.js',
     'functions/admin-login.js',
+    'functions/assistant-conversation-log.js',
+    'functions/assistant-conversations-retention.js',
     'functions/assistant-ask.js',
     'functions/assistant-challenge.js',
     'functions/assistant-ui-copy.js',

@@ -89,6 +89,21 @@ export default defineConfig(({ mode }) => {
         createApi: 'createAdminOutreachApi',
       },
       {
+        path: '/api/admin/assistant-conversation-log',
+        module: '/src/backend/admin/apps/assistantConversationLogApi.js',
+        createApi: 'createAssistantConversationLogApi',
+      },
+      {
+        path: '/api/admin/assistant-conversations',
+        module: '/src/backend/admin/apps/adminAssistantConversationsApi.js',
+        createApi: 'createAdminAssistantConversationsApi',
+      },
+      {
+        path: '/api/admin/assistant-conversations-retention',
+        module: '/src/backend/admin/apps/assistantConversationsRetentionApi.js',
+        createApi: 'createAssistantConversationsRetentionApi',
+      },
+      {
         path: '/api/admin/login',
         module: '/src/backend/admin/apps/adminLoginApi.js',
         createApi: 'createAdminLoginApi',

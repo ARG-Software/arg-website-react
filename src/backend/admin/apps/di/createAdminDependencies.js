@@ -1,5 +1,6 @@
 import { createAdminAccessPolicy } from '../../application/admin/adminAccessPolicy.js';
 import { getAdminConfig } from '../../infrastructure/config/adminConfig.js';
+import { createAssistantConversationCipher } from '../../infrastructure/crypto/assistantConversationCipher.js';
 import { createOutreachPayloadCipher } from '../../infrastructure/crypto/outreachPayloadCipher.js';
 import {
   createSupabaseAdminAuthClient,
@@ -7,6 +8,7 @@ import {
 } from '../../infrastructure/supabase/SupabaseClientFactory.js';
 import { SupabaseAdminIdentityProvider } from '../../infrastructure/supabase/SupabaseAdminIdentityProvider.js';
 import { SupabaseAdminUserRepository } from '../../infrastructure/supabase/SupabaseAdminUserRepository.js';
+import { SupabaseAssistantConversationRepository } from '../../infrastructure/supabase/SupabaseAssistantConversationRepository.js';
 import { SupabaseOutreachAuditRepository } from '../../infrastructure/supabase/SupabaseOutreachAuditRepository.js';
 import { SupabaseOutreachRepository } from '../../infrastructure/supabase/SupabaseOutreachRepository.js';
 import { systemClock } from '../../infrastructure/system/systemClock.js';
@@ -64,6 +66,40 @@ function createAdminDependenciesWithClients({ env, createAuthClient, createServi
       return {
         supabase: createServiceClient(config),
         tableName: 'outreach_records',
+      };
+    },
+    createAssistantConversationLogDependencies() {
+      const client = createServiceClient(config);
+      const payloadCipher = createAssistantConversationCipher(env);
+
+      return {
+        conversationRepository: new SupabaseAssistantConversationRepository(client, payloadCipher),
+        logRateLimit: {
+          config: getRateLimitConfig(env, {
+            prefix: 'ASSISTANT_CONVERSATION_LOG',
+            defaultSalt: 'arg-assistant-conversation-log-rate-limit',
+          }),
+          store: new SupabaseRateLimitStore(client, 'hit_admin_rate_limit'),
+        },
+      };
+    },
+    createAssistantConversationAdminDependencies() {
+      const client = createServiceClient(config);
+      const payloadCipher = createAssistantConversationCipher(env);
+      const adminUserRepository = new SupabaseAdminUserRepository(client);
+
+      return {
+        adminAccessPolicy: createAdminAccessPolicy(adminUserRepository),
+        conversationRepository: new SupabaseAssistantConversationRepository(client, payloadCipher),
+        identityProvider: new SupabaseAdminIdentityProvider(client),
+      };
+    },
+    createAssistantConversationRetentionDependencies() {
+      const client = createServiceClient(config);
+      const payloadCipher = createAssistantConversationCipher(env);
+
+      return {
+        conversationRepository: new SupabaseAssistantConversationRepository(client, payloadCipher),
       };
     },
     createOutreachDependencies() {

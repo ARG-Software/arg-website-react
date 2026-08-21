@@ -95,10 +95,11 @@ async function loadHomepageSectionSources(
 async function loadJsonSource(filePath: string, options: JsonManifestEntry): Promise<RagSource> {
   const sourceKey = options.sourceKey ?? path.basename(filePath, path.extname(filePath));
   const json = await readJsonFile(filePath);
+  const sourceJson = options.dataKey ? (json as Record<string, unknown>)[options.dataKey] : json;
   const content =
     sourceKey === 'site-links'
-      ? formatSiteLinksSource(json as SiteLinksJson, options.label)
-      : flattenJsonToText(json, options.label);
+      ? formatSiteLinksSource(sourceJson as SiteLinksJson, options.label)
+      : flattenJsonToText(sourceJson, options.label);
 
   return createSource({
     sourceType: options.sourceType,
@@ -106,7 +107,11 @@ async function loadJsonSource(filePath: string, options: JsonManifestEntry): Pro
     title: options.title ?? sourceKey,
     url: options.url,
     path: filePath,
-    metadata: { ...(options.metadata ?? {}), source_file: filePath },
+    metadata: {
+      ...(options.metadata ?? {}),
+      source_file: filePath,
+      ...(options.dataKey ? { data_key: options.dataKey } : {}),
+    },
     content,
   });
 }

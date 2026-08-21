@@ -44,6 +44,10 @@ const PROJECT_DURATION_PATTERN =
   /\b(?:project duration|how long|timeline|duration|took|take|months?|years?|delivery time)\b/i;
 const TECHNOLOGY_QUALITY_PATTERN =
   /\b(?:ai|automation|architecture|backend|ci\/cd|cicd|cloud|code review|cqrs|database|ddd|devops|frontend|framework|integration tests?|language|methodolog(?:y|ies)|mobile|observability|patterns?|platform|qa|quality|scalability|security|stack|technology|testing|tests?|tool|unit tests?)\b/i;
+const PRIVACY_POLICY_PATTERN =
+  /\b(?:privacy|privacy policy|data protection|personal data|gdpr|rgpd|cookies?|tracking|data retention|retain(?:ed|s|ing)?|retention|encrypted|delete my data|privacidade|dados pessoais|prote[cç][aã]o de dados|reten[cç][aã]o|encriptad[ao]s?|apagar dados)\b|\b(?:store|stores|stored|save|saves|saved|log|logs|logged|keep|keeps|kept|guardas?|guardam|guardar|armazenam?|armazenar|registam?|registar)\b.{0,80}\b(?:conversation|conversations|messages?|chat|history|conversas?|mensagens?|hist[oó]rico)\b|\b(?:conversation|conversations|messages?|chat|history|conversas?|mensagens?|hist[oó]rico)\b.{0,80}\b(?:store|stores|stored|save|saves|saved|log|logs|logged|keep|keeps|kept|guardas?|guardam|guardar|armazenam?|armazenar|registam?|registar)\b/i;
+const TERMS_POLICY_PATTERN =
+  /\b(?:terms|terms of service|conditions|legal terms|governing law|liability|warranties?|intellectual property|confidentiality|payment terms|termination|termos|termos de servi[cç]o|condi[cç][oõ]es|lei aplic[aá]vel|responsabilidade|garantias?|propriedade intelectual|confidencialidade|pagamentos?|rescis[aã]o)\b/i;
 const GASPAR_PROFILE_PATTERN =
   /\b(?:gaspar|assistant profile|assistant identity|your name|who are you|ai assistant|artificial intelligence|robot|chatbot|language model|real cat|where were you born|nationality|ascendence|free time|do you like working at arg|likes? working at arg)\b/i;
 const GASPAR_HUMAN_LANGUAGE_PATTERN =
@@ -56,6 +60,15 @@ export function resolveRetrievalRoute(
 ): RetrievalRoute {
   const routeText = `${retrievalQuestion} ${plan.entity} ${plan.subject}`;
   const isGasparHumanLanguageQuestion = GASPAR_HUMAN_LANGUAGE_PATTERN.test(routeText);
+  const isPrivacyPolicyQuestion = PRIVACY_POLICY_PATTERN.test(routeText);
+  const isTermsPolicyQuestion = TERMS_POLICY_PATTERN.test(routeText);
+
+  if (isPrivacyPolicyQuestion || isTermsPolicyQuestion) {
+    return createLegalPolicyRoute({
+      includePrivacy: isPrivacyPolicyQuestion,
+      includeTerms: isTermsPolicyQuestion,
+    });
+  }
 
   if (GASPAR_PROFILE_PATTERN.test(routeText) || isGasparHumanLanguageQuestion) {
     return {
@@ -197,6 +210,39 @@ function createCommercialRoute(
     entity: plan.entity,
     subject: plan.subject,
   };
+}
+
+function createLegalPolicyRoute({
+  includePrivacy,
+  includeTerms,
+}: {
+  includePrivacy: boolean;
+  includeTerms: boolean;
+}): RetrievalRoute {
+  const sourceKeys = [
+    ...(includePrivacy ? ['privacy-policy'] : []),
+    ...(includeTerms ? ['terms-of-service'] : []),
+  ];
+
+  return {
+    kind: 'company_services',
+    firstPartySourceTypes: ['homepage'],
+    entity: 'ARG Software',
+    subject: getLegalPolicySubject(includePrivacy, includeTerms),
+    sourceKeys,
+  };
+}
+
+function getLegalPolicySubject(includePrivacy: boolean, includeTerms: boolean): string {
+  if (includePrivacy && includeTerms) {
+    return 'privacy policy terms of service legal policies';
+  }
+
+  if (includePrivacy) {
+    return 'AI assistant conversations storage history messages data retention encrypted privacy policy';
+  }
+
+  return 'terms of service legal terms conditions liability confidentiality payment governing law';
 }
 
 function isExternalLinkQuestion(value: string): boolean {

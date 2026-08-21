@@ -62,6 +62,17 @@ export async function retrieveDirectEvidenceContexts({
     });
   }
 
+  if (route.sourceKeys?.length && route.subject) {
+    const search = await resolveSemanticSearch(
+      route.subject,
+      embeddingProvider,
+      fallbackEmbeddingProvider,
+      semanticSearch
+    );
+
+    return retrieveSemanticEvidenceForSourceKeys(readRepository, config, search, route.sourceKeys);
+  }
+
   const person = route.entity ? await findPersonSource(readRepository, route.entity) : null;
 
   if (person && route.subject && isBroadPersonProfileSubject(route.subject)) {

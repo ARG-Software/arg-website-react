@@ -3,6 +3,7 @@ import { MOBILE_BREAKPOINT } from '@constants/ui';
 import { trackAssistantEvent } from '@utils/analytics';
 import { isMobile } from '@utils/helpers';
 import { useAssistantChat } from './useAssistantChat';
+import { useAssistantConversationLogger } from './useAssistantConversationLogger';
 import { useAssistantCopy } from './useAssistantCopy';
 import { useAssistantLeadCapture } from './useAssistantLeadCapture';
 import { useAssistantSecurity } from './useAssistantSecurity';
@@ -20,11 +21,11 @@ import {
 } from './utils/leadMessages';
 
 function getChatUserMessage(content) {
-  return { role: 'user', content, source: CHAT_SOURCE };
+  return { role: 'user', content, source: CHAT_SOURCE, createdAt: new Date().toISOString() };
 }
 
 function getChatAssistantMessage(message) {
-  return { ...message, source: CHAT_SOURCE };
+  return { ...message, source: CHAT_SOURCE, createdAt: new Date().toISOString() };
 }
 
 function getChatHistory(messages) {
@@ -79,6 +80,11 @@ export function useAssistantWidgetController({
     getPayload,
     consumePayload,
     preferredLanguage,
+  });
+  const { flushConversation, resetConversationLog } = useAssistantConversationLogger({
+    messages,
+    isOpen,
+    language: activeLanguage,
   });
 
   const dismissLeadCaptureOnce = useCallback(
@@ -309,10 +315,12 @@ export function useAssistantWidgetController({
     }
     resetChat();
     cancelLeadCapture();
+    flushConversation();
     setMessages([]);
     setInputValue('');
     setPreferredLanguage('');
     setError(null);
+    resetConversationLog();
     leadCaptureStartedRef.current = false;
     leadDismissHandledRef.current = false;
     trackAssistantEvent('clear_conversation', {
@@ -325,8 +333,10 @@ export function useAssistantWidgetController({
     LEAD_STEPS.SUCCESS,
     messages.length,
     resetChat,
+    flushConversation,
     cancelLeadCapture,
     setError,
+    resetConversationLog,
     dismissLeadCaptureOnce,
   ]);
 

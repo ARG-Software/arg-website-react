@@ -11,6 +11,7 @@ import {
 } from '@tanstack/react-query';
 
 import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
+import { AdminConversationTranscript } from '@ui/admin/AdminConversationTranscript.jsx';
 import { AdminMetricChart } from '@ui/admin/AdminMetricChart.jsx';
 import { AdminNav } from '@ui/admin/AdminNav.jsx';
 import { AdminProfileMenu } from '@ui/admin/AdminProfileMenu.jsx';
@@ -28,6 +29,11 @@ import { UiStat } from '@ui/primitives/UiStat.jsx';
 import { UiStatusPill } from '@ui/primitives/UiStatusPill.jsx';
 import { AltchaVerification } from '@components/forms/AltchaVerification.jsx';
 import { adminQueryClient } from './queryClient.js';
+import {
+  deleteAssistantConversation,
+  fetchAssistantConversation,
+  fetchAssistantConversations,
+} from './assistantConversationsApi.js';
 import { getSupabaseBrowserClient } from './supabaseClient.js';
 import {
   exportOutreachCsv,
@@ -64,6 +70,7 @@ const ADMIN_ROUTES = {
   all: '/admin/all/',
   sent: '/admin/sent/',
   notSent: '/admin/not-sent/',
+  aiBot: '/admin/ai-bot/',
   help: '/admin/help/',
   settings: '/admin/settings/',
 };
@@ -98,6 +105,7 @@ export default function AdminPage() {
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(() => !clientState.error);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [selectedConversation, setSelectedConversation] = useState(null);
   const view = getAdminView(location.pathname);
 
   useEffect(() => {
@@ -123,6 +131,7 @@ export default function AdminPage() {
     await clientState.supabase.auth.signOut();
     adminQueryClient.clear();
     setSelectedRecord(null);
+    setSelectedConversation(null);
   }
 
   useEffect(() => {
@@ -135,6 +144,7 @@ export default function AdminPage() {
         clientState.supabase.auth.signOut();
         adminQueryClient.clear();
         setSelectedRecord(null);
+        setSelectedConversation(null);
       }, ADMIN_INACTIVITY_TIMEOUT_MS);
     };
     const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
@@ -183,7 +193,9 @@ export default function AdminPage() {
         session={session}
         navigate={navigate}
         selectedRecord={selectedRecord}
+        selectedConversation={selectedConversation}
         onSelectRecord={setSelectedRecord}
+        onSelectConversation={setSelectedConversation}
         onRecordUpdated={handleRecordUpdated}
         onSignOut={handleSignOut}
       />
@@ -191,7 +203,7 @@ export default function AdminPage() {
   );
 }
 
-function AdminShell({ actions, nav, loading = false, children }) {
+function AdminShell({ actions, nav, sectionNav, loading = false, children }) {
   return (
     <main className="admin-page">
       <Helmet>
@@ -200,9 +212,12 @@ function AdminShell({ actions, nav, loading = false, children }) {
       </Helmet>
       <header className="admin-header">
         <div className="admin-header__top">
-          <a href="/" className="admin-header__logo" aria-label="ARG Software home">
-            <Logo />
-          </a>
+          <div className="admin-header__main">
+            <a href="/" className="admin-header__logo" aria-label="ARG Software home">
+              <Logo />
+            </a>
+            {sectionNav}
+          </div>
           {actions && <div className="admin-header__actions">{actions}</div>}
         </div>
         {nav && <div className="admin-nav-wrap">{nav}</div>}
@@ -224,18 +239,26 @@ function AdminWorkspace({
   session,
   navigate,
   selectedRecord,
+  selectedConversation,
   onSelectRecord,
+  onSelectConversation,
   onRecordUpdated,
   onSignOut,
 }) {
   const queryFetching = useIsFetching({ queryKey: ['outreach'] });
+  const conversationFetching = useIsFetching({ queryKey: ['assistantConversations'] });
   const queryMutating = useIsMutating({ mutationKey: ['outreach'] });
+  const conversationMutating = useIsMutating({ mutationKey: ['assistantConversations'] });
   const [importStatus, setImportStatus] = useState('');
-  const pageLoading = queryFetching > 0 || queryMutating > 0;
+  const pageLoading =
+    queryFetching > 0 || conversationFetching > 0 || queryMutating > 0 || conversationMutating > 0;
 
   function handleRefresh() {
     adminQueryClient.invalidateQueries({ queryKey: ['outreach'] });
+    adminQueryClient.invalidateQueries({ queryKey: ['assistantConversations'] });
   }
+
+  const topNavItems = getAdminTopNavItems(pathname);
 
   async function handleExport() {
     const csv = await exportOutreachCsv(session.access_token);
@@ -275,13 +298,29 @@ function AdminWorkspace({
           ]}
         />
       }
+      sectionNav={
+        <nav className="admin-header-nav" aria-label="Admin sections">
+          {topNavItems.map(item => (
+            <a
+              key={item.href}
+              className={item.isActive ? 'is-active' : ''}
+              href={item.href}
+              onClick={event => {
+                event.preventDefault();
+                navigate(item.href);
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      }
       nav={
-        <AdminNav
-          items={getAdminNavItems(pathname)}
-          onNavigate={navigate}
-          trailing={
-            view !== 'settings' &&
-            view !== 'help' && (
+        isOutreachView(view) ? (
+          <AdminNav
+            items={getAdminNavItems(pathname)}
+            onNavigate={navigate}
+            trailing={
               <div className="admin-nav-actions">
                 <button
                   type="button"
@@ -306,9 +345,9 @@ function AdminWorkspace({
                 </button>
                 {importStatus && <span className="admin-save-status">{importStatus}</span>}
               </div>
-            )
-          }
-        />
+            }
+          />
+        ) : null
       }
       loading={pageLoading}
     >
@@ -342,6 +381,12 @@ function AdminWorkspace({
           onSelectRecord={onSelectRecord}
         />
       )}
+      {view === 'aiBot' && (
+        <AssistantConversationsView
+          accessToken={session.access_token}
+          onSelectConversation={onSelectConversation}
+        />
+      )}
       {view === 'settings' && <SettingsView supabase={supabase} session={session} />}
       {view === 'help' && <HelpView />}
 
@@ -351,6 +396,11 @@ function AdminWorkspace({
         record={selectedRecord}
         onClose={() => onSelectRecord(null)}
         onRecordUpdated={onRecordUpdated}
+      />
+      <AssistantConversationOverlay
+        accessToken={session.access_token}
+        conversation={selectedConversation}
+        onClose={() => onSelectConversation(null)}
       />
     </AdminShell>
   );
@@ -588,6 +638,38 @@ function RecordsView({ accessToken, title, query, emptyMessage, onSelectRecord }
           }}
           emptyMessage={emptyMessage}
           onRowClick={onSelectRecord}
+          tone="light"
+        />
+      )}
+    </div>
+  );
+}
+
+function AssistantConversationsView({ accessToken, onSelectConversation }) {
+  const [page, setPage] = useState(1);
+
+  const conversationsQuery = useQuery({
+    queryKey: ['assistantConversations', 'records', page],
+    queryFn: () => fetchAssistantConversations(accessToken, { page, pageSize: PAGE_SIZE }),
+    placeholderData: keepPreviousData,
+  });
+
+  return (
+    <div className="admin-content-grid">
+      {conversationsQuery.isError ? (
+        <ErrorCard error={conversationsQuery.error} onRetry={() => conversationsQuery.refetch()} />
+      ) : (
+        <AdminDataTable
+          title="AI Bot conversations"
+          description="Encrypted Gaspar conversations saved after visitors pause or leave the chat."
+          columns={getConversationColumns()}
+          rows={conversationsQuery.data?.records || []}
+          pagination={{
+            ...(conversationsQuery.data?.pagination ?? createEmptyTableData().pagination),
+            onPageChange: setPage,
+          }}
+          emptyMessage="No assistant conversations found."
+          onRowClick={onSelectConversation}
           tone="light"
         />
       )}
@@ -954,6 +1036,74 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
   );
 }
 
+function AssistantConversationOverlay({ accessToken, conversation, onClose }) {
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const detailQuery = useQuery({
+    queryKey: ['assistantConversations', 'detail', conversation?.id],
+    queryFn: () => fetchAssistantConversation(accessToken, conversation.id),
+    enabled: Boolean(conversation?.id),
+  });
+  const deleteMutation = useMutation({
+    mutationKey: ['assistantConversations'],
+    mutationFn: id => deleteAssistantConversation(accessToken, id),
+    onSuccess: () => {
+      adminQueryClient.invalidateQueries({ queryKey: ['assistantConversations'] });
+      setDeleteConfirmOpen(false);
+      onClose();
+    },
+  });
+
+  if (!conversation) return null;
+
+  const record = detailQuery.data?.record || conversation;
+  const isDeleting = deleteMutation.isPending;
+
+  async function deleteConversation() {
+    await deleteMutation.mutateAsync(conversation.id);
+  }
+
+  return (
+    <AdminRecordOverlay
+      isOpen
+      title={record.preview || 'Assistant conversation'}
+      eyebrow={formatDateTime(record.lastMessageAt || record.updatedAt)}
+      onClose={onClose}
+      actions={
+        <UiButton onClick={() => setDeleteConfirmOpen(true)} disabled={isDeleting}>
+          {isDeleting ? 'Deleting...' : 'Delete'}
+        </UiButton>
+      }
+    >
+      <div className="admin-conversation-meta">
+        <span>Page: {record.pagePath || '-'}</span>
+        <span>Language: {record.language || '-'}</span>
+        <span>Messages: {record.messageCount || 0}</span>
+      </div>
+      {detailQuery.isError && (
+        <ErrorCard error={detailQuery.error} onRetry={() => detailQuery.refetch()} />
+      )}
+      {!detailQuery.isError && detailQuery.isLoading && (
+        <UiSpinner label="Loading conversation..." />
+      )}
+      {!detailQuery.isError && !detailQuery.isLoading && (
+        <AdminConversationTranscript messages={record.messages || []} />
+      )}
+      {deleteMutation.isError && <p className="admin-error">{deleteMutation.error.message}</p>}
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        title="Delete this conversation?"
+        cancelLabel="Keep conversation"
+        confirmLabel="Delete conversation"
+        confirmDisabled={isDeleting}
+        onCancel={() => setDeleteConfirmOpen(false)}
+        onConfirm={deleteConversation}
+      >
+        <p>This permanently removes the encrypted transcript from the admin database.</p>
+      </ConfirmDialog>
+    </AdminRecordOverlay>
+  );
+}
+
 function getRecordColumns() {
   return [
     { key: 'company_name', label: 'Company', sortable: true },
@@ -983,6 +1133,48 @@ function getRecordColumns() {
       render: record => record.follow_up_date || '-',
     },
   ];
+}
+
+function getConversationColumns() {
+  return [
+    {
+      key: 'lastMessageAt',
+      label: 'Last activity',
+      render: record => formatDateTime(record.lastMessageAt || record.updatedAt),
+    },
+    {
+      key: 'preview',
+      label: 'Conversation',
+      render: record => record.preview || `Conversation on ${record.pagePath || 'unknown page'}`,
+    },
+    {
+      key: 'pagePath',
+      label: 'Page',
+      render: record => record.pagePath || '-',
+    },
+    {
+      key: 'messageCount',
+      label: 'Messages',
+      render: record => record.messageCount || 0,
+    },
+    {
+      key: 'language',
+      label: 'Language',
+      render: record => record.language || '-',
+    },
+  ];
+}
+
+function formatDateTime(value) {
+  if (!value) return '-';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '-';
+
+  return date.toLocaleString(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
 }
 
 function createNextTableSort(current, sortBy) {
@@ -1028,9 +1220,27 @@ function getAdminView(pathname) {
   if (pathname.startsWith('/admin/all')) return 'all';
   if (pathname.startsWith('/admin/sent')) return 'sent';
   if (pathname.startsWith('/admin/not-sent')) return 'notSent';
+  if (pathname.startsWith('/admin/ai-bot')) return 'aiBot';
   if (pathname.startsWith('/admin/help')) return 'help';
   if (pathname.startsWith('/admin/settings')) return 'settings';
   return 'dashboard';
+}
+
+function isOutreachView(view) {
+  return ['dashboard', 'all', 'sent', 'notSent'].includes(view);
+}
+
+function getAdminTopNavItems(pathname) {
+  const view = getAdminView(pathname);
+
+  return [
+    {
+      href: ADMIN_ROUTES.dashboard,
+      label: 'Outreach',
+      isActive: isOutreachView(view),
+    },
+    { href: ADMIN_ROUTES.aiBot, label: 'AI Bot', isActive: view === 'aiBot' },
+  ];
 }
 
 function getAdminNavItems(pathname) {

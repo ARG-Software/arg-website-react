@@ -2,6 +2,7 @@ const API_ENDPOINTS = Object.freeze({
   ASSISTANT_ASK: '/api/assistant/ask',
   ASSISTANT_CHALLENGE: '/api/assistant/challenge',
   ASSISTANT_UI_COPY: '/api/assistant/ui-copy',
+  ASSISTANT_CONVERSATION_LOG: '/api/admin/assistant-conversation-log',
   SECURITY_CHALLENGE: '/api/security/challenge',
   SECURITY_VERIFY: '/api/security/verify',
 });
@@ -41,6 +42,15 @@ export function fetchAssistantUiCopy(language, { signal } = {}) {
   return fetch(`${API_ENDPOINTS.ASSISTANT_UI_COPY}?${params.toString()}`, {
     method: 'GET',
     signal,
+  });
+}
+
+export function submitAssistantConversationLog(payload, { keepalive = false } = {}) {
+  return fetch(API_ENDPOINTS.ASSISTANT_CONVERSATION_LOG, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    keepalive,
+    body: JSON.stringify(payload),
   });
 }
 

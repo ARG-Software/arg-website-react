@@ -100,6 +100,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     <Route path="/admin/sent/" element={<AdminPage />} />
                     <Route path="/admin/not-sent" element={<AdminPage />} />
                     <Route path="/admin/not-sent/" element={<AdminPage />} />
+                    <Route path="/admin/ai-bot" element={<AdminPage />} />
+                    <Route path="/admin/ai-bot/" element={<AdminPage />} />
                     <Route path="/admin/help" element={<AdminPage />} />
                     <Route path="/admin/help/" element={<AdminPage />} />
                     <Route path="/admin/settings" element={<AdminPage />} />

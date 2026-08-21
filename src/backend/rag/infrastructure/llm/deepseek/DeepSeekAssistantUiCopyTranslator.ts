@@ -29,5 +29,3 @@ export function createDeepSeekAssistantUiCopyTranslator(
     },
   };
 }
-
-export const deepSeekAssistantUiCopyTranslator = createDeepSeekAssistantUiCopyTranslator();

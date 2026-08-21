@@ -18,6 +18,8 @@
     "/careers": ["careers-page", "jobs"],
     "/contact": ["site-links"],
     "/partners": ["partners-page"],
+    "/privacy": ["privacy-policy"],
+    "/terms": ["terms-of-service"],
     "/working-with-us": ["working-with-us"]
   },
   "projects": [
@@ -37,6 +39,8 @@
     { "kind": "json", "filePath": "src/frontend/data/careersPage.json", "sourceType": "careers", "sourceKey": "careers-page", "title": "Careers Page", "url": "/careers/", "label": "careers page" },
     { "kind": "json", "filePath": "src/frontend/data/workingWithUs.json", "sourceType": "working_with_us", "sourceKey": "working-with-us", "title": "Working With Us", "url": "/working-with-us/", "label": "working with us" },
     { "kind": "json", "filePath": "src/frontend/data/faq.json", "sourceType": "faq", "sourceKey": "faq", "title": "Frequently Asked Questions", "url": "/#faq", "label": "faq" },
+    { "kind": "json", "filePath": "src/frontend/data/legalPages.json", "dataKey": "privacyPolicy", "sourceType": "homepage", "sourceKey": "privacy-policy", "title": "Privacy Policy", "url": "/privacy/", "label": "privacy policy" },
+    { "kind": "json", "filePath": "src/frontend/data/legalPages.json", "dataKey": "termsOfService", "sourceType": "homepage", "sourceKey": "terms-of-service", "title": "Terms of Service", "url": "/terms/", "label": "terms of service" },
     { "kind": "json", "filePath": "src/frontend/data/siteLinks.json", "sourceType": "homepage", "sourceKey": "site-links", "title": "ARG Links and Contact Options", "url": "/contact/", "label": "ARG links and contact options" },
     { "kind": "json", "filePath": "src/frontend/data/assistant.json", "sourceType": "homepage", "sourceKey": "assistant-profile", "title": "Gaspar", "url": "/", "label": "Gaspar assistant profile" },
     { "kind": "assistant_policy", "sourceType": "working_with_us", "sourceKey": "assistant-policy", "title": "Assistant Response Policy", "label": "assistant response policy", "virtualPath": "src/backend/rag/config/sources.json#assistant-policy" },
