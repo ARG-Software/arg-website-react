@@ -1,6 +1,14 @@
 import { UiCard } from '../primitives/UiCard.jsx';
 
-export function AdminRecordOverlay({ isOpen, title, eyebrow, actions, children, onClose }) {
+export function AdminRecordOverlay({
+  isOpen,
+  title,
+  titleAccessory,
+  eyebrow,
+  actions,
+  children,
+  onClose,
+}) {
   if (!isOpen) return null;
 
   return (
@@ -36,7 +44,10 @@ export function AdminRecordOverlay({ isOpen, title, eyebrow, actions, children, 
         <div className="admin-record-overlay__header">
           <div>
             {eyebrow && <p>{eyebrow}</p>}
-            <h2>{title}</h2>
+            <div className="admin-record-overlay__title-row">
+              <h2>{title}</h2>
+              {titleAccessory}
+            </div>
           </div>
           <div className="admin-record-overlay__actions">{actions}</div>
         </div>

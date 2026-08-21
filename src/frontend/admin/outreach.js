@@ -9,12 +9,21 @@ export function getStatusLabel(status) {
 
 export function buildMailtoUrl(record) {
   const email = record.contact_email || extractEmail(record.contact_info);
-  const params = new URLSearchParams();
+  const params = [];
 
-  if (record.email_subject) params.set('subject', record.email_subject);
-  if (record.email_body) params.set('body', record.email_body);
+  if (record.email_subject) params.push(`subject=${encodeURIComponent(record.email_subject)}`);
+  if (record.email_body) {
+    params.push(`body=${encodeURIComponent(normalizeEmailBody(record.email_body))}`);
+  }
 
-  return `mailto:${email || ''}?${params.toString()}`;
+  return `mailto:${email || ''}${params.length ? `?${params.join('&')}` : ''}`;
+}
+
+function normalizeEmailBody(value) {
+  return String(value || '')
+    .replace(/\\n/g, '\n')
+    .replace(/\/n/g, '\n')
+    .replace(/\r\n/g, '\n');
 }
 
 export function getRecordSearchText(record) {

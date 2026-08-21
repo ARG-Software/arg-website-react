@@ -1,5 +1,6 @@
 export { UiButton } from './primitives/UiButton.jsx';
 export { UiCard } from './primitives/UiCard.jsx';
+export { UiDatePicker } from './primitives/UiDatePicker.jsx';
 export { UiField, UiSelect, UiTextarea } from './primitives/UiField.jsx';
 export { UiSpinner } from './primitives/UiSpinner.jsx';
 export { UiStat } from './primitives/UiStat.jsx';

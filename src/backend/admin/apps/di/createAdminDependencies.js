@@ -16,6 +16,7 @@ export function createAdminDependencies({ env = process.env } = {}) {
 
   return {
     createLoginDependencies,
+    createMaintenanceDependencies,
     createOutreachDependencies,
   };
 
@@ -55,6 +56,13 @@ export function createAdminDependencies({ env = process.env } = {}) {
       clock: systemClock,
       identityProvider: new SupabaseAdminIdentityProvider(client),
       outreachRepository: new SupabaseOutreachRepository(client, payloadCipher),
+    };
+  }
+
+  function createMaintenanceDependencies() {
+    return {
+      supabase: createSupabaseAdminClient(config),
+      tableName: 'outreach_records',
     };
   }
 }

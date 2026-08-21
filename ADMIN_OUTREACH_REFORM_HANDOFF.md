@@ -1,5 +1,61 @@
 # Admin Outreach Reform Handoff
 
+## Latest Continuation Notes — 2026-08-21
+
+The user updated local `.env` with fresh outreach secrets:
+
+- `OUTREACH_ENCRYPTION_KEY_ACTIVE_VERSION=1`
+- `OUTREACH_ENCRYPTION_KEY_V1=<new fresh V1 key>`
+- `OUTREACH_BLIND_INDEX_KEY=<new dedicated blind-index key>`
+
+Important decisions:
+
+- Do not rotate to V2. The user wants a fresh key but wants to stay on active version `1`.
+- Do not use `OUTREACH_AUDIT_SALT` as the blind-index fallback for the reset/reingestion path.
+- The user wants a full outreach-data reset: delete all current outreach rows and reingest from the workbook using the fresh V1 encryption key and dedicated `OUTREACH_BLIND_INDEX_KEY`.
+- Because the V1 key changed, old encrypted rows should be treated as disposable. Do not rely on decrypting old outreach rows after the env change.
+
+Required sequencing for the next session:
+
+1. Implement code/schema changes first.
+2. Confirm `.env` contains `OUTREACH_ENCRYPTION_KEY_ACTIVE_VERSION=1`, `OUTREACH_ENCRYPTION_KEY_V1`, `OUTREACH_BLIND_INDEX_KEY`, `ADMIN_DATABASE_URL`, and `ADMIN_DATABASE_SERVICE_ROLE_KEY` before destructive DB work.
+3. Apply the admin DB migration/reset.
+4. Ask for explicit confirmation immediately before deleting outreach data.
+5. Delete all `public.outreach_records` rows or recreate the table through migration/reset.
+6. Run `npm run outreach:import:dry-run`.
+7. Run `npm run outreach:import`.
+8. Verify admin UI can decrypt/read the reingested records.
+
+Pending requested implementation before reset/reingestion:
+
+- Encrypt `email_subject` and `email_body` at rest. Suggested columns: `email_subject_key_version`, `email_subject_nonce`, `email_subject_ciphertext`, `email_subject_auth_tag`, `email_body_key_version`, `email_body_nonce`, `email_body_ciphertext`, `email_body_auth_tag`. No blind index is needed for subject/body.
+- Update `src/backend/admin/infrastructure/crypto/outreachPayloadCipher.js`, `src/backend/admin/infrastructure/supabase/outreachRows.js`, `src/backend/admin/application/outreach/outreachCsv.js`, `scripts/import-outreach.js`, admin migrations, and backend tests for encrypted/decrypted subject/body.
+- Preserve formatted email drafts during import. Do not use the generic `clean()` that collapses all whitespace for `Email Draft`. Keep paragraph breaks, convert literal `\n` and `/n` into real newlines, normalize CRLF to LF, trim line ends, and keep paragraph spacing readable. Keep email subjects single-line.
+- Mailto formatting was already improved in the working tree: `src/frontend/admin/outreach.js` uses `encodeURIComponent()` instead of `URLSearchParams` so mail clients receive `%20` and `%0A`, not visible `+` characters.
+- Sent-record locking was partially implemented in the working tree: contact email is disabled for `contact_form`, status is disabled for persisted sent records, and the backend rejects status changes away from `sent`.
+- Still add frontend locks for `contact_method` and `date_sent` when the persisted record is sent.
+- Still add backend rejection for changing `contact_method` and `date_sent` when the persisted record is sent, while allowing unchanged values through because full-form saves may include unchanged fields.
+- Replace `window.confirm()` with a reusable UI package confirm dialog, likely `src/packages/ui/src/overlays/ConfirmDialog.jsx` plus Storybook story and index export. Use buttons `Don't mark as sent` and `Mark as sent`.
+
+Recent working-tree admin UI/API changes already completed and committed in the follow-up commit:
+
+- Added admin table filters: company search, `Date sent from`, and `Date sent to`.
+- Removed visible labels from filters while keeping `aria-label`.
+- Debounced company search.
+- Backend filters by decrypted company name and date range.
+- Sort indicators now show on sortable table columns.
+- Added `UiDatePicker` primitive.
+- Expanded Help card width.
+- Moved status pill beside the record detail title through `AdminRecordOverlay` `titleAccessory`.
+- Added send-email confirmation flow, currently using `window.confirm()` until the reusable UI dialog is added.
+- Fixed mailto encoding/newline normalization.
+- Added sent status lock backend tests.
+
+Verification run for the recent working tree before handoff update:
+
+- `npm run lint:app` passed.
+- `npm run test:backend` passed.
+
 ## Current Session Status — 2026-08-21
 
 The main reform work has been implemented in the working tree but not committed.

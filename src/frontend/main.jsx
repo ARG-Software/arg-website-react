@@ -94,10 +94,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     <Route path="/terms/" element={<TermsPage />} />
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/admin/" element={<AdminPage />} />
+                    <Route path="/admin/all" element={<AdminPage />} />
+                    <Route path="/admin/all/" element={<AdminPage />} />
                     <Route path="/admin/sent" element={<AdminPage />} />
                     <Route path="/admin/sent/" element={<AdminPage />} />
                     <Route path="/admin/not-sent" element={<AdminPage />} />
                     <Route path="/admin/not-sent/" element={<AdminPage />} />
+                    <Route path="/admin/help" element={<AdminPage />} />
+                    <Route path="/admin/help/" element={<AdminPage />} />
                     <Route path="/admin/settings" element={<AdminPage />} />
                     <Route path="/admin/settings/" element={<AdminPage />} />
                     <Route path="*" element={<NotFoundPage />} />

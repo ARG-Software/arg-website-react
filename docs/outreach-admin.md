@@ -136,23 +136,22 @@ Expand `/admin/` from the current single outreach management screen into a small
 
 Sent emails are records where `status === 'sent'`.
 
-Replies are records where `status === 'replied'`.
+Replies are sent records where `reply_obtained === true`.
 
-Not-sent emails are records where `status === 'draft' || status === 'ready'`.
+Not-sent emails are records where `status === 'not_sent'`.
 
-Exclude these statuses from the Not Sent page:
+The admin status model only supports:
 
 - `sent`
-- `replied`
-- `follow_up_needed`
-- `closed`
-- `not_relevant`
+- `not_sent`
 
 ### Target Routes
 
 - `/admin/` - Dashboard
+- `/admin/all/` - All emails
 - `/admin/sent/` - All sent emails
-- `/admin/not-sent/` - Draft and ready emails
+- `/admin/not-sent/` - Not-sent emails
+- `/admin/help/` - CSV import help and admin usage notes
 - `/admin/settings/` - User profile/password settings
 
 Unauthenticated users should still see the login screen.
@@ -187,6 +186,18 @@ Suggested paginated response:
 ```
 
 Dashboard should not fetch all outreach records. It should fetch summary counts, chart data, and the current latest-sent page.
+
+### CSV Import Help
+
+The Help page should instruct admins to export CSV first when they need a template, keep the same headers, and import no more than 30 data rows per request.
+
+Required and normalized CSV behavior:
+
+- `company_name` is required.
+- `status` accepts `sent` and `not_sent`.
+- `contact_method` accepts `email` and `contact_form`.
+- `date_sent` and `follow_up_date` should use `YYYY-MM-DD`.
+- Duplicate normalized company names or contact emails are rejected through blind-index uniqueness checks.
 
 Suggested dashboard requests through the same API:
 

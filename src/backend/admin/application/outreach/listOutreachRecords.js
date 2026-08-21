@@ -5,15 +5,7 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 10;
 const MAX_PAGE_SIZE = 50;
 const RECENT_SENT_LIMIT = 30;
-const SORTABLE_FIELDS = new Set([
-  'company_name',
-  'contact_email',
-  'created_at',
-  'updated_at',
-  'date_sent',
-  'status',
-  'contact_method',
-]);
+const SORTABLE_FIELDS = new Set(['company_name', 'date_sent', 'follow_up_date']);
 
 export async function listOutreachRecords(query = {}, { outreachRepository, clock } = {}) {
   const records = await outreachRepository.list();
@@ -29,18 +21,19 @@ export async function listOutreachRecords(query = {}, { outreachRepository, cloc
 
   const pagination = getPagination(query);
   const filteredRecords = filterRecords(records, query, scope);
-  const sortedRecords = sortRecords(filteredRecords, query, scope);
+
+  const sortedRecords =
+    scope === 'recent_sent'
+      ? sortRecords(getLatestSentRecords(filteredRecords), query, scope)
+      : sortRecords(filteredRecords, query, scope);
 
   if (scope === 'export') {
     return { records: sortedRecords };
   }
 
-  const limitedRecords =
-    scope === 'recent_sent' ? sortedRecords.slice(0, RECENT_SENT_LIMIT) : sortedRecords;
-
   return {
-    records: getPageRecords(limitedRecords, pagination),
-    pagination: createPagination(limitedRecords.length, pagination),
+    records: getPageRecords(sortedRecords, pagination),
+    pagination: createPagination(sortedRecords.length, pagination),
   };
 }
 
@@ -69,15 +62,17 @@ function createSummary(records) {
 
 function filterRecords(records, query, scope) {
   const status = getRequestedStatus(query, scope);
-  const search = String(query.search || '')
+  const companyName = String(query.companyName || '')
     .trim()
     .toLowerCase();
+  const dateRange = getDateSentRange(query);
 
   return records.filter(record => {
     if (status && record.payload?.status !== status) return false;
-    if (!search) return true;
+    if (companyName && !getCompanySearchText(record).includes(companyName)) return false;
+    if (!isDateSentInRange(record, dateRange)) return false;
 
-    return getSearchText(record).includes(search);
+    return true;
   });
 }
 
@@ -94,22 +89,32 @@ function getRequestedStatus(query, scope) {
   return status;
 }
 
-function getSearchText(record) {
-  const payload = record.payload || {};
+function getCompanySearchText(record) {
+  return String(record.payload?.company_name || '').toLowerCase();
+}
 
-  return [
-    payload.company_name,
-    payload.website,
-    payload.contact_email,
-    payload.contact_info,
-    payload.contact_method,
-    payload.fit_reason,
-    payload.email_subject,
-    payload.notes,
-  ]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
+function getDateSentRange(query) {
+  return {
+    from: getDateFilter(query.dateSentFrom),
+    to: getDateFilter(query.dateSentTo),
+  };
+}
+
+function getDateFilter(value) {
+  const date = String(value || '').trim();
+
+  return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '';
+}
+
+function isDateSentInRange(record, { from, to }) {
+  if (!from && !to) return true;
+
+  const dateSent = getDateFilter(record.payload?.date_sent);
+  if (!dateSent) return false;
+  if (from && dateSent < from) return false;
+  if (to && dateSent > to) return false;
+
+  return true;
 }
 
 function sortRecords(records, query, scope) {
@@ -126,13 +131,21 @@ function sortRecords(records, query, scope) {
   });
 }
 
+function getLatestSentRecords(records) {
+  return [...records]
+    .sort((first, second) => getSortValue(second, 'date_sent') - getSortValue(first, 'date_sent'))
+    .slice(0, RECENT_SENT_LIMIT);
+}
+
 function getSort(query, scope) {
-  if (scope === 'recent_sent') {
+  if (scope === 'recent_sent' && !query.sortBy) {
     return { field: 'date_sent', direction: 'desc' };
   }
 
-  const field = String(query.sortBy || 'created_at');
-  const direction = String(query.sortDirection || 'desc').toLowerCase() === 'asc' ? 'asc' : 'desc';
+  const field = String(query.sortBy || 'company_name');
+  const defaultDirection = field === 'company_name' ? 'asc' : 'desc';
+  const direction =
+    String(query.sortDirection || defaultDirection).toLowerCase() === 'asc' ? 'asc' : 'desc';
 
   if (!SORTABLE_FIELDS.has(field)) {
     throw createAdminError(400, 'invalid_sort', 'Unsupported sort field');
@@ -142,9 +155,8 @@ function getSort(query, scope) {
 }
 
 function getSortValue(record, field) {
-  if (field === 'created_at') return Date.parse(record.createdAt || '') || 0;
-  if (field === 'updated_at') return Date.parse(record.updatedAt || '') || 0;
   if (field === 'date_sent') return Date.parse(record.payload?.date_sent || '') || 0;
+  if (field === 'follow_up_date') return Date.parse(record.payload?.follow_up_date || '') || 0;
 
   return String(record.payload?.[field] || '').toLowerCase();
 }

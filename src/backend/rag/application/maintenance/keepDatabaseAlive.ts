@@ -1,9 +1,7 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { keepDatabaseAlive as keepSharedDatabaseAlive } from '../../../shared/maintenance/keepDatabaseAlive.js';
 
-export async function keepDatabaseAlive({ supabase }: { supabase: SupabaseClient }) {
-  const { error } = await supabase.from('rag_sources').select('id').limit(1);
+type RagKeepAliveDependencies = Omit<Parameters<typeof keepSharedDatabaseAlive>[0], 'tableName'>;
 
-  if (error) {
-    throw error;
-  }
+export async function keepDatabaseAlive(dependencies: RagKeepAliveDependencies) {
+  await keepSharedDatabaseAlive({ ...dependencies, tableName: 'rag_sources' });
 }

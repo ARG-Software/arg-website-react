@@ -17,6 +17,15 @@ export async function updateOutreachRecord(input, { auditRepository, clock, outr
   }
 
   const sanitizedChanges = sanitizeChanges(input.changes);
+
+  if (
+    record.payload.status === 'sent' &&
+    sanitizedChanges.status &&
+    sanitizedChanges.status !== record.payload.status
+  ) {
+    throw createAdminError(400, 'sent_status_locked', 'Sent outreach records cannot change status');
+  }
+
   const nextPayload = {
     ...record.payload,
     ...sanitizedChanges,

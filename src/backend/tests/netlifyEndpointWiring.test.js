@@ -33,6 +33,10 @@ test('function files instantiate backend API modules', () => {
   assert.match(readNetlifyFile('functions/security-verify.js'), /createSecurityVerifyApi/);
   assert.match(readNetlifyFile('functions/admin-login.js'), /createAdminLoginApi/);
   assert.match(readNetlifyFile('functions/admin-outreach.js'), /createAdminOutreachApi/);
+  assert.match(
+    readNetlifyFile('functions/maintenance-keep-database-alive.js'),
+    /createKeepDatabaseAliveApi/
+  );
   assert.match(readNetlifyFile('functions/assistant-ask.js'), /createAssistantAskApi/);
 });
 

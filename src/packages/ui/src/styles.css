@@ -191,17 +191,24 @@
 }
 
 .admin-nav {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
 .admin-nav a {
+  align-items: center;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 999px;
+  box-sizing: border-box;
   color: rgba(255, 255, 255, 0.72);
+  display: inline-flex;
   font-size: var(--type-ui);
   font-weight: 500;
+  justify-content: center;
+  line-height: 1;
+  min-height: 2.75rem;
   padding: 0.65rem 1.125rem;
   text-decoration: none;
   transition:
@@ -235,6 +242,16 @@
   gap: 1rem;
   justify-content: space-between;
   margin-bottom: 1.25rem;
+}
+
+.admin-data-table__intro {
+  min-width: 0;
+}
+
+.admin-data-table__filters {
+  margin-left: auto;
+  max-width: 48rem;
+  width: 100%;
 }
 
 .admin-metric-chart h2,
@@ -291,6 +308,18 @@
   padding: 2rem;
 }
 
+.admin-data-table__empty {
+  align-items: center;
+  background: rgba(12, 0, 46, 0.04);
+  border: 1px dashed rgba(12, 0, 46, 0.14);
+  border-radius: 1rem;
+  display: flex;
+  justify-content: center;
+  min-height: 8rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
 .admin-data-table table {
   border-collapse: collapse;
   min-width: 48rem;
@@ -313,16 +342,25 @@
 }
 
 .admin-data-table__sort {
+  align-items: center;
   background: transparent;
   border: 0;
   color: inherit;
   cursor: pointer;
+  display: inline-flex;
   font: inherit;
   font-weight: inherit;
+  gap: 0.3rem;
   letter-spacing: inherit;
   padding: 0;
   text-align: left;
   text-transform: inherit;
+}
+
+.admin-data-table__sort-indicator {
+  color: currentColor;
+  min-width: 0.8em;
+  opacity: 0.62;
 }
 
 .admin-data-table td {
@@ -416,6 +454,17 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.65rem;
+}
+
+.admin-record-overlay__title-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.admin-record-overlay__title-row h2 {
+  margin-bottom: 0;
 }
 
 /* Light theme overrides for admin cards */
@@ -572,6 +621,11 @@
   .admin-data-table__header,
   .admin-record-overlay__header {
     flex-direction: column;
+  }
+
+  .admin-data-table__filters {
+    margin-left: 0;
+    max-width: none;
   }
 
   .admin-record-overlay__panel.ui-card {

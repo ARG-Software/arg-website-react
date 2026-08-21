@@ -20,6 +20,7 @@ import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
 import { Logo } from '@components/icons/Logo.jsx';
 import { UiButton } from '@ui/primitives/UiButton.jsx';
 import { UiCard } from '@ui/primitives/UiCard.jsx';
+import { UiDatePicker } from '@ui/primitives/UiDatePicker.jsx';
 import { UiField, UiSelect, UiTextarea } from '@ui/primitives/UiField.jsx';
 import { UiSpinner } from '@ui/primitives/UiSpinner.jsx';
 import { UiStat } from '@ui/primitives/UiStat.jsx';
@@ -59,8 +60,10 @@ const EMPTY_FORM = {
 
 const ADMIN_ROUTES = {
   dashboard: '/admin/',
+  all: '/admin/all/',
   sent: '/admin/sent/',
   notSent: '/admin/not-sent/',
+  help: '/admin/help/',
   settings: '/admin/settings/',
 };
 
@@ -73,6 +76,13 @@ const CHART_RANGES = [
 
 const PAGE_SIZE = 10;
 const ADMIN_INACTIVITY_TIMEOUT_MS = 60 * 60 * 1000;
+const SEARCH_DEBOUNCE_MS = 350;
+
+const EMPTY_TABLE_FILTERS = {
+  companyName: '',
+  dateSentFrom: '',
+  dateSentTo: '',
+};
 
 export default function AdminPage() {
   const location = useLocation();
@@ -219,10 +229,38 @@ function AdminWorkspace({
 }) {
   const queryFetching = useIsFetching({ queryKey: ['outreach'] });
   const queryMutating = useIsMutating({ mutationKey: ['outreach'] });
+  const [importStatus, setImportStatus] = useState('');
   const pageLoading = queryFetching > 0 || queryMutating > 0;
 
   function handleRefresh() {
     adminQueryClient.invalidateQueries({ queryKey: ['outreach'] });
+  }
+
+  async function handleExport() {
+    const csv = await exportOutreachCsv(session.access_token);
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'outreach-records.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleImport(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setImportStatus('Importing...');
+
+    try {
+      const result = await importOutreachCsv(session.access_token, await file.text());
+      setImportStatus(`Imported ${result.imported} records.`);
+      adminQueryClient.invalidateQueries({ queryKey: ['outreach'] });
+    } catch (error) {
+      setImportStatus(error.message);
+    } finally {
+      event.target.value = '';
+    }
   }
 
   return (
@@ -231,6 +269,7 @@ function AdminWorkspace({
         <AdminProfileMenu
           items={[
             { label: 'Settings', onClick: () => navigate(ADMIN_ROUTES.settings) },
+            { label: 'Help', onClick: () => navigate(ADMIN_ROUTES.help) },
             { label: 'Log out', onClick: onSignOut },
           ]}
         />
@@ -240,16 +279,32 @@ function AdminWorkspace({
           items={getAdminNavItems(pathname)}
           onNavigate={navigate}
           trailing={
-            view !== 'settings' && (
-              <button
-                type="button"
-                className="admin-nav__refresh"
-                onClick={handleRefresh}
-                disabled={pageLoading}
-                aria-label="Refresh current tab"
-              >
-                ↻ Refresh
-              </button>
+            view !== 'settings' &&
+            view !== 'help' && (
+              <div className="admin-nav-actions">
+                <button
+                  type="button"
+                  className="admin-nav__control"
+                  onClick={handleExport}
+                  disabled={pageLoading}
+                >
+                  Export CSV
+                </button>
+                <label className="admin-csv-import admin-csv-import--nav admin-nav__control">
+                  <span>Import CSV</span>
+                  <input type="file" accept=".csv,text/csv" onChange={handleImport} />
+                </label>
+                <button
+                  type="button"
+                  className="admin-nav__refresh admin-nav__control"
+                  onClick={handleRefresh}
+                  disabled={pageLoading}
+                  aria-label="Refresh current tab"
+                >
+                  ↻ Refresh
+                </button>
+                {importStatus && <span className="admin-save-status">{importStatus}</span>}
+              </div>
             )
           }
         />
@@ -259,11 +314,19 @@ function AdminWorkspace({
       {view === 'dashboard' && (
         <DashboardView accessToken={session.access_token} onSelectRecord={onSelectRecord} />
       )}
+      {view === 'all' && (
+        <RecordsView
+          accessToken={session.access_token}
+          title="All emails"
+          query={{}}
+          emptyMessage="No outreach records found."
+          onSelectRecord={onSelectRecord}
+        />
+      )}
       {view === 'sent' && (
         <RecordsView
           accessToken={session.access_token}
           title="Sent emails"
-          description="All outreach records with sent status."
           query={{ status: 'sent' }}
           emptyMessage="No sent outreach records found."
           onSelectRecord={onSelectRecord}
@@ -273,13 +336,13 @@ function AdminWorkspace({
         <RecordsView
           accessToken={session.access_token}
           title="Not sent emails"
-          description="Outreach records that have not been sent yet."
           query={{ status: 'not_sent' }}
           emptyMessage="No not-sent outreach records found."
           onSelectRecord={onSelectRecord}
         />
       )}
       {view === 'settings' && <SettingsView supabase={supabase} session={session} />}
+      {view === 'help' && <HelpView />}
 
       <OutreachEditor
         key={selectedRecord?.id ?? 'closed'}
@@ -380,6 +443,10 @@ function AdminLogin({ supabase }) {
 function DashboardView({ accessToken, onSelectRecord }) {
   const [chartRange, setChartRange] = useState('30d');
   const [tablePage, setTablePage] = useState(1);
+  const [tableSort, setTableSort] = useState({ sortBy: 'date_sent', sortDirection: 'desc' });
+  const [tableFilters, setTableFilters] = useState(EMPTY_TABLE_FILTERS);
+  const debouncedCompanyName = useDebouncedValue(tableFilters.companyName, SEARCH_DEBOUNCE_MS);
+  const tableQueryFilters = createTableQueryFilters(tableFilters, debouncedCompanyName);
 
   const summaryQuery = useQuery({
     queryKey: ['outreach', 'summary'],
@@ -392,10 +459,12 @@ function DashboardView({ accessToken, onSelectRecord }) {
   });
 
   const tableQuery = useQuery({
-    queryKey: ['outreach', 'records', 'recent_sent', tablePage],
+    queryKey: ['outreach', 'records', 'recent_sent', tableSort, tableQueryFilters, tablePage],
     queryFn: () =>
       fetchOutreachRecords(accessToken, {
         scope: 'recent_sent',
+        ...tableSort,
+        ...tableQueryFilters,
         page: tablePage,
         pageSize: PAGE_SIZE,
       }),
@@ -403,6 +472,16 @@ function DashboardView({ accessToken, onSelectRecord }) {
   });
 
   const summary = summaryQuery.data?.summary;
+
+  function handleTableSortChange(sortBy) {
+    setTablePage(1);
+    setTableSort(current => createNextTableSort(current, sortBy));
+  }
+
+  function handleTableFilterChange(field, value) {
+    setTablePage(1);
+    setTableFilters(current => ({ ...current, [field]: value }));
+  }
 
   return (
     <div className="admin-content-grid">
@@ -417,30 +496,10 @@ function DashboardView({ accessToken, onSelectRecord }) {
       ) : (
         <>
           <div className="admin-stats-grid">
-            <UiStat
-              label="Total"
-              value={summary?.total ?? '...'}
-              detail="Encrypted records"
-              tone="light"
-            />
-            <UiStat
-              label="Not sent"
-              value={summary?.notSent ?? '...'}
-              detail="Not sent yet"
-              tone="light"
-            />
-            <UiStat
-              label="Sent"
-              value={summary?.sent ?? '...'}
-              detail="Status is sent"
-              tone="light"
-            />
-            <UiStat
-              label="Replies"
-              value={summary?.repliesObtained ?? '...'}
-              detail="Replies obtained"
-              tone="light"
-            />
+            <UiStat label="Total" value={summary?.total ?? '...'} tone="light" />
+            <UiStat label="Not sent" value={summary?.notSent ?? '...'} tone="light" />
+            <UiStat label="Sent" value={summary?.sent ?? '...'} tone="light" />
+            <UiStat label="Replies" value={summary?.repliesObtained ?? '...'} tone="light" />
           </div>
           <AdminMetricChart
             title="Sent and replies"
@@ -459,9 +518,13 @@ function DashboardView({ accessToken, onSelectRecord }) {
       ) : (
         <AdminDataTable
           title="Latest sent"
-          description="Latest 30 sent records, paginated 10 per page."
+          filters={
+            <AdminTableFilters filters={tableFilters} onFilterChange={handleTableFilterChange} />
+          }
           columns={getRecordColumns()}
           rows={tableQuery.data?.records || []}
+          sort={tableSort}
+          onSortChange={handleTableSortChange}
           pagination={{
             ...(tableQuery.data?.pagination ?? createEmptyTableData().pagination),
             onPageChange: setTablePage,
@@ -475,72 +538,45 @@ function DashboardView({ accessToken, onSelectRecord }) {
   );
 }
 
-function RecordsView({ accessToken, title, description, query, emptyMessage, onSelectRecord }) {
+function RecordsView({ accessToken, title, query, emptyMessage, onSelectRecord }) {
   const [page, setPage] = useState(1);
-  const [sort, setSort] = useState({ sortBy: 'created_at', sortDirection: 'desc' });
-  const [importStatus, setImportStatus] = useState('');
-  const viewKey = JSON.stringify({ query, sort });
+  const [sort, setSort] = useState({ sortBy: 'company_name', sortDirection: 'asc' });
+  const [filters, setFilters] = useState(EMPTY_TABLE_FILTERS);
+  const debouncedCompanyName = useDebouncedValue(filters.companyName, SEARCH_DEBOUNCE_MS);
+  const queryFilters = createTableQueryFilters(filters, debouncedCompanyName);
+  const viewKey = JSON.stringify({ query, sort, queryFilters });
 
   const recordsQuery = useQuery({
     queryKey: ['outreach', 'records', viewKey, page],
     queryFn: () =>
-      fetchOutreachRecords(accessToken, { ...query, ...sort, page, pageSize: PAGE_SIZE }),
+      fetchOutreachRecords(accessToken, {
+        ...query,
+        ...sort,
+        ...queryFilters,
+        page,
+        pageSize: PAGE_SIZE,
+      }),
     placeholderData: keepPreviousData,
   });
 
   function handleSortChange(sortBy) {
     setPage(1);
-    setSort(current => ({
-      sortBy,
-      sortDirection: current.sortBy === sortBy && current.sortDirection === 'asc' ? 'desc' : 'asc',
-    }));
+    setSort(current => createNextTableSort(current, sortBy));
   }
 
-  async function handleExport() {
-    const csv = await exportOutreachCsv(accessToken);
-    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'outreach-records.csv';
-    link.click();
-    URL.revokeObjectURL(url);
-  }
-
-  async function handleImport(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setImportStatus('Importing...');
-
-    try {
-      const result = await importOutreachCsv(accessToken, await file.text());
-      setImportStatus(`Imported ${result.imported} records.`);
-      adminQueryClient.invalidateQueries({ queryKey: ['outreach'] });
-    } catch (error) {
-      setImportStatus(error.message);
-    } finally {
-      event.target.value = '';
-    }
+  function handleFilterChange(field, value) {
+    setPage(1);
+    setFilters(current => ({ ...current, [field]: value }));
   }
 
   return (
     <div className="admin-content-grid">
-      <div className="admin-csv-actions">
-        <UiButton type="button" onClick={handleExport}>
-          Export CSV
-        </UiButton>
-        <label className="admin-csv-import">
-          <span>Import CSV</span>
-          <input type="file" accept=".csv,text/csv" onChange={handleImport} />
-        </label>
-        {importStatus && <span className="admin-save-status">{importStatus}</span>}
-      </div>
       {recordsQuery.isError ? (
         <ErrorCard error={recordsQuery.error} onRetry={() => recordsQuery.refetch()} />
       ) : (
         <AdminDataTable
           title={title}
-          description={description}
+          filters={<AdminTableFilters filters={filters} onFilterChange={handleFilterChange} />}
           columns={getRecordColumns()}
           rows={recordsQuery.data?.records || []}
           sort={sort}
@@ -554,6 +590,33 @@ function RecordsView({ accessToken, title, description, query, emptyMessage, onS
           tone="light"
         />
       )}
+    </div>
+  );
+}
+
+function AdminTableFilters({ filters, onFilterChange }) {
+  return (
+    <div className="admin-table-filters">
+      <UiField
+        id="admin-company-search"
+        aria-label="Search by company name"
+        type="search"
+        placeholder="Search company name"
+        value={filters.companyName}
+        onChange={event => onFilterChange('companyName', event.target.value)}
+      />
+      <UiDatePicker
+        id="admin-date-sent-from"
+        aria-label="Date sent from"
+        value={filters.dateSentFrom}
+        onChange={event => onFilterChange('dateSentFrom', event.target.value)}
+      />
+      <UiDatePicker
+        id="admin-date-sent-to"
+        aria-label="Date sent to"
+        value={filters.dateSentTo}
+        onChange={event => onFilterChange('dateSentTo', event.target.value)}
+      />
     </div>
   );
 }
@@ -651,6 +714,44 @@ function SettingsView({ supabase, session }) {
   );
 }
 
+function HelpView() {
+  return (
+    <UiCard className="admin-help-card" tone="light">
+      <h1>Admin help</h1>
+      <section className="admin-help-section">
+        <h2>Import outreach CSV</h2>
+        <p>
+          Use Export CSV first when you need a template. Keep the same column names, edit the rows
+          you want to add, then import a CSV file from the admin navigation.
+        </p>
+        <ol>
+          <li>Prepare a CSV with no more than 30 data rows per import.</li>
+          <li>Keep `company_name` filled in for every row.</li>
+          <li>Use `sent` or `not_sent` for `status`.</li>
+          <li>Use `email` or `contact_form` for `contact_method`.</li>
+          <li>Use `YYYY-MM-DD` for `date_sent` and `follow_up_date`.</li>
+          <li>Set `reply_obtained` to `true` only when a sent record already has a reply.</li>
+        </ol>
+      </section>
+      <section className="admin-help-section">
+        <h2>Duplicate checks</h2>
+        <p>
+          Imports reject rows when the normalized company name or contact email already exists.
+          Company names and contact emails stay encrypted at rest, and the duplicate check uses
+          blind indexes.
+        </p>
+      </section>
+      <section className="admin-help-section">
+        <h2>After importing</h2>
+        <p>
+          Refresh the admin view if needed, then review imported rows in All emails before sending
+          or editing outreach details.
+        </p>
+      </section>
+    </UiCard>
+  );
+}
+
 function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
   const [form, setForm] = useState(() => (record ? { ...EMPTY_FORM, ...record } : EMPTY_FORM));
   const [status, setStatus] = useState('');
@@ -659,6 +760,7 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
     mutationKey: ['outreach'],
     mutationFn: changes => updateOutreachRecord(accessToken, record.id, changes),
     onSuccess: data => {
+      setForm(current => ({ ...current, ...data.record }));
       onRecordUpdated(data.record);
       adminQueryClient.invalidateQueries({ queryKey: ['outreach', 'records'] });
     },
@@ -667,6 +769,8 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
   if (!record) return null;
 
   const isSaving = saveMutation.isPending;
+  const isSentRecord = record.status === 'sent';
+  const isContactForm = form.contact_method === 'contact_form';
 
   async function saveChanges(changes = form) {
     setStatus('');
@@ -682,14 +786,21 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
     setForm(current => ({ ...current, [field]: value }));
   }
 
-  function openEmailClient() {
+  async function openEmailClient() {
     window.location.href = buildMailtoUrl(form);
+
+    if (window.confirm('Do you want to mark this email as sent?')) {
+      await saveChanges({ status: 'sent' });
+    }
   }
 
   return (
     <AdminRecordOverlay
       isOpen
       title={form.company_name || 'Untitled company'}
+      titleAccessory={
+        <UiStatusPill status={form.status}>{getStatusLabel(form.status)}</UiStatusPill>
+      }
       onClose={onClose}
       actions={
         <>
@@ -705,9 +816,6 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
         </>
       }
     >
-      <div className="admin-detail-status">
-        <UiStatusPill status={form.status}>{getStatusLabel(form.status)}</UiStatusPill>
-      </div>
       <form
         id="outreach-edit-form"
         className="admin-detail-form"
@@ -733,6 +841,7 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
           label="Contact email"
           type="email"
           value={form.contact_email}
+          disabled={isContactForm}
           onChange={event => updateField('contact_email', event.target.value)}
         />
         <UiSelect
@@ -748,6 +857,7 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
           id="status"
           label="Status"
           value={form.status}
+          disabled={isSentRecord}
           onChange={event => updateField('status', event.target.value)}
         >
           {OUTREACH_STATUSES.map(item => (
@@ -824,14 +934,12 @@ function getRecordColumns() {
     {
       key: 'contact_email',
       label: 'Contact',
-      sortable: true,
       render: record =>
         record.contact_email || record.contact_info || record.website || 'No contact',
     },
     {
       key: 'status',
       label: 'Status',
-      sortable: true,
       render: record => (
         <UiStatusPill status={record.status}>{getStatusLabel(record.status)}</UiStatusPill>
       ),
@@ -842,8 +950,40 @@ function getRecordColumns() {
       sortable: true,
       render: record => record.date_sent || '-',
     },
-    { key: 'follow_up_date', label: 'Follow up', render: record => record.follow_up_date || '-' },
+    {
+      key: 'follow_up_date',
+      label: 'Follow up',
+      sortable: true,
+      render: record => record.follow_up_date || '-',
+    },
   ];
+}
+
+function createNextTableSort(current, sortBy) {
+  return {
+    sortBy,
+    sortDirection: current.sortBy === sortBy && current.sortDirection === 'asc' ? 'desc' : 'asc',
+  };
+}
+
+function createTableQueryFilters(filters, companyName) {
+  return {
+    companyName,
+    dateSentFrom: filters.dateSentFrom,
+    dateSentTo: filters.dateSentTo,
+  };
+}
+
+function useDebouncedValue(value, delayMs) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => setDebouncedValue(value), delayMs);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [delayMs, value]);
+
+  return debouncedValue;
 }
 
 function createEmptyTableData() {
@@ -859,8 +999,10 @@ function createEmptyTableData() {
 }
 
 function getAdminView(pathname) {
+  if (pathname.startsWith('/admin/all')) return 'all';
   if (pathname.startsWith('/admin/sent')) return 'sent';
   if (pathname.startsWith('/admin/not-sent')) return 'notSent';
+  if (pathname.startsWith('/admin/help')) return 'help';
   if (pathname.startsWith('/admin/settings')) return 'settings';
   return 'dashboard';
 }
@@ -878,5 +1020,6 @@ function getAdminNavItems(pathname) {
       label: 'Not sent',
       isActive: getAdminView(pathname) === 'notSent',
     },
+    { href: ADMIN_ROUTES.all, label: 'All', isActive: getAdminView(pathname) === 'all' },
   ];
 }

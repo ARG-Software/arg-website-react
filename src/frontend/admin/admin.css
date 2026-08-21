@@ -68,8 +68,55 @@
 .admin-list-card,
 .admin-detail-card,
 .admin-login-card,
-.admin-settings-card {
+.admin-settings-card,
+.admin-help-card {
   padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.admin-help-card {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.admin-table-filters {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(14rem, 1fr) minmax(10rem, 0.7fr) minmax(10rem, 0.7fr);
+}
+
+.admin-help-card h1,
+.admin-help-card h2,
+.admin-help-card p {
+  margin: 0;
+}
+
+.admin-help-card h1 {
+  color: #0c002e;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  line-height: 1;
+}
+
+.admin-help-card h2 {
+  color: #0c002e;
+  font-size: 1.2rem;
+}
+
+.admin-help-card p,
+.admin-help-card li {
+  color: rgba(12, 0, 46, 0.68);
+  line-height: 1.6;
+}
+
+.admin-help-card ol {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.admin-help-section {
+  display: grid;
+  gap: 0.65rem;
 }
 
 .admin-login-page {
@@ -145,12 +192,15 @@
   align-items: center;
   border: 2px solid #fff;
   border-radius: 999px;
+  box-sizing: border-box;
   color: #fff;
   cursor: pointer;
   display: inline-flex;
   font: inherit;
   font-size: 0.875rem;
   font-weight: 500;
+  justify-content: center;
+  line-height: 1;
   min-height: 2.75rem;
   padding: 0.75rem 1.25rem;
 }
@@ -160,6 +210,10 @@
   opacity: 0;
   position: absolute;
   width: 1px;
+}
+
+.admin-csv-import--nav {
+  padding: 0.65rem 1.125rem;
 }
 
 .admin-checkbox-field {
@@ -296,6 +350,7 @@
 
   .admin-stats-grid,
   .admin-toolbar,
+  .admin-table-filters,
   .admin-detail-form {
     grid-template-columns: 1fr;
   }
@@ -315,38 +370,62 @@
   margin-left: auto;
 }
 
-.admin-nav__refresh {
+.admin-nav-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: flex-end;
+}
+
+.admin-nav__control {
   align-items: center;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 999px;
-  color: #fff;
+  box-sizing: border-box;
+  color: rgba(255, 255, 255, 0.72);
   cursor: pointer;
   display: inline-flex;
   font: inherit;
-  gap: 0.4rem;
-  padding: 0.4rem 0.9rem;
+  font-size: var(--type-ui);
+  font-weight: 500;
+  justify-content: center;
+  line-height: 1;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.125rem;
+  text-decoration: none;
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
     color 0.2s ease;
 }
 
-.admin-nav__refresh:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.4);
+.admin-nav__control:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #fff;
 }
 
-.admin-nav__refresh:disabled {
+.admin-nav__control:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
+.admin-nav__refresh {
+  gap: 0.4rem;
+}
+
 .admin-error-card {
   align-items: flex-start;
+  align-self: start;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  max-width: 42rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  width: 100%;
 }
 
 .admin-error-card .admin-error {

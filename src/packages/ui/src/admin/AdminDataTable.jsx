@@ -5,6 +5,7 @@ import { UiSpinner } from '../primitives/UiSpinner.jsx';
 export function AdminDataTable({
   title,
   description,
+  filters,
   columns,
   rows,
   getRowKey = row => row.id,
@@ -18,10 +19,15 @@ export function AdminDataTable({
 }) {
   return (
     <UiCard className="admin-data-table" tone={tone}>
-      {(title || description) && (
+      {(title || description || filters) && (
         <div className="admin-data-table__header">
-          {title && <h2>{title}</h2>}
-          {description && <p>{description}</p>}
+          {(title || description) && (
+            <div className="admin-data-table__intro">
+              {title && <h2>{title}</h2>}
+              {description && <p>{description}</p>}
+            </div>
+          )}
+          {filters && <div className="admin-data-table__filters">{filters}</div>}
         </div>
       )}
 
@@ -36,26 +42,29 @@ export function AdminDataTable({
           <table>
             <thead>
               <tr>
-                {columns.map(column => (
-                  <th key={column.key} scope="col">
-                    {column.sortable ? (
-                      <button
-                        type="button"
-                        className="admin-data-table__sort"
-                        onClick={() => onSortChange?.(column.key)}
-                      >
-                        {column.label}
-                        {sort?.sortBy === column.key && (
-                          <span aria-hidden="true">
-                            {sort.sortDirection === 'asc' ? ' ↑' : ' ↓'}
+                {columns.map(column => {
+                  const isSorted = sort?.sortBy === column.key;
+                  const sortDirection = isSorted ? sort.sortDirection : undefined;
+
+                  return (
+                    <th key={column.key} scope="col" aria-sort={getAriaSort(column, sortDirection)}>
+                      {column.sortable ? (
+                        <button
+                          type="button"
+                          className="admin-data-table__sort"
+                          onClick={() => onSortChange?.(column.key)}
+                        >
+                          {column.label}
+                          <span className="admin-data-table__sort-indicator" aria-hidden="true">
+                            {getSortIndicator(sortDirection)}
                           </span>
-                        )}
-                      </button>
-                    ) : (
-                      column.label
-                    )}
-                  </th>
-                ))}
+                        </button>
+                      ) : (
+                        column.label
+                      )}
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
@@ -92,4 +101,19 @@ export function AdminDataTable({
       )}
     </UiCard>
   );
+}
+
+function getSortIndicator(sortDirection) {
+  if (sortDirection === 'asc') return '↑';
+  if (sortDirection === 'desc') return '↓';
+
+  return '↕';
+}
+
+function getAriaSort(column, sortDirection) {
+  if (!column.sortable) return undefined;
+  if (sortDirection === 'asc') return 'ascending';
+  if (sortDirection === 'desc') return 'descending';
+
+  return 'none';
 }
