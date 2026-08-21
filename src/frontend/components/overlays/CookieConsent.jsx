@@ -1,5 +1,4 @@
 import { useContext, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { trackConsent } from '../../utils/analytics';
 import { STORAGE_KEY } from '@constants/ui';
 import { LoadingContext } from '../../providers/LoadingProvider';
@@ -22,10 +21,8 @@ function getStoredConsent() {
 
 export function CookieConsent() {
   const [consent, setConsent] = useState(getStoredConsent);
-  const location = useLocation();
   const loadingDone = useContext(LoadingContext);
-  const isHomepage = location.pathname === '/';
-  const shouldShow = isHomepage && loadingDone && consent !== 'granted' && consent !== 'denied';
+  const shouldShow = loadingDone && consent !== 'granted' && consent !== 'denied';
 
   function handleAccept(type) {
     localStorage.setItem(STORAGE_KEY, 'granted');
