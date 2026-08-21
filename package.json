@@ -45,6 +45,7 @@
     "rag:ask": "tsx src/backend/rag/scripts/ask.ts",
     "rag:test": "tsx --test --test-concurrency=1 \"src/backend/rag/tests/**/*.test.ts\"",
     "test:backend": "node --test --test-concurrency=1 \"src/backend/**/*.test.js\"",
+    "test:netlify": "node --test --test-concurrency=1 \"netlify/**/*.test.js\"",
     "database:admin:push": "node supabase/scripts.js admin push",
     "database:rag:push": "node supabase/scripts.js rag push"
   },

@@ -90,8 +90,8 @@ npm run preview      # Preview production build
 | `npm run rag:embeddings:rebuild:fallback` | Rebuild fallback embedding vectors |
 | `npm run rag:ask:test` | Ask Gaspar from the CLI using the same app wiring |
 | `npm run rag:test` | Run the RAG test and eval suite |
-| `npm run test:backend` | Run backend JS API and Netlify adapter wiring tests |
-| `npm run test:netlify` | Compatibility alias for `npm run test:backend` |
+| `npm run test:backend` | Run backend JS API tests |
+| `npm run test:netlify` | Run Netlify function and redirect wiring tests |
 | `npm run typecheck:rag` | Type-check the TypeScript RAG code |
 | `npm run database:rag:push` | Optional CLI push for only RAG migrations |
 | `npm run database:admin:push` | Optional CLI push for only admin/outreach migrations |

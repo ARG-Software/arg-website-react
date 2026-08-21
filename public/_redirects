@@ -13,6 +13,17 @@
 
 /index.html / 301!
 
+# Netlify Functions exposed behind stable public API routes
+
+/api/assistant/challenge /.netlify/functions/assistant-challenge 200
+/api/assistant/ask       /.netlify/functions/assistant-ask       200
+/api/assistant/ui-copy   /.netlify/functions/assistant-ui-copy   200
+/api/security/challenge  /.netlify/functions/security-challenge  200
+/api/security/verify     /.netlify/functions/security-verify     200
+/api/admin/login         /.netlify/functions/admin-login         200
+/api/admin/outreach      /.netlify/functions/admin-outreach      200
+/mcp                     /.netlify/functions/mcp                 200
+
 # Trailing-slash canonicalization — fixes Ahrefs "3XX in sitemap" errors
 /partners         /partners/             301
 /careers          /careers/              301
