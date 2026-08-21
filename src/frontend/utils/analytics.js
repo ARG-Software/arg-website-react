@@ -2,12 +2,28 @@
    Analytics helpers — thin wrapper around gtag
    ============================================ */
 
+const ADMIN_PATH_PATTERN = /^\/admin(?:\/|$)/;
+
+function isAdminPath(path) {
+  return typeof path === 'string' && ADMIN_PATH_PATTERN.test(path);
+}
+
+function getCurrentPath() {
+  if (typeof window === 'undefined') return '';
+  return window.location.pathname;
+}
+
+function shouldTrack(params) {
+  const eventPath = typeof params?.page_path === 'string' ? params.page_path : getCurrentPath();
+  return !isAdminPath(eventPath);
+}
+
 /**
  * Fire a GA4 event. Safe to call even when gtag hasn't loaded yet;
  * gtag queues the hit once the bootstrap script exists.
  */
 export function trackEvent(eventName, params = {}) {
-  if (typeof window.gtag === 'function') {
+  if (shouldTrack(params) && typeof window.gtag === 'function') {
     window.gtag('event', eventName, params);
   }
 }
