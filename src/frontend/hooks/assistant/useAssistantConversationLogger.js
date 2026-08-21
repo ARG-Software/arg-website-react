@@ -130,7 +130,7 @@ export function useAssistantConversationLogger({ messages, isOpen, language }) {
 }
 
 function createLoggableMessages(messages) {
-  return messages
+  const loggableMessages = messages
     .filter(message => message?.role && message?.content && !message.isLoading)
     .map(message => ({
       role: message.role,
@@ -144,6 +144,8 @@ function createLoggableMessages(messages) {
         : {}),
       ...(message.actions?.length ? { actions: simplifyActions(message.actions) } : {}),
     }));
+
+  return loggableMessages.some(message => message.role === 'user') ? loggableMessages : [];
 }
 
 function simplifyReferences(items) {

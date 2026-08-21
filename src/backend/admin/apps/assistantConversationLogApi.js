@@ -1,4 +1,7 @@
-import { createAssistantConversationLogRecord } from '../domain/assistantConversation.js';
+import {
+  createAssistantConversationLogRecord,
+  hasVisitorMessage,
+} from '../domain/assistantConversation.js';
 import { getAdminErrorStatus } from '../application/errors.js';
 import { checkRateLimits } from '../../shared/security/rateLimit.js';
 import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
@@ -45,6 +48,11 @@ export function createAssistantConversationLogApi({
     try {
       const payload = await readJsonBody(request);
       const logRecord = createAssistantConversationLogRecord(payload);
+
+      if (!hasVisitorMessage(logRecord)) {
+        return http.createJsonResponse(request, 204, '');
+      }
+
       await dependencies.conversationRepository.upsert(logRecord);
 
       return http.createJsonResponse(request, 204, '');

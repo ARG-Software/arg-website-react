@@ -647,12 +647,28 @@ function RecordsView({ accessToken, title, query, emptyMessage, onSelectRecord }
 
 function AssistantConversationsView({ accessToken, onSelectConversation }) {
   const [page, setPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const conversationsQuery = useQuery({
     queryKey: ['assistantConversations', 'records', page],
     queryFn: () => fetchAssistantConversations(accessToken, { page, pageSize: PAGE_SIZE }),
     placeholderData: keepPreviousData,
   });
+  const deleteMutation = useMutation({
+    mutationKey: ['assistantConversations'],
+    mutationFn: id => deleteAssistantConversation(accessToken, id),
+    onSuccess: () => {
+      adminQueryClient.invalidateQueries({ queryKey: ['assistantConversations'] });
+      setDeleteTarget(null);
+      onSelectConversation(null);
+    },
+  });
+
+  async function deleteConversation() {
+    if (!deleteTarget) return;
+
+    await deleteMutation.mutateAsync(deleteTarget.id);
+  }
 
   return (
     <div className="admin-content-grid">
@@ -670,9 +686,31 @@ function AssistantConversationsView({ accessToken, onSelectConversation }) {
           }}
           emptyMessage="No assistant conversations found."
           onRowClick={onSelectConversation}
+          rowActions={record => (
+            <button
+              type="button"
+              className="admin-table-action admin-table-action--danger"
+              disabled={deleteMutation.isPending}
+              onClick={() => setDeleteTarget(record)}
+            >
+              Delete
+            </button>
+          )}
           tone="light"
         />
       )}
+      <ConfirmDialog
+        isOpen={Boolean(deleteTarget)}
+        title="Delete this conversation?"
+        cancelLabel="Keep conversation"
+        confirmLabel={deleteMutation.isPending ? 'Deleting...' : 'Delete conversation'}
+        confirmDisabled={deleteMutation.isPending}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={deleteConversation}
+      >
+        <p>This permanently removes the encrypted transcript from the admin database.</p>
+        {deleteMutation.isError && <p className="admin-error">{deleteMutation.error.message}</p>}
+      </ConfirmDialog>
     </div>
   );
 }
@@ -1037,30 +1075,15 @@ function OutreachEditor({ accessToken, record, onClose, onRecordUpdated }) {
 }
 
 function AssistantConversationOverlay({ accessToken, conversation, onClose }) {
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const detailQuery = useQuery({
     queryKey: ['assistantConversations', 'detail', conversation?.id],
     queryFn: () => fetchAssistantConversation(accessToken, conversation.id),
     enabled: Boolean(conversation?.id),
   });
-  const deleteMutation = useMutation({
-    mutationKey: ['assistantConversations'],
-    mutationFn: id => deleteAssistantConversation(accessToken, id),
-    onSuccess: () => {
-      adminQueryClient.invalidateQueries({ queryKey: ['assistantConversations'] });
-      setDeleteConfirmOpen(false);
-      onClose();
-    },
-  });
 
   if (!conversation) return null;
 
   const record = detailQuery.data?.record || conversation;
-  const isDeleting = deleteMutation.isPending;
-
-  async function deleteConversation() {
-    await deleteMutation.mutateAsync(conversation.id);
-  }
 
   return (
     <AdminRecordOverlay
@@ -1068,11 +1091,7 @@ function AssistantConversationOverlay({ accessToken, conversation, onClose }) {
       title={record.preview || 'Assistant conversation'}
       eyebrow={formatDateTime(record.lastMessageAt || record.updatedAt)}
       onClose={onClose}
-      actions={
-        <UiButton onClick={() => setDeleteConfirmOpen(true)} disabled={isDeleting}>
-          {isDeleting ? 'Deleting...' : 'Delete'}
-        </UiButton>
-      }
+      tone="light"
     >
       <div className="admin-conversation-meta">
         <span>Page: {record.pagePath || '-'}</span>
@@ -1088,18 +1107,6 @@ function AssistantConversationOverlay({ accessToken, conversation, onClose }) {
       {!detailQuery.isError && !detailQuery.isLoading && (
         <AdminConversationTranscript messages={record.messages || []} />
       )}
-      {deleteMutation.isError && <p className="admin-error">{deleteMutation.error.message}</p>}
-      <ConfirmDialog
-        isOpen={deleteConfirmOpen}
-        title="Delete this conversation?"
-        cancelLabel="Keep conversation"
-        confirmLabel="Delete conversation"
-        confirmDisabled={isDeleting}
-        onCancel={() => setDeleteConfirmOpen(false)}
-        onConfirm={deleteConversation}
-      >
-        <p>This permanently removes the encrypted transcript from the admin database.</p>
-      </ConfirmDialog>
     </AdminRecordOverlay>
   );
 }

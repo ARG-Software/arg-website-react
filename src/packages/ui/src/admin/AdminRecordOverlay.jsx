@@ -6,6 +6,7 @@ export function AdminRecordOverlay({
   titleAccessory,
   eyebrow,
   actions,
+  tone = 'default',
   children,
   onClose,
 }) {
@@ -19,7 +20,7 @@ export function AdminRecordOverlay({
         onClick={onClose}
         aria-label="Close"
       />
-      <UiCard className="admin-record-overlay__panel">
+      <UiCard className="admin-record-overlay__panel" tone={tone}>
         <button
           type="button"
           className="admin-record-overlay__close"

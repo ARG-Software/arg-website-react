@@ -13,6 +13,7 @@ export function AdminDataTable({
   pagination,
   sort,
   onSortChange,
+  rowActions,
   loading = false,
   emptyMessage = 'No records found.',
   tone = 'default',
@@ -65,6 +66,7 @@ export function AdminDataTable({
                     </th>
                   );
                 })}
+                {rowActions && <th scope="col">Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -73,6 +75,7 @@ export function AdminDataTable({
                   key={getRowKey(row)}
                   onClick={() => onRowClick?.(row)}
                   onKeyDown={event => {
+                    if (event.target !== event.currentTarget) return;
                     if (event.key === 'Enter' || event.key === ' ') onRowClick?.(row);
                   }}
                   tabIndex={0}
@@ -80,6 +83,15 @@ export function AdminDataTable({
                   {columns.map(column => (
                     <td key={column.key}>{column.render ? column.render(row) : row[column.key]}</td>
                   ))}
+                  {rowActions && (
+                    <td
+                      className="admin-data-table__actions-cell"
+                      onClick={event => event.stopPropagation()}
+                      onKeyDown={event => event.stopPropagation()}
+                    >
+                      {rowActions(row)}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

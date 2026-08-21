@@ -669,6 +669,12 @@
   color: #fff;
 }
 
+.ui-card--light.admin-data-table tbody tr:hover .admin-table-action,
+.ui-card--light.admin-data-table tbody tr:focus-visible .admin-table-action {
+  border-color: rgba(255, 255, 255, 0.42);
+  color: #fff;
+}
+
 .ui-card--light .ui-field__label,
 .ui-card--light .ui-field__hint {
   color: rgba(12, 0, 46, 0.62);
@@ -703,12 +709,57 @@
   background: rgba(12, 0, 46, 0.06);
 }
 
+.admin-record-overlay__panel.ui-card--light {
+  background: #fff;
+  border-color: rgba(12, 0, 46, 0.14);
+  color: #0c002e;
+}
+
 .ui-card--light .admin-record-overlay__panel.ui-card {
   background: #fff;
   border-left-color: rgba(12, 0, 46, 0.1);
 }
 
+.admin-record-overlay__panel.ui-card--light h2,
+.admin-record-overlay__panel.ui-card--light .admin-conversation-message__meta span {
+  color: #0c002e;
+}
+
+.admin-record-overlay__panel.ui-card--light p,
+.admin-record-overlay__panel.ui-card--light .admin-conversation-message__meta time,
+.admin-record-overlay__panel.ui-card--light .admin-conversation-message__refs span,
+.admin-record-overlay__panel.ui-card--light .admin-conversation-message__actions span {
+  color: rgba(12, 0, 46, 0.62);
+}
+
+.admin-record-overlay__panel.ui-card--light .admin-conversation-message {
+  border-color: rgba(12, 0, 46, 0.14);
+}
+
+.admin-record-overlay__panel.ui-card--light .admin-conversation-message--assistant {
+  background: rgba(12, 0, 46, 0.04);
+}
+
+.admin-record-overlay__panel.ui-card--light .admin-conversation-message--user {
+  background: #fff;
+}
+
+.admin-record-overlay__panel.ui-card--light .admin-conversation-message p,
+.admin-record-overlay__panel.ui-card--light .admin-conversation-message__refs a,
+.admin-record-overlay__panel.ui-card--light .admin-conversation-message__actions li {
+  color: rgba(12, 0, 46, 0.86);
+}
+
+.admin-record-overlay__panel.ui-card--light .admin-conversation-transcript__empty {
+  border-color: rgba(12, 0, 46, 0.18);
+}
+
 .ui-card--light .admin-record-overlay__close {
+  border-color: rgba(12, 0, 46, 0.2);
+  color: #0c002e;
+}
+
+.admin-record-overlay__panel.ui-card--light .admin-record-overlay__close {
   border-color: rgba(12, 0, 46, 0.2);
   color: #0c002e;
 }

@@ -392,6 +392,56 @@
   padding: 0.4rem 0.7rem;
 }
 
+.admin-record-overlay__panel.ui-card--light .admin-conversation-meta span {
+  background: rgba(12, 0, 46, 0.04);
+  border-color: rgba(12, 0, 46, 0.14);
+  color: rgba(12, 0, 46, 0.72);
+}
+
+.admin-data-table__actions-cell {
+  text-align: right;
+  white-space: nowrap;
+  width: 1%;
+}
+
+.admin-table-action {
+  background: transparent;
+  border: 1px solid rgba(12, 0, 46, 0.16);
+  border-radius: 999px;
+  color: #0c002e;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.5rem 0.8rem;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin-table-action:hover:not(:disabled),
+.admin-table-action:focus-visible:not(:disabled) {
+  background: rgba(12, 0, 46, 0.06);
+  border-color: rgba(12, 0, 46, 0.32);
+}
+
+.admin-table-action--danger {
+  color: #9f1239;
+}
+
+.admin-table-action--danger:hover:not(:disabled),
+.admin-table-action--danger:focus-visible:not(:disabled) {
+  background: rgba(159, 18, 57, 0.08);
+  border-color: rgba(159, 18, 57, 0.28);
+}
+
+.admin-table-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .admin-error {
   color: #ffb5c0;
 }

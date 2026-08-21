@@ -35,6 +35,35 @@ test('logs assistant conversations through the public write-only endpoint', asyn
   assert.equal(savedRecord.metadata.pagePath, '/');
 });
 
+test('ignores assistant-only conversation logs through the public write-only endpoint', async () => {
+  let upsertCalled = false;
+  const api = createAssistantConversationLogApi({
+    createDependencies: () => ({
+      createAssistantConversationLogDependencies() {
+        return {
+          conversationRepository: {
+            async upsert() {
+              upsertCalled = true;
+            },
+          },
+          logRateLimit: {
+            config: { perMinute: 20, perDay: 200, globalDaily: 1000, salt: 'test' },
+            store: {
+              async hit() {
+                return { allowed: true };
+              },
+            },
+          },
+        };
+      },
+    }),
+  });
+  const response = await api(createAssistantOnlyConversationLogRequest());
+
+  assert.equal(response.status, 204);
+  assert.equal(upsertCalled, false);
+});
+
 test('lists assistant conversations through the authenticated admin endpoint', async () => {
   const api = createAdminAssistantConversationsApi({
     createDependencies: () => createConversationAdminDependencies(),
@@ -83,6 +112,28 @@ function createConversationLogRequest() {
       messages: [
         { role: 'user', content: 'What do you do?', createdAt: '2026-08-21T10:00:00.000Z' },
         { role: 'assistant', content: 'We build software.', createdAt: '2026-08-21T10:00:01.000Z' },
+      ],
+      pageContext: { pathname: '/', title: 'ARG' },
+      language: 'en',
+    }),
+  });
+}
+
+function createAssistantOnlyConversationLogRequest() {
+  return new Request('https://arg.software/api/admin/assistant-conversation-log', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Origin: 'https://arg.software',
+    },
+    body: JSON.stringify({
+      conversationId: 'conversation-test-2',
+      messages: [
+        {
+          role: 'assistant',
+          content: 'Hi, how can I help?',
+          createdAt: '2026-08-21T10:00:00.000Z',
+        },
       ],
       pageContext: { pathname: '/', title: 'ARG' },
       language: 'en',

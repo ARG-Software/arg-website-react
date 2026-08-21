@@ -46,6 +46,10 @@ export function createAssistantConversationDetailResponse(record) {
   };
 }
 
+export function hasVisitorMessage(record) {
+  return record.payload.messages.some(message => message.role === 'user');
+}
+
 export function createAssistantConversationResponse(record, { includeTranscript = false } = {}) {
   const messages = Array.isArray(record.payload?.messages) ? record.payload.messages : [];
   const pageContext = record.payload?.pageContext || {};
