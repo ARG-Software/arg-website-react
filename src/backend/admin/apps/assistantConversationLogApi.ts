@@ -1,7 +1,4 @@
-import {
-  createAssistantConversationLogRecord,
-  hasVisitorMessage,
-} from '../domain/assistantConversation.js';
+import { AssistantConversation } from '../domain/assistantConversation.js';
 import { getAdminErrorStatus } from '../application/errors.js';
 import { checkRateLimits } from '../../shared/security/rateLimit.js';
 import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
@@ -62,14 +59,20 @@ export function createAssistantConversationLogApi({
     if (rateLimitResponse) return rateLimitResponse;
 
     try {
-      const payload = await readJsonBody(request);
-      const logRecord = createAssistantConversationLogRecord(payload);
+      const payload = await http.readJsonBody(request);
+      const conversation = new AssistantConversation({
+        publicConversationId: payload.conversationId,
+        messages: payload.messages,
+        pageContext: payload.pageContext,
+        language: payload.language,
+        savedAt: payload.savedAt,
+      });
 
-      if (!hasVisitorMessage(logRecord)) {
+      if (!conversation.hasVisitorMessage()) {
         return http.createJsonResponse(request, 204, '');
       }
 
-      await dependencies.conversationRepository.upsert(logRecord);
+      await dependencies.conversationRepository.upsert(conversation);
 
       return http.createJsonResponse(request, 204, '');
     } catch (error) {
@@ -110,19 +113,8 @@ async function createRateLimitResponse(request, dependencies, http) {
   return null;
 }
 
-async function readJsonBody(request) {
-  try {
-    return await request.json();
-  } catch {
-    const error = new Error('Invalid JSON body') as Error & { statusCode: number; code: string };
-    error.statusCode = 400;
-    error.code = 'invalid_json';
-    throw error;
-  }
-}
-
 function getLogErrorBody(error) {
-  if (error?.code && error?.statusCode) {
+  if (error?.code && getAdminErrorStatus(error) !== 500) {
     return createErrorBody(error.code, error.message);
   }
 

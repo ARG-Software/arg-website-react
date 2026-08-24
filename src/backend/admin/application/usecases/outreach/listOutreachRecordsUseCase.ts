@@ -1,7 +1,8 @@
-import { Outreach, OutreachCollection, type OutreachStatus } from '../../../domain/outreach.js';
+import { Outreach } from '../../../domain/outreach.js';
 import { OutreachDomainError } from '../../../domain/errors/OutreachDomainError.js';
+import type { OutreachStatus } from '../../../domain/types/OutreachTypes.js';
 import type { IClock } from '../../ports/IClock.js';
-import type { IOutreachRepository } from '../../ports/IOutreachRepository.js';
+import type { IOutreachRepository } from '../../ports/repositories/IOutreachRepository.js';
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 10;
@@ -50,7 +51,7 @@ export async function listOutreachRecordsUseCase(
   const scope = getScope(query.scope || 'list');
 
   if (scope === 'summary') {
-    return { summary: new OutreachCollection(records).createSummary() };
+    return { summary: Outreach.createSummary(records) };
   }
 
   if (scope === 'chart') {

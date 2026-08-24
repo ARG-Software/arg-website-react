@@ -1,9 +1,14 @@
-import { VisitSessions, type VisitSessionListResult } from '../../../domain/visit.js';
-import type { IVisitRepository } from '../../ports/IVisitRepository.js';
+import type { VisitSessionListResult } from '../../../domain/types/VisitTypes.js';
+import type { IVisitRepository } from '../../ports/repositories/IVisitRepository.js';
 
 export async function listVisitSessionsUseCase(
   repository: IVisitRepository,
   pagination: { page?: number; pageSize?: number }
 ): Promise<VisitSessionListResult> {
-  return new VisitSessions(await repository.listSessions(pagination)).toResponse();
+  const result = await repository.listSessions(pagination);
+
+  return {
+    records: result.records || [],
+    pagination: result.pagination,
+  };
 }

@@ -20,13 +20,13 @@ export async function fetchOutreachChart(range) {
   return readAdminResponse(response);
 }
 
-export async function updateOutreachRecord(id, changes) {
+export async function updateOutreachRecord(id, record) {
   const response = await fetch(ADMIN_OUTREACH_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ id, changes }),
+    body: JSON.stringify({ id, record }),
   });
 
   return readAdminResponse(response);

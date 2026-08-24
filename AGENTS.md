@@ -208,6 +208,22 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 
 ## 6. Component Conventions
 
+### 6.0 Code Simplification
+- Prefer the simplest readable implementation across the whole codebase.
+- Do not add new types, interfaces, helper functions, classes, wrappers, factories, or params objects unless they are clearly needed for reuse, clarity, or an existing pattern.
+- Do not use `Partial` for method inputs unless explicitly requested.
+- Prefer passing existing domain/application objects over creating method-specific DTO types.
+- Keep one-line logic inline instead of extracting it to a helper.
+- Keep behavior close to the code/data it belongs to; avoid moving logic into generic utilities unless it is reused.
+- For class-owned validation or normalization, prefer private class members over free helper functions.
+- Prefer direct immutable data shapes, such as `readonly` properties, over getters, setters, backing fields, and response wrappers unless there is a concrete need.
+- Keep only real business invariants in domain/application objects. Do not add redundant validation for values generated or enforced elsewhere, such as database IDs or client-generated UUIDs.
+- Do not normalize, sanitize, trim, reformat, or truncate data in domain code when that belongs to the API boundary or would silently change user/client data.
+- Preserve source data by default, especially transcripts, messages, imported records, and user-provided text. Derived display fields such as previews may be shortened separately.
+- Put security, encryption/decryption, persistence mapping, and HTTP response shaping in infrastructure/API code, not domain objects.
+- Prefer explicit imperative code with local variables and `if` statements over clever conditional spreads, nested ternaries, or `flatMap` tricks when constructing objects.
+- Before adding any abstraction, ask whether it reduces code or just names code. If it only names code, do not add it.
+
 ### 6.1 Imports
 - No barrel exports — import directly from component files
 - Use path aliases: `import { Navbar } from '@components/navigation/Navbar'`

@@ -1,7 +1,7 @@
 import { createAdminAccessPolicy } from '../../application/auth/policies/adminAccessPolicy.js';
-import { AdminSecurityCodec } from '../../application/usecases/security/AdminSecurityCodec.js';
 import { AdminConfig } from '../config/AdminConfig.js';
 import { FallbackGeolocationProvider } from '../../infrastructure/geolocation/FallbackGeolocationProvider.js';
+import { OutreachCsvParser } from '../../infrastructure/csv/OutreachCsvParser.js';
 import { HeaderGeolocationProvider } from '../../infrastructure/http/HeaderGeolocationProvider.js';
 import {
   createSupabaseAdminAuthClient,
@@ -100,10 +100,12 @@ function createAdminDependenciesWithClients({
     },
     createAssistantConversationLogDependencies() {
       const client = createServiceClient(config);
-      const securityCodec = new AdminSecurityCodec(config);
 
       return {
-        conversationRepository: new SupabaseAssistantConversationRepository(client, securityCodec),
+        conversationRepository: new SupabaseAssistantConversationRepository(
+          client,
+          createAssistantConversationEncryptionConfig(config)
+        ),
         logRateLimit: {
           config: config.getAssistantConversationLogRateLimitConfig(),
           store: new SupabaseRateLimitStore(client, 'hit_admin_rate_limit'),
@@ -112,26 +114,29 @@ function createAdminDependenciesWithClients({
     },
     createAssistantConversationAdminDependencies() {
       const client = createServiceClient(config);
-      const securityCodec = new AdminSecurityCodec(config);
       const adminUserRepository = new SupabaseAdminUserRepository(client);
 
       return {
         adminAccessPolicy: createAdminAccessPolicy(adminUserRepository),
-        conversationRepository: new SupabaseAssistantConversationRepository(client, securityCodec),
+        conversationRepository: new SupabaseAssistantConversationRepository(
+          client,
+          createAssistantConversationEncryptionConfig(config)
+        ),
         identityProvider: new SupabaseAdminIdentityProvider(client),
       };
     },
     createAssistantConversationRetentionDependencies() {
       const client = createServiceClient(config);
-      const securityCodec = new AdminSecurityCodec(config);
 
       return {
-        conversationRepository: new SupabaseAssistantConversationRepository(client, securityCodec),
+        conversationRepository: new SupabaseAssistantConversationRepository(
+          client,
+          createAssistantConversationEncryptionConfig(config)
+        ),
       };
     },
     createVisitIngestDependencies() {
       const client = createServiceClient(config);
-      const securityCodec = new AdminSecurityCodec(config);
 
       return {
         geolocationProvider: new FallbackGeolocationProvider([
@@ -139,7 +144,7 @@ function createAdminDependenciesWithClients({
           new HeaderGeolocationProvider(),
         ]),
         visitRepository: new SupabaseVisitRepository(client),
-        securityCodec,
+        visitHashKey: config.getVisitHashKey(),
         visitRateLimit: {
           config: config.getVisitLogRateLimitConfig(),
           store: new SupabaseRateLimitStore(client, 'hit_admin_rate_limit'),
@@ -163,16 +168,23 @@ function createAdminDependenciesWithClients({
     },
     createOutreachDependencies() {
       const client = createServiceClient(config);
-      const securityCodec = new AdminSecurityCodec(config);
       const adminUserRepository = new SupabaseAdminUserRepository(client);
 
       return {
         adminAccessPolicy: createAdminAccessPolicy(adminUserRepository),
         auditRepository: new SupabaseOutreachAuditRepository(client, config.getAuditSalt()),
         clock: systemClock,
+        csvParser: new OutreachCsvParser(),
         identityProvider: new SupabaseAdminIdentityProvider(client),
-        outreachRepository: new SupabaseOutreachRepository(client, securityCodec),
+        outreachRepository: new SupabaseOutreachRepository(client, config),
       };
     },
+  };
+}
+
+function createAssistantConversationEncryptionConfig(config: AdminConfig) {
+  return {
+    activeKeyVersion: config.getActiveAssistantConversationEncryptionKeyVersion(),
+    keys: config.getAssistantConversationEncryptionKeys(),
   };
 }

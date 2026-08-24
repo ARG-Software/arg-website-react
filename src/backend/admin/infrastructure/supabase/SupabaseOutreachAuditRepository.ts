@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-import type { IOutreachAuditRepository } from '../../application/ports/IOutreachRepository.js';
+import type { IOutreachAuditRepository } from '../../application/ports/repositories/IOutreachRepository.js';
 
 export class SupabaseOutreachAuditRepository implements IOutreachAuditRepository {
   constructor(private readonly client: any, private readonly auditSalt: string) {}

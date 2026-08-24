@@ -1,4 +1,4 @@
-import type { Outreach } from '../../domain/outreach.js';
+import type { Outreach } from '../../../domain/outreach.js';
 
 export interface IOutreachRepository {
   list(): Promise<Outreach[]>;

@@ -1,4 +1,4 @@
-import type { IVisitRepository } from '../../application/ports/IVisitRepository.js';
+import type { IVisitRepository } from '../../application/ports/repositories/IVisitRepository.js';
 
 export class SupabaseVisitRepository implements IVisitRepository {
   constructor(private readonly client: any) {}

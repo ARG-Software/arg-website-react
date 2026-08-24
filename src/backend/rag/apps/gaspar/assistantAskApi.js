@@ -48,7 +48,7 @@ export function createAssistantAskApi({
     let payload;
 
     try {
-      payload = await request.json();
+      payload = await http.readJsonBody(request);
     } catch {
       return http.createJsonResponse(
         request,

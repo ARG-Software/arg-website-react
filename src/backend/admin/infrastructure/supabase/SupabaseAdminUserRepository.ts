@@ -1,4 +1,4 @@
-import type { IAdminUserRepository } from '../../application/ports/IAdminUserRepository.js';
+import type { IAdminUserRepository } from '../../application/ports/repositories/IAdminUserRepository.js';
 
 export class SupabaseAdminUserRepository implements IAdminUserRepository {
   constructor(private readonly client: any) {}

@@ -118,6 +118,10 @@ export class AdminConfig {
     return this.values.assistantConversationEncryptionKeys[version] || '';
   }
 
+  getAssistantConversationEncryptionKeys(): Record<number, string> {
+    return { ...this.values.assistantConversationEncryptionKeys };
+  }
+
   getLoginRateLimitConfig(): IRateLimitConfig {
     return {
       perMinute: this.values.loginRateLimitPerMinute,

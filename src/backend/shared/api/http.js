@@ -15,6 +15,15 @@ export function createApiHttp({ allowedMethods, env = process.env, ...options })
     createCorsHeaders(request) {
       return createCorsHeaders(request, allowedMethods, httpOptions);
     },
+    readJsonBody(request, options = {}) {
+      return readJsonBody(request, options);
+    },
+    readSearchParams(request, options = {}) {
+      return readSearchParams(request, options);
+    },
+    sanitizeInput(value, options = {}) {
+      return sanitizeInput(value, options);
+    },
     isAllowedOrigin(origin) {
       return isAllowedOrigin(origin, httpOptions);
     },
@@ -28,6 +37,33 @@ export function createErrorBody(code, message) {
       message,
     },
   };
+}
+
+export async function readJsonBody(request, options = {}) {
+  try {
+    return sanitizeInput(await request.json(), options);
+  } catch {
+    if (options.fallback !== undefined) return options.fallback;
+
+    const error = new Error(options.message || 'Invalid JSON body');
+    error.statusCode = options.statusCode || 400;
+    error.code = options.code || 'invalid_json';
+    throw error;
+  }
+}
+
+export function readSearchParams(request, options = {}) {
+  return sanitizeInput(Object.fromEntries(new URL(request.url).searchParams.entries()), options);
+}
+
+export function sanitizeInput(value, options = {}) {
+  if (typeof value === 'string') return sanitizeString(value, options);
+  if (Array.isArray(value)) return value.map(item => sanitizeInput(item, options));
+  if (!value || typeof value !== 'object') return value;
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, item]) => [sanitizeObjectKey(key), sanitizeInput(item, options)])
+  );
 }
 
 export function createJsonResponse(request, allowedMethods, statusCode, body, options = {}) {
@@ -112,4 +148,16 @@ function normalizeOrigin(value) {
   } catch {
     return '';
   }
+}
+
+function sanitizeString(value, options) {
+  const sanitized = value
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+    .normalize('NFC');
+
+  return options.trimStrings === false ? sanitized : sanitized.trim();
+}
+
+function sanitizeObjectKey(value) {
+  return value.replace(/[\u0000-\u001F\u007F]/g, '').trim();
 }

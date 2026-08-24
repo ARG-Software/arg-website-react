@@ -1,4 +1,7 @@
-import { createVisitSessionRecord } from '../domain/visitEvent.js';
+import crypto from 'node:crypto';
+
+import { VisitSession } from '../domain/visit.js';
+import { VisitDomainError } from '../domain/errors/VisitDomainError.js';
 import { getAdminErrorStatus } from '../application/errors.js';
 import { checkRateLimits } from '../../shared/security/rateLimit.js';
 import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
@@ -52,11 +55,23 @@ export function createVisitLogApi({
     if (rateLimitResponse) return rateLimitResponse;
 
     try {
-      const payload = await readJsonBody(request);
+      const payload = await http.readJsonBody(request);
+      if (!payload.sessionId) throw VisitDomainError.missingSessionId();
+
       const clientIp = getClientIp(request);
       const geo = await dependencies.geolocationProvider.lookup(clientIp, request.headers);
-      const sessionHash = dependencies.securityCodec.hashVisitSessionId(payload.sessionId);
-      const record = createVisitSessionRecord(payload, { sessionHash, geo });
+      const record = new VisitSession({
+        sessionHash: crypto
+          .createHmac('sha256', dependencies.visitHashKey)
+          .update(payload.sessionId)
+          .digest('hex')
+          .slice(0, 16),
+        events: payload.events,
+        pageViews: payload.pageViews,
+        geo,
+        language: payload.language,
+        referrer: payload.referrer,
+      });
       await dependencies.visitRepository.recordSession(record);
 
       return http.createJsonResponse(request, 204, '');
@@ -100,19 +115,8 @@ function getClientIp(request) {
   return request.headers.get('x-nf-client-connection-ip') || 'unknown';
 }
 
-async function readJsonBody(request) {
-  try {
-    return await request.json();
-  } catch {
-    const error = new Error('Invalid JSON body') as Error & { statusCode: number; code: string };
-    error.statusCode = 400;
-    error.code = 'invalid_json';
-    throw error;
-  }
-}
-
 function getVisitLogErrorBody(error) {
-  if (error?.code && error?.statusCode) {
+  if (error?.code && getAdminErrorStatus(error) !== 500) {
     return createErrorBody(error.code, error.message);
   }
 

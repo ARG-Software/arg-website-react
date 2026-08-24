@@ -1,9 +1,5 @@
 import { authenticateAdmin } from './auth/userAuthenticator.js';
 import { createAdminError, getAdminErrorStatus } from '../application/errors.js';
-import {
-  createAssistantConversationDetailResponse,
-  createAssistantConversationListResponse,
-} from '../domain/assistantConversation.js';
 import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
 import { createAdminDependencies } from './di/createAdminDependencies.js';
 import { getAccessToken } from '../infrastructure/http/adminCookies.js';
@@ -61,29 +57,53 @@ export function createAdminAssistantConversationsApi({
       await authenticateAdmin(getAccessToken(request), dependencies);
 
       if (request.method === 'DELETE') {
-        const id = getRequiredConversationId(request);
+        const id = getRequiredConversationId(http.readSearchParams(request));
         await dependencies.conversationRepository.deleteById(id);
 
         return http.createJsonResponse(request, 204, '');
       }
 
-      const id = getConversationId(request);
+      const query = http.readSearchParams(request);
+      const id = getConversationId(query);
 
       if (id) {
         const record = await dependencies.conversationRepository.findById(id);
         if (!record)
           throw createAdminError(404, 'conversation_not_found', 'Conversation not found');
 
-        return http.createJsonResponse(
-          request,
-          200,
-          createAssistantConversationDetailResponse(record)
-        );
+        return http.createJsonResponse(request, 200, {
+          id: record.id,
+          conversationId: record.publicConversationId,
+          createdAt: record.createdAt,
+          updatedAt: record.updatedAt,
+          lastMessageAt: record.lastMessageAt,
+          messageCount: record.messageCount,
+          pagePath: record.pagePath || record.pageContext.pathname || '',
+          pageTitle: record.pageContext.title || '',
+          language: record.language,
+          preview: record.preview,
+          messages: record.messages,
+          pageContext: record.pageContext,
+        });
       }
 
-      const result = await dependencies.conversationRepository.list(getPagination(request));
+      const result = await dependencies.conversationRepository.list(getPagination(query));
 
-      return http.createJsonResponse(request, 200, createAssistantConversationListResponse(result));
+      return http.createJsonResponse(request, 200, {
+        records: result.records.map(record => ({
+          id: record.id,
+          conversationId: record.publicConversationId,
+          createdAt: record.createdAt,
+          updatedAt: record.updatedAt,
+          lastMessageAt: record.lastMessageAt,
+          messageCount: record.messageCount,
+          pagePath: record.pagePath || record.pageContext.pathname || '',
+          pageTitle: record.pageContext.title || '',
+          language: record.language,
+          preview: record.preview,
+        })),
+        pagination: result.pagination,
+      });
     } catch (error) {
       const statusCode = getAdminErrorStatus(error);
 
@@ -98,12 +118,12 @@ export function createAdminAssistantConversationsApi({
 
 export const handleAdminAssistantConversations = createAdminAssistantConversationsApi();
 
-function getConversationId(request) {
-  return new URL(request.url).searchParams.get('id') || '';
+function getConversationId(query) {
+  return query.id || '';
 }
 
-function getRequiredConversationId(request) {
-  const id = getConversationId(request);
+function getRequiredConversationId(query) {
+  const id = getConversationId(query);
 
   if (!id) {
     throw createAdminError(400, 'missing_conversation_id', 'Conversation id is required');
@@ -112,12 +132,10 @@ function getRequiredConversationId(request) {
   return id;
 }
 
-function getPagination(request) {
-  const params = new URL(request.url).searchParams;
-
+function getPagination(query) {
   return {
-    page: clampNumber(params.get('page'), DEFAULT_PAGE, Number.MAX_SAFE_INTEGER, DEFAULT_PAGE),
-    pageSize: clampNumber(params.get('pageSize'), 1, MAX_PAGE_SIZE, DEFAULT_PAGE_SIZE),
+    page: clampNumber(query.page, DEFAULT_PAGE, Number.MAX_SAFE_INTEGER, DEFAULT_PAGE),
+    pageSize: clampNumber(query.pageSize, 1, MAX_PAGE_SIZE, DEFAULT_PAGE_SIZE),
   };
 }
 
@@ -128,7 +146,7 @@ function clampNumber(value, min, max, fallback) {
 }
 
 function getAdminConversationErrorBody(error) {
-  if (error?.code && error?.statusCode) {
+  if (error?.code && getAdminErrorStatus(error) !== 500) {
     return createErrorBody(error.code, error.message);
   }
 

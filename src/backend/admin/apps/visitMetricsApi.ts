@@ -59,14 +59,14 @@ export function createVisitMetricsApi({
       }).createVisitAdminDependencies();
       await authenticateAdmin(getAccessToken(request), dependencies);
 
-      const url = new URL(request.url);
-      const scope = url.searchParams.get('scope') || 'metrics';
+      const query = http.readSearchParams(request);
+      const scope = query.scope || 'metrics';
 
       if (scope === 'sessions') {
         return http.createJsonResponse(
           request,
           200,
-          await listVisitSessionsUseCase(dependencies.visitRepository, getPagination(request))
+          await listVisitSessionsUseCase(dependencies.visitRepository, getPagination(query))
         );
       }
 
@@ -76,7 +76,7 @@ export function createVisitMetricsApi({
           200,
           await listVisitJourneyUseCase(
             dependencies.visitRepository,
-            url.searchParams.get('sessionHash') || ''
+            query.sessionHash || ''
           )
         );
       }
@@ -86,7 +86,7 @@ export function createVisitMetricsApi({
         200,
         await listVisitMetricsUseCase(
           dependencies.visitRepository,
-          url.searchParams.get('range') || '30d'
+          query.range || '30d'
         )
       );
     } catch (error) {
@@ -103,12 +103,10 @@ export function createVisitMetricsApi({
 
 export const handleVisitMetrics = createVisitMetricsApi();
 
-function getPagination(request) {
-  const params = new URL(request.url).searchParams;
-
+function getPagination(query) {
   return {
-    page: clampNumber(params.get('page'), DEFAULT_PAGE, Number.MAX_SAFE_INTEGER, DEFAULT_PAGE),
-    pageSize: clampNumber(params.get('pageSize'), 1, MAX_PAGE_SIZE, DEFAULT_PAGE_SIZE),
+    page: clampNumber(query.page, DEFAULT_PAGE, Number.MAX_SAFE_INTEGER, DEFAULT_PAGE),
+    pageSize: clampNumber(query.pageSize, 1, MAX_PAGE_SIZE, DEFAULT_PAGE_SIZE),
   };
 }
 
@@ -119,7 +117,7 @@ function clampNumber(value, min, max, fallback) {
 }
 
 function getVisitMetricsErrorBody(error) {
-  if (error?.code && error?.statusCode) {
+  if (error?.code && getAdminErrorStatus(error) !== 500) {
     return createErrorBody(error.code, error.message);
   }
 

@@ -20,10 +20,10 @@ export function OutreachEditor({ record, onClose, onRecordUpdated }) {
   const isSentRecord = record.status === 'sent';
   const isContactForm = form.contactMethod === 'contact_form';
 
-  async function saveChanges(changes = form) {
+  async function saveChanges(recordData = form) {
     setStatus('');
     try {
-      const data = await saveMutation.mutateAsync({ id: record.id, changes });
+      const data = await saveMutation.mutateAsync({ id: record.id, record: recordData });
       setForm(current => ({ ...current, ...data.record }));
       onRecordUpdated(data.record);
       setStatus('Saved');
@@ -47,7 +47,7 @@ export function OutreachEditor({ record, onClose, onRecordUpdated }) {
 
   async function markEmailAsSent() {
     setSendConfirmOpen(false);
-    await saveChanges({ status: 'sent' });
+    await saveChanges({ ...form, status: 'sent' });
     openEmailDraft();
   }
 

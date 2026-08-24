@@ -2,16 +2,8 @@ import { config as loadDotenv } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import XLSX from 'xlsx';
 
-import { normalizeContactMethod, normalizeStatus } from '../src/backend/admin/application/outreach/outreachCsv.js';
-import {
-  cleanSingleLine,
-  normalizeEmailDraft,
-} from '../src/backend/admin/domain/outreachRecord.js';
-import {
-  createOutreachPayloadCipher,
-  normalizeCompanyName,
-  normalizeEmail,
-} from '../src/backend/admin/application/crypto/outreachPayloadCipher.js';
+import { Outreach } from '../src/backend/admin/domain/outreach.js';
+import type { AdminConfig } from '../src/backend/admin/apps/config/AdminConfig.js';
 import { toOutreachDatabaseRow } from '../src/backend/admin/infrastructure/supabase/outreachRows.js';
 
 loadDotenv({ path: '.env', quiet: true });
@@ -41,9 +33,9 @@ const serviceRoleKey = requiredEnv('ADMIN_DATABASE_SERVICE_ROLE_KEY');
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
-const payloadCipher = createOutreachPayloadCipher(process.env);
+const outreachConfig = createOutreachConfig();
 
-const rows = records.map(record => toOutreachDatabaseRow(record.payload, payloadCipher));
+const rows = records.map(record => toOutreachDatabaseRow(record, outreachConfig));
 
 for (const batch of chunk(rows, 100)) {
   const { error } = await supabase
@@ -67,8 +59,8 @@ function createImportPlan(inputRecords) {
   const skippedDuplicates = [];
 
   for (const record of inputRecords) {
-    const companyIndex = normalizeCompanyName(record.payload.company_name);
-    const emailIndex = normalizeEmail(record.payload.contact_email);
+    const companyIndex = normalizeCompanyName(record.companyName);
+    const emailIndex = normalizeEmail(record.contactEmail);
 
     if (companyIndexes.has(companyIndex) || (emailIndex && emailIndexes.has(emailIndex))) {
       skippedDuplicates.push(record);
@@ -98,9 +90,9 @@ function loadWorkbookRecords(path) {
       if (!hasMeaningfulValue(row)) continue;
 
       const sourceRowNumber = Number(row.__rowNum__ || records.length + 1) + 1;
-      const payload = normalizeRow(row, sheetName, sourceRowNumber);
+      const record = normalizeRow(row, sheetName, sourceRowNumber);
 
-      records.push({ payload });
+      records.push(record);
     }
   }
 
@@ -117,23 +109,23 @@ function normalizeRow(row, sourceRound, sourceRowNumber) {
       ? toDateString(row['Date Sent']) || createFallbackSentDate(sourceRowNumber)
       : '';
 
-  return {
-    company_name: clean(row.Agency),
+  return new Outreach({
+    companyName: clean(row.Agency),
     website: clean(row.Website),
-    contact_email: contactEmail.toLowerCase(),
-    contact_info: contactInfo,
-    contact_method: normalizeContactMethod(row['Contact Method'], contactEmail),
-    fit_reason: clean(row['Focus / Why Good Fit']),
-    email_subject: cleanSingleLine(row['Email Subject']),
-    email_body: normalizeEmailDraft(row['Email Draft']),
+    contactEmail: contactEmail.toLowerCase(),
+    contactInfo,
+    contactMethod: normalizeContactMethod(row['Contact Method'], contactEmail),
+    fitReason: clean(row['Focus / Why Good Fit']),
+    emailSubject: clean(row['Email Subject']),
+    emailBody: normalizeEmailDraft(row['Email Draft']),
     status: status.status,
-    date_sent: dateSent,
-    follow_up_date: toDateString(row['Follow-up Date']),
-    reply_obtained: status.replyObtained,
-    reply_summary:
+    dateSent,
+    followUpDate: toDateString(row['Follow-up Date']) || '',
+    replyObtained: status.replyObtained,
+    replySummary:
       response && response.toLowerCase() !== 'no' ? `Response marked: ${response}` : '',
     notes: clean(row.Notes),
-  };
+  });
 }
 
 function normalizeWorkbookStatus(statusValue, responseValue, sourceRound) {
@@ -178,9 +170,9 @@ function chunk(items, size) {
 
 function summarizeByStatus(items) {
   return items.reduce((summary, item) => {
-    const status = item.payload.status;
+    const status = item.status;
     summary[status] = (summary[status] || 0) + 1;
-    if (item.payload.reply_obtained) {
+    if (item.replyObtained) {
       summary.reply_obtained = (summary.reply_obtained || 0) + 1;
     }
     return summary;
@@ -214,4 +206,58 @@ function requiredEnv(name) {
   }
 
   return value;
+}
+
+function normalizeStatus(value, replyObtained) {
+  if (replyObtained || clean(value).toLowerCase() === 'sent') {
+    return { status: 'sent', replyObtained: Boolean(replyObtained) };
+  }
+
+  return { status: 'not_sent', replyObtained: false };
+}
+
+function normalizeContactMethod(value, contactEmail = '') {
+  const method = clean(value).toLowerCase().replace(/[\s-]+/g, '_');
+
+  if (method.includes('form')) return 'contact_form';
+  if (method.includes('mail')) return 'email';
+  if (method === 'contact_form' || method === 'form') return 'contact_form';
+  if (method === 'email') return 'email';
+
+  return clean(contactEmail) ? 'email' : 'contact_form';
+}
+
+function normalizeEmailDraft(value) {
+  return String(value || '')
+    .replace(/\\n/g, '\n')
+    .replace(/\/n/g, '\n')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .split('\n')
+    .map(line => line.trimEnd())
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function normalizeCompanyName(value) {
+  return clean(value).toLowerCase();
+}
+
+function normalizeEmail(value) {
+  return clean(value).toLowerCase();
+}
+
+function createOutreachConfig(): AdminConfig {
+  return {
+    getActiveOutreachEncryptionKeyVersion() {
+      return Number(process.env.OUTREACH_ENCRYPTION_KEY_ACTIVE_VERSION || 1);
+    },
+    getOutreachEncryptionKey(version) {
+      return process.env[`OUTREACH_ENCRYPTION_KEY_${version}`] || process.env.OUTREACH_ENCRYPTION_KEY || '';
+    },
+    getOutreachBlindIndexKey() {
+      return requiredEnv('OUTREACH_BLIND_INDEX_KEY');
+    },
+  } as unknown as AdminConfig;
 }

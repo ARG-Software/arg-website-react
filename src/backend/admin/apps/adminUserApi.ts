@@ -48,7 +48,7 @@ export function createAdminUserApi({
         );
       }
 
-      const payload = await readJsonBody(request);
+      const payload = await http.readJsonBody(request, { fallback: {}, trimStrings: false });
       const dependencies = createDependencies({ config: getAppConfig() }).createSessionDependencies();
 
       const result = await updateAdminUser(
@@ -75,16 +75,8 @@ export function createAdminUserApi({
 
 export const handleAdminUserApi = createAdminUserApi();
 
-async function readJsonBody(request) {
-  try {
-    return await request.json();
-  } catch {
-    return {};
-  }
-}
-
 function getHttpErrorBody(error) {
-  if (error?.code && error?.statusCode) {
+  if (error?.code && getAdminErrorStatus(error) !== 500) {
     return createErrorBody(error.code, error.message);
   }
 

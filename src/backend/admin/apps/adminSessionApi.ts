@@ -137,7 +137,7 @@ export function createAdminSessionApi({
 export const handleAdminSessionApi = createAdminSessionApi();
 
 function getHttpErrorBody(error) {
-  if (error?.code && error?.statusCode) {
+  if (error?.code && getAdminErrorStatus(error) !== 500) {
     return createErrorBody(error.code, error.message);
   }
 

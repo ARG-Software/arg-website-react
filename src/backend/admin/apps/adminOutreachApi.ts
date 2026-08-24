@@ -4,7 +4,7 @@ import { createOutreachCsvUseCase } from '../application/usecases/outreach/creat
 import { importOutreachCsvUseCase } from '../application/usecases/outreach/importOutreachCsvUseCase.js';
 import { listOutreachRecordsUseCase } from '../application/usecases/outreach/listOutreachRecordsUseCase.js';
 import { updateOutreachRecordUseCase } from '../application/usecases/outreach/updateOutreachRecordUseCase.js';
-import { createOutreachRecordResponse } from '../domain/outreachRecord.js';
+import { Outreach } from '../domain/outreach.js';
 import { createApiHttp, createErrorBody } from '../../shared/api/http.js';
 import { createAdminDependencies } from './di/createAdminDependencies.js';
 import { getAccessToken } from '../infrastructure/http/adminCookies.js';
@@ -61,21 +61,21 @@ export function createAdminOutreachApi({
       const user = await authenticateAdmin(getAccessToken(request), dependencies);
 
       if (request.method === 'GET') {
-        const query = getOutreachQuery(request);
+        const query = getOutreachQuery(request, http);
         const result = await listOutreachRecordsUseCase(query, dependencies);
 
         if (query.scope === 'export' && query.format === 'csv') {
           return createCsvResponse(
             request,
             http,
-            createOutreachCsvUseCase((result as any).records || [])
+            createOutreachCsvUseCase((result as any).records || [], dependencies)
           );
         }
 
         return http.createJsonResponse(request, 200, createListResponse(result));
       }
 
-      const payload = await readJsonBody(request);
+      const payload = await http.readJsonBody(request);
 
       if (payload.action === 'import') {
         const result = await importOutreachCsvUseCase(payload, dependencies);
@@ -85,14 +85,14 @@ export function createAdminOutreachApi({
       const record = await updateOutreachRecordUseCase(
         {
           id: payload.id,
-          changes: payload.changes,
+          record: new Outreach(payload.record),
           actorEmail: user.email,
         },
         dependencies
       );
 
       return http.createJsonResponse(request, 200, {
-        record: createOutreachRecordResponse(record),
+        record,
       });
     } catch (error) {
       const statusCode = getHttpErrorStatus(error);
@@ -125,31 +125,22 @@ export function getHttpErrorStatus(error) {
 }
 
 export function getHttpErrorBody(error) {
-  if (error?.code && error?.statusCode) {
+  if (error?.code && getHttpErrorStatus(error) !== 500) {
     return createErrorBody(error.code, error.message);
   }
 
   return createErrorBody('admin_request_failed', 'Admin request failed');
 }
 
-async function readJsonBody(request) {
-  try {
-    return await request.json();
-  } catch {
-    throw createAdminError(400, 'invalid_json', 'Invalid JSON body');
-  }
-}
-
-function getOutreachQuery(request) {
-  const params = new URL(request.url).searchParams;
-  return Object.fromEntries(params.entries());
+function getOutreachQuery(request, http) {
+  return http.readSearchParams(request);
 }
 
 function createListResponse(result) {
   if (result.records) {
     return {
       ...result,
-      records: result.records.map(createOutreachRecordResponse),
+      records: result.records,
     };
   }
 

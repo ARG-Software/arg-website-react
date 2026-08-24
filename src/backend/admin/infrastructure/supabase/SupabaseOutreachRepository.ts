@@ -1,8 +1,10 @@
-import type { IOutreachRepository } from '../../application/ports/IOutreachRepository.js';
+import type { IOutreachRepository } from '../../application/ports/repositories/IOutreachRepository.js';
+import type { Outreach } from '../../domain/outreach.js';
+import type { AdminConfig } from '../../apps/config/AdminConfig.js';
 import { toOutreachDatabaseRow, toOutreachRecord } from './outreachRows.js';
 
 export class SupabaseOutreachRepository implements IOutreachRepository {
-  constructor(private readonly client: any, private readonly securityCodec: any) {}
+  constructor(private readonly client: any, private readonly config: AdminConfig) {}
 
   async list() {
     const { data, error } = await this.client
@@ -12,7 +14,7 @@ export class SupabaseOutreachRepository implements IOutreachRepository {
 
     if (error) throw error;
 
-    return data.map(row => toOutreachRecord(row, this.securityCodec));
+    return data.map(row => toOutreachRecord(row, this.config));
   }
 
   async findById(id) {
@@ -24,30 +26,30 @@ export class SupabaseOutreachRepository implements IOutreachRepository {
 
     if (error || !data) return null;
 
-    return toOutreachRecord(data, this.securityCodec);
+    return toOutreachRecord(data, this.config);
   }
 
-  async savePayload(id, payload) {
+  async save(outreach: Outreach) {
     const { data, error } = await this.client
       .from('outreach_records')
-      .update(toOutreachDatabaseRow(payload, this.securityCodec))
-      .eq('id', id)
+      .update(toOutreachDatabaseRow(outreach, this.config))
+      .eq('id', outreach.id)
       .select('*')
       .single();
 
     if (error) throw error;
 
-    return toOutreachRecord(data, this.securityCodec);
+    return toOutreachRecord(data, this.config);
   }
 
-  async createMany(payloads) {
-    if (!payloads.length) return [];
+  async createMany(outreaches: Outreach[]) {
+    if (!outreaches.length) return [];
 
-    const rows = payloads.map(payload => toOutreachDatabaseRow(payload, this.securityCodec));
+    const rows = outreaches.map(outreach => toOutreachDatabaseRow(outreach, this.config));
     const { data, error } = await this.client.from('outreach_records').insert(rows).select('*');
 
     if (error) throw error;
 
-    return data.map(row => toOutreachRecord(row, this.securityCodec));
+    return data.map(row => toOutreachRecord(row, this.config));
   }
 }

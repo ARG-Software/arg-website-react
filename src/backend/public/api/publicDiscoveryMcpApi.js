@@ -1,3 +1,5 @@
+import { readJsonBody } from '../../shared/api/http.js';
+
 const SERVER_INFO = {
   name: 'ARG Software Public Discovery MCP',
   version: '1.0.0',
@@ -195,7 +197,7 @@ async function handlePublicDiscoveryMcpRequest(request) {
   let payload;
 
   try {
-    payload = await request.json();
+    payload = await readJsonBody(request);
   } catch {
     return createResponse(400, createJsonRpcError(null, -32700, 'Parse error'));
   }

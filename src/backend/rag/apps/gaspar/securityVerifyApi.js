@@ -38,7 +38,7 @@ export function createSecurityVerifyApi({
     let altcha;
 
     try {
-      altcha = (await request.json()).altcha;
+      altcha = (await http.readJsonBody(request)).altcha;
     } catch {
       return http.createJsonResponse(
         request,

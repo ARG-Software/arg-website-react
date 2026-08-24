@@ -37,7 +37,7 @@ export function useUpdateOutreachRecord() {
 
   return useMutation({
     mutationKey: outreachQueryKey,
-    mutationFn: ({ id, changes }) => updateOutreachRecord(id, changes),
+    mutationFn: ({ id, record }) => updateOutreachRecord(id, record),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: outreachQueryKey });
     },

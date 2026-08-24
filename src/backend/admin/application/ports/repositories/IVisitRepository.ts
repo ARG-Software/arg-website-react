@@ -3,7 +3,7 @@ import type {
   VisitMetricsData,
   VisitSessionListResult,
   VisitSessionRecord,
-} from '../../domain/visit.js';
+} from '../../../domain/types/VisitTypes.js';
 
 export interface IVisitRepository {
   recordSession(record: VisitSessionRecord): Promise<void>;

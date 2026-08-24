@@ -1,5 +1,5 @@
 import { createAdminError } from '../../application/errors.js';
-import type { IAdminUserRepository } from '../../application/ports/IAdminUserRepository.js';
+import type { IAdminUserRepository } from '../../application/ports/repositories/IAdminUserRepository.js';
 import type { IAdminIdentityProvider } from '../../application/ports/IAdminIdentityProvider.js';
 
 class UserAuthenticator {
