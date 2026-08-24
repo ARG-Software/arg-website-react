@@ -1,7 +1,7 @@
-import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
-import type { AskQuestionResult } from '../../../domain/assistant/AssistantResponse.js';
-import type { PageContext } from '../../../domain/conversation/ChatMessage.js';
-import type { RetrievalItemResult } from '../planning/createRetrievalItems.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/IRetrievedContext.js';
+import type { IAskQuestionResult } from '../../../domain/assistant/AssistantResponse.js';
+import type { IPageContext } from '../../../domain/conversation/IChatMessage.js';
+import type { IRetrievalItemResult } from '../planning/createRetrievalItems.js';
 import { createAssistantActions } from './actions.js';
 import { createCitations } from './citations.js';
 import { normalizeAssistantAnswer } from './normalizeAnswer.js';
@@ -22,13 +22,13 @@ export function createAnswerResult({
 }: {
   answer: string;
   language: string;
-  languagePreference?: Pick<AskQuestionResult, 'languagePreference'>;
+  languagePreference?: Pick<IAskQuestionResult, 'languagePreference'>;
   question: string;
-  contexts: RetrievedContext[];
-  retrievalResults: RetrievalItemResult[];
+  contexts: IRetrievedContext[];
+  retrievalResults: IRetrievalItemResult[];
   siteUrl: string;
-  pageContext?: PageContext | null;
-}): AskQuestionResult {
+  pageContext?: IPageContext | null;
+}): IAskQuestionResult {
   return {
     answer: normalizeAssistantAnswer(answer),
     language,

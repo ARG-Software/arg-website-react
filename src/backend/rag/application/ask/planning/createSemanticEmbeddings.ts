@@ -1,14 +1,14 @@
-import type { EmbeddingProvider } from '../../ports/ProviderPorts.js';
+import type { IEmbeddingProvider } from '../../ports/IProviderPorts.js';
 import type { EmbeddingIndex } from '../../ports/EmbeddingIndex.js';
 import { createQueryEmbeddings } from '../retrieval/embeddings.js';
 import { isExactTechnologySubject } from '../retrieval/strategies/exactTechnology.js';
 import { isProjectReferenceQuestion } from '../retrieval/strategies/projectReferences.js';
-import type { RoutedRetrievalItem } from './createRetrievalItems.js';
+import type { IRoutedRetrievalItem } from './createRetrievalItems.js';
 
 export async function createSemanticEmbeddings(
-  items: RoutedRetrievalItem[],
-  embeddingProvider: EmbeddingProvider,
-  fallbackEmbeddingProvider: EmbeddingProvider
+  items: IRoutedRetrievalItem[],
+  embeddingProvider: IEmbeddingProvider,
+  fallbackEmbeddingProvider: IEmbeddingProvider
 ): Promise<Map<number, { embedding: number[]; index: EmbeddingIndex }>> {
   const semanticItems = items
     .map((item, index) => ({ item, index }))
@@ -32,7 +32,7 @@ export async function createSemanticEmbeddings(
   );
 }
 
-function requiresSemanticEmbedding(item: RoutedRetrievalItem): boolean {
+function requiresSemanticEmbedding(item: IRoutedRetrievalItem): boolean {
   if (item.route.requiresPersonClarification) {
     return false;
   }

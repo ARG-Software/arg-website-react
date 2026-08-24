@@ -1,12 +1,16 @@
-import { getDeepSeekConfig, type DeepSeekConfig } from './deepSeekConfig.js';
-import type { AssistantUiCopyTranslator } from '../../../application/ports/ProviderPorts.js';
+import type { IAssistantUiCopyTranslator } from '../../../application/ports/IProviderPorts.js';
 import { buildAssistantUiCopyTranslationPrompt } from '../../../application/prompts/assistantUiCopyTranslation.js';
 import { parseTranslatedAssistantUiCopy } from '../../../application/assistantUiCopy/normalization.js';
 import { createDeepSeekChatCompletion } from './DeepSeekChatClient.js';
 
+type DeepSeekTranslatorConfig = {
+  apiKey: string;
+  model: string;
+};
+
 export function createDeepSeekAssistantUiCopyTranslator(
-  config: DeepSeekConfig = getDeepSeekConfig()
-): AssistantUiCopyTranslator {
+  config: DeepSeekTranslatorConfig
+): IAssistantUiCopyTranslator {
   return {
     async translateAssistantUiCopy(source, language) {
       const data = await createDeepSeekChatCompletion({

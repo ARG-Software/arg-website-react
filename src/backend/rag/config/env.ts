@@ -1,11 +1,12 @@
 import { config as loadDotenv } from 'dotenv';
+import type { IEnvSource } from '../../shared/config/IEnvSource.js';
 
-interface EnvOptions {
-  env?: EnvSource;
+interface IEnvOptions {
+  env?: IEnvSource;
   required?: boolean;
 }
 
-export type EnvSource = Record<string, string | undefined>;
+export type { IEnvSource };
 
 const DEFAULTS: Record<string, string> = {
   EMBEDDING_DIMENSIONS: '768',
@@ -28,9 +29,10 @@ const REQUIRED_ENV = [
   'FALLBACK_EMBEDDING_MODEL',
   'AI_MODEL_API_KEY',
   'AI_MODEL',
+  'ALTCHA_HMAC_KEY',
 ];
 
-export function getEnv(name: string, options: EnvOptions = {}): string | undefined {
+export function getEnv(name: string, options: IEnvOptions = {}): string | undefined {
   const env = options.env || process.env;
   const value = env[name] ?? DEFAULTS[name];
 
@@ -41,7 +43,7 @@ export function getEnv(name: string, options: EnvOptions = {}): string | undefin
   return value;
 }
 
-export function getNumberEnv(name: string, options: EnvOptions = {}): number | undefined {
+export function getNumberEnv(name: string, options: IEnvOptions = {}): number | undefined {
   const value = getEnv(name, options);
 
   if (value === undefined) {
@@ -67,7 +69,7 @@ export function loadLocalEnv(path = '.env'): Record<string, string> {
   return result.parsed ?? {};
 }
 
-export function validateRequiredEnv(env: EnvSource = process.env): void {
+export function validateRequiredEnv(env: IEnvSource = process.env): void {
   const missing = REQUIRED_ENV.filter(name => !env[name]);
 
   if (missing.length > 0) {
@@ -75,10 +77,10 @@ export function validateRequiredEnv(env: EnvSource = process.env): void {
   }
 }
 
-export function getRequiredEnv(name: string, env: EnvSource = process.env): string {
+export function getRequiredEnv(name: string, env: IEnvSource = process.env): string {
   return getEnv(name, { env, required: true }) as string;
 }
 
-export function getRequiredNumberEnv(name: string, env: EnvSource = process.env): number {
+export function getRequiredNumberEnv(name: string, env: IEnvSource = process.env): number {
   return getNumberEnv(name, { env, required: true }) as number;
 }

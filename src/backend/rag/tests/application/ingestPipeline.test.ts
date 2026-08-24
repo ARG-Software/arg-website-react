@@ -7,9 +7,9 @@ import { redactCvContent } from '../../application/ingestion/processing/redactio
 import { createSourceHash } from '../../application/ingestion/processing/text.js';
 import { createFakeEmbeddingProvider as createProvider } from '../fakes/FakeEmbeddingProvider.js';
 import { createFakeRagWriteRepository as createRepository } from '../fakes/FakeRagWriteRepository.js';
-import type { RagSource } from '../../domain/content/RagSource.js';
+import type { IRagSource } from '../../domain/content/IRagSource.js';
 
-const source: RagSource = {
+const source: IRagSource = {
   sourceType: 'blog_post',
   sourceKey: 'fallback-test',
   title: 'Fallback test',

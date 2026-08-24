@@ -1,12 +1,12 @@
-import type { PageContext } from '../../../domain/conversation/ChatMessage.js';
-import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
+import type { IPageContext } from '../../../domain/conversation/IChatMessage.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/IRetrievedContext.js';
 import type {
-  RetrievalPlan,
-  RetrievalQuestionPlan,
-} from '../../../domain/retrieval/RetrievalPlan.js';
+  IRetrievalPlan,
+  IRetrievalQuestionPlan,
+} from '../../../domain/retrieval/IRetrievalPlan.js';
 import type {
-  RetrievalRoute,
-} from '../../../domain/retrieval/RetrievalRoute.js';
+  IRetrievalRoute,
+} from '../../../domain/retrieval/IRetrievalRoute.js';
 import { resolveRetrievalRoute } from '../retrieval/route.js';
 import { extractTechnologyName } from '../retrieval/technology/normalizeTechnology.js';
 import {
@@ -16,7 +16,7 @@ import {
   splitTechnologySubjects,
 } from '../retrieval/technology/splitTechnologyQuestion.js';
 
-interface ContextualRetrievalItem extends RetrievalQuestionPlan {
+interface IContextualRetrievalItem extends IRetrievalQuestionPlan {
   sourceKeys?: string[];
   forceFirstChunks?: boolean;
 }
@@ -29,21 +29,21 @@ const PROJECT_BUDGET_PATTERN = /\b(?:budget|cost|price|pricing)\b/i;
 const SERVICE_ENQUIRY_PATTERN =
   /\b(?:assess|build|create|deliver|develop|estimate|fix|help|make|modernize|quote|scope|want|need)\b.{0,80}\b(?:app|application|mvp|platform|product|project|site|software|system|web(?:site)?|web app)\b|\b(?:app|application|mvp|platform|product|project|site|software|system|web(?:site)?|web app)\b.{0,80}\b(?:assess|build|create|deliver|develop|estimate|fix|help|make|modernize|quote|scope)\b/i;
 
-export interface RoutedRetrievalItem {
-  plan: RetrievalQuestionPlan;
+export interface IRoutedRetrievalItem {
+  plan: IRetrievalQuestionPlan;
   retrievalQuestion: string;
-  route: RetrievalRoute;
+  route: IRetrievalRoute;
 }
 
-export interface RetrievalItemResult extends RoutedRetrievalItem {
-  contexts: RetrievedContext[];
+export interface IRetrievalItemResult extends IRoutedRetrievalItem {
+  contexts: IRetrievedContext[];
 }
 
 export function createRoutedRetrievalItems(
-  plan: RetrievalPlan & { questions?: RetrievalQuestionPlan[] },
+  plan: IRetrievalPlan & { questions?: IRetrievalQuestionPlan[] },
   question: string,
-  pageContext: PageContext | null = null
-): RoutedRetrievalItem[] {
+  pageContext: IPageContext | null = null
+): IRoutedRetrievalItem[] {
   return createRetrievalItems(plan, question, pageContext).map(item => {
     const retrievalQuestion = item.query || question;
     const route = resolveRetrievalRoute(retrievalQuestion, item);
@@ -61,10 +61,10 @@ export function createRoutedRetrievalItems(
 }
 
 function createRetrievalItems(
-  plan: RetrievalPlan & { questions?: RetrievalQuestionPlan[] },
+  plan: IRetrievalPlan & { questions?: IRetrievalQuestionPlan[] },
   question: string,
-  pageContext: PageContext | null
-): ContextualRetrievalItem[] {
+  pageContext: IPageContext | null
+): IContextualRetrievalItem[] {
   const items = plan.questions?.length ? plan.questions : [plan];
   return items
     .flatMap(item => createTechnologySubjectItems(item, question))
@@ -82,10 +82,10 @@ function createRetrievalItems(
 }
 
 function applyPageContext(
-  item: RetrievalQuestionPlan,
+  item: IRetrievalQuestionPlan,
   originalQuestion: string,
-  pageContext: PageContext | null
-): ContextualRetrievalItem {
+  pageContext: IPageContext | null
+): IContextualRetrievalItem {
   if (!pageContext || !isContextualReference(`${originalQuestion} ${item.query}`)) {
     return item;
   }
@@ -108,10 +108,10 @@ function applyPageContext(
 }
 
 function applyProjectPageContext(
-  item: RetrievalQuestionPlan,
+  item: IRetrievalQuestionPlan,
   originalQuestion: string,
   projectName: string
-): ContextualRetrievalItem {
+): IContextualRetrievalItem {
   const text = `${originalQuestion} ${item.query} ${item.subject}`;
   const subject = PROJECT_BUDGET_PATTERN.test(text)
     ? 'project budget'
@@ -135,11 +135,11 @@ function isCompanyEntityName(value: string): boolean {
   return !value || /\b(?:arg|arg software|company|team|studio|you|your)\b/i.test(value.trim());
 }
 
-function isServiceEnquiry(item: RetrievalQuestionPlan): boolean {
+function isServiceEnquiry(item: IRetrievalQuestionPlan): boolean {
   return SERVICE_ENQUIRY_PATTERN.test(`${item.query} ${item.subject}`);
 }
 
-function getPageContextLabel(pageContext: PageContext): string {
+function getPageContextLabel(pageContext: IPageContext): string {
   if (pageContext.activeSection) {
     return `${pageContext.activeSection} section`;
   }
@@ -152,9 +152,9 @@ function getPageContextLabel(pageContext: PageContext): string {
 }
 
 function createTechnologySubjectItems(
-  item: RetrievalQuestionPlan,
+  item: IRetrievalQuestionPlan,
   originalQuestion: string
-): RetrievalQuestionPlan[] {
+): IRetrievalQuestionPlan[] {
   if (
     item.mode === 'article_discovery' ||
     isEngineeringPracticeQuestion(originalQuestion, item.subject) ||
@@ -178,7 +178,7 @@ function createTechnologySubjectItems(
 
 function shouldUseDirectEvidenceForTechnology(
   originalQuestion: string,
-  item: RetrievalQuestionPlan
+  item: IRetrievalQuestionPlan
 ): boolean {
   if (
     item.mode === 'article_discovery' ||

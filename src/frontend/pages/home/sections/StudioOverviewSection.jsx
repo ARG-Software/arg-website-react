@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import AppLink from '../../../components/navigation/AppLink';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { TransitionContext } from '../../../providers/TransitionProvider';
-import { trackEvent } from '../../../utils/analytics';
+import { trackEvent } from '@services/analytics';
 
 import HOMEPAGE from '../../../data/homePage.json';
 

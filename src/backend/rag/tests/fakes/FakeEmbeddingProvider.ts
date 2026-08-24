@@ -1,8 +1,8 @@
-import type { EmbeddingProvider } from '../../application/ports/ProviderPorts.js';
+import type { IEmbeddingProvider } from '../../application/ports/IProviderPorts.js';
 
 export function createFakeEmbeddingProvider(
   embedTexts: (texts: string[]) => number[][] | Promise<number[][]>
-): EmbeddingProvider {
+): IEmbeddingProvider {
   return {
     async embedText(text) {
       const [embedding] = await embedTexts([text]);

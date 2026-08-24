@@ -4,15 +4,15 @@ import path from 'node:path';
 import { getTrustedExternalSourceEntries } from '../sourceManifestConfig.js';
 import { extractHtmlText, fetchExternalHtml } from '../extractors/extractHtmlText.js';
 import { createSource } from '../../../application/ingestion/sourceFactory.js';
-import type { IngestionRunOptions } from '../../../application/ingestion/types.js';
-import type { RagSource } from '../../../domain/content/RagSource.js';
-import type { ExternalSourceManifestEntry } from '../SourceManifestTypes.js';
+import type { IIngestionRunOptions } from '../../../application/ingestion/IIngestionTypes.js';
+import type { IRagSource } from '../../../domain/content/IRagSource.js';
+import type { IExternalSourceManifestEntry } from '../SourceManifestTypes.js';
 import { escapeRegExp } from '../../../application/common/regex.js';
 
 export async function loadTrustedExternalSourceEntries(
   rootDir = process.cwd(),
-  selection?: IngestionRunOptions
-): Promise<ExternalSourceManifestEntry[]> {
+  selection?: IIngestionRunOptions
+): Promise<IExternalSourceManifestEntry[]> {
   void rootDir;
 
   return filterExternalSourceEntries(getTrustedExternalSourceEntries().map(validateExternalSourceEntry), selection);
@@ -25,7 +25,7 @@ export async function loadTrustedExternalSource({
   snapshotPath,
   extractor,
   extraction,
-}: ExternalSourceManifestEntry): Promise<RagSource> {
+}: IExternalSourceManifestEntry): Promise<IRagSource> {
   const parsedUrl = new URL(url);
   const snapshot = snapshotPath
     ? {
@@ -52,7 +52,7 @@ export async function loadTrustedExternalSource({
   });
 }
 
-function validateExternalSourceEntry(item: unknown): ExternalSourceManifestEntry {
+function validateExternalSourceEntry(item: unknown): IExternalSourceManifestEntry {
   if (!item || typeof item !== 'object') {
     throw new Error('External source entries must be objects');
   }
@@ -93,7 +93,7 @@ function validateExternalSourceEntry(item: unknown): ExternalSourceManifestEntry
           extractor: item.extractor,
           extraction:
             'extraction' in item && item.extraction && typeof item.extraction === 'object'
-              ? (item.extraction as ExternalSourceManifestEntry['extraction'])
+              ? (item.extraction as IExternalSourceManifestEntry['extraction'])
               : undefined,
         }
       : {}),
@@ -143,9 +143,9 @@ async function extractDesignRushFacts(
 
 
 function filterExternalSourceEntries(
-  entries: ExternalSourceManifestEntry[],
-  selection: IngestionRunOptions | undefined
-): ExternalSourceManifestEntry[] {
+  entries: IExternalSourceManifestEntry[],
+  selection: IIngestionRunOptions | undefined
+): IExternalSourceManifestEntry[] {
   if (selection && !selection.all) {
     return entries.filter(entry => {
       const normalizedUrl = new URL(entry.url).toString();

@@ -5,7 +5,7 @@ import {
   loadTrustedExternalSource,
   loadTrustedExternalSourceEntries,
 } from '../infrastructure/ingestion/loaders/loadTrustedExternalSources.js';
-import type { IngestSourceResult } from '../application/ingestion/types.js';
+import type { IIngestSourceResult } from '../application/ingestion/IIngestionTypes.js';
 import { sleep } from '../application/common/time.js';
 import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
 
@@ -28,7 +28,7 @@ if (allowlist.length === 0) {
   process.exit(0);
 }
 
-const results: IngestSourceResult[] = [];
+const results: IIngestSourceResult[] = [];
 const failures: Array<{ item: { url: string }; error: unknown }> = [];
 
 for (const item of allowlist) {
@@ -70,7 +70,7 @@ if (failures.length > 0) {
   process.exitCode = 1;
 }
 
-function printResult(result: IngestSourceResult): void {
+function printResult(result: IIngestSourceResult): void {
   const status = result.skipped ? `skipped:${result.reason}` : dryRun ? 'ready' : 'ingested';
   console.log(`${status} ${result.sourceType}/${result.sourceKey} (${result.chunkCount} chunks)`);
 }

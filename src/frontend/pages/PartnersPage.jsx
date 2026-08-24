@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
-import { trackCTA, trackEvent } from '@utils/analytics';
+import { trackCTA, trackEvent } from '@services/analytics';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
 import { CTASection } from '@components/layout/CTASection';

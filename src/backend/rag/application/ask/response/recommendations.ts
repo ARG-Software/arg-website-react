@@ -1,18 +1,18 @@
-import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
-import type { ArticleRecommendation } from '../../../domain/assistant/AssistantResponse.js';
-import type { RetrievalRoute } from '../../../domain/retrieval/RetrievalRoute.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/IRetrievedContext.js';
+import type { IArticleRecommendation } from '../../../domain/assistant/AssistantResponse.js';
+import type { IRetrievalRoute } from '../../../domain/retrieval/IRetrievalRoute.js';
 import { resolveUrl } from '../../common/url.js';
 
 export function createArticleRecommendations(
-  contexts: RetrievedContext[],
-  route: RetrievalRoute,
+  contexts: IRetrievedContext[],
+  route: IRetrievalRoute,
   siteUrl: string
-): ArticleRecommendation[] {
+): IArticleRecommendation[] {
   if (route.kind !== 'blog' && !hasFirstPartyBlogContext(contexts)) {
     return [];
   }
 
-  const recommendations: ArticleRecommendation[] = [];
+  const recommendations: IArticleRecommendation[] = [];
   const seenUrls = new Set<string>();
 
   for (const context of contexts) {
@@ -37,13 +37,13 @@ export function createArticleRecommendations(
   return recommendations;
 }
 
-function hasFirstPartyBlogContext(contexts: RetrievedContext[]): boolean {
+function hasFirstPartyBlogContext(contexts: IRetrievedContext[]): boolean {
   return contexts.some(context => context.sourceType === 'blog_post' && context.origin === 'first_party');
 }
 
 export function mergeArticleRecommendations(
-  recommendationGroups: ArticleRecommendation[][]
-): ArticleRecommendation[] {
+  recommendationGroups: IArticleRecommendation[][]
+): IArticleRecommendation[] {
   const seenUrls = new Set<string>();
   return recommendationGroups.flat().filter(recommendation => {
     if (seenUrls.has(recommendation.url)) {

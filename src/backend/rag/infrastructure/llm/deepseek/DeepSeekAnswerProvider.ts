@@ -1,4 +1,3 @@
-import { getSiteConfig } from '../../../application/ragConfig.js';
 import { buildSystemPrompt } from '../../../application/prompts/answering.js';
 import {
   buildConversationTransformPrompt,
@@ -15,35 +14,38 @@ import { buildIntentPrompt } from '../../../application/prompts/intent.js';
 import { buildPersonClarificationPrompt } from '../../../application/prompts/personClarification.js';
 import { parseIntentResponse, parseRetrievalPlan } from '../../../application/prompts/outputParsers.js';
 import { buildRetrievalPlanPrompt } from '../../../application/prompts/retrievalPlan.js';
-import type { ChatMessage, PageContext, PromptMessage } from '../../../domain/conversation/ChatMessage.js';
-import { getDeepSeekConfig, type DeepSeekConfig } from './deepSeekConfig.js';
-import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
-import type { AnswerProvider } from '../../../application/ports/ProviderPorts.js';
+import type { IChatMessage, IPageContext, IPromptMessage } from '../../../domain/conversation/IChatMessage.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/IRetrievedContext.js';
+import type { IAnswerProvider } from '../../../application/ports/IProviderPorts.js';
 import { createDeepSeekChatCompletion } from './DeepSeekChatClient.js';
 import type {
   ConversationTransformTask,
 } from '../../../domain/conversation/ConversationTransform.js';
 import type {
   FallbackQuestionIntent,
-  QuestionIntentResult,
+  IQuestionIntentResult,
 } from '../../../domain/conversation/QuestionIntent.js';
 import type {
-  RetrievalPlan,
-} from '../../../domain/retrieval/RetrievalPlan.js';
+  IRetrievalPlan,
+} from '../../../domain/retrieval/IRetrievalPlan.js';
 
-type DeepSeekAnswerConfig = DeepSeekConfig & { companyName: string };
+type DeepSeekAnswerConfig = {
+  apiKey: string;
+  model: string;
+  companyName: string;
+};
 
-export class DeepSeekAnswerClient implements AnswerProvider {
-  constructor(private readonly config?: DeepSeekAnswerConfig) {}
+export class DeepSeekAnswerClient implements IAnswerProvider {
+  constructor(private readonly config: DeepSeekAnswerConfig) {}
 
   async generateAnswer(
     question: string,
-    messages: ChatMessage[],
-    contexts: RetrievedContext[],
+    messages: IChatMessage[],
+    contexts: IRetrievedContext[],
     responseLanguage: string
   ): Promise<string> {
     const config = this.getConfig();
-    const chatMessages: PromptMessage[] = [
+    const chatMessages: IPromptMessage[] = [
       {
         role: 'system',
         content: buildSystemPrompt(config.companyName, responseLanguage),
@@ -67,9 +69,9 @@ export class DeepSeekAnswerClient implements AnswerProvider {
 
   async planRetrieval(
     question: string,
-    messages: ChatMessage[],
-    pageContext: PageContext | null
-  ): Promise<RetrievalPlan> {
+    messages: IChatMessage[],
+    pageContext: IPageContext | null
+  ): Promise<IRetrievalPlan> {
     const config = this.getConfig();
     const data = await createDeepSeekChatCompletion({
       config,
@@ -88,9 +90,9 @@ export class DeepSeekAnswerClient implements AnswerProvider {
 
   async classifyQuestionIntent(
     question: string,
-    messages: ChatMessage[],
-    pageContext: PageContext | null
-  ): Promise<QuestionIntentResult> {
+    messages: IChatMessage[],
+    pageContext: IPageContext | null
+  ): Promise<IQuestionIntentResult> {
     const config = this.getConfig();
     const data = await createDeepSeekChatCompletion({
       config,
@@ -115,7 +117,7 @@ export class DeepSeekAnswerClient implements AnswerProvider {
 
   async generateInsufficientContextAnswer(
     question: string,
-    messages: ChatMessage[],
+    messages: IChatMessage[],
     responseLanguage: string
   ): Promise<string> {
     const config = this.getConfig();
@@ -212,13 +214,6 @@ export class DeepSeekAnswerClient implements AnswerProvider {
   }
 
   private getConfig(): DeepSeekAnswerConfig {
-    return (
-      this.config ?? {
-        ...getDeepSeekConfig(),
-        ...getSiteConfig(),
-      }
-    );
+    return this.config;
   }
 }
-
-export const deepSeekAnswerClient = new DeepSeekAnswerClient();

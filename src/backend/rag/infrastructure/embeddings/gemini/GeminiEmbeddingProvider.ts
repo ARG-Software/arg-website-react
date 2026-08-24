@@ -1,9 +1,4 @@
-import {
-  getGeminiConfig,
-  getGeminiFallbackEmbeddingConfig,
-  type GeminiEmbeddingConfig,
-} from './geminiConfig.js';
-import type { EmbeddingProvider } from '../../../application/ports/ProviderPorts.js';
+import type { IEmbeddingProvider } from '../../../application/ports/IProviderPorts.js';
 import {
   EmbeddingQuotaExceededError,
   isEmbeddingQuotaExceededError,
@@ -17,20 +12,27 @@ const MAX_BATCH_SIZE = 100;
 
 export { EmbeddingQuotaExceededError, isEmbeddingQuotaExceededError };
 
+type GeminiEmbeddingConfig = {
+  apiKey: string;
+  model: string;
+  dimensions: number;
+  requestDelayMs: number;
+};
+
 type GeminiEmbeddingConfigSource = () => GeminiEmbeddingConfig;
 
-interface GeminiEmbeddingResponse {
+interface IGeminiEmbeddingResponse {
   embedding?: {
     values?: number[];
   };
 }
 
-interface GeminiBatchEmbeddingResponse {
-  embeddings?: Array<GeminiEmbeddingResponse['embedding']>;
+interface IGeminiBatchEmbeddingResponse {
+  embeddings?: Array<IGeminiEmbeddingResponse['embedding']>;
 }
 
-export class GeminiEmbeddingClient implements EmbeddingProvider {
-  constructor(private readonly configSource: GeminiEmbeddingConfigSource = getPrimaryEmbeddingConfig) {}
+export class GeminiEmbeddingClient implements IEmbeddingProvider {
+  constructor(private readonly configSource: GeminiEmbeddingConfigSource) {}
 
   async embedText(text: string): Promise<number[]> {
     const [embedding] = await this.embedTexts([text]);
@@ -64,7 +66,7 @@ export class GeminiEmbeddingClient implements EmbeddingProvider {
   private async embedTextContent(text: string): Promise<number[]> {
     const config = this.getConfig();
     const url = `${GEMINI_API_BASE}/models/${config.model}:embedContent?key=${config.apiKey}`;
-    const data = await fetchWithRetry<GeminiEmbeddingResponse>(
+    const data = await fetchWithRetry<IGeminiEmbeddingResponse>(
       url,
       {
         method: 'POST',
@@ -87,7 +89,7 @@ export class GeminiEmbeddingClient implements EmbeddingProvider {
   private async embedBatch(texts: string[]): Promise<number[][]> {
     const config = this.getConfig();
     const url = `${GEMINI_API_BASE}/models/${config.model}:batchEmbedContents?key=${config.apiKey}`;
-    const data = await fetchWithRetry<GeminiBatchEmbeddingResponse>(
+    const data = await fetchWithRetry<IGeminiBatchEmbeddingResponse>(
       url,
       {
         method: 'POST',
@@ -120,18 +122,7 @@ export class GeminiEmbeddingClient implements EmbeddingProvider {
   }
 }
 
-export const geminiEmbeddingClient = new GeminiEmbeddingClient();
-export const geminiFallbackEmbeddingClient = new GeminiEmbeddingClient(getFallbackEmbeddingConfig);
-
-function getPrimaryEmbeddingConfig(): GeminiEmbeddingConfig {
-  return getGeminiConfig();
-}
-
-function getFallbackEmbeddingConfig(): GeminiEmbeddingConfig {
-  return getGeminiFallbackEmbeddingConfig();
-}
-
-async function fetchWithRetry<T extends GeminiEmbeddingResponse | GeminiBatchEmbeddingResponse>(
+async function fetchWithRetry<T extends IGeminiEmbeddingResponse | IGeminiBatchEmbeddingResponse>(
   url: string,
   init: RequestInit,
   model: string

@@ -3,11 +3,10 @@ export {
   getDayBucket,
   getGlobalDayBucket,
   getMinuteBucket,
-  getRateLimitConfig,
   hashIp,
 } from '../../../shared/security/rateLimit.js';
 export type {
-  RateLimitConfig,
-  RateLimitResult,
-  RateLimitStore,
+  IRateLimitConfig,
+  IRateLimitResult,
+  IRateLimitStore,
 } from '../../../shared/security/rateLimit.js';

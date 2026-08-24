@@ -1,7 +1,7 @@
-import type { RagConfig } from '../../../ragConfig.js';
-import type { RagSourceMetadata } from '../../../../domain/content/RagSource.js';
-import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
-import type { RagReadRepository, RagSourceRecord } from '../../../ports/RagReadRepository.js';
+import type { IRagConfig } from '../../../ragConfig.js';
+import type { RagSourceMetadata } from '../../../../domain/content/IRagSource.js';
+import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
+import type { IRagReadRepository, IRagSourceRecord } from '../../../ports/IRagReadRepository.js';
 
 const PROJECT_REFERENCE_PATTERN =
   /\b(?:top|main|best|featured|reference|referenced|portfolio|case stud(?:y|ies)|public examples?|client examples?)\b.{0,80}\b(?:projects?|case stud(?:y|ies)|portfolio|examples?)\b|\b(?:projects?|case stud(?:y|ies)|portfolio|examples?)\b.{0,80}\b(?:top|main|best|featured|reference|referenced|public|client)\b/iu;
@@ -23,11 +23,11 @@ export async function retrieveProjectReferenceContexts({
   question,
   subject,
 }: {
-  readRepository: RagReadRepository;
-  config: RagConfig;
+  readRepository: IRagReadRepository;
+  config: IRagConfig;
   question: string;
   subject: string;
-}): Promise<RetrievedContext[]> {
+}): Promise<IRetrievedContext[]> {
   const sources = await readRepository.findSources({ sourceTypes: ['homepage', 'project'] });
   const homepageProjectsSource = sources.find(
     source => source.sourceType === 'homepage' && source.sourceKey === 'home:projects'
@@ -44,7 +44,7 @@ export async function retrieveProjectReferenceContexts({
   ]);
 }
 
-function hasReferenceRank(source: RagSourceRecord): boolean {
+function hasReferenceRank(source: IRagSourceRecord): boolean {
   return Number.isFinite(getReferenceRank(source.metadata));
 }
 

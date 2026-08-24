@@ -1,6 +1,6 @@
 export type LanguagePreferenceAction = 'none' | 'set' | 'clear';
 
-export interface LanguagePolicyResult {
+export interface ILanguagePolicyResult {
   responseLanguage: string;
   preferenceAction: LanguagePreferenceAction;
   preferredLanguage?: string;

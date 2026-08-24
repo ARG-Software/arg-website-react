@@ -1,6 +1,6 @@
-import type { RagSourceMetadata, RagSourceType } from '../../domain/content/RagSource.js';
+import type { RagSourceMetadata, RagSourceType } from '../../domain/content/IRagSource.js';
 
-export interface JsonManifestEntry {
+export interface IJsonManifestEntry {
   kind: 'json';
   filePath: string;
   sourceType: RagSourceType;
@@ -12,7 +12,7 @@ export interface JsonManifestEntry {
   metadata?: RagSourceMetadata;
 }
 
-export interface InlineJsonManifestEntry {
+export interface IInlineJsonManifestEntry {
   kind: 'inline_json';
   sourceType: RagSourceType;
   sourceKey: string;
@@ -24,7 +24,7 @@ export interface InlineJsonManifestEntry {
   metadata?: RagSourceMetadata;
 }
 
-export interface LocalDocumentManifestEntry extends RagSourceMetadata {
+export interface ILocalDocumentManifestEntry extends RagSourceMetadata {
   kind: 'local_document';
   format: 'pdf';
   filePath: string;
@@ -33,16 +33,16 @@ export interface LocalDocumentManifestEntry extends RagSourceMetadata {
   citationUrl?: string;
   documentKind: 'portfolio' | 'cv';
   isPublic?: boolean;
-  redaction?: CvRedactionPolicy;
+  redaction?: ICvRedactionPolicy;
 }
 
-export interface CvRedactionPolicy {
+export interface ICvRedactionPolicy {
   profile: 'cv';
   manualReview: true;
   literals?: string[];
 }
 
-export interface ExternalSourceManifestEntry {
+export interface IExternalSourceManifestEntry {
   sourceKey: string;
   url: string;
   title: string;
@@ -57,13 +57,13 @@ export interface ExternalSourceManifestEntry {
   };
 }
 
-export interface FileManifestEntry {
+export interface IFileManifestEntry {
   kind: 'projects_json' | 'partners_json' | 'markdown_dir';
   filePath: string;
 }
 
 export type LocalManifestEntry =
-  | JsonManifestEntry
-  | InlineJsonManifestEntry
-  | FileManifestEntry
-  | LocalDocumentManifestEntry;
+  | IJsonManifestEntry
+  | IInlineJsonManifestEntry
+  | IFileManifestEntry
+  | ILocalDocumentManifestEntry;

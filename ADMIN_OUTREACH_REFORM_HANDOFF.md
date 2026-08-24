@@ -29,7 +29,7 @@ Required sequencing for the next session:
 Pending requested implementation before reset/reingestion:
 
 - Encrypt `email_subject` and `email_body` at rest. Suggested columns: `email_subject_key_version`, `email_subject_nonce`, `email_subject_ciphertext`, `email_subject_auth_tag`, `email_body_key_version`, `email_body_nonce`, `email_body_ciphertext`, `email_body_auth_tag`. No blind index is needed for subject/body.
-- Update `src/backend/admin/infrastructure/crypto/outreachPayloadCipher.js`, `src/backend/admin/infrastructure/supabase/outreachRows.js`, `src/backend/admin/application/outreach/outreachCsv.js`, `scripts/import-outreach.js`, admin migrations, and backend tests for encrypted/decrypted subject/body.
+- Update `src/backend/admin/application/crypto/outreachPayloadCipher.ts`, `src/backend/admin/infrastructure/supabase/outreachRows.ts`, `src/backend/admin/application/outreach/outreachCsv.ts`, `scripts/import-outreach.ts`, admin migrations, and backend tests for encrypted/decrypted subject/body.
 - Preserve formatted email drafts during import. Do not use the generic `clean()` that collapses all whitespace for `Email Draft`. Keep paragraph breaks, convert literal `\n` and `/n` into real newlines, normalize CRLF to LF, trim line ends, and keep paragraph spacing readable. Keep email subjects single-line.
 - Mailto formatting was already improved in the working tree: `src/frontend/admin/outreach.js` uses `encodeURIComponent()` instead of `URLSearchParams` so mail clients receive `%20` and `%0A`, not visible `+` characters.
 - Sent-record locking was partially implemented in the working tree: contact email is disabled for `contact_form`, status is disabled for persisted sent records, and the backend rejects status changes away from `sent`.
@@ -64,7 +64,7 @@ Completed:
 
 - Added shared ALTCHA/rate-limit modules under `src/backend/shared/security/` with JS and TS entry points.
 - Updated Gaspar/RAG security imports to use shared security modules instead of owning the implementation.
-- Added admin login backend endpoint at `/api/admin/login` in `src/backend/admin/apps/adminLoginApi.js` and `netlify/functions/admin-login.js`.
+- Added admin login backend endpoint at `/api/admin/login` in `src/backend/admin/apps/adminLoginApi.ts` and `netlify/functions/admin-login.js`.
 - Added admin login ALTCHA verification and login-attempt rate limiting using an admin-specific Supabase RPC/table.
 - Added admin 1-hour inactivity logout in `src/frontend/admin/AdminPage.jsx`.
 - Added migration `supabase/admin/migrations/20260821000000_reform_outreach_records.sql`.
@@ -74,7 +74,7 @@ Completed:
 - Reduced status model to `sent` and `not_sent`; old `replied` maps to `sent` plus `reply_obtained = true`.
 - Restricted contact method to `email` and `contact_form`.
 - Added CSV export/import backend actions on `/api/admin/outreach`; import enforces max 30 rows server-side.
-- Updated `scripts/import-outreach.js` to ingest the workbook into the new schema and skip duplicate normalized company/email rows.
+- Updated `scripts/import-outreach.ts` to ingest the workbook into the new schema and skip duplicate normalized company/email rows.
 - Added dashboard pie chart data/UI for `Replies obtained` vs `Sent without reply`.
 - Updated backend tests for login, import/export, summaries, chart data, encrypted field sorting, and blind indexes.
 - Added `OUTREACH_BLIND_INDEX_KEY` to `.env.example` and docs. Runtime currently falls back to `OUTREACH_AUDIT_SALT` if the dedicated key is not set, but a dedicated server-only key is preferred.
@@ -106,7 +106,7 @@ Remaining user-requested follow-up work:
 4. Make the dashboard `Latest sent` table sortable too.
 5. Allow table sorting by `company_name`, `date_sent`, and `follow_up_date`.
 6. Remove contact/email ordering from the UI and backend allowed sort fields. Keep the contact email blind index and uniqueness constraint.
-7. Add backend sorting support for `follow_up_date` in `src/backend/admin/application/outreach/listOutreachRecords.js`.
+7. Add backend sorting support for `follow_up_date` in `src/backend/admin/application/outreach/listOutreachRecords.ts`.
 8. Add an admin database keep-alive scheduled function, similar to Gaspar's current RAG keep-alive.
 9. Move generic keep-alive logic from `src/backend/rag/application/maintenance/keepDatabaseAlive.ts` into a backend shared module, then make Gaspar and admin use that shared module.
 
@@ -360,17 +360,17 @@ Admin should get its own rate-limit table/function in admin migrations, rather t
 
 Backend:
 
-- `src/backend/admin/apps/adminOutreachApi.js`
-- `src/backend/admin/apps/di/createAdminDependencies.js`
-- `src/backend/admin/application/admin/authenticateAdmin.js`
-- `src/backend/admin/application/admin/adminAccessPolicy.js`
-- `src/backend/admin/application/outreach/listOutreachRecords.js`
-- `src/backend/admin/application/outreach/updateOutreachRecord.js`
-- `src/backend/admin/domain/outreachRecord.js`
-- `src/backend/admin/infrastructure/config/adminConfig.js`
-- `src/backend/admin/infrastructure/crypto/outreachPayloadCipher.js`
-- `src/backend/admin/infrastructure/supabase/SupabaseOutreachRepository.js`
-- `src/backend/admin/infrastructure/supabase/outreachRows.js`
+- `src/backend/admin/apps/adminOutreachApi.ts`
+- `src/backend/admin/apps/di/createAdminDependencies.ts`
+- `src/backend/admin/application/admin/authenticateAdmin.ts`
+- `src/backend/admin/application/admin/adminAccessPolicy.ts`
+- `src/backend/admin/application/outreach/listOutreachRecords.ts`
+- `src/backend/admin/application/outreach/updateOutreachRecord.ts`
+- `src/backend/admin/domain/outreachRecord.ts`
+- `src/backend/admin/infrastructure/config/adminConfig.ts`
+- `src/backend/admin/application/crypto/outreachPayloadCipher.ts`
+- `src/backend/admin/infrastructure/supabase/SupabaseOutreachRepository.ts`
+- `src/backend/admin/infrastructure/supabase/outreachRows.ts`
 
 Frontend:
 
@@ -399,13 +399,13 @@ Netlify function:
 
 Scripts:
 
-- `scripts/import-outreach.js`
+- `scripts/import-outreach.ts`
 
 Tests:
 
-- `src/backend/admin/tests/api/adminOutreachApi.test.js`
-- `src/backend/admin/tests/application/adminAccessPolicy.test.js`
-- `src/backend/admin/tests/infrastructure/outreachPayloadCipher.test.js`
+- `src/backend/admin/tests/api/adminOutreachApi.test.ts`
+- `src/backend/admin/tests/application/adminAccessPolicy.test.ts`
+- `src/backend/admin/tests/infrastructure/outreachPayloadCipher.test.ts`
 - `src/backend/rag/tests/infrastructure/altcha.test.ts`
 - `src/backend/rag/tests/infrastructure/rateLimit.test.ts`
 

@@ -1,11 +1,11 @@
-import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
-import type { RagReadRepository } from '../../../ports/RagReadRepository.js';
+import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
+import type { IRagReadRepository } from '../../../ports/IRagReadRepository.js';
 
 const SITE_LINKS_SOURCE_KEY = 'site-links';
 
 export async function retrieveLinkActionContexts(
-  readRepository: RagReadRepository
-): Promise<RetrievedContext[]> {
+  readRepository: IRagReadRepository
+): Promise<IRetrievedContext[]> {
   const sources = await readRepository.findSources({ sourceTypes: ['homepage'] });
   const source = sources.find(item => item.sourceKey === SITE_LINKS_SOURCE_KEY);
 

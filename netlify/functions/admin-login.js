@@ -1,4 +1,4 @@
-import { config, createAdminLoginApi } from '../../src/backend/admin/apps/adminLoginApi.js';
+import { config, createAdminLoginApi } from '../../src/backend/admin/apps/adminLoginApi.ts';
 
 export { config };
 

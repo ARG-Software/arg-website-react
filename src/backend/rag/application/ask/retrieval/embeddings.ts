@@ -1,22 +1,22 @@
-import type { EmbeddingProvider } from '../../ports/ProviderPorts.js';
+import type { IEmbeddingProvider } from '../../ports/IProviderPorts.js';
 import type { EmbeddingIndex } from '../../ports/EmbeddingIndex.js';
 import { isEmbeddingQuotaExceededError } from '../../ports/ProviderErrors.js';
 
-export interface QueryEmbedding {
+export interface IQueryEmbedding {
   embedding: number[];
   index: EmbeddingIndex;
 }
 
-export interface SemanticSearchInput extends QueryEmbedding {
+export interface ISemanticSearchInput extends IQueryEmbedding {
   query: string;
 }
 
 export async function resolveSemanticSearch(
   query: string,
-  embeddingProvider: EmbeddingProvider,
-  fallbackEmbeddingProvider: EmbeddingProvider,
-  semanticSearch?: SemanticSearchInput
-): Promise<SemanticSearchInput> {
+  embeddingProvider: IEmbeddingProvider,
+  fallbackEmbeddingProvider: IEmbeddingProvider,
+  semanticSearch?: ISemanticSearchInput
+): Promise<ISemanticSearchInput> {
   if (semanticSearch) {
     return semanticSearch;
   }
@@ -32,9 +32,9 @@ export async function resolveSemanticSearch(
 
 export async function createQueryEmbedding(
   query: string,
-  embeddingProvider: EmbeddingProvider,
-  fallbackEmbeddingProvider: EmbeddingProvider
-): Promise<QueryEmbedding> {
+  embeddingProvider: IEmbeddingProvider,
+  fallbackEmbeddingProvider: IEmbeddingProvider
+): Promise<IQueryEmbedding> {
   try {
     return {
       embedding: await embeddingProvider.embedText(query),
@@ -54,8 +54,8 @@ export async function createQueryEmbedding(
 
 export async function createQueryEmbeddings(
   queries: string[],
-  embeddingProvider: EmbeddingProvider,
-  fallbackEmbeddingProvider: EmbeddingProvider
+  embeddingProvider: IEmbeddingProvider,
+  fallbackEmbeddingProvider: IEmbeddingProvider
 ): Promise<{ embeddings: number[][]; index: EmbeddingIndex }> {
   try {
     return {

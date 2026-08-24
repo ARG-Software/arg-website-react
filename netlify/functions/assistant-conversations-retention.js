@@ -1,7 +1,7 @@
 import {
   config,
   createAssistantConversationsRetentionApi,
-} from '../../src/backend/admin/apps/assistantConversationsRetentionApi.js';
+} from '../../src/backend/admin/apps/assistantConversationsRetentionApi.ts';
 
 export { config };
 

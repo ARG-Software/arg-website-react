@@ -4,7 +4,7 @@ import AppLink from '@components/navigation/AppLink';
 import { useNotFoundPageScene } from '@hooks/useNotFoundPageScene';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
-import { trackCTA } from '@utils/analytics';
+import { trackCTA } from '@services/analytics';
 import { getProjectBookingLink } from '../services/linksService';
 
 import '../styles/404.css';

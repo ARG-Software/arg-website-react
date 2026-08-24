@@ -1,4 +1,4 @@
-import type { RetrievalItemResult } from '../planning/createRetrievalItems.js';
+import type { IRetrievalItemResult } from '../planning/createRetrievalItems.js';
 import { extractTechnologyName } from '../retrieval/technology/normalizeTechnology.js';
 import {
   isEngineeringPracticeQuestion,
@@ -7,7 +7,7 @@ import {
 } from '../retrieval/technology/splitTechnologyQuestion.js';
 
 export function createUnconfirmedTechnologyAnswer(
-  results: RetrievalItemResult[],
+  results: IRetrievalItemResult[],
   responseLanguage: string
 ): string | null {
   if (results.length !== 1 || !isEnglishResponseLanguage(responseLanguage)) {
@@ -46,7 +46,7 @@ export function createUnconfirmedTechnologyAnswer(
   ].join(' ');
 }
 
-function createBusinessSystemAnswer(result: RetrievalItemResult): string | null {
+function createBusinessSystemAnswer(result: IRetrievalItemResult): string | null {
   const text = `${result.retrievalQuestion} ${result.plan.subject}`;
 
   if (isStrapiCrmQuestion(text)) {

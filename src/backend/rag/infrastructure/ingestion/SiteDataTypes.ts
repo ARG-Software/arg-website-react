@@ -1,6 +1,6 @@
-import type { RagSourceMetadata } from '../../domain/content/RagSource.js';
+import type { RagSourceMetadata } from '../../domain/content/IRagSource.js';
 
-export interface ProjectJson extends RagSourceMetadata {
+export interface IProjectJson extends RagSourceMetadata {
   slug: string;
   title: string;
   referenceRank?: number;
@@ -9,7 +9,7 @@ export interface ProjectJson extends RagSourceMetadata {
   liveLink?: string;
 }
 
-export interface PartnerJson extends RagSourceMetadata {
+export interface IPartnerJson extends RagSourceMetadata {
   slug: string;
   name: string;
   category?: string;
@@ -17,11 +17,11 @@ export interface PartnerJson extends RagSourceMetadata {
   link?: string;
 }
 
-export interface PartnersJson {
-  clients: PartnerJson[];
+export interface IPartnersJson {
+  clients: IPartnerJson[];
 }
 
-export interface FounderProfile {
+export interface IFounderProfile {
   id: string;
   name: string;
   role: string;
@@ -31,9 +31,9 @@ export interface FounderProfile {
   tags: string[];
 }
 
-export interface AboutJson {
+export interface IAboutJson {
   founders: {
-    people: FounderProfile[];
+    people: IFounderProfile[];
   };
   collaborators: {
     paragraphs: string[];
@@ -41,32 +41,32 @@ export interface AboutJson {
   };
 }
 
-export interface HomepageTeamMember {
+export interface IHomepageTeamMember {
   name: string;
   role: string;
   personKey: string;
 }
 
-export interface HomepageJson {
+export interface IHomepageJson {
   team: {
     intro: string;
-    members: HomepageTeamMember[];
+    members: IHomepageTeamMember[];
   };
 }
 
-export interface CareersFounderCard {
+export interface ICareersFounderCard {
   name: string;
   focus: string;
   personKey: string;
 }
 
-export interface CareersJson {
+export interface ICareersJson {
   founders: {
-    cards: CareersFounderCard[];
+    cards: ICareersFounderCard[];
   };
 }
 
-export interface SiteLinksJson {
+export interface ISiteLinksJson {
   calendar?: {
     project?: string;
   };

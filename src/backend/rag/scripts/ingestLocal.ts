@@ -2,8 +2,8 @@ import { loadLocalEnv } from '../config/env.js';
 import { createGasparDependencies } from '../apps/di/createGasparDependencies.js';
 import { ingestSource } from '../application/ingestion/ingestPipeline.js';
 import { loadFirstPartySources } from '../infrastructure/ingestion/loaders/loadFirstPartySources.js';
-import type { IngestSourceResult } from '../application/ingestion/types.js';
-import type { RagSource } from '../domain/content/RagSource.js';
+import type { IIngestSourceResult } from '../application/ingestion/IIngestionTypes.js';
+import type { IRagSource } from '../domain/content/IRagSource.js';
 import { sleep } from '../application/common/time.js';
 import { getIngestionRunOptions, hasSourceFilters, isDryRun, printSelectionUsage } from './cli.js';
 
@@ -20,8 +20,8 @@ if (!hasSourceFilters(selection)) {
 
 const dependencies = createGasparDependencies();
 const sources = await loadFirstPartySources(process.cwd(), selection);
-const results: IngestSourceResult[] = [];
-const failures: Array<{ source: RagSource; error: unknown }> = [];
+const results: IIngestSourceResult[] = [];
+const failures: Array<{ source: IRagSource; error: unknown }> = [];
 
 if (sources.length === 0) {
   console.log('No first-party sources matched the selected filters. Nothing to ingest.');
@@ -66,7 +66,7 @@ if (failures.length > 0) {
   process.exitCode = 1;
 }
 
-function printResult(result: IngestSourceResult): void {
+function printResult(result: IIngestSourceResult): void {
   const status = result.skipped ? `skipped:${result.reason}` : dryRun ? 'ready' : 'ingested';
   console.log(`${status} ${result.sourceType}/${result.sourceKey} (${result.chunkCount} chunks)`);
 }

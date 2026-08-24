@@ -1,4 +1,4 @@
-import type { IngestSourceInput, IngestSourceResult } from './types.js';
+import type { IIngestSourceInput, IIngestSourceResult } from './IIngestionTypes.js';
 import { isEmbeddingQuotaExceededError } from '../ports/ProviderErrors.js';
 import { chunkText } from './processing/chunking.js';
 import { createSourceHash, normalizeText } from './processing/text.js';
@@ -12,7 +12,7 @@ export async function ingestSource({
   embeddingProvider,
   fallbackEmbeddingProvider,
   repository: sourceRepository,
-}: IngestSourceInput): Promise<IngestSourceResult> {
+}: IIngestSourceInput): Promise<IIngestSourceResult> {
   const primaryProvider = requireDependency(embeddingProvider, 'embedding provider');
   const fallbackProvider = requireDependency(fallbackEmbeddingProvider, 'fallback embedding provider');
   const content = normalizeText(source.content);

@@ -392,6 +392,55 @@
   padding: 0.4rem 0.7rem;
 }
 
+.admin-visit-journey {
+  display: grid;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-visit-journey__item {
+  align-items: flex-start;
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.admin-visit-journey__sequence {
+  align-items: center;
+  background: #7904fd;
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  height: 1.8rem;
+  justify-content: center;
+  width: 1.8rem;
+}
+
+.admin-visit-journey__item div {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.admin-visit-journey__item strong,
+.admin-visit-journey__item span,
+.admin-visit-journey__item small {
+  overflow-wrap: anywhere;
+}
+
+.admin-visit-journey__item strong {
+  color: #0c002e;
+}
+
+.admin-visit-journey__item span,
+.admin-visit-journey__item small {
+  color: rgba(12, 0, 46, 0.66);
+}
+
 .admin-record-overlay__panel.ui-card--light .admin-conversation-meta span {
   background: rgba(12, 0, 46, 0.04);
   border-color: rgba(12, 0, 46, 0.14);

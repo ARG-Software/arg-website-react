@@ -1,12 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { getSupabaseConfig, type SupabaseConfig } from './supabaseConfig.js';
+import type { IRagConfig } from '../../../application/ragConfig.js';
 
 export function createSupabaseServiceClient(
-  config: SupabaseConfig = getSupabaseConfig()
+  config: Pick<IRagConfig, 'databaseUrl' | 'databaseServiceRoleKey'>
 ): SupabaseClient {
-  return createClient(config.supabaseUrl, config.supabaseServiceRoleKey, {
+  return createClient(config.databaseUrl, config.databaseServiceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

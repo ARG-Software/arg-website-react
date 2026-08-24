@@ -1,17 +1,17 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/IRetrievedContext.js';
 import type { EmbeddingIndex } from '../../../application/ports/EmbeddingIndex.js';
-import type { RagSourceOrigin } from '../../../domain/content/RagSource.js';
+import type { RagSourceOrigin } from '../../../domain/content/IRagSource.js';
 import { resolveUrl } from '../../../application/common/url.js';
 import type {
-  FindChunksByTextInput,
-  FindSourcesInput,
-  MatchChunksInput,
-  RagReadRepository,
-  RagSourceRecord,
-} from '../../../application/ports/RagReadRepository.js';
-import type { DirectChunkRow, DirectSourceRow, MatchFunction, MatchRagChunkRow } from './rows.js';
+  IFindChunksByTextInput,
+  IFindSourcesInput,
+  IMatchChunksInput,
+  IRagReadRepository,
+  IRagSourceRecord,
+} from '../../../application/ports/IRagReadRepository.js';
+import type { IDirectChunkRow, IDirectSourceRow, MatchFunction, IMatchRagChunkRow } from './rows.js';
 import { toEmbeddingLiteral } from './vector.js';
 
 const FIRST_PARTY_ORIGIN: RagSourceOrigin = 'first_party';
@@ -23,7 +23,7 @@ const MATCH_FUNCTION_BY_INDEX: Record<EmbeddingIndex, MatchFunction> = {
   fallback: 'match_rag_chunks_fallback',
 };
 
-export class SupabaseRagReadRepository implements RagReadRepository {
+export class SupabaseRagReadRepository implements IRagReadRepository {
   constructor(
     private readonly supabase: SupabaseClient,
     private readonly siteUrl: string
@@ -32,7 +32,7 @@ export class SupabaseRagReadRepository implements RagReadRepository {
   async findSources({
     sourceTypes,
     sourceOrigin = FIRST_PARTY_ORIGIN,
-  }: FindSourcesInput): Promise<RagSourceRecord[]> {
+  }: IFindSourcesInput): Promise<IRagSourceRecord[]> {
     const { data, error } = await this.supabase
       .from('rag_sources')
       .select(SOURCE_COLUMNS)
@@ -44,10 +44,10 @@ export class SupabaseRagReadRepository implements RagReadRepository {
       throw error;
     }
 
-    return ((data ?? []) as DirectSourceRow[]).map(row => toSourceRecord(row));
+    return ((data ?? []) as IDirectSourceRow[]).map(row => toSourceRecord(row));
   }
 
-  async findFirstChunksForSources(sources: RagSourceRecord[]): Promise<RetrievedContext[]> {
+  async findFirstChunksForSources(sources: IRagSourceRecord[]): Promise<IRetrievedContext[]> {
     if (sources.length === 0) {
       return [];
     }
@@ -66,7 +66,7 @@ export class SupabaseRagReadRepository implements RagReadRepository {
     }
 
     const chunksBySourceId = new Map(
-      ((data ?? []) as DirectChunkRow[]).map(chunk => [chunk.source_id, chunk])
+      ((data ?? []) as IDirectChunkRow[]).map(chunk => [chunk.source_id, chunk])
     );
 
     return sources.flatMap(source => {
@@ -83,7 +83,7 @@ export class SupabaseRagReadRepository implements RagReadRepository {
     sourceOrigin,
     sourceTypes = null,
     sourceKeys = null,
-  }: MatchChunksInput): Promise<RetrievedContext[]> {
+  }: IMatchChunksInput): Promise<IRetrievedContext[]> {
     const { data, error } = await this.supabase.rpc(MATCH_FUNCTION_BY_INDEX[index], {
       query_embedding: toEmbeddingLiteral(embedding),
       match_count: matchCount,
@@ -97,7 +97,7 @@ export class SupabaseRagReadRepository implements RagReadRepository {
       throw error;
     }
 
-    return ((data ?? []) as MatchRagChunkRow[]).map(row => ({
+    return ((data ?? []) as IMatchRagChunkRow[]).map(row => ({
       chunkId: row.chunk_id,
       sourceId: row.source_id,
       sourceType: row.source_type,
@@ -119,7 +119,7 @@ export class SupabaseRagReadRepository implements RagReadRepository {
     matchCount,
     sourceOrigin = FIRST_PARTY_ORIGIN,
     sourceTypes = null,
-  }: FindChunksByTextInput): Promise<RetrievedContext[]> {
+  }: IFindChunksByTextInput): Promise<IRetrievedContext[]> {
     const searchableTerms = terms.map(normalizeTextSearchTerm).filter(Boolean);
 
     if (searchableTerms.length === 0) {
@@ -135,7 +135,7 @@ export class SupabaseRagReadRepository implements RagReadRepository {
       throw chunkError;
     }
 
-    const chunks = (chunkRows ?? []) as DirectChunkRow[];
+    const chunks = (chunkRows ?? []) as IDirectChunkRow[];
 
     if (chunks.length === 0) {
       return [];
@@ -160,7 +160,7 @@ export class SupabaseRagReadRepository implements RagReadRepository {
     }
 
     const sourcesById = new Map(
-      ((sourceRows ?? []) as DirectSourceRow[]).map(row => [row.id, toSourceRecord(row)])
+      ((sourceRows ?? []) as IDirectSourceRow[]).map(row => [row.id, toSourceRecord(row)])
     );
 
     return chunks
@@ -171,7 +171,7 @@ export class SupabaseRagReadRepository implements RagReadRepository {
       .slice(0, matchCount);
   }
 
-  private createDirectContext(source: RagSourceRecord, chunk: DirectChunkRow): RetrievedContext {
+  private createDirectContext(source: IRagSourceRecord, chunk: IDirectChunkRow): IRetrievedContext {
     return {
       chunkId: chunk.id,
       sourceId: source.id,
@@ -190,7 +190,7 @@ export class SupabaseRagReadRepository implements RagReadRepository {
   }
 }
 
-function toSourceRecord(row: DirectSourceRow): RagSourceRecord {
+function toSourceRecord(row: IDirectSourceRow): IRagSourceRecord {
   return {
     id: row.id,
     sourceType: row.source_type,

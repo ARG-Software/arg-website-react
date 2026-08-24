@@ -1,14 +1,14 @@
-import type { ChatMessage, PageContext, PromptMessage } from '../../domain/conversation/ChatMessage.js';
-import type { RetrievedContext } from '../../domain/retrieval/RetrievedContext.js';
+import type { IChatMessage, IPageContext, IPromptMessage } from '../../domain/conversation/IChatMessage.js';
+import type { IRetrievedContext } from '../../domain/retrieval/IRetrievedContext.js';
 
-export function buildHistoryMessages(messages: ChatMessage[]): PromptMessage[] {
+export function buildHistoryMessages(messages: IChatMessage[]): IPromptMessage[] {
   return messages.map(message => ({
     role: message.role,
     content: message.content,
   }));
 }
 
-export function buildPageContextMessages(pageContext: PageContext | null): PromptMessage[] {
+export function buildPageContextMessages(pageContext: IPageContext | null): IPromptMessage[] {
   if (!pageContext) {
     return [];
   }
@@ -35,7 +35,7 @@ export function buildPageContextMessages(pageContext: PageContext | null): Promp
   ];
 }
 
-export function buildUserPrompt(question: string, contexts: RetrievedContext[]): string {
+export function buildUserPrompt(question: string, contexts: IRetrievedContext[]): string {
   const contextText = contexts
     .map((context, index) => {
       const citation = context.title || context.url || `Source ${index + 1}`;

@@ -3,7 +3,7 @@ import {
   getProjectNameBySlug,
   getStaticPageSourceKeys,
 } from '../sourceConfig.js';
-import type { ChatMessage, PageContext } from '../../domain/conversation/ChatMessage.js';
+import type { IChatMessage, IPageContext } from '../../domain/conversation/IChatMessage.js';
 
 const MAX_HISTORY_MESSAGES = 12;
 const MAX_HISTORY_MESSAGE_LENGTH = 2000;
@@ -38,7 +38,7 @@ export function normalizeQuestion(question: unknown): string {
   return normalizedQuestion;
 }
 
-export function normalizeMessages(messages: unknown): ChatMessage[] {
+export function normalizeMessages(messages: unknown): IChatMessage[] {
   if (!messages) {
     return [];
   }
@@ -83,13 +83,13 @@ export function normalizeMessages(messages: unknown): ChatMessage[] {
     }
 
     return {
-      role: message.role as ChatMessage['role'],
+      role: message.role as IChatMessage['role'],
       content,
     };
   });
 }
 
-export function normalizePageContext(pageContext: unknown): PageContext | null {
+export function normalizePageContext(pageContext: unknown): IPageContext | null {
   if (pageContext === undefined || pageContext === null) {
     return null;
   }
@@ -178,7 +178,7 @@ export function normalizePageContext(pageContext: unknown): PageContext | null {
     ...(!projectSlug && !blogSlug && staticSourceKeys
       ? { pageKind: 'static_page' as const, sourceKeys: staticSourceKeys }
       : {}),
-    ...(normalizedActiveSection ? { activeSection: activeSection as PageContext['activeSection'] } : {}),
+    ...(normalizedActiveSection ? { activeSection: activeSection as IPageContext['activeSection'] } : {}),
   };
 }
 

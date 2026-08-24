@@ -3,6 +3,7 @@ import { EmbeddingQuotaExceededError } from '../../application/ports/ProviderErr
 import { checkRateLimits } from '../../infrastructure/security/rateLimit.ts';
 import { createApiHttp, createErrorBody } from '../../../shared/api/http.js';
 import { createGasparDependencies } from '../di/createGasparDependencies.ts';
+import { getRagConfig } from '../../application/ragConfig.ts';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 
@@ -20,7 +21,13 @@ export function createAssistantAskApi({
   createDependencies = createGasparDependencies,
   env = process.env,
 } = {}) {
+  let ragConfig;
   const http = createApiHttp({ allowedMethods: ALLOWED_METHODS, env });
+
+  function getAppConfig() {
+    ragConfig ||= createDependencies === createGasparDependencies ? getRagConfig(env) : undefined;
+    return ragConfig;
+  }
 
   return async function handleAssistantAsk(request) {
     const originGuardResponse = http.createOriginGuardResponse(request);
@@ -50,7 +57,7 @@ export function createAssistantAskApi({
       );
     }
 
-    const dependencies = createDependencies({ env });
+    const dependencies = createDependencies({ config: getAppConfig() });
 
     try {
       if (!payload.altcha?.challenge || !payload.altcha?.solution) {

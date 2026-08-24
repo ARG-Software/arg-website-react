@@ -1,9 +1,9 @@
-import type { RagConfig } from '../../../ragConfig.js';
-import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
-import type { EmbeddingProvider } from '../../../ports/ProviderPorts.js';
-import type { RagSourceMetadata } from '../../../../domain/content/RagSource.js';
-import type { RagReadRepository, RagSourceRecord } from '../../../ports/RagReadRepository.js';
-import { resolveSemanticSearch, type SemanticSearchInput } from '../embeddings.js';
+import type { IRagConfig } from '../../../ragConfig.js';
+import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
+import type { IEmbeddingProvider } from '../../../ports/IProviderPorts.js';
+import type { RagSourceMetadata } from '../../../../domain/content/IRagSource.js';
+import type { IRagReadRepository, IRagSourceRecord } from '../../../ports/IRagReadRepository.js';
+import { resolveSemanticSearch, type ISemanticSearchInput } from '../embeddings.js';
 import { normalizeName } from '../technology/normalizeTechnology.js';
 import { mergeComplementaryContexts, retrieveContextsForOrigin } from '../vectorSearch.js';
 
@@ -19,9 +19,9 @@ export function isBroadPersonProfileSubject(subject: string): boolean {
 }
 
 export async function findPersonSource(
-  readRepository: RagReadRepository,
+  readRepository: IRagReadRepository,
   entity: string
-): Promise<RagSourceRecord | null> {
+): Promise<IRagSourceRecord | null> {
   const sources = await readRepository.findSources({ sourceTypes: ['about'] });
   const people = sources.filter(source => getPersonKey(source.metadata));
   const entityName = normalizeName(entity);
@@ -46,14 +46,14 @@ export async function retrieveBroadPersonProfileContexts({
   fallbackEmbeddingProvider,
   semanticSearch,
 }: {
-  readRepository: RagReadRepository;
-  config: RagConfig;
-  person: RagSourceRecord;
+  readRepository: IRagReadRepository;
+  config: IRagConfig;
+  person: IRagSourceRecord;
   subject: string;
-  embeddingProvider: EmbeddingProvider;
-  fallbackEmbeddingProvider: EmbeddingProvider;
-  semanticSearch?: SemanticSearchInput;
-}): Promise<RetrievedContext[]> {
+  embeddingProvider: IEmbeddingProvider;
+  fallbackEmbeddingProvider: IEmbeddingProvider;
+  semanticSearch?: ISemanticSearchInput;
+}): Promise<IRetrievedContext[]> {
   const sources = [person];
 
   if (asksCompanyOrigin(subject)) {
@@ -86,11 +86,11 @@ export async function retrieveBroadPersonProfileContexts({
 }
 
 export async function retrievePersonSemanticEvidence(
-  readRepository: RagReadRepository,
-  config: RagConfig,
-  person: RagSourceRecord,
-  search: SemanticSearchInput
-): Promise<RetrievedContext[]> {
+  readRepository: IRagReadRepository,
+  config: IRagConfig,
+  person: IRagSourceRecord,
+  search: ISemanticSearchInput
+): Promise<IRetrievedContext[]> {
   const documents = await findPersonDocuments(readRepository, person);
   return retrieveSemanticEvidenceForSourceKeys(
     readRepository,
@@ -101,11 +101,11 @@ export async function retrievePersonSemanticEvidence(
 }
 
 async function retrieveSemanticEvidenceForSourceKeys(
-  readRepository: RagReadRepository,
-  config: RagConfig,
-  search: SemanticSearchInput,
+  readRepository: IRagReadRepository,
+  config: IRagConfig,
+  search: ISemanticSearchInput,
   sourceKeys: string[]
-): Promise<RetrievedContext[]> {
+): Promise<IRetrievedContext[]> {
   if (sourceKeys.length === 0) {
     return [];
   }
@@ -121,9 +121,9 @@ async function retrieveSemanticEvidenceForSourceKeys(
 }
 
 async function findPersonDocuments(
-  readRepository: RagReadRepository,
-  person: RagSourceRecord
-): Promise<RagSourceRecord[]> {
+  readRepository: IRagReadRepository,
+  person: IRagSourceRecord
+): Promise<IRagSourceRecord[]> {
   const personKey = getPersonKey(person.metadata);
   if (!personKey) {
     return [];
@@ -133,7 +133,7 @@ async function findPersonDocuments(
   return documents.filter(source => source.metadata?.person_key === personKey);
 }
 
-async function findAboutSource(readRepository: RagReadRepository): Promise<RagSourceRecord | null> {
+async function findAboutSource(readRepository: IRagReadRepository): Promise<IRagSourceRecord | null> {
   const sources = await readRepository.findSources({ sourceTypes: ['about'] });
   return sources.find(source => source.sourceKey === 'about') ?? null;
 }
@@ -146,7 +146,7 @@ function asksCompanyOrigin(subject: string): boolean {
   return COMPANY_ORIGIN_PATTERN.test(subject);
 }
 
-function uniqueSources(sources: RagSourceRecord[]): RagSourceRecord[] {
+function uniqueSources(sources: IRagSourceRecord[]): IRagSourceRecord[] {
   const seen = new Set<string>();
   return sources.filter(source => {
     if (seen.has(source.id)) {

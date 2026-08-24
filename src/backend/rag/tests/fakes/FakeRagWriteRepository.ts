@@ -1,8 +1,8 @@
-import type { RagWriteRepository } from '../../application/ports/RagWriteRepository.js';
+import type { IRagWriteRepository } from '../../application/ports/IRagWriteRepository.js';
 
 export function createFakeRagWriteRepository(
-  overrides: Partial<RagWriteRepository> = {}
-): RagWriteRepository {
+  overrides: Partial<IRagWriteRepository> = {}
+): IRagWriteRepository {
   return {
     getSourceContentHash: async () => null,
     upsertSource: async () => ({ sourceId: 'source-id', chunkCount: 1 }),

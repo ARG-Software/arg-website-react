@@ -35,7 +35,7 @@ Run the admin app with the regular Vite dev server:
 npm run dev
 ```
 
-The `/api/admin/outreach` endpoint is served locally by `plugins/local-api-dev/`. The adapter loads `src/backend/admin/apps/adminOutreachApi.js` through Vite and calls the same backend API factory used by the Netlify production function, so local development does not require Netlify Dev or redirect rewrites.
+The `/api/admin/outreach` endpoint is served locally by `plugins/local-api-dev/`. The adapter loads `src/backend/admin/apps/adminOutreachApi.ts` through Vite and calls the same backend API factory used by the Netlify production function, so local development does not require Netlify Dev or redirect rewrites.
 
 Production remains backed by `netlify/functions/admin-outreach.js`.
 

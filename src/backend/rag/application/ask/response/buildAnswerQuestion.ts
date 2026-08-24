@@ -1,8 +1,8 @@
-import type { RetrievalItemResult } from '../planning/createRetrievalItems.js';
+import type { IRetrievalItemResult } from '../planning/createRetrievalItems.js';
 
 export function buildAnswerQuestion(
   originalQuestion: string,
-  results: RetrievalItemResult[]
+  results: IRetrievalItemResult[]
 ): string {
   if (results.length <= 1) {
     const resolvedQuestion = results[0]?.retrievalQuestion;

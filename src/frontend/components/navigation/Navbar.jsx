@@ -2,7 +2,7 @@ import { useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { Navbar as UiNavbar } from '@ui/navigation/Navbar.jsx';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
-import { trackCTA } from '../../utils/analytics';
+import { trackCTA } from '@services/analytics';
 import { LenisContext } from '../../providers/LenisProvider';
 import { NAV_SCROLL_THRESHOLD } from '@constants/config';
 import { NavMenu } from './NavMenu';

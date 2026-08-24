@@ -1,11 +1,11 @@
-import type { RagSourceMetadata } from '../../../domain/content/RagSource.js';
+import type { RagSourceMetadata } from '../../../domain/content/IRagSource.js';
 
-interface ParsedMarkdown {
+interface IParsedMarkdown {
   frontmatter: RagSourceMetadata;
   body: string;
 }
 
-export function parseFrontmatter(markdown: string): ParsedMarkdown {
+export function parseFrontmatter(markdown: string): IParsedMarkdown {
   const normalizedMarkdown = markdown.replace(/\r\n?/g, '\n');
   const match = normalizedMarkdown.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
 

@@ -1,9 +1,9 @@
-import type { ChatMessage, PageContext } from '../../domain/conversation/ChatMessage.js';
-import type { RagConfig } from '../ragConfig.js';
-import type { RetrievedContext } from '../../domain/retrieval/RetrievedContext.js';
-import type { AskQuestionResult } from '../../domain/assistant/AssistantResponse.js';
-import type { AnswerProvider, EmbeddingProvider } from '../ports/ProviderPorts.js';
-import type { RagReadRepository } from '../ports/RagReadRepository.js';
+import type { IChatMessage, IPageContext } from '../../domain/conversation/IChatMessage.js';
+import type { IRagConfig } from '../ragConfig.js';
+import type { IRetrievedContext } from '../../domain/retrieval/IRetrievedContext.js';
+import type { IAskQuestionResult } from '../../domain/assistant/AssistantResponse.js';
+import type { IAnswerProvider, IEmbeddingProvider } from '../ports/IProviderPorts.js';
+import type { IRagReadRepository } from '../ports/IRagReadRepository.js';
 import {
   normalizeMessages,
   normalizePageContext,
@@ -24,33 +24,33 @@ import { createUnconfirmedTechnologyAnswer } from './response/unconfirmedTechnol
 import { resolveLanguagePolicy } from '../assistant/languagePolicy.js';
 
 export { RagValidationError, resolveRetrievalRoute };
-export type { RetrievalRoute, RetrievalRouteKind } from './retrieval/route.js';
+export type { IRetrievalRoute, RetrievalRouteKind } from './retrieval/route.js';
 
-export interface AskQuestionInput {
+export interface IAskQuestionInput {
   question?: unknown;
   messages?: unknown;
   pageContext?: unknown;
   retrievalQuestion?: string;
-  config?: RagConfig;
-  readRepository?: RagReadRepository;
-  answerProvider?: AnswerProvider;
-  embeddingProvider?: EmbeddingProvider;
-  fallbackEmbeddingProvider?: EmbeddingProvider;
+  config?: IRagConfig;
+  readRepository?: IRagReadRepository;
+  answerProvider?: IAnswerProvider;
+  embeddingProvider?: IEmbeddingProvider;
+  fallbackEmbeddingProvider?: IEmbeddingProvider;
   preferredLanguage?: string;
 }
 
-interface RuntimeContext {
+interface IRuntimeContext {
   question: string;
-  messages: ChatMessage[];
-  pageContext: PageContext | null;
-  config: RagConfig;
-  readRepository: RagReadRepository;
-  answerProvider: AnswerProvider;
-  embeddingProvider: EmbeddingProvider;
-  fallbackEmbeddingProvider: EmbeddingProvider;
+  messages: IChatMessage[];
+  pageContext: IPageContext | null;
+  config: IRagConfig;
+  readRepository: IRagReadRepository;
+  answerProvider: IAnswerProvider;
+  embeddingProvider: IEmbeddingProvider;
+  fallbackEmbeddingProvider: IEmbeddingProvider;
 }
 
-export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQuestionResult> {
+export async function askQuestion(input: IAskQuestionInput = {}): Promise<IAskQuestionResult> {
   const context = createRuntimeContext(input);
   const intent = await context.answerProvider.classifyQuestionIntent(
     context.question,
@@ -150,7 +150,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
   const retrievalResults = await Promise.all(
     routedItems.map(async (item, index) => {
       if (item.route.requiresPersonClarification) {
-        return { ...item, contexts: [] as RetrievedContext[] };
+        return { ...item, contexts: [] as IRetrievedContext[] };
       }
 
       const semanticSearch = embeddings.get(index);
@@ -229,7 +229,7 @@ export async function askQuestion(input: AskQuestionInput = {}): Promise<AskQues
 
 function createLanguagePreferenceResult(
   languagePolicy: ReturnType<typeof resolveLanguagePolicy>
-): Pick<AskQuestionResult, 'languagePreference'> {
+): Pick<IAskQuestionResult, 'languagePreference'> {
   if (languagePolicy.preferenceAction === 'none') {
     return {};
   }
@@ -242,7 +242,7 @@ function createLanguagePreferenceResult(
   };
 }
 
-function getLatestAssistantAnswer(messages: ChatMessage[]): string | null {
+function getLatestAssistantAnswer(messages: IChatMessage[]): string | null {
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     const message = messages[index];
     if (message.role === 'assistant') return message.content;
@@ -252,8 +252,8 @@ function getLatestAssistantAnswer(messages: ChatMessage[]): string | null {
 }
 
 export async function retrieveRelevantChunks(
-  input: AskQuestionInput = {}
-): Promise<RetrievedContext[]> {
+  input: IAskQuestionInput = {}
+): Promise<IRetrievedContext[]> {
   const context = createRuntimeContext(input);
   const plan = await context.answerProvider.planRetrieval(
     context.question,
@@ -293,7 +293,7 @@ function createRuntimeContext({
   answerProvider,
   embeddingProvider,
   fallbackEmbeddingProvider,
-}: AskQuestionInput): RuntimeContext {
+}: IAskQuestionInput): IRuntimeContext {
   const runtimeConfig = requireDependency(config, 'RAG config');
 
   return {

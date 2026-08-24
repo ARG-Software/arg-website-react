@@ -1,8 +1,8 @@
-import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
-import type { RagConfig } from '../../../ragConfig.js';
-import type { RetrievalRoute } from '../../../../domain/retrieval/RetrievalRoute.js';
-import type { RagSourceType } from '../../../../domain/content/RagSource.js';
-import type { RagReadRepository, RagSourceRecord } from '../../../ports/RagReadRepository.js';
+import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
+import type { IRagConfig } from '../../../ragConfig.js';
+import type { IRetrievalRoute } from '../../../../domain/retrieval/IRetrievalRoute.js';
+import type { RagSourceType } from '../../../../domain/content/IRagSource.js';
+import type { IRagReadRepository, IRagSourceRecord } from '../../../ports/IRagReadRepository.js';
 import { getTechnologySearchTerms, isCompanyEntity } from '../technology/normalizeTechnology.js';
 import {
   getExactTechnologyPattern,
@@ -23,10 +23,10 @@ const SOURCE_TYPE_PRIORITY = new Map(
 );
 
 export async function retrieveLexicalExactTechnologyEvidence(
-  readRepository: RagReadRepository,
-  config: RagConfig,
+  readRepository: IRagReadRepository,
+  config: IRagConfig,
   subject: string
-): Promise<RetrievedContext[]> {
+): Promise<IRetrievedContext[]> {
   if (!isExactTechnologySubject(subject)) {
     return [];
   }
@@ -43,10 +43,10 @@ export async function retrieveLexicalExactTechnologyEvidence(
 }
 
 export async function retrieveLexicalExactBlogTechnologyEvidence(
-  readRepository: RagReadRepository,
-  config: RagConfig,
+  readRepository: IRagReadRepository,
+  config: IRagConfig,
   subject: string
-): Promise<RetrievedContext[]> {
+): Promise<IRetrievedContext[]> {
   if (!isExactTechnologySubject(subject)) {
     return [];
   }
@@ -65,9 +65,9 @@ export function isExactTechnologySubject(subject: string): boolean {
 }
 
 export function filterExactTechnologyEvidence(
-  contexts: RetrievedContext[],
+  contexts: IRetrievedContext[],
   subject: string
-): RetrievedContext[] {
+): IRetrievedContext[] {
   const technologyPattern = getExactTechnologyPattern(subject);
 
   if (!technologyPattern) {
@@ -81,9 +81,9 @@ export function filterExactTechnologyEvidence(
 }
 
 export function shouldUseBlogTechnologyEvidence(
-  route: RetrievalRoute,
-  person: RagSourceRecord | null,
-  entitySource: RagSourceRecord | null
+  route: IRetrievalRoute,
+  person: IRagSourceRecord | null,
+  entitySource: IRagSourceRecord | null
 ): boolean {
   if (person || (entitySource && !isCompanyEntity(route.entity))) {
     return false;

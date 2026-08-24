@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { trackTimeOnPage } from '../utils/analytics';
+import { trackTimeOnPage } from '@services/analytics';
 
 /**
  * Track time spent on a page.

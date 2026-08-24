@@ -3,7 +3,7 @@ import assistantContent from '@data/assistant.json';
 import { ChatbotLink } from '@components/navigation/ChatbotLink';
 import { useAssistantWidgetController } from '@hooks/assistant/useAssistantWidgetController';
 import { getAssistantActionDetails } from '@services/assistantActionsService';
-import { trackAssistantEvent } from '@utils/analytics';
+import { trackAssistantEvent } from '@services/analytics';
 import {
   getAssistantLinks,
   getInternalAssistantPath,

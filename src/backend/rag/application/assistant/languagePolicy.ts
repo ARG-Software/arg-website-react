@@ -1,5 +1,5 @@
 import { getLanguageTagForName } from '../languageConfig.js';
-import type { LanguagePolicyResult } from '../../domain/assistant/LanguagePolicy.js';
+import type { ILanguagePolicyResult } from '../../domain/assistant/LanguagePolicy.js';
 
 const LANGUAGE_PREFERENCE_PATTERN =
   /\b(?:answer|reply|respond)\s+in\s+([\p{L}-]+)(?:\s+(?:from now on|going forward|always))?\b|\b(?:responde|responder)\s+em\s+([\p{L}-]+)(?:\s+(?:daqui para a frente|a partir de agora|sempre))?\b/iu;
@@ -18,7 +18,7 @@ export function resolveLanguagePolicy({
   question: string;
   detectedLanguage: string;
   preferredLanguage?: string;
-}): LanguagePolicyResult {
+}): ILanguagePolicyResult {
   if (CLEAR_PREFERENCE_PATTERN.test(question)) {
     return {
       responseLanguage: detectedLanguage,

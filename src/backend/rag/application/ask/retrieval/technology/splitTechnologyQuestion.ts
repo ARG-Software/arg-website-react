@@ -1,4 +1,4 @@
-import type { RetrievalQuestionPlan } from '../../../../domain/retrieval/RetrievalPlan.js';
+import type { IRetrievalQuestionPlan } from '../../../../domain/retrieval/IRetrievalPlan.js';
 import { normalizeName } from './normalizeTechnology.js';
 
 const ENGINEERING_PRACTICE_PATTERN =
@@ -15,7 +15,7 @@ export function splitTechnologySubjects(subject: string): string[] {
 }
 
 export function createTechnologySupportQuery(
-  item: RetrievalQuestionPlan,
+  item: IRetrievalQuestionPlan,
   subject: string
 ): string {
   if (isNamedEntityTechnologyQuestion(item.entity)) {

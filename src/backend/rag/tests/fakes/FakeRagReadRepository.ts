@@ -1,42 +1,42 @@
-import type { RagSourceOrigin } from '../../domain/content/RagSource.js';
-import type { RetrievedContext } from '../../domain/retrieval/RetrievedContext.js';
+import type { RagSourceOrigin } from '../../domain/content/IRagSource.js';
+import type { IRetrievedContext } from '../../domain/retrieval/IRetrievedContext.js';
 import type {
-  FindChunksByTextInput,
-  FindSourcesInput,
-  MatchChunksInput,
-  RagReadRepository,
-  RagSourceRecord,
-} from '../../application/ports/RagReadRepository.js';
+  IFindChunksByTextInput,
+  IFindSourcesInput,
+  IMatchChunksInput,
+  IRagReadRepository,
+  IRagSourceRecord,
+} from '../../application/ports/IRagReadRepository.js';
 import { resolveUrl } from '../../application/common/url.js';
-import type { ChunkFixture } from '../fixtures/sources.js';
+import type { IChunkFixture } from '../fixtures/sources.js';
 
 const TEST_SITE_URL = 'https://arg.software';
 const FIRST_PARTY_ORIGIN: RagSourceOrigin = 'first_party';
 
-export interface FakeRagReadRepositoryFixtures {
-  sources?: RagSourceRecord[];
-  chunks?: ChunkFixture[];
-  contexts?: RetrievedContext[];
+export interface IFakeRagReadRepositoryFixtures {
+  sources?: IRagSourceRecord[];
+  chunks?: IChunkFixture[];
+  contexts?: IRetrievedContext[];
 }
 
-export interface FakeRagReadRepositoryCalls {
-  findSources: FindSourcesInput[];
-  findFirstChunksForSources: RagSourceRecord[][];
-  matchChunks: MatchChunksInput[];
-  findChunksByText: FindChunksByTextInput[];
+export interface IFakeRagReadRepositoryCalls {
+  findSources: IFindSourcesInput[];
+  findFirstChunksForSources: IRagSourceRecord[][];
+  matchChunks: IMatchChunksInput[];
+  findChunksByText: IFindChunksByTextInput[];
 }
 
-export class FakeRagReadRepository implements RagReadRepository {
-  readonly calls: FakeRagReadRepositoryCalls = {
+export class FakeRagReadRepository implements IRagReadRepository {
+  readonly calls: IFakeRagReadRepositoryCalls = {
     findSources: [],
     findFirstChunksForSources: [],
     matchChunks: [],
     findChunksByText: [],
   };
 
-  constructor(private readonly fixtures: FakeRagReadRepositoryFixtures = {}) {}
+  constructor(private readonly fixtures: IFakeRagReadRepositoryFixtures = {}) {}
 
-  async findSources(input: FindSourcesInput): Promise<RagSourceRecord[]> {
+  async findSources(input: IFindSourcesInput): Promise<IRagSourceRecord[]> {
     this.calls.findSources.push(input);
     const sourceOrigin = input.sourceOrigin ?? FIRST_PARTY_ORIGIN;
 
@@ -48,7 +48,7 @@ export class FakeRagReadRepository implements RagReadRepository {
     );
   }
 
-  async findFirstChunksForSources(sources: RagSourceRecord[]): Promise<RetrievedContext[]> {
+  async findFirstChunksForSources(sources: IRagSourceRecord[]): Promise<IRetrievedContext[]> {
     this.calls.findFirstChunksForSources.push(sources);
     const chunksBySourceId = new Map(
       (this.fixtures.chunks ?? [])
@@ -62,7 +62,7 @@ export class FakeRagReadRepository implements RagReadRepository {
     });
   }
 
-  async matchChunks(input: MatchChunksInput): Promise<RetrievedContext[]> {
+  async matchChunks(input: IMatchChunksInput): Promise<IRetrievedContext[]> {
     this.calls.matchChunks.push(input);
 
     return (this.fixtures.contexts ?? [])
@@ -72,7 +72,7 @@ export class FakeRagReadRepository implements RagReadRepository {
       .map(resolveContextUrl);
   }
 
-  async findChunksByText(input: FindChunksByTextInput): Promise<RetrievedContext[]> {
+  async findChunksByText(input: IFindChunksByTextInput): Promise<IRetrievedContext[]> {
     this.calls.findChunksByText.push(input);
     const sourceOrigin = input.sourceOrigin ?? FIRST_PARTY_ORIGIN;
     const terms = input.terms.map(term => term.toLowerCase());
@@ -86,7 +86,7 @@ export class FakeRagReadRepository implements RagReadRepository {
   }
 }
 
-function createDirectContext(source: RagSourceRecord, chunk: ChunkFixture): RetrievedContext {
+function createDirectContext(source: IRagSourceRecord, chunk: IChunkFixture): IRetrievedContext {
   return {
     chunkId: chunk.id,
     sourceId: source.id,
@@ -104,7 +104,7 @@ function createDirectContext(source: RagSourceRecord, chunk: ChunkFixture): Retr
   };
 }
 
-function resolveContextUrl(context: RetrievedContext): RetrievedContext {
+function resolveContextUrl(context: IRetrievedContext): IRetrievedContext {
   return {
     ...context,
     url: resolveUrl(context.url, TEST_SITE_URL),

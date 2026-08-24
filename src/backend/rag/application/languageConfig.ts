@@ -2,13 +2,13 @@ import languageConfigJson from '../config/languages.json' with { type: 'json' };
 
 const LANGUAGE_PATTERN = /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i;
 
-interface LanguageConfig {
+interface ILanguageConfig {
   defaultLanguage: string;
   normalization: Record<string, string>;
   aliases: Record<string, string>;
 }
 
-const languageConfig = languageConfigJson as LanguageConfig;
+const languageConfig = languageConfigJson as ILanguageConfig;
 const normalizedAliases = Object.fromEntries(
   Object.entries(languageConfig.aliases).map(([name, tag]) => [normalizeLanguageName(name), tag])
 );

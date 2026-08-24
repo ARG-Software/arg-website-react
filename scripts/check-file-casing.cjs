@@ -88,8 +88,8 @@ const RULES = [
   {
     root: 'src/backend/rag/application',
     extensions: ['.ts'],
-    pattern: /^[a-z][A-Za-z0-9]*\.ts$/,
-    description: 'camelCase.ts',
+    pattern: /^(?:[a-z][A-Za-z0-9]*|I[A-Z][A-Za-z0-9]*)\.ts$/,
+    description: 'camelCase.ts or I-prefixed interface contract .ts',
     excludeDirectories: ['ports'],
   },
   {
@@ -168,11 +168,67 @@ const violations = RULES.flatMap(rule => {
     }));
 });
 
+violations.push(...findBackendInterfaceViolations());
+
 function isInExcludedDirectory(filePath, excludedDirectories) {
   if (excludedDirectories.length === 0) return false;
 
   const parts = path.relative(ROOT_DIR, filePath).split(path.sep);
   return parts.some(part => excludedDirectories.includes(part));
+}
+
+function findBackendInterfaceViolations() {
+  const backendDirectory = path.join(ROOT_DIR, 'src/backend');
+
+  return listFiles(backendDirectory)
+    .filter(filePath => path.extname(filePath) === '.ts')
+    .flatMap(filePath => [
+      ...findInterfaceNameViolations(filePath),
+      ...findInterfaceFilenameViolations(filePath),
+    ]);
+}
+
+function findInterfaceNameViolations(filePath) {
+  const source = fs.readFileSync(filePath, 'utf8');
+  const matches = source.matchAll(/\binterface\s+([A-Z][A-Za-z0-9_]*)\b/g);
+
+  return Array.from(matches)
+    .filter(([, name]) => !/^I[A-Z]/.test(name))
+    .map(([, name]) => ({
+      filePath: path.relative(ROOT_DIR, filePath).replace(/\\/g, '/'),
+      expected: `interface name ${name} should start with I`,
+    }));
+}
+
+function findInterfaceFilenameViolations(filePath) {
+  const source = fs.readFileSync(filePath, 'utf8');
+  if (!isInterfaceOnlyModule(source)) return [];
+
+  const filename = path.basename(filePath);
+  if (/^I[A-Z]/.test(filename)) return [];
+
+  return [
+    {
+      filePath: path.relative(ROOT_DIR, filePath).replace(/\\/g, '/'),
+      expected: 'I-prefixed interface contract filename',
+    },
+  ];
+}
+
+function isInterfaceOnlyModule(source) {
+  const withoutImports = source
+    .replace(/^import[\s\S]*?;\s*/gm, '')
+    .replace(/^export\s+type\s+\{[\s\S]*?\};\s*/gm, '')
+    .trim();
+
+  if (!/\binterface\s+I[A-Z]/.test(withoutImports)) return false;
+
+  const withoutInterfaces = withoutImports
+    .replace(/export\s+interface\s+I[A-Z][A-Za-z0-9_]*(?:\s+extends\s+[^\{]+)?\s*\{[\s\S]*?\}\s*/g, '')
+    .replace(/interface\s+I[A-Z][A-Za-z0-9_]*(?:\s+extends\s+[^\{]+)?\s*\{[\s\S]*?\}\s*/g, '')
+    .trim();
+
+  return withoutInterfaces.length === 0;
 }
 
 if (violations.length > 0) {

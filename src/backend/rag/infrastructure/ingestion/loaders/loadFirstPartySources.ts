@@ -8,23 +8,23 @@ import { redactCvContent } from '../../../application/ingestion/processing/redac
 import { stripMarkdown } from '../../../application/ingestion/processing/text.js';
 import { createSource } from '../../../application/ingestion/sourceFactory.js';
 import type {
-  AboutJson,
-  CareersJson,
-  HomepageJson,
-  PartnersJson,
-  ProjectJson,
-  SiteLinksJson,
+  IAboutJson,
+  ICareersJson,
+  IHomepageJson,
+  IPartnersJson,
+  IProjectJson,
+  ISiteLinksJson,
 } from '../SiteDataTypes.js';
 import type {
-  InlineJsonManifestEntry,
-  LocalDocumentManifestEntry,
+  IInlineJsonManifestEntry,
+  ILocalDocumentManifestEntry,
   LocalManifestEntry,
-  JsonManifestEntry,
+  IJsonManifestEntry,
 } from '../SourceManifestTypes.js';
 import { HOMEPAGE_SECTION_SCOPES } from '../../../application/sourceConfig.js';
 import { getFirstPartySourceEntries } from '../sourceManifestConfig.js';
-import type { IngestionRunOptions } from '../../../application/ingestion/types.js';
-import type { RagSource, RagSourceMetadata } from '../../../domain/content/RagSource.js';
+import type { IIngestionRunOptions } from '../../../application/ingestion/IIngestionTypes.js';
+import type { IRagSource, RagSourceMetadata } from '../../../domain/content/IRagSource.js';
 
 const PERSON_SOURCE_KEYS: Record<string, string> = {
   jose: 'jose-antunes',
@@ -33,10 +33,10 @@ const PERSON_SOURCE_KEYS: Record<string, string> = {
 
 export async function loadFirstPartySources(
   rootDir = process.cwd(),
-  selection?: IngestionRunOptions
-): Promise<RagSource[]> {
+  selection?: IIngestionRunOptions
+): Promise<IRagSource[]> {
   const manifest = loadLocalManifest();
-  const sources: RagSource[] = [];
+  const sources: IRagSource[] = [];
 
   for (const entry of manifest) {
     if (shouldLoadManifestEntry(rootDir, entry, selection)) {
@@ -51,8 +51,8 @@ export async function loadFirstPartySources(
 async function loadManifestEntry(
   rootDir: string,
   entry: LocalManifestEntry,
-  selection?: IngestionRunOptions
-): Promise<RagSource[]> {
+  selection?: IIngestionRunOptions
+): Promise<IRagSource[]> {
   switch (entry.kind) {
     case 'json':
       if (entry.sourceKey === 'homepage') {
@@ -74,8 +74,8 @@ async function loadManifestEntry(
 
 async function loadHomepageSectionSources(
   rootDir: string,
-  entry: JsonManifestEntry
-): Promise<RagSource[]> {
+  entry: IJsonManifestEntry
+): Promise<IRagSource[]> {
   const filePath = resolveRoot(rootDir, entry.filePath);
   const homepage = await readJsonFile<Record<string, unknown>>(filePath);
 
@@ -92,13 +92,13 @@ async function loadHomepageSectionSources(
   );
 }
 
-async function loadJsonSource(filePath: string, options: JsonManifestEntry): Promise<RagSource> {
+async function loadJsonSource(filePath: string, options: IJsonManifestEntry): Promise<IRagSource> {
   const sourceKey = options.sourceKey ?? path.basename(filePath, path.extname(filePath));
   const json = await readJsonFile(filePath);
   const sourceJson = options.dataKey ? (json as Record<string, unknown>)[options.dataKey] : json;
   const content =
     sourceKey === 'site-links'
-      ? formatSiteLinksSource(sourceJson as SiteLinksJson, options.label)
+      ? formatSiteLinksSource(sourceJson as ISiteLinksJson, options.label)
       : flattenJsonToText(sourceJson, options.label);
 
   return createSource({
@@ -116,7 +116,7 @@ async function loadJsonSource(filePath: string, options: JsonManifestEntry): Pro
   });
 }
 
-function formatSiteLinksSource(siteLinks: SiteLinksJson, label = 'ARG links and contact options'): string {
+function formatSiteLinksSource(siteLinks: ISiteLinksJson, label = 'ARG links and contact options'): string {
   return [
     `${label}: Visitors can send a message through Gaspar here in the assistant.`,
     `${label}: Primary general email: ${siteLinks.emails?.hello}.`,
@@ -133,7 +133,7 @@ function formatSiteLinksSource(siteLinks: SiteLinksJson, label = 'ARG links and 
     .join('\n');
 }
 
-function loadInlineJsonSource(rootDir: string, options: InlineJsonManifestEntry): RagSource {
+function loadInlineJsonSource(rootDir: string, options: IInlineJsonManifestEntry): IRagSource {
   const virtualPath = resolveRoot(rootDir, options.virtualPath);
 
   return createSource({
@@ -147,9 +147,9 @@ function loadInlineJsonSource(rootDir: string, options: InlineJsonManifestEntry)
   });
 }
 
-async function loadProjectSources(rootDir: string, relativeFilePath: string): Promise<RagSource[]> {
+async function loadProjectSources(rootDir: string, relativeFilePath: string): Promise<IRagSource[]> {
   const filePath = resolveRoot(rootDir, relativeFilePath);
-  const projects = await readJsonFile<ProjectJson[]>(filePath);
+  const projects = await readJsonFile<IProjectJson[]>(filePath);
 
   return projects.map(project =>
     createSource({
@@ -170,9 +170,9 @@ async function loadProjectSources(rootDir: string, relativeFilePath: string): Pr
   );
 }
 
-async function loadPartnerSources(rootDir: string, relativeFilePath: string): Promise<RagSource[]> {
+async function loadPartnerSources(rootDir: string, relativeFilePath: string): Promise<IRagSource[]> {
   const filePath = resolveRoot(rootDir, relativeFilePath);
-  const partners = await readJsonFile<PartnersJson>(filePath);
+  const partners = await readJsonFile<IPartnersJson>(filePath);
 
   return partners.clients.map(partner =>
     createSource({
@@ -192,17 +192,17 @@ async function loadPartnerSources(rootDir: string, relativeFilePath: string): Pr
   );
 }
 
-async function loadTeamProfileSources(rootDir: string): Promise<RagSource[]> {
+async function loadTeamProfileSources(rootDir: string): Promise<IRagSource[]> {
   const homepagePath = resolveRoot(rootDir, 'src/frontend/data/homePage.json');
   const aboutPath = resolveRoot(rootDir, 'src/frontend/data/about.json');
   const careersPath = resolveRoot(rootDir, 'src/frontend/data/careersPage.json');
   const [homepage, about, careers] = await Promise.all([
-    readJsonFile<HomepageJson>(homepagePath),
-    readJsonFile<AboutJson>(aboutPath),
-    readJsonFile<CareersJson>(careersPath),
+    readJsonFile<IHomepageJson>(homepagePath),
+    readJsonFile<IAboutJson>(aboutPath),
+    readJsonFile<ICareersJson>(careersPath),
   ]);
   const sourceFiles = [homepagePath, aboutPath, careersPath];
-  const sources: RagSource[] = [
+  const sources: IRagSource[] = [
     createSource({
       sourceType: 'about',
       sourceKey: 'arg-team',
@@ -279,8 +279,8 @@ async function loadTeamProfileSources(rootDir: string): Promise<RagSource[]> {
 async function loadBlogSources(
   rootDir: string,
   relativeFilePath: string,
-  selection?: IngestionRunOptions
-): Promise<RagSource[]> {
+  selection?: IIngestionRunOptions
+): Promise<IRagSource[]> {
   const blogDir = resolveRoot(rootDir, relativeFilePath);
   const entries = await readdir(blogDir, { withFileTypes: true });
   const markdownFiles = entries
@@ -292,7 +292,7 @@ async function loadBlogSources(
   return Promise.all(markdownFiles.map(loadMarkdownSource));
 }
 
-async function loadMarkdownSource(filePath: string): Promise<RagSource> {
+async function loadMarkdownSource(filePath: string): Promise<IRagSource> {
   const { frontmatter, body } = parseFrontmatter(await readFile(filePath, 'utf8'));
   const slug = getFrontmatterString(frontmatter, 'slug');
   const fallbackName = path.basename(filePath, path.extname(filePath));
@@ -322,9 +322,9 @@ async function loadMarkdownSource(filePath: string): Promise<RagSource> {
 
 async function loadLocalDocumentSource(
   rootDir: string,
-  document: LocalDocumentManifestEntry,
-  selection?: IngestionRunOptions
-): Promise<RagSource[]> {
+  document: ILocalDocumentManifestEntry,
+  selection?: IIngestionRunOptions
+): Promise<IRagSource[]> {
   validateLocalDocument(document, rootDir);
 
   if (!matchesFileSelection(resolveRoot(rootDir, document.filePath), selection)) {
@@ -356,7 +356,7 @@ async function loadLocalDocumentSource(
   ];
 }
 
-function validateLocalDocument(document: LocalDocumentManifestEntry, rootDir: string): void {
+function validateLocalDocument(document: ILocalDocumentManifestEntry, rootDir: string): void {
   if (!document || typeof document !== 'object') {
     throw new Error('Local document entries must be objects');
   }
@@ -409,7 +409,7 @@ function validateManifestEntry(entry: LocalManifestEntry): LocalManifestEntry {
 function shouldLoadManifestEntry(
   rootDir: string,
   entry: LocalManifestEntry,
-  selection: IngestionRunOptions | undefined
+  selection: IIngestionRunOptions | undefined
 ): boolean {
   if (!selection || selection.all) {
     return true;
@@ -443,7 +443,7 @@ function shouldLoadManifestEntry(
   );
 }
 
-function matchesFileSelection(filePath: string, selection: IngestionRunOptions | undefined): boolean {
+function matchesFileSelection(filePath: string, selection: IIngestionRunOptions | undefined): boolean {
   return (
     !selection ||
     selection.all ||
@@ -453,7 +453,7 @@ function matchesFileSelection(filePath: string, selection: IngestionRunOptions |
   );
 }
 
-function filterLoadedSources(sources: RagSource[], selection: IngestionRunOptions | undefined): RagSource[] {
+function filterLoadedSources(sources: IRagSource[], selection: IIngestionRunOptions | undefined): IRagSource[] {
   if (!selection || selection.all) {
     return sources;
   }

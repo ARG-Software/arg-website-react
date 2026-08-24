@@ -17,6 +17,11 @@ import { UiSelect } from '../primitives/UiField.jsx';
 const COLOR_SENT = '#f0060d';
 const COLOR_REPLIED = '#7904fd';
 const COLOR_NO_REPLY = '#ffb020';
+const PIE_COLORS = [COLOR_REPLIED, COLOR_SENT, COLOR_NO_REPLY, '#0ea5e9', '#22c55e', '#64748b'];
+const DEFAULT_LINES = [
+  { dataKey: 'sent', name: 'Sent', color: COLOR_SENT },
+  { dataKey: 'repliesObtained', name: 'Replies obtained', color: COLOR_REPLIED },
+];
 
 export function AdminMetricChart({
   title,
@@ -25,12 +30,15 @@ export function AdminMetricChart({
   ranges = [],
   points = [],
   pie = [],
+  lines = DEFAULT_LINES,
+  pieAriaLabel = 'Metric split',
+  emptyMessage = 'No data available for the selected range.',
+  pieEmptyMessage = 'No split data available yet.',
   onRangeChange,
   tone = 'default',
 }) {
   const hasData =
-    points.length > 0 &&
-    points.some(point => (point.sent || 0) > 0 || (point.repliesObtained || 0) > 0);
+    points.length > 0 && points.some(point => lines.some(line => (point[line.dataKey] || 0) > 0));
   const hasPieData = pie.some(item => (item.value || 0) > 0);
 
   return (
@@ -89,33 +97,25 @@ export function AdminMetricChart({
                   labelStyle={{ color: 'rgba(12, 0, 46, 0.62)', marginBottom: '0.25rem' }}
                 />
                 <Legend wrapperStyle={{ paddingTop: '1rem' }} iconType="circle" />
-                <Line
-                  type="monotone"
-                  dataKey="sent"
-                  name="Sent"
-                  stroke={COLOR_SENT}
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: COLOR_SENT, strokeWidth: 0 }}
-                  activeDot={{ r: 5 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="repliesObtained"
-                  name="Replies obtained"
-                  stroke={COLOR_REPLIED}
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: COLOR_REPLIED, strokeWidth: 0 }}
-                  activeDot={{ r: 5 }}
-                />
+                {lines.map(line => (
+                  <Line
+                    key={line.dataKey}
+                    type="monotone"
+                    dataKey={line.dataKey}
+                    name={line.name}
+                    stroke={line.color}
+                    strokeWidth={2}
+                    dot={{ r: 3, fill: line.color, strokeWidth: 0 }}
+                    activeDot={{ r: 5 }}
+                  />
+                ))}
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="admin-metric-chart__empty">
-              No data available for the selected range.
-            </div>
+            <div className="admin-metric-chart__empty">{emptyMessage}</div>
           )}
         </div>
-        <div className="admin-metric-chart__pie" role="img" aria-label="Reply outcome split">
+        <div className="admin-metric-chart__pie" role="img" aria-label={pieAriaLabel}>
           {hasPieData ? (
             <ResponsiveContainer width="100%" height="100%" minHeight={320}>
               <PieChart>
@@ -127,10 +127,10 @@ export function AdminMetricChart({
                   outerRadius="82%"
                   paddingAngle={3}
                 >
-                  {pie.map(item => (
+                  {pie.map((item, index) => (
                     <Cell
                       key={item.label}
-                      fill={item.label === 'Replies obtained' ? COLOR_REPLIED : COLOR_NO_REPLY}
+                      fill={item.color || PIE_COLORS[index % PIE_COLORS.length]}
                     />
                   ))}
                 </Pie>
@@ -147,7 +147,7 @@ export function AdminMetricChart({
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="admin-metric-chart__empty">No sent records to split yet.</div>
+            <div className="admin-metric-chart__empty">{pieEmptyMessage}</div>
           )}
         </div>
       </div>

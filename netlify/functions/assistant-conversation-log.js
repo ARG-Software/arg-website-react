@@ -1,7 +1,7 @@
 import {
   config,
   createAssistantConversationLogApi,
-} from '../../src/backend/admin/apps/assistantConversationLogApi.js';
+} from '../../src/backend/admin/apps/assistantConversationLogApi.ts';
 
 export { config };
 

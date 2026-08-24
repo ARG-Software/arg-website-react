@@ -12,7 +12,7 @@ import { ShuffleText } from '@components/widgets/ShuffleText';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useNextProjectSection } from '@hooks/useNextProjectSection';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
-import { trackCTA } from '@utils/analytics';
+import { trackCTA } from '@services/analytics';
 import { buildProjectSchema } from '@utils/structuredData';
 import { getProjectGallery } from '@constants/projectGallery';
 import PROJECTS from '../data/projects.json';

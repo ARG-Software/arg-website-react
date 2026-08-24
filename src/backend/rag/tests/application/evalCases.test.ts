@@ -4,18 +4,18 @@ import test from 'node:test';
 import {
   executableRagEvalCases,
   ragEvalPromptBank,
-  type EvalChunkRow,
-  type EvalMatchRow,
-  type EvalSourceRow,
-  type RagEvalCase,
+  type IEvalChunkRow,
+  type IEvalMatchRow,
+  type IEvalSourceRow,
+  type IRagEvalCase,
 } from '../evals/cases.js';
-import type { RetrievedContext } from '../../domain/retrieval/RetrievedContext.js';
+import type { IRetrievedContext } from '../../domain/retrieval/IRetrievedContext.js';
 import { createFakeAnswerProvider } from '../fakes/FakeAnswerProvider.js';
 import { createFakeEmbeddingProvider } from '../fakes/FakeEmbeddingProvider.js';
 import { FakeRagReadRepository } from '../fakes/FakeRagReadRepository.js';
 import { createTestConfig } from '../fixtures/config.js';
-import type { ChunkFixture } from '../fixtures/sources.js';
-import type { RagSourceRecord } from '../../application/ports/RagReadRepository.js';
+import type { IChunkFixture } from '../fixtures/sources.js';
+import type { IRagSourceRecord } from '../../application/ports/IRagReadRepository.js';
 import { askQuestion } from '../../application/ask/askQuestion.js';
 
 const config = createTestConfig();
@@ -118,7 +118,7 @@ for (const ragCase of executableRagEvalCases) {
   });
 }
 
-function createAnswerProviderForCase(ragCase: RagEvalCase, generatedQuestions: string[]) {
+function createAnswerProviderForCase(ragCase: IRagEvalCase, generatedQuestions: string[]) {
   return createFakeAnswerProvider(ragCase.question, {
     intent: ragCase.intent ?? 'rag_question',
     intentResponse: ragCase.intentResponse ?? '',
@@ -137,9 +137,9 @@ function createReadRepository({
   chunks,
   rpcRows,
 }: {
-  sources: EvalSourceRow[];
-  chunks: EvalChunkRow[];
-  rpcRows: EvalMatchRow[];
+  sources: IEvalSourceRow[];
+  chunks: IEvalChunkRow[];
+  rpcRows: IEvalMatchRow[];
 }): FakeRagReadRepository {
   return new FakeRagReadRepository({
     sources: sources.map(toSourceRecord),
@@ -148,7 +148,7 @@ function createReadRepository({
   });
 }
 
-function toSourceRecord(row: EvalSourceRow): RagSourceRecord {
+function toSourceRecord(row: IEvalSourceRow): IRagSourceRecord {
   return {
     id: row.id,
     sourceType: row.source_type,
@@ -162,7 +162,7 @@ function toSourceRecord(row: EvalSourceRow): RagSourceRecord {
   };
 }
 
-function toChunkFixture(row: EvalChunkRow): ChunkFixture {
+function toChunkFixture(row: IEvalChunkRow): IChunkFixture {
   return {
     id: row.id,
     sourceId: row.source_id,
@@ -172,7 +172,7 @@ function toChunkFixture(row: EvalChunkRow): ChunkFixture {
   };
 }
 
-function toContextFixture(row: EvalMatchRow): RetrievedContext {
+function toContextFixture(row: IEvalMatchRow): IRetrievedContext {
   return {
     chunkId: row.chunk_id,
     sourceId: row.source_id,

@@ -1,14 +1,14 @@
-import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
-import type { RagReadRepository, RagSourceRecord } from '../../../ports/RagReadRepository.js';
+import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
+import type { IRagReadRepository, IRagSourceRecord } from '../../../ports/IRagReadRepository.js';
 
 export async function retrieveLatestBlogContexts(
-  repository: RagReadRepository
-): Promise<RetrievedContext[]> {
+  repository: IRagReadRepository
+): Promise<IRetrievedContext[]> {
   const sources = await repository.findSources({ sourceTypes: ['blog_post'] });
   const newestSources = sources
     .map(source => ({ source, timestamp: getPublicationTimestamp(source.metadata) }))
     .filter(
-      (item): item is { source: RagSourceRecord; timestamp: number } => item.timestamp !== null
+      (item): item is { source: IRagSourceRecord; timestamp: number } => item.timestamp !== null
     )
     .sort((left, right) => right.timestamp - left.timestamp)
     .slice(0, 3)
@@ -17,7 +17,7 @@ export async function retrieveLatestBlogContexts(
   return repository.findFirstChunksForSources(newestSources);
 }
 
-function getPublicationTimestamp(metadata: RagSourceRecord['metadata']): number | null {
+function getPublicationTimestamp(metadata: IRagSourceRecord['metadata']): number | null {
   const date = metadata?.date;
   const timestamp = typeof date === 'string' ? Date.parse(date) : Number.NaN;
   return Number.isNaN(timestamp) ? null : timestamp;

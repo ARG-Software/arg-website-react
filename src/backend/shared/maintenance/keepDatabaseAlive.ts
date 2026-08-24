@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-interface KeepDatabaseAliveDependencies {
+interface IKeepDatabaseAliveDependencies {
   supabase: SupabaseClient;
   tableName: string;
   select?: string;
@@ -10,7 +10,7 @@ export async function keepDatabaseAlive({
   supabase,
   tableName,
   select = 'id',
-}: KeepDatabaseAliveDependencies): Promise<void> {
+}: IKeepDatabaseAliveDependencies): Promise<void> {
   if (!supabase || !tableName) {
     throw new Error('Missing keep-alive dependencies');
   }
@@ -22,6 +22,6 @@ export async function keepDatabaseAlive({
   }
 }
 
-export async function keepDatabasesAlive(databases: KeepDatabaseAliveDependencies[]): Promise<void> {
+export async function keepDatabasesAlive(databases: IKeepDatabaseAliveDependencies[]): Promise<void> {
   await Promise.all(databases.map(database => keepDatabaseAlive(database)));
 }

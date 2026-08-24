@@ -1,7 +1,7 @@
 import AppLink from '../../../components/navigation/AppLink';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { Pill } from '@ui/pills/Pill.jsx';
-import { trackBlogPostClick } from '../../../utils/analytics';
+import { trackBlogPostClick } from '@services/analytics';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import HOMEPAGE from '../../../data/homePage.json';
 

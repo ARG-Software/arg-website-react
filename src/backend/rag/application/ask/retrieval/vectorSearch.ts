@@ -1,14 +1,14 @@
-import type { RagConfig } from '../../ragConfig.js';
-import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
+import type { IRagConfig } from '../../ragConfig.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/IRetrievedContext.js';
 import type { EmbeddingIndex } from '../../ports/EmbeddingIndex.js';
-import type { RagSourceOrigin, RagSourceType } from '../../../domain/content/RagSource.js';
-import type { RagReadRepository } from '../../ports/RagReadRepository.js';
+import type { RagSourceOrigin, RagSourceType } from '../../../domain/content/IRagSource.js';
+import type { IRagReadRepository } from '../../ports/IRagReadRepository.js';
 
-export interface RetrieveContextsInput {
-  repository: RagReadRepository;
+export interface IRetrieveContextsInput {
+  repository: IRagReadRepository;
   embedding: number[];
   index: EmbeddingIndex;
-  config: RagConfig;
+  config: IRagConfig;
   sourceOrigin: RagSourceOrigin;
   sourceTypes?: RagSourceType[] | null;
   sourceKeys?: string[] | null;
@@ -22,7 +22,7 @@ export async function retrieveContextsForOrigin({
   sourceOrigin,
   sourceTypes = null,
   sourceKeys = null,
-}: RetrieveContextsInput): Promise<RetrievedContext[]> {
+}: IRetrieveContextsInput): Promise<IRetrievedContext[]> {
   const highConfidenceContexts = await repository.matchChunks({
     embedding,
     index,
@@ -54,10 +54,10 @@ export async function retrieveContextsForOrigin({
 }
 
 export function mergeRetrievedContexts(
-  contextGroups: RetrievedContext[][],
+  contextGroups: IRetrievedContext[][],
   matchCount: number
-): RetrievedContext[] {
-  const contextsByChunk = new Map<string, RetrievedContext>();
+): IRetrievedContext[] {
+  const contextsByChunk = new Map<string, IRetrievedContext>();
 
   for (const context of contextGroups.flat()) {
     const current = contextsByChunk.get(context.chunkId);
@@ -70,11 +70,11 @@ export function mergeRetrievedContexts(
 }
 
 export function mergeContexts(
-  contextGroups: RetrievedContext[][],
+  contextGroups: IRetrievedContext[][],
   matchCount: number
-): RetrievedContext[] {
+): IRetrievedContext[] {
   const contexts = contextGroups.flat();
-  const uniqueContexts = new Map<string, RetrievedContext>();
+  const uniqueContexts = new Map<string, IRetrievedContext>();
 
   for (const context of contexts) {
     const current = uniqueContexts.get(context.chunkId);
@@ -89,9 +89,9 @@ export function mergeContexts(
 }
 
 export function mergeComplementaryContexts(
-  contextGroups: RetrievedContext[][],
+  contextGroups: IRetrievedContext[][],
   matchCount: number
-): RetrievedContext[] {
+): IRetrievedContext[] {
   const sortedGroups = contextGroups
     .map(contexts => mergeContexts([contexts], matchCount))
     .filter(contexts => contexts.length > 0);

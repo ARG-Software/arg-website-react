@@ -1,5 +1,5 @@
 import { loadLocalEnv } from '../config/env.js';
-import type { ChatMessage, PageContext } from '../domain/conversation/ChatMessage.js';
+import type { IChatMessage, IPageContext } from '../domain/conversation/IChatMessage.js';
 import { askQuestion, retrieveRelevantChunks } from '../application/ask/askQuestion.js';
 import { createGasparDependencies } from '../apps/di/createGasparDependencies.js';
 
@@ -119,7 +119,7 @@ function getQuestion(): string {
     .trim();
 }
 
-function parseMessages(): ChatMessage[] {
+function parseMessages(): IChatMessage[] {
   if (historyDemo) {
     return [
       {
@@ -143,10 +143,10 @@ function parseMessages(): ChatMessage[] {
     throw new Error('--history-json requires a JSON array argument');
   }
 
-  return JSON.parse(rawHistory) as ChatMessage[];
+  return JSON.parse(rawHistory) as IChatMessage[];
 }
 
-function parsePageContext(): PageContext | undefined {
+function parsePageContext(): IPageContext | undefined {
   if (!pagePath) {
     return undefined;
   }
@@ -154,7 +154,7 @@ function parsePageContext(): PageContext | undefined {
   return {
     pathname: pagePath,
     title: pageTitle || '',
-    ...(activeSection ? { activeSection: activeSection as PageContext['activeSection'] } : {}),
+    ...(activeSection ? { activeSection: activeSection as IPageContext['activeSection'] } : {}),
   };
 }
 

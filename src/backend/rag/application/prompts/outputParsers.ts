@@ -2,13 +2,13 @@ import type {
   ConversationTransformTask,
 } from '../../domain/conversation/ConversationTransform.js';
 import type {
-  QuestionIntentResult,
+  IQuestionIntentResult,
 } from '../../domain/conversation/QuestionIntent.js';
 import type {
   RetrievalMode,
-  RetrievalPlan,
-  RetrievalQuestionPlan,
-} from '../../domain/retrieval/RetrievalPlan.js';
+  IRetrievalPlan,
+  IRetrievalQuestionPlan,
+} from '../../domain/retrieval/IRetrievalPlan.js';
 
 const RAG_INTENT = 'rag_question';
 const RETRIEVAL_MODES: RetrievalMode[] = ['direct_evidence', 'editorial', 'article_discovery'];
@@ -21,7 +21,7 @@ const CONVERSATION_TRANSFORM_TASKS: ConversationTransformTask[] = [
   'translate_previous_answer',
 ];
 
-export function parseIntentResponse(content: string | undefined): QuestionIntentResult {
+export function parseIntentResponse(content: string | undefined): IQuestionIntentResult {
   if (!content) {
     return { intent: RAG_INTENT, response: '', language: '' };
   }
@@ -58,8 +58,8 @@ function parseConversationTransformTask(value: unknown): ConversationTransformTa
     : null;
 }
 
-export function parseRetrievalPlan(content: string | undefined): RetrievalPlan {
-  const fallback: RetrievalPlan = { query: '', mode: 'direct_evidence', entity: '', subject: '' };
+export function parseRetrievalPlan(content: string | undefined): IRetrievalPlan {
+  const fallback: IRetrievalPlan = { query: '', mode: 'direct_evidence', entity: '', subject: '' };
 
   if (!content) {
     return fallback;
@@ -95,7 +95,7 @@ export function parseRetrievalPlan(content: string | undefined): RetrievalPlan {
   }
 }
 
-function parseRetrievalQuestionPlan(value: unknown): RetrievalQuestionPlan | null {
+function parseRetrievalQuestionPlan(value: unknown): IRetrievalQuestionPlan | null {
   if (!value || typeof value !== 'object') {
     return null;
   }

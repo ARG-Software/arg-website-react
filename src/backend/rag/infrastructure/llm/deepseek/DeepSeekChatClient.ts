@@ -1,11 +1,13 @@
-import type { DeepSeekConfig } from './deepSeekConfig.js';
-import type { PromptMessage } from '../../../domain/conversation/ChatMessage.js';
+import type { IPromptMessage } from '../../../domain/conversation/IChatMessage.js';
 
 const DEEPSEEK_CHAT_URL = 'https://api.deepseek.com/chat/completions';
 
-export type DeepSeekChatConfig = DeepSeekConfig;
+export type DeepSeekChatConfig = {
+  apiKey: string;
+  model: string;
+};
 
-export interface DeepSeekChatCompletionResponse {
+export interface IDeepSeekChatCompletionResponse {
   choices?: Array<{
     message?: {
       content?: string;
@@ -20,10 +22,10 @@ export async function createDeepSeekChatCompletion({
   errorPrefix,
 }: {
   config: DeepSeekChatConfig;
-  messages: PromptMessage[];
+  messages: IPromptMessage[];
   temperature: number;
   errorPrefix: string;
-}): Promise<DeepSeekChatCompletionResponse> {
+}): Promise<IDeepSeekChatCompletionResponse> {
   const response = await fetch(DEEPSEEK_CHAT_URL, {
     method: 'POST',
     headers: {
@@ -42,5 +44,5 @@ export async function createDeepSeekChatCompletion({
     throw new Error(`${errorPrefix}: ${response.status} ${await response.text()}`);
   }
 
-  return (await response.json()) as DeepSeekChatCompletionResponse;
+  return (await response.json()) as IDeepSeekChatCompletionResponse;
 }

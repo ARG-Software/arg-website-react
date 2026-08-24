@@ -1,33 +1,33 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { EmbeddingProvider } from '../ports/ProviderPorts.js';
+import type { IEmbeddingProvider } from '../ports/IProviderPorts.js';
 import { toEmbeddingLiteral } from '../../infrastructure/repositories/supabase/vector.js';
 
 const PAGE_SIZE = 100;
 
-interface RagChunkRow {
+interface IRagChunkRow {
   id: string;
   content: string;
 }
 
-export interface RebuildFallbackEmbeddingsProgress {
+export interface IRebuildFallbackEmbeddingsProgress {
   chunkCount: number;
   rebuiltCount: number;
 }
 
-export interface RebuildFallbackEmbeddingsOptions {
+export interface IRebuildFallbackEmbeddingsOptions {
   onCleared?: (chunkCount: number) => void;
-  onProgress?: (progress: RebuildFallbackEmbeddingsProgress) => void;
+  onProgress?: (progress: IRebuildFallbackEmbeddingsProgress) => void;
 }
 
-interface RebuildFallbackEmbeddingsDependencies {
+interface IRebuildFallbackEmbeddingsDependencies {
   supabase: SupabaseClient;
-  fallbackEmbeddingProvider: EmbeddingProvider;
+  fallbackEmbeddingProvider: IEmbeddingProvider;
 }
 
 export async function rebuildFallbackEmbeddings(
-  dependencies: RebuildFallbackEmbeddingsDependencies,
-  options: RebuildFallbackEmbeddingsOptions = {}
-): Promise<RebuildFallbackEmbeddingsProgress> {
+  dependencies: IRebuildFallbackEmbeddingsDependencies,
+  options: IRebuildFallbackEmbeddingsOptions = {}
+): Promise<IRebuildFallbackEmbeddingsProgress> {
   const chunkCount = await getChunkCount(dependencies.supabase);
 
   if (chunkCount === 0) {
@@ -66,7 +66,7 @@ export async function rebuildFallbackEmbeddings(
           .eq('id', chunk.id)
       )
     );
-    const updateError = updates.find(result => result.error)?.error;
+    const updateError = updates.find((result: { error: Error | null }) => result.error)?.error;
 
     if (updateError) {
       throw updateError;
@@ -96,7 +96,7 @@ async function getChunkCount(supabase: SupabaseClient): Promise<number> {
   return count ?? 0;
 }
 
-async function loadChunkPage(supabase: SupabaseClient, offset: number): Promise<RagChunkRow[]> {
+async function loadChunkPage(supabase: SupabaseClient, offset: number): Promise<IRagChunkRow[]> {
   const { data, error } = await supabase
     .from('rag_chunks')
     .select('id, content')
@@ -107,5 +107,5 @@ async function loadChunkPage(supabase: SupabaseClient, offset: number): Promise<
     throw error;
   }
 
-  return (data ?? []) as RagChunkRow[];
+  return (data ?? []) as IRagChunkRow[];
 }

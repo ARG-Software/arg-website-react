@@ -12,7 +12,7 @@ import { TagFilterPills } from '@ui/filters/TagFilterPills.jsx';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useBlogSearch } from '@hooks/useBlogSearch';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
-import { trackBlogPostClick, trackCTA, trackEvent } from '@utils/analytics';
+import { trackBlogPostClick, trackCTA, trackEvent } from '@services/analytics';
 
 import { getBlogTags, loadBlogPostsMetadata } from '@utils/blog';
 import { BLOG_POSTS_PER_PAGE } from '@constants/config';

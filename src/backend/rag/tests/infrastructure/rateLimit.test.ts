@@ -7,11 +7,11 @@ import {
   getDayBucket,
   getGlobalDayBucket,
   hashIp,
-  type RateLimitConfig,
+  type IRateLimitConfig,
 } from '../../infrastructure/security/rateLimit.js';
 import { InMemoryRateLimitStore } from '../../infrastructure/security/rateLimitStores.js';
 
-function createConfig(overrides: Partial<RateLimitConfig> = {}): RateLimitConfig {
+function createConfig(overrides: Partial<IRateLimitConfig> = {}): IRateLimitConfig {
   return {
     perMinute: 3,
     perDay: 10,

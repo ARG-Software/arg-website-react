@@ -1,8 +1,8 @@
-import type { RagConfig } from '../../../ragConfig.js';
-import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
-import type { EmbeddingProvider } from '../../../ports/ProviderPorts.js';
-import type { RagReadRepository } from '../../../ports/RagReadRepository.js';
-import { resolveSemanticSearch, type SemanticSearchInput } from '../embeddings.js';
+import type { IRagConfig } from '../../../ragConfig.js';
+import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
+import type { IEmbeddingProvider } from '../../../ports/IProviderPorts.js';
+import type { IRagReadRepository } from '../../../ports/IRagReadRepository.js';
+import { resolveSemanticSearch, type ISemanticSearchInput } from '../embeddings.js';
 import { retrieveContextsForOrigin } from '../vectorSearch.js';
 
 const PORTFOLIO_SOURCE_KEY = 'portfolio-pdf';
@@ -17,13 +17,13 @@ export async function retrieveOpenSourceContexts({
   fallbackEmbeddingProvider,
   semanticSearch,
 }: {
-  readRepository: RagReadRepository;
-  config: RagConfig;
+  readRepository: IRagReadRepository;
+  config: IRagConfig;
   retrievalQuestion: string;
-  embeddingProvider: EmbeddingProvider;
-  fallbackEmbeddingProvider: EmbeddingProvider;
-  semanticSearch?: SemanticSearchInput;
-}): Promise<RetrievedContext[]> {
+  embeddingProvider: IEmbeddingProvider;
+  fallbackEmbeddingProvider: IEmbeddingProvider;
+  semanticSearch?: ISemanticSearchInput;
+}): Promise<IRetrievedContext[]> {
   const search = await resolveSemanticSearch(
     retrievalQuestion,
     embeddingProvider,

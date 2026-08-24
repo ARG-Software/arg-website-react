@@ -1,10 +1,10 @@
-import type { RagConfig } from '../../../ragConfig.js';
-import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
-import type { EmbeddingProvider } from '../../../ports/ProviderPorts.js';
-import type { RetrievalRoute } from '../../../../domain/retrieval/RetrievalRoute.js';
-import type { RagSourceOrigin, RagSourceType } from '../../../../domain/content/RagSource.js';
-import type { RagReadRepository, RagSourceRecord } from '../../../ports/RagReadRepository.js';
-import { resolveSemanticSearch, type SemanticSearchInput } from '../embeddings.js';
+import type { IRagConfig } from '../../../ragConfig.js';
+import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
+import type { IEmbeddingProvider } from '../../../ports/IProviderPorts.js';
+import type { IRetrievalRoute } from '../../../../domain/retrieval/IRetrievalRoute.js';
+import type { RagSourceOrigin, RagSourceType } from '../../../../domain/content/IRagSource.js';
+import type { IRagReadRepository, IRagSourceRecord } from '../../../ports/IRagReadRepository.js';
+import { resolveSemanticSearch, type ISemanticSearchInput } from '../embeddings.js';
 import {
   BLOG_SOURCE_TYPES,
   DIRECT_EVIDENCE_SOURCE_TYPES,
@@ -45,14 +45,14 @@ export async function retrieveDirectEvidenceContexts({
   fallbackEmbeddingProvider,
   semanticSearch,
 }: {
-  readRepository: RagReadRepository;
-  config: RagConfig;
+  readRepository: IRagReadRepository;
+  config: IRagConfig;
   retrievalQuestion: string;
-  route: RetrievalRoute;
-  embeddingProvider: EmbeddingProvider;
-  fallbackEmbeddingProvider: EmbeddingProvider;
-  semanticSearch?: SemanticSearchInput;
-}): Promise<RetrievedContext[]> {
+  route: IRetrievalRoute;
+  embeddingProvider: IEmbeddingProvider;
+  fallbackEmbeddingProvider: IEmbeddingProvider;
+  semanticSearch?: ISemanticSearchInput;
+}): Promise<IRetrievedContext[]> {
   if (isProjectReferenceQuestion(retrievalQuestion, route.subject)) {
     return retrieveProjectReferenceContexts({
       readRepository,
@@ -234,9 +234,9 @@ export async function retrieveDirectEvidenceContexts({
 }
 
 async function findDirectSource(
-  readRepository: RagReadRepository,
+  readRepository: IRagReadRepository,
   entity: string
-): Promise<RagSourceRecord | null> {
+): Promise<IRagSourceRecord | null> {
   const entityName = normalizeName(entity);
   const sources = await readRepository.findSources({
     sourceTypes: DIRECT_EVIDENCE_SOURCE_TYPES,
@@ -246,13 +246,13 @@ async function findDirectSource(
 }
 
 async function retrieveSemanticEvidence(
-  readRepository: RagReadRepository,
-  config: RagConfig,
+  readRepository: IRagReadRepository,
+  config: IRagConfig,
   subject: string,
-  embeddingProvider: EmbeddingProvider,
-  fallbackEmbeddingProvider: EmbeddingProvider,
-  semanticSearch?: SemanticSearchInput
-): Promise<RetrievedContext[]> {
+  embeddingProvider: IEmbeddingProvider,
+  fallbackEmbeddingProvider: IEmbeddingProvider,
+  semanticSearch?: ISemanticSearchInput
+): Promise<IRetrievedContext[]> {
   if (!subject) {
     return [];
   }
@@ -294,11 +294,11 @@ async function retrieveSemanticEvidence(
 }
 
 async function retrieveSemanticEvidenceForSourceKeys(
-  readRepository: RagReadRepository,
-  config: RagConfig,
-  search: SemanticSearchInput,
+  readRepository: IRagReadRepository,
+  config: IRagConfig,
+  search: ISemanticSearchInput,
   sourceKeys: string[]
-): Promise<RetrievedContext[]> {
+): Promise<IRetrievedContext[]> {
   if (sourceKeys.length === 0) {
     return [];
   }
@@ -314,12 +314,12 @@ async function retrieveSemanticEvidenceForSourceKeys(
 }
 
 async function retrieveSemanticEvidenceForOrigin(
-  readRepository: RagReadRepository,
-  config: RagConfig,
-  search: SemanticSearchInput,
+  readRepository: IRagReadRepository,
+  config: IRagConfig,
+  search: ISemanticSearchInput,
   sourceTypes: RagSourceType[],
   sourceOrigin: RagSourceOrigin
-): Promise<RetrievedContext[]> {
+): Promise<IRetrievedContext[]> {
   return retrieveContextsForOrigin({
     repository: readRepository,
     embedding: search.embedding,
@@ -331,10 +331,10 @@ async function retrieveSemanticEvidenceForOrigin(
 }
 
 function mergePrioritizedContexts(
-  contextGroups: RetrievedContext[][],
+  contextGroups: IRetrievedContext[][],
   matchCount: number
-): RetrievedContext[] {
-  const contextsByChunk = new Map<string, RetrievedContext>();
+): IRetrievedContext[] {
+  const contextsByChunk = new Map<string, IRetrievedContext>();
 
   for (const context of contextGroups.flat()) {
     if (!contextsByChunk.has(context.chunkId)) {
@@ -350,28 +350,28 @@ function isCompanyOrTeamEntity(entity: string): boolean {
 }
 
 function shouldUseLexicalBlogTechnologyEvidence(
-  route: RetrievalRoute,
-  person: RagSourceRecord | null,
-  entitySource: RagSourceRecord | null
+  route: IRetrievalRoute,
+  person: IRagSourceRecord | null,
+  entitySource: IRagSourceRecord | null
 ): boolean {
   return shouldUseBlogTechnologyEvidence(route, person, entitySource) && isTechnicalWritingSubject(route.subject);
 }
 
-function isTechnicalCapabilityRoute(route: RetrievalRoute): boolean {
+function isTechnicalCapabilityRoute(route: IRetrievalRoute): boolean {
   return route.kind === 'technology_quality' || isExactTechnologySubject(route.subject);
 }
 
 function filterIndividualContextsForCompanyLevelQuestion(
-  contexts: RetrievedContext[],
+  contexts: IRetrievedContext[],
   excludeNamedIndividualContent = false
-): RetrievedContext[] {
+): IRetrievedContext[] {
   return contexts.filter(
     context => !isIndividualEvidenceContext(context, excludeNamedIndividualContent)
   );
 }
 
 function isIndividualEvidenceContext(
-  context: RetrievedContext,
+  context: IRetrievedContext,
   excludeNamedIndividualContent: boolean
 ): boolean {
   const evidenceScope = context.sourceMetadata.evidence_scope;
@@ -382,7 +382,7 @@ function isIndividualEvidenceContext(
   );
 }
 
-function isNamedAboutContent(context: RetrievedContext): boolean {
+function isNamedAboutContent(context: IRetrievedContext): boolean {
   if (context.sourceType !== 'about') {
     return false;
   }

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
-import { trackCTA, trackEvent } from '@utils/analytics';
+import { trackCTA, trackEvent } from '@services/analytics';
 import { Navbar } from '@components/navigation/Navbar';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { ContactForm } from '@components/forms/ContactForm';

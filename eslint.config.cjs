@@ -65,7 +65,12 @@ module.exports = [
   },
   ...tseslint.configs.recommended.map(config => ({
     ...config,
-    files: ['src/backend/rag/**/*.ts'],
+    files: ['src/backend/{rag,admin,shared}/**/*.ts'],
     ignores: ['node_modules/**', 'dist/**'],
+    rules: {
+      ...config.rules,
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    },
   })),
 ];

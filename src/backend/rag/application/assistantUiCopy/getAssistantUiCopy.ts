@@ -1,20 +1,20 @@
 import type {
-  AssistantUiCopy,
-  AssistantUiCopyResponse,
-} from '../../domain/assistant/AssistantUiCopy.js';
-import type { AssistantUiCopyTranslator } from '../ports/ProviderPorts.js';
+  IAssistantUiCopy,
+  IAssistantUiCopyResponse,
+} from '../../domain/assistant/IAssistantUiCopy.js';
+import type { IAssistantUiCopyTranslator } from '../ports/IProviderPorts.js';
 import { getTextDirection, normalizeLanguage } from '../common/language.js';
 import { normalizeTranslatedAssistantUiCopy } from '../../application/assistantUiCopy/normalization.js';
 import { readAssistantSourceCopy } from './sourceCopy.js';
 
-const translationCache = new Map<string, AssistantUiCopyResponse>();
+const translationCache = new Map<string, IAssistantUiCopyResponse>();
 
 export { readAssistantSourceCopy };
 
 export async function getAssistantUiCopy(
   language: string | undefined,
-  { translator }: { translator?: AssistantUiCopyTranslator } = {}
-): Promise<AssistantUiCopyResponse> {
+  { translator }: { translator?: IAssistantUiCopyTranslator } = {}
+): Promise<IAssistantUiCopyResponse> {
   const source = readAssistantSourceCopy();
   const normalizedLanguage = normalizeLanguage(language);
   const cacheKey = `${normalizedLanguage}:${source.copyVersion}`;
@@ -44,8 +44,8 @@ export async function getAssistantUiCopy(
 function createResponse(
   language: string,
   copyVersion: string,
-  copy: AssistantUiCopy
-): AssistantUiCopyResponse {
+  copy: IAssistantUiCopy
+): IAssistantUiCopyResponse {
   return {
     language,
     direction: getTextDirection(language),

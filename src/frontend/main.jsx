@@ -32,7 +32,6 @@ const BlogPostPage = lazyWithRetry(() => import('./pages/blog/BlogPostPage.jsx')
 const PrivacyPage = lazyWithRetry(() => import('./pages/PrivacyPage.jsx'));
 const TermsPage = lazyWithRetry(() => import('./pages/TermsPage.jsx'));
 const AdminPage = lazyWithRetry(() => import('@admin/AdminPage.jsx'));
-const LoginPage = lazyWithRetry(() => import('@admin/pages/LoginPage.jsx'));
 const NotFoundPage = lazyWithRetry(() => import('./pages/NotFoundPage.jsx'));
 
 function BlogPostPageWrapper() {
@@ -94,22 +93,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     <Route path="/privacy/" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
                     <Route path="/terms/" element={<TermsPage />} />
-                    <Route path="/admin/login" element={<LoginPage />} />
-                    <Route path="/admin/login/" element={<LoginPage />} />
-                    <Route path="/admin" element={<AdminPage />} />
-                    <Route path="/admin/" element={<AdminPage />} />
-                    <Route path="/admin/all" element={<AdminPage />} />
-                    <Route path="/admin/all/" element={<AdminPage />} />
-                    <Route path="/admin/sent" element={<AdminPage />} />
-                    <Route path="/admin/sent/" element={<AdminPage />} />
-                    <Route path="/admin/not-sent" element={<AdminPage />} />
-                    <Route path="/admin/not-sent/" element={<AdminPage />} />
-                    <Route path="/admin/ai-bot" element={<AdminPage />} />
-                    <Route path="/admin/ai-bot/" element={<AdminPage />} />
-                    <Route path="/admin/help" element={<AdminPage />} />
-                    <Route path="/admin/help/" element={<AdminPage />} />
-                    <Route path="/admin/settings" element={<AdminPage />} />
-                    <Route path="/admin/settings/" element={<AdminPage />} />
+                    <Route path="/admin/*" element={<AdminPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </Suspense>

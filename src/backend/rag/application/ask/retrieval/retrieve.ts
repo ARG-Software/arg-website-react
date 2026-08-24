@@ -1,10 +1,10 @@
-import type { RagConfig } from '../../ragConfig.js';
-import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
-import type { EmbeddingProvider } from '../../ports/ProviderPorts.js';
+import type { IRagConfig } from '../../ragConfig.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/IRetrievedContext.js';
+import type { IEmbeddingProvider } from '../../ports/IProviderPorts.js';
 import type { EmbeddingIndex } from '../../ports/EmbeddingIndex.js';
-import type { RetrievalRoute } from '../../../domain/retrieval/RetrievalRoute.js';
-import type { RagSourceType } from '../../../domain/content/RagSource.js';
-import type { RagReadRepository } from '../../ports/RagReadRepository.js';
+import type { IRetrievalRoute } from '../../../domain/retrieval/IRetrievalRoute.js';
+import type { RagSourceType } from '../../../domain/content/IRagSource.js';
+import type { IRagReadRepository } from '../../ports/IRagReadRepository.js';
 import { retrieveCommercialDeliveryContexts } from './strategies/commercialDelivery.js';
 import { retrieveEditorialContexts } from './strategies/editorial.js';
 import { retrieveLatestBlogContexts } from './strategies/latestBlog.js';
@@ -23,18 +23,18 @@ const CONTEXT_SOURCE_TYPES: RagSourceType[] = [
   'blog_post',
 ];
 
-export interface RetrievalResult {
-  contexts: RetrievedContext[];
-  route: RetrievalRoute;
+export interface IRetrievalResult {
+  contexts: IRetrievedContext[];
+  route: IRetrievalRoute;
 }
 
-export interface RetrieveRoutedContextsInput {
+export interface IRetrieveRoutedContextsInput {
   retrievalQuestion: string;
-  route: RetrievalRoute;
-  config: RagConfig;
-  readRepository: RagReadRepository;
-  embeddingProvider: EmbeddingProvider;
-  fallbackEmbeddingProvider: EmbeddingProvider;
+  route: IRetrievalRoute;
+  config: IRagConfig;
+  readRepository: IRagReadRepository;
+  embeddingProvider: IEmbeddingProvider;
+  fallbackEmbeddingProvider: IEmbeddingProvider;
   embedding?: number[];
   index?: EmbeddingIndex;
 }
@@ -48,7 +48,7 @@ export async function retrieveRoutedContexts({
   fallbackEmbeddingProvider,
   embedding,
   index,
-}: RetrieveRoutedContextsInput): Promise<RetrievalResult> {
+}: IRetrieveRoutedContextsInput): Promise<IRetrievalResult> {
   if (route.kind === 'blog' && route.blogKind === 'latest') {
     return {
       contexts: await retrieveLatestBlogContexts(readRepository),

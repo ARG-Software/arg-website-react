@@ -1,7 +1,7 @@
 import {
   config,
   createAdminAssistantConversationsApi,
-} from '../../src/backend/admin/apps/adminAssistantConversationsApi.js';
+} from '../../src/backend/admin/apps/adminAssistantConversationsApi.ts';
 
 export { config };
 

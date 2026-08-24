@@ -7,7 +7,7 @@ import { PageHeader } from '@components/headers/PageHeader';
 import { SEO } from '@components/seo/SEO';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
-import { trackCTA, trackEvent, trackMailto, trackSocial } from '@utils/analytics';
+import { trackCTA, trackEvent, trackMailto, trackSocial } from '@services/analytics';
 import {
   EMAIL_KEYS,
   getCompanySocialLinks,

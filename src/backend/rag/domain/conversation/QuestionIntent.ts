@@ -8,7 +8,7 @@ export type QuestionIntent =
 
 export type FallbackQuestionIntent = Exclude<QuestionIntent, 'rag_question' | 'conversation_transform'>;
 
-export interface QuestionIntentResult {
+export interface IQuestionIntentResult {
   intent: QuestionIntent;
   response: string;
   language: string;

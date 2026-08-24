@@ -1,4 +1,4 @@
-import type { AnswerProvider } from '../../application/ports/ProviderPorts.js';
+import type { IAnswerProvider } from '../../application/ports/IProviderPorts.js';
 import type {
   ConversationTransformTask,
 } from '../../domain/conversation/ConversationTransform.js';
@@ -6,14 +6,14 @@ import type {
   QuestionIntent,
 } from '../../domain/conversation/QuestionIntent.js';
 import type {
-  RetrievalPlan,
-} from '../../domain/retrieval/RetrievalPlan.js';
+  IRetrievalPlan,
+} from '../../domain/retrieval/IRetrievalPlan.js';
 
-export interface FakeAnswerProviderBehavior {
+export interface IFakeAnswerProviderBehavior {
   intent?: QuestionIntent;
   intentResponse?: string;
   language?: string;
-  plan?: Partial<RetrievalPlan>;
+  plan?: Partial<IRetrievalPlan>;
   generatedAnswer?: string;
   insufficientContextAnswer?: string;
   intentFallbackResponse?: string;
@@ -32,8 +32,8 @@ export interface FakeAnswerProviderBehavior {
 
 export function createFakeAnswerProvider(
   planQuery: string,
-  behavior: FakeAnswerProviderBehavior = {}
-): AnswerProvider {
+  behavior: IFakeAnswerProviderBehavior = {}
+): IAnswerProvider {
   const {
     intent = 'rag_question',
     intentResponse = '',
@@ -51,7 +51,7 @@ export function createFakeAnswerProvider(
     onRewritePreviousAnswer,
   } = behavior;
 
-  const retrievalPlan: RetrievalPlan = {
+  const retrievalPlan: IRetrievalPlan = {
     query: planQuery,
     mode: 'direct_evidence',
     entity: '',

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MOBILE_BREAKPOINT } from '@constants/ui';
-import { trackAssistantEvent } from '@utils/analytics';
+import { trackAssistantEvent } from '@services/analytics';
 import { isMobile } from '@utils/helpers';
 import { useAssistantChat } from './useAssistantChat';
 import { useAssistantConversationLogger } from './useAssistantConversationLogger';

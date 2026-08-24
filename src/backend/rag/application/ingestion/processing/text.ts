@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import type { RagSource } from '../../../domain/content/RagSource.js';
+import type { IRagSource } from '../../../domain/content/IRagSource.js';
 
 export function normalizeText(value: unknown): string {
   return String(value ?? '')
@@ -26,7 +26,7 @@ export function stripMarkdown(value: unknown): string {
     .trim();
 }
 
-export function createSourceHash(source: RagSource): string {
+export function createSourceHash(source: IRagSource): string {
   return createHash('sha256')
     .update(
       JSON.stringify({

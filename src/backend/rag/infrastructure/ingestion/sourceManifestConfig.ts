@@ -1,14 +1,14 @@
 import { ASSISTANT_POLICY_CONTENT } from '../../domain/assistant/AssistantPolicy.js';
 import sourceManifestConfigJson from '../../config/sources.json' with { type: 'json' };
 import type {
-  ExternalSourceManifestEntry,
-  InlineJsonManifestEntry,
+  IExternalSourceManifestEntry,
+  IInlineJsonManifestEntry,
   LocalManifestEntry,
 } from './SourceManifestTypes.js';
 
-interface AssistantPolicySourceConfig {
+interface IAssistantPolicySourceConfig {
   kind: 'assistant_policy';
-  sourceType: InlineJsonManifestEntry['sourceType'];
+  sourceType: IInlineJsonManifestEntry['sourceType'];
   sourceKey: string;
   title: string;
   url?: string;
@@ -16,12 +16,12 @@ interface AssistantPolicySourceConfig {
   virtualPath: string;
 }
 
-interface SourceManifestConfig {
-  firstPartySources: Array<LocalManifestEntry | AssistantPolicySourceConfig>;
-  trustedExternalSources: ExternalSourceManifestEntry[];
+interface ISourceManifestConfig {
+  firstPartySources: Array<LocalManifestEntry | IAssistantPolicySourceConfig>;
+  trustedExternalSources: IExternalSourceManifestEntry[];
 }
 
-const sourceManifestConfig = sourceManifestConfigJson as SourceManifestConfig;
+const sourceManifestConfig = sourceManifestConfigJson as ISourceManifestConfig;
 
 export function getFirstPartySourceEntries(): LocalManifestEntry[] {
   return sourceManifestConfig.firstPartySources.map(entry =>
@@ -29,11 +29,11 @@ export function getFirstPartySourceEntries(): LocalManifestEntry[] {
   );
 }
 
-export function getTrustedExternalSourceEntries(): ExternalSourceManifestEntry[] {
+export function getTrustedExternalSourceEntries(): IExternalSourceManifestEntry[] {
   return sourceManifestConfig.trustedExternalSources;
 }
 
-function createAssistantPolicySource(entry: AssistantPolicySourceConfig): InlineJsonManifestEntry {
+function createAssistantPolicySource(entry: IAssistantPolicySourceConfig): IInlineJsonManifestEntry {
   return {
     kind: 'inline_json',
     sourceType: entry.sourceType,

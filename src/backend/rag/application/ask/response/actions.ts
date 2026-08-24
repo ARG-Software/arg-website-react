@@ -1,4 +1,4 @@
-import type { AssistantAction } from '../../../domain/assistant/AssistantAction.js';
+import type { IAssistantAction } from '../../../domain/assistant/IAssistantAction.js';
 
 const PROJECT_CONTACT_QUESTION_PATTERN =
   /\b(?:book|meeting|call|contact|email|reach|talk|speak|discuss|project|service|services|brief|scope|proposal|quote|estimate|budget|pricing|cost|collaborat(?:e|ion)|get started)\b/i;
@@ -9,16 +9,16 @@ const GASPAR_MESSAGE_REQUEST_PATTERN =
 const HIRE_ARG_QUESTION_PATTERN =
   /\b(?:hire|engage|work with)\b.{0,40}\b(?:arg|you|you guys|your team|your studio)\b|\b(?:arg|you|you guys|your team|your studio)\b.{0,40}\b(?:for hire|hire|engage)\b/i;
 const CAREERS_QUESTION_PATTERN = /\b(?:career|careers|job|jobs|hiring|hire|apply|application|role|position|hr)\b/i;
-const PROJECT_CONTACT_ACTIONS: AssistantAction[] = [{ type: 'gaspar_message' }];
-const CONTACT_OPTIONS_ACTIONS: AssistantAction[] = [
+const PROJECT_CONTACT_ACTIONS: IAssistantAction[] = [{ type: 'gaspar_message' }];
+const CONTACT_OPTIONS_ACTIONS: IAssistantAction[] = [
   { type: 'gaspar_message' },
   { type: 'book_meeting' },
   { type: 'contact_form' },
 ];
-const GASPAR_MESSAGE_ACTIONS: AssistantAction[] = [{ type: 'gaspar_message', autoStart: true }];
-const CONTACT_ACTIONS: AssistantAction[] = [{ type: 'gaspar_message' }];
+const GASPAR_MESSAGE_ACTIONS: IAssistantAction[] = [{ type: 'gaspar_message', autoStart: true }];
+const CONTACT_ACTIONS: IAssistantAction[] = [{ type: 'gaspar_message' }];
 
-export function createAssistantActions(question: string): AssistantAction[] {
+export function createAssistantActions(question: string): IAssistantAction[] {
   if (GASPAR_MESSAGE_REQUEST_PATTERN.test(question)) {
     return GASPAR_MESSAGE_ACTIONS;
   }
@@ -42,7 +42,7 @@ export function createAssistantActions(question: string): AssistantAction[] {
   return [];
 }
 
-export function createInsufficientContextActions(question: string): AssistantAction[] {
+export function createInsufficientContextActions(question: string): IAssistantAction[] {
   const actions = createAssistantActions(question);
 
   return actions.length > 0 ? actions : CONTACT_ACTIONS;

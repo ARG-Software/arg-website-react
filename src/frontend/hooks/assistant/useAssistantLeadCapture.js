@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { ALREADY_SUBSCRIBED_KEY } from '@constants/ui';
 import { submitWeb3Form } from '@services/web3formsService';
-import { trackEvent } from '@utils/analytics';
+import { trackEvent } from '@services/analytics';
 
 const LEAD_STEPS = {
   OFFER: 'offer',

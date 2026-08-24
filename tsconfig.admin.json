@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": false,
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": [
+    "src/backend/admin/**/*.ts",
+    "src/backend/shared/config/**/*.ts",
+    "src/backend/shared/security/**/*.ts",
+    "src/backend/shared/api/http.js"
+  ],
+  "exclude": ["src/backend/admin/tests/**/*.ts"]
+}

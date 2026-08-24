@@ -1,11 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { RateLimitResult, RateLimitStore } from './rateLimit.js';
+import type { IRateLimitResult, IRateLimitStore } from './rateLimit.js';
 
-export class InMemoryRateLimitStore implements RateLimitStore {
+export class InMemoryRateLimitStore implements IRateLimitStore {
   private readonly buckets = new Map<string, { count: number; windowStart: number }>();
 
-  async hit(bucket: string, windowSeconds: number, limit: number): Promise<RateLimitResult> {
+  async hit(bucket: string, windowSeconds: number, limit: number): Promise<IRateLimitResult> {
     const now = Math.floor(Date.now() / 1000);
     const entry = this.buckets.get(bucket);
 
@@ -24,13 +24,13 @@ export class InMemoryRateLimitStore implements RateLimitStore {
   }
 }
 
-export class SupabaseRateLimitStore implements RateLimitStore {
+export class SupabaseRateLimitStore implements IRateLimitStore {
   constructor(
     private readonly supabase: SupabaseClient,
     private readonly rpcName = 'hit_rag_rate_limit'
   ) {}
 
-  async hit(bucket: string, windowSeconds: number, limit: number): Promise<RateLimitResult> {
+  async hit(bucket: string, windowSeconds: number, limit: number): Promise<IRateLimitResult> {
     const { data, error } = await this.supabase.rpc(this.rpcName, {
       p_bucket: bucket,
       p_window_seconds: windowSeconds,

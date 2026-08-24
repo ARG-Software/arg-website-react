@@ -1,30 +1,30 @@
 import sourcesConfigJson from '../config/sources.json' with { type: 'json' };
 
-export interface HomepageSectionScope {
+export interface IHomepageSectionScope {
   sourceKey: string;
   dataKey: string;
   title: string;
 }
 
-interface ProjectReferenceConfig {
+interface IProjectReferenceConfig {
   slug: string;
   name: string;
   aliases?: string[];
 }
 
-interface SourcesConfig {
-  homepageSectionScopes: Record<string, HomepageSectionScope>;
+interface ISourcesConfig {
+  homepageSectionScopes: Record<string, IHomepageSectionScope>;
   staticPageSourceKeys: Record<string, string[]>;
-  projects: ProjectReferenceConfig[];
+  projects: IProjectReferenceConfig[];
 }
 
-const sourcesConfig = sourcesConfigJson as SourcesConfig;
+const sourcesConfig = sourcesConfigJson as ISourcesConfig;
 
 export const HOMEPAGE_SECTION_SCOPES = sourcesConfig.homepageSectionScopes;
 export type HomepageSectionId = keyof typeof HOMEPAGE_SECTION_SCOPES;
 export const HOMEPAGE_SECTION_IDS = Object.keys(HOMEPAGE_SECTION_SCOPES) as HomepageSectionId[];
 
-export function getHomepageSectionScope(sectionId: string): HomepageSectionScope | null {
+export function getHomepageSectionScope(sectionId: string): IHomepageSectionScope | null {
   return HOMEPAGE_SECTION_SCOPES[sectionId] ?? null;
 }
 

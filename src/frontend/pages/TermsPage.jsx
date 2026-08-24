@@ -6,7 +6,7 @@ import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
-import { trackCTA } from '@utils/analytics';
+import { trackCTA } from '@services/analytics';
 import legalPages from '@data/legalPages.json';
 import { EMAIL_KEYS, getEmailAddress, getMailtoLink } from '../services/linksService';
 

@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider, useAuth } from '../hooks/useAuth.jsx';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { adminQueryClient } from '../queryClient';
+import { useAuth } from '../hooks/auth/useAuth.jsx';
 import { AltchaVerification } from '@components/forms/AltchaVerification.jsx';
 import { AmbientVideoBackground } from '@ui/layout/AmbientVideoBackground.jsx';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
@@ -95,11 +93,5 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
-  return (
-    <QueryClientProvider client={adminQueryClient}>
-      <AuthProvider>
-        <LoginForm />
-      </AuthProvider>
-    </QueryClientProvider>
-  );
+  return <LoginForm />;
 }

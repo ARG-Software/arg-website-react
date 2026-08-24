@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useActiveHomepageSection } from '@hooks/useActiveHomepageSection';
 import { submitAssistantQuestion } from '@services/apiService';
-import { trackAssistantEvent } from '@utils/analytics';
+import { trackAssistantEvent } from '@services/analytics';
 
 const ERROR_MESSAGES = {
   question_required: 'Please enter a question.',

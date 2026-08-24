@@ -1,23 +1,23 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { RagSourceEmbeddings, UpsertSourceResult } from '../../../application/ingestion/types.js';
-import type { RagSource } from '../../../domain/content/RagSource.js';
+import type { IRagSourceEmbeddings, IUpsertSourceResult } from '../../../application/ingestion/IIngestionTypes.js';
+import type { IRagSource } from '../../../domain/content/IRagSource.js';
 import { toEmbeddingLiteral } from './vector.js';
-import { getChunkingConfig, type ChunkingConfig } from '../../../application/ragConfig.js';
+import type { IChunkingConfig } from '../../../application/ragConfig.js';
 import { chunkText } from '../../../application/ingestion/processing/chunking.js';
 import { createSourceHash, normalizeText } from '../../../application/ingestion/processing/text.js';
-import type { RagWriteRepository } from '../../../application/ports/RagWriteRepository.js';
+import type { IRagWriteRepository } from '../../../application/ports/IRagWriteRepository.js';
 
-export class SupabaseRagWriteRepository implements RagWriteRepository {
+export class SupabaseRagWriteRepository implements IRagWriteRepository {
   constructor(
     private readonly supabase: SupabaseClient,
-    private readonly chunkingConfig: ChunkingConfig = getChunkingConfig()
+    private readonly chunkingConfig: IChunkingConfig
   ) {}
 
   async upsertSource(
-    source: RagSource,
-    embeddings: RagSourceEmbeddings
-  ): Promise<UpsertSourceResult> {
+    source: IRagSource,
+    embeddings: IRagSourceEmbeddings
+  ): Promise<IUpsertSourceResult> {
     const content = normalizeText(source.content);
     const chunks = source.chunks ?? chunkText(content, this.chunkingConfig);
 
@@ -89,7 +89,7 @@ export class SupabaseRagWriteRepository implements RagWriteRepository {
     return { sourceId, chunkCount: rows.length };
   }
 
-  async updateFallbackEmbeddings(source: RagSource, embeddings: number[][]): Promise<UpsertSourceResult> {
+  async updateFallbackEmbeddings(source: IRagSource, embeddings: number[][]): Promise<IUpsertSourceResult> {
     const content = normalizeText(source.content);
     const chunks = source.chunks ?? chunkText(content, this.chunkingConfig);
 
@@ -126,20 +126,23 @@ export class SupabaseRagWriteRepository implements RagWriteRepository {
 
     if (
       chunkRows.length !== chunks.length ||
-      chunkRows.some((row, index) => row.chunk_index !== index || row.content !== chunks[index])
+      chunkRows.some(
+        (row: { chunk_index: number; content: string }, index: number) =>
+          row.chunk_index !== index || row.content !== chunks[index]
+      )
     ) {
       return this.upsertSource(source, { primary: null, fallback: embeddings });
     }
 
     const updates = await Promise.all(
-      chunkRows.map((row, index) =>
+      chunkRows.map((row: { id: string }, index: number) =>
         this.supabase
           .from('rag_chunks')
           .update({ fallback_embedding: toEmbeddingLiteral(embeddings[index]) })
           .eq('id', row.id)
       )
     );
-    const updateError = updates.find(result => result.error)?.error;
+    const updateError = updates.find((result: { error: Error | null }) => result.error)?.error;
 
     if (updateError) {
       throw updateError;
@@ -149,7 +152,7 @@ export class SupabaseRagWriteRepository implements RagWriteRepository {
   }
 
   async getSourceContentHash(
-    source: Pick<RagSource, 'sourceType' | 'sourceKey'>
+    source: Pick<IRagSource, 'sourceType' | 'sourceKey'>
   ): Promise<string | null> {
     const { data, error } = await this.supabase
       .from('rag_sources')

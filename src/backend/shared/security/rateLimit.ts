@@ -1,45 +1,22 @@
 import { createHash } from 'node:crypto';
 
-import type { EnvSource } from './altcha.js';
-
-const DEFAULT_PER_MINUTE = 6;
-const DEFAULT_PER_DAY = 30;
-const DEFAULT_GLOBAL_DAILY = 500;
 const MINUTE_SECONDS = 60;
 const DAY_SECONDS = 86_400;
 
-export interface RateLimitResult {
+export interface IRateLimitResult {
   allowed: boolean;
   retryAfterSeconds?: number;
 }
 
-export interface RateLimitStore {
-  hit(bucket: string, windowSeconds: number, limit: number): Promise<RateLimitResult>;
+export interface IRateLimitStore {
+  hit(bucket: string, windowSeconds: number, limit: number): Promise<IRateLimitResult>;
 }
 
-export interface RateLimitConfig {
+export interface IRateLimitConfig {
   perMinute: number;
   perDay: number;
   globalDaily: number;
   salt: string;
-}
-
-export function getRateLimitConfig(
-  env: EnvSource = process.env,
-  options: {
-    prefix?: string;
-    saltName?: string;
-    defaultSalt?: string;
-  } = {}
-): RateLimitConfig {
-  const prefix = options.prefix || 'RAG_ASK';
-
-  return {
-    perMinute: getNumberEnv(env, `${prefix}_RATE_LIMIT_PER_MINUTE`, DEFAULT_PER_MINUTE),
-    perDay: getNumberEnv(env, `${prefix}_RATE_LIMIT_PER_DAY`, DEFAULT_PER_DAY),
-    globalDaily: getNumberEnv(env, `${prefix}_GLOBAL_RATE_LIMIT_PER_DAY`, DEFAULT_GLOBAL_DAILY),
-    salt: env[options.saltName || `${prefix}_RATE_LIMIT_SALT`] || options.defaultSalt || 'arg-rate-limit',
-  };
 }
 
 export function hashIp(ip: string, salt: string): string {
@@ -63,9 +40,9 @@ export function getGlobalDayBucket(): string {
 
 export async function checkRateLimits(
   ip: string,
-  store: RateLimitStore,
-  config: RateLimitConfig = getRateLimitConfig()
-): Promise<RateLimitResult> {
+  store: IRateLimitStore,
+  config: IRateLimitConfig
+): Promise<IRateLimitResult> {
   const ipHash = hashIp(ip, config.salt);
   const checks = [
     { bucket: getMinuteBucket(ipHash), windowSeconds: MINUTE_SECONDS, limit: config.perMinute },
@@ -82,16 +59,4 @@ export async function checkRateLimits(
   }
 
   return { allowed: true };
-}
-
-function getNumberEnv(env: EnvSource, name: string, fallback: number): number {
-  const value = env[name];
-
-  if (!value) {
-    return fallback;
-  }
-
-  const parsed = Number(value);
-
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }

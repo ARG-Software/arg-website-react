@@ -1,8 +1,8 @@
-import type { RagConfig } from '../../../ragConfig.js';
-import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
-import type { CommercialDeliveryKind, RetrievalRoute } from '../../../../domain/retrieval/RetrievalRoute.js';
-import type { RagSourceType } from '../../../../domain/content/RagSource.js';
-import type { RagReadRepository, RagSourceRecord } from '../../../ports/RagReadRepository.js';
+import type { IRagConfig } from '../../../ragConfig.js';
+import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
+import type { CommercialDeliveryKind, IRetrievalRoute } from '../../../../domain/retrieval/IRetrievalRoute.js';
+import type { RagSourceType } from '../../../../domain/content/IRagSource.js';
+import type { IRagReadRepository, IRagSourceRecord } from '../../../ports/IRagReadRepository.js';
 import { normalizeName } from '../../../common/text.js';
 
 const DESIGNRUSH_SOURCE_KEY = 'designrush';
@@ -14,10 +14,10 @@ export async function retrieveCommercialDeliveryContexts({
   config,
   route,
 }: {
-  readRepository: RagReadRepository;
-  config: RagConfig;
-  route: RetrievalRoute;
-}): Promise<RetrievedContext[]> {
+  readRepository: IRagReadRepository;
+  config: IRagConfig;
+  route: IRetrievalRoute;
+}): Promise<IRetrievedContext[]> {
   switch (route.commercialKind) {
     case 'project_budget':
     case 'project_duration':
@@ -33,9 +33,9 @@ export async function retrieveCommercialDeliveryContexts({
 }
 
 async function findCommercialFactContexts(
-  readRepository: RagReadRepository,
-  route: RetrievalRoute
-): Promise<RetrievedContext[]> {
+  readRepository: IRagReadRepository,
+  route: IRetrievalRoute
+): Promise<IRetrievedContext[]> {
   const designRush = await findTrustedExternalSource(readRepository, DESIGNRUSH_SOURCE_KEY);
   const contexts = designRush ? await readRepository.findFirstChunksForSources([designRush]) : [];
   const projectName = route.entity.trim();
@@ -48,18 +48,18 @@ async function findCommercialFactContexts(
 }
 
 async function findEngagementDurationContexts(
-  readRepository: RagReadRepository,
-  route: RetrievalRoute
-): Promise<RetrievedContext[]> {
+  readRepository: IRagReadRepository,
+  route: IRetrievalRoute
+): Promise<IRetrievedContext[]> {
   const source = await findFirstPartySourceByTitle(readRepository, route.entity, ['project', 'partner']);
   return source ? readRepository.findFirstChunksForSources([source]) : [];
 }
 
 async function findFaqContexts(
-  readRepository: RagReadRepository,
-  config: RagConfig,
+  readRepository: IRagReadRepository,
+  config: IRagConfig,
   terms: string[]
-): Promise<RetrievedContext[]> {
+): Promise<IRetrievedContext[]> {
   const matchingChunks = await readRepository.findChunksByText({
     terms,
     matchCount: config.matchCount,
@@ -75,9 +75,9 @@ async function findFaqContexts(
 }
 
 async function findTrustedExternalSource(
-  readRepository: RagReadRepository,
+  readRepository: IRagReadRepository,
   sourceKey: string
-): Promise<RagSourceRecord | null> {
+): Promise<IRagSourceRecord | null> {
   const sources = await readRepository.findSources({
     sourceTypes: TRUSTED_EXTERNAL_SOURCE_TYPES,
     sourceOrigin: 'trusted_external',
@@ -87,19 +87,19 @@ async function findTrustedExternalSource(
 }
 
 async function findFirstPartySourceByKey(
-  readRepository: RagReadRepository,
+  readRepository: IRagReadRepository,
   sourceKey: string,
   sourceTypes: RagSourceType[]
-): Promise<RagSourceRecord | null> {
+): Promise<IRagSourceRecord | null> {
   const sources = await readRepository.findSources({ sourceTypes });
   return sources.find(source => source.sourceKey === sourceKey) ?? null;
 }
 
 async function findFirstPartySourceByTitle(
-  readRepository: RagReadRepository,
+  readRepository: IRagReadRepository,
   title: string,
   sourceTypes: RagSourceType[]
-): Promise<RagSourceRecord | null> {
+): Promise<IRagSourceRecord | null> {
   const normalizedTitle = normalizeName(title);
   const sources = await readRepository.findSources({ sourceTypes });
   const matches = sources.filter(

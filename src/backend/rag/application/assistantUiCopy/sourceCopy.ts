@@ -1,5 +1,5 @@
 import assistantSourceCopy from '../../../../frontend/data/assistant.json' with { type: 'json' };
-import type { AssistantSourceCopy } from '../../domain/assistant/AssistantUiCopy.js';
+import type { IAssistantSourceCopy } from '../../domain/assistant/IAssistantUiCopy.js';
 import {
   readActionCopy,
   readString,
@@ -7,7 +7,7 @@ import {
   readStringRecord,
 } from '../../application/assistantUiCopy/normalization.js';
 
-export function readAssistantSourceCopy(): AssistantSourceCopy {
+export function readAssistantSourceCopy(): IAssistantSourceCopy {
   const source = assistantSourceCopy as Record<string, unknown>;
 
   return {
