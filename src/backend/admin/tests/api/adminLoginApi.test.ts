@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createAdminLoginApi } from '../../apps/adminLoginApi.js';
-import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '../../infrastructure/http/adminCookies.js';
+import { createAdminLoginApi } from '../../apps/adminApi.js';
+import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '../../apps/http/userSessionCookies.js';
 
 test('logs in admins through the backend endpoint and sets cookies', async () => {
   const api = createTestApi();
@@ -45,7 +45,7 @@ function createTestApi({ altchaVerified = true, rateLimitAllowed = true } = {}) 
   return createAdminLoginApi({
     createDependencies: () => ({
       createLoginDependencies: () => ({
-        adminAccessPolicy: { canAccess: () => true },
+        userAccessPolicy: { canAccess: () => true },
         humanVerification: { verifyPayload: () => ({ verified: altchaVerified }) },
         identityProvider: {
           signInWithPassword: () => ({

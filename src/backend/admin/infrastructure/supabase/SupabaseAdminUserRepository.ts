@@ -1,9 +1,14 @@
-import type { IAdminUserRepository } from '../../application/ports/repositories/IAdminUserRepository.js';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
+import type {
+  IAdminUser,
+  IAdminUserRepository,
+} from '../../application/ports/repositories/IAdminUserRepository.js';
 
 export class SupabaseAdminUserRepository implements IAdminUserRepository {
-  constructor(private readonly client: any) {}
+  constructor(private readonly client: SupabaseClient) {}
 
-  async findActiveByEmail(email) {
+  async findActiveByEmail(email: string): Promise<IAdminUser | null> {
     const normalizedEmail = normalizeEmail(email);
 
     if (!normalizedEmail) return null;
@@ -25,7 +30,7 @@ export class SupabaseAdminUserRepository implements IAdminUserRepository {
   }
 }
 
-function normalizeEmail(email) {
+function normalizeEmail(email: string): string {
   return String(email || '')
     .trim()
     .toLowerCase();

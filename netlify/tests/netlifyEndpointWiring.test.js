@@ -30,23 +30,24 @@ test('backend app APIs expose the security routes and old API folders are remove
   assert.equal(existsSync(join(BACKEND_DIR, 'admin/api')), false);
 });
 
-test('function files instantiate backend API modules', () => {
+test('function files use backend API entrypoints', () => {
   assert.match(readNetlifyFile('functions/security-challenge.js'), /createSecurityChallengeApi/);
   assert.match(readNetlifyFile('functions/security-verify.js'), /createSecurityVerifyApi/);
-  assert.match(readNetlifyFile('functions/admin-login.js'), /createAdminLoginApi/);
-  assert.match(readNetlifyFile('functions/admin-outreach.js'), /createAdminOutreachApi/);
+  assert.match(readNetlifyFile('functions/admin-auth.js'), /apps\/api\/api\.ts/);
+  assert.match(readNetlifyFile('functions/admin-outreach.js'), /apps\/api\/api\.ts/);
   assert.match(
     readNetlifyFile('functions/assistant-conversation-log.js'),
-    /createAssistantConversationLogApi/
+    /apps\/api\/api\.ts/
   );
   assert.match(
     readNetlifyFile('functions/admin-assistant-conversations.js'),
-    /createAdminAssistantConversationsApi/
+    /apps\/api\/api\.ts/
   );
   assert.match(
     readNetlifyFile('functions/assistant-conversations-retention.js'),
-    /createAssistantConversationsRetentionApi/
+    /apps\/api\/api\.ts/
   );
+  assert.match(readNetlifyFile('functions/admin-visits.js'), /apps\/api\/api\.ts/);
   assert.match(
     readNetlifyFile('functions/maintenance-keep-database-alive.js'),
     /createKeepDatabaseAliveApi/
@@ -66,10 +67,20 @@ test('public redirects expose function endpoints before the 404 fallback', () =>
     '/api/assistant/ui-copy   /.netlify/functions/assistant-ui-copy   200',
     '/api/security/challenge  /.netlify/functions/security-challenge  200',
     '/api/security/verify     /.netlify/functions/security-verify     200',
-    '/api/admin/login         /.netlify/functions/admin-login         200',
-    '/api/admin/outreach      /.netlify/functions/admin-outreach      200',
+    '/api/admin/login         /.netlify/functions/admin-auth          200',
+    '/api/admin/session       /.netlify/functions/admin-auth          200',
+    '/api/admin/outreach-records /.netlify/functions/admin-outreach  200',
+    '/api/admin/outreach-summary /.netlify/functions/admin-outreach  200',
+    '/api/admin/outreach-chart /.netlify/functions/admin-outreach    200',
+    '/api/admin/outreach-export /.netlify/functions/admin-outreach   200',
+    '/api/admin/outreach-import /.netlify/functions/admin-outreach   200',
+    '/api/admin/outreach-record /.netlify/functions/admin-outreach   200',
+    '/api/admin/visit-metrics /.netlify/functions/admin-visits        200',
+    '/api/admin/visit-sessions /.netlify/functions/admin-visits       200',
+    '/api/admin/visit-journey /.netlify/functions/admin-visits        200',
     '/api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200',
     '/api/admin/assistant-conversations    /.netlify/functions/admin-assistant-conversations 200',
+    '/api/admin/assistant-conversation     /.netlify/functions/admin-assistant-conversations 200',
     '/mcp                     /.netlify/functions/mcp                 200',
   ]) {
     const redirectIndex = redirects.indexOf(redirect);
@@ -87,9 +98,12 @@ test('netlify functions do not reference removed implementation folders or old c
   const files = [
     'functions/admin-outreach.js',
     'functions/admin-assistant-conversations.js',
-    'functions/admin-login.js',
+    'functions/admin-auth.js',
     'functions/assistant-conversation-log.js',
     'functions/assistant-conversations-retention.js',
+    'functions/admin-visits.js',
+    'functions/visit-log.js',
+    'functions/visit-events-retention.js',
     'functions/assistant-ask.js',
     'functions/assistant-challenge.js',
     'functions/assistant-ui-copy.js',

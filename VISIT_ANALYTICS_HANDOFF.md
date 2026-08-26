@@ -22,6 +22,8 @@ The feature records public-site visits only. Admin paths are skipped.
 
 - Public visit logging endpoint: `/api/visit-log`
 - Authenticated admin metrics endpoint: `/api/admin/visit-metrics`
+- Authenticated admin sessions endpoint: `/api/admin/visit-sessions`
+- Authenticated admin journey endpoint: `/api/admin/visit-journey`
 - 90-day retention function: `/api/admin/visit-events-retention`
 - Client-side visitor session tracking inside the analytics service with a 30-minute inactivity timeout
 - First-party page views are buffered in session memory with timestamps and flushed on window close/page hide using `navigator.sendBeacon` with `fetch(..., { keepalive: true })` fallback
@@ -52,13 +54,11 @@ netlify/functions/assets/.gitkeep
 netlify/functions/assets/README.md
 netlify/functions/visit-events-retention.js
 netlify/functions/visit-log.js
-netlify/functions/visit-metrics.js
+netlify/functions/admin-visits.js
 src/backend/admin/application/visits/listVisitJourney.ts
 src/backend/admin/application/visits/listVisitMetrics.ts
 src/backend/admin/application/visits/listVisitSessions.ts
-src/backend/admin/apps/visitLogApi.ts
-src/backend/admin/apps/visitMetricsApi.ts
-src/backend/admin/apps/visitRetentionApi.ts
+src/backend/admin/apps/api/api.ts
 src/backend/admin/domain/visitEvent.ts
 src/backend/admin/application/crypto/visitSessionHasher.ts
 src/backend/admin/infrastructure/supabase/SupabaseVisitRepository.ts
@@ -77,7 +77,7 @@ netlify.toml
 package-lock.json
 package.json
 public/_redirects
-src/backend/admin/apps/di/createAdminDependencies.ts
+src/backend/admin/apps/di/createAdminContainer.ts
 src/frontend/admin/AdminPage.jsx
 src/frontend/admin/admin.css
 src/frontend/main.jsx
@@ -90,7 +90,7 @@ vite.config.js
 
 ### Public Ingest
 
-`src/backend/admin/apps/visitLogApi.ts`
+`src/backend/admin/apps/api/controllers/VisitsController.ts`
 
 - Mirrors the existing public assistant-conversation logging endpoint pattern.
 - Uses CORS origin guard.
@@ -105,14 +105,14 @@ vite.config.js
 
 ### Admin Metrics
 
-`src/backend/admin/apps/visitMetricsApi.ts`
+`src/backend/admin/apps/api/controllers/VisitsController.ts`
 
-Supported scopes:
+Supported endpoints:
 
 ```text
 GET /api/admin/visit-metrics?range=30d
-GET /api/admin/visit-metrics?scope=sessions&page=1&pageSize=10
-GET /api/admin/visit-metrics?scope=journey&sessionHash=<hash>
+GET /api/admin/visit-sessions?page=1&pageSize=10
+GET /api/admin/visit-journey?sessionHash=<hash>
 ```
 
 - Authenticates using the existing admin cookie/auth policy pattern.
@@ -121,7 +121,7 @@ GET /api/admin/visit-metrics?scope=journey&sessionHash=<hash>
 
 ### Retention
 
-`src/backend/admin/apps/visitRetentionApi.ts`
+`src/backend/admin/apps/api/controllers/VisitsController.ts`
 
 - Scheduled daily at `0 4 * * *`.
 - Deletes `visit_sessions.last_seen_at < cutoff`.

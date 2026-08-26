@@ -136,6 +136,37 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Also provides email, social, and share URL builders
 - Never hardcode external URLs in components — always use this service
 
+### 3.9 Admin Backend Boundaries
+- Domain stays small and business-focused. It should own real business invariants only.
+- Domain must not know about HTTP status codes, request/response shapes, Supabase rows, CSV parsing, encryption/decryption, hashing, cookies, or persistence details.
+- Application owns use cases, error-to-status mapping, ports, and generic reusable mechanics.
+- Repository ports live in `src/backend/admin/application/ports/repositories/`.
+- User/session operations live in application use cases under `src/backend/admin/application/usecases/sessions/` and `src/backend/admin/application/usecases/users/`; controllers should only call those use cases and handle HTTP details.
+- Identity provider ports use user naming, such as `IUserIdentityProvider`; keep `Admin` naming for admin routes/config only.
+- Admin configuration should be exposed through an application-level interface, not by passing the concrete `AdminConfig` into infrastructure. Inject the configuration interface anywhere configuration is genuinely needed.
+- Generic crypto helpers live in `src/backend/admin/application/crypto/` as simple functions such as `encode`, `decode`, and `encodeIndex`; do not duplicate cipher logic per repository or domain type.
+- Admin HTTP endpoints should use controller-style apps under `src/backend/admin/apps/api/`.
+- Netlify functions are deployment adapters only. Keep Netlify `config` objects and schedules in `netlify/functions/*`; API route behavior belongs in the backend API app.
+- `src/backend/admin/apps/api/api.ts` is the executable admin API entrypoint. It exports grouped router handlers such as `routeAuthRequest`, `routeOutreachRequest`, `routeVisitRequest`, and `routeAssistantConversationRequest`.
+- Admin controllers live under `src/backend/admin/apps/api/controllers/` and export their own route factories.
+- Admin controller methods should declare method/path and error metadata with `@route(...)` and `@errorResponse(...)`. Controller methods should not dispatch internally on HTTP method, query `scope`, IDs, or payload `action` values.
+- Admin controllers orchestrate HTTP only: read request body/query/cookies, call use cases, and return `Response`.
+- Protected admin controller methods should call `this.authenticateUser(request)` before parsing body/query or calling business use cases. Keep authorization out of non-auth business use cases.
+- Controllers must not talk to repositories, providers, Supabase clients, config, env, or dependency factories.
+- Controllers may receive dependencies through constructors, but those dependencies should be real use cases or use-case services, not env/config/repository containers.
+- DI is the composition root. It should resolve env/config internally, construct infrastructure adapters, construct use cases with explicit dependencies, and export a runtime container.
+- Use cases should receive their dependencies directly through constructors, following a .NET-style dependency injection model. Avoid opaque dependency objects when explicit constructor dependencies make the use case clearer.
+- Each controller method should call a use case. Reuse an existing use case when behavior is repeated; add a new use case when controller logic would otherwise reach into repositories/providers.
+- Supabase client creation belongs in the DI composition root/container, not in a separate generic factory file, unless reuse outside the container proves necessary.
+- Supabase adapter constructors should be consistent: receive the `SupabaseClient` first, then explicit adapter dependencies such as configuration interfaces or salts.
+- App-level HTTP helpers, such as cookie and request-header extraction, live in `src/backend/admin/apps/http/` because they are API concerns.
+- Admin route dispatch owns CORS, OPTIONS, 404, and 405 behavior. Controller error responses belong to `@errorResponse(...)`.
+- Infrastructure owns concrete adapters such as Supabase repositories, identity providers, geolocation providers, and CSV parser implementations.
+- Supabase repositories should connect table columns to domain objects directly in the repository unless the conversion is reused. Avoid vague helper files that only rename simple row mapping.
+- Keep table-specific conversion near the repository because DB columns and encrypted field envelopes are persistence details.
+- One-time scripts should not drive architecture. Disable or update them when needed instead of preserving stale helper APIs for them.
+- Centralized constants are useful when they define a stable contract, such as outreach CSV columns, but avoid deriving exported shapes implicitly from runtime object keys.
+
 ---
 
 ## 4. Analytics
@@ -220,7 +251,9 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - Keep only real business invariants in domain/application objects. Do not add redundant validation for values generated or enforced elsewhere, such as database IDs or client-generated UUIDs.
 - Do not normalize, sanitize, trim, reformat, or truncate data in domain code when that belongs to the API boundary or would silently change user/client data.
 - Preserve source data by default, especially transcripts, messages, imported records, and user-provided text. Derived display fields such as previews may be shortened separately.
-- Put security, encryption/decryption, persistence mapping, and HTTP response shaping in infrastructure/API code, not domain objects.
+- Put security, encryption/decryption, persistence mapping, and HTTP response shaping outside domain objects.
+- Keep generic reusable mechanics such as crypto encode/decode in application helpers; keep adapter-specific details such as Supabase columns in infrastructure repositories.
+- Prefer direct repository-local column-to-domain conversion over separate mapper/helper files unless the conversion is reused or genuinely complex enough to justify extraction.
 - Prefer explicit imperative code with local variables and `if` statements over clever conditional spreads, nested ternaries, or `flatMap` tricks when constructing objects.
 - Before adding any abstraction, ask whether it reduces code or just names code. If it only names code, do not add it.
 
@@ -281,7 +314,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - Dev server: port 3000, auto-open browser
 - Path aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`
 - Manual chunks: `vendor` (React/Router/Helmet), `three`, `gsap`, `hljs`
-- Local API routes: mounted through `plugins/local-api-dev/`, loaded with Vite SSR transforms, and delegated to backend API factories for assistant, security, and admin outreach endpoints
+- Local API routes: mounted through `plugins/local-api-dev/`, loaded with Vite SSR transforms, and delegated to backend API route handlers/factories
 - SPA fallback middleware for dev server
 - CSS preload injection plugin
 - Production: drops `console` and `debugger` statements

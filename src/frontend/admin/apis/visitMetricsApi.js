@@ -1,6 +1,8 @@
 import { readAdminResponse } from './adminResponse.js';
 
 const VISIT_METRICS_ENDPOINT = '/api/admin/visit-metrics';
+const VISIT_SESSIONS_ENDPOINT = '/api/admin/visit-sessions';
+const VISIT_JOURNEY_ENDPOINT = '/api/admin/visit-journey';
 
 export async function fetchVisitMetrics(range = '30d') {
   const response = await fetch(buildVisitMetricsUrl({ range }));
@@ -8,16 +10,20 @@ export async function fetchVisitMetrics(range = '30d') {
 }
 
 export async function fetchVisitSessions(query = {}) {
-  const response = await fetch(buildVisitMetricsUrl({ scope: 'sessions', ...query }));
+  const response = await fetch(buildVisitApiUrl(VISIT_SESSIONS_ENDPOINT, query));
   return readAdminResponse(response);
 }
 
 export async function fetchVisitJourney(sessionHash) {
-  const response = await fetch(buildVisitMetricsUrl({ scope: 'journey', sessionHash }));
+  const response = await fetch(buildVisitApiUrl(VISIT_JOURNEY_ENDPOINT, { sessionHash }));
   return readAdminResponse(response);
 }
 
 function buildVisitMetricsUrl(query) {
+  return buildVisitApiUrl(VISIT_METRICS_ENDPOINT, query);
+}
+
+function buildVisitApiUrl(endpoint, query) {
   const params = new URLSearchParams();
 
   Object.entries(query).forEach(([key, value]) => {
@@ -27,5 +33,5 @@ function buildVisitMetricsUrl(query) {
   });
 
   const queryString = params.toString();
-  return queryString ? `${VISIT_METRICS_ENDPOINT}?${queryString}` : VISIT_METRICS_ENDPOINT;
+  return queryString ? `${endpoint}?${queryString}` : endpoint;
 }

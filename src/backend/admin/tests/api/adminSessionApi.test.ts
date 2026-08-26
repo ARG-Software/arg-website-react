@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createAdminSessionApi } from '../../apps/adminSessionApi.js';
-import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '../../infrastructure/http/adminCookies.js';
+import { createAdminSessionApi } from '../../apps/adminApi.js';
+import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '../../apps/http/userSessionCookies.js';
 
 const mockUser = { email: 'admin@arg.software' };
 const mockSession = { access_token: 'new-access', refresh_token: 'new-refresh' };
@@ -55,7 +55,7 @@ function createTestApi(overrides = {}) {
   return createAdminSessionApi({
     createDependencies: () => ({
       createSessionDependencies: () => ({
-        adminAccessPolicy: { canAccess: () => true },
+        userAccessPolicy: { canAccess: () => true },
         identityProvider: {
           getUser: () => mockUser,
           refreshSession: () => ({ session: mockSession, user: mockUser }),

@@ -6,7 +6,7 @@ import type {
   OutreachSummary,
 } from './types/OutreachTypes.js';
 
-const OUTREACH_STATUSES: readonly OutreachStatus[] = ['sent', 'not_sent'];
+export const OUTREACH_STATUSES: readonly OutreachStatus[] = ['sent', 'not_sent'];
 const OUTREACH_CONTACT_METHODS: readonly OutreachContactMethod[] = ['email', 'contact_form'];
 
 export class Outreach {
@@ -74,6 +74,13 @@ export class Outreach {
   update(record: Outreach): Outreach {
     const canUpdateSentFields = this.status !== 'sent';
 
+    if (!canUpdateSentFields) {
+      if (record.status !== this.status) throw OutreachDomainError.sentStatusLocked();
+      if (record.contactMethod !== this.contactMethod)
+        throw OutreachDomainError.sentContactMethodLocked();
+      if (record.dateSent !== this.dateSent) throw OutreachDomainError.sentDateSentLocked();
+    }
+
     const next: OutreachConstructorParams = {
       id: this.id,
       createdAt: this.createdAt,
@@ -128,3 +135,20 @@ export class Outreach {
     return value;
   }
 }
+
+export const OUTREACH_CSV_COLUMNS = [
+  'companyName',
+  'website',
+  'contactEmail',
+  'contactInfo',
+  'contactMethod',
+  'fitReason',
+  'emailSubject',
+  'emailBody',
+  'status',
+  'dateSent',
+  'followUpDate',
+  'replyObtained',
+  'replySummary',
+  'notes',
+] as const satisfies readonly (keyof Outreach)[];

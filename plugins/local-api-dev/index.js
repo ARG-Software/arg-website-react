@@ -4,6 +4,7 @@ export function localApiDev(routes) {
     apply: 'serve',
     configureServer(server) {
       const env = createLocalApiEnv(server);
+      process.env.ALLOWED_API_ORIGINS = env.ALLOWED_API_ORIGINS;
 
       server.middlewares.use(async (req, res, next) => {
         const route = findRoute(routes, req.url);
@@ -15,13 +16,7 @@ export function localApiDev(routes) {
 
         try {
           const apiModule = await server.ssrLoadModule(route.module);
-          const createApi = apiModule[route.createApi];
-
-          if (typeof createApi !== 'function') {
-            throw new Error(`Missing API factory export: ${route.createApi}`);
-          }
-
-          const response = await createApi({ env })(await createFetchRequest(req));
+          const response = await callRouteHandler(apiModule, route, env, await createFetchRequest(req));
           await writeFetchResponse(res, response);
         } catch (error) {
           console.error(`Local API route failed: ${route.path}`, error);
@@ -30,6 +25,26 @@ export function localApiDev(routes) {
       });
     },
   };
+}
+
+function callRouteHandler(apiModule, route, env, request) {
+  if (route.handler) {
+    const handler = apiModule[route.handler];
+
+    if (typeof handler !== 'function') {
+      throw new Error(`Missing API handler export: ${route.handler}`);
+    }
+
+    return handler(request);
+  }
+
+  const createApi = apiModule[route.createApi];
+
+  if (typeof createApi !== 'function') {
+    throw new Error(`Missing API factory export: ${route.createApi}`);
+  }
+
+  return createApi({ env })(request);
 }
 
 function createLocalApiEnv(server) {
@@ -51,7 +66,11 @@ function createLocalApiEnv(server) {
 
 function findRoute(routes, url = '') {
   const pathname = url.split('?')[0];
-  return routes.find(route => route.path === pathname);
+  return routes.find(route => getRoutePaths(route).includes(pathname));
+}
+
+function getRoutePaths(route) {
+  return Array.isArray(route.path) ? route.path : [route.path];
 }
 
 async function createFetchRequest(req) {

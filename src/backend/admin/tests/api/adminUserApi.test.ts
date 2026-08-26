@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createAdminUserApi } from '../../apps/adminUserApi.js';
-import { ACCESS_COOKIE_NAME } from '../../infrastructure/http/adminCookies.js';
+import { createAdminUserApi } from '../../apps/adminApi.js';
+import { ACCESS_COOKIE_NAME } from '../../apps/http/userSessionCookies.js';
 
 test('PATCH /api/admin/user updates user name', async () => {
   let updatedData = null;
@@ -82,7 +82,7 @@ function createTestApi(overrides = {}) {
   return createAdminUserApi({
     createDependencies: () => ({
       createSessionDependencies: () => ({
-        adminAccessPolicy: { canAccess: () => true },
+        userAccessPolicy: { canAccess: () => true },
         identityProvider: {
           getUser: () => ({ email: 'admin@arg.software' }),
           updateUser: () => {},

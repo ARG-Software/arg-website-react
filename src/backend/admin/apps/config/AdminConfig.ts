@@ -1,4 +1,5 @@
 import { createAdminError } from '../../application/errors.js';
+import type { IAdminConfiguration } from '../../application/config/IAdminConfiguration.js';
 import type { IEnvSource } from '../../../shared/config/IEnvSource.js';
 import type { IRateLimitConfig } from '../../../shared/security/rateLimit.js';
 import type { AltchaSettings } from '../../../shared/security/altcha.js';
@@ -39,7 +40,7 @@ export interface IAdminConfigValues {
   assistantConversationEncryptionKeys: Record<number, string>;
 }
 
-export class AdminConfig {
+export class AdminConfig implements IAdminConfiguration {
   private static instance: AdminConfig | null = null;
 
   private values: IAdminConfigValues;

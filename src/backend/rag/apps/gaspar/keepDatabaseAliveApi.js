@@ -1,22 +1,13 @@
 import { keepDatabasesAlive } from '../../../shared/maintenance/keepDatabaseAlive.js';
-import { createAdminDependencies } from '../../../admin/apps/di/createAdminDependencies.ts';
+import { adminContainer } from '../../../admin/apps/di/adminContainer.ts';
 import { createGasparDependencies } from '../di/createGasparDependencies.ts';
-import { getAdminConfig } from '../../../admin/infrastructure/config/adminConfig.ts';
 import { getRagConfig } from '../../application/ragConfig.ts';
 
 export function createKeepDatabaseAliveApi({
   createDependencies = createGasparDependencies,
-  createAdminDependencyFactory = createAdminDependencies,
   env = process.env,
 } = {}) {
-  let adminConfig;
   let ragConfig;
-
-  function getAdminAppConfig() {
-    adminConfig ||=
-      createAdminDependencyFactory === createAdminDependencies ? getAdminConfig(env) : undefined;
-    return adminConfig;
-  }
 
   function getRagAppConfig() {
     ragConfig ||= createDependencies === createGasparDependencies ? getRagConfig(env) : undefined;
@@ -28,16 +19,13 @@ export function createKeepDatabaseAliveApi({
     const gasparDependencies = createDependencies({
       config: getRagAppConfig(),
     }).createMaintenanceDependencies();
-    const adminDependencies = createAdminDependencyFactory({
-      config: getAdminAppConfig(),
-    }).createMaintenanceDependencies();
 
     await keepDatabasesAlive([
       {
         ...gasparDependencies,
         tableName: 'rag_sources',
       },
-      adminDependencies,
+      adminContainer.maintenance,
     ]);
 
     console.log('Database keepalive completed', {

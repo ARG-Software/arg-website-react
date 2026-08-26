@@ -8,6 +8,7 @@
     "noEmit": true,
     "allowJs": true,
     "checkJs": false,
+    "experimentalDecorators": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
@@ -18,7 +19,8 @@
     "src/backend/admin/**/*.ts",
     "src/backend/shared/config/**/*.ts",
     "src/backend/shared/security/**/*.ts",
-    "src/backend/shared/api/http.js"
+    "src/backend/shared/api/http.js",
+    "src/backend/shared/api/**/*.ts"
   ],
   "exclude": ["src/backend/admin/tests/**/*.ts"]
 }

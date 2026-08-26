@@ -64,7 +64,7 @@ Completed:
 
 - Added shared ALTCHA/rate-limit modules under `src/backend/shared/security/` with JS and TS entry points.
 - Updated Gaspar/RAG security imports to use shared security modules instead of owning the implementation.
-- Added admin login backend endpoint at `/api/admin/login` in `src/backend/admin/apps/adminLoginApi.ts` and `netlify/functions/admin-login.js`.
+- Added admin login backend endpoint at `/api/admin/login` through `src/backend/admin/apps/api/api.ts` and `netlify/functions/admin-auth.js`.
 - Added admin login ALTCHA verification and login-attempt rate limiting using an admin-specific Supabase RPC/table.
 - Added admin 1-hour inactivity logout in `src/frontend/admin/AdminPage.jsx`.
 - Added migration `supabase/admin/migrations/20260821000000_reform_outreach_records.sql`.
@@ -73,7 +73,7 @@ Completed:
 - Removed persisted Excel source metadata and contact name from the app model/UI/import path.
 - Reduced status model to `sent` and `not_sent`; old `replied` maps to `sent` plus `reply_obtained = true`.
 - Restricted contact method to `email` and `contact_form`.
-- Added CSV export/import backend actions on `/api/admin/outreach`; import enforces max 30 rows server-side.
+- Added dedicated CSV export/import backend actions; import enforces max 30 rows server-side.
 - Updated `scripts/import-outreach.ts` to ingest the workbook into the new schema and skip duplicate normalized company/email rows.
 - Added dashboard pie chart data/UI for `Replies obtained` vs `Sent without reply`.
 - Updated backend tests for login, import/export, summaries, chart data, encrypted field sorting, and blind indexes.
@@ -121,7 +121,7 @@ Suggested follow-up implementation plan:
 7. Improve `ErrorCard` and empty table CSS/classes in `src/frontend/admin/admin.css` and/or `src/packages/ui/src/styles.css`.
 8. Create shared keep-alive module, for example `src/backend/shared/maintenance/keepDatabaseAlive.ts` and possibly `.js` if consumed by JS Netlify wrappers/tests.
 9. Update `src/backend/rag/apps/gaspar/keepDatabaseAliveApi.js` to use the shared keep-alive with `tableName: 'rag_sources'`.
-10. Add admin keep-alive dependencies in `createAdminDependencies.js`, an admin keep-alive app/function, and wiring tests/docs.
+10. Add admin keep-alive dependencies in the admin DI container, an admin keep-alive app/function, and wiring tests/docs.
 11. Re-run `npm run test:backend`, `npm run rag:test`, `npm run lint:all`, and `npm run build`.
 
 ## Context
@@ -360,8 +360,8 @@ Admin should get its own rate-limit table/function in admin migrations, rather t
 
 Backend:
 
-- `src/backend/admin/apps/adminOutreachApi.ts`
-- `src/backend/admin/apps/di/createAdminDependencies.ts`
+- `src/backend/admin/apps/api/api.ts`
+- `src/backend/admin/apps/di/createAdminContainer.ts`
 - `src/backend/admin/application/admin/authenticateAdmin.ts`
 - `src/backend/admin/application/admin/adminAccessPolicy.ts`
 - `src/backend/admin/application/outreach/listOutreachRecords.ts`
@@ -473,7 +473,7 @@ The backend should decrypt protected fields before generating CSV.
 
 Suggested endpoint shape:
 
-- `GET /api/admin/outreach?scope=export&format=csv`
+- `GET /api/admin/outreach-export`
 
 Or separate endpoint/action if cleaner.
 
@@ -491,7 +491,7 @@ Rules:
 
 Suggested endpoint shape:
 
-- `POST /api/admin/outreach/import`
+- `POST /api/admin/outreach-import`
 
 Or a POST action on the existing endpoint if cleaner.
 

@@ -8,7 +8,9 @@ import {
   createHttpError,
   getHttpErrorBody,
   getHttpErrorStatus,
-} from '../../apps/adminOutreachApi.js';
+} from '../../apps/adminApi.js';
+import { Outreach } from '../../domain/outreach.js';
+import { OutreachCsvParser } from '../../infrastructure/csv/OutreachCsvParser.js';
 
 test('creates admin responses with admin allowed methods', async () => {
   const request = new Request('https://arg.software/api/admin/outreach', {
@@ -296,12 +298,12 @@ test('imports CSV email drafts without collapsing paragraphs', async () => {
 test('rejects status changes for already sent outreach records', async () => {
   const record = createRecord(1, { status: 'sent', dateSent: '2026-08-14' });
   const api = createTestApi([], {
-    findById: () => record,
-    savePayload: () => {
-      throw new Error('savePayload should not be called');
+    findById: () => new Outreach(record),
+    save: () => {
+      throw new Error('save should not be called');
     },
   });
-  const response = await api(createPostRequest({ id: record.id, changes: { status: 'not_sent' } }));
+  const response = await api(createUpdateRequest(record, { status: 'not_sent' }));
   const body = await response.json();
 
   assert.equal(response.status, 400);
@@ -311,12 +313,10 @@ test('rejects status changes for already sent outreach records', async () => {
 test('allows sent outreach records to save unchanged status with other edits', async () => {
   const record = createRecord(1, { status: 'sent', dateSent: '2026-08-14' });
   const api = createTestApi([], {
-    findById: () => record,
-    savePayload: (_id, nextRecord) => nextRecord,
+    findById: () => new Outreach(record),
+    save: nextRecord => nextRecord,
   });
-  const response = await api(
-    createPostRequest({ id: record.id, changes: { status: 'sent', notes: 'Updated notes' } })
-  );
+  const response = await api(createUpdateRequest(record, { status: 'sent', notes: 'Updated notes' }));
   const body = await response.json();
 
   assert.equal(response.status, 200);
@@ -331,19 +331,17 @@ test('rejects contact method and sent date changes for already sent outreach rec
     dateSent: '2026-08-14',
   });
   const api = createTestApi([], {
-    findById: () => record,
-    savePayload: () => {
-      throw new Error('savePayload should not be called');
+    findById: () => new Outreach(record),
+    save: () => {
+      throw new Error('save should not be called');
     },
   });
 
   const contactMethodResponse = await api(
-    createPostRequest({ id: record.id, changes: { contactMethod: 'contact_form' } })
+    createUpdateRequest(record, { contactMethod: 'contact_form' })
   );
   const contactMethodBody = await contactMethodResponse.json();
-  const dateSentResponse = await api(
-    createPostRequest({ id: record.id, changes: { dateSent: '2026-08-15' } })
-  );
+  const dateSentResponse = await api(createUpdateRequest(record, { dateSent: '2026-08-15' }));
   const dateSentBody = await dateSentResponse.json();
 
   assert.equal(contactMethodResponse.status, 400);
@@ -359,18 +357,15 @@ test('allows sent outreach records to save unchanged sent lock fields', async ()
     dateSent: '2026-08-14',
   });
   const api = createTestApi([], {
-    findById: () => record,
-    savePayload: (_id, nextRecord) => nextRecord,
+    findById: () => new Outreach(record),
+    save: nextRecord => nextRecord,
   });
   const response = await api(
-    createPostRequest({
-      id: record.id,
-      changes: {
-        status: 'sent',
-        contactMethod: 'email',
-        dateSent: '2026-08-14',
-        notes: 'Full form save',
-      },
+    createUpdateRequest(record, {
+      status: 'sent',
+      contactMethod: 'email',
+      dateSent: '2026-08-14',
+      notes: 'Full form save',
     })
   );
   const body = await response.json();
@@ -380,16 +375,21 @@ test('allows sent outreach records to save unchanged sent lock fields', async ()
 });
 
 function createTestApi(records, repositoryOverrides = {}) {
+  const storedRecords = records.map(record => new Outreach(record));
+
   return createAdminOutreachApi({
     createDependencies: () => ({
       createOutreachDependencies: () => ({
-        adminAccessPolicy: { canAccess: () => true },
+        userAccessPolicy: { canAccess: () => true },
         auditRepository: { recordUpdated: () => {} },
         clock: { today: () => '2026-08-14' },
+        csvParser: new OutreachCsvParser(),
         identityProvider: { getUser: () => ({ email: 'admin@arg.software' }) },
         outreachRepository: {
-          list: () => records,
-          createMany: () => [],
+          list: () => storedRecords,
+          findById: id => storedRecords.find(record => record.id === id) || null,
+          save: record => record,
+          createMany: records => records.map((record, index) => new Outreach(createRecord(index + 1, record))),
           ...repositoryOverrides,
         },
       }),
@@ -418,6 +418,10 @@ function createPostRequest(body) {
   });
 }
 
+function createUpdateRequest(record, changes) {
+  return createPostRequest({ id: record.id, record: { ...record, ...changes } });
+}
+
 function createRecords(count, overrides = {}) {
   return Array.from({ length: count }, (_, index) => createRecord(index + 1, overrides));
 }
@@ -427,7 +431,7 @@ function createRecord(number, overrides = {}) {
   date.setUTCDate(date.getUTCDate() - number);
   const timestamp = date.toISOString();
 
-  return {
+  const record = {
     id: `record-${number}`,
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -447,4 +451,10 @@ function createRecord(number, overrides = {}) {
     notes: '',
     ...overrides,
   };
+
+  if (record.status === 'sent' && !record.dateSent) {
+    record.dateSent = timestamp.slice(0, 10);
+  }
+
+  return record;
 }

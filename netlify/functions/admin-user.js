@@ -1,5 +1,8 @@
-import { config, createAdminUserApi } from '../../src/backend/admin/apps/adminUserApi.ts';
+import { routeUserRequest } from '../../src/backend/admin/apps/api/api.ts';
 
-export { config };
+export const config = {
+  path: '/api/admin/user',
+  method: ['PATCH', 'OPTIONS'],
+};
 
-export default createAdminUserApi({ env: process.env });
+export default routeUserRequest;

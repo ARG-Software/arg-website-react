@@ -2,24 +2,7 @@ import { parse } from 'csv-parse/sync';
 import { stringify } from 'csv-stringify/sync';
 
 import type { IOutreachCsvParser } from '../../application/ports/IOutreachCsvParser.js';
-import type { Outreach } from '../../domain/outreach.js';
-
-const COLUMNS = [
-  'companyName',
-  'website',
-  'contactEmail',
-  'contactInfo',
-  'contactMethod',
-  'fitReason',
-  'emailSubject',
-  'emailBody',
-  'status',
-  'dateSent',
-  'followUpDate',
-  'replyObtained',
-  'replySummary',
-  'notes',
-];
+import { OUTREACH_CSV_COLUMNS, type Outreach } from '../../domain/outreach.js';
 
 export class OutreachCsvParser implements IOutreachCsvParser {
   parse(csv: string): Record<string, string>[] {
@@ -37,7 +20,7 @@ export class OutreachCsvParser implements IOutreachCsvParser {
 
   stringify(records: Outreach[]): string {
     return stringify(records, {
-      columns: COLUMNS,
+      columns: [...OUTREACH_CSV_COLUMNS],
       header: true,
     });
   }

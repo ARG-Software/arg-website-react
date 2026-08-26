@@ -20,15 +20,23 @@
 /api/assistant/ui-copy   /.netlify/functions/assistant-ui-copy   200
 /api/security/challenge  /.netlify/functions/security-challenge  200
 /api/security/verify     /.netlify/functions/security-verify     200
-/api/admin/login         /.netlify/functions/admin-login         200
-/api/admin/session       /.netlify/functions/admin-session       200
+/api/admin/login         /.netlify/functions/admin-auth          200
+/api/admin/session       /.netlify/functions/admin-auth          200
 /api/admin/user          /.netlify/functions/admin-user          200
-/api/admin/outreach      /.netlify/functions/admin-outreach      200
+/api/admin/outreach-records /.netlify/functions/admin-outreach  200
+/api/admin/outreach-summary /.netlify/functions/admin-outreach  200
+/api/admin/outreach-chart /.netlify/functions/admin-outreach    200
+/api/admin/outreach-export /.netlify/functions/admin-outreach   200
+/api/admin/outreach-import /.netlify/functions/admin-outreach   200
+/api/admin/outreach-record /.netlify/functions/admin-outreach   200
 /api/visit-log           /.netlify/functions/visit-log           200
-/api/admin/visit-metrics /.netlify/functions/visit-metrics       200
+/api/admin/visit-metrics /.netlify/functions/admin-visits        200
+/api/admin/visit-sessions /.netlify/functions/admin-visits       200
+/api/admin/visit-journey /.netlify/functions/admin-visits        200
 /api/admin/visit-events-retention /.netlify/functions/visit-events-retention 200
 /api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200
 /api/admin/assistant-conversations    /.netlify/functions/admin-assistant-conversations 200
+/api/admin/assistant-conversation     /.netlify/functions/admin-assistant-conversations 200
 /mcp                     /.netlify/functions/mcp                 200
 
 # Trailing-slash canonicalization — fixes Ahrefs "3XX in sitemap" errors

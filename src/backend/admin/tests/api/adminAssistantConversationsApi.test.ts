@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createAdminAssistantConversationsApi } from '../../apps/adminAssistantConversationsApi.js';
-import { createAssistantConversationLogApi } from '../../apps/assistantConversationLogApi.js';
+import {
+  createAdminAssistantConversationsApi,
+  createAssistantConversationLogApi,
+} from '../../apps/assistantConversationsApi.js';
 
 test('logs assistant conversations through the public write-only endpoint', async () => {
   let savedRecord;
@@ -31,8 +33,8 @@ test('logs assistant conversations through the public write-only endpoint', asyn
 
   assert.equal(response.status, 204);
   assert.equal(savedRecord.publicConversationId, 'conversation-test-1');
-  assert.equal(savedRecord.metadata.messageCount, 2);
-  assert.equal(savedRecord.metadata.pagePath, '/');
+  assert.equal(savedRecord.messageCount, 2);
+  assert.equal(savedRecord.pagePath, '/');
 });
 
 test('ignores assistant-only conversation logs through the public write-only endpoint', async () => {
@@ -168,7 +170,7 @@ function createConversationAdminDependencies({ conversationRepository } = {}) {
   return {
     createAssistantConversationAdminDependencies() {
       return {
-        adminAccessPolicy: {
+        userAccessPolicy: {
           async canAccess() {
             return true;
           },
@@ -198,6 +200,12 @@ function createConversationRecord() {
     },
     messageCount: 2,
     pagePath: '/',
+    pageContext: { pathname: '/', title: 'ARG' },
+    preview: 'What do you do?',
+    messages: [
+      { role: 'user', content: 'What do you do?', createdAt: '2026-08-21T10:00:00.000Z' },
+      { role: 'assistant', content: 'We build software.', createdAt: '2026-08-21T10:00:01.000Z' },
+    ],
     language: 'en',
     lastMessageAt: '2026-08-21T10:00:01.000Z',
     createdAt: '2026-08-21T10:00:00.000Z',

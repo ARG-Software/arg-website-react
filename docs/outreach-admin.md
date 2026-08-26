@@ -5,7 +5,7 @@ The `/admin/` route is a private outreach management app deployed with the publi
 ## Security Model
 
 - Supabase Auth authenticates Jose and Rui in the browser.
-- The browser sends the Supabase access token to `/api/admin/outreach`.
+- The browser calls explicit admin outreach endpoints such as `/api/admin/outreach-records` and `/api/admin/outreach-record`.
 - Netlify Functions validate the token with `supabase.auth.getUser(token)`.
 - The function checks `public.admin_users` server-side before reading data.
 - Outreach records are encrypted in the function before writing to Supabase.
@@ -35,9 +35,9 @@ Run the admin app with the regular Vite dev server:
 npm run dev
 ```
 
-The `/api/admin/outreach` endpoint is served locally by `plugins/local-api-dev/`. The adapter loads `src/backend/admin/apps/adminOutreachApi.ts` through Vite and calls the same backend API factory used by the Netlify production function, so local development does not require Netlify Dev or redirect rewrites.
+The admin outreach endpoints are served locally by `plugins/local-api-dev/`. The adapter loads `src/backend/admin/apps/api/api.ts` through Vite and calls the same controller handlers used by the Netlify production functions, so local development does not require Netlify Dev or redirect rewrites.
 
-Production remains backed by `netlify/functions/admin-outreach.js`.
+Production remains backed by the grouped `netlify/functions/admin-outreach.js` adapter.
 
 ## Admin Users
 
@@ -157,7 +157,7 @@ Unauthenticated users should still see the login screen.
 
 ### Backend Pagination
 
-Extend `GET /api/admin/outreach` to support backend pagination and filtering.
+Extend `GET /api/admin/outreach-records` to support backend pagination and filtering.
 
 Suggested query params:
 
@@ -201,9 +201,9 @@ Required and normalized CSV behavior:
 Suggested dashboard requests through the same API:
 
 ```txt
-GET /api/admin/outreach?scope=summary
-GET /api/admin/outreach?scope=chart&range=30d
-GET /api/admin/outreach?scope=recent_sent&page=1&pageSize=10
+GET /api/admin/outreach-summary
+GET /api/admin/outreach-chart?range=30d
+GET /api/admin/outreach-records?page=1&pageSize=10
 ```
 
 For `recent_sent`, cap results to the latest 30 sent records total.
@@ -297,7 +297,7 @@ Keep current behaviors:
 - `Send email` opens a `mailto:` URL.
 - `Mark sent` sets `status: 'sent'`.
 - Backend auto-fills `date_sent` when status becomes `sent` and no date exists.
-- Save continues to call `POST /api/admin/outreach`.
+- Save calls `PATCH /api/admin/outreach-record`.
 
 ### Suggested Implementation Order
 

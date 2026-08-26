@@ -44,7 +44,7 @@ test('login dependencies keep auth sign-in separate from privileged admin checks
   AdminConfig.reset();
   const dependencies = createDependencies({ config: AdminConfig.configure(config) }).createLoginDependencies();
 
-  await dependencies.adminAccessPolicy.canAccess('admin@arg.software');
+  await dependencies.userAccessPolicy.canAccess('admin@arg.software');
 
   assert.equal(dependencies.identityProvider.client, authClient);
   assert.equal(dependencies.loginRateLimit.store.supabase, serviceClient);

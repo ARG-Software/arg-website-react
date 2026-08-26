@@ -1,27 +1,15 @@
-import crypto from 'node:crypto';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
+import type { IAdminConfiguration } from '../../application/config/IAdminConfiguration.js';
+import { decode, isValidKey } from '../../application/crypto/decode.js';
+import { encode, type EncodedValue } from '../../application/crypto/encode.js';
 import type { IAssistantConversationRepository } from '../../application/ports/repositories/IAssistantConversationRepository.js';
 import { AssistantConversation } from '../../domain/assistantConversation.js';
 import type {
   AssistantConversationMessage,
+  AssistantConversationPagination,
   AssistantConversationPageContext,
 } from '../../domain/types/AssistantConversationTypes.js';
-
-const ALGORITHM = 'aes-256-gcm';
-const KEY_BYTES = 32;
-const NONCE_BYTES = 12;
-
-type AssistantConversationEncryptionConfig = {
-  activeKeyVersion: number;
-  keys: Record<number, string>;
-};
-
-type AssistantConversationEncryptedPayload = {
-  keyVersion: number;
-  nonce: string;
-  ciphertext: string;
-  authTag: string;
-};
 
 type AssistantConversationPayload = {
   conversationId: string;
@@ -31,26 +19,68 @@ type AssistantConversationPayload = {
   savedAt: string;
 };
 
+type AssistantConversationRow = {
+  id?: string;
+  public_conversation_id: string;
+  payload_key_version: number;
+  payload_nonce: string;
+  payload_ciphertext: string;
+  payload_auth_tag: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export class SupabaseAssistantConversationRepository implements IAssistantConversationRepository {
   constructor(
-    private readonly client: any,
-    private readonly encryption: AssistantConversationEncryptionConfig
+    private readonly client: SupabaseClient,
+    private readonly configuration: IAdminConfiguration
   ) {}
 
-  async upsert(conversation: AssistantConversation) {
-    const row = toDatabaseRow(conversation, this.encryption);
+  async upsert(conversation: AssistantConversation): Promise<AssistantConversation> {
+    const encryptedPayload = encryptPayload(
+      {
+        conversationId: conversation.publicConversationId,
+        messages: conversation.messages,
+        pageContext: conversation.pageContext,
+        language: conversation.language,
+        savedAt: conversation.savedAt,
+      },
+      this.configuration
+    );
     const { data, error } = await this.client
       .from('assistant_conversations')
-      .upsert(row, { onConflict: 'public_conversation_id' })
+      .upsert(
+        {
+          public_conversation_id: conversation.publicConversationId,
+          payload_key_version: encryptedPayload.keyVersion,
+          payload_nonce: encryptedPayload.nonce,
+          payload_ciphertext: encryptedPayload.ciphertext,
+          payload_auth_tag: encryptedPayload.authTag,
+          message_count: conversation.messageCount,
+          page_path: conversation.pagePath,
+          language: conversation.language || null,
+          last_message_at: conversation.lastMessageAt,
+        },
+        { onConflict: 'public_conversation_id' }
+      )
       .select('*')
       .single();
 
     if (error) throw error;
 
-    return toConversationRecord(data, this.encryption);
+    return toConversationRecord(data, this.configuration);
   }
 
-  async list({ page = 1, pageSize = 10 } = {}) {
+  async list({
+    page = 1,
+    pageSize = 10,
+  }: {
+    page?: number;
+    pageSize?: number;
+  } = {}): Promise<{
+    records: AssistantConversation[];
+    pagination: AssistantConversationPagination;
+  }> {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
     const { data, error, count } = await this.client
@@ -62,7 +92,7 @@ export class SupabaseAssistantConversationRepository implements IAssistantConver
     if (error) throw error;
 
     return {
-      records: data.map(row => toConversationRecord(row, this.encryption)),
+      records: data.map(row => toConversationRecord(row, this.configuration)),
       pagination: {
         page,
         pageSize,
@@ -72,7 +102,7 @@ export class SupabaseAssistantConversationRepository implements IAssistantConver
     };
   }
 
-  async findById(id) {
+  async findById(id: string): Promise<AssistantConversation | null> {
     const { data, error } = await this.client
       .from('assistant_conversations')
       .select('*')
@@ -81,16 +111,16 @@ export class SupabaseAssistantConversationRepository implements IAssistantConver
 
     if (error || !data) return null;
 
-    return toConversationRecord(data, this.encryption);
+    return toConversationRecord(data, this.configuration);
   }
 
-  async deleteById(id) {
+  async deleteById(id: string): Promise<void> {
     const { error } = await this.client.from('assistant_conversations').delete().eq('id', id);
 
     if (error) throw error;
   }
 
-  async deleteOlderThan(cutoffIso) {
+  async deleteOlderThan(cutoffIso: string): Promise<number> {
     const { count, error } = await this.client
       .from('assistant_conversations')
       .delete({ count: 'exact' })
@@ -102,35 +132,10 @@ export class SupabaseAssistantConversationRepository implements IAssistantConver
   }
 }
 
-function toDatabaseRow(
-  conversation: AssistantConversation,
-  encryption: AssistantConversationEncryptionConfig
-) {
-  const encryptedPayload = encryptPayload(
-    {
-      conversationId: conversation.publicConversationId,
-      messages: conversation.messages,
-      pageContext: conversation.pageContext,
-      language: conversation.language,
-      savedAt: conversation.savedAt,
-    },
-    encryption
-  );
-
-  return {
-    public_conversation_id: conversation.publicConversationId,
-    payload_key_version: encryptedPayload.keyVersion,
-    payload_nonce: encryptedPayload.nonce,
-    payload_ciphertext: encryptedPayload.ciphertext,
-    payload_auth_tag: encryptedPayload.authTag,
-    message_count: conversation.messageCount,
-    page_path: conversation.pagePath,
-    language: conversation.language || null,
-    last_message_at: conversation.lastMessageAt,
-  };
-}
-
-function toConversationRecord(row, encryption: AssistantConversationEncryptionConfig) {
+function toConversationRecord(
+  row: AssistantConversationRow,
+  configuration: IAdminConfiguration
+): AssistantConversation {
   const payload = decryptPayload(
     {
       keyVersion: row.payload_key_version,
@@ -138,7 +143,7 @@ function toConversationRecord(row, encryption: AssistantConversationEncryptionCo
       ciphertext: row.payload_ciphertext,
       authTag: row.payload_auth_tag,
     },
-    encryption
+    configuration
   );
 
   return new AssistantConversation({
@@ -155,44 +160,23 @@ function toConversationRecord(row, encryption: AssistantConversationEncryptionCo
 
 function encryptPayload(
   payload: AssistantConversationPayload,
-  encryption: AssistantConversationEncryptionConfig
-): AssistantConversationEncryptedPayload {
-  const keyVersion = encryption.activeKeyVersion;
-  const key = getEncryptionKey(keyVersion, encryption);
-  const nonce = crypto.randomBytes(NONCE_BYTES);
-  const cipher = crypto.createCipheriv(ALGORITHM, key, nonce);
-  const plaintext = Buffer.from(JSON.stringify(payload), 'utf8');
-  const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
-
-  return {
-    keyVersion,
-    nonce: nonce.toString('base64'),
-    ciphertext: ciphertext.toString('base64'),
-    authTag: cipher.getAuthTag().toString('base64'),
-  };
+  configuration: IAdminConfiguration
+): EncodedValue {
+  const keyVersion = configuration.getActiveAssistantConversationEncryptionKeyVersion();
+  return encode(JSON.stringify(payload), getEncryptionKey(keyVersion, configuration), keyVersion);
 }
 
 function decryptPayload(
-  encryptedPayload: AssistantConversationEncryptedPayload,
-  encryption: AssistantConversationEncryptionConfig
+  encryptedPayload: EncodedValue,
+  configuration: IAdminConfiguration
 ): AssistantConversationPayload {
-  const decipher = crypto.createDecipheriv(
-    ALGORITHM,
-    getEncryptionKey(encryptedPayload.keyVersion, encryption),
-    Buffer.from(encryptedPayload.nonce, 'base64')
+  return JSON.parse(
+    decode(encryptedPayload, getEncryptionKey(encryptedPayload.keyVersion, configuration))
   );
-  decipher.setAuthTag(Buffer.from(encryptedPayload.authTag, 'base64'));
-
-  const plaintext = Buffer.concat([
-    decipher.update(Buffer.from(encryptedPayload.ciphertext, 'base64')),
-    decipher.final(),
-  ]);
-
-  return JSON.parse(plaintext.toString('utf8'));
 }
 
-function getEncryptionKey(version: number, encryption: AssistantConversationEncryptionConfig): Buffer {
-  const value = encryption.keys[version];
+function getEncryptionKey(version: number, configuration: IAdminConfiguration): string {
+  const value = configuration.getAssistantConversationEncryptionKey(version);
   if (!value) {
     throw createEncryptionError(
       'missing_assistant_conversation_encryption_key',
@@ -200,23 +184,14 @@ function getEncryptionKey(version: number, encryption: AssistantConversationEncr
     );
   }
 
-  const trimmed = value.trim();
-  let key = Buffer.from(trimmed, 'utf8');
-
-  if (/^[a-f0-9]{64}$/i.test(trimmed)) {
-    key = Buffer.from(trimmed, 'hex');
-  } else if (Buffer.from(trimmed, 'base64').length === KEY_BYTES) {
-    key = Buffer.from(trimmed, 'base64');
-  }
-
-  if (key.length !== KEY_BYTES) {
+  if (!isValidKey(value)) {
     throw createEncryptionError(
       'invalid_assistant_conversation_encryption_key',
       `Assistant conversation encryption key version ${version} must decode to 32 bytes`
     );
   }
 
-  return key;
+  return value;
 }
 
 function createEncryptionError(code: string, message: string): Error & { code: string } {

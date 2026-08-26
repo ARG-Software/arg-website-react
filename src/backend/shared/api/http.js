@@ -62,7 +62,10 @@ export function sanitizeInput(value, options = {}) {
   if (!value || typeof value !== 'object') return value;
 
   return Object.fromEntries(
-    Object.entries(value).map(([key, item]) => [sanitizeObjectKey(key), sanitizeInput(item, options)])
+    Object.entries(value).map(([key, item]) => [
+      sanitizeObjectKey(key),
+      sanitizeInput(item, options),
+    ])
   );
 }
 
@@ -152,6 +155,7 @@ function normalizeOrigin(value) {
 
 function sanitizeString(value, options) {
   const sanitized = value
+    // eslint-disable-next-line no-control-regex -- Sanitizer intentionally strips control chars.
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
     .normalize('NFC');
 
@@ -159,5 +163,6 @@ function sanitizeString(value, options) {
 }
 
 function sanitizeObjectKey(value) {
+  // eslint-disable-next-line no-control-regex -- Sanitizer intentionally strips control chars.
   return value.replace(/[\u0000-\u001F\u007F]/g, '').trim();
 }

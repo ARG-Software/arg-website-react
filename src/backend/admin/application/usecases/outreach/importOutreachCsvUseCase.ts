@@ -10,47 +10,50 @@ export interface ImportOutreachCsvInput {
   csv: string;
 }
 
-export interface ImportOutreachCsvDependencies {
-  clock: IClock;
-  csvParser: IOutreachCsvParser;
-  outreachRepository: IOutreachRepository;
-}
+export class ImportOutreachCsvUseCase {
+  constructor(
+    private readonly clock: IClock,
+    private readonly csvParser: IOutreachCsvParser,
+    private readonly outreachRepository: IOutreachRepository
+  ) {}
 
-export async function importOutreachCsvUseCase(
-  input: ImportOutreachCsvInput,
-  { clock, csvParser, outreachRepository }: ImportOutreachCsvDependencies
-): Promise<{ imported: number; records?: Outreach[]; errors: { row: number; error: string }[] }> {
-  const rows = csvParser.parse(input.csv || '');
-  if (rows.length > MAX_IMPORT_ROWS) throw OutreachDomainError.tooManyRows();
+  async execute(input: ImportOutreachCsvInput): Promise<{
+    imported: number;
+    records?: Outreach[];
+    errors: { row: number; error: string }[];
+  }> {
+    const rows = this.csvParser.parse(input.csv || '');
+    if (rows.length > MAX_IMPORT_ROWS) throw OutreachDomainError.tooManyRows();
 
-  const records: Outreach[] = [];
-  const errors: { row: number; error: string }[] = [];
-  const today = clock.today();
+    const records: Outreach[] = [];
+    const errors: { row: number; error: string }[] = [];
+    const today = this.clock.today();
 
-  rows.forEach((row, index) => {
+    rows.forEach((row, index) => {
+      try {
+        records.push(createOutreach(row, today));
+      } catch (error) {
+        errors.push({
+          row: index + 2,
+          error: error instanceof Error ? error.message : 'Invalid row',
+        });
+      }
+    });
+
+    if (errors.length) {
+      return { imported: 0, errors };
+    }
+
     try {
-      records.push(createOutreach(row, today));
+      const createdRecords = await this.outreachRepository.createMany(records);
+      return { imported: createdRecords.length, records: createdRecords, errors: [] };
     } catch (error) {
-      errors.push({
-        row: index + 2,
-        error: error instanceof Error ? error.message : 'Invalid row',
-      });
+      if (isDuplicateDatabaseError(error)) {
+        throw OutreachDomainError.duplicateRecord();
+      }
+
+      throw error;
     }
-  });
-
-  if (errors.length) {
-    return { imported: 0, errors };
-  }
-
-  try {
-    const createdRecords = await outreachRepository.createMany(records);
-    return { imported: createdRecords.length, records: createdRecords, errors: [] };
-  } catch (error) {
-    if (isDuplicateDatabaseError(error)) {
-      throw OutreachDomainError.duplicateRecord();
-    }
-
-    throw error;
   }
 }
 

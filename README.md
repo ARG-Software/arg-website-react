@@ -111,7 +111,7 @@ Current local routes:
 - `/api/assistant/ui-copy`
 - `/api/security/challenge`
 - `/api/security/verify`
-- `/api/admin/outreach`
+- `/api/admin/outreach-records`
 
 Production still uses the committed Netlify function adapters in `netlify/functions/`.
 

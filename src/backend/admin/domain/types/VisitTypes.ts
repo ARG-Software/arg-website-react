@@ -63,6 +63,37 @@ export type VisitSessionRecord = {
   lastSeenAt: string;
 };
 
+export type VisitSessionListItem = {
+  id: string;
+  sessionHash: string;
+  countryCode: string | null;
+  region: string;
+  city: string;
+  timezone: string;
+  entryPath: string;
+  referrer: string | null;
+  pageCount: number;
+  eventCount: number;
+  durationMs: number;
+  startedAt: string;
+  lastSeenAt: string;
+};
+
+export type VisitJourneyEvent = {
+  sessionHash: string;
+  sequence: string | number;
+  path: string;
+  title: string;
+  countryCode: string | null;
+  region: string;
+  city: string;
+  timezone: string;
+  referrer: string | null;
+  visitedAt: string;
+  endedAt: string;
+  durationMs: string | number;
+};
+
 export type VisitMetricsData = {
   summary?: VisitMetricsSummary;
   points?: VisitMetricsPoint[];
@@ -98,6 +129,6 @@ export type VisitPagination = {
 };
 
 export type VisitSessionListResult = {
-  records: VisitSessionRecord[];
+  records: VisitSessionListItem[];
   pagination: VisitPagination;
 };

@@ -1,30 +1,36 @@
 import { readAdminResponse } from './adminResponse.js';
 
 const ADMIN_ASSISTANT_CONVERSATIONS_ENDPOINT = '/api/admin/assistant-conversations';
+const ADMIN_ASSISTANT_CONVERSATION_ENDPOINT = '/api/admin/assistant-conversation';
 
 export async function fetchAssistantConversations(query = {}) {
-  const response = await fetch(createAssistantConversationsUrl(query));
+  const response = await fetch(
+    createAssistantConversationsUrl(ADMIN_ASSISTANT_CONVERSATIONS_ENDPOINT, query)
+  );
 
   return readAdminResponse(response);
 }
 
 export async function fetchAssistantConversation(id) {
-  const response = await fetch(createAssistantConversationsUrl({ id }));
+  const response = await fetch(
+    createAssistantConversationsUrl(ADMIN_ASSISTANT_CONVERSATION_ENDPOINT, { id })
+  );
 
   return readAdminResponse(response);
 }
 
 export async function deleteAssistantConversation(id) {
-  const response = await fetch(createAssistantConversationsUrl({ id }), {
-    method: 'DELETE',
-  });
+  const response = await fetch(
+    createAssistantConversationsUrl(ADMIN_ASSISTANT_CONVERSATION_ENDPOINT, { id }),
+    { method: 'DELETE' }
+  );
 
   if (response.status === 204) return { deleted: true };
 
   return readAdminResponse(response);
 }
 
-function createAssistantConversationsUrl(query) {
+function createAssistantConversationsUrl(endpoint, query) {
   const params = new URLSearchParams();
 
   for (const [key, value] of Object.entries(query)) {
@@ -34,7 +40,5 @@ function createAssistantConversationsUrl(query) {
   }
 
   const search = params.toString();
-  return search
-    ? `${ADMIN_ASSISTANT_CONVERSATIONS_ENDPOINT}?${search}`
-    : ADMIN_ASSISTANT_CONVERSATIONS_ENDPOINT;
+  return search ? `${endpoint}?${search}` : endpoint;
 }

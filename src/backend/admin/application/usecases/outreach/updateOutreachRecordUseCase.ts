@@ -4,42 +4,44 @@ import type {
   IOutreachAuditRepository,
   IOutreachRepository,
 } from '../../ports/repositories/IOutreachRepository.js';
+import type { OutreachConstructorParams } from '../../../domain/types/OutreachTypes.js';
 
 export interface UpdateOutreachRecordInput {
   id: string;
-  record: Outreach;
+  record: Outreach | OutreachConstructorParams;
   actorEmail: string;
 }
 
-export interface UpdateOutreachRecordDependencies {
-  auditRepository: IOutreachAuditRepository;
-  outreachRepository: IOutreachRepository;
-}
+export class UpdateOutreachRecordUseCase {
+  constructor(
+    private readonly auditRepository: IOutreachAuditRepository,
+    private readonly outreachRepository: IOutreachRepository
+  ) {}
 
-export async function updateOutreachRecordUseCase(
-  input: UpdateOutreachRecordInput,
-  { auditRepository, outreachRepository }: UpdateOutreachRecordDependencies
-): Promise<Outreach> {
-  if (!input.id) {
-    throw OutreachDomainError.missingId();
+  async execute(input: UpdateOutreachRecordInput): Promise<{ record: Outreach }> {
+    if (!input.id) {
+      throw OutreachDomainError.missingId();
+    }
+
+    const record = await this.outreachRepository.findById(input.id);
+
+    if (!record) {
+      throw OutreachDomainError.notFound();
+    }
+
+    const nextRecord = record.update(
+      input.record instanceof Outreach ? input.record : new Outreach(input.record)
+    );
+    const updatedRecord = await this.outreachRepository.save(nextRecord);
+
+    await this.auditRepository.recordUpdated({
+      recordId: input.id,
+      actorEmail: input.actorEmail,
+      changedFields: getChangedFields(record, nextRecord),
+    });
+
+    return { record: updatedRecord };
   }
-
-  const record = await outreachRepository.findById(input.id);
-
-  if (!record) {
-    throw OutreachDomainError.notFound();
-  }
-
-  const nextRecord = record.update(input.record);
-  const updatedRecord = await outreachRepository.save(nextRecord);
-
-  await auditRepository.recordUpdated({
-    recordId: input.id,
-    actorEmail: input.actorEmail,
-    changedFields: getChangedFields(record, nextRecord),
-  });
-
-  return updatedRecord;
 }
 
 function getChangedFields(current: Outreach, next: Outreach): string[] {

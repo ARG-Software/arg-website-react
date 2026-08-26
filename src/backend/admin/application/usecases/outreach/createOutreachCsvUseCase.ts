@@ -1,9 +1,15 @@
-import { Outreach } from '../../../domain/outreach.js';
 import type { IOutreachCsvParser } from '../../ports/IOutreachCsvParser.js';
+import type { IOutreachRepository } from '../../ports/repositories/IOutreachRepository.js';
 
-export function createOutreachCsvUseCase(
-  records: Outreach[],
-  { csvParser }: { csvParser: IOutreachCsvParser }
-): string {
-  return csvParser.stringify(records);
+export class CreateOutreachCsvUseCase {
+  constructor(
+    private readonly csvParser: IOutreachCsvParser,
+    private readonly outreachRepository: IOutreachRepository
+  ) {}
+
+  async execute(): Promise<string> {
+    const records = await this.outreachRepository.list();
+
+    return this.csvParser.stringify(records);
+  }
 }

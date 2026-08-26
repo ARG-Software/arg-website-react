@@ -22,6 +22,9 @@ const BAD_REQUEST_ERROR_CODES = new Set([
   'missing_id',
   'missing_sent_date',
   'missing_session_id',
+  'sent_contactMethod_locked',
+  'sent_dateSent_locked',
+  'sent_status_locked',
   'too_many_rows',
 ]);
 

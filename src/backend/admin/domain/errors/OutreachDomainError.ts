@@ -35,6 +35,21 @@ export class OutreachDomainError extends Error {
     return new OutreachDomainError('missing_sent_date', 'Sent records require a sent date');
   }
 
+  static sentStatusLocked(): OutreachDomainError {
+    return new OutreachDomainError('sent_status_locked', 'Sent outreach status cannot be changed');
+  }
+
+  static sentContactMethodLocked(): OutreachDomainError {
+    return new OutreachDomainError(
+      'sent_contactMethod_locked',
+      'Sent outreach contact method cannot be changed'
+    );
+  }
+
+  static sentDateSentLocked(): OutreachDomainError {
+    return new OutreachDomainError('sent_dateSent_locked', 'Sent outreach date cannot be changed');
+  }
+
   static duplicateRecord(): OutreachDomainError {
     return new OutreachDomainError(
       'duplicate_record',

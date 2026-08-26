@@ -1,8 +1,8 @@
-import {
-  config,
-  createAdminAssistantConversationsApi,
-} from '../../src/backend/admin/apps/adminAssistantConversationsApi.ts';
+import { routeAssistantConversationRequest } from '../../src/backend/admin/apps/api/api.ts';
 
-export { config };
+export const config = {
+  path: ['/api/admin/assistant-conversations', '/api/admin/assistant-conversation'],
+  method: ['GET', 'DELETE', 'OPTIONS'],
+};
 
-export default createAdminAssistantConversationsApi({ env: process.env });
+export default routeAssistantConversationRequest;
