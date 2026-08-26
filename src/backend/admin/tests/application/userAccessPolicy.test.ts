@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { createUserAccessPolicy } from '../../application/policies/userAccessPolicy.js';
-import { authenticateUserUseCase } from '../../application/usecases/sessions/authenticateUserUseCase.js';
+import { AuthenticateUserUseCase } from '../../application/usecases/sessions/authenticateUserUseCase.js';
 
 test('allows active admin users from the database-backed repository', async () => {
   const policy = createUserAccessPolicy({
@@ -14,11 +14,13 @@ test('allows active admin users from the database-backed repository', async () =
 });
 
 test('authentication rejects authenticated users that are not active admins', async () => {
+  const useCase = new AuthenticateUserUseCase(
+    { getUser: async () => ({ email: 'other@arg.software' }) } as any,
+    { canAccess: async () => false }
+  );
+
   await assert.rejects(
-    authenticateUserUseCase('token', {
-      userAccessPolicy: { canAccess: () => false },
-      identityProvider: { getUser: () => ({ email: 'other@arg.software' }) },
-    }),
+    useCase.execute('token'),
     {
       code: 'forbidden',
       message: 'Admin access denied',

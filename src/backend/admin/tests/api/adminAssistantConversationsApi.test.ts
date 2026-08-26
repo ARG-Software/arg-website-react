@@ -1,33 +1,26 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-  createAdminAssistantConversationsApi,
-  createAssistantConversationLogApi,
-} from '../../apps/assistantConversationsApi.js';
+import { AssistantConversationsController } from '../../apps/api/controllers/AssistantConversationsController.js';
+import { ACCESS_COOKIE_NAME } from '../../apps/http/userSessionCookies.js';
+import { DeleteAssistantConversationUseCase } from '../../application/usecases/assistantConversations/deleteAssistantConversationUseCase.js';
+import { GetAssistantConversationUseCase } from '../../application/usecases/assistantConversations/getAssistantConversationUseCase.js';
+import { ListAssistantConversationsUseCase } from '../../application/usecases/assistantConversations/listAssistantConversationsUseCase.js';
+import { LogAssistantConversationUseCase } from '../../application/usecases/assistantConversations/logAssistantConversationUseCase.js';
+import { AssistantConversation } from '../../domain/assistantConversation.js';
+
+class TestAssistantConversationsController extends AssistantConversationsController {
+  protected override authenticateUser(): Promise<any> {
+    return Promise.resolve({ email: 'admin@arg.software' });
+  }
+}
 
 test('logs assistant conversations through the public write-only endpoint', async () => {
   let savedRecord;
-  const api = createAssistantConversationLogApi({
-    createDependencies: () => ({
-      createAssistantConversationLogDependencies() {
-        return {
-          conversationRepository: {
-            async upsert(record) {
-              savedRecord = record;
-            },
-          },
-          logRateLimit: {
-            config: { perMinute: 20, perDay: 200, globalDaily: 1000, salt: 'test' },
-            store: {
-              async hit() {
-                return { allowed: true };
-              },
-            },
-          },
-        };
-      },
-    }),
+  const api = createTestApi({
+    async upsert(record) {
+      savedRecord = record;
+    },
   });
   const response = await api(createConversationLogRequest());
 
@@ -39,26 +32,10 @@ test('logs assistant conversations through the public write-only endpoint', asyn
 
 test('ignores assistant-only conversation logs through the public write-only endpoint', async () => {
   let upsertCalled = false;
-  const api = createAssistantConversationLogApi({
-    createDependencies: () => ({
-      createAssistantConversationLogDependencies() {
-        return {
-          conversationRepository: {
-            async upsert() {
-              upsertCalled = true;
-            },
-          },
-          logRateLimit: {
-            config: { perMinute: 20, perDay: 200, globalDaily: 1000, salt: 'test' },
-            store: {
-              async hit() {
-                return { allowed: true };
-              },
-            },
-          },
-        };
-      },
-    }),
+  const api = createTestApi({
+    async upsert() {
+      upsertCalled = true;
+    },
   });
   const response = await api(createAssistantOnlyConversationLogRequest());
 
@@ -67,10 +44,8 @@ test('ignores assistant-only conversation logs through the public write-only end
 });
 
 test('lists assistant conversations through the authenticated admin endpoint', async () => {
-  const api = createAdminAssistantConversationsApi({
-    createDependencies: () => createConversationAdminDependencies(),
-  });
-  const response = await api(createAdminRequest());
+  const api = createTestApi();
+  const response = await api(createAdminRequest('/api/admin/assistant-conversations'));
   const body = await response.json();
 
   assert.equal(response.status, 200);
@@ -84,23 +59,75 @@ test('lists assistant conversations through the authenticated admin endpoint', a
   });
 });
 
+test('gets assistant conversation detail through the authenticated admin endpoint', async () => {
+  const api = createTestApi();
+  const response = await api(createAdminRequest('/api/admin/assistant-conversation?id=conversation-id'));
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.id, 'conversation-id');
+  assert.equal(body.messages.length, 2);
+});
+
 test('deletes assistant conversations through the authenticated admin endpoint', async () => {
   let deletedId = '';
-  const api = createAdminAssistantConversationsApi({
-    createDependencies: () =>
-      createConversationAdminDependencies({
-        conversationRepository: {
-          async deleteById(id) {
-            deletedId = id;
-          },
-        },
-      }),
+  const api = createTestApi({
+    async deleteById(id) {
+      deletedId = id;
+    },
   });
-  const response = await api(createAdminRequest('?id=conversation-id', { method: 'DELETE' }));
+  const response = await api(
+    createAdminRequest('/api/admin/assistant-conversation?id=conversation-id', 'DELETE')
+  );
 
   assert.equal(response.status, 204);
   assert.equal(deletedId, 'conversation-id');
 });
+
+function createTestApi(repositoryOverrides = {}) {
+  const conversation = createConversationRecord();
+  const repository = {
+    async upsert() {},
+    async list() {
+      return {
+        records: [conversation],
+        pagination: { page: 1, pageSize: 10, totalRecords: 1, totalPages: 1 },
+      };
+    },
+    async findById() {
+      return conversation;
+    },
+    async deleteById() {},
+    ...repositoryOverrides,
+  };
+  const controller = new TestAssistantConversationsController({
+    deleteAssistantConversationUseCase: new DeleteAssistantConversationUseCase(repository as any),
+    getAssistantConversationUseCase: new GetAssistantConversationUseCase(repository as any),
+    listAssistantConversationsUseCase: new ListAssistantConversationsUseCase(repository as any),
+    logAssistantConversationUseCase: new LogAssistantConversationUseCase(repository as any, {
+      config: { perMinute: 20, perDay: 200, globalDaily: 1000, salt: 'test' },
+      store: { hit: async () => ({ allowed: true }) },
+    }),
+  } as any);
+
+  return async function api(request) {
+    const { pathname } = new URL(request.url);
+    if (request.method === 'POST' && pathname === '/api/admin/assistant-conversation-log') {
+      return controller.log(request);
+    }
+    if (request.method === 'GET' && pathname === '/api/admin/assistant-conversations') {
+      return controller.list(request);
+    }
+    if (request.method === 'GET' && pathname === '/api/admin/assistant-conversation') {
+      return controller.detail(request);
+    }
+    if (request.method === 'DELETE' && pathname === '/api/admin/assistant-conversation') {
+      return controller.delete(request);
+    }
+
+    return new Response(null, { status: 404 });
+  };
+}
 
 function createConversationLogRequest() {
   return new Request('https://arg.software/api/admin/assistant-conversation-log', {
@@ -143,72 +170,28 @@ function createAssistantOnlyConversationLogRequest() {
   });
 }
 
-function createAdminRequest(search = '', options = {}) {
-  return new Request(`https://arg.software/api/admin/assistant-conversations${search}`, {
-    method: options.method || 'GET',
+function createAdminRequest(path, method = 'GET') {
+  return new Request(`https://arg.software${path}`, {
+    method,
     headers: {
       Origin: 'https://arg.software',
-      Cookie: 'arg_admin_access=token',
+      Cookie: `${ACCESS_COOKIE_NAME}=token`,
     },
   });
 }
 
-function createConversationAdminDependencies({ conversationRepository } = {}) {
-  const repository = conversationRepository || {
-    async list() {
-      return {
-        records: [createConversationRecord()],
-        pagination: { page: 1, pageSize: 10, totalRecords: 1, totalPages: 1 },
-      };
-    },
-    async findById() {
-      return createConversationRecord();
-    },
-    async deleteById() {},
-  };
-
-  return {
-    createAssistantConversationAdminDependencies() {
-      return {
-        userAccessPolicy: {
-          async canAccess() {
-            return true;
-          },
-        },
-        conversationRepository: repository,
-        identityProvider: {
-          async getUser() {
-            return { email: 'admin@arg.software' };
-          },
-        },
-      };
-    },
-  };
-}
-
 function createConversationRecord() {
-  return {
+  return new AssistantConversation({
     id: 'conversation-id',
     publicConversationId: 'conversation-public-id',
-    payload: {
-      messages: [
-        { role: 'user', content: 'What do you do?', createdAt: '2026-08-21T10:00:00.000Z' },
-        { role: 'assistant', content: 'We build software.', createdAt: '2026-08-21T10:00:01.000Z' },
-      ],
-      pageContext: { pathname: '/', title: 'ARG' },
-      language: 'en',
-    },
-    messageCount: 2,
-    pagePath: '/',
-    pageContext: { pathname: '/', title: 'ARG' },
-    preview: 'What do you do?',
     messages: [
       { role: 'user', content: 'What do you do?', createdAt: '2026-08-21T10:00:00.000Z' },
       { role: 'assistant', content: 'We build software.', createdAt: '2026-08-21T10:00:01.000Z' },
     ],
+    pageContext: { pathname: '/', title: 'ARG' },
     language: 'en',
-    lastMessageAt: '2026-08-21T10:00:01.000Z',
+    savedAt: '2026-08-21T10:00:01.000Z',
     createdAt: '2026-08-21T10:00:00.000Z',
     updatedAt: '2026-08-21T10:00:01.000Z',
-  };
+  });
 }

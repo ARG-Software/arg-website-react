@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createAdminLoginApi } from '../../apps/adminApi.js';
+import { AuthController } from '../../apps/api/controllers/AuthController.js';
 import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '../../apps/http/userSessionCookies.js';
+import { createAdminError } from '../../application/errors.js';
 
 test('logs in admins through the backend endpoint and sets cookies', async () => {
-  const api = createTestApi();
-  const response = await api(createLoginRequest());
+  const controller = createTestController();
+  const response = await controller.login(createLoginRequest());
   const body = await response.json();
 
   assert.equal(response.status, 200);
@@ -23,8 +24,10 @@ test('logs in admins through the backend endpoint and sets cookies', async () =>
 });
 
 test('rejects login when ALTCHA verification fails', async () => {
-  const api = createTestApi({ altchaVerified: false });
-  const response = await api(createLoginRequest());
+  const controller = createTestController({
+    loginError: createAdminError(403, 'bot_verification_failed', 'Verification failed'),
+  });
+  const response = await controller.login(createLoginRequest());
   const body = await response.json();
 
   assert.equal(response.status, 403);
@@ -32,8 +35,10 @@ test('rejects login when ALTCHA verification fails', async () => {
 });
 
 test('rate limits admin login attempts before auth', async () => {
-  const api = createTestApi({ rateLimitAllowed: false });
-  const response = await api(createLoginRequest());
+  const error = createAdminError(429, 'rate_limited', 'Too many login attempts');
+  error.retryAfterSeconds = 60;
+  const controller = createTestController({ loginError: error });
+  const response = await controller.login(createLoginRequest());
   const body = await response.json();
 
   assert.equal(response.status, 429);
@@ -41,29 +46,20 @@ test('rate limits admin login attempts before auth', async () => {
   assert.equal(body.error.code, 'rate_limited');
 });
 
-function createTestApi({ altchaVerified = true, rateLimitAllowed = true } = {}) {
-  return createAdminLoginApi({
-    createDependencies: () => ({
-      createLoginDependencies: () => ({
-        userAccessPolicy: { canAccess: () => true },
-        humanVerification: { verifyPayload: () => ({ verified: altchaVerified }) },
-        identityProvider: {
-          signInWithPassword: () => ({
-            session: { access_token: 'access-token', refresh_token: 'refresh-token' },
-            user: { email: 'admin@arg.software' },
-          }),
-        },
-        loginRateLimit: {
-          config: { perMinute: 1, perDay: 1, globalDaily: 1, salt: 'test' },
-          store: {
-            hit: () =>
-              rateLimitAllowed ? { allowed: true } : { allowed: false, retryAfterSeconds: 60 },
-          },
-        },
-        env: { NODE_ENV: 'test' },
-      }),
-    }),
-  });
+function createTestController({ loginError = null } = {}) {
+  return new AuthController({
+    loginUserUseCase: {
+      async execute() {
+        if (loginError) throw loginError;
+
+        return {
+          session: { access_token: 'access-token', refresh_token: 'refresh-token' },
+          user: { email: 'admin@arg.software' },
+        };
+      },
+    },
+    secureCookies: false,
+  } as any);
 }
 
 function createLoginRequest() {

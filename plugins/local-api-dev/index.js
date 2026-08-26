@@ -16,7 +16,12 @@ export function localApiDev(routes) {
 
         try {
           const apiModule = await server.ssrLoadModule(route.module);
-          const response = await callRouteHandler(apiModule, route, env, await createFetchRequest(req));
+          const response = await callRouteHandler(
+            apiModule,
+            route,
+            env,
+            await createFetchRequest(req)
+          );
           await writeFetchResponse(res, response);
         } catch (error) {
           console.error(`Local API route failed: ${route.path}`, error);
@@ -121,6 +126,12 @@ async function readRequestBody(req) {
 }
 
 async function writeFetchResponse(res, response) {
+  if (!response) {
+    res.statusCode = 204;
+    res.end();
+    return;
+  }
+
   res.statusCode = response.status;
 
   const setCookie = response.headers.getSetCookie?.();

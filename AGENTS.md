@@ -167,6 +167,19 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - One-time scripts should not drive architecture. Disable or update them when needed instead of preserving stale helper APIs for them.
 - Centralized constants are useful when they define a stable contract, such as outreach CSV columns, but avoid deriving exported shapes implicitly from runtime object keys.
 
+### 3.10 Admin API Current State
+- `src/backend/admin/apps/api/api.ts` is the only admin API router entrypoint. There is no separate `router.ts`.
+- `api.ts` defines route groups and exports Netlify/local handlers: `routeAdminRequest`, `routeAuthRequest`, `routeUserRequest`, `routeOutreachRequest`, `routeVisitRequest`, and `routeAssistantConversationRequest`.
+- `src/backend/admin/apps/api/controllerRouteHandler.ts` dispatches registered controller routes and owns CORS, origin guard, OPTIONS, 404, and 405 behavior.
+- Controllers live in `src/backend/admin/apps/api/controllers/` and keep route/error declarations beside methods using `@route(...)` and `@errorResponse(...)`.
+- Keep `methodDecorator.ts`, `routeRegistry.ts`, `route.ts`, and `errorResponse.ts`; they intentionally make controllers cleaner.
+- Do not reintroduce `@cors`, `@options`, `allowMethods`, `BaseApi`, route files per controller, or `src/backend/admin/apps/api/router.ts` unless there is a concrete reason.
+- `ControllerBase` is admin-specific and intentionally small: `authenticateUser(request)`, `json(...)`, `body(...)`, `query(...)`, `errorBody(...)`, and `errorStatus(...)`.
+- Protected admin controller methods should authenticate first with `this.authenticateUser(request)`, then parse body/query, then call business use cases.
+- Non-auth business use cases should not perform authorization. Auth/session use cases may still use `UserAccessPolicy` because authentication and session validation are their purpose.
+- Netlify admin functions are grouped deployment adapters, such as `admin-auth.js`, `admin-outreach.js`, `admin-visits.js`, and `admin-assistant-conversations.js`.
+- Recent verification passed: `npm run test:backend`, `npm run typecheck:admin`, `npm run lint:backend`, and `npm run test:netlify`.
+
 ---
 
 ## 4. Analytics

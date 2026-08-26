@@ -16,6 +16,7 @@ export interface ListOutreachRecordsInput {
   dateSentTo?: string;
   sortBy?: string;
   sortDirection?: string;
+  scope?: string;
   recentSent?: boolean;
 }
 
@@ -29,8 +30,9 @@ export class ListOutreachRecordsUseCase {
     const pagination = getPagination(query);
     const filteredRecords = filterRecords(records, query);
 
+    const recentSent = isRecentSentQuery(query);
     const sortedRecords =
-      query.recentSent === true
+      recentSent
         ? sortRecords(getLatestSentRecords(filteredRecords), query)
         : sortRecords(filteredRecords, query);
 
@@ -58,7 +60,7 @@ function filterRecords(records: Outreach[], query: ListOutreachRecordsInput): Ou
 }
 
 function getRequestedStatus(query: ListOutreachRecordsInput): OutreachStatus | '' {
-  if (query.recentSent === true) return 'sent';
+  if (isRecentSentQuery(query)) return 'sent';
   if (!query.status) return '';
 
   const status = String(query.status).trim();
@@ -120,7 +122,7 @@ function getLatestSentRecords(records: Outreach[]): Outreach[] {
 }
 
 function getSort(query: ListOutreachRecordsInput): { field: SortableOutreachField; direction: 'asc' | 'desc' } {
-  if (query.recentSent === true && !query.sortBy) {
+  if (isRecentSentQuery(query) && !query.sortBy) {
     return { field: 'dateSent', direction: 'desc' };
   }
 
@@ -132,6 +134,10 @@ function getSort(query: ListOutreachRecordsInput): { field: SortableOutreachFiel
   if (!SORTABLE_FIELDS.includes(field)) throw OutreachDomainError.invalidSort();
 
   return { field, direction };
+}
+
+function isRecentSentQuery(query: ListOutreachRecordsInput): boolean {
+  return query.recentSent === true || query.scope === 'recent_sent';
 }
 
 function getSortValue(record: Outreach, field: SortableOutreachField): string | number {
