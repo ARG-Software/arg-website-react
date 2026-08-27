@@ -7,8 +7,11 @@ import {
   verifyAltchaChallenge,
   verifyAltchaPayload,
 } from '../security/altcha.js';
+import type { ILogger } from '../logger/ilogger.js';
 
 export abstract class ApiControllerBase {
+  constructor(protected readonly logger?: ILogger) {}
+
   protected json(statusCode: number, body: unknown): Response {
     const responseBody =
       statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);

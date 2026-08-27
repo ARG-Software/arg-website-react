@@ -1,8 +1,13 @@
 import { ApiControllerBase } from '../../../../shared/api/controllerbase.js';
 import { createErrorBody } from '../../../../shared/api/http.js';
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { createRagError, getRagErrorStatus, isConfigurationError } from '../../../application/errors.js';
 
 export class ControllerBase extends ApiControllerBase {
+  constructor(logger?: ILogger) {
+    super(logger);
+  }
+
   protected errorBody(error: any, fallbackCode: string, fallbackMessage: string): unknown {
     const statusCode = this.errorStatus(error);
     const serviceUnavailableMessage =

@@ -1,5 +1,6 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import { adminContainer } from '../../di/admin.container.js';
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { getClientIp } from '../../http/requestinfo.js';
 import {
   clearUserSessionCookies,
@@ -11,8 +12,11 @@ import {
 import { ControllerBase } from './controllerbase.js';
 
 export class AuthController extends ControllerBase {
-  constructor(private readonly auth = adminContainer.auth) {
-    super();
+  constructor(
+    private readonly auth = adminContainer.auth,
+    logger?: ILogger
+  ) {
+    super(logger);
   }
 
   @route('POST', '/api/admin/login')
@@ -109,6 +113,6 @@ export class AuthController extends ControllerBase {
 let controller: AuthController;
 
 export function getAuthRoutes() {
-  controller ||= new AuthController();
+  controller ||= new AuthController(adminContainer.auth, adminContainer.logger);
   return getControllerRoutes(controller);
 }

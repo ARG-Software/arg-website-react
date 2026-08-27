@@ -1,4 +1,5 @@
 import type { ControllerRoute } from '../../../shared/api/decorators/index.js';
+import { adminContainer } from '../di/admin.container.js';
 import { dispatchControllerRoutes } from './controllerroute.handler.js';
 import { getAssistantConversationRoutes } from './controllers/assistantconversations.controller.js';
 import { getAuthRoutes } from './controllers/auth.controller.js';
@@ -46,5 +47,5 @@ export function routeAssistantConversationRequest(request: Request): Promise<Res
 }
 
 function routeRequest(type: keyof typeof ROUTE_MAP, request: Request): Promise<Response> {
-  return dispatchControllerRoutes(request, ROUTE_MAP[type]());
+  return dispatchControllerRoutes(request, ROUTE_MAP[type](), adminContainer.logger);
 }

@@ -1,11 +1,15 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { adminContainer } from '../../di/admin.container.js';
 import { getAccessToken } from '../../http/usersession.cookies.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class UserController extends ControllerBase {
-  constructor(private readonly users = adminContainer.users) {
-    super();
+  constructor(
+    private readonly users = adminContainer.users,
+    logger?: ILogger
+  ) {
+    super(logger);
   }
 
   @route('PATCH', '/api/admin/user')
@@ -28,6 +32,6 @@ export class UserController extends ControllerBase {
 let controller: UserController;
 
 export function getUserRoutes() {
-  controller ||= new UserController();
+  controller ||= new UserController(adminContainer.users, adminContainer.logger);
   return getControllerRoutes(controller);
 }

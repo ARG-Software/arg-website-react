@@ -1,3 +1,4 @@
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { checkRateLimits, type IRateLimitConfig, type IRateLimitStore } from '../../../../shared/security/ratelimit.js';
 import type { IAssistantConversationRepository } from '../../ports/repositories/iassistantconversation.repository.js';
 import { AssistantConversation } from '../../../domain/assistantconversation.js';
@@ -10,7 +11,8 @@ export interface LogAssistantConversationInput extends AssistantConversationCons
 export class LogAssistantConversationUseCase {
   constructor(
     private readonly conversationRepository: IAssistantConversationRepository,
-    private readonly logRateLimit: { store: IRateLimitStore; config: IRateLimitConfig }
+    private readonly logRateLimit: { store: IRateLimitStore; config: IRateLimitConfig },
+    private readonly logger?: ILogger
   ) {}
 
   async execute(input: LogAssistantConversationInput): Promise<void> {
@@ -33,7 +35,7 @@ export class LogAssistantConversationUseCase {
     } catch (error) {
       if ((error as Error & { code?: string }).code === 'rate_limited') throw error;
 
-      console.error('Assistant conversation log rate limit check failed, failing open:', error);
+      this.logger?.error('Assistant conversation log rate limit check failed open', { error });
     }
 
     const conversation = new AssistantConversation(input);

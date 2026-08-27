@@ -9,7 +9,8 @@ export function createRagContainer() {
     assistant: {
       askAssistantQuestionUseCase: new AskAssistantQuestionUseCase(
         dependencies.createAskQuestionDependencies(),
-        dependencies.createRateLimitDependencies()
+        dependencies.createRateLimitDependencies(),
+        dependencies.logger
       ),
       getAssistantUiCopyUseCase: new GetAssistantUiCopyUseCase(
         dependencies.createAssistantUiCopyDependencies()
@@ -18,5 +19,6 @@ export function createRagContainer() {
     security: {
       altchaSettings: dependencies.altchaSettings,
     },
+    logger: dependencies.logger,
   };
 }

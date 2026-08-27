@@ -2,13 +2,15 @@ import crypto from 'node:crypto';
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import type { IAdminConfiguration } from '../../../application/config/iadmin.configuration.js';
 import type { IOutreachAuditRepository } from '../../../application/ports/repositories/ioutreach.repository.js';
 
 export class SupabaseOutreachAuditRepository implements IOutreachAuditRepository {
   constructor(
     private readonly client: SupabaseClient,
-    private readonly configuration: IAdminConfiguration
+    private readonly configuration: IAdminConfiguration,
+    private readonly logger?: ILogger
   ) {}
 
   async recordUpdated({
@@ -28,7 +30,7 @@ export class SupabaseOutreachAuditRepository implements IOutreachAuditRepository
     });
 
     if (error) {
-      console.error('Failed to write outreach audit event', error);
+      this.logger?.error('Outreach audit event write failed', { error, changedFieldCount: changedFields.length });
     }
   }
 

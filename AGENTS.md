@@ -276,12 +276,13 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - No barrel exports — import directly from component files
 - Use path aliases: `import { Navbar } from '@components/navigation/Navbar'`
 - Page files import their own CSS: `import '../styles/blog.css'`
+- Backend TypeScript files use NodeNext runtime `.js` specifiers for relative internal imports; Netlify JavaScript adapters may import backend `.ts` entrypoints at the deployment boundary.
 
 ### 6.2 Naming
 - Components: PascalCase files, named exports preferred
 - Custom hooks: camelCase, `use*` prefix
 - Service, utility, constant, and multi-word JSON module files: camelCase
-- Backend files: lowercase names with no word separators, plus `.` before terminal role suffixes such as `.types`, `.config`, `.controller`, `.repository`, `.provider`, `.parser`, `.usecase`, `.error`, `.handler`, `.container`, `.cookies`, and `.api`.
+- Backend files: lowercase names with no word separators, plus `.` before terminal role suffixes such as `.types`, `.config`, `.controller`, `.repository`, `.provider`, `.parser`, `.usecase`, `.error`, `.handler`, `.container`, `.cookies`, `.logger`, and `.api`.
 - CSS, blog Markdown slugs, and generated/static route-oriented files: kebab-case or lowercase
 - CSS classes: kebab-case, scoped by page/component prefix (e.g. `footer-`, `pc-`, `pt-`)
 - Analytics events: `snake_case`

@@ -5,6 +5,9 @@ type AdminContainer = ReturnType<typeof createAdminContainer>;
 let container: AdminContainer | null = null;
 
 export const adminContainer = {
+  get logger() {
+    return getAdminContainer().logger;
+  },
   get auth() {
     return getAdminContainer().auth;
   },

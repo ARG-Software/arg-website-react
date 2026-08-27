@@ -10,10 +10,14 @@ export function errorResponse(fallbackCode: string, fallbackMessage: string): an
         } catch (error) {
           const handledError = error as any;
           const statusCode = this.errorStatus(handledError);
-
-          if (statusCode === 500) {
-            console.error(handledError);
-          }
+          const level = statusCode >= 500 ? 'error' : 'warn';
+          this.logger?.[level]('Controller request handled error', {
+            method: request.method,
+            path: new URL(request.url).pathname,
+            status: statusCode,
+            code: handledError?.code ?? fallbackCode,
+            error: handledError,
+          });
 
           const response = this.json(
             statusCode,

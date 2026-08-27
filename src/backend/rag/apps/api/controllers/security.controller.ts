@@ -1,10 +1,14 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { ragContainer } from '../../di/rag.container.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class SecurityController extends ControllerBase {
-  constructor(private readonly security = ragContainer.security) {
-    super();
+  constructor(
+    private readonly security = ragContainer.security,
+    logger?: ILogger
+  ) {
+    super(logger);
   }
 
   @route('GET', '/api/security/challenge')
@@ -27,6 +31,6 @@ export class SecurityController extends ControllerBase {
 let controller: SecurityController;
 
 export function getSecurityRoutes() {
-  controller ||= new SecurityController();
+  controller ||= new SecurityController(ragContainer.security, ragContainer.logger);
   return getControllerRoutes(controller);
 }

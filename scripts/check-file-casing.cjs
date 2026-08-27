@@ -77,7 +77,7 @@ const RULES = [
     root: 'src/backend',
     extensions: ['.ts', '.js', '.json', '.md'],
     pattern:
-      /^[a-z0-9]+(?:\.(?:types|config|configuration|controller|repository|provider|factory|parser|translator|client|policy|response|request|usecase|error|constants|store|stores|handler|container|cookies|api))?(?:\.test)?\.(?:ts|js|json|md)$/,
+      /^[a-z0-9]+(?:\.(?:types|config|configuration|controller|repository|provider|factory|parser|translator|client|policy|response|request|usecase|error|constants|store|stores|handler|container|cookies|logger|api))?(?:\.test)?\.(?:ts|js|json|md)$/,
     description: 'lowercase filename with optional terminal dot suffix',
   },
 ];
@@ -108,6 +108,10 @@ const violations = RULES.flatMap(rule => {
     }));
 });
 
+const backendImportExtensionViolations = listFiles(path.join(ROOT_DIR, 'src/backend'))
+  .filter(filePath => path.extname(filePath) === '.ts')
+  .flatMap(filePath => findRelativeTypeScriptImports(filePath));
+
 function isInExcludedDirectory(filePath, excludedDirectories) {
   if (excludedDirectories.length === 0) return false;
 
@@ -123,4 +127,29 @@ if (violations.length > 0) {
   process.exit(1);
 }
 
+if (backendImportExtensionViolations.length > 0) {
+  console.error('Backend import extension check failed:\n');
+  backendImportExtensionViolations.forEach(({ filePath, importPath }) => {
+    console.error(
+      `- ${filePath} imports ${importPath}; use the NodeNext runtime .js specifier instead`
+    );
+  });
+  process.exit(1);
+}
+
 console.log('Filename casing check passed.');
+
+function findRelativeTypeScriptImports(filePath) {
+  const source = fs.readFileSync(filePath, 'utf8');
+  const importPattern = /(?:from\s+['"]|import\(\s*['"])(\.{1,2}\/[^'"]+\.ts)['"]/g;
+  const matches = [];
+
+  for (const match of source.matchAll(importPattern)) {
+    matches.push({
+      filePath: path.relative(ROOT_DIR, filePath).replace(/\\/g, '/'),
+      importPath: match[1],
+    });
+  }
+
+  return matches;
+}

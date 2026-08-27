@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import type {
   IUserIdentity,
   IUserIdentityProvider,
@@ -8,7 +9,10 @@ import type {
 } from '../../../application/ports/iuseridentity.provider.js';
 
 export class SupabaseUserIdentityProvider implements IUserIdentityProvider {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(
+    private readonly client: SupabaseClient,
+    private readonly logger?: ILogger
+  ) {}
 
   async getUser(token: string): Promise<IUserIdentity | null> {
     const { data, error } = await this.client.auth.getUser(token);
@@ -67,7 +71,7 @@ export class SupabaseUserIdentityProvider implements IUserIdentityProvider {
       }) => Promise<void>;
       await signOut({ accessToken });
     } catch (error) {
-      console.error('Supabase sign out failed', error);
+      this.logger?.error('Supabase sign out failed', { error });
     }
   }
 

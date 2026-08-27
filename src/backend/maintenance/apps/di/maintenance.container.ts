@@ -9,6 +9,9 @@ export function getMaintenanceContainer() {
 }
 
 export const maintenanceContainer = {
+  get logger() {
+    return getMaintenanceContainer().logger;
+  },
   get deleteOldAssistantConversationsUseCase() {
     return getMaintenanceContainer().deleteOldAssistantConversationsUseCase;
   },

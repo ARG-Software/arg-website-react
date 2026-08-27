@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import type { ILogger } from '../logger/ilogger.js';
 import type { IRateLimitResult, IRateLimitStore } from './ratelimit.js';
 
 export class InMemoryRateLimitStore implements IRateLimitStore {
@@ -27,7 +28,8 @@ export class InMemoryRateLimitStore implements IRateLimitStore {
 export class SupabaseRateLimitStore implements IRateLimitStore {
   constructor(
     private readonly supabase: SupabaseClient,
-    private readonly rpcName = 'hit_rag_rate_limit'
+    private readonly rpcName = 'hit_rag_rate_limit',
+    private readonly logger?: ILogger
   ) {}
 
   async hit(bucket: string, windowSeconds: number, limit: number): Promise<IRateLimitResult> {
@@ -38,7 +40,7 @@ export class SupabaseRateLimitStore implements IRateLimitStore {
     });
 
     if (error) {
-      console.error('Rate limit store error, failing open:', error);
+      this.logger?.error('Rate limit store failed open', { error, rpcName: this.rpcName });
       return { allowed: true };
     }
 

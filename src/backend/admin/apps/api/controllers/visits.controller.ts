@@ -1,12 +1,16 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import { createErrorBody } from '../../../../shared/api/http.js';
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { adminContainer } from '../../di/admin.container.js';
 import { getClientIp, getHeaderGeolocation } from '../../http/requestinfo.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class VisitsController extends ControllerBase {
-  constructor(private readonly visits = adminContainer.visits) {
-    super();
+  constructor(
+    private readonly visits = adminContainer.visits,
+    logger?: ILogger
+  ) {
+    super(logger);
   }
 
   @route('POST', '/api/visit-log')
@@ -66,6 +70,6 @@ export class VisitsController extends ControllerBase {
 let controller: VisitsController;
 
 export function getVisitRoutes() {
-  controller ||= new VisitsController();
+  controller ||= new VisitsController(adminContainer.visits, adminContainer.logger);
   return getControllerRoutes(controller);
 }

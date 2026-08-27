@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
+import { ConsoleLogger } from '../../../shared/logger/console.logger.js';
 import { SupabaseRateLimitStore } from '../../../shared/security/ratelimit.stores.js';
 import { AuthenticateUserUseCase } from '../../application/usecases/sessions/authenticateuser.usecase.js';
 import { CreateOutreachCsvUseCase } from '../../application/usecases/outreach/createoutreachcsv.usecase.js';
@@ -34,6 +35,7 @@ import { systemClock } from '../../infrastructure/system/systemclock.js';
 import { AdminConfig } from '../config/admin.config.js';
 
 export function createAdminContainer() {
+  const logger = new ConsoleLogger();
   const config = AdminConfig.load();
   const serviceClient = createClient(
     config.getAdminDatabaseUrl(),
@@ -45,8 +47,8 @@ export function createAdminContainer() {
   });
 
   const adminUserRepository = new SupabaseAdminUserRepository(serviceClient);
-  const userAccessPolicy = createUserAccessPolicy(adminUserRepository);
-  const identityProvider = new SupabaseUserIdentityProvider(authClient);
+  const userAccessPolicy = createUserAccessPolicy(adminUserRepository, logger);
+  const identityProvider = new SupabaseUserIdentityProvider(authClient, logger);
   const conversationRepository = new SupabaseAssistantConversationRepository(serviceClient, config);
   const outreachRepository = new SupabaseOutreachRepository(serviceClient, config);
   const visitRepository = new SupabaseVisitRepository(serviceClient);
@@ -62,7 +64,7 @@ export function createAdminContainer() {
         identityProvider,
         {
           config: config.getLoginRateLimitConfig(),
-          store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit'),
+          store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit', logger),
         },
         userAccessPolicy
       ),
@@ -81,7 +83,7 @@ export function createAdminContainer() {
       importOutreachCsvUseCase: new ImportOutreachCsvUseCase(systemClock, csvParser, outreachRepository),
       listOutreachRecordsUseCase: new ListOutreachRecordsUseCase(outreachRepository),
       updateOutreachRecordUseCase: new UpdateOutreachRecordUseCase(
-        new SupabaseOutreachAuditRepository(serviceClient, config),
+        new SupabaseOutreachAuditRepository(serviceClient, config, logger),
         outreachRepository
       ),
     },
@@ -95,18 +97,24 @@ export function createAdminContainer() {
         visitRepository,
         {
           config: config.getVisitLogRateLimitConfig(),
-          store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit'),
-        }
+          store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit', logger),
+        },
+        logger
       ),
     },
     assistantConversations: {
       deleteAssistantConversationUseCase: new DeleteAssistantConversationUseCase(conversationRepository),
       getAssistantConversationUseCase: new GetAssistantConversationUseCase(conversationRepository),
       listAssistantConversationsUseCase: new ListAssistantConversationsUseCase(conversationRepository),
-      logAssistantConversationUseCase: new LogAssistantConversationUseCase(conversationRepository, {
-        config: config.getAssistantConversationLogRateLimitConfig(),
-        store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit'),
-      }),
+      logAssistantConversationUseCase: new LogAssistantConversationUseCase(
+        conversationRepository,
+        {
+          config: config.getAssistantConversationLogRateLimitConfig(),
+          store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit', logger),
+        },
+        logger
+      ),
     },
+    logger,
   };
 }

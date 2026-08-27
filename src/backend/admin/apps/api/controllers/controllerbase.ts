@@ -2,10 +2,15 @@ import { createAdminError, getAdminErrorStatus } from '../../../application/erro
 import type { IUserIdentity } from '../../../application/ports/iuseridentity.provider.js';
 import { ApiControllerBase } from '../../../../shared/api/controllerbase.js';
 import { createErrorBody } from '../../../../shared/api/http.js';
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { adminContainer } from '../../di/admin.container.js';
 import { getAccessToken } from '../../http/usersession.cookies.js';
 
 export class ControllerBase extends ApiControllerBase {
+  constructor(logger?: ILogger) {
+    super(logger);
+  }
+
   protected authenticateUser(request: Request): Promise<IUserIdentity> {
     return adminContainer.auth.authenticateUserUseCase.execute(getAccessToken(request));
   }

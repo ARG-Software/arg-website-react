@@ -1,12 +1,16 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import { createErrorBody } from '../../../../shared/api/http.js';
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { adminContainer } from '../../di/admin.container.js';
 import { getClientIp } from '../../http/requestinfo.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class AssistantConversationsController extends ControllerBase {
-  constructor(private readonly conversations = adminContainer.assistantConversations) {
-    super();
+  constructor(
+    private readonly conversations = adminContainer.assistantConversations,
+    logger?: ILogger
+  ) {
+    super(logger);
   }
 
   @route('GET', '/api/admin/assistant-conversations')
@@ -73,6 +77,9 @@ export class AssistantConversationsController extends ControllerBase {
 let controller: AssistantConversationsController;
 
 export function getAssistantConversationRoutes() {
-  controller ||= new AssistantConversationsController();
+  controller ||= new AssistantConversationsController(
+    adminContainer.assistantConversations,
+    adminContainer.logger
+  );
   return getControllerRoutes(controller);
 }

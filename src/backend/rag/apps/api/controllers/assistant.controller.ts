@@ -1,14 +1,16 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import { getClientIp } from '../../../../shared/api/http.js';
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { ragContainer } from '../../di/rag.container.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class AssistantController extends ControllerBase {
   constructor(
     private readonly assistant = ragContainer.assistant,
-    private readonly security = ragContainer.security
+    private readonly security = ragContainer.security,
+    logger?: ILogger
   ) {
-    super();
+    super(logger);
   }
 
   @route('GET', '/api/assistant/challenge')
@@ -57,6 +59,10 @@ export class AssistantController extends ControllerBase {
 let controller: AssistantController;
 
 export function getAssistantRoutes() {
-  controller ||= new AssistantController();
+  controller ||= new AssistantController(
+    ragContainer.assistant,
+    ragContainer.security,
+    ragContainer.logger
+  );
   return getControllerRoutes(controller);
 }

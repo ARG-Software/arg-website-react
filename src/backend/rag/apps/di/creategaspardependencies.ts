@@ -1,4 +1,5 @@
 import type { IRagConfiguration } from '../../application/config/irag.configuration.js';
+import { ConsoleLogger } from '../../../shared/logger/console.logger.js';
 import { RagConfig } from '../config/rag.config.js';
 import { GeminiEmbeddingClient } from '../../infrastructure/embeddings/gemini/geminiembedding.provider.js';
 import { createSupabaseServiceClient } from '../../infrastructure/repositories/supabase/supabaseclient.factory.js';
@@ -21,11 +22,13 @@ export function getGasparDependencies(config: IRagConfiguration = RagConfig.load
 }
 
 export function createGasparDependencies({ config = RagConfig.load() }: IGasparDependenciesOptions = {}) {
+  const logger = new ConsoleLogger();
   const ragConfig = config.getRagConfig();
   let rateLimitConfig: IRateLimitConfig | undefined;
 
   return {
     altchaSettings: config.getAltchaSettings(),
+    logger,
     createAskQuestionDependencies,
     createAssistantUiCopyDependencies,
     createIngestSourceDependencies,
@@ -81,7 +84,12 @@ export function createGasparDependencies({ config = RagConfig.load() }: IGasparD
   function createRateLimitDependencies() {
     return {
       config: getCachedRateLimitConfig(),
-      store: new SupabaseRateLimitStore(createSupabaseServiceClient(createSupabaseConfig(config))),
+      store: new SupabaseRateLimitStore(
+        createSupabaseServiceClient(createSupabaseConfig(config)),
+        'hit_rag_rate_limit',
+        logger
+      ),
+      logger,
     };
   }
 

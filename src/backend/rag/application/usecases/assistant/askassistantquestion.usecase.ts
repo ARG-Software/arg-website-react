@@ -3,6 +3,7 @@ import {
   type IRateLimitConfig,
   type IRateLimitStore,
 } from '../../../../shared/security/ratelimit.js';
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { askQuestion } from '../../ask/askquestion.js';
 import { createRagError } from '../../errors.js';
 
@@ -20,7 +21,8 @@ export class AskAssistantQuestionUseCase {
       Parameters<typeof askQuestion>[0],
       'question' | 'messages' | 'pageContext' | 'preferredLanguage'
     >,
-    private readonly askRateLimit: { store: IRateLimitStore; config: IRateLimitConfig }
+    private readonly askRateLimit: { store: IRateLimitStore; config: IRateLimitConfig },
+    private readonly logger?: ILogger
   ) {}
 
   async execute(input: AskAssistantQuestionInput) {
@@ -41,7 +43,7 @@ export class AskAssistantQuestionUseCase {
     try {
       rateLimit = await checkRateLimits(clientIp, this.askRateLimit.store, this.askRateLimit.config);
     } catch (error) {
-      console.error('Rate limit check failed, failing open:', error);
+      this.logger?.error('Assistant ask rate limit check failed open', { error });
       return;
     }
 

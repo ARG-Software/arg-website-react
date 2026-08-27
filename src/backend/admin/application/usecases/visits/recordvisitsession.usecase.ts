@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { checkRateLimits, type IRateLimitConfig, type IRateLimitStore } from '../../../../shared/security/ratelimit.js';
 import type { IAdminConfiguration } from '../../config/iadmin.configuration.js';
 import type { IVisitGeolocationProvider } from '../../ports/ivisitgeolocation.provider.js';
@@ -23,7 +24,8 @@ export class RecordVisitSessionUseCase {
     private readonly configuration: IAdminConfiguration,
     private readonly geolocationProvider: IVisitGeolocationProvider,
     private readonly visitRepository: IVisitRepository,
-    private readonly visitRateLimit: { store: IRateLimitStore; config: IRateLimitConfig }
+    private readonly visitRateLimit: { store: IRateLimitStore; config: IRateLimitConfig },
+    private readonly logger?: ILogger
   ) {}
 
   async execute(input: RecordVisitSessionInput): Promise<void> {
@@ -46,7 +48,7 @@ export class RecordVisitSessionUseCase {
     } catch (error) {
       if ((error as Error & { code?: string }).code === 'rate_limited') throw error;
 
-      console.error('Visit log rate limit check failed, failing open:', error);
+      this.logger?.error('Visit log rate limit check failed open', { error });
     }
 
     if (!input.sessionId) throw VisitDomainError.missingSessionId();
