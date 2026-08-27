@@ -54,7 +54,7 @@ netlify/functions/assets/.gitkeep
 netlify/functions/assets/README.md
 netlify/functions/visit-events-retention.js
 netlify/functions/visit-log.js
-netlify/functions/admin-visits.js
+netlify/functions/admin.js
 src/backend/admin/application/visits/listVisitJourney.ts
 src/backend/admin/application/visits/listVisitMetrics.ts
 src/backend/admin/application/visits/listVisitSessions.ts

@@ -25,7 +25,7 @@ export function registerMethodMetadata(
   }
 
   const [, context] = decoratorArgs;
-  context.addInitializer(function registerMethodMetadataInitializer() {
+  context.addInitializer(function registerMethodMetadataInitializer(this: any) {
     register(Object.getPrototypeOf(this), context.name);
   });
 }

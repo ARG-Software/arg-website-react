@@ -10,49 +10,67 @@ const BACKEND_DIR = join(ROOT_DIR, 'src/backend');
 const NETLIFY_DIR = join(ROOT_DIR, 'netlify');
 const PUBLIC_DIR = join(ROOT_DIR, 'public');
 
-test('uses security function names and removes old contact function files', () => {
-  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/security-challenge.js')), true);
-  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/security-verify.js')), true);
+test('uses one RAG function and removes old contact function files', () => {
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/rag.js')), true);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/security-challenge.js')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/security-verify.js')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/assistant-challenge.js')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/assistant-ask.js')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/assistant-ui-copy.js')), false);
   assert.equal(existsSync(join(NETLIFY_DIR, 'functions/contact-challenge.js')), false);
   assert.equal(existsSync(join(NETLIFY_DIR, 'functions/contact-verify.js')), false);
 });
 
+test('uses one admin function for admin feature endpoints', () => {
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/admin.js')), true);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/admin-auth.js')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/admin-user.js')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/admin-outreach.js')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/admin-visits.js')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/admin-assistant-conversations.js')), false);
+});
+
+test('keeps route-specific admin adapters that need deployment-level config', () => {
+  const adminFunction = readNetlifyFile('functions/admin.js');
+
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/assistant-conversation-log.js')), true);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/visit-log.js')), true);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/visit-events-retention.js')), true);
+  assert.equal(
+    existsSync(join(NETLIFY_DIR, 'functions/assistant-conversations-retention.js')),
+    true
+  );
+  assert.doesNotMatch(
+    adminFunction,
+    /assistant-conversation-log|\/api\/visit-log|rateLimit|schedule/
+  );
+});
+
 test('backend app APIs expose the security routes and old API folders are removed', () => {
   assert.match(
-    readBackendFile('rag/apps/gaspar/securityChallengeApi.js'),
-    /path:\s*'\/api\/security\/challenge'/
+    readBackendFile('rag/apps/api/controllers/SecurityController.ts'),
+    /@route\('GET', '\/api\/security\/challenge'\)/
   );
   assert.match(
-    readBackendFile('rag/apps/gaspar/securityVerifyApi.js'),
-    /path:\s*'\/api\/security\/verify'/
+    readBackendFile('rag/apps/api/controllers/SecurityController.ts'),
+    /@route\('POST', '\/api\/security\/verify'\)/
   );
   assert.equal(existsSync(join(BACKEND_DIR, 'rag/api')), false);
   assert.equal(existsSync(join(BACKEND_DIR, 'admin/api')), false);
 });
 
 test('function files use backend API entrypoints', () => {
-  assert.match(readNetlifyFile('functions/security-challenge.js'), /createSecurityChallengeApi/);
-  assert.match(readNetlifyFile('functions/security-verify.js'), /createSecurityVerifyApi/);
-  assert.match(readNetlifyFile('functions/admin-auth.js'), /apps\/api\/api\.ts/);
-  assert.match(readNetlifyFile('functions/admin-outreach.js'), /apps\/api\/api\.ts/);
-  assert.match(
-    readNetlifyFile('functions/assistant-conversation-log.js'),
-    /apps\/api\/api\.ts/
-  );
-  assert.match(
-    readNetlifyFile('functions/admin-assistant-conversations.js'),
-    /apps\/api\/api\.ts/
-  );
+  assert.match(readNetlifyFile('functions/rag.js'), /apps\/api\/api\.ts/);
+  assert.match(readNetlifyFile('functions/admin.js'), /apps\/api\/api\.ts/);
+  assert.match(readNetlifyFile('functions/assistant-conversation-log.js'), /apps\/api\/api\.ts/);
   assert.match(
     readNetlifyFile('functions/assistant-conversations-retention.js'),
     /apps\/api\/api\.ts/
   );
-  assert.match(readNetlifyFile('functions/admin-visits.js'), /apps\/api\/api\.ts/);
   assert.match(
     readNetlifyFile('functions/maintenance-keep-database-alive.js'),
-    /createKeepDatabaseAliveApi/
+    /apps\/api\/controllers\/MaintenanceController\.js/
   );
-  assert.match(readNetlifyFile('functions/assistant-ask.js'), /createAssistantAskApi/);
 });
 
 test('public redirects expose function endpoints before the 404 fallback', () => {
@@ -62,25 +80,26 @@ test('public redirects expose function endpoints before the 404 fallback', () =>
   assert.notEqual(fallbackIndex, -1);
 
   for (const redirect of [
-    '/api/assistant/challenge /.netlify/functions/assistant-challenge 200',
-    '/api/assistant/ask       /.netlify/functions/assistant-ask       200',
-    '/api/assistant/ui-copy   /.netlify/functions/assistant-ui-copy   200',
-    '/api/security/challenge  /.netlify/functions/security-challenge  200',
-    '/api/security/verify     /.netlify/functions/security-verify     200',
-    '/api/admin/login         /.netlify/functions/admin-auth          200',
-    '/api/admin/session       /.netlify/functions/admin-auth          200',
-    '/api/admin/outreach-records /.netlify/functions/admin-outreach  200',
-    '/api/admin/outreach-summary /.netlify/functions/admin-outreach  200',
-    '/api/admin/outreach-chart /.netlify/functions/admin-outreach    200',
-    '/api/admin/outreach-export /.netlify/functions/admin-outreach   200',
-    '/api/admin/outreach-import /.netlify/functions/admin-outreach   200',
-    '/api/admin/outreach-record /.netlify/functions/admin-outreach   200',
-    '/api/admin/visit-metrics /.netlify/functions/admin-visits        200',
-    '/api/admin/visit-sessions /.netlify/functions/admin-visits       200',
-    '/api/admin/visit-journey /.netlify/functions/admin-visits        200',
+    '/api/assistant/challenge /.netlify/functions/rag                 200',
+    '/api/assistant/ask       /.netlify/functions/rag                 200',
+    '/api/assistant/ui-copy   /.netlify/functions/rag                 200',
+    '/api/security/challenge  /.netlify/functions/rag                 200',
+    '/api/security/verify     /.netlify/functions/rag                 200',
+    '/api/admin/login         /.netlify/functions/admin               200',
+    '/api/admin/session       /.netlify/functions/admin               200',
+    '/api/admin/user          /.netlify/functions/admin               200',
+    '/api/admin/outreach-records /.netlify/functions/admin            200',
+    '/api/admin/outreach-summary /.netlify/functions/admin            200',
+    '/api/admin/outreach-chart /.netlify/functions/admin              200',
+    '/api/admin/outreach-export /.netlify/functions/admin             200',
+    '/api/admin/outreach-import /.netlify/functions/admin             200',
+    '/api/admin/outreach-record /.netlify/functions/admin             200',
+    '/api/admin/visit-metrics /.netlify/functions/admin               200',
+    '/api/admin/visit-sessions /.netlify/functions/admin              200',
+    '/api/admin/visit-journey /.netlify/functions/admin               200',
     '/api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200',
-    '/api/admin/assistant-conversations    /.netlify/functions/admin-assistant-conversations 200',
-    '/api/admin/assistant-conversation     /.netlify/functions/admin-assistant-conversations 200',
+    '/api/admin/assistant-conversations    /.netlify/functions/admin  200',
+    '/api/admin/assistant-conversation     /.netlify/functions/admin  200',
     '/mcp                     /.netlify/functions/mcp                 200',
   ]) {
     const redirectIndex = redirects.indexOf(redirect);
@@ -96,21 +115,14 @@ test('removed netlify implementation folder stays removed', () => {
 
 test('netlify functions do not reference removed implementation folders or old contact routes', () => {
   const files = [
-    'functions/admin-outreach.js',
-    'functions/admin-assistant-conversations.js',
-    'functions/admin-auth.js',
+    'functions/admin.js',
     'functions/assistant-conversation-log.js',
     'functions/assistant-conversations-retention.js',
-    'functions/admin-visits.js',
     'functions/visit-log.js',
     'functions/visit-events-retention.js',
-    'functions/assistant-ask.js',
-    'functions/assistant-challenge.js',
-    'functions/assistant-ui-copy.js',
+    'functions/rag.js',
     'functions/mcp.js',
     'functions/maintenance-keep-database-alive.js',
-    'functions/security-challenge.js',
-    'functions/security-verify.js',
   ];
 
   for (const file of files) {
@@ -135,13 +147,11 @@ test('function-bound JSON config is imported instead of read from deployment pat
 });
 
 test('function bundles inline JSON config used during module load', async () => {
-  await assertFunctionBundleIncludesJsonConfig('functions/assistant-ask.js', [
+  await assertFunctionBundleIncludesJsonConfig('functions/rag.js', [
     'homepageSectionScopes',
     'defaultLanguage',
   ]);
-  await assertFunctionBundleIncludesJsonConfig('functions/assistant-ui-copy.js', [
-    'leadCaptureQuickPrompts',
-  ]);
+  await assertFunctionBundleIncludesJsonConfig('functions/rag.js', ['leadCaptureQuickPrompts']);
 });
 
 function readBackendFile(path) {

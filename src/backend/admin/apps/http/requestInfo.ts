@@ -1,11 +1,8 @@
+import { getClientIp as getSharedClientIp } from '../../../shared/api/http.js';
 import type { VisitGeolocationInput } from '../../domain/types/VisitTypes.js';
 
 export function getClientIp(request: Request): string {
-  return (
-    request.headers.get('x-nf-client-connection-ip') ||
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    'unknown'
-  );
+  return getSharedClientIp(request);
 }
 
 export function getHeaderGeolocation(request: Request): VisitGeolocationInput {

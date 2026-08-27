@@ -37,7 +37,7 @@ npm run dev
 
 The admin outreach endpoints are served locally by `plugins/local-api-dev/`. The adapter loads `src/backend/admin/apps/api/api.ts` through Vite and calls the same controller handlers used by the Netlify production functions, so local development does not require Netlify Dev or redirect rewrites.
 
-Production remains backed by the grouped `netlify/functions/admin-outreach.js` adapter.
+Production remains backed by the shared `netlify/functions/admin.js` adapter.
 
 ## Admin Users
 

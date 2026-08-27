@@ -7,6 +7,7 @@ import {
   createErrorBody,
   createJsonResponse,
   createOriginGuardResponse,
+  getClientIp,
   isAllowedOrigin,
 } from '../../api/http.js';
 
@@ -99,4 +100,27 @@ test('creates endpoint-scoped HTTP helpers', async () => {
 
   assert.equal(response.headers.get('Access-Control-Allow-Methods'), 'POST, OPTIONS');
   assert.deepEqual(await response.json(), { ok: true });
+});
+
+test('reads Netlify client IP before forwarded headers', () => {
+  const request = new Request('https://arg.software/api/assistant/ask', {
+    headers: {
+      'x-nf-client-connection-ip': '203.0.113.10',
+      'x-forwarded-for': '198.51.100.10, 198.51.100.11',
+    },
+  });
+
+  assert.equal(getClientIp(request), '203.0.113.10');
+});
+
+test('falls back to forwarded client IP and unknown', () => {
+  const forwardedRequest = new Request('https://arg.software/api/assistant/ask', {
+    headers: {
+      'x-forwarded-for': '198.51.100.10, 198.51.100.11',
+    },
+  });
+  const anonymousRequest = new Request('https://arg.software/api/assistant/ask');
+
+  assert.equal(getClientIp(forwardedRequest), '198.51.100.10');
+  assert.equal(getClientIp(anonymousRequest), 'unknown');
 });

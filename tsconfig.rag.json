@@ -1,16 +1,25 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "strict": true,
     "noEmit": true,
+    "allowJs": true,
+    "checkJs": false,
+    "experimentalDecorators": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["src/backend/rag/**/*.ts", "src/backend/shared/config/**/*.ts"]
+  "include": [
+    "src/backend/rag/**/*.ts",
+    "src/backend/shared/api/http.js",
+    "src/backend/shared/api/**/*.ts",
+    "src/backend/shared/config/**/*.ts",
+    "src/backend/shared/security/**/*.ts"
+  ]
 }

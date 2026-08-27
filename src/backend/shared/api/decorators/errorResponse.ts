@@ -4,23 +4,24 @@ export function errorResponse(fallbackCode: string, fallbackMessage: string): an
   return function errorResponseDecorator(...decoratorArgs: any[]) {
     return wrapMethod(
       decoratorArgs,
-      method => async function decoratedErrorResponse(request: Request, ...args: any[]) {
+      method => async function decoratedErrorResponse(this: any, request: Request, ...args: any[]) {
         try {
           return await method.call(this, request, ...args);
         } catch (error) {
-          const statusCode = this.errorStatus(error);
+          const handledError = error as any;
+          const statusCode = this.errorStatus(handledError);
 
           if (statusCode === 500) {
-            console.error(error);
+            console.error(handledError);
           }
 
           const response = this.json(
             statusCode,
-            this.errorBody(error, fallbackCode, fallbackMessage)
+            this.errorBody(handledError, fallbackCode, fallbackMessage)
           );
 
-          if (statusCode === 429 && error?.retryAfterSeconds) {
-            response.headers.set('Retry-After', String(error.retryAfterSeconds));
+          if (statusCode === 429 && handledError?.retryAfterSeconds) {
+            response.headers.set('Retry-After', String(handledError.retryAfterSeconds));
           }
 
           return response;

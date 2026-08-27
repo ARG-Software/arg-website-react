@@ -59,49 +59,38 @@ export default defineConfig(({ mode }) => {
     },
     localApiDev([
       {
-        path: '/api/assistant/challenge',
-        module: '/src/backend/rag/apps/gaspar/assistantChallengeApi.js',
-        createApi: 'createAssistantChallengeApi',
-      },
-      {
-        path: '/api/assistant/ask',
-        module: '/src/backend/rag/apps/gaspar/assistantAskApi.js',
-        createApi: 'createAssistantAskApi',
-      },
-      {
-        path: '/api/assistant/ui-copy',
-        module: '/src/backend/rag/apps/gaspar/assistantUiCopyApi.js',
-        createApi: 'createAssistantUiCopyApi',
-      },
-      {
-        path: '/api/security/challenge',
-        module: '/src/backend/rag/apps/gaspar/securityChallengeApi.js',
-        createApi: 'createSecurityChallengeApi',
-      },
-      {
-        path: '/api/security/verify',
-        module: '/src/backend/rag/apps/gaspar/securityVerifyApi.js',
-        createApi: 'createSecurityVerifyApi',
+        path: [
+          '/api/assistant/challenge',
+          '/api/assistant/ask',
+          '/api/assistant/ui-copy',
+          '/api/security/challenge',
+          '/api/security/verify',
+        ],
+        module: '/src/backend/rag/apps/api/api.ts',
+        handler: 'routeRagRequest',
       },
       {
         path: [
+          '/api/admin/login',
+          '/api/admin/session',
+          '/api/admin/user',
           '/api/admin/outreach-records',
           '/api/admin/outreach-summary',
           '/api/admin/outreach-chart',
           '/api/admin/outreach-export',
           '/api/admin/outreach-import',
           '/api/admin/outreach-record',
+          '/api/admin/visit-metrics',
+          '/api/admin/visit-sessions',
+          '/api/admin/visit-journey',
+          '/api/admin/assistant-conversations',
+          '/api/admin/assistant-conversation',
         ],
         module: '/src/backend/admin/apps/api/api.ts',
-        handler: 'routeOutreachRequest',
+        handler: 'routeAdminRequest',
       },
       {
         path: '/api/admin/assistant-conversation-log',
-        module: '/src/backend/admin/apps/api/api.ts',
-        handler: 'routeAssistantConversationRequest',
-      },
-      {
-        path: ['/api/admin/assistant-conversations', '/api/admin/assistant-conversation'],
         module: '/src/backend/admin/apps/api/api.ts',
         handler: 'routeAssistantConversationRequest',
       },
@@ -116,24 +105,9 @@ export default defineConfig(({ mode }) => {
         handler: 'routeVisitRequest',
       },
       {
-        path: ['/api/admin/visit-metrics', '/api/admin/visit-sessions', '/api/admin/visit-journey'],
-        module: '/src/backend/admin/apps/api/api.ts',
-        handler: 'routeVisitRequest',
-      },
-      {
         path: '/api/admin/visit-events-retention',
         module: '/src/backend/admin/apps/api/api.ts',
         handler: 'visitRetention',
-      },
-      {
-        path: ['/api/admin/login', '/api/admin/session'],
-        module: '/src/backend/admin/apps/api/api.ts',
-        handler: 'routeAuthRequest',
-      },
-      {
-        path: '/api/admin/user',
-        module: '/src/backend/admin/apps/api/api.ts',
-        handler: 'routeUserRequest',
       },
     ]),
     // SPA fallback: serve index.html for routes without file extensions

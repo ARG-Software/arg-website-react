@@ -177,7 +177,7 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - `ControllerBase` is admin-specific and intentionally small: `authenticateUser(request)`, `json(...)`, `body(...)`, `query(...)`, `errorBody(...)`, and `errorStatus(...)`.
 - Protected admin controller methods should authenticate first with `this.authenticateUser(request)`, then parse body/query, then call business use cases.
 - Non-auth business use cases should not perform authorization. Auth/session use cases may still use `UserAccessPolicy` because authentication and session validation are their purpose.
-- Netlify admin functions are grouped deployment adapters, such as `admin-auth.js`, `admin-outreach.js`, `admin-visits.js`, and `admin-assistant-conversations.js`.
+- `netlify/functions/admin.js` handles admin feature endpoints. Keep route-specific deployment adapters only when Netlify config needs to differ, such as `assistant-conversation-log.js`, `visit-log.js`, and scheduled retention functions.
 - Recent verification passed: `npm run test:backend`, `npm run typecheck:admin`, `npm run lint:backend`, and `npm run test:netlify`.
 
 ---

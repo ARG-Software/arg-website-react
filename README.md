@@ -174,7 +174,7 @@ The `AppLink` component (SPA navigation) supports optional `trackEvent`/`trackDa
 
 ## Gaspar RAG Assistant
 
-Gaspar is the site assistant exposed through `src/frontend/components/widgets/AssistantWidget.jsx` and served by Netlify Functions. It uses a mounted app under `src/backend/rag/apps/gaspar/` to wire application use cases to concrete infrastructure adapters.
+Gaspar is the site assistant exposed through `src/frontend/components/widgets/AssistantWidget.jsx` and served by Netlify Functions. Public assistant and security routes are handled by controller-style apps under `src/backend/rag/apps/api/`, with dependency composition under `src/backend/rag/apps/di/`.
 
 ### Runtime Architecture
 
@@ -193,12 +193,12 @@ The RAG code is organized by dependency direction rather than by provider:
 | **Ingestion Manifests** | `src/backend/rag/infrastructure/ingestion/manifests/` | First-party and trusted-external source definitions and manifest types |
 | **Tests** | `src/backend/rag/tests/` | Unit tests, route/eval coverage, ingestion tests, security tests, and fakes |
 
-The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `src/backend/rag/infrastructure/`, and `src/backend/rag/apps/gaspar/` wires those adapters into application use cases.
+The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `src/backend/rag/infrastructure/`, and `src/backend/rag/apps/di/` wires those adapters into application use cases.
 
 ### Ask Flow
 
-1. `POST /api/assistant/ask` is handled by `netlify/functions/assistant-ask.js`.
-2. The function enforces origin checks, ALTCHA verification, and rate limits before calling the `askQuestion` use case with dependencies from `apps/di`.
+1. `POST /api/assistant/ask` is handled by `netlify/functions/rag.js`.
+2. The function delegates to `src/backend/rag/apps/api/api.ts`; route dispatch handles origin/method checks and `AssistantController` calls the assistant ask use case.
 3. The application use case validates input, applies language preference policy, classifies intent, plans retrieval, resolves a retrieval route, retrieves context through repository ports, and generates the answer through provider ports.
 4. The response returns answer text, resolved language, optional language preference updates, citations, article recommendations, and assistant actions such as `book_meeting`, `gaspar_message`, `contact_form`, or `email_hr`.
 

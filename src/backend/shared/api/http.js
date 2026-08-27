@@ -21,6 +21,7 @@ export function createApiHttp({ allowedMethods, env = process.env, ...options })
     readSearchParams(request, options = {}) {
       return readSearchParams(request, options);
     },
+    getClientIp,
     sanitizeInput(value, options = {}) {
       return sanitizeInput(value, options);
     },
@@ -54,6 +55,14 @@ export async function readJsonBody(request, options = {}) {
 
 export function readSearchParams(request, options = {}) {
   return sanitizeInput(Object.fromEntries(new URL(request.url).searchParams.entries()), options);
+}
+
+export function getClientIp(request) {
+  return (
+    request.headers.get('x-nf-client-connection-ip') ||
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    'unknown'
+  );
 }
 
 export function sanitizeInput(value, options = {}) {

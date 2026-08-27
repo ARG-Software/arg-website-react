@@ -1,8 +1,8 @@
 import {
-  config,
-  createKeepDatabaseAliveApi,
-} from '../../src/backend/rag/apps/gaspar/keepDatabaseAliveApi.js';
+  keepDatabaseAliveConfig as config,
+  runKeepDatabaseAlive,
+} from '../../src/backend/rag/apps/api/controllers/MaintenanceController.js';
 
 export { config };
 
-export default createKeepDatabaseAliveApi({ env: process.env });
+export default runKeepDatabaseAlive;

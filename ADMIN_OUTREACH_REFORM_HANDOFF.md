@@ -64,7 +64,7 @@ Completed:
 
 - Added shared ALTCHA/rate-limit modules under `src/backend/shared/security/` with JS and TS entry points.
 - Updated Gaspar/RAG security imports to use shared security modules instead of owning the implementation.
-- Added admin login backend endpoint at `/api/admin/login` through `src/backend/admin/apps/api/api.ts` and `netlify/functions/admin-auth.js`.
+- Added admin login backend endpoint at `/api/admin/login` through `src/backend/admin/apps/api/api.ts` and `netlify/functions/admin.js`.
 - Added admin login ALTCHA verification and login-attempt rate limiting using an admin-specific Supabase RPC/table.
 - Added admin 1-hour inactivity logout in `src/frontend/admin/AdminPage.jsx`.
 - Added migration `supabase/admin/migrations/20260821000000_reform_outreach_records.sql`.
@@ -395,7 +395,7 @@ Migrations:
 
 Netlify function:
 
-- `netlify/functions/admin-outreach.js`
+- `netlify/functions/admin.js`
 
 Scripts:
 
