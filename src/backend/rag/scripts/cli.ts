@@ -6,7 +6,7 @@ export function isDryRun(): boolean {
   );
 }
 
-import type { IIngestionRunOptions } from '../application/ingestion/IIngestionTypes.js';
+import type { IIngestionRunOptions } from '../application/ingestion/iingestion.types.js';
 
 export function getIngestionRunOptions(): IIngestionRunOptions {
   const selection = {

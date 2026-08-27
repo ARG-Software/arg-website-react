@@ -74,71 +74,11 @@ const RULES = [
     description: 'kebab-case.md',
   },
   {
-    root: 'src/backend/rag/domain',
-    extensions: ['.ts'],
-    pattern: /^[A-Z][A-Za-z0-9]*\.ts$/,
-    description: 'PascalCase.ts',
-  },
-  {
-    root: 'src/backend/rag/application/ports',
-    extensions: ['.ts'],
-    pattern: /^[A-Z][A-Za-z0-9]*\.ts$/,
-    description: 'PascalCase.ts',
-  },
-  {
-    root: 'src/backend/rag/application',
-    extensions: ['.ts'],
-    pattern: /^(?:[a-z][A-Za-z0-9]*|I[A-Z][A-Za-z0-9]*)\.ts$/,
-    description: 'camelCase.ts or I-prefixed interface contract .ts',
-    excludeDirectories: ['ports'],
-  },
-  {
-    root: 'src/backend/rag/infrastructure/ingestion',
-    extensions: ['.ts'],
-    pattern: /^(?:[a-z][A-Za-z0-9]*|[A-Z][A-Za-z0-9]*Types)\.ts$/,
-    description: 'camelCase.ts or PascalCaseTypes.ts',
-  },
-  {
-    root: 'src/backend/rag/infrastructure/embeddings',
-    extensions: ['.ts'],
-    pattern: /^(?:[a-z][A-Za-z0-9]*Config|[A-Z][A-Za-z0-9]*Provider)\.ts$/,
-    description: 'camelCaseConfig.ts or PascalCaseProvider.ts',
-  },
-  {
-    root: 'src/backend/rag/infrastructure/llm',
-    extensions: ['.ts'],
-    pattern: /^(?:[a-z][A-Za-z0-9]*Config|[A-Z][A-Za-z0-9]*(?:Provider|Translator|Client))\.ts$/,
-    description: 'camelCaseConfig.ts or PascalCase provider/client module',
-  },
-  {
-    root: 'src/backend/rag/infrastructure/repositories',
-    extensions: ['.ts'],
-    pattern: /^(?:[a-z][A-Za-z0-9]*|[A-Z][A-Za-z0-9]*(?:Repository|Factory))\.ts$/,
-    description: 'camelCase.ts or PascalCase repository/factory module',
-  },
-  {
-    root: 'src/backend/rag/infrastructure/security',
-    extensions: ['.ts'],
-    pattern: /^[a-z][A-Za-z0-9]*\.ts$/,
-    description: 'camelCase.ts',
-  },
-  {
-    root: 'src/backend/rag/apps',
-    extensions: ['.ts'],
-    pattern: /^[a-z][A-Za-z0-9]*\.ts$/,
-    description: 'camelCase.ts',
-  },
-  {
-    root: 'src/backend/rag/scripts',
-    extensions: ['.ts'],
-    pattern: /^[a-z][A-Za-z0-9]*\.ts$/,
-    description: 'camelCase.ts',
-  },
-  {
-    root: 'src/backend/rag/tests',
-    extensions: ['.ts'],
-    pattern: /^(?:[A-Z][A-Za-z0-9]*|[a-z][A-Za-z0-9]*)(?:\.test)?\.ts$/,
-    description: 'PascalCase.ts, camelCase.ts, or camelCase.test.ts',
+    root: 'src/backend',
+    extensions: ['.ts', '.js', '.json', '.md'],
+    pattern:
+      /^[a-z0-9]+(?:\.(?:types|config|configuration|controller|repository|provider|factory|parser|translator|client|policy|response|request|usecase|error|constants|store|stores|handler|container|cookies|api))?(?:\.test)?\.(?:ts|js|json|md)$/,
+    description: 'lowercase filename with optional terminal dot suffix',
   },
 ];
 
@@ -168,67 +108,11 @@ const violations = RULES.flatMap(rule => {
     }));
 });
 
-violations.push(...findBackendInterfaceViolations());
-
 function isInExcludedDirectory(filePath, excludedDirectories) {
   if (excludedDirectories.length === 0) return false;
 
   const parts = path.relative(ROOT_DIR, filePath).split(path.sep);
   return parts.some(part => excludedDirectories.includes(part));
-}
-
-function findBackendInterfaceViolations() {
-  const backendDirectory = path.join(ROOT_DIR, 'src/backend');
-
-  return listFiles(backendDirectory)
-    .filter(filePath => path.extname(filePath) === '.ts')
-    .flatMap(filePath => [
-      ...findInterfaceNameViolations(filePath),
-      ...findInterfaceFilenameViolations(filePath),
-    ]);
-}
-
-function findInterfaceNameViolations(filePath) {
-  const source = fs.readFileSync(filePath, 'utf8');
-  const matches = source.matchAll(/\binterface\s+([A-Z][A-Za-z0-9_]*)\b/g);
-
-  return Array.from(matches)
-    .filter(([, name]) => !/^I[A-Z]/.test(name))
-    .map(([, name]) => ({
-      filePath: path.relative(ROOT_DIR, filePath).replace(/\\/g, '/'),
-      expected: `interface name ${name} should start with I`,
-    }));
-}
-
-function findInterfaceFilenameViolations(filePath) {
-  const source = fs.readFileSync(filePath, 'utf8');
-  if (!isInterfaceOnlyModule(source)) return [];
-
-  const filename = path.basename(filePath);
-  if (/^I[A-Z]/.test(filename)) return [];
-
-  return [
-    {
-      filePath: path.relative(ROOT_DIR, filePath).replace(/\\/g, '/'),
-      expected: 'I-prefixed interface contract filename',
-    },
-  ];
-}
-
-function isInterfaceOnlyModule(source) {
-  const withoutImports = source
-    .replace(/^import[\s\S]*?;\s*/gm, '')
-    .replace(/^export\s+type\s+\{[\s\S]*?\};\s*/gm, '')
-    .trim();
-
-  if (!/\binterface\s+I[A-Z]/.test(withoutImports)) return false;
-
-  const withoutInterfaces = withoutImports
-    .replace(/export\s+interface\s+I[A-Z][A-Za-z0-9_]*(?:\s+extends\s+[^\{]+)?\s*\{[\s\S]*?\}\s*/g, '')
-    .replace(/interface\s+I[A-Z][A-Za-z0-9_]*(?:\s+extends\s+[^\{]+)?\s*\{[\s\S]*?\}\s*/g, '')
-    .trim();
-
-  return withoutInterfaces.length === 0;
 }
 
 if (violations.length > 0) {

@@ -1,3 +1,3 @@
-export { errorResponse } from './errorResponse.js';
+export { errorResponse } from './error.response.js';
 export { route } from './route.js';
-export { getControllerRoutes, type ControllerRoute } from './routeRegistry.js';
+export { getControllerRoutes, type ControllerRoute } from './routeregistry.js';

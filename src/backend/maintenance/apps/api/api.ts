@@ -1,4 +1,4 @@
-import { MaintenanceController } from './controllers/MaintenanceController.js';
+import { MaintenanceController } from './controllers/maintenance.controller.js';
 
 let controller: MaintenanceController;
 

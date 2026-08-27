@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 
 import { decodeKey } from './decode.js';
-import { ENCODING_ALGORITHM, INDEX_ENCODING_ALGORITHM, NONCE_BYTES } from './securityConstants.js';
+import { ENCODING_ALGORITHM, INDEX_ENCODING_ALGORITHM, NONCE_BYTES } from './security.constants.js';
 
 export type EncodedValue = {
   keyVersion: number;

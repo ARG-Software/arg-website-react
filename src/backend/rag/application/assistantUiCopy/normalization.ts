@@ -1,7 +1,7 @@
 import type {
   IAssistantActionCopy,
   IAssistantUiCopy,
-} from '../../domain/assistant/IAssistantUiCopy.js';
+} from '../../domain/assistant/iassistantuicopy.js';
 
 export function parseTranslatedAssistantUiCopy(
   content: string | undefined

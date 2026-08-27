@@ -48,11 +48,11 @@ test('keeps route-specific adapters that need deployment-level config', () => {
 
 test('backend app APIs expose the security routes and old API folders are removed', () => {
   assert.match(
-    readBackendFile('rag/apps/api/controllers/SecurityController.ts'),
+    readBackendFile('rag/apps/api/controllers/security.controller.ts'),
     /@route\('GET', '\/api\/security\/challenge'\)/
   );
   assert.match(
-    readBackendFile('rag/apps/api/controllers/SecurityController.ts'),
+    readBackendFile('rag/apps/api/controllers/security.controller.ts'),
     /@route\('POST', '\/api\/security\/verify'\)/
   );
   assert.equal(existsSync(join(BACKEND_DIR, 'rag/api')), false);
@@ -144,10 +144,10 @@ test('netlify functions do not reference removed implementation folders or old c
 
 test('function-bound JSON config is imported instead of read from deployment paths', () => {
   for (const file of [
-    'rag/application/sourceConfig.ts',
-    'rag/application/languageConfig.ts',
-    'rag/application/assistantUiCopy/sourceCopy.ts',
-    'rag/infrastructure/ingestion/sourceManifestConfig.ts',
+    'rag/application/source.config.ts',
+    'rag/application/language.config.ts',
+    'rag/application/assistantUiCopy/sourcecopy.ts',
+    'rag/infrastructure/ingestion/sourcemanifest.config.ts',
   ]) {
     const content = readBackendFile(file);
 

@@ -7,7 +7,7 @@ import type {
   JsonRpcSuccess,
   ToolCallParams,
   ToolResult,
-} from './types/mcpTypes.js';
+} from './types/mcp.types.js';
 import {
   BLOG_DISCOVERY,
   COMPANY_PROFILE,
@@ -17,7 +17,7 @@ import {
   SERVER_INFO,
   SERVICES,
   TOOLS,
-} from './mcpContent.js';
+} from './mcpcontent.js';
 
 class ToolError extends Error {
   constructor(

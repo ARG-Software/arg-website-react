@@ -1,4 +1,4 @@
-import { registerRouteMetadata } from './routeRegistry.js';
+import { registerRouteMetadata } from './routeregistry.js';
 
 export function route(method: string, path: string): any {
   return function routeDecorator(...decoratorArgs: any[]) {

@@ -1,6 +1,6 @@
-import type { IRetrievedContext } from '../../../domain/retrieval/IRetrievedContext.js';
-import type { ICitation } from '../../../domain/assistant/AssistantResponse.js';
-import type { IPageContext } from '../../../domain/conversation/IChatMessage.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/iretrievedcontext.js';
+import type { ICitation } from '../../../domain/assistant/assistant.response.js';
+import type { IPageContext } from '../../../domain/conversation/ichatmessage.js';
 import { resolveUrl } from '../../common/url.js';
 
 export function createCitations(

@@ -1,10 +1,10 @@
-import type { IRetrievalPlan } from '../../../domain/retrieval/IRetrievalPlan.js';
-import type { IRetrievalRoute } from '../../../domain/retrieval/IRetrievalRoute.js';
-import type { RagSourceType } from '../../../domain/content/IRagSource.js';
+import type { IRetrievalPlan } from '../../../domain/retrieval/iretrievalplan.js';
+import type { IRetrievalRoute } from '../../../domain/retrieval/iretrievalroute.js';
+import type { RagSourceType } from '../../../domain/content/iragsource.js';
 import { normalizeName } from '../../common/text.js';
-import { getKnownProjectNames } from '../../sourceConfig.js';
+import { getKnownProjectNames } from '../../source.config.js';
 
-export type { IRetrievalRoute, RetrievalRouteKind } from '../../../domain/retrieval/IRetrievalRoute.js';
+export type { IRetrievalRoute, RetrievalRouteKind } from '../../../domain/retrieval/iretrievalroute.js';
 
 export const BLOG_SOURCE_TYPES: RagSourceType[] = ['blog_post'];
 export const OFFICIAL_WEBSITE_SOURCE_TYPES: RagSourceType[] = [

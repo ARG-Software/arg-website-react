@@ -1,10 +1,10 @@
-import type { IRagConfig } from '../../../config/IRagConfiguration.js';
-import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
-import type { IEmbeddingProvider } from '../../../ports/IProviderPorts.js';
-import type { IRetrievalRoute } from '../../../../domain/retrieval/IRetrievalRoute.js';
-import type { IRagReadRepository } from '../../../ports/IRagReadRepository.js';
+import type { IRagConfig } from '../../../config/irag.configuration.js';
+import type { IRetrievedContext } from '../../../../domain/retrieval/iretrievedcontext.js';
+import type { IEmbeddingProvider } from '../../../ports/iproviderports.js';
+import type { IRetrievalRoute } from '../../../../domain/retrieval/iretrievalroute.js';
+import type { IRagReadRepository } from '../../../ports/iragread.repository.js';
 import { resolveSemanticSearch, type ISemanticSearchInput } from '../embeddings.js';
-import { retrieveContextsForOrigin } from '../vectorSearch.js';
+import { retrieveContextsForOrigin } from '../vectorsearch.js';
 
 const FIRST_PARTY_ORIGIN = 'first_party';
 

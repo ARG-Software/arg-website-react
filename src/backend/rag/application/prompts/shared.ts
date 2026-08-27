@@ -1,4 +1,4 @@
-import { getAssistantPolicyInstructions } from '../../domain/assistant/AssistantPolicy.js';
+import { getAssistantPolicyInstructions } from '../../domain/assistant/assistant.policy.js';
 
 export function buildResponseLanguageInstruction(responseLanguage: string): string {
   if (!responseLanguage) {

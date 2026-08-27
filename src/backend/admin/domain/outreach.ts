@@ -1,10 +1,10 @@
-import { OutreachDomainError } from './errors/OutreachDomainError.js';
+import { OutreachDomainError } from './errors/outreachdomain.error.js';
 import type {
   OutreachConstructorParams,
   OutreachContactMethod,
   OutreachStatus,
   OutreachSummary,
-} from './types/OutreachTypes.js';
+} from './types/outreach.types.js';
 
 export const OUTREACH_STATUSES: readonly OutreachStatus[] = ['sent', 'not_sent'];
 const OUTREACH_CONTACT_METHODS: readonly OutreachContactMethod[] = ['email', 'contact_form'];

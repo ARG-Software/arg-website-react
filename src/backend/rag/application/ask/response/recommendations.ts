@@ -1,6 +1,6 @@
-import type { IRetrievedContext } from '../../../domain/retrieval/IRetrievedContext.js';
-import type { IArticleRecommendation } from '../../../domain/assistant/AssistantResponse.js';
-import type { IRetrievalRoute } from '../../../domain/retrieval/IRetrievalRoute.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/iretrievedcontext.js';
+import type { IArticleRecommendation } from '../../../domain/assistant/assistant.response.js';
+import type { IRetrievalRoute } from '../../../domain/retrieval/iretrievalroute.js';
 import { resolveUrl } from '../../common/url.js';
 
 export function createArticleRecommendations(

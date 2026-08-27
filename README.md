@@ -93,7 +93,7 @@ npm run preview      # Preview production build
 | `npm run rag:test` | Run the RAG test and eval suite |
 | `npm run test:backend` | Run backend JS API tests |
 | `npm run test:netlify` | Run Netlify function and redirect wiring tests |
-| `npm run typecheck:rag` | Type-check the TypeScript RAG code |
+| `npm run typecheck:backend` | Type-check the TypeScript backend code |
 | `npm run database:rag:push` | Optional CLI push for only RAG migrations |
 | `npm run database:admin:push` | Optional CLI push for only admin/outreach migrations |
 
@@ -241,9 +241,9 @@ Optional tuning variables include `RAG_SITE_URL`, `RAG_COMPANY_NAME`, `RAG_CHUNK
 Run these before changing assistant behavior, retrieval routing, ingestion, provider adapters, or prompts:
 
 ```bash
-npm run typecheck:rag
+npm run typecheck:backend
 npm run rag:test
-npm run lint:rag
+npm run lint:backend
 npm run lint:app
 ```
 

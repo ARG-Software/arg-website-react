@@ -55,13 +55,13 @@ netlify/functions/assets/README.md
 netlify/functions/visit-events-retention.js
 netlify/functions/visit-log.js
 netlify/functions/admin.js
-src/backend/admin/application/visits/listVisitJourney.ts
-src/backend/admin/application/visits/listVisitMetrics.ts
-src/backend/admin/application/visits/listVisitSessions.ts
+src/backend/admin/application/visits/listvisitjourney.ts
+src/backend/admin/application/visits/listvisitmetrics.ts
+src/backend/admin/application/visits/listvisitsessions.ts
 src/backend/admin/apps/api/api.ts
-src/backend/admin/domain/visitEvent.ts
-src/backend/admin/application/crypto/visitSessionHasher.ts
-src/backend/admin/infrastructure/repositories/supabase/SupabaseVisitRepository.ts
+src/backend/admin/domain/visitevent.ts
+src/backend/admin/application/crypto/visitsessionhasher.ts
+src/backend/admin/infrastructure/repositories/supabase/supabasevisit.repository.ts
 src/frontend/admin/apis/visitMetricsApi.js
 src/frontend/services/analytics/
 src/packages/ui/src/admin/AdminVisitJourney.jsx
@@ -77,7 +77,7 @@ netlify.toml
 package-lock.json
 package.json
 public/_redirects
-src/backend/admin/apps/di/createAdminContainer.ts
+src/backend/admin/apps/di/createadmin.container.ts
 src/frontend/admin/AdminPage.jsx
 src/frontend/admin/admin.css
 src/frontend/main.jsx
@@ -90,7 +90,7 @@ vite.config.js
 
 ### Public Ingest
 
-`src/backend/admin/apps/api/controllers/VisitsController.ts`
+`src/backend/admin/apps/api/controllers/visits.controller.ts`
 
 - Mirrors the existing public assistant-conversation logging endpoint pattern.
 - Uses CORS origin guard.
@@ -105,7 +105,7 @@ vite.config.js
 
 ### Admin Metrics
 
-`src/backend/admin/apps/api/controllers/VisitsController.ts`
+`src/backend/admin/apps/api/controllers/visits.controller.ts`
 
 Supported endpoints:
 
@@ -121,7 +121,7 @@ GET /api/admin/visit-journey?sessionHash=<hash>
 
 ### Retention
 
-`src/backend/admin/apps/api/controllers/VisitsController.ts`
+`src/backend/admin/apps/api/controllers/visits.controller.ts`
 
 - Scheduled daily at `0 4 * * *`.
 - Deletes `visit_sessions.last_seen_at < cutoff`.
@@ -303,7 +303,7 @@ Backend test result at the time:
 
    ```text
    src/frontend/providers/TransitionProvider.jsx
-   src/backend/admin/application/crypto/visitSessionHasher.ts
+   src/backend/admin/application/crypto/visitsessionhasher.ts
    supabase/admin/migrations/20260822010000_create_visit_sessions.sql
    supabase/admin/migrations/20260822020000_create_visit_aggregate_rpc.sql
    src/frontend/admin/AdminPage.jsx

@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 
 import type { EncodedValue } from './encode.js';
-import { ENCODING_ALGORITHM, KEY_BYTES } from './securityConstants.js';
+import { ENCODING_ALGORITHM, KEY_BYTES } from './security.constants.js';
 
 export function decode(encodedValue: EncodedValue, key: string): string {
   const decipher = crypto.createDecipheriv(

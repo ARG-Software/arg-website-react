@@ -1,7 +1,7 @@
-import { loadLocalEnv } from './loadLocalEnv.js';
-import type { IChatMessage, IPageContext } from '../domain/conversation/IChatMessage.js';
-import { askQuestion, retrieveRelevantChunks } from '../application/ask/askQuestion.js';
-import { createGasparDependencies } from '../apps/di/createGasparDependencies.js';
+import { loadLocalEnv } from './loadlocalenv.js';
+import type { IChatMessage, IPageContext } from '../domain/conversation/ichatmessage.js';
+import { askQuestion, retrieveRelevantChunks } from '../application/ask/askquestion.js';
+import { createGasparDependencies } from '../apps/di/creategaspardependencies.js';
 
 loadLocalEnv();
 

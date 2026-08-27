@@ -1,11 +1,11 @@
-import { VisitDomainError } from './errors/VisitDomainError.js';
+import { VisitDomainError } from './errors/visitdomain.error.js';
 import type {
   VisitEvent,
   VisitEventInput,
   VisitPageView,
   VisitPageViewInput,
   VisitSessionConstructorParams,
-} from './types/VisitTypes.js';
+} from './types/visit.types.js';
 
 export class VisitSession {
   readonly sessionHash: string;

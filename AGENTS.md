@@ -172,15 +172,15 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 ### 3.10 Admin API Current State
 - `src/backend/admin/apps/api/api.ts` is the only admin API router entrypoint. There is no separate `router.ts`.
 - `api.ts` defines route groups and exports Netlify/local handlers: `routeAdminRequest`, `routeAuthRequest`, `routeUserRequest`, `routeOutreachRequest`, `routeVisitRequest`, and `routeAssistantConversationRequest`.
-- `src/backend/admin/apps/api/controllerRouteHandler.ts` dispatches registered controller routes and owns CORS, origin guard, OPTIONS, 404, and 405 behavior.
+- `src/backend/admin/apps/api/controllerroute.handler.ts` dispatches registered controller routes and owns CORS, origin guard, OPTIONS, 404, and 405 behavior.
 - Controllers live in `src/backend/admin/apps/api/controllers/` and keep route/error declarations beside methods using `@route(...)` and `@errorResponse(...)`.
-- Keep `methodDecorator.ts`, `routeRegistry.ts`, `route.ts`, and `errorResponse.ts`; they intentionally make controllers cleaner.
+- Keep `methoddecorator.ts`, `routeregistry.ts`, `route.ts`, and `error.response.ts`; they intentionally make controllers cleaner.
 - Do not reintroduce `@cors`, `@options`, `allowMethods`, `BaseApi`, route files per controller, or `src/backend/admin/apps/api/router.ts` unless there is a concrete reason.
 - `ControllerBase` is admin-specific and intentionally small: `authenticateUser(request)`, `json(...)`, `body(...)`, `query(...)`, `errorBody(...)`, and `errorStatus(...)`.
 - Protected admin controller methods should authenticate first with `this.authenticateUser(request)`, then parse body/query, then call business use cases.
 - Non-auth business use cases should not perform authorization. Auth/session use cases may still use `UserAccessPolicy` because authentication and session validation are their purpose.
 - `netlify/functions/admin.js` handles admin feature endpoints. Keep route-specific deployment adapters only when Netlify config needs to differ, such as `assistant-conversation-log.js`, `visit-log.js`, and scheduled maintenance functions.
-- Recent verification passed: `npm run test:backend`, `npm run typecheck:admin`, `npm run lint:backend`, and `npm run test:netlify`.
+- Recent verification passed: `npm run test:backend`, `npm run typecheck:backend`, `npm run lint:backend`, and `npm run test:netlify`.
 
 ---
 
@@ -281,6 +281,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - Components: PascalCase files, named exports preferred
 - Custom hooks: camelCase, `use*` prefix
 - Service, utility, constant, and multi-word JSON module files: camelCase
+- Backend files: lowercase names with no word separators, plus `.` before terminal role suffixes such as `.types`, `.config`, `.controller`, `.repository`, `.provider`, `.parser`, `.usecase`, `.error`, `.handler`, `.container`, `.cookies`, and `.api`.
 - CSS, blog Markdown slugs, and generated/static route-oriented files: kebab-case or lowercase
 - CSS classes: kebab-case, scoped by page/component prefix (e.g. `footer-`, `pc-`, `pt-`)
 - Analytics events: `snake_case`

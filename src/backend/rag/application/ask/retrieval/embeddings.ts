@@ -1,6 +1,6 @@
-import type { IEmbeddingProvider } from '../../ports/IProviderPorts.js';
-import type { EmbeddingIndex } from '../../ports/EmbeddingIndex.js';
-import { isEmbeddingQuotaExceededError } from '../../ports/ProviderErrors.js';
+import type { IEmbeddingProvider } from '../../ports/iproviderports.js';
+import type { EmbeddingIndex } from '../../ports/embeddingindex.js';
+import { isEmbeddingQuotaExceededError } from '../../ports/providererrors.js';
 
 export interface IQueryEmbedding {
   embedding: number[];

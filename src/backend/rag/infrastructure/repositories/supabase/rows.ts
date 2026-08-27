@@ -2,7 +2,7 @@ import type {
   RagSourceMetadata,
   RagSourceOrigin,
   RagSourceType,
-} from '../../../domain/content/IRagSource.js';
+} from '../../../domain/content/iragsource.js';
 
 export interface IMatchRagChunkRow {
   chunk_id: string;

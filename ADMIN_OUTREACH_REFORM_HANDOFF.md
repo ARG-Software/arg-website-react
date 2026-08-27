@@ -29,7 +29,7 @@ Required sequencing for the next session:
 Pending requested implementation before reset/reingestion:
 
 - Encrypt `email_subject` and `email_body` at rest. Suggested columns: `email_subject_key_version`, `email_subject_nonce`, `email_subject_ciphertext`, `email_subject_auth_tag`, `email_body_key_version`, `email_body_nonce`, `email_body_ciphertext`, `email_body_auth_tag`. No blind index is needed for subject/body.
-- Update `src/backend/admin/application/crypto/outreachPayloadCipher.ts`, `src/backend/admin/infrastructure/repositories/supabase/outreachRows.ts`, `src/backend/admin/application/outreach/outreachCsv.ts`, `scripts/import-outreach.ts`, admin migrations, and backend tests for encrypted/decrypted subject/body.
+- Update `src/backend/admin/application/crypto/outreachpayloadcipher.ts`, `src/backend/admin/infrastructure/repositories/supabase/outreachrows.ts`, `src/backend/admin/application/outreach/outreachcsv.ts`, `scripts/import-outreach.ts`, admin migrations, and backend tests for encrypted/decrypted subject/body.
 - Preserve formatted email drafts during import. Do not use the generic `clean()` that collapses all whitespace for `Email Draft`. Keep paragraph breaks, convert literal `\n` and `/n` into real newlines, normalize CRLF to LF, trim line ends, and keep paragraph spacing readable. Keep email subjects single-line.
 - Mailto formatting was already improved in the working tree: `src/frontend/admin/outreach.js` uses `encodeURIComponent()` instead of `URLSearchParams` so mail clients receive `%20` and `%0A`, not visible `+` characters.
 - Sent-record locking was partially implemented in the working tree: contact email is disabled for `contact_form`, status is disabled for persisted sent records, and the backend rejects status changes away from `sent`.
@@ -106,7 +106,7 @@ Remaining user-requested follow-up work:
 4. Make the dashboard `Latest sent` table sortable too.
 5. Allow table sorting by `company_name`, `date_sent`, and `follow_up_date`.
 6. Remove contact/email ordering from the UI and backend allowed sort fields. Keep the contact email blind index and uniqueness constraint.
-7. Add backend sorting support for `follow_up_date` in `src/backend/admin/application/outreach/listOutreachRecords.ts`.
+7. Add backend sorting support for `follow_up_date` in `src/backend/admin/application/outreach/listoutreachrecords.ts`.
 
 Suggested follow-up implementation plan:
 
@@ -304,9 +304,9 @@ ALTCHA is currently implemented under the Gaspar/RAG backend and frontend shared
 
 Relevant files:
 
-- `src/backend/rag/apps/gaspar/securityChallengeApi.js`
-- `src/backend/rag/apps/gaspar/securityVerifyApi.js`
-- `src/backend/rag/apps/gaspar/assistantChallengeApi.js`
+- `src/backend/rag/apps/gaspar/securitychallenge.api.js`
+- `src/backend/rag/apps/gaspar/securityverify.api.js`
+- `src/backend/rag/apps/gaspar/assistantchallenge.api.js`
 - `src/frontend/components/forms/AltchaVerification.jsx`
 - `src/frontend/services/apiService.js`
 - `src/frontend/services/altchaService.js`
@@ -332,8 +332,8 @@ Avoid making admin call/import Gaspar internals.
 
 Recommended refactor:
 
-- Move generic rate-limit logic into `src/backend/shared/security/rateLimit.ts`
-- Move Supabase/in-memory rate-limit stores into `src/backend/shared/security/rateLimitStores.ts`
+- Move generic rate-limit logic into `src/backend/shared/security/ratelimit.ts`
+- Move Supabase/in-memory rate-limit stores into `src/backend/shared/security/ratelimit.stores.ts`
 - Update Gaspar imports to use shared modules
 - Add admin-specific config/dependency wiring for rate limiting against the admin Supabase DB
 
@@ -343,8 +343,8 @@ There is already a backend shared folder:
 
 Existing rate limit files:
 
-- `src/backend/shared/security/rateLimit.ts`
-- `src/backend/shared/security/rateLimitStores.ts`
+- `src/backend/shared/security/ratelimit.ts`
+- `src/backend/shared/security/ratelimit.stores.ts`
 - `supabase/rag/migrations/20260726000000_create_rag_rate_limits.sql`
 
 Admin should get its own rate-limit table/function in admin migrations, rather than relying on the RAG DB.
@@ -354,16 +354,16 @@ Admin should get its own rate-limit table/function in admin migrations, rather t
 Backend:
 
 - `src/backend/admin/apps/api/api.ts`
-- `src/backend/admin/apps/di/createAdminContainer.ts`
-- `src/backend/admin/application/admin/authenticateAdmin.ts`
-- `src/backend/admin/application/admin/adminAccessPolicy.ts`
-- `src/backend/admin/application/outreach/listOutreachRecords.ts`
-- `src/backend/admin/application/outreach/updateOutreachRecord.ts`
-- `src/backend/admin/domain/outreachRecord.ts`
-- `src/backend/admin/infrastructure/config/adminConfig.ts`
-- `src/backend/admin/application/crypto/outreachPayloadCipher.ts`
-- `src/backend/admin/infrastructure/repositories/supabase/SupabaseOutreachRepository.ts`
-- `src/backend/admin/infrastructure/repositories/supabase/outreachRows.ts`
+- `src/backend/admin/apps/di/createadmin.container.ts`
+- `src/backend/admin/application/admin/authenticateadmin.ts`
+- `src/backend/admin/application/admin/adminaccess.policy.ts`
+- `src/backend/admin/application/outreach/listoutreachrecords.ts`
+- `src/backend/admin/application/outreach/updateoutreachrecord.ts`
+- `src/backend/admin/domain/outreachrecord.ts`
+- `src/backend/admin/infrastructure/config/admin.config.ts`
+- `src/backend/admin/application/crypto/outreachpayloadcipher.ts`
+- `src/backend/admin/infrastructure/repositories/supabase/supabaseoutreach.repository.ts`
+- `src/backend/admin/infrastructure/repositories/supabase/outreachrows.ts`
 
 Frontend:
 
@@ -396,11 +396,11 @@ Scripts:
 
 Tests:
 
-- `src/backend/admin/tests/api/adminOutreachApi.test.ts`
-- `src/backend/admin/tests/application/adminAccessPolicy.test.ts`
-- `src/backend/admin/tests/infrastructure/outreachPayloadCipher.test.ts`
+- `src/backend/admin/tests/api/adminoutreach.api.test.ts`
+- `src/backend/admin/tests/application/adminaccess.policy.test.ts`
+- `src/backend/admin/tests/infrastructure/outreachpayloadcipher.test.ts`
 - `src/backend/rag/tests/infrastructure/altcha.test.ts`
-- `src/backend/rag/tests/infrastructure/rateLimit.test.ts`
+- `src/backend/rag/tests/infrastructure/ratelimit.test.ts`
 
 ## Suggested Database Shape
 

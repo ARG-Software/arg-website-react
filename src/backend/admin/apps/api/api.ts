@@ -1,10 +1,10 @@
 import type { ControllerRoute } from '../../../shared/api/decorators/index.js';
-import { dispatchControllerRoutes } from './controllerRouteHandler.js';
-import { getAssistantConversationRoutes } from './controllers/AssistantConversationsController.js';
-import { getAuthRoutes } from './controllers/AuthController.js';
-import { getOutreachRoutes } from './controllers/OutreachController.js';
-import { getUserRoutes } from './controllers/UserController.js';
-import { getVisitRoutes } from './controllers/VisitsController.js';
+import { dispatchControllerRoutes } from './controllerroute.handler.js';
+import { getAssistantConversationRoutes } from './controllers/assistantconversations.controller.js';
+import { getAuthRoutes } from './controllers/auth.controller.js';
+import { getOutreachRoutes } from './controllers/outreach.controller.js';
+import { getUserRoutes } from './controllers/user.controller.js';
+import { getVisitRoutes } from './controllers/visits.controller.js';
 
 const ROUTE_MAP = {
   admin: (): ControllerRoute[] => [

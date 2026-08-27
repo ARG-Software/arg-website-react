@@ -1,12 +1,12 @@
-import type { AssistantActionType } from '../../domain/assistant/IAssistantAction.js';
-import type { IChatMessage, IPageContext } from '../../domain/conversation/IChatMessage.js';
-import type { QuestionIntent } from '../../domain/conversation/QuestionIntent.js';
-import type { IRetrievalPlan } from '../../domain/retrieval/IRetrievalPlan.js';
+import type { AssistantActionType } from '../../domain/assistant/iassistantaction.js';
+import type { IChatMessage, IPageContext } from '../../domain/conversation/ichatmessage.js';
+import type { QuestionIntent } from '../../domain/conversation/questionintent.js';
+import type { IRetrievalPlan } from '../../domain/retrieval/iretrievalplan.js';
 import type {
   RagSourceMetadata,
   RagSourceOrigin,
   RagSourceType,
-} from '../../domain/content/IRagSource.js';
+} from '../../domain/content/iragsource.js';
 
 export interface IEvalSourceRow {
   id: string;

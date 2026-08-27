@@ -1,5 +1,5 @@
-import type { RagSourceMetadata, RagSourceType } from '../../domain/content/IRagSource.js';
-import type { IRagSourceRecord } from '../../application/ports/IRagReadRepository.js';
+import type { RagSourceMetadata, RagSourceType } from '../../domain/content/iragsource.js';
+import type { IRagSourceRecord } from '../../application/ports/iragread.repository.js';
 
 export interface IChunkFixture {
   id: string;
