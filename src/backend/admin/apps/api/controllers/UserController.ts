@@ -1,4 +1,4 @@
-import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators.js';
+import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import { adminContainer } from '../../di/adminContainer.js';
 import { getAccessToken } from '../../http/userSessionCookies.js';
 import { ControllerBase } from './ControllerBase.js';

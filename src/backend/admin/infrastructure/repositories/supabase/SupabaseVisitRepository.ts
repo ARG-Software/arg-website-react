@@ -1,13 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { IVisitRepository } from '../../application/ports/repositories/IVisitRepository.js';
+import type { IVisitRepository } from '../../../application/ports/repositories/IVisitRepository.js';
 import type {
   VisitJourneyEvent,
   VisitMetricsData,
   VisitSessionListItem,
   VisitSessionListResult,
   VisitSessionRecord,
-} from '../../domain/types/VisitTypes.js';
+} from '../../../domain/types/VisitTypes.js';
 
 type VisitSessionRow = {
   session_hash: string;

@@ -1,4 +1,4 @@
-import type { ControllerRoute } from '../../../shared/api/decorators.js';
+import type { ControllerRoute } from '../../../shared/api/decorators/index.js';
 import { createApiHttp, createErrorBody } from '../../../shared/api/http.js';
 
 const DEFAULT_ALLOWED_ORIGINS = ['https://arg.software', 'https://www.arg.software'];

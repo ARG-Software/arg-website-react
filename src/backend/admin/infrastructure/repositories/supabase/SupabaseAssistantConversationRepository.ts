@@ -1,15 +1,15 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { IAdminConfiguration } from '../../application/config/IAdminConfiguration.js';
-import { decode, isValidKey } from '../../application/crypto/decode.js';
-import { encode, type EncodedValue } from '../../application/crypto/encode.js';
-import type { IAssistantConversationRepository } from '../../application/ports/repositories/IAssistantConversationRepository.js';
-import { AssistantConversation } from '../../domain/assistantConversation.js';
+import type { IAdminConfiguration } from '../../../application/config/IAdminConfiguration.js';
+import { decode, isValidKey } from '../../../application/crypto/decode.js';
+import { encode, type EncodedValue } from '../../../application/crypto/encode.js';
+import type { IAssistantConversationRepository } from '../../../application/ports/repositories/IAssistantConversationRepository.js';
+import { AssistantConversation } from '../../../domain/assistantConversation.js';
 import type {
   AssistantConversationMessage,
   AssistantConversationPagination,
   AssistantConversationPageContext,
-} from '../../domain/types/AssistantConversationTypes.js';
+} from '../../../domain/types/AssistantConversationTypes.js';
 
 type AssistantConversationPayload = {
   conversationId: string;

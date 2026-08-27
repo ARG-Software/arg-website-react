@@ -61,7 +61,7 @@ src/backend/admin/application/visits/listVisitSessions.ts
 src/backend/admin/apps/api/api.ts
 src/backend/admin/domain/visitEvent.ts
 src/backend/admin/application/crypto/visitSessionHasher.ts
-src/backend/admin/infrastructure/supabase/SupabaseVisitRepository.ts
+src/backend/admin/infrastructure/repositories/supabase/SupabaseVisitRepository.ts
 src/frontend/admin/apis/visitMetricsApi.js
 src/frontend/services/analytics/
 src/packages/ui/src/admin/AdminVisitJourney.jsx

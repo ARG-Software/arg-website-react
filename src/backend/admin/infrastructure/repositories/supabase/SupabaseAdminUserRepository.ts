@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   IAdminUser,
   IAdminUserRepository,
-} from '../../application/ports/repositories/IAdminUserRepository.js';
+} from '../../../application/ports/repositories/IAdminUserRepository.js';
 
 export class SupabaseAdminUserRepository implements IAdminUserRepository {
   constructor(private readonly client: SupabaseClient) {}

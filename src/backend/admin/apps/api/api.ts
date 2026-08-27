@@ -1,4 +1,4 @@
-import type { ControllerRoute } from '../../../shared/api/decorators.js';
+import type { ControllerRoute } from '../../../shared/api/decorators/index.js';
 import { dispatchControllerRoutes } from './controllerRouteHandler.js';
 import { getAssistantConversationRoutes } from './controllers/AssistantConversationsController.js';
 import { getAuthRoutes } from './controllers/AuthController.js';
@@ -48,6 +48,3 @@ export function routeAssistantConversationRequest(request: Request): Promise<Res
 function routeRequest(type: keyof typeof ROUTE_MAP, request: Request): Promise<Response> {
   return dispatchControllerRoutes(request, ROUTE_MAP[type]());
 }
-
-export { runAssistantConversationRetention as assistantConversationsRetention } from './controllers/AssistantConversationsController.js';
-export { runVisitRetention as visitRetention } from './controllers/VisitsController.js';

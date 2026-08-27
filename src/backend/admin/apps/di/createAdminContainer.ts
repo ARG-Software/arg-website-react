@@ -4,8 +4,6 @@ import { SupabaseRateLimitStore } from '../../../shared/security/rateLimitStores
 import { AuthenticateUserUseCase } from '../../application/usecases/sessions/authenticateUserUseCase.js';
 import { CreateOutreachCsvUseCase } from '../../application/usecases/outreach/createOutreachCsvUseCase.js';
 import { DeleteAssistantConversationUseCase } from '../../application/usecases/assistantConversations/deleteAssistantConversationUseCase.js';
-import { DeleteOldAssistantConversationsUseCase } from '../../application/usecases/assistantConversations/deleteOldAssistantConversationsUseCase.js';
-import { DeleteOldVisitSessionsUseCase } from '../../application/usecases/visits/deleteOldVisitSessionsUseCase.js';
 import { GetAssistantConversationUseCase } from '../../application/usecases/assistantConversations/getAssistantConversationUseCase.js';
 import { GetOutreachChartUseCase } from '../../application/usecases/outreach/getOutreachChartUseCase.js';
 import { GetOutreachSummaryUseCase } from '../../application/usecases/outreach/getOutreachSummaryUseCase.js';
@@ -25,13 +23,13 @@ import { UpdateOutreachRecordUseCase } from '../../application/usecases/outreach
 import { UpdateUserUseCase } from '../../application/usecases/users/updateUserUseCase.js';
 import { createUserAccessPolicy } from '../../application/policies/userAccessPolicy.js';
 import { OutreachCsvParser } from '../../infrastructure/csv/OutreachCsvParser.js';
-import { SupabaseAdminUserRepository } from '../../infrastructure/supabase/SupabaseAdminUserRepository.js';
-import { SupabaseAssistantConversationRepository } from '../../infrastructure/supabase/SupabaseAssistantConversationRepository.js';
-import { SupabaseGeolocationProvider } from '../../infrastructure/supabase/SupabaseGeolocationProvider.js';
-import { SupabaseOutreachAuditRepository } from '../../infrastructure/supabase/SupabaseOutreachAuditRepository.js';
-import { SupabaseOutreachRepository } from '../../infrastructure/supabase/SupabaseOutreachRepository.js';
-import { SupabaseUserIdentityProvider } from '../../infrastructure/supabase/SupabaseUserIdentityProvider.js';
-import { SupabaseVisitRepository } from '../../infrastructure/supabase/SupabaseVisitRepository.js';
+import { SupabaseAdminUserRepository } from '../../infrastructure/repositories/supabase/SupabaseAdminUserRepository.js';
+import { SupabaseAssistantConversationRepository } from '../../infrastructure/repositories/supabase/SupabaseAssistantConversationRepository.js';
+import { SupabaseGeolocationProvider } from '../../infrastructure/repositories/supabase/SupabaseGeolocationProvider.js';
+import { SupabaseOutreachAuditRepository } from '../../infrastructure/repositories/supabase/SupabaseOutreachAuditRepository.js';
+import { SupabaseOutreachRepository } from '../../infrastructure/repositories/supabase/SupabaseOutreachRepository.js';
+import { SupabaseUserIdentityProvider } from '../../infrastructure/repositories/supabase/SupabaseUserIdentityProvider.js';
+import { SupabaseVisitRepository } from '../../infrastructure/repositories/supabase/SupabaseVisitRepository.js';
 import { systemClock } from '../../infrastructure/system/systemClock.js';
 import { AdminConfig } from '../config/AdminConfig.js';
 
@@ -88,7 +86,6 @@ export function createAdminContainer() {
       ),
     },
     visits: {
-      deleteOldVisitSessionsUseCase: new DeleteOldVisitSessionsUseCase(visitRepository),
       listVisitJourneyUseCase: new ListVisitJourneyUseCase(visitRepository),
       listVisitMetricsUseCase: new ListVisitMetricsUseCase(visitRepository),
       listVisitSessionsUseCase: new ListVisitSessionsUseCase(visitRepository),
@@ -104,19 +101,12 @@ export function createAdminContainer() {
     },
     assistantConversations: {
       deleteAssistantConversationUseCase: new DeleteAssistantConversationUseCase(conversationRepository),
-      deleteOldAssistantConversationsUseCase: new DeleteOldAssistantConversationsUseCase(
-        conversationRepository
-      ),
       getAssistantConversationUseCase: new GetAssistantConversationUseCase(conversationRepository),
       listAssistantConversationsUseCase: new ListAssistantConversationsUseCase(conversationRepository),
       logAssistantConversationUseCase: new LogAssistantConversationUseCase(conversationRepository, {
         config: config.getAssistantConversationLogRateLimitConfig(),
         store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit'),
       }),
-    },
-    maintenance: {
-      supabase: serviceClient,
-      tableName: 'outreach_records',
     },
   };
 }

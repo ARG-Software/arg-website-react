@@ -1,4 +1,4 @@
-import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators.js';
+import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import { getClientIp } from '../../../../shared/api/http.js';
 import { ragContainer } from '../../di/ragContainer.js';
 import { ControllerBase } from './ControllerBase.js';

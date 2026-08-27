@@ -40,7 +40,8 @@ and comprehensive Google Analytics 4 instrumentation.
 └── src/
     ├── backend/
     │   ├── admin/          # Admin API, domain, application, and infrastructure
-    │   ├── public/         # Public discovery/MCP API
+    │   ├── maintenance/    # Scheduled maintenance API, application, and infrastructure
+    │   ├── mcp/            # Public discovery MCP API
     │   ├── rag/            # Gaspar apps, domain, application, infrastructure, ingestion, tests
     │   └── shared/         # Shared backend HTTP utilities
     ├── frontend/
@@ -147,6 +148,7 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Generic crypto helpers live in `src/backend/admin/application/crypto/` as simple functions such as `encode`, `decode`, and `encodeIndex`; do not duplicate cipher logic per repository or domain type.
 - Admin HTTP endpoints should use controller-style apps under `src/backend/admin/apps/api/`.
 - Netlify functions are deployment adapters only. Keep Netlify `config` objects and schedules in `netlify/functions/*`; API route behavior belongs in the backend API app.
+- Scheduled maintenance behavior belongs in `src/backend/maintenance/apps/api/`; Netlify scheduled functions should only keep deployment schedules and call maintenance API runner exports.
 - `src/backend/admin/apps/api/api.ts` is the executable admin API entrypoint. It exports grouped router handlers such as `routeAuthRequest`, `routeOutreachRequest`, `routeVisitRequest`, and `routeAssistantConversationRequest`.
 - Admin controllers live under `src/backend/admin/apps/api/controllers/` and export their own route factories.
 - Admin controller methods should declare method/path and error metadata with `@route(...)` and `@errorResponse(...)`. Controller methods should not dispatch internally on HTTP method, query `scope`, IDs, or payload `action` values.
@@ -177,7 +179,7 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - `ControllerBase` is admin-specific and intentionally small: `authenticateUser(request)`, `json(...)`, `body(...)`, `query(...)`, `errorBody(...)`, and `errorStatus(...)`.
 - Protected admin controller methods should authenticate first with `this.authenticateUser(request)`, then parse body/query, then call business use cases.
 - Non-auth business use cases should not perform authorization. Auth/session use cases may still use `UserAccessPolicy` because authentication and session validation are their purpose.
-- `netlify/functions/admin.js` handles admin feature endpoints. Keep route-specific deployment adapters only when Netlify config needs to differ, such as `assistant-conversation-log.js`, `visit-log.js`, and scheduled retention functions.
+- `netlify/functions/admin.js` handles admin feature endpoints. Keep route-specific deployment adapters only when Netlify config needs to differ, such as `assistant-conversation-log.js`, `visit-log.js`, and scheduled maintenance functions.
 - Recent verification passed: `npm run test:backend`, `npm run typecheck:admin`, `npm run lint:backend`, and `npm run test:netlify`.
 
 ---

@@ -30,7 +30,7 @@ test('uses one admin function for admin feature endpoints', () => {
   assert.equal(existsSync(join(NETLIFY_DIR, 'functions/admin-assistant-conversations.js')), false);
 });
 
-test('keeps route-specific admin adapters that need deployment-level config', () => {
+test('keeps route-specific adapters that need deployment-level config', () => {
   const adminFunction = readNetlifyFile('functions/admin.js');
 
   assert.equal(existsSync(join(NETLIFY_DIR, 'functions/assistant-conversation-log.js')), true);
@@ -65,13 +65,14 @@ test('function files use backend API entrypoints', () => {
   assert.match(readNetlifyFile('functions/assistant-conversation-log.js'), /apps\/api\/api\.ts/);
   assert.match(
     readNetlifyFile('functions/assistant-conversations-retention.js'),
-    /apps\/api\/api\.ts/
+    /maintenance\/apps\/api\/api\.ts/
   );
+  assert.match(readNetlifyFile('functions/visit-events-retention.js'), /maintenance\/apps\/api\/api\.ts/);
   assert.match(
     readNetlifyFile('functions/maintenance-keep-database-alive.js'),
-    /apps\/api\/controllers\/MaintenanceController\.js/
+    /maintenance\/apps\/api\/api\.ts/
   );
-  assert.match(readNetlifyFile('functions/mcp.js'), /publicDiscoveryMcpApi\.ts/);
+  assert.match(readNetlifyFile('functions/mcp.js'), /mcp\/apps\/api\/api\.ts/);
 });
 
 test('TypeScript-backed public MCP function bundles', async () => {

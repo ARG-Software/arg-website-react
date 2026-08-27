@@ -1,8 +1,7 @@
-import {
-  keepDatabaseAliveConfig as config,
-  runKeepDatabaseAlive,
-} from '../../src/backend/rag/apps/api/controllers/MaintenanceController.js';
+import { runKeepDatabaseAlive } from '../../src/backend/maintenance/apps/api/api.ts';
 
-export { config };
+export const config = {
+  schedule: '0 9 */3 * *',
+};
 
 export default runKeepDatabaseAlive;

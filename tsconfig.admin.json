@@ -17,7 +17,6 @@
   },
   "include": [
     "src/backend/admin/**/*.ts",
-    "src/backend/shared/maintenance/**/*.ts",
     "src/backend/shared/security/**/*.ts",
     "src/backend/shared/api/**/*.ts"
   ],

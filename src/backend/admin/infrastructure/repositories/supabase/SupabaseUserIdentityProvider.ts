@@ -5,7 +5,7 @@ import type {
   IUserIdentityProvider,
   IUserRefreshSessionResult,
   IUserSignInResult,
-} from '../../application/ports/IUserIdentityProvider.js';
+} from '../../../application/ports/IUserIdentityProvider.js';
 
 export class SupabaseUserIdentityProvider implements IUserIdentityProvider {
   constructor(private readonly client: SupabaseClient) {}

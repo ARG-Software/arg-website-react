@@ -1,4 +1,4 @@
-import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators.js';
+import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import { createErrorBody } from '../../../../shared/api/http.js';
 import { adminContainer } from '../../di/adminContainer.js';
 import { getClientIp, getHeaderGeolocation } from '../../http/requestInfo.js';
@@ -61,14 +61,6 @@ export class VisitsController extends ControllerBase {
     return this.json(200, await this.visits.listVisitJourneyUseCase.execute(this.query(request)));
   }
 
-  async retention(): Promise<void> {
-    const result = await this.visits.deleteOldVisitSessionsUseCase.execute();
-
-    console.log('Visit analytics retention completed', {
-      cutoff: result.cutoff,
-      deleted: result.deleted,
-    });
-  }
 }
 
 let controller: VisitsController;
@@ -76,9 +68,4 @@ let controller: VisitsController;
 export function getVisitRoutes() {
   controller ||= new VisitsController();
   return getControllerRoutes(controller);
-}
-
-export function runVisitRetention(): Promise<void> {
-  controller ||= new VisitsController();
-  return controller.retention();
 }

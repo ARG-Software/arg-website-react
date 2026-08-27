@@ -1,7 +1,7 @@
-import { assistantConversationsRetention } from '../../src/backend/admin/apps/api/api.ts';
+import { runAssistantConversationsRetention } from '../../src/backend/maintenance/apps/api/api.ts';
 
 export const config = {
   schedule: '0 3 * * *',
 };
 
-export default assistantConversationsRetention;
+export default runAssistantConversationsRetention;

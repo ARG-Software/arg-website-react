@@ -20,9 +20,6 @@ export const adminContainer = {
   get assistantConversations() {
     return getAdminContainer().assistantConversations;
   },
-  get maintenance() {
-    return getAdminContainer().maintenance;
-  },
 };
 
 function getAdminContainer(): AdminContainer {

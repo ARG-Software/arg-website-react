@@ -49,7 +49,8 @@ npm run preview      # Preview production build
 └── src/
     ├── backend/
     │   ├── admin/                # Admin API, domain, application, and infrastructure
-    │   ├── public/               # Public discovery/MCP API
+    │   ├── maintenance/          # Scheduled maintenance API
+    │   ├── mcp/                  # Public discovery MCP API
     │   ├── rag/                  # Gaspar assistant apps, domain, ingestion, tests
     │   └── shared/               # Shared backend HTTP utilities
     ├── frontend/

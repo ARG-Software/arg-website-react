@@ -1,8 +1,8 @@
 import {
   config,
-  createPublicDiscoveryMcpApi,
-} from '../../src/backend/public/api/publicDiscoveryMcpApi.ts';
+  createMcpApi,
+} from '../../src/backend/mcp/apps/api/api.ts';
 
 export { config };
 
-export default createPublicDiscoveryMcpApi();
+export default createMcpApi();

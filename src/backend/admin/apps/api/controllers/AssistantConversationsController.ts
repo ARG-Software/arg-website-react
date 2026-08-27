@@ -1,4 +1,4 @@
-import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators.js';
+import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import { createErrorBody } from '../../../../shared/api/http.js';
 import { adminContainer } from '../../di/adminContainer.js';
 import { getClientIp } from '../../http/requestInfo.js';
@@ -68,14 +68,6 @@ export class AssistantConversationsController extends ControllerBase {
     }
   }
 
-  async retention(): Promise<void> {
-    const result = await this.conversations.deleteOldAssistantConversationsUseCase.execute();
-
-    console.log('Assistant conversation retention completed', {
-      cutoff: result.cutoff,
-      deleted: result.deleted,
-    });
-  }
 }
 
 let controller: AssistantConversationsController;
@@ -83,9 +75,4 @@ let controller: AssistantConversationsController;
 export function getAssistantConversationRoutes() {
   controller ||= new AssistantConversationsController();
   return getControllerRoutes(controller);
-}
-
-export function runAssistantConversationRetention(): Promise<void> {
-  controller ||= new AssistantConversationsController();
-  return controller.retention();
 }

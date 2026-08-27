@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { IVisitGeolocationProvider } from '../../application/ports/IVisitGeolocationProvider.js';
-import type { VisitGeolocationInput } from '../../domain/types/VisitTypes.js';
+import type { IVisitGeolocationProvider } from '../../../application/ports/IVisitGeolocationProvider.js';
+import type { VisitGeolocationInput } from '../../../domain/types/VisitTypes.js';
 
 interface ISupabaseGeoLocationRow {
   country_code: string | null;

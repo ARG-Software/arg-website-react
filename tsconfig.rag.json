@@ -18,7 +18,6 @@
   "include": [
     "src/backend/rag/**/*.ts",
     "src/backend/shared/api/**/*.ts",
-    "src/backend/shared/maintenance/**/*.ts",
     "src/backend/shared/security/**/*.ts"
   ]
 }

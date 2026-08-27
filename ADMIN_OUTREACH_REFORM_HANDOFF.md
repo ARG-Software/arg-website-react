@@ -29,7 +29,7 @@ Required sequencing for the next session:
 Pending requested implementation before reset/reingestion:
 
 - Encrypt `email_subject` and `email_body` at rest. Suggested columns: `email_subject_key_version`, `email_subject_nonce`, `email_subject_ciphertext`, `email_subject_auth_tag`, `email_body_key_version`, `email_body_nonce`, `email_body_ciphertext`, `email_body_auth_tag`. No blind index is needed for subject/body.
-- Update `src/backend/admin/application/crypto/outreachPayloadCipher.ts`, `src/backend/admin/infrastructure/supabase/outreachRows.ts`, `src/backend/admin/application/outreach/outreachCsv.ts`, `scripts/import-outreach.ts`, admin migrations, and backend tests for encrypted/decrypted subject/body.
+- Update `src/backend/admin/application/crypto/outreachPayloadCipher.ts`, `src/backend/admin/infrastructure/repositories/supabase/outreachRows.ts`, `src/backend/admin/application/outreach/outreachCsv.ts`, `scripts/import-outreach.ts`, admin migrations, and backend tests for encrypted/decrypted subject/body.
 - Preserve formatted email drafts during import. Do not use the generic `clean()` that collapses all whitespace for `Email Draft`. Keep paragraph breaks, convert literal `\n` and `/n` into real newlines, normalize CRLF to LF, trim line ends, and keep paragraph spacing readable. Keep email subjects single-line.
 - Mailto formatting was already improved in the working tree: `src/frontend/admin/outreach.js` uses `encodeURIComponent()` instead of `URLSearchParams` so mail clients receive `%20` and `%0A`, not visible `+` characters.
 - Sent-record locking was partially implemented in the working tree: contact email is disabled for `contact_form`, status is disabled for persisted sent records, and the backend rejects status changes away from `sent`.
@@ -362,8 +362,8 @@ Backend:
 - `src/backend/admin/domain/outreachRecord.ts`
 - `src/backend/admin/infrastructure/config/adminConfig.ts`
 - `src/backend/admin/application/crypto/outreachPayloadCipher.ts`
-- `src/backend/admin/infrastructure/supabase/SupabaseOutreachRepository.ts`
-- `src/backend/admin/infrastructure/supabase/outreachRows.ts`
+- `src/backend/admin/infrastructure/repositories/supabase/SupabaseOutreachRepository.ts`
+- `src/backend/admin/infrastructure/repositories/supabase/outreachRows.ts`
 
 Frontend:
 
