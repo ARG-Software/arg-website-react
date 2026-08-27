@@ -95,19 +95,14 @@ export default defineConfig(({ mode }) => {
         handler: 'routeAssistantConversationRequest',
       },
       {
-        path: '/api/admin/assistant-conversations-retention',
+        path: '/api/admin/maintenance-retention',
         module: '/src/backend/maintenance/apps/api/api.ts',
-        handler: 'runAssistantConversationsRetention',
+        handler: 'runRetentionCleanup',
       },
       {
         path: '/api/visit-log',
         module: '/src/backend/admin/apps/api/api.ts',
         handler: 'routeVisitRequest',
-      },
-      {
-        path: '/api/admin/visit-events-retention',
-        module: '/src/backend/maintenance/apps/api/api.ts',
-        handler: 'runVisitEventsRetention',
       },
     ]),
     // SPA fallback: serve index.html for routes without file extensions

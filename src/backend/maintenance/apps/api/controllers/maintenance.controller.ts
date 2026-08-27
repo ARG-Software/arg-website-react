@@ -7,22 +7,17 @@ export class MaintenanceController {
     private readonly logger: ILogger = maintenanceContainer.logger
   ) {}
 
-  async assistantConversationsRetention(): Promise<void> {
-    await this.runTask('assistant_conversations_retention', async () => {
-      const result = await this.maintenance.deleteOldAssistantConversationsUseCase.execute();
-      return {
-        cutoff: result.cutoff,
-        deleted: result.deleted,
-      };
-    });
-  }
+  async retentionCleanup(): Promise<void> {
+    await this.runTask('retention_cleanup', async () => {
+      const assistantConversations =
+        await this.maintenance.deleteOldAssistantConversationsUseCase.execute();
+      const visitSessions = await this.maintenance.deleteOldVisitSessionsUseCase.execute();
 
-  async visitEventsRetention(): Promise<void> {
-    await this.runTask('visit_events_retention', async () => {
-      const result = await this.maintenance.deleteOldVisitSessionsUseCase.execute();
       return {
-        cutoff: result.cutoff,
-        deleted: result.deleted,
+        assistantConversationsCutoff: assistantConversations.cutoff,
+        assistantConversationsDeleted: assistantConversations.deleted,
+        visitSessionsCutoff: visitSessions.cutoff,
+        visitSessionsDeleted: visitSessions.deleted,
       };
     });
   }

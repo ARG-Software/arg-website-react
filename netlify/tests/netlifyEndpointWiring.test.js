@@ -35,11 +35,9 @@ test('keeps route-specific adapters that need deployment-level config', () => {
 
   assert.equal(existsSync(join(NETLIFY_DIR, 'functions/assistant-conversation-log.js')), true);
   assert.equal(existsSync(join(NETLIFY_DIR, 'functions/visit-log.js')), true);
-  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/visit-events-retention.js')), true);
-  assert.equal(
-    existsSync(join(NETLIFY_DIR, 'functions/assistant-conversations-retention.js')),
-    true
-  );
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/maintenance-retention.js')), true);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/visit-events-retention.js')), false);
+  assert.equal(existsSync(join(NETLIFY_DIR, 'functions/assistant-conversations-retention.js')), false);
   assert.doesNotMatch(
     adminFunction,
     /assistant-conversation-log|\/api\/visit-log|rateLimit|schedule/
@@ -63,11 +61,7 @@ test('function files use backend API entrypoints', () => {
   assert.match(readNetlifyFile('functions/rag.js'), /apps\/api\/api\.ts/);
   assert.match(readNetlifyFile('functions/admin.js'), /apps\/api\/api\.ts/);
   assert.match(readNetlifyFile('functions/assistant-conversation-log.js'), /apps\/api\/api\.ts/);
-  assert.match(
-    readNetlifyFile('functions/assistant-conversations-retention.js'),
-    /maintenance\/apps\/api\/api\.ts/
-  );
-  assert.match(readNetlifyFile('functions/visit-events-retention.js'), /maintenance\/apps\/api\/api\.ts/);
+  assert.match(readNetlifyFile('functions/maintenance-retention.js'), /maintenance\/apps\/api\/api\.ts/);
   assert.match(
     readNetlifyFile('functions/maintenance-keep-database-alive.js'),
     /maintenance\/apps\/api\/api\.ts/
@@ -81,6 +75,10 @@ test('TypeScript-backed public MCP function bundles', async () => {
 
 test('TypeScript-backed maintenance keep-alive function bundles', async () => {
   await buildFunction('functions/maintenance-keep-database-alive.js');
+});
+
+test('TypeScript-backed maintenance retention function bundles', async () => {
+  await buildFunction('functions/maintenance-retention.js');
 });
 
 test('public redirects expose function endpoints before the 404 fallback', () => {
@@ -107,6 +105,7 @@ test('public redirects expose function endpoints before the 404 fallback', () =>
     '/api/admin/visit-metrics /.netlify/functions/admin               200',
     '/api/admin/visit-sessions /.netlify/functions/admin              200',
     '/api/admin/visit-journey /.netlify/functions/admin               200',
+    '/api/admin/maintenance-retention /.netlify/functions/maintenance-retention 200',
     '/api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200',
     '/api/admin/assistant-conversations    /.netlify/functions/admin  200',
     '/api/admin/assistant-conversation     /.netlify/functions/admin  200',
@@ -127,9 +126,8 @@ test('netlify functions do not reference removed implementation folders or old c
   const files = [
     'functions/admin.js',
     'functions/assistant-conversation-log.js',
-    'functions/assistant-conversations-retention.js',
     'functions/visit-log.js',
-    'functions/visit-events-retention.js',
+    'functions/maintenance-retention.js',
     'functions/rag.js',
     'functions/mcp.js',
     'functions/maintenance-keep-database-alive.js',

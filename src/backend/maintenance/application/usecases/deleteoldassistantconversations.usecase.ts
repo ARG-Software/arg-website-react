@@ -1,6 +1,6 @@
 import type { IMaintenanceRepository } from '../ports/repositories/imaintenance.repository.js';
 
-const RETENTION_DAYS = 60;
+const RETENTION_DAYS = 90;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export class DeleteOldAssistantConversationsUseCase {

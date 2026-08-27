@@ -2,12 +2,8 @@ import { MaintenanceController } from './controllers/maintenance.controller.js';
 
 let controller: MaintenanceController;
 
-export function runAssistantConversationsRetention(): Promise<void> {
-  return getController().assistantConversationsRetention();
-}
-
-export function runVisitEventsRetention(): Promise<void> {
-  return getController().visitEventsRetention();
+export function runRetentionCleanup(): Promise<void> {
+  return getController().retentionCleanup();
 }
 
 export function runKeepDatabaseAlive(): Promise<void> {

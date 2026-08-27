@@ -24,7 +24,7 @@ The feature records public-site visits only. Admin paths are skipped.
 - Authenticated admin metrics endpoint: `/api/admin/visit-metrics`
 - Authenticated admin sessions endpoint: `/api/admin/visit-sessions`
 - Authenticated admin journey endpoint: `/api/admin/visit-journey`
-- 90-day retention function: `/api/admin/visit-events-retention`
+- Grouped 90-day maintenance retention function: `/api/admin/maintenance-retention`
 - Client-side visitor session tracking inside the analytics service with a 30-minute inactivity timeout
 - First-party page views are buffered in session memory with timestamps and flushed on window close/page hide using `navigator.sendBeacon` with `fetch(..., { keepalive: true })` fallback
 - Admin dashboard route: `/admin/visits/`
@@ -52,7 +52,7 @@ The feature records public-site visits only. Admin paths are skipped.
 ```text
 netlify/functions/assets/.gitkeep
 netlify/functions/assets/README.md
-netlify/functions/visit-events-retention.js
+netlify/functions/maintenance-retention.js
 netlify/functions/visit-log.js
 netlify/functions/admin.js
 src/backend/admin/application/visits/listvisitjourney.ts

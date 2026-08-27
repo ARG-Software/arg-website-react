@@ -263,7 +263,8 @@ Netlify Functions also serve assistant/security endpoints and scheduled maintena
 - `POST /api/assistant/ask`: Gaspar RAG endpoint with ALTCHA and rate limiting
 - `GET /api/assistant/ui-copy`: localized assistant widget copy
 - `GET /api/security/challenge` and `POST /api/security/verify`: ALTCHA flow for protected form submissions
-- Scheduled `maintenance-keep-database-alive`: periodically touches Supabase so the RAG and admin outreach databases remain warm
+- Scheduled `maintenance-retention`: quarterly cleanup for visit and assistant conversation data older than 90 days
+- Scheduled `maintenance-keep-database-alive`: daily Supabase keep-alive for the RAG and admin outreach databases
 
 ---
 
