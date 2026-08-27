@@ -266,6 +266,8 @@ Netlify Functions also serve assistant/security endpoints and scheduled maintena
 - Scheduled `maintenance-retention`: quarterly cleanup for visit and assistant conversation data older than 90 days
 - Scheduled `maintenance-keep-database-alive`: daily Supabase keep-alive for the RAG and admin outreach databases
 
+Future database consolidation: the project currently uses separate Supabase projects for Admin and RAG/AI data. A future migration should consolidate them into one Supabase project using dedicated PostgreSQL schemas, likely `admin` and `ai`. This is not urgent; test the migration locally before applying it to any shared environment.
+
 ---
 
 ## For AI Agents

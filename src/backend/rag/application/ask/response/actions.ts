@@ -4,6 +4,8 @@ const PROJECT_CONTACT_QUESTION_PATTERN =
   /\b(?:book|meeting|call|contact|email|reach|talk|speak|discuss|project|service|services|brief|scope|proposal|quote|estimate|budget|pricing|cost|collaborat(?:e|ion)|get started)\b/i;
 const CONTACT_OPTIONS_QUESTION_PATTERN =
   /\b(?:how|where|what)\b.{0,50}\b(?:contact|email|e-mail|reach|get in touch)\b|\b(?:contact options?|email address)\b|\b(?:contact|email|e-mail|reach|get in touch)\b.{0,50}\b(?:you|your team|arg|arg software)\b/i;
+const LOCATION_CONTACT_QUESTION_PATTERN =
+  /\b(?:address|addresses|exact\s+address|headquarters|location|locations|office|offices|physical\s+(?:site|spot|office)|street\s+address|where\s+are\s+you\s+based)\b/i;
 const GASPAR_MESSAGE_REQUEST_PATTERN =
   /\b(?:can|could|may|do)\s+i\s+(?:send|submit|leave)\s+(?:a\s+)?message\s+(?:through|via|to)\s+(?:you|gaspar|here)\b|\bi\s+(?:want|would like|need)\s+to\s+(?:send|submit|leave)\s+(?:you|gaspar)\s+(?:a\s+)?message\b|\b(?:send|submit|leave)\s+(?:you|gaspar)\s+(?:a\s+)?message\b|\b(?:can|could|do)\s+i\s+(?:do|send|submit|leave)\s+it\s+(?:through|via)\s+(?:you|gaspar)\b|\b(?:can|could)\s+you\s+(?:pass|forward|send)\s+(?:a\s+)?message\s+to\s+(?:arg|arg software|your team|the team|arg team|the arg team)\b/i;
 const HIRE_ARG_QUESTION_PATTERN =
@@ -31,7 +33,7 @@ export function createAssistantActions(question: string): IAssistantAction[] {
     return [{ type: 'email_hr' }];
   }
 
-  if (CONTACT_OPTIONS_QUESTION_PATTERN.test(question)) {
+  if (CONTACT_OPTIONS_QUESTION_PATTERN.test(question) || LOCATION_CONTACT_QUESTION_PATTERN.test(question)) {
     return CONTACT_OPTIONS_ACTIONS;
   }
 

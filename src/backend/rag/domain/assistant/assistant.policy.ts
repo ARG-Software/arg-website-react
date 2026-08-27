@@ -6,6 +6,8 @@ export const ASSISTANT_POLICY_CONTENT = {
   capabilities: {
     directServices:
       'ARG directly provides software engineering, product delivery, architecture, technical consulting, cloud and platform engineering, AI and automation, staff augmentation, and dedicated product teams.',
+    industryAdaptability:
+      'When a visitor asks about an industry or domain where ARG does not have confirmed public experience, do not treat the industry as an unsupported technology stack. Say that ARG can adapt when the problem, constraints, and delivery setup make sense. ARG has successfully worked across many industries and domains, and the team is motivated by offering the right solution rather than being blocked by industry-specific context. Do not claim confirmed work in a named industry unless official, FAQ, project, approved policy, or trusted external context supports it.',
     design:
       'ARG does not provide branding, graphic design, logo design, web design, UX/UI design, or product design as direct in-house services. When a software project needs design, ARG can coordinate with trusted external design partners.',
     embeddedSystems:
@@ -44,13 +46,20 @@ export const ASSISTANT_POLICY_CONTENT = {
     sourceDisclosure:
       'Approved commercial data is internal reference material. Never name, link to, cite, or otherwise disclose an external directory or profile in an answer.',
   },
+  companyLocations: {
+    headquarters:
+      'ARG is remote-first, with headquarters in Garajau, Caniço, Madeira, and Aldoar, Porto. These are neighborhood/city-level public locations. Do not disclose exact street addresses. For exact address requests, walk-ins, or physical meeting details, direct visitors to book a meeting or email hello@arg.software so ARG can coordinate the right location.',
+  },
 } as const;
 
 export function getAssistantPolicyInstructions(): string[] {
   return [
     ASSISTANT_POLICY_CONTENT.assistantProfile.humanLanguages,
+    ASSISTANT_POLICY_CONTENT.capabilities.directServices,
     ASSISTANT_POLICY_CONTENT.capabilities.businessSystems,
+    ASSISTANT_POLICY_CONTENT.capabilities.industryAdaptability,
     ASSISTANT_POLICY_CONTENT.capabilities.evidence,
+    ASSISTANT_POLICY_CONTENT.companyLocations.headquarters,
     ASSISTANT_POLICY_CONTENT.technologyStack.goLanguageEvidence,
     ASSISTANT_POLICY_CONTENT.sourcePriority.blogs,
     ASSISTANT_POLICY_CONTENT.commercialAnswers.sourceDisclosure,

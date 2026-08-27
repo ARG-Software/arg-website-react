@@ -178,6 +178,21 @@ export function useAssistantLeadCapture({ copy, onDismiss, onComplete }) {
           return { type: 'multiple_emails', message };
         }
 
+        if (!hasEmail && capturedEmail) {
+          const normalizedInput = trimmed.toLowerCase();
+          const skipWords = copy.leadCaptureSkipWords.map(word => word.toLowerCase());
+
+          if (action === 'skip' || skipWords.includes(normalizedInput)) {
+            setCapturedMessage('');
+            setLeadStep(LEAD_STEPS.CONFIRM);
+            return { type: 'message_skipped' };
+          }
+
+          setCapturedMessage(trimmed);
+          setLeadStep(LEAD_STEPS.CONFIRM);
+          return { type: 'message_captured', message: trimmed };
+        }
+
         if (!hasEmail) {
           const message = copy.messages.noEmailFound;
           setLeadError(message);
@@ -215,7 +230,7 @@ export function useAssistantLeadCapture({ copy, onDismiss, onComplete }) {
 
       return { type: 'blocked' };
     },
-    [copy.leadCaptureSkipWords, copy.messages, leadStep, declineLeadCapture]
+    [capturedEmail, copy.leadCaptureSkipWords, copy.messages, leadStep, declineLeadCapture]
   );
 
   return {

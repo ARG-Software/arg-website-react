@@ -3,7 +3,7 @@ const TECHNOLOGY_DESCRIPTOR_PATTERN =
 const TECHNOLOGY_CATEGORY_WORD_PATTERN =
   /\b(?:cloud|database|framework|language|library|methodology|platform|programming|stack|technology|tool)\b/giu;
 const NON_EXACT_TECHNOLOGY_SUBJECT_PATTERN =
-  /\b(?:app(?:lication)?s?|automated\s+tests?|background|budget|career|case\s+stud(?:y|ies)|ci\/cd|cicd|clients?|code\s+reviews?|collaboration|contact|continuous\s+(?:delivery|integration)|cost|development|duration|e2e(?:\s+testing)?|end[-\s]+to[-\s]+end\s+testing|experience|fintech|hybrid|integration\s+tests?|mode|mvp|on[-\s]?site|origin|portfolio|price|projects?|qa|quality\s+assurance|references?|referenced|remote|service|team|test\s+coverage|testing|unit\s+tests?|web(?:site)?s?)\b/iu;
+  /\b(?:app(?:lication)?s?|automated\s+tests?|autonomy|background|budget|career|case\s+stud(?:y|ies)|ci\/cd|cicd|clients?|code\s+reviews?|collaboration|contact|continuous\s+(?:delivery|integration)|cost|development|domain|duration|e2e(?:\s+testing)?|end[-\s]+to[-\s]+end\s+testing|experience|field|fintech|healthcare|hybrid|industry|industries|integration\s+tests?|manufacturing|maritime|media|mode|mvp|on[-\s]?site|origin|portfolio|price|projects?|qa|quality\s+assurance|references?|referenced|remote|sector|service|team|test\s+coverage|testing|unit\s+tests?|vertical|web(?:site)?s?)\b/iu;
 const TECHNOLOGY_DISPLAY_NAMES = new Map([
   ['aws', 'AWS'],
   ['c#', 'C#'],
@@ -57,6 +57,10 @@ export function extractTechnologyName(value: string): string | null {
     .trim();
 
   if (!normalizedTechnology || normalizedTechnology.length > 40) {
+    return null;
+  }
+
+  if (NON_EXACT_TECHNOLOGY_SUBJECT_PATTERN.test(normalizedTechnology)) {
     return null;
   }
 

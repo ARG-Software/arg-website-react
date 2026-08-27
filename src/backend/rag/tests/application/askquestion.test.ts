@@ -1270,6 +1270,66 @@ test('unconfirmed single-technology answers use adaptive wording deterministical
   assert.match(result.answer, /we can assess and adapt/u);
 });
 
+test('industry questions use domain-adaptability wording instead of unsupported-stack wording', async () => {
+  const result = await askQuestion({
+    question: 'What maritime industry work do you support?',
+    config,
+    readRepository: createSupabase({}).repository,
+    answerProvider: createAnswerProvider('What maritime industry work does ARG Software support?', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'maritime industry' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.doesNotMatch(result.answer, /usual or preferred stack/iu);
+  assert.match(result.answer, /cannot confirm specific published experience/iu);
+  assert.match(result.answer, /worked successfully across different industries and domains/iu);
+  assert.match(result.answer, /adapt when the problem, constraints, and delivery setup make sense/iu);
+});
+
+test('maritime autonomy questions are treated as industry-domain questions', async () => {
+  const result = await askQuestion({
+    question: 'What work in the maritime autonomy space do you support?',
+    config,
+    readRepository: createSupabase({}).repository,
+    answerProvider: createAnswerProvider('What maritime autonomy work does ARG Software support?', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'maritime autonomy' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.doesNotMatch(result.answer, /usual or preferred stack/iu);
+  assert.match(result.answer, /right software solution/iu);
+  assert.match(result.answer, /industry-specific context/iu);
+});
+
+test('location questions mention public headquarters without exact street addresses', async () => {
+  const result = await askQuestion({
+    question: 'Do you have a physical site on Madeira?',
+    config,
+    readRepository: createSupabase({}).repository,
+    answerProvider: createAnswerProvider('Does ARG Software have a physical site on Madeira?', {
+      plan: { mode: 'direct_evidence', entity: 'ARG Software', subject: 'physical site Madeira' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.match(result.answer, /Garajau/u);
+  assert.match(result.answer, /Cani[cç]o/u);
+  assert.match(result.answer, /Aldoar/u);
+  assert.match(result.answer, /Porto/u);
+  assert.match(result.answer, /book a meeting|hello@arg\.software/u);
+  assert.doesNotMatch(result.answer, /Rua|Avenida|Av\.|street number/iu);
+  assert.deepEqual(result.actions, [
+    { type: 'gaspar_message' },
+    { type: 'book_meeting' },
+    { type: 'contact_form' },
+  ]);
+});
+
 test('CRM questions use business-system wording instead of unsupported-stack wording', async () => {
   const result = await askQuestion({
     question: 'Does ARG work with CRM integrations?',

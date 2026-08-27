@@ -19,6 +19,16 @@ export function createUnconfirmedTechnologyAnswer(
     return businessSystemAnswer;
   }
 
+  const locationAnswer = createLocationAnswer(results[0]);
+  if (locationAnswer) {
+    return locationAnswer;
+  }
+
+  const industryDomainAnswer = createIndustryDomainAnswer(results[0]);
+  if (industryDomainAnswer) {
+    return industryDomainAnswer;
+  }
+
   if (isNamedEntityTechnologyQuestion(results[0].plan.entity)) {
     return null;
   }
@@ -43,6 +53,30 @@ export function createUnconfirmedTechnologyAnswer(
     `${technology} is not part of our usual or preferred stack.`,
     'Our preferred production stack is TypeScript, JavaScript, and C#, and we also use Python when it fits the problem.',
     `That said, the language or tool is just the vehicle for the outcome, not a bottleneck. If ${technology} is the right fit for your project, we can assess and adapt.`,
+  ].join(' ');
+}
+
+function createLocationAnswer(result: IRetrievalItemResult): string | null {
+  const text = `${result.retrievalQuestion} ${result.plan.subject}`;
+
+  if (!isLocationQuestion(text)) {
+    return null;
+  }
+
+  return 'We are remote-first, with headquarters in Garajau, Caniço, Madeira, and Aldoar, Porto. For in-person meetings, exact addresses, or walk-ins, please book a meeting or email hello@arg.software so we can coordinate the right location.';
+}
+
+function createIndustryDomainAnswer(result: IRetrievalItemResult): string | null {
+  const text = `${result.retrievalQuestion} ${result.plan.subject}`;
+
+  if (!isIndustryDomainQuestion(text)) {
+    return null;
+  }
+
+  return [
+    'We cannot confirm specific published experience in that industry from the available public material.',
+    'That does not mean we would reject it: we have worked successfully across different industries and domains, and we adapt when the problem, constraints, and delivery setup make sense.',
+    'Our motivation is to offer the right software solution rather than be blocked by industry-specific context, so the best next step is to share the requirements and let us assess the fit properly.',
   ].join(' ');
 }
 
@@ -82,6 +116,18 @@ function isCmsQuestion(value: string): boolean {
 
 function isErpQuestion(value: string): boolean {
   return /\b(?:erp|enterprise\s+resource\s+planning|odoo|sap|netsuite|oracle\s+netsuite|microsoft\s+dynamics|dynamics\s+365)\b/iu.test(
+    value
+  );
+}
+
+function isLocationQuestion(value: string): boolean {
+  return /\b(?:address|addresses|aldoar|based|cani[cç]o|exact\s+address|garajau|headquarters|location|locations|madeira|office|offices|physical\s+(?:site|spot|office)|porto|street\s+address|where\s+are\s+you)\b/iu.test(
+    value
+  );
+}
+
+function isIndustryDomainQuestion(value: string): boolean {
+  return /\b(?:agritech|automotive|aviation|banking|domain|domains|education|energy|field|fields|fintech|healthcare|industry|industries|insurance|logistics|manufacturing|maritime|media|medtech|music|public\s+sector|retail|sector|sectors|shipping|space|telecom|travel|vertical|verticals)\b/iu.test(
     value
   );
 }
