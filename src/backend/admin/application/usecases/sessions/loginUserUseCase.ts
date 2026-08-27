@@ -13,21 +13,17 @@ import type { UserAccessPolicy } from '../../policies/userAccessPolicy.js';
 
 export class LoginUserUseCase {
   constructor(
-    private readonly humanVerification: {
-      verifyPayload(payload: string): Promise<{ verified?: boolean }> | { verified?: boolean };
-    },
     private readonly identityProvider: IUserIdentityProvider,
     private readonly loginRateLimit: { store: IRateLimitStore; config: IRateLimitConfig },
     private readonly userAccessPolicy: UserAccessPolicy
   ) {}
 
-  async execute(input: { email?: string; password?: string; altcha?: string; clientIp?: string }): Promise<{
+  async execute(input: { email?: string; password?: string; clientIp?: string }): Promise<{
     session: IUserSession;
     user: IUserIdentity;
   }> {
     const email = normalizeEmail(input.email);
     const password = String(input.password || '');
-    const altcha = String(input.altcha || '');
     const clientIp = String(input.clientIp || 'unknown');
 
     if (!email || !password) {
@@ -44,18 +40,6 @@ export class LoginUserUseCase {
       const error = createAdminError(429, 'rate_limited', 'Too many login attempts');
       error.retryAfterSeconds = rateLimit.retryAfterSeconds;
       throw error;
-    }
-
-    if (!altcha) {
-      throw createAdminError(403, 'bot_verification_failed', 'Verification required');
-    }
-
-    const altchaResult = await Promise.resolve(this.humanVerification.verifyPayload(altcha)).catch(
-      () => null
-    );
-
-    if (!altchaResult?.verified) {
-      throw createAdminError(403, 'bot_verification_failed', 'Verification failed');
     }
 
     const result = await this.identityProvider.signInWithPassword({ email, password });

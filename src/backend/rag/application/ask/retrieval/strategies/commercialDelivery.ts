@@ -1,4 +1,4 @@
-import type { IRagConfig } from '../../../ragConfig.js';
+import type { IRagConfig } from '../../../config/IRagConfiguration.js';
 import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
 import type { CommercialDeliveryKind, IRetrievalRoute } from '../../../../domain/retrieval/IRetrievalRoute.js';
 import type { RagSourceType } from '../../../../domain/content/IRagSource.js';

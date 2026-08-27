@@ -1,4 +1,4 @@
-import { loadLocalEnv } from '../config/env.js';
+import { loadLocalEnv } from './loadLocalEnv.js';
 import { createGasparDependencies } from '../apps/di/createGasparDependencies.js';
 import { ingestSource } from '../application/ingestion/ingestPipeline.js';
 import { loadFirstPartySources } from '../infrastructure/ingestion/loaders/loadFirstPartySources.js';

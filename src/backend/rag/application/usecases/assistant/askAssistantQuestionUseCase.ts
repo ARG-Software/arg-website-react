@@ -7,10 +7,6 @@ import { askQuestion } from '../../ask/askQuestion.js';
 import { createRagError } from '../../errors.js';
 
 export interface AskAssistantQuestionInput {
-  altcha?: {
-    challenge?: unknown;
-    solution?: unknown;
-  };
   clientIp: string;
   messages?: unknown;
   pageContext?: unknown;
@@ -24,17 +20,10 @@ export class AskAssistantQuestionUseCase {
       Parameters<typeof askQuestion>[0],
       'question' | 'messages' | 'pageContext' | 'preferredLanguage'
     >,
-    private readonly humanVerification: {
-      verifyChallenge(payload: {
-        challenge: unknown;
-        solution: unknown;
-      }): Promise<{ verified?: boolean }>;
-    },
     private readonly askRateLimit: { store: IRateLimitStore; config: IRateLimitConfig }
   ) {}
 
   async execute(input: AskAssistantQuestionInput) {
-    await this.verifyHuman(input.altcha);
     await this.checkRateLimit(input.clientIp);
 
     return askQuestion({
@@ -44,20 +33,6 @@ export class AskAssistantQuestionUseCase {
       pageContext: input.pageContext,
       preferredLanguage: input.preferredLanguage,
     });
-  }
-
-  private async verifyHuman(altcha: AskAssistantQuestionInput['altcha']): Promise<void> {
-    if (!altcha?.challenge || !altcha?.solution) {
-      throw createRagError(403, 'bot_verification_failed', 'Verification required');
-    }
-
-    const result = await this.humanVerification
-      .verifyChallenge({ challenge: altcha.challenge, solution: altcha.solution })
-      .catch(() => null);
-
-    if (!result?.verified) {
-      throw createRagError(403, 'bot_verification_failed', 'Verification failed');
-    }
   }
 
   private async checkRateLimit(clientIp: string): Promise<void> {

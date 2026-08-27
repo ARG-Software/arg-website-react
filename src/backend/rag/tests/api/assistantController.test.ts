@@ -2,40 +2,46 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { AssistantController } from '../../apps/api/controllers/AssistantController.js';
-import { createRagError } from '../../application/errors.js';
 import { EmbeddingQuotaExceededError } from '../../application/ports/ProviderErrors.js';
+import { createAltchaChallenge } from '../../../shared/security/altcha.js';
+
+const altchaSettings = {
+  altchaHmacKey: 'test-hmac-key-for-testing-only',
+  altchaCost: 100,
+  altchaCounterMin: 10,
+  altchaCounterMax: 50,
+};
 
 test('assistant challenge returns the existing wrapped challenge body', async () => {
-  const controller = new AssistantController(createAssistantUseCases());
+  const controller = createController();
   const response = await controller.challenge();
+  const body = await response.json();
 
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { challenge: { algorithm: 'PBKDF2/SHA-256' } });
+  assert.equal(body.challenge.parameters.algorithm, 'PBKDF2/SHA-256');
 });
 
 test('assistant ask passes HTTP payload and client IP to the use case', async () => {
   let input: any;
-  const controller = new AssistantController(
-    createAssistantUseCases({
-      async ask(payload) {
-        input = payload;
-        return createAnswer();
-      },
-    })
-  );
-  const response = await controller.ask(createAskRequest());
+  const controller = createController({
+    async ask(payload) {
+      input = payload;
+      return createAnswer();
+    },
+  });
+  const response = await controller.ask(await createAskRequest());
   const body = await response.json();
 
   assert.equal(response.status, 200);
   assert.equal(input.clientIp, '203.0.113.10');
   assert.equal(input.question, 'What does ARG build?');
-  assert.deepEqual(input.altcha, { challenge: 'challenge', solution: 'solution' });
+  assert.equal(input.altcha, undefined);
   assert.equal(body.contexts, undefined);
   assert.equal(body.answer, 'ARG builds software products.');
 });
 
 test('assistant ask returns invalid_json for malformed request bodies', async () => {
-  const controller = new AssistantController(createAssistantUseCases());
+  const controller = createController();
   const response = await controller.ask(
     new Request('https://arg.software/api/assistant/ask', {
       method: 'POST',
@@ -49,14 +55,10 @@ test('assistant ask returns invalid_json for malformed request bodies', async ()
 });
 
 test('assistant ask maps bot verification errors', async () => {
-  const controller = new AssistantController(
-    createAssistantUseCases({
-      async ask() {
-        throw createRagError(403, 'bot_verification_failed', 'Verification failed');
-      },
-    })
+  const controller = createController();
+  const response = await controller.ask(
+    await createAskRequest({ altcha: { challenge: 'challenge', solution: 'solution' } })
   );
-  const response = await controller.ask(createAskRequest());
   const body = await response.json();
 
   assert.equal(response.status, 403);
@@ -65,14 +67,12 @@ test('assistant ask maps bot verification errors', async () => {
 });
 
 test('assistant ask maps embedding quota errors to service unavailable', async () => {
-  const controller = new AssistantController(
-    createAssistantUseCases({
-      async ask() {
-        throw new EmbeddingQuotaExceededError('test', 'model');
-      },
-    })
-  );
-  const response = await controller.ask(createAskRequest());
+  const controller = createController({
+    async ask() {
+      throw new EmbeddingQuotaExceededError('test', 'model');
+    },
+  });
+  const response = await controller.ask(await createAskRequest());
   const body = await response.json();
 
   assert.equal(response.status, 503);
@@ -81,7 +81,7 @@ test('assistant ask maps embedding quota errors to service unavailable', async (
 });
 
 test('assistant UI copy reads the language query and returns use case output', async () => {
-  const controller = new AssistantController(createAssistantUseCases());
+  const controller = createController();
   const response = await controller.uiCopy(
     new Request('https://arg.software/api/assistant/ui-copy?language=pt')
   );
@@ -91,14 +91,13 @@ test('assistant UI copy reads the language query and returns use case output', a
   assert.equal(body.language, 'pt');
 });
 
+function createController(options: AssistantUseCases = {}) {
+  return new AssistantController(createAssistantUseCases(options), { altchaSettings } as any);
+}
+
 function createAssistantUseCases({ ask = async (_payload: any) => createAnswer() }: AssistantUseCases = {}) {
   return {
     askAssistantQuestionUseCase: { execute: ask },
-    createAssistantChallengeUseCase: {
-      async execute() {
-        return { algorithm: 'PBKDF2/SHA-256' };
-      },
-    },
     getAssistantUiCopyUseCase: {
       async execute(language: string) {
         return { language };
@@ -111,7 +110,7 @@ interface AssistantUseCases {
   ask?: (payload: any) => Promise<any>;
 }
 
-function createAskRequest() {
+async function createAskRequest(overrides: Record<string, unknown> = {}) {
   return new Request('https://arg.software/api/assistant/ask', {
     method: 'POST',
     headers: {
@@ -119,13 +118,25 @@ function createAskRequest() {
       'x-nf-client-connection-ip': '203.0.113.10',
     },
     body: JSON.stringify({
-      altcha: { challenge: 'challenge', solution: 'solution' },
+      altcha: await createAltchaProof(),
       messages: [],
       pageContext: { pathname: '/', title: 'ARG Software' },
       preferredLanguage: 'en',
       question: 'What does ARG build?',
+      ...overrides,
     }),
   });
+}
+
+async function createAltchaProof() {
+  const { solveChallenge } = await import('altcha-lib');
+  const { deriveKey } = await import('altcha-lib/algorithms/pbkdf2');
+  const challenge = await createAltchaChallenge(altchaSettings);
+  const solution = await solveChallenge({ challenge, deriveKey, timeout: 30_000 });
+
+  assert.ok(solution);
+
+  return { challenge, solution };
 }
 
 function createAnswer() {

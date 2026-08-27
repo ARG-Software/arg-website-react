@@ -1,6 +1,6 @@
 import type { IEmbeddingProvider } from '../ports/IProviderPorts.js';
 import type { IRagSource, RagSourceType } from '../../domain/content/IRagSource.js';
-import type { IChunkingConfig } from '../ragConfig.js';
+import type { IChunkingConfig } from '../config/IRagConfiguration.js';
 import type { IRagWriteRepository } from '../ports/IRagWriteRepository.js';
 
 export interface IIngestSourceInput {

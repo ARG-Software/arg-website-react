@@ -71,6 +71,15 @@ test('function files use backend API entrypoints', () => {
     readNetlifyFile('functions/maintenance-keep-database-alive.js'),
     /apps\/api\/controllers\/MaintenanceController\.js/
   );
+  assert.match(readNetlifyFile('functions/mcp.js'), /publicDiscoveryMcpApi\.ts/);
+});
+
+test('TypeScript-backed public MCP function bundles', async () => {
+  await buildFunction('functions/mcp.js');
+});
+
+test('TypeScript-backed maintenance keep-alive function bundles', async () => {
+  await buildFunction('functions/maintenance-keep-database-alive.js');
 });
 
 test('public redirects expose function endpoints before the 404 fallback', () => {
@@ -167,15 +176,7 @@ function readPublicFile(path) {
 }
 
 async function assertFunctionBundleIncludesJsonConfig(path, expectedTerms) {
-  const result = await build({
-    entryPoints: [join(NETLIFY_DIR, path)],
-    bundle: true,
-    platform: 'node',
-    format: 'esm',
-    target: 'node20',
-    write: false,
-    external: ['@netlify/functions'],
-  });
+  const result = await buildFunction(path);
   const bundle = result.outputFiles[0].text;
 
   assert.doesNotMatch(
@@ -186,4 +187,16 @@ async function assertFunctionBundleIncludesJsonConfig(path, expectedTerms) {
   for (const term of expectedTerms) {
     assert.match(bundle, new RegExp(term), `${path} should bundle JSON config term: ${term}`);
   }
+}
+
+function buildFunction(path) {
+  return build({
+    entryPoints: [join(NETLIFY_DIR, path)],
+    bundle: true,
+    platform: 'node',
+    format: 'esm',
+    target: 'node20',
+    write: false,
+    external: ['@netlify/functions'],
+  });
 }

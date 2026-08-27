@@ -22,14 +22,22 @@ test('creates consistent JSON error bodies', () => {
 
 test('creates JSON responses with endpoint CORS headers', async () => {
   const request = new Request('https://arg.software/api/security/verify', {
-    headers: { Origin: 'https://arg.software' },
+    headers: { Origin: 'https://app.example' },
   });
-  const response = createJsonResponse(request, 'POST, OPTIONS', 200, { verified: true });
+  const response = createJsonResponse(
+    request,
+    'POST, OPTIONS',
+    200,
+    { verified: true },
+    {
+      defaultAllowedOrigins: ['https://app.example'],
+    }
+  );
 
   assert.equal(response.status, 200);
   assert.equal(response.headers.get('Content-Type'), 'application/json');
   assert.equal(response.headers.get('Access-Control-Allow-Methods'), 'POST, OPTIONS');
-  assert.equal(response.headers.get('Access-Control-Allow-Origin'), 'https://arg.software');
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'), 'https://app.example');
   assert.deepEqual(await response.json(), { verified: true });
 });
 
@@ -41,20 +49,27 @@ test('does not serialize a response body for 204 responses', async () => {
   assert.equal(await response.text(), '');
 });
 
-test('allows configured production origins', () => {
-  assert.equal(isAllowedOrigin('https://arg.software'), true);
-  assert.equal(isAllowedOrigin('https://www.arg.software/'), true);
+test('allows configured default origins', () => {
+  const options = { defaultAllowedOrigins: ['https://app.example', 'https://www.example'] };
+
+  assert.equal(isAllowedOrigin('https://app.example', options), true);
+  assert.equal(isAllowedOrigin('https://www.example/', options), true);
 });
 
-test('allows origins from injected ALLOWED_API_ORIGINS', () => {
-  const options = {
-    env: {
-      ALLOWED_API_ORIGINS: 'https://preview.example.com, https://branch.example.com/path',
-    },
-  };
+test('allows origins from ALLOWED_API_ORIGINS', () => {
+  const originalAllowedApiOrigins = process.env.ALLOWED_API_ORIGINS;
+  process.env.ALLOWED_API_ORIGINS = 'https://preview.example.com, https://branch.example.com/path';
 
-  assert.equal(isAllowedOrigin('https://preview.example.com', options), true);
-  assert.equal(isAllowedOrigin('https://branch.example.com', options), true);
+  try {
+    assert.equal(isAllowedOrigin('https://preview.example.com'), true);
+    assert.equal(isAllowedOrigin('https://branch.example.com'), true);
+  } finally {
+    if (originalAllowedApiOrigins === undefined) {
+      delete process.env.ALLOWED_API_ORIGINS;
+    } else {
+      process.env.ALLOWED_API_ORIGINS = originalAllowedApiOrigins;
+    }
+  }
 });
 
 test('does not reject requests with no origin header', () => {
@@ -69,13 +84,14 @@ test('does not reject requests with no origin header', () => {
 
 test('echoes allowed origin in CORS headers', () => {
   const request = new Request('https://arg.software/api/assistant/challenge', {
-    headers: { Origin: 'https://arg.software' },
+    headers: { Origin: 'https://app.example' },
   });
+  const options = { defaultAllowedOrigins: ['https://app.example'] };
 
-  assert.equal(createOriginGuardResponse(request, 'GET, OPTIONS'), null);
+  assert.equal(createOriginGuardResponse(request, 'GET, OPTIONS', options), null);
   assert.equal(
-    createCorsHeaders(request, 'GET, OPTIONS')['Access-Control-Allow-Origin'],
-    'https://arg.software'
+    createCorsHeaders(request, 'GET, OPTIONS', options)['Access-Control-Allow-Origin'],
+    'https://app.example'
   );
 });
 
@@ -92,9 +108,12 @@ test('rejects present but disallowed origin', async () => {
 });
 
 test('creates endpoint-scoped HTTP helpers', async () => {
-  const http = createApiHttp({ allowedMethods: 'POST, OPTIONS' });
+  const http = createApiHttp({
+    allowedMethods: 'POST, OPTIONS',
+    defaultAllowedOrigins: ['https://app.example'],
+  });
   const request = new Request('https://arg.software/api/assistant/ask', {
-    headers: { Origin: 'https://arg.software' },
+    headers: { Origin: 'https://app.example' },
   });
   const response = http.createJsonResponse(request, 200, { ok: true });
 

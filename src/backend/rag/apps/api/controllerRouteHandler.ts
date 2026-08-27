@@ -1,6 +1,8 @@
 import type { ControllerRoute } from '../../../shared/api/decorators.js';
 import { createApiHttp, createErrorBody } from '../../../shared/api/http.js';
 
+const DEFAULT_ALLOWED_ORIGINS = ['https://arg.software', 'https://www.arg.software'];
+
 export async function dispatchControllerRoutes(
   request: Request,
   routes: ControllerRoute[]
@@ -9,7 +11,7 @@ export async function dispatchControllerRoutes(
   const pathRoutes = routes.filter(r => r.path === pathname);
 
   const allowedMethods = [...new Set(['OPTIONS', ...pathRoutes.map(r => r.method)])].join(', ');
-  const http = createApiHttp({ allowedMethods });
+  const http = createApiHttp({ allowedMethods, defaultAllowedOrigins: DEFAULT_ALLOWED_ORIGINS });
 
   const originGuard = http.createOriginGuardResponse(request);
   if (originGuard) return originGuard;

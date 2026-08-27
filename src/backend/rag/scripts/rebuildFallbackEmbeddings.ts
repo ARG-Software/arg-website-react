@@ -1,4 +1,4 @@
-import { loadLocalEnv } from '../config/env.js';
+import { loadLocalEnv } from './loadLocalEnv.js';
 import { createGasparDependencies } from '../apps/di/createGasparDependencies.js';
 import { rebuildFallbackEmbeddings } from '../application/maintenance/rebuildFallbackEmbeddings.js';
 

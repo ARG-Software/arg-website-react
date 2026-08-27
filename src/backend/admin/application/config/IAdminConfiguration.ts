@@ -18,5 +18,4 @@ export interface IAdminConfiguration {
   getVisitLogRateLimitConfig(): IRateLimitConfig;
   getAssistantConversationLogRateLimitConfig(): IRateLimitConfig;
   getAltchaSettings(): AltchaSettings;
-  getAltchaVerificationSettings(): Pick<AltchaSettings, 'altchaHmacKey'>;
 }

@@ -1,36 +1,33 @@
-import { getRagConfig, type IRagConfig } from '../../application/ragConfig.js';
+import type { IRagConfiguration } from '../../application/config/IRagConfiguration.js';
+import { RagConfig } from '../config/RagConfig.js';
 import { GeminiEmbeddingClient } from '../../infrastructure/embeddings/gemini/GeminiEmbeddingProvider.js';
 import { createSupabaseServiceClient } from '../../infrastructure/repositories/supabase/SupabaseClientFactory.js';
 import { SupabaseRagReadRepository } from '../../infrastructure/repositories/supabase/SupabaseRagReadRepository.js';
 import { SupabaseRagWriteRepository } from '../../infrastructure/repositories/supabase/SupabaseRagWriteRepository.js';
-import {
-  createAltchaChallenge,
-  verifyAltchaChallenge,
-  verifyAltchaPayload,
-} from '../../../shared/security/altcha.js';
 import type { IRateLimitConfig } from '../../../shared/security/rateLimit.js';
 import { SupabaseRateLimitStore } from '../../../shared/security/rateLimitStores.js';
 import { DeepSeekAnswerClient } from '../../infrastructure/llm/deepseek/DeepSeekAnswerProvider.js';
 import { createDeepSeekAssistantUiCopyTranslator } from '../../infrastructure/llm/deepseek/DeepSeekAssistantUiCopyTranslator.js';
 
 interface IGasparDependenciesOptions {
-  config?: IRagConfig;
+  config?: IRagConfiguration;
 }
 
 let cachedDependencies: ReturnType<typeof createGasparDependencies> | null = null;
 
-export function getGasparDependencies(config: IRagConfig = getRagConfig()) {
+export function getGasparDependencies(config: IRagConfiguration = RagConfig.load()) {
   cachedDependencies ??= createGasparDependencies({ config });
   return cachedDependencies;
 }
 
-export function createGasparDependencies({ config = getRagConfig() }: IGasparDependenciesOptions = {}) {
+export function createGasparDependencies({ config = RagConfig.load() }: IGasparDependenciesOptions = {}) {
+  const ragConfig = config.getRagConfig();
   let rateLimitConfig: IRateLimitConfig | undefined;
 
   return {
+    altchaSettings: config.getAltchaSettings(),
     createAskQuestionDependencies,
     createAssistantUiCopyDependencies,
-    createHumanVerificationDependencies,
     createIngestSourceDependencies,
     createMaintenanceDependencies,
     createRateLimitDependencies,
@@ -38,15 +35,15 @@ export function createGasparDependencies({ config = getRagConfig() }: IGasparDep
 
   function createAskQuestionDependencies() {
     return {
-      config,
+      config: ragConfig,
       readRepository: new SupabaseRagReadRepository(
-        createSupabaseServiceClient(config),
-        config.siteUrl
+        createSupabaseServiceClient(createSupabaseConfig(config)),
+        config.getSiteConfig().siteUrl
       ),
       answerProvider: new DeepSeekAnswerClient({
-        apiKey: config.aiModelApiKey,
-        model: config.aiModel,
-        companyName: config.companyName,
+        apiKey: config.getAiModelApiKey(),
+        model: config.getAiModel(),
+        companyName: config.getSiteConfig().companyName,
       }),
       embeddingProvider: new GeminiEmbeddingClient(() => createGeminiConfig(config)),
       fallbackEmbeddingProvider: new GeminiEmbeddingClient(() => createFallbackGeminiConfig(config)),
@@ -56,30 +53,19 @@ export function createGasparDependencies({ config = getRagConfig() }: IGasparDep
   function createAssistantUiCopyDependencies() {
     return {
       translator: createDeepSeekAssistantUiCopyTranslator({
-        apiKey: config.aiModelApiKey,
-        model: config.aiModel,
+        apiKey: config.getAiModelApiKey(),
+        model: config.getAiModel(),
       }),
-    };
-  }
-
-  function createHumanVerificationDependencies() {
-    return {
-      createChallenge() {
-        return createAltchaChallenge(config);
-      },
-      verifyChallenge(payload: Parameters<typeof verifyAltchaChallenge>[0]) {
-        return verifyAltchaChallenge(payload, config);
-      },
-      verifyPayload(payload: string) {
-        return verifyAltchaPayload(payload, config);
-      },
     };
   }
 
   function createIngestSourceDependencies() {
     return {
-      chunkingConfig: config,
-      repository: new SupabaseRagWriteRepository(createSupabaseServiceClient(config), config),
+      chunkingConfig: config.getChunkingConfig(),
+      repository: new SupabaseRagWriteRepository(
+        createSupabaseServiceClient(createSupabaseConfig(config)),
+        config.getChunkingConfig()
+      ),
       embeddingProvider: new GeminiEmbeddingClient(() => createGeminiConfig(config)),
       fallbackEmbeddingProvider: new GeminiEmbeddingClient(() => createFallbackGeminiConfig(config)),
     };
@@ -87,7 +73,7 @@ export function createGasparDependencies({ config = getRagConfig() }: IGasparDep
 
   function createMaintenanceDependencies() {
     return {
-      supabase: createSupabaseServiceClient(config),
+      supabase: createSupabaseServiceClient(createSupabaseConfig(config)),
       fallbackEmbeddingProvider: new GeminiEmbeddingClient(() => createFallbackGeminiConfig(config)),
     };
   }
@@ -95,36 +81,38 @@ export function createGasparDependencies({ config = getRagConfig() }: IGasparDep
   function createRateLimitDependencies() {
     return {
       config: getCachedRateLimitConfig(),
-      store: new SupabaseRateLimitStore(createSupabaseServiceClient(config)),
+      store: new SupabaseRateLimitStore(createSupabaseServiceClient(createSupabaseConfig(config))),
     };
   }
 
   function getCachedRateLimitConfig() {
-    rateLimitConfig ??= {
-      perMinute: config.askRateLimitPerMinute,
-      perDay: config.askRateLimitPerDay,
-      globalDaily: config.askGlobalRateLimitPerDay,
-      salt: config.askRateLimitSalt,
-    };
+    rateLimitConfig ??= config.getAskRateLimitConfig();
 
     return rateLimitConfig;
   }
 }
 
-function createGeminiConfig(config: IRagConfig) {
+function createSupabaseConfig(config: IRagConfiguration) {
   return {
-    apiKey: config.embeddingApiKey,
-    model: config.embeddingModel,
-    dimensions: config.embeddingDimensions,
-    requestDelayMs: config.embeddingRequestDelayMs,
+    databaseUrl: config.getDatabaseUrl(),
+    databaseServiceRoleKey: config.getDatabaseServiceRoleKey(),
   };
 }
 
-function createFallbackGeminiConfig(config: IRagConfig) {
+function createGeminiConfig(config: IRagConfiguration) {
   return {
-    apiKey: config.embeddingApiKey,
-    model: config.fallbackEmbeddingModel,
-    dimensions: config.fallbackEmbeddingDimensions,
-    requestDelayMs: config.embeddingRequestDelayMs,
+    apiKey: config.getEmbeddingApiKey(),
+    model: config.getEmbeddingModel(),
+    dimensions: config.getEmbeddingDimensions(),
+    requestDelayMs: config.getEmbeddingRequestDelayMs(),
+  };
+}
+
+function createFallbackGeminiConfig(config: IRagConfiguration) {
+  return {
+    apiKey: config.getEmbeddingApiKey(),
+    model: config.getFallbackEmbeddingModel(),
+    dimensions: config.getFallbackEmbeddingDimensions(),
+    requestDelayMs: config.getEmbeddingRequestDelayMs(),
   };
 }

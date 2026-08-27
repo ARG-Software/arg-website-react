@@ -1,32 +1,13 @@
-import { getAdminErrorStatus } from '../../../application/errors.js';
+import { createAdminError, getAdminErrorStatus } from '../../../application/errors.js';
 import type { IUserIdentity } from '../../../application/ports/IUserIdentityProvider.js';
-import { createErrorBody, readJsonBody, readSearchParams } from '../../../../shared/api/http.js';
+import { ApiControllerBase } from '../../../../shared/api/ControllerBase.js';
+import { createErrorBody } from '../../../../shared/api/http.js';
 import { adminContainer } from '../../di/adminContainer.js';
 import { getAccessToken } from '../../http/userSessionCookies.js';
 
-export class ControllerBase {
+export class ControllerBase extends ApiControllerBase {
   protected authenticateUser(request: Request): Promise<IUserIdentity> {
     return adminContainer.auth.authenticateUserUseCase.execute(getAccessToken(request));
-  }
-
-  protected json(statusCode: number, body: unknown): Response {
-    const responseBody =
-      statusCode === 204 ? null : typeof body === 'string' ? body : JSON.stringify(body);
-
-    return new Response(responseBody, {
-      status: statusCode,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  }
-
-  protected body(request: Request, options = {}): Promise<any> {
-    return readJsonBody(request, options);
-  }
-
-  protected query(request: Request): Record<string, string> {
-    return readSearchParams(request);
   }
 
   protected errorBody(error: any, fallbackCode: string, fallbackMessage: string): unknown {
@@ -39,5 +20,9 @@ export class ControllerBase {
 
   protected errorStatus(error: any): number {
     return getAdminErrorStatus(error);
+  }
+
+  protected createBotVerificationError(message: string): Error {
+    return createAdminError(403, 'bot_verification_failed', message);
   }
 }

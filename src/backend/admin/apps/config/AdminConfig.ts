@@ -1,6 +1,5 @@
 import { createAdminError } from '../../application/errors.js';
 import type { IAdminConfiguration } from '../../application/config/IAdminConfiguration.js';
-import type { IEnvSource } from '../../../shared/config/IEnvSource.js';
 import type { IRateLimitConfig } from '../../../shared/security/rateLimit.js';
 import type { AltchaSettings } from '../../../shared/security/altcha.js';
 
@@ -49,7 +48,7 @@ export class AdminConfig implements IAdminConfiguration {
     this.values = { ...values };
   }
 
-  static load(env: IEnvSource = process.env): AdminConfig {
+  static load(env: NodeJS.ProcessEnv = process.env): AdminConfig {
     if (!AdminConfig.instance) {
       AdminConfig.instance = new AdminConfig(readAdminConfigValues(env));
     }
@@ -159,14 +158,9 @@ export class AdminConfig implements IAdminConfiguration {
     };
   }
 
-  getAltchaVerificationSettings(): Pick<AltchaSettings, 'altchaHmacKey'> {
-    return {
-      altchaHmacKey: this.values.altchaHmacKey,
-    };
-  }
 }
 
-export function readAdminConfigValues(env: IEnvSource): IAdminConfigValues {
+export function readAdminConfigValues(env: NodeJS.ProcessEnv): IAdminConfigValues {
   const loginRateLimitSalt = env.ADMIN_LOGIN_RATE_LIMIT_SALT || DEFAULT_LOGIN_RATE_LIMIT_SALT;
 
   return {
@@ -233,7 +227,7 @@ export function readAdminConfigValues(env: IEnvSource): IAdminConfigValues {
   };
 }
 
-function requiredEnv(env: IEnvSource, name: string): string {
+function requiredEnv(env: NodeJS.ProcessEnv, name: string): string {
   const value = env[name];
 
   if (!value) {
@@ -243,13 +237,13 @@ function requiredEnv(env: IEnvSource, name: string): string {
   return value;
 }
 
-function getPositiveNumberEnv(env: IEnvSource, name: string, fallback: number): number {
+function getPositiveNumberEnv(env: NodeJS.ProcessEnv, name: string, fallback: number): number {
   const value = Number(env[name]);
 
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
-function getPositiveIntegerEnv(env: IEnvSource, name: string, fallback: number): number {
+function getPositiveIntegerEnv(env: NodeJS.ProcessEnv, name: string, fallback: number): number {
   const value = getPositiveNumberEnv(env, name, fallback);
 
   if (!Number.isInteger(value)) {
@@ -259,7 +253,7 @@ function getPositiveIntegerEnv(env: IEnvSource, name: string, fallback: number):
   return value;
 }
 
-function collectVersionedKeys(env: IEnvSource, baseName: string): Record<number, string> {
+function collectVersionedKeys(env: NodeJS.ProcessEnv, baseName: string): Record<number, string> {
   const keys: Record<number, string> = {};
 
   if (env[baseName]) {

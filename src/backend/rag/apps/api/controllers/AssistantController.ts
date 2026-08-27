@@ -4,7 +4,10 @@ import { ragContainer } from '../../di/ragContainer.js';
 import { ControllerBase } from './ControllerBase.js';
 
 export class AssistantController extends ControllerBase {
-  constructor(private readonly assistant = ragContainer.assistant) {
+  constructor(
+    private readonly assistant = ragContainer.assistant,
+    private readonly security = ragContainer.security
+  ) {
     super();
   }
 
@@ -12,7 +15,7 @@ export class AssistantController extends ControllerBase {
   @errorResponse('challenge_failed', 'Assistant service is temporarily unavailable')
   async challenge(): Promise<Response> {
     return this.json(200, {
-      challenge: await this.assistant.createAssistantChallengeUseCase.execute(),
+      challenge: await this.createAltchaChallenge(this.security.altchaSettings),
     });
   }
 
@@ -20,8 +23,10 @@ export class AssistantController extends ControllerBase {
   @errorResponse('answer_failed', 'Unable to answer the question')
   async ask(request: Request): Promise<Response> {
     const payload = await this.body(request);
+
+    await this.verifyAltchaChallenge(payload.altcha, this.security.altchaSettings);
+
     const result = await this.assistant.askAssistantQuestionUseCase.execute({
-      altcha: payload.altcha,
       clientIp: getClientIp(request),
       messages: payload.messages,
       pageContext: payload.pageContext,

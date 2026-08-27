@@ -25,8 +25,9 @@ export function getRagErrorStatus(error: any): number {
 
 export function isConfigurationError(error: any): boolean {
   return (
-    error instanceof Error &&
-    (error.message.startsWith('Missing required environment variable:') ||
-      error.message.startsWith('Missing required environment variables:'))
+    error?.code === 'configuration_error' ||
+    (error instanceof Error &&
+      (error.message.startsWith('Missing required environment variable:') ||
+        error.message.startsWith('Missing required environment variables:')))
   );
 }

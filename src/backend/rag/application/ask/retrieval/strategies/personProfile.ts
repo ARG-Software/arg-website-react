@@ -1,4 +1,4 @@
-import type { IRagConfig } from '../../../ragConfig.js';
+import type { IRagConfig } from '../../../config/IRagConfiguration.js';
 import type { IRetrievedContext } from '../../../../domain/retrieval/IRetrievedContext.js';
 import type { IEmbeddingProvider } from '../../../ports/IProviderPorts.js';
 import type { RagSourceMetadata } from '../../../../domain/content/IRagSource.js';

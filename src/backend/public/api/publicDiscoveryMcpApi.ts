@@ -185,7 +185,7 @@ export function createPublicDiscoveryMcpApi() {
 
 export const handlePublicDiscoveryMcp = createPublicDiscoveryMcpApi();
 
-async function handlePublicDiscoveryMcpRequest(request) {
+async function handlePublicDiscoveryMcpRequest(request: Request) {
   if (request.method === 'OPTIONS') {
     return createResponse(204, '');
   }
@@ -208,7 +208,7 @@ async function handlePublicDiscoveryMcpRequest(request) {
   return createResponse(200, response);
 }
 
-function handleJsonRpc(payload) {
+function handleJsonRpc(payload: any) {
   if (Array.isArray(payload)) {
     return payload.map(handleJsonRpc).filter(Boolean);
   }
@@ -246,7 +246,7 @@ function handleJsonRpc(payload) {
   }
 }
 
-function callTool(id, params) {
+function callTool(id: unknown, params: any) {
   const name = params?.name;
   const args = params?.arguments || {};
 
@@ -289,7 +289,7 @@ function callTool(id, params) {
   }
 }
 
-function getProject(id, slug) {
+function getProject(id: unknown, slug: unknown) {
   const project = PROJECTS.find(item => item.slug === slug);
 
   if (!project) {
@@ -299,7 +299,7 @@ function getProject(id, slug) {
   return createToolResult(id, project);
 }
 
-function createToolResult(id, data) {
+function createToolResult(id: unknown, data: unknown) {
   return createJsonRpcResult(id, {
     content: [
       {
@@ -311,7 +311,7 @@ function createToolResult(id, data) {
   });
 }
 
-function createJsonRpcResult(id, result) {
+function createJsonRpcResult(id: unknown, result: unknown) {
   return {
     jsonrpc: '2.0',
     id,
@@ -319,7 +319,7 @@ function createJsonRpcResult(id, result) {
   };
 }
 
-function createJsonRpcError(id, code, message) {
+function createJsonRpcError(id: unknown, code: number, message: string) {
   return {
     jsonrpc: '2.0',
     id,
@@ -330,7 +330,7 @@ function createJsonRpcError(id, code, message) {
   };
 }
 
-function createResponse(status, body) {
+function createResponse(status: number, body: unknown) {
   return new Response(status === 204 ? null : JSON.stringify(body), {
     status,
     headers: {

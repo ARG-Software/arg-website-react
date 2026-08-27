@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 
-import { verifyAltchaPayload } from '../../../shared/security/altcha.js';
 import { SupabaseRateLimitStore } from '../../../shared/security/rateLimitStores.js';
 import { AuthenticateUserUseCase } from '../../application/usecases/sessions/authenticateUserUseCase.js';
 import { CreateOutreachCsvUseCase } from '../../application/usecases/outreach/createOutreachCsvUseCase.js';
@@ -62,11 +61,6 @@ export function createAdminContainer() {
       authenticateUserUseCase,
       getUserSessionUseCase: new GetUserSessionUseCase(identityProvider, userAccessPolicy),
       loginUserUseCase: new LoginUserUseCase(
-        {
-          verifyPayload(payload: string) {
-            return verifyAltchaPayload(payload, config.getAltchaVerificationSettings());
-          },
-        },
         identityProvider,
         {
           config: config.getLoginRateLimitConfig(),
@@ -75,6 +69,7 @@ export function createAdminContainer() {
         userAccessPolicy
       ),
       refreshUserSessionUseCase: new RefreshUserSessionUseCase(identityProvider, userAccessPolicy),
+      altchaSettings: config.getAltchaSettings(),
       secureCookies: config.getSecureCookies(),
       signOutUserUseCase: new SignOutUserUseCase(identityProvider),
     },

@@ -1,5 +1,5 @@
 import type { IChatMessage, IPageContext } from '../../domain/conversation/IChatMessage.js';
-import type { IRagConfig } from '../ragConfig.js';
+import type { IRagConfig } from '../config/IRagConfiguration.js';
 import type { IRetrievedContext } from '../../domain/retrieval/IRetrievedContext.js';
 import type { IAskQuestionResult } from '../../domain/assistant/AssistantResponse.js';
 import type { IAnswerProvider, IEmbeddingProvider } from '../ports/IProviderPorts.js';

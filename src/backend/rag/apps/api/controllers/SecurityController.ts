@@ -10,7 +10,7 @@ export class SecurityController extends ControllerBase {
   @route('GET', '/api/security/challenge')
   @errorResponse('challenge_failed', 'Security verification is temporarily unavailable')
   async challenge(): Promise<Response> {
-    return this.json(200, await this.security.createSecurityChallengeUseCase.execute());
+    return this.json(200, await this.createAltchaChallenge(this.security.altchaSettings));
   }
 
   @route('POST', '/api/security/verify')
@@ -18,7 +18,7 @@ export class SecurityController extends ControllerBase {
   async verify(request: Request): Promise<Response> {
     const payload = await this.body(request);
 
-    await this.security.verifySecurityPayloadUseCase.execute(payload.altcha);
+    await this.verifyAltchaPayload(payload.altcha, this.security.altchaSettings);
 
     return this.json(200, { verified: true });
   }

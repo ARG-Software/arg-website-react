@@ -107,8 +107,6 @@ Remaining user-requested follow-up work:
 5. Allow table sorting by `company_name`, `date_sent`, and `follow_up_date`.
 6. Remove contact/email ordering from the UI and backend allowed sort fields. Keep the contact email blind index and uniqueness constraint.
 7. Add backend sorting support for `follow_up_date` in `src/backend/admin/application/outreach/listOutreachRecords.ts`.
-8. Add an admin database keep-alive scheduled function, similar to Gaspar's current RAG keep-alive.
-9. Move generic keep-alive logic from `src/backend/rag/application/maintenance/keepDatabaseAlive.ts` into a backend shared module, then make Gaspar and admin use that shared module.
 
 Suggested follow-up implementation plan:
 
@@ -119,10 +117,7 @@ Suggested follow-up implementation plan:
 5. Update `getRecordColumns()` so only `company_name`, `date_sent`, and `follow_up_date` are sortable. Remove `contact_email` sortable.
 6. Update backend `SORTABLE_FIELDS` to remove `contact_email` and add `follow_up_date`; add date parsing in `getSortValue()`.
 7. Improve `ErrorCard` and empty table CSS/classes in `src/frontend/admin/admin.css` and/or `src/packages/ui/src/styles.css`.
-8. Create shared keep-alive module, for example `src/backend/shared/maintenance/keepDatabaseAlive.ts` and possibly `.js` if consumed by JS Netlify wrappers/tests.
-9. Update `src/backend/rag/apps/gaspar/keepDatabaseAliveApi.js` to use the shared keep-alive with `tableName: 'rag_sources'`.
-10. Add admin keep-alive dependencies in the admin DI container, an admin keep-alive app/function, and wiring tests/docs.
-11. Re-run `npm run test:backend`, `npm run rag:test`, `npm run lint:all`, and `npm run build`.
+8. Re-run `npm run test:backend`, `npm run rag:test`, `npm run lint:all`, and `npm run build`.
 
 ## Context
 
@@ -309,7 +304,6 @@ ALTCHA is currently implemented under the Gaspar/RAG backend and frontend shared
 
 Relevant files:
 
-- `src/backend/rag/infrastructure/security/altcha.ts`
 - `src/backend/rag/apps/gaspar/securityChallengeApi.js`
 - `src/backend/rag/apps/gaspar/securityVerifyApi.js`
 - `src/backend/rag/apps/gaspar/assistantChallengeApi.js`
@@ -338,7 +332,6 @@ Avoid making admin call/import Gaspar internals.
 
 Recommended refactor:
 
-- Move/re-export ALTCHA helpers into `src/backend/shared/security/altcha.ts`
 - Move generic rate-limit logic into `src/backend/shared/security/rateLimit.ts`
 - Move Supabase/in-memory rate-limit stores into `src/backend/shared/security/rateLimitStores.ts`
 - Update Gaspar imports to use shared modules
@@ -346,12 +339,12 @@ Recommended refactor:
 
 There is already a backend shared folder:
 
-- `src/backend/shared/api/http.js`
+- `src/backend/shared/api/http.ts`
 
-Existing rate limit files to reuse/refactor:
+Existing rate limit files:
 
-- `src/backend/rag/infrastructure/security/rateLimit.ts`
-- `src/backend/rag/infrastructure/security/rateLimitStores.ts`
+- `src/backend/shared/security/rateLimit.ts`
+- `src/backend/shared/security/rateLimitStores.ts`
 - `supabase/rag/migrations/20260726000000_create_rag_rate_limits.sql`
 
 Admin should get its own rate-limit table/function in admin migrations, rather than relying on the RAG DB.

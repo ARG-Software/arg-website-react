@@ -1,4 +1,4 @@
-import type { IRagConfig } from '../../application/ragConfig.js';
+import type { IRagConfig } from '../../application/config/IRagConfiguration.js';
 
 export function createTestConfig(overrides: Partial<IRagConfig> = {}): IRagConfig {
   return {

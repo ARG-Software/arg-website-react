@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { keepDatabaseAlive, keepDatabasesAlive } from '../../maintenance/keepDatabaseAlive.js';
+import { keepDatabaseAlive, keepDatabasesAlive } from '../../maintenance/keepDatabaseAlive.ts';
 
 test('touches the configured Supabase table', async () => {
   const calls = [];

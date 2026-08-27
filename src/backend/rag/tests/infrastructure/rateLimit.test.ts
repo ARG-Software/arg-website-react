@@ -8,8 +8,8 @@ import {
   getGlobalDayBucket,
   hashIp,
   type IRateLimitConfig,
-} from '../../infrastructure/security/rateLimit.js';
-import { InMemoryRateLimitStore } from '../../infrastructure/security/rateLimitStores.js';
+} from '../../../shared/security/rateLimit.js';
+import { InMemoryRateLimitStore } from '../../../shared/security/rateLimitStores.js';
 
 function createConfig(overrides: Partial<IRateLimitConfig> = {}): IRateLimitConfig {
   return {

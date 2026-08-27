@@ -1,7 +1,7 @@
-import { keepDatabasesAlive } from '../../../../shared/maintenance/keepDatabaseAlive.js';
+import { keepDatabasesAlive } from '../../../../shared/maintenance/keepDatabaseAlive.ts';
 import { adminContainer } from '../../../../admin/apps/di/adminContainer.ts';
 import { createGasparDependencies } from '../../di/createGasparDependencies.ts';
-import { getRagConfig } from '../../../application/ragConfig.ts';
+import { RagConfig } from '../../config/RagConfig.ts';
 
 export class MaintenanceController {
   constructor({ createDependencies = createGasparDependencies, env = process.env } = {}) {
@@ -32,7 +32,7 @@ export class MaintenanceController {
 
   getRagAppConfig() {
     this.ragConfig ||=
-      this.createDependencies === createGasparDependencies ? getRagConfig(this.env) : undefined;
+      this.createDependencies === createGasparDependencies ? RagConfig.load(this.env) : undefined;
     return this.ragConfig;
   }
 }

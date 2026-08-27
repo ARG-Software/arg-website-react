@@ -1,4 +1,4 @@
-import { loadLocalEnv } from '../config/env.js';
+import { loadLocalEnv } from './loadLocalEnv.js';
 import type { IChatMessage, IPageContext } from '../domain/conversation/IChatMessage.js';
 import { askQuestion, retrieveRelevantChunks } from '../application/ask/askQuestion.js';
 import { createGasparDependencies } from '../apps/di/createGasparDependencies.js';

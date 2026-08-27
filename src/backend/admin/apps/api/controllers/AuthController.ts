@@ -20,10 +20,12 @@ export class AuthController extends ControllerBase {
   async login(request: Request): Promise<Response> {
     const cookieResponse = new Response(null);
     const payload = await this.body(request, { fallback: {}, trimStrings: false });
+
+    await this.verifyAltchaPayload(payload.altcha, this.auth.altchaSettings);
+
     const result = await this.auth.loginUserUseCase.execute({
       email: payload.email,
       password: payload.password,
-      altcha: payload.altcha,
       clientIp: getClientIp(request),
     });
 

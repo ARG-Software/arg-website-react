@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { IRagSourceEmbeddings, IUpsertSourceResult } from '../../../application/ingestion/IIngestionTypes.js';
 import type { IRagSource } from '../../../domain/content/IRagSource.js';
 import { toEmbeddingLiteral } from './vector.js';
-import type { IChunkingConfig } from '../../../application/ragConfig.js';
+import type { IChunkingConfig } from '../../../application/config/IRagConfiguration.js';
 import { chunkText } from '../../../application/ingestion/processing/chunking.js';
 import { createSourceHash, normalizeText } from '../../../application/ingestion/processing/text.js';
 import type { IRagWriteRepository } from '../../../application/ports/IRagWriteRepository.js';
