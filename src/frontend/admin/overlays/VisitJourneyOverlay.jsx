@@ -23,6 +23,9 @@ export function VisitJourneyOverlay({ session, onClose }) {
         <span>Pages: {session.pageCount || 0}</span>
         <span>Duration: {formatDuration(session.durationMs)}</span>
         <span>Last seen: {formatDateTime(session.lastSeenAt)}</span>
+        <span>Source: {formatSource(session)}</span>
+        {session.campaign && <span>Campaign: {session.campaign}</span>}
+        {session.clickId && <span>Click ID: {session.clickId}</span>}
         <span>Referrer: {session.referrer || '(direct)'}</span>
       </div>
       {journeyQuery.isError && (
@@ -34,6 +37,13 @@ export function VisitJourneyOverlay({ session, onClose }) {
       )}
     </AdminRecordOverlay>
   );
+}
+
+function formatSource(session) {
+  const source = session.source || (session.referrer ? '' : 'direct');
+  const medium = session.medium ? ` / ${session.medium}` : '';
+
+  return source ? `${source}${medium}` : '-';
 }
 
 function formatLocation(session) {

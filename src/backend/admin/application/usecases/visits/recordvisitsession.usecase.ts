@@ -6,7 +6,10 @@ import type { IAdminConfiguration } from '../../config/iadmin.configuration.js';
 import type { IVisitRepository } from '../../ports/repositories/ivisit.repository.js';
 import { VisitSession } from '../../../domain/visit.js';
 import { VisitDomainError } from '../../../domain/errors/visitdomain.error.js';
-import type { VisitGeolocationInput } from '../../../domain/types/visit.types.js';
+import type {
+  VisitAttributionInput,
+  VisitGeolocationInput,
+} from '../../../domain/types/visit.types.js';
 
 export interface RecordVisitSessionInput {
   clientIp: string;
@@ -16,6 +19,7 @@ export interface RecordVisitSessionInput {
   pageViews?: unknown[];
   language?: string;
   referrer?: string;
+  attribution?: VisitAttributionInput;
 }
 
 export class RecordVisitSessionUseCase {
@@ -62,6 +66,7 @@ export class RecordVisitSessionUseCase {
       geo: input.geo,
       language: input.language,
       referrer: input.referrer,
+      attribution: input.attribution,
     });
 
     await this.visitRepository.recordSession(record);

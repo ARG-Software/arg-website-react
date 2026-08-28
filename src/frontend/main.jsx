@@ -12,6 +12,7 @@ import { WidgetManager } from '@components/widgets/WidgetManager';
 import { WebMCPProvider } from '@providers/WebMCPProvider';
 import { ErrorBoundary } from '@components/layout/ErrorBoundary';
 import { lazyWithRetry } from '@utils/lazyWithRetry';
+import { useScrollDepthTracking } from '@hooks/useScrollDepthTracking';
 import './styles/base.css';
 import '@ui/styles.css';
 import './styles/home.css';
@@ -60,6 +61,11 @@ function GlobalOverlays() {
   );
 }
 
+function PublicAnalyticsTracker() {
+  useScrollDepthTracking();
+  return null;
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <LoadingProvider>
     <HelmetProvider>
@@ -101,6 +107,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </TransitionProvider>
           </LenisProvider>
         </RAFProvider>
+        <PublicAnalyticsTracker />
         <GlobalOverlays />
       </BrowserRouter>
     </HelmetProvider>

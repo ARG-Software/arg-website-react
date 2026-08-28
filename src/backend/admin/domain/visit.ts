@@ -15,6 +15,12 @@ export class VisitSession {
   readonly timezone: string;
   readonly language: string;
   readonly referrer: string | null;
+  readonly source: string | null;
+  readonly medium: string | null;
+  readonly campaign: string | null;
+  readonly term: string | null;
+  readonly content: string | null;
+  readonly clickId: string | null;
   readonly entryPath: string;
   readonly events: VisitEvent[];
   readonly pageViews: VisitPageView[];
@@ -41,7 +47,13 @@ export class VisitSession {
     this.city = params.geo?.city || '';
     this.timezone = params.geo?.timezone || '';
     this.language = params.language || '';
-    this.referrer = params.referrer || null;
+    this.referrer = params.attribution?.referrer || params.referrer || null;
+    this.source = params.attribution?.source || null;
+    this.medium = params.attribution?.medium || null;
+    this.campaign = params.attribution?.campaign || null;
+    this.term = params.attribution?.term || null;
+    this.content = params.attribution?.content || null;
+    this.clickId = params.attribution?.clickId || null;
     this.entryPath =
       firstPageView?.path || events[0]?.path || String(events[0]?.params.page_path || '') || '/';
     this.events = events;

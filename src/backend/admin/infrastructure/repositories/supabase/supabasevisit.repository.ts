@@ -17,6 +17,12 @@ type VisitSessionRow = {
   timezone: string;
   entry_path: string;
   referrer: string | null;
+  source: string | null;
+  medium: string | null;
+  campaign: string | null;
+  term: string | null;
+  content: string | null;
+  click_id: string | null;
   page_count: number;
   event_count: number;
   duration_ms: number;
@@ -31,6 +37,12 @@ type VisitJourneyRow = {
   city: string;
   timezone: string;
   referrer: string | null;
+  source: string | null;
+  medium: string | null;
+  campaign: string | null;
+  term: string | null;
+  content: string | null;
+  click_id: string | null;
   page_views?: Array<{
     sequence: string | number;
     path: string;
@@ -38,6 +50,13 @@ type VisitJourneyRow = {
     startedAt: string;
     endedAt: string;
     durationMs: string | number;
+  }>;
+  events?: Array<{
+    name: string;
+    params?: Record<string, string | number | boolean | null>;
+    sequence: string | number;
+    timestamp: string;
+    path: string;
   }>;
 };
 
@@ -53,6 +72,12 @@ export class SupabaseVisitRepository implements IVisitRepository {
       p_timezone: record.timezone,
       p_language: record.language,
       p_referrer: record.referrer,
+      p_source: record.source,
+      p_medium: record.medium,
+      p_campaign: record.campaign,
+      p_term: record.term,
+      p_content: record.content,
+      p_click_id: record.clickId,
       p_entry_path: record.entryPath,
       p_events: record.events,
       p_page_views: record.pageViews,
@@ -86,7 +111,7 @@ export class SupabaseVisitRepository implements IVisitRepository {
     const { data, error, count } = await this.client
       .from('visit_sessions')
       .select(
-        'session_hash, country_code, region, city, timezone, entry_path, referrer, page_count, event_count, duration_ms, started_at, last_seen_at',
+        'session_hash, country_code, region, city, timezone, entry_path, referrer, source, medium, campaign, term, content, click_id, page_count, event_count, duration_ms, started_at, last_seen_at',
         {
           count: 'exact',
         }
@@ -110,7 +135,9 @@ export class SupabaseVisitRepository implements IVisitRepository {
   async listJourney(sessionHash: string): Promise<VisitJourneyEvent[]> {
     const { data, error } = await this.client
       .from('visit_sessions')
-      .select('session_hash, country_code, region, city, timezone, referrer, page_views')
+      .select(
+        'session_hash, country_code, region, city, timezone, referrer, source, medium, campaign, term, content, click_id, page_views, events'
+      )
       .eq('session_hash', sessionHash)
       .single();
 
@@ -144,6 +171,12 @@ function toSessionRecord(row: VisitSessionRow): VisitSessionListItem {
     timezone: row.timezone,
     entryPath: row.entry_path,
     referrer: row.referrer,
+    source: row.source,
+    medium: row.medium,
+    campaign: row.campaign,
+    term: row.term,
+    content: row.content,
+    clickId: row.click_id,
     pageCount: row.page_count,
     eventCount: row.event_count,
     durationMs: row.duration_ms,
@@ -153,8 +186,11 @@ function toSessionRecord(row: VisitSessionRow): VisitSessionListItem {
 }
 
 function createJourneyEvents(row: VisitJourneyRow): VisitJourneyEvent[] {
-  return (row?.page_views || []).map(pageView => ({
+  const pageViewEvents = (row?.page_views || []).map(pageView => ({
     sessionHash: row.session_hash,
+    type: 'page_view' as const,
+    name: 'page_view',
+    params: {},
     sequence: pageView.sequence,
     path: pageView.path,
     title: pageView.title,
@@ -163,8 +199,53 @@ function createJourneyEvents(row: VisitJourneyRow): VisitJourneyEvent[] {
     city: row.city,
     timezone: row.timezone,
     referrer: row.referrer,
+    source: row.source,
+    medium: row.medium,
+    campaign: row.campaign,
+    term: row.term,
+    content: row.content,
+    clickId: row.click_id,
     visitedAt: pageView.startedAt,
     endedAt: pageView.endedAt,
     durationMs: pageView.durationMs,
   }));
+
+  const events = (row?.events || [])
+    .filter(event => event.name && event.timestamp && event.name !== 'page_view')
+    .map(event => ({
+      sessionHash: row.session_hash,
+      type: 'event' as const,
+      name: event.name,
+      params: event.params || {},
+      sequence: event.sequence || 0,
+      path: event.path || String(event.params?.page_path || ''),
+      title: event.name,
+      countryCode: row.country_code,
+      region: row.region,
+      city: row.city,
+      timezone: row.timezone,
+      referrer: row.referrer,
+      source: row.source,
+      medium: row.medium,
+      campaign: row.campaign,
+      term: row.term,
+      content: row.content,
+      clickId: row.click_id,
+      visitedAt: event.timestamp,
+      endedAt: event.timestamp,
+      durationMs: 0,
+    }));
+
+  return [...pageViewEvents, ...events].sort(compareJourneyEvents);
+}
+
+function compareJourneyEvents(first: VisitJourneyEvent, second: VisitJourneyEvent): number {
+  const firstSequence = Number(first.sequence);
+  const secondSequence = Number(second.sequence);
+
+  if (Number.isFinite(firstSequence) && Number.isFinite(secondSequence)) {
+    return firstSequence - secondSequence;
+  }
+
+  return Date.parse(first.visitedAt || '') - Date.parse(second.visitedAt || '');
 }

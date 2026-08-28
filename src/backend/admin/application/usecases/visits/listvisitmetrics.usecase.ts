@@ -27,6 +27,7 @@ export class ListVisitMetricsUseCase {
       countryBreakdown: Array.isArray(data.countryBreakdown) ? data.countryBreakdown : [],
       topPages: Array.isArray(data.topPages) ? data.topPages : [],
       topReferrers: Array.isArray(data.topReferrers) ? data.topReferrers : [],
+      topSources: Array.isArray(data.topSources) ? data.topSources : [],
     };
   }
 }

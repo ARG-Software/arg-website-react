@@ -1,25 +1,61 @@
 export function AdminVisitJourney({ events = [] }) {
   if (!events.length) {
-    return <div className="admin-metric-chart__empty">No page views found for this visit.</div>;
+    return <div className="admin-metric-chart__empty">No events found for this visit.</div>;
   }
 
   return (
     <ol className="admin-visit-journey">
       {events.map(event => (
-        <li key={`${event.sessionHash}-${event.sequence}`} className="admin-visit-journey__item">
+        <li
+          key={`${event.sessionHash}-${event.type}-${event.sequence}-${event.name}`}
+          className="admin-visit-journey__item"
+        >
           <span className="admin-visit-journey__sequence">{event.sequence}</span>
           <div>
-            <strong>{event.title || event.path}</strong>
+            <strong>{getEventTitle(event)}</strong>
             <span>{event.path}</span>
             <small>
-              {formatDateTime(event.visitedAt)} · {formatDuration(event.durationMs)}
+              {formatDateTime(event.visitedAt)}
+              {event.type === 'page_view' ? ` · ${formatDuration(event.durationMs)}` : ''}
             </small>
+            {event.type === 'event' && <small>{formatEventParams(event.params)}</small>}
+            {event.source && <small>Source: {formatJourneySource(event)}</small>}
+            {event.campaign && <small>Campaign: {event.campaign}</small>}
             {event.referrer && <small>Referrer: {event.referrer}</small>}
           </div>
         </li>
       ))}
     </ol>
   );
+}
+
+function getEventTitle(event) {
+  if (event.type === 'page_view') return event.title || event.path;
+  if (event.name === 'scroll_depth') return `Scroll depth ${event.params?.percent || ''}%`;
+  if (event.name === 'time_on_page') return 'Time on page';
+  if (event.name === 'cta_click')
+    return `CTA click${event.params?.cta_type ? `: ${event.params.cta_type}` : ''}`;
+
+  return formatEventName(event.name);
+}
+
+function formatEventName(name) {
+  return String(name || 'event')
+    .replace(/_/g, ' ')
+    .replace(/^./, character => character.toUpperCase());
+}
+
+function formatEventParams(params = {}) {
+  const entries = Object.entries(params).filter(
+    ([, value]) => value !== undefined && value !== null
+  );
+  if (!entries.length) return 'No event details';
+
+  return entries.map(([key, value]) => `${formatEventName(key)}: ${value}`).join(' · ');
+}
+
+function formatJourneySource(event) {
+  return `${event.source}${event.medium ? ` / ${event.medium}` : ''}`;
 }
 
 function formatDateTime(value) {

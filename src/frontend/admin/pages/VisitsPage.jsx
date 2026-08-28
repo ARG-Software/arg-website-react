@@ -56,6 +56,14 @@ export default function VisitsPage({ onSelectVisitSession }) {
             tone="light"
           />
           <AdminDataTable
+            title="Top sources"
+            description="UTM source or click-id attribution, falling back to referrer host or direct traffic."
+            columns={getVisitSourceColumns()}
+            rows={(metrics?.topSources || []).map(createReferrerRow)}
+            emptyMessage="No source data found."
+            tone="light"
+          />
+          <AdminDataTable
             title="Top referrers"
             description="Specific referrer URLs are stored on each visit; this table groups them by host."
             columns={getVisitReferrerColumns()}
@@ -113,6 +121,13 @@ function getVisitPageColumns() {
 
 function getVisitReferrerColumns() {
   return [
+    { key: 'label', label: 'Referrer' },
+    { key: 'value', label: 'Page views' },
+  ];
+}
+
+function getVisitSourceColumns() {
+  return [
     { key: 'label', label: 'Source' },
     { key: 'value', label: 'Page views' },
   ];
@@ -136,7 +151,13 @@ function getVisitSessionColumns() {
       label: 'Referrer',
       render: record => record.referrer || '(direct)',
     },
+    {
+      key: 'source',
+      label: 'Source',
+      render: formatSource,
+    },
     { key: 'pageCount', label: 'Pages' },
+    { key: 'eventCount', label: 'Events' },
     {
       key: 'durationMs',
       label: 'Duration',
@@ -157,4 +178,11 @@ function formatLocation(record) {
       .filter(value => value !== 'Unknown')
       .join(', ') || 'Unknown'
   );
+}
+
+function formatSource(record) {
+  const source = record.source || (record.referrer ? '' : 'direct');
+  const medium = record.medium ? ` / ${record.medium}` : '';
+
+  return source ? `${source}${medium}` : '-';
 }

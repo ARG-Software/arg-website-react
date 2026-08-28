@@ -1,6 +1,29 @@
 const VISIT_LOG_ENDPOINT = '/api/visit-log';
 const STORAGE_KEY = 'arg.visitor.session';
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+const EMPTY_ATTRIBUTION = {
+  referrer: '',
+  source: '',
+  medium: '',
+  campaign: '',
+  term: '',
+  content: '',
+  clickId: '',
+};
+const ATTRIBUTION_CLICK_IDS = [
+  ['li_fat_id', 'linkedin'],
+  ['twclid', 'twitter'],
+  ['fbclid', 'facebook'],
+  ['gbraid', 'google'],
+  ['gclid', 'google'],
+  ['wbraid', 'google'],
+  ['msclkid', 'bing'],
+  ['ttclid', 'tiktok'],
+  ['rdt_cid', 'reddit'],
+  ['epik', 'pinterest'],
+  ['scid', 'snapchat'],
+  ['mc_cid', 'newsletter'],
+];
 
 export class FirstPartyAnalyticsProvider {
   constructor() {
@@ -103,10 +126,12 @@ export class FirstPartyAnalyticsProvider {
     if (!this.events.length && !this.pageViews.length) return;
 
     const session = this.readStoredSession();
+    const attribution = getStoredAttribution(session);
     const body = JSON.stringify({
       sessionId: session?.sessionId,
       language: navigator.language,
-      referrer: document.referrer,
+      referrer: attribution.referrer,
+      attribution,
       events: this.events.splice(0, this.events.length),
       pageViews: this.pageViews.splice(0, this.pageViews.length),
     });
@@ -132,12 +157,14 @@ export class FirstPartyAnalyticsProvider {
     const now = Date.now();
     const stored = this.readStoredSession();
     const isExpired = !stored?.lastActivity || now - stored.lastActivity > SESSION_TIMEOUT_MS;
+    const attribution = getStoredAttribution(stored);
     const session = isExpired
-      ? createSession(now)
+      ? createSession(now, getCurrentAttribution())
       : {
           sessionId: stored.sessionId,
           lastActivity: now,
           sequence: (stored.sequence || 0) + 1,
+          attribution,
         };
 
     this.writeStoredSession(session);
@@ -177,11 +204,12 @@ function getEventPath(params) {
   return window.location.pathname;
 }
 
-function createSession(now) {
+function createSession(now, attribution = EMPTY_ATTRIBUTION) {
   return {
     sessionId: createSessionId(),
     lastActivity: now,
     sequence: 1,
+    attribution,
   };
 }
 
@@ -191,4 +219,75 @@ function createSessionId() {
   }
 
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function getCurrentAttribution() {
+  const params = new URLSearchParams(window.location.search);
+  const attribution = {
+    referrer: getExternalReferrer(),
+    source: normalizeAttributionValue(
+      params.get('utm_source') || params.get('source') || params.get('ref')
+    ),
+    medium: normalizeAttributionValue(params.get('utm_medium')),
+    campaign: normalizeAttributionValue(params.get('utm_campaign')),
+    term: normalizeAttributionValue(params.get('utm_term')),
+    content: normalizeAttributionValue(params.get('utm_content')),
+    clickId: '',
+  };
+
+  for (const [parameter, source] of ATTRIBUTION_CLICK_IDS) {
+    if (!params.has(parameter)) continue;
+
+    attribution.clickId = parameter;
+    if (!attribution.source) attribution.source = source;
+    if (!attribution.medium) attribution.medium = 'paid';
+    break;
+  }
+
+  return attribution;
+}
+
+function getExternalReferrer() {
+  if (!document.referrer) return '';
+
+  try {
+    const referrer = new URL(document.referrer);
+    if (referrer.hostname === window.location.hostname) return '';
+
+    referrer.hash = '';
+    return referrer.toString();
+  } catch {
+    return document.referrer;
+  }
+}
+
+function normalizeAttributionValue(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase();
+}
+
+function normalizeAttribution(value, referrer = '') {
+  return {
+    referrer: normalizeAttributionString(value?.referrer || referrer),
+    source: normalizeAttributionValue(value?.source),
+    medium: normalizeAttributionValue(value?.medium),
+    campaign: normalizeAttributionValue(value?.campaign),
+    term: normalizeAttributionValue(value?.term),
+    content: normalizeAttributionValue(value?.content),
+    clickId: normalizeAttributionValue(value?.clickId),
+  };
+}
+
+function getStoredAttribution(session) {
+  const attribution = normalizeAttribution(session?.attribution, session?.referrer);
+  return hasAttribution(attribution) ? attribution : getCurrentAttribution();
+}
+
+function hasAttribution(attribution) {
+  return Object.values(attribution).some(Boolean);
+}
+
+function normalizeAttributionString(value) {
+  return String(value || '').trim();
 }

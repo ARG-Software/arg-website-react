@@ -26,6 +26,7 @@ export class VisitsController extends ControllerBase {
         pageViews: payload.pageViews,
         language: payload.language,
         referrer: payload.referrer,
+        attribution: payload.attribution,
       });
 
       return this.json(204, '');

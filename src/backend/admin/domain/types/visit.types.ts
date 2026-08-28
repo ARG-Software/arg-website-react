@@ -22,6 +22,16 @@ export type VisitGeolocationInput = {
   timezone?: string | null;
 };
 
+export type VisitAttributionInput = {
+  referrer?: string | null;
+  source?: string | null;
+  medium?: string | null;
+  campaign?: string | null;
+  term?: string | null;
+  content?: string | null;
+  clickId?: string | null;
+};
+
 export type VisitSessionConstructorParams = {
   sessionHash: string;
   events?: VisitEventInput[];
@@ -29,6 +39,7 @@ export type VisitSessionConstructorParams = {
   geo?: VisitGeolocationInput;
   language?: string;
   referrer?: string;
+  attribution?: VisitAttributionInput;
 };
 
 export type VisitEvent = {
@@ -56,6 +67,12 @@ export type VisitSessionRecord = {
   timezone: string;
   language: string;
   referrer: string | null;
+  source: string | null;
+  medium: string | null;
+  campaign: string | null;
+  term: string | null;
+  content: string | null;
+  clickId: string | null;
   entryPath: string;
   events: VisitEvent[];
   pageViews: VisitPageView[];
@@ -72,6 +89,12 @@ export type VisitSessionListItem = {
   timezone: string;
   entryPath: string;
   referrer: string | null;
+  source: string | null;
+  medium: string | null;
+  campaign: string | null;
+  term: string | null;
+  content: string | null;
+  clickId: string | null;
   pageCount: number;
   eventCount: number;
   durationMs: number;
@@ -81,6 +104,9 @@ export type VisitSessionListItem = {
 
 export type VisitJourneyEvent = {
   sessionHash: string;
+  type: 'page_view' | 'event';
+  name: string;
+  params: Record<string, string | number | boolean | null>;
   sequence: string | number;
   path: string;
   title: string;
@@ -89,6 +115,12 @@ export type VisitJourneyEvent = {
   city: string;
   timezone: string;
   referrer: string | null;
+  source: string | null;
+  medium: string | null;
+  campaign: string | null;
+  term: string | null;
+  content: string | null;
+  clickId: string | null;
   visitedAt: string;
   endedAt: string;
   durationMs: string | number;
@@ -100,6 +132,7 @@ export type VisitMetricsData = {
   countryBreakdown?: VisitMetricBreakdownItem[];
   topPages?: VisitMetricBreakdownItem[];
   topReferrers?: VisitMetricBreakdownItem[];
+  topSources?: VisitMetricBreakdownItem[];
 };
 
 export type VisitMetricsSummary = {
