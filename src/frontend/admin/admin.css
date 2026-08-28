@@ -154,6 +154,131 @@
   grid-template-columns: minmax(0, 1.35fr) minmax(20rem, 0.65fr);
 }
 
+.admin-visit-country-column {
+  align-content: start;
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-country-summary {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.admin-country-summary__metric {
+  background: rgba(12, 0, 46, 0.04);
+  border: 1px solid rgba(12, 0, 46, 0.08);
+  border-radius: 0.9rem;
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  padding: 0.75rem;
+}
+
+.admin-country-summary__metric span {
+  color: rgba(12, 0, 46, 0.56);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-country-summary__metric strong {
+  color: #0c002e;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.05;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-country-ranking-card {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.admin-country-ranking-card__header h2,
+.admin-country-ranking-card__header p {
+  margin: 0;
+}
+
+.admin-country-ranking-card__header h2 {
+  color: #0c002e;
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  line-height: 1;
+  margin-bottom: 0.35rem;
+}
+
+.admin-country-ranking-card__header p,
+.admin-country-ranking-card__empty {
+  color: rgba(12, 0, 46, 0.62);
+}
+
+.admin-country-ranking-list {
+  display: grid;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-country-ranking-list__item {
+  align-items: center;
+  background: rgba(12, 0, 46, 0.04);
+  border: 1px solid rgba(12, 0, 46, 0.06);
+  border-radius: 0.8rem;
+  color: #0c002e;
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 2.65rem;
+  padding: 0.55rem 0.65rem;
+}
+
+.admin-country-ranking-list__rank {
+  color: rgba(12, 0, 46, 0.4);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.admin-country-ranking-list__country {
+  font-size: 0.92rem;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-country-ranking-list__visits {
+  color: rgba(12, 0, 46, 0.72);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.admin-country-ranking-card__pagination {
+  align-items: center;
+  color: rgba(12, 0, 46, 0.62);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.admin-country-ranking-card__button {
+  --size-button-padding-x: 0.85rem;
+  --size-button-padding-y: 0.55rem;
+  --type-button: 0.78rem;
+  min-height: 2.1rem;
+}
+
 .admin-workspace {
   align-items: start;
   display: grid;
@@ -684,4 +809,26 @@
 
 .admin-retry:hover {
   background: #1a0a4d;
+}
+
+@media screen and (max-width: 1024px) {
+  .admin-visit-analytics-grid,
+  .admin-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .admin-country-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-country-ranking-card__pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-country-ranking-card__button {
+    width: 100%;
+  }
 }

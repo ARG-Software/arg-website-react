@@ -313,6 +313,10 @@
   grid-template-columns: 1fr;
 }
 
+.admin-metric-chart__plots--pie {
+  display: block;
+}
+
 .admin-metric-chart__plot,
 .admin-metric-chart__pie {
   height: 20rem;
@@ -323,72 +327,6 @@
   height: 100%;
   min-height: 20rem;
   width: 100%;
-}
-
-.admin-metric-chart__pie--with-list {
-  display: grid;
-  gap: 1rem;
-  height: auto;
-  min-height: 0;
-}
-
-.admin-metric-chart__pie--with-list .admin-metric-chart__pie-graphic {
-  height: clamp(18rem, 32vw, 23rem);
-  min-height: 18rem;
-}
-
-.admin-metric-chart__pie-list {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  display: grid;
-  gap: 0.35rem;
-  list-style: none;
-  margin: 0;
-  max-height: 17rem;
-  overflow-y: auto;
-  padding: 0.45rem;
-}
-
-.admin-metric-chart__pie-list-item {
-  align-items: center;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 0.75rem;
-  color: #fff;
-  display: grid;
-  gap: 0.55rem;
-  grid-template-columns: auto auto minmax(0, 1fr) auto;
-  min-height: 2.6rem;
-  padding: 0.55rem 0.65rem;
-}
-
-.admin-metric-chart__pie-list-rank {
-  color: rgba(255, 255, 255, 0.48);
-  font-size: 0.74rem;
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
-
-.admin-metric-chart__pie-list-color {
-  border-radius: 999px;
-  height: 0.65rem;
-  width: 0.65rem;
-}
-
-.admin-metric-chart__pie-list-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.admin-metric-chart__pie-list-value {
-  font-size: 0.82rem;
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  white-space: nowrap;
 }
 
 .admin-metric-chart__empty {
@@ -732,25 +670,6 @@
   color: rgba(12, 0, 46, 0.62);
 }
 
-.ui-card--light.admin-metric-chart .admin-metric-chart__pie-list {
-  background: rgba(12, 0, 46, 0.03);
-  border-color: rgba(12, 0, 46, 0.08);
-}
-
-.ui-card--light.admin-metric-chart .admin-metric-chart__pie-list-item {
-  background: #fff;
-  box-shadow: inset 0 0 0 1px rgba(12, 0, 46, 0.06);
-  color: #0c002e;
-}
-
-.ui-card--light.admin-metric-chart .admin-metric-chart__pie-list-rank {
-  color: rgba(12, 0, 46, 0.4);
-}
-
-.ui-card--light.admin-metric-chart .admin-metric-chart__pie-list-value {
-  color: rgba(12, 0, 46, 0.72);
-}
-
 .ui-card--light.admin-data-table th,
 .ui-card--light.admin-data-table td {
   border-bottom-color: rgba(12, 0, 46, 0.1);
@@ -940,14 +859,6 @@
 
   .admin-metric-chart__plots {
     grid-template-columns: 1fr;
-  }
-
-  .admin-metric-chart__pie--with-list .admin-metric-chart__pie-graphic {
-    height: 18rem;
-  }
-
-  .admin-metric-chart__pie-list {
-    max-height: 14rem;
   }
 }
 

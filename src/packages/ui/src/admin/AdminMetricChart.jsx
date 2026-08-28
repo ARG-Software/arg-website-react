@@ -35,7 +35,6 @@ export function AdminMetricChart({
   mode = 'combo',
   pieAriaLabel = 'Metric split',
   pieLegendMode = 'chart',
-  pieListValueUnit = 'item',
   emptyMessage = 'No data available for the selected range.',
   pieEmptyMessage = 'No split data available yet.',
   onRangeChange,
@@ -43,13 +42,14 @@ export function AdminMetricChart({
   rangeClassName = '',
   rangeLabelHidden = false,
   tone = 'default',
+  children,
 }) {
   const showLineChart = mode !== 'pie';
   const showPieChart = mode !== 'line';
   const hasData =
     points.length > 0 && points.some(point => lines.some(line => (point[line.dataKey] || 0) > 0));
   const hasPieData = pie.some(item => (item.value || 0) > 0);
-  const showPieList = showPieChart && pieLegendMode === 'list';
+  const showPieLegend = pieLegendMode === 'chart';
 
   return (
     <UiCard className="admin-metric-chart" tone={tone}>
@@ -135,84 +135,45 @@ export function AdminMetricChart({
           </div>
         )}
         {showPieChart && (
-          <div
-            className={[
-              'admin-metric-chart__pie',
-              showPieList ? 'admin-metric-chart__pie--with-list' : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-            role={showPieList ? undefined : 'img'}
-            aria-label={showPieList ? undefined : pieAriaLabel}
-          >
+          <div className="admin-metric-chart__pie" role="img" aria-label={pieAriaLabel}>
             {hasPieData ? (
-              <>
-                <div
-                  className="admin-metric-chart__pie-graphic"
-                  role={showPieList ? 'img' : undefined}
-                  aria-label={showPieList ? pieAriaLabel : undefined}
-                >
-                  <ResponsiveContainer width="100%" height="100%" minHeight={320}>
-                    <PieChart>
-                      <Pie
-                        data={pie}
-                        dataKey="value"
-                        nameKey="label"
-                        innerRadius="55%"
-                        outerRadius="88%"
-                        paddingAngle={3}
-                      >
-                        {pie.map((item, index) => (
-                          <Cell key={item.label} fill={getPieColor(item, index)} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{
-                          background: '#fff',
-                          border: '1px solid rgba(12, 0, 46, 0.1)',
-                          borderRadius: '0.75rem',
-                          boxShadow: '0 1rem 2rem rgba(4, 0, 18, 0.12)',
-                          color: '#0c002e',
-                        }}
-                      />
-                      {!showPieList && (
-                        <Legend wrapperStyle={{ paddingTop: '1rem' }} iconType="circle" />
-                      )}
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                {showPieList && (
-                  <ol className="admin-metric-chart__pie-list" aria-label={`${pieAriaLabel} list`}>
-                    {pie.map((item, index) => {
-                      const value = Number(item.value || 0);
-                      const unit = value === 1 ? pieListValueUnit : `${pieListValueUnit}s`;
-
-                      return (
-                        <li key={item.label} className="admin-metric-chart__pie-list-item">
-                          <span className="admin-metric-chart__pie-list-rank">
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-                          <span
-                            className="admin-metric-chart__pie-list-color"
-                            style={{ backgroundColor: getPieColor(item, index) }}
-                            aria-hidden="true"
-                          />
-                          <span className="admin-metric-chart__pie-list-label">{item.label}</span>
-                          <span className="admin-metric-chart__pie-list-value">
-                            {value.toLocaleString()} {unit}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ol>
-                )}
-              </>
+              <div className="admin-metric-chart__pie-graphic">
+                <ResponsiveContainer width="100%" height="100%" minHeight={320}>
+                  <PieChart>
+                    <Pie
+                      data={pie}
+                      dataKey="value"
+                      nameKey="label"
+                      innerRadius="55%"
+                      outerRadius="88%"
+                      paddingAngle={3}
+                    >
+                      {pie.map((item, index) => (
+                        <Cell key={item.label} fill={getPieColor(item, index)} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        background: '#fff',
+                        border: '1px solid rgba(12, 0, 46, 0.1)',
+                        borderRadius: '0.75rem',
+                        boxShadow: '0 1rem 2rem rgba(4, 0, 18, 0.12)',
+                        color: '#0c002e',
+                      }}
+                    />
+                    {showPieLegend && (
+                      <Legend wrapperStyle={{ paddingTop: '1rem' }} iconType="circle" />
+                    )}
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             ) : (
               <div className="admin-metric-chart__empty">{pieEmptyMessage}</div>
             )}
           </div>
         )}
       </div>
+      {children}
     </UiCard>
   );
 }

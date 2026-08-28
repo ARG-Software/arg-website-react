@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
 import { AdminMetricChart } from '@ui/admin/AdminMetricChart.jsx';
 import { ConfirmDialog } from '@ui/overlays/ConfirmDialog.jsx';
+import { UiButton } from '@ui/primitives/UiButton.jsx';
 import { UiCard } from '@ui/primitives/UiCard.jsx';
 import { UiSelect } from '@ui/primitives/UiField.jsx';
 import {
@@ -31,6 +32,8 @@ import {
 
 const DEFAULT_RANGE = 'today';
 const COUNTRY_BREAKDOWN_PAGE_SIZE = 250;
+const COUNTRY_DONUT_SLICE_COUNT = 6;
+const COUNTRY_RANKING_PAGE_SIZE = 8;
 const STAT_CARDS = [
   { metric: 'page_views', label: 'Page views' },
   { metric: 'visits', label: 'Visits' },
@@ -51,6 +54,7 @@ function VisitsDashboard({ onSelectVisitSession }) {
   const [chartRange, setChartRange] = useState(DEFAULT_RANGE);
   const [chartSeries, setChartSeries] = useState('all');
   const [countryRange, setCountryRange] = useState(DEFAULT_RANGE);
+  const [countryPage, setCountryPage] = useState(1);
   const [sourcesRange, setSourcesRange] = useState(DEFAULT_RANGE);
   const [sourcesPage, setSourcesPage] = useState(1);
   const [referrersRange, setReferrersRange] = useState(DEFAULT_RANGE);
@@ -98,9 +102,15 @@ function VisitsDashboard({ onSelectVisitSession }) {
     events: eventsStatQuery,
     countries: countriesStatQuery,
   };
+  const countryItems = formatCountryBreakdown(countryQuery.data?.records || []);
 
   function updateStatRange(metric, range) {
     setStatRanges(current => ({ ...current, [metric]: range }));
+  }
+
+  function updateCountryRange(range) {
+    setCountryRange(range);
+    setCountryPage(1);
   }
 
   async function deleteVisit() {
@@ -156,27 +166,37 @@ function VisitsDashboard({ onSelectVisitSession }) {
             tone="light"
           />
         )}
-        {countryQuery.isError ? (
-          <ErrorCard error={countryQuery.error} onRetry={() => countryQuery.refetch()} />
-        ) : (
-          <AdminMetricChart
-            title="Visitors by country"
-            description="Country split for page views in the selected range."
-            range={countryRange}
-            rangeId="admin-visit-country-range"
-            ranges={VISIT_CHART_RANGES}
-            pie={formatCountryBreakdown(countryQuery.data?.records || [])}
-            pieAriaLabel="Visitor countries"
-            pieLegendMode="list"
-            pieListValueUnit="visit"
-            pieEmptyMessage="No country data available for the selected range."
-            onRangeChange={setCountryRange}
-            rangeClassName="admin-visit-range-select admin-visit-range-select--small"
-            rangeLabelHidden
-            mode="pie"
-            tone="light"
-          />
-        )}
+        <div className="admin-visit-country-column">
+          {countryQuery.isError ? (
+            <ErrorCard error={countryQuery.error} onRetry={() => countryQuery.refetch()} />
+          ) : (
+            <>
+              <AdminMetricChart
+                title="Visitors by country"
+                description="Country split for visits in the selected range."
+                range={countryRange}
+                rangeId="admin-visit-country-range"
+                ranges={VISIT_CHART_RANGES}
+                pie={getCountryChartItems(countryItems)}
+                pieAriaLabel="Visitor countries"
+                pieLegendMode="none"
+                pieEmptyMessage="No country data available for the selected range."
+                onRangeChange={updateCountryRange}
+                rangeClassName="admin-visit-range-select admin-visit-range-select--small"
+                rangeLabelHidden
+                mode="pie"
+                tone="light"
+              >
+                <CountrySummary items={countryItems} />
+              </AdminMetricChart>
+              <CountryRankingCard
+                items={countryItems}
+                page={countryPage}
+                onPageChange={setCountryPage}
+              />
+            </>
+          )}
+        </div>
       </div>
       {sourcesQuery.isError ? (
         <ErrorCard error={sourcesQuery.error} onRetry={() => sourcesQuery.refetch()} />
@@ -362,6 +382,87 @@ function VisitDeleteDialog({ deleteTarget, deleteMutation, onCancel, onConfirm }
   );
 }
 
+function CountrySummary({ items }) {
+  const totalVisits = items.reduce((total, item) => total + Number(item.value || 0), 0);
+  const topCountry = items[0];
+
+  return (
+    <div className="admin-country-summary" aria-label="Country visit summary">
+      <CountrySummaryMetric label="Total visits" value={totalVisits.toLocaleString()} />
+      <CountrySummaryMetric label="Countries" value={items.length.toLocaleString()} />
+      <CountrySummaryMetric label="Top country" value={topCountry?.label || '-'} />
+      <CountrySummaryMetric label="Top visits" value={(topCountry?.value || 0).toLocaleString()} />
+    </div>
+  );
+}
+
+function CountrySummaryMetric({ label, value }) {
+  return (
+    <div className="admin-country-summary__metric">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function CountryRankingCard({ items, page, onPageChange }) {
+  const totalPages = Math.max(1, Math.ceil(items.length / COUNTRY_RANKING_PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const start = (currentPage - 1) * COUNTRY_RANKING_PAGE_SIZE;
+  const pageItems = items.slice(start, start + COUNTRY_RANKING_PAGE_SIZE);
+
+  return (
+    <UiCard className="admin-country-ranking-card" tone="light">
+      <div className="admin-country-ranking-card__header">
+        <div>
+          <h2>Country ranking</h2>
+          <p>Countries ordered by visit count.</p>
+        </div>
+      </div>
+      {pageItems.length > 0 ? (
+        <ol className="admin-country-ranking-list" aria-label="Countries by visits">
+          {pageItems.map((item, index) => (
+            <li key={item.label} className="admin-country-ranking-list__item">
+              <span className="admin-country-ranking-list__rank">
+                {String(start + index + 1).padStart(2, '0')}
+              </span>
+              <span className="admin-country-ranking-list__country">{item.label}</span>
+              <strong className="admin-country-ranking-list__visits">
+                {Number(item.value || 0).toLocaleString()} visits
+              </strong>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <div className="admin-country-ranking-card__empty">No country visits found.</div>
+      )}
+      {totalPages > 1 && (
+        <div className="admin-country-ranking-card__pagination">
+          <UiButton
+            className="admin-country-ranking-card__button"
+            variant="secondary"
+            disabled={currentPage <= 1}
+            onClick={() => onPageChange(currentPage - 1)}
+          >
+            Previous
+          </UiButton>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <UiButton
+            className="admin-country-ranking-card__button"
+            variant="secondary"
+            disabled={currentPage >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+          >
+            Next
+          </UiButton>
+        </div>
+      )}
+    </UiCard>
+  );
+}
+
 function VisitStatCard({ label, range, query, onRangeChange }) {
   return (
     <UiCard className="admin-visit-stat-card" tone="light">
@@ -420,6 +521,17 @@ function getVisitChartLines(series) {
 
   const dataKey = series === 'page_views' ? 'pageViews' : series;
   return VISIT_CHART_LINES.filter(line => line.dataKey === dataKey);
+}
+
+function getCountryChartItems(items) {
+  if (items.length <= COUNTRY_DONUT_SLICE_COUNT + 1) return items;
+
+  const visibleItems = items.slice(0, COUNTRY_DONUT_SLICE_COUNT);
+  const otherVisits = items
+    .slice(COUNTRY_DONUT_SLICE_COUNT)
+    .reduce((total, item) => total + Number(item.value || 0), 0);
+
+  return [...visibleItems, { label: 'Other countries', value: otherVisits }];
 }
 
 function getVisitPageColumns() {
