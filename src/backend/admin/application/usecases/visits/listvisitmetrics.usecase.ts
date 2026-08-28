@@ -5,6 +5,7 @@ import type {
   VisitStatMetric,
 } from '../../../domain/types/visitmetrics.types.js';
 import type { IVisitRepository } from '../../ports/repositories/ivisit.repository.js';
+import { getPagination } from '../pagination.js';
 
 const ALLOWED_RANGES = new Set([
   'today',
@@ -23,6 +24,8 @@ export interface ListVisitMetricsInput {
   metric?: string;
   range?: string;
   series?: string;
+  page?: string | number;
+  pageSize?: string | number;
 }
 
 export class ListVisitMetricsUseCase {
@@ -37,7 +40,11 @@ export class ListVisitMetricsUseCase {
     }
 
     if (BREAKDOWN_METRICS.has(metric)) {
-      return this.repository.getBreakdown(metric as VisitBreakdownMetric, range);
+      return this.repository.getBreakdown(
+        metric as VisitBreakdownMetric,
+        range,
+        getPagination(input)
+      );
     }
 
     return this.repository.getChart(range, normalizeSeries(input.series));

@@ -1,3 +1,5 @@
+import type { VisitPagination } from './visitsession.types.js';
+
 export type VisitMetricsData = {
   summary?: VisitMetricsSummary;
   points?: VisitMetricsPoint[];
@@ -66,4 +68,5 @@ export type VisitBreakdownResult = {
   metric: VisitBreakdownMetric;
   range: VisitMetricRange;
   records: VisitMetricBreakdownItem[];
+  pagination?: VisitPagination;
 };

@@ -5,6 +5,7 @@ export const ADMIN_ROUTES = {
   notSent: '/admin/not-sent/',
   aiBot: '/admin/ai-bot/',
   visits: '/admin/visits/',
+  visitsAll: '/admin/visits/all/',
   help: '/admin/help/',
   settings: '/admin/settings/',
 };

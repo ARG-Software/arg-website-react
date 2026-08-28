@@ -66,6 +66,7 @@ function AdminWorkspace() {
   const queryMutating = useIsMutating({ mutationKey: ['admin'] });
   const pageLoading = queryFetching > 0 || queryMutating > 0;
   const view = getAdminView(location.pathname);
+  const visitsView = getVisitsView(location.pathname);
   const importStatus = getImportStatus(importMutation);
   const deepLinkedConversationId =
     view === 'aiBot' ? new URLSearchParams(location.search).get('conversationId') : '';
@@ -212,6 +213,8 @@ function AdminWorkspace() {
               </div>
             }
           />
+        ) : view === 'visits' ? (
+          <AdminNav items={getVisitNavItems(location.pathname)} onNavigate={navigate} />
         ) : null
       }
       loading={pageLoading}
@@ -221,6 +224,7 @@ function AdminWorkspace() {
         onSelectRecord: setSelectedRecord,
         onSelectConversation: handleSelectConversation,
         onSelectVisitSession: setSelectedVisitSession,
+        visitsView,
       })}
       <OutreachEditor
         key={selectedRecord?.id ?? 'closed'}
@@ -279,7 +283,9 @@ function renderAdminFragment(view, handlers) {
   }
 
   if (view === 'visits') {
-    return <VisitsPage onSelectVisitSession={handlers.onSelectVisitSession} />;
+    return (
+      <VisitsPage view={handlers.visitsView} onSelectVisitSession={handlers.onSelectVisitSession} />
+    );
   }
 
   if (view === 'settings') {
@@ -341,6 +347,11 @@ function getAdminView(pathname) {
   return 'dashboard';
 }
 
+function getVisitsView(pathname) {
+  if (pathname.startsWith('/admin/visits/all')) return 'all';
+  return 'dashboard';
+}
+
 function isOutreachView(view) {
   return ['dashboard', 'all', 'sent', 'notSent'].includes(view);
 }
@@ -373,5 +384,18 @@ function getAdminNavItems(pathname) {
       isActive: getAdminView(pathname) === 'notSent',
     },
     { href: ADMIN_ROUTES.all, label: 'All', isActive: getAdminView(pathname) === 'all' },
+  ];
+}
+
+function getVisitNavItems(pathname) {
+  const view = getVisitsView(pathname);
+
+  return [
+    {
+      href: ADMIN_ROUTES.visits,
+      label: 'Dashboard',
+      isActive: view === 'dashboard',
+    },
+    { href: ADMIN_ROUTES.visitsAll, label: 'All', isActive: view === 'all' },
   ];
 }

@@ -6,6 +6,7 @@ import { UiCard } from '@ui/primitives/UiCard.jsx';
 import { UiSelect } from '@ui/primitives/UiField.jsx';
 import {
   useDeleteVisitSession,
+  useAllVisitSessions,
   useVisitBreakdown,
   useVisitChart,
   useVisitSessions,
@@ -35,14 +36,25 @@ const STAT_CARDS = [
   { metric: 'countries', label: 'Countries' },
 ];
 
-export default function VisitsPage({ onSelectVisitSession }) {
+export default function VisitsPage({ view = 'dashboard', onSelectVisitSession }) {
+  if (view === 'all') {
+    return <AllVisitsPage onSelectVisitSession={onSelectVisitSession} />;
+  }
+
+  return <VisitsDashboard onSelectVisitSession={onSelectVisitSession} />;
+}
+
+function VisitsDashboard({ onSelectVisitSession }) {
   const [statRanges, setStatRanges] = useState(createDefaultStatRanges);
   const [chartRange, setChartRange] = useState(DEFAULT_RANGE);
   const [chartSeries, setChartSeries] = useState('all');
   const [countryRange, setCountryRange] = useState(DEFAULT_RANGE);
   const [sourcesRange, setSourcesRange] = useState(DEFAULT_RANGE);
+  const [sourcesPage, setSourcesPage] = useState(1);
   const [referrersRange, setReferrersRange] = useState(DEFAULT_RANGE);
+  const [referrersPage, setReferrersPage] = useState(1);
   const [pagesRange, setPagesRange] = useState(DEFAULT_RANGE);
+  const [pagesPage, setPagesPage] = useState(1);
   const [sessionPage, setSessionPage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const pageViewsStatQuery = useVisitStat('page_views', statRanges.page_views);
@@ -51,9 +63,24 @@ export default function VisitsPage({ onSelectVisitSession }) {
   const countriesStatQuery = useVisitStat('countries', statRanges.countries);
   const chartQuery = useVisitChart(chartRange, chartSeries);
   const countryQuery = useVisitBreakdown('countries', countryRange);
-  const sourcesQuery = useVisitBreakdown('sources', sourcesRange);
-  const referrersQuery = useVisitBreakdown('referrers', referrersRange);
-  const pagesQuery = useVisitBreakdown('pages', pagesRange);
+  const sourcesQuery = useVisitBreakdown(
+    'sources',
+    sourcesRange,
+    { page: sourcesPage, pageSize: PAGE_SIZE },
+    { keepPrevious: true }
+  );
+  const referrersQuery = useVisitBreakdown(
+    'referrers',
+    referrersRange,
+    { page: referrersPage, pageSize: PAGE_SIZE },
+    { keepPrevious: true }
+  );
+  const pagesQuery = useVisitBreakdown(
+    'pages',
+    pagesRange,
+    { page: pagesPage, pageSize: PAGE_SIZE },
+    { keepPrevious: true }
+  );
   const sessionsQuery = useVisitSessions(
     { page: sessionPage, pageSize: PAGE_SIZE },
     { keepPrevious: true }
@@ -154,13 +181,14 @@ export default function VisitsPage({ onSelectVisitSession }) {
               id="admin-visit-sources-range"
               className="admin-visit-range-select--tiny"
               value={sourcesRange}
-              onChange={setSourcesRange}
+              onChange={range => updatePagedRange(setSourcesRange, setSourcesPage, range)}
             />
           }
           filtersClassName="admin-data-table__filters--compact"
           columns={getVisitSourceColumns()}
           rows={(sourcesQuery.data?.records || []).map(createReferrerRow)}
           loading={sourcesQuery.isLoading}
+          pagination={getTablePagination(sourcesQuery, setSourcesPage)}
           emptyMessage="No source data found."
           tone="light"
         />
@@ -176,13 +204,14 @@ export default function VisitsPage({ onSelectVisitSession }) {
               id="admin-visit-referrers-range"
               className="admin-visit-range-select--tiny"
               value={referrersRange}
-              onChange={setReferrersRange}
+              onChange={range => updatePagedRange(setReferrersRange, setReferrersPage, range)}
             />
           }
           filtersClassName="admin-data-table__filters--compact"
           columns={getVisitReferrerColumns()}
           rows={(referrersQuery.data?.records || []).map(createReferrerRow)}
           loading={referrersQuery.isLoading}
+          pagination={getTablePagination(referrersQuery, setReferrersPage)}
           emptyMessage="No referrer data found."
           tone="light"
         />
@@ -197,13 +226,14 @@ export default function VisitsPage({ onSelectVisitSession }) {
               id="admin-visit-pages-range"
               className="admin-visit-range-select--tiny"
               value={pagesRange}
-              onChange={setPagesRange}
+              onChange={range => updatePagedRange(setPagesRange, setPagesPage, range)}
             />
           }
           filtersClassName="admin-data-table__filters--compact"
           columns={getVisitPageColumns()}
           rows={pagesQuery.data?.records || []}
           loading={pagesQuery.isLoading}
+          pagination={getTablePagination(pagesQuery, setPagesPage)}
           emptyMessage="No page views found."
           tone="light"
         />
@@ -211,43 +241,116 @@ export default function VisitsPage({ onSelectVisitSession }) {
       {sessionsQuery.isError ? (
         <ErrorCard error={sessionsQuery.error} onRetry={() => sessionsQuery.refetch()} />
       ) : (
-        <AdminDataTable
+        <VisitSessionsTable
           title="Recent visits"
           description="Today and yesterday only. Open a row to view the ordered page journey."
-          columns={getVisitSessionColumns()}
-          rows={sessionsQuery.data?.records || []}
-          pagination={{
-            ...(sessionsQuery.data?.pagination ?? createEmptyTableData().pagination),
-            onPageChange: setSessionPage,
-          }}
-          emptyMessage="No visits found."
-          onRowClick={onSelectVisitSession}
-          rowActions={record => (
-            <button
-              type="button"
-              className="admin-table-action admin-table-action--danger"
-              disabled={deleteMutation.isPending}
-              onClick={() => setDeleteTarget(record)}
-            >
-              Delete
-            </button>
-          )}
-          tone="light"
+          query={sessionsQuery}
+          onPageChange={setSessionPage}
+          onSelectVisitSession={onSelectVisitSession}
+          onDelete={setDeleteTarget}
+          deleteMutation={deleteMutation}
         />
       )}
-      <ConfirmDialog
-        isOpen={Boolean(deleteTarget)}
-        title="Delete this visit?"
-        cancelLabel="Keep visit"
-        confirmLabel={deleteMutation.isPending ? 'Deleting...' : 'Delete visit'}
-        confirmDisabled={deleteMutation.isPending}
+      <VisitDeleteDialog
+        deleteTarget={deleteTarget}
+        deleteMutation={deleteMutation}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={deleteVisit}
-      >
-        <p>This permanently removes the visit session and its journey events from analytics.</p>
-        {deleteMutation.isError && <p className="admin-error">{deleteMutation.error.message}</p>}
-      </ConfirmDialog>
+      />
     </div>
+  );
+}
+
+function AllVisitsPage({ onSelectVisitSession }) {
+  const [sessionPage, setSessionPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const sessionsQuery = useAllVisitSessions(
+    { page: sessionPage, pageSize: PAGE_SIZE },
+    { keepPrevious: true }
+  );
+  const deleteMutation = useDeleteVisitSession();
+
+  async function deleteVisit() {
+    if (!deleteTarget) return;
+
+    await deleteMutation.mutateAsync(deleteTarget.sessionHash);
+    setDeleteTarget(null);
+    onSelectVisitSession(null);
+  }
+
+  return (
+    <div className="admin-content-grid">
+      {sessionsQuery.isError ? (
+        <ErrorCard error={sessionsQuery.error} onRetry={() => sessionsQuery.refetch()} />
+      ) : (
+        <VisitSessionsTable
+          title="All visits"
+          description="Every recorded visit, ordered by latest activity. Open a row to view the ordered page journey."
+          query={sessionsQuery}
+          onPageChange={setSessionPage}
+          onSelectVisitSession={onSelectVisitSession}
+          onDelete={setDeleteTarget}
+          deleteMutation={deleteMutation}
+        />
+      )}
+      <VisitDeleteDialog
+        deleteTarget={deleteTarget}
+        deleteMutation={deleteMutation}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={deleteVisit}
+      />
+    </div>
+  );
+}
+
+function VisitSessionsTable({
+  title,
+  description,
+  query,
+  onPageChange,
+  onSelectVisitSession,
+  onDelete,
+  deleteMutation,
+}) {
+  return (
+    <AdminDataTable
+      title={title}
+      description={description}
+      columns={getVisitSessionColumns()}
+      rows={query.data?.records || []}
+      loading={query.isLoading}
+      pagination={getTablePagination(query, onPageChange)}
+      emptyMessage="No visits found."
+      onRowClick={onSelectVisitSession}
+      rowActions={record => (
+        <button
+          type="button"
+          className="admin-table-action admin-table-action--danger"
+          disabled={deleteMutation.isPending}
+          onClick={() => onDelete(record)}
+        >
+          Delete
+        </button>
+      )}
+      tone="light"
+    />
+  );
+}
+
+function VisitDeleteDialog({ deleteTarget, deleteMutation, onCancel, onConfirm }) {
+  return (
+    <ConfirmDialog
+      isOpen={Boolean(deleteTarget)}
+      title="Delete this visit?"
+      cancelLabel="Keep visit"
+      confirmLabel={deleteMutation.isPending ? 'Deleting...' : 'Delete visit'}
+      confirmDisabled={deleteMutation.isPending}
+      onCancel={onCancel}
+      onConfirm={onConfirm}
+    >
+      <p>This permanently removes the visit session and its journey events from analytics.</p>
+      {deleteMutation.isError && <p className="admin-error">{deleteMutation.error.message}</p>}
+    </ConfirmDialog>
   );
 }
 
@@ -286,6 +389,18 @@ function RangeSelect({ id, className = '', value, onChange }) {
       ))}
     </UiSelect>
   );
+}
+
+function updatePagedRange(setRange, setPage, range) {
+  setRange(range);
+  setPage(1);
+}
+
+function getTablePagination(query, onPageChange) {
+  return {
+    ...(query.data?.pagination ?? createEmptyTableData().pagination),
+    onPageChange,
+  };
 }
 
 function createDefaultStatRanges() {

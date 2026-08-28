@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   deleteVisitSession,
+  fetchAllVisitSessions,
   fetchVisitBreakdown,
   fetchVisitChart,
   fetchVisitJourney,
@@ -24,10 +25,11 @@ export function useVisitChart(range, series) {
   });
 }
 
-export function useVisitBreakdown(metric, range) {
+export function useVisitBreakdown(metric, range, query = {}, options = {}) {
   return useQuery({
-    queryKey: [...visitQueryKey, 'breakdown', metric, range],
-    queryFn: () => fetchVisitBreakdown(metric, range),
+    queryKey: [...visitQueryKey, 'breakdown', metric, range, query],
+    queryFn: () => fetchVisitBreakdown(metric, range, query),
+    placeholderData: options.keepPrevious ? keepPreviousData : undefined,
   });
 }
 
@@ -35,6 +37,14 @@ export function useVisitSessions(query, options = {}) {
   return useQuery({
     queryKey: [...visitQueryKey, 'sessions', query],
     queryFn: () => fetchVisitSessions(query),
+    placeholderData: options.keepPrevious ? keepPreviousData : undefined,
+  });
+}
+
+export function useAllVisitSessions(query, options = {}) {
+  return useQuery({
+    queryKey: [...visitQueryKey, 'allSessions', query],
+    queryFn: () => fetchAllVisitSessions(query),
     placeholderData: options.keepPrevious ? keepPreviousData : undefined,
   });
 }

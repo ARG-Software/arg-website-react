@@ -1,4 +1,8 @@
-import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
+import {
+  errorResponse,
+  getControllerRoutes,
+  route,
+} from '../../../../shared/api/decorators/index.js';
 import { createErrorBody } from '../../../../shared/api/http.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { adminContainer } from '../../di/admin.container.js';
@@ -58,6 +62,17 @@ export class VisitsController extends ControllerBase {
     return this.json(200, await this.visits.listVisitSessionsUseCase.execute(this.query(request)));
   }
 
+  @route('GET', '/api/admin/all-visit-sessions')
+  @errorResponse('all_visit_sessions_request_failed', 'Admin request failed')
+  async allSessions(request: Request): Promise<Response> {
+    await this.authenticateUser(request);
+
+    return this.json(
+      200,
+      await this.visits.listAllVisitSessionsUseCase.execute(this.query(request))
+    );
+  }
+
   @route('GET', '/api/admin/visit-journey')
   @errorResponse('visit_journey_request_failed', 'Admin request failed')
   async journey(request: Request): Promise<Response> {
@@ -74,7 +89,6 @@ export class VisitsController extends ControllerBase {
 
     return this.json(204, '');
   }
-
 }
 
 let controller: VisitsController;

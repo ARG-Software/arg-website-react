@@ -119,10 +119,13 @@ export class SupabaseVisitRepository implements IVisitRepository {
 
   async getBreakdown(
     metric: VisitBreakdownMetric,
-    range: VisitMetricRange
+    range: VisitMetricRange,
+    { page = 1, pageSize = 10 }: { page?: number; pageSize?: number } = {}
   ): Promise<VisitBreakdownResult> {
     const { data, error } = await this.client.rpc('get_visit_breakdown', {
       p_metric: metric,
+      p_page: page,
+      p_page_size: pageSize,
       p_range: range,
       p_now: new Date().toISOString(),
     });
@@ -139,17 +142,37 @@ export class SupabaseVisitRepository implements IVisitRepository {
     page?: number;
     pageSize?: number;
   } = {}): Promise<VisitSessionListResult> {
+    return this.listSessionRecords({ page, pageSize }, true);
+  }
+
+  async listAllSessions({
+    page = 1,
+    pageSize = 10,
+  }: {
+    page?: number;
+    pageSize?: number;
+  } = {}): Promise<VisitSessionListResult> {
+    return this.listSessionRecords({ page, pageSize }, false);
+  }
+
+  private async listSessionRecords(
+    { page = 1, pageSize = 10 }: { page?: number; pageSize?: number } = {},
+    recentOnly: boolean
+  ): Promise<VisitSessionListResult> {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
-    const { data, error, count } = await this.client
+    let query = this.client
       .from('visit_sessions')
       .select(
         'session_hash, country_code, region, city, timezone, entry_path, referrer, source, medium, campaign, term, content, click_id, page_count, event_count, duration_ms, started_at, last_seen_at',
         {
           count: 'exact',
         }
-      )
-      .gte('last_seen_at', getRecentVisitsCutoff())
+      );
+
+    if (recentOnly) query = query.gte('last_seen_at', getRecentVisitsCutoff());
+
+    const { data, error, count } = await query
       .order('last_seen_at', { ascending: false })
       .range(from, to);
 

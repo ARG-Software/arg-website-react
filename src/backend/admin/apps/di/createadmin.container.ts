@@ -12,6 +12,7 @@ import { GetOutreachSummaryUseCase } from '../../application/usecases/outreach/g
 import { GetUserSessionUseCase } from '../../application/usecases/sessions/getusersession.usecase.js';
 import { ImportOutreachCsvUseCase } from '../../application/usecases/outreach/importoutreachcsv.usecase.js';
 import { ListAssistantConversationsUseCase } from '../../application/usecases/assistantConversations/listassistantconversations.usecase.js';
+import { ListAllVisitSessionsUseCase } from '../../application/usecases/visits/listallvisitsessions.usecase.js';
 import { ListOutreachRecordsUseCase } from '../../application/usecases/outreach/listoutreachrecords.usecase.js';
 import { ListVisitJourneyUseCase } from '../../application/usecases/visits/listvisitjourney.usecase.js';
 import { ListVisitMetricsUseCase } from '../../application/usecases/visits/listvisitmetrics.usecase.js';
@@ -84,7 +85,11 @@ export function createAdminContainer() {
       createOutreachCsvUseCase: new CreateOutreachCsvUseCase(csvParser, outreachRepository),
       getOutreachChartUseCase: new GetOutreachChartUseCase(outreachRepository, systemClock),
       getOutreachSummaryUseCase: new GetOutreachSummaryUseCase(outreachRepository),
-      importOutreachCsvUseCase: new ImportOutreachCsvUseCase(systemClock, csvParser, outreachRepository),
+      importOutreachCsvUseCase: new ImportOutreachCsvUseCase(
+        systemClock,
+        csvParser,
+        outreachRepository
+      ),
       listOutreachRecordsUseCase: new ListOutreachRecordsUseCase(outreachRepository),
       updateOutreachRecordUseCase: new UpdateOutreachRecordUseCase(
         new SupabaseOutreachAuditRepository(serviceClient, config, logger),
@@ -93,6 +98,7 @@ export function createAdminContainer() {
     },
     visits: {
       deleteVisitSessionUseCase: new DeleteVisitSessionUseCase(visitRepository),
+      listAllVisitSessionsUseCase: new ListAllVisitSessionsUseCase(visitRepository),
       listVisitJourneyUseCase: new ListVisitJourneyUseCase(visitRepository),
       listVisitMetricsUseCase: new ListVisitMetricsUseCase(visitRepository),
       listVisitSessionsUseCase: new ListVisitSessionsUseCase(visitRepository),
@@ -107,9 +113,13 @@ export function createAdminContainer() {
       ),
     },
     assistantConversations: {
-      deleteAssistantConversationUseCase: new DeleteAssistantConversationUseCase(conversationRepository),
+      deleteAssistantConversationUseCase: new DeleteAssistantConversationUseCase(
+        conversationRepository
+      ),
       getAssistantConversationUseCase: new GetAssistantConversationUseCase(conversationRepository),
-      listAssistantConversationsUseCase: new ListAssistantConversationsUseCase(conversationRepository),
+      listAssistantConversationsUseCase: new ListAssistantConversationsUseCase(
+        conversationRepository
+      ),
       logAssistantConversationUseCase: new LogAssistantConversationUseCase(
         conversationRepository,
         assistantConversationWebhook,

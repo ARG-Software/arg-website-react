@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { VisitsController } from '../../apps/api/controllers/visits.controller.js';
 import { DeleteVisitSessionUseCase } from '../../application/usecases/visits/deletevisitsession.usecase.js';
+import { ListAllVisitSessionsUseCase } from '../../application/usecases/visits/listallvisitsessions.usecase.js';
 import { ListVisitMetricsUseCase } from '../../application/usecases/visits/listvisitmetrics.usecase.js';
 
 class TestVisitsController extends VisitsController {
@@ -75,22 +76,85 @@ test('routes visit chart requests with a selected series', async () => {
 
 test('routes visit breakdown requests independently', async () => {
   let receivedMetric = '';
+  let receivedPage = 0;
+  let receivedPageSize = 0;
   const controller = new TestVisitsController({
     listVisitMetricsUseCase: {
       async execute(input: any) {
         receivedMetric = input.metric;
+        receivedPage = input.page;
+        receivedPageSize = input.pageSize;
         return { metric: input.metric, range: input.range, records: [{ label: 'PT', value: 3 }] };
       },
     },
   } as any);
   const response = await controller.metrics(
-    new Request('https://arg.software/api/admin/visit-metrics?metric=countries&range=last_week')
+    new Request(
+      'https://arg.software/api/admin/visit-metrics?metric=countries&range=last_week&page=2&pageSize=10'
+    )
   );
   const body = await response.json();
 
   assert.equal(response.status, 200);
   assert.equal(receivedMetric, 'countries');
+  assert.equal(receivedPage, '2');
+  assert.equal(receivedPageSize, '10');
   assert.deepEqual(body.records, [{ label: 'PT', value: 3 }]);
+});
+
+test('passes visit breakdown pagination to the repository', async () => {
+  let receivedPage = 0;
+  let receivedPageSize = 0;
+  const useCase = new ListVisitMetricsUseCase({
+    async getBreakdown(_metric, _range, pagination) {
+      receivedPage = pagination.page;
+      receivedPageSize = pagination.pageSize;
+      return {
+        metric: 'sources',
+        range: 'today',
+        records: [],
+        pagination: {
+          page: receivedPage,
+          pageSize: receivedPageSize,
+          totalRecords: 0,
+          totalPages: 1,
+        },
+      };
+    },
+  } as any);
+
+  await useCase.execute({ metric: 'sources', page: '3', pageSize: '12' });
+
+  assert.equal(receivedPage, 3);
+  assert.equal(receivedPageSize, 12);
+});
+
+test('routes all visit sessions through the dedicated endpoint', async () => {
+  let receivedPage = '';
+  const controller = new TestVisitsController({
+    listAllVisitSessionsUseCase: new ListAllVisitSessionsUseCase({
+      async listAllSessions(input) {
+        receivedPage = String(input?.page || '');
+        return {
+          records: [],
+          pagination: {
+            page: input?.page || 1,
+            pageSize: input?.pageSize || 10,
+            totalRecords: 0,
+            totalPages: 1,
+          },
+        };
+      },
+    } as any),
+  } as any);
+  const response = await controller.allSessions(
+    new Request('https://arg.software/api/admin/all-visit-sessions?page=2&pageSize=10')
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(receivedPage, '2');
+  assert.equal(body.pagination.page, 2);
 });
 
 test('defaults visit metric requests to today', async () => {

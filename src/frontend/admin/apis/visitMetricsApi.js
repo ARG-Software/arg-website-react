@@ -2,6 +2,7 @@ import { readAdminResponse } from './adminResponse.js';
 
 const VISIT_METRICS_ENDPOINT = '/api/admin/visit-metrics';
 const VISIT_SESSIONS_ENDPOINT = '/api/admin/visit-sessions';
+const ALL_VISIT_SESSIONS_ENDPOINT = '/api/admin/all-visit-sessions';
 const VISIT_SESSION_ENDPOINT = '/api/admin/visit-session';
 const VISIT_JOURNEY_ENDPOINT = '/api/admin/visit-journey';
 
@@ -15,13 +16,18 @@ export async function fetchVisitChart(range, series) {
   return readAdminResponse(response);
 }
 
-export async function fetchVisitBreakdown(metric, range) {
-  const response = await fetch(buildVisitMetricsUrl({ metric, range }));
+export async function fetchVisitBreakdown(metric, range, query = {}) {
+  const response = await fetch(buildVisitMetricsUrl({ ...query, metric, range }));
   return readAdminResponse(response);
 }
 
 export async function fetchVisitSessions(query = {}) {
   const response = await fetch(buildVisitApiUrl(VISIT_SESSIONS_ENDPOINT, query));
+  return readAdminResponse(response);
+}
+
+export async function fetchAllVisitSessions(query = {}) {
+  const response = await fetch(buildVisitApiUrl(ALL_VISIT_SESSIONS_ENDPOINT, query));
   return readAdminResponse(response);
 }
 
