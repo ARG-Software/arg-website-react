@@ -6,6 +6,7 @@ export function AdminDataTable({
   title,
   description,
   filters,
+  filtersClassName = '',
   columns,
   rows,
   getRowKey = row => row.id,
@@ -28,7 +29,13 @@ export function AdminDataTable({
               {description && <p>{description}</p>}
             </div>
           )}
-          {filters && <div className="admin-data-table__filters">{filters}</div>}
+          {filters && (
+            <div
+              className={['admin-data-table__filters', filtersClassName].filter(Boolean).join(' ')}
+            >
+              {filters}
+            </div>
+          )}
         </div>
       )}
 

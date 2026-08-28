@@ -108,7 +108,30 @@
 }
 
 .admin-visit-stat-card__header .ui-field {
-  max-width: 10rem;
+  max-width: 7.5rem;
+}
+
+.admin-visit-range-select {
+  width: 7.5rem;
+}
+
+.admin-visit-range-select--small {
+  width: 8.5rem;
+}
+
+.admin-visit-range-select--tiny {
+  width: 7rem;
+}
+
+.admin-visit-range-select .ui-field__control {
+  border-radius: 0.7rem;
+  font-size: 0.78rem;
+  min-height: 2.1rem;
+  padding: 0.42rem 0.55rem;
+}
+
+.admin-metric-chart__controls .admin-visit-range-select {
+  min-width: 0;
 }
 
 .admin-visit-stat-card__label {

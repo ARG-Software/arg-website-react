@@ -104,6 +104,18 @@
   color: var(--arg-color-muted-on-dark);
 }
 
+.ui-field__label--hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 .ui-field__control--textarea {
   min-height: 9rem;
   resize: vertical;
@@ -253,6 +265,12 @@
   margin-left: auto;
   max-width: 48rem;
   width: 100%;
+}
+
+.admin-data-table__filters--compact {
+  margin-left: 0;
+  max-width: max-content;
+  width: auto;
 }
 
 .admin-metric-chart h2,

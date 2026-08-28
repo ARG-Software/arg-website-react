@@ -45,7 +45,7 @@ export class ListVisitMetricsUseCase {
 }
 
 function normalizeRange(value?: string): VisitMetricRange {
-  return (ALLOWED_RANGES.has(value || '') ? value : 'this_month') as VisitMetricRange;
+  return (ALLOWED_RANGES.has(value || '') ? value : 'today') as VisitMetricRange;
 }
 
 function normalizeSeries(value?: string): VisitChartSeries {

@@ -27,7 +27,7 @@ import {
   formatDuration,
 } from '../shared/formatters.js';
 
-const DEFAULT_RANGE = 'this_month';
+const DEFAULT_RANGE = 'today';
 const STAT_CARDS = [
   { metric: 'page_views', label: 'Page views' },
   { metric: 'visits', label: 'Visits' },
@@ -136,6 +136,8 @@ export default function VisitsPage({ onSelectVisitSession }) {
             pieAriaLabel="Visitor countries"
             pieEmptyMessage="No country data available for the selected range."
             onRangeChange={setCountryRange}
+            rangeClassName="admin-visit-range-select admin-visit-range-select--small"
+            rangeLabelHidden
             mode="pie"
             tone="light"
           />
@@ -150,10 +152,12 @@ export default function VisitsPage({ onSelectVisitSession }) {
           filters={
             <RangeSelect
               id="admin-visit-sources-range"
+              className="admin-visit-range-select--tiny"
               value={sourcesRange}
               onChange={setSourcesRange}
             />
           }
+          filtersClassName="admin-data-table__filters--compact"
           columns={getVisitSourceColumns()}
           rows={(sourcesQuery.data?.records || []).map(createReferrerRow)}
           loading={sourcesQuery.isLoading}
@@ -170,10 +174,12 @@ export default function VisitsPage({ onSelectVisitSession }) {
           filters={
             <RangeSelect
               id="admin-visit-referrers-range"
+              className="admin-visit-range-select--tiny"
               value={referrersRange}
               onChange={setReferrersRange}
             />
           }
+          filtersClassName="admin-data-table__filters--compact"
           columns={getVisitReferrerColumns()}
           rows={(referrersQuery.data?.records || []).map(createReferrerRow)}
           loading={referrersQuery.isLoading}
@@ -187,8 +193,14 @@ export default function VisitsPage({ onSelectVisitSession }) {
         <AdminDataTable
           title="Top pages"
           filters={
-            <RangeSelect id="admin-visit-pages-range" value={pagesRange} onChange={setPagesRange} />
+            <RangeSelect
+              id="admin-visit-pages-range"
+              className="admin-visit-range-select--tiny"
+              value={pagesRange}
+              onChange={setPagesRange}
+            />
           }
+          filtersClassName="admin-data-table__filters--compact"
           columns={getVisitPageColumns()}
           rows={pagesQuery.data?.records || []}
           loading={pagesQuery.isLoading}
@@ -257,9 +269,16 @@ function VisitStatCard({ label, range, query, onRangeChange }) {
   );
 }
 
-function RangeSelect({ id, value, onChange }) {
+function RangeSelect({ id, className = '', value, onChange }) {
   return (
-    <UiSelect id={id} label="Range" value={value} onChange={event => onChange(event.target.value)}>
+    <UiSelect
+      id={id}
+      className={['admin-visit-range-select', className].filter(Boolean).join(' ')}
+      label="Range"
+      labelHidden
+      value={value}
+      onChange={event => onChange(event.target.value)}
+    >
       {VISIT_CHART_RANGES.map(item => (
         <option key={item.value} value={item.value}>
           {item.label}

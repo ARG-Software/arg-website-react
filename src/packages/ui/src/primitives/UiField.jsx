@@ -8,10 +8,16 @@ export function UiField({ label, hint, className = '', id, ...props }) {
   );
 }
 
-export function UiSelect({ label, children, className = '', id, ...props }) {
+export function UiSelect({ label, labelHidden = false, children, className = '', id, ...props }) {
   return (
     <label className={['ui-field', className].filter(Boolean).join(' ')} htmlFor={id}>
-      <span className="ui-field__label">{label}</span>
+      {label && (
+        <span
+          className={labelHidden ? 'ui-field__label ui-field__label--hidden' : 'ui-field__label'}
+        >
+          {label}
+        </span>
+      )}
       <select id={id} className="ui-field__control" {...props}>
         {children}
       </select>

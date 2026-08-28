@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { VisitsController } from '../../apps/api/controllers/visits.controller.js';
 import { DeleteVisitSessionUseCase } from '../../application/usecases/visits/deletevisitsession.usecase.js';
+import { ListVisitMetricsUseCase } from '../../application/usecases/visits/listvisitmetrics.usecase.js';
 
 class TestVisitsController extends VisitsController {
   protected override authenticateUser(): Promise<any> {
@@ -90,4 +91,18 @@ test('routes visit breakdown requests independently', async () => {
   assert.equal(response.status, 200);
   assert.equal(receivedMetric, 'countries');
   assert.deepEqual(body.records, [{ label: 'PT', value: 3 }]);
+});
+
+test('defaults visit metric requests to today', async () => {
+  let receivedRange = '';
+  const useCase = new ListVisitMetricsUseCase({
+    async getChart(range) {
+      receivedRange = range;
+      return { range, series: 'all', points: [] };
+    },
+  } as any);
+
+  await useCase.execute({ metric: 'chart' });
+
+  assert.equal(receivedRange, 'today');
 });

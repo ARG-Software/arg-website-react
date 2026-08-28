@@ -38,6 +38,8 @@ export function AdminMetricChart({
   pieEmptyMessage = 'No split data available yet.',
   onRangeChange,
   controls,
+  rangeClassName = '',
+  rangeLabelHidden = false,
   tone = 'default',
 }) {
   const showLineChart = mode !== 'pie';
@@ -58,7 +60,9 @@ export function AdminMetricChart({
             {ranges.length > 0 && (
               <UiSelect
                 id={rangeId}
+                className={rangeClassName}
                 label="Range"
+                labelHidden={rangeLabelHidden}
                 value={range}
                 onChange={event => onRangeChange?.(event.target.value)}
               >

@@ -24,10 +24,13 @@ export function formatCountry(countryCode) {
 }
 
 export function formatCountryBreakdown(items) {
-  return items.map(item => ({
-    ...item,
-    label: formatCountry(item.label),
-  }));
+  return items
+    .map(item => ({
+      ...item,
+      label: formatCountry(item.label),
+      value: Number(item.value || 0),
+    }))
+    .filter(item => item.value > 0);
 }
 
 export function createReferrerRow(item) {
