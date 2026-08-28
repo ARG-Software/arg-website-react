@@ -1,8 +1,13 @@
-import {
-  config,
-  createAssistantConversationLogApi,
-} from '../../src/backend/admin/apps/assistantConversationLogApi.js';
+import { routeAssistantConversationRequest } from '../../src/backend/admin/apps/api/api.ts';
 
-export { config };
+export const config = {
+  path: '/api/admin/assistant-conversation-log',
+  method: ['POST', 'OPTIONS'],
+  rateLimit: {
+    windowLimit: 20,
+    windowSize: 60,
+    aggregateBy: ['ip', 'domain'],
+  },
+};
 
-export default createAssistantConversationLogApi({ env: process.env });
+export default routeAssistantConversationRequest;

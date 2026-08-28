@@ -15,15 +15,28 @@
 
 # Netlify Functions exposed behind stable public API routes
 
-/api/assistant/challenge /.netlify/functions/assistant-challenge 200
-/api/assistant/ask       /.netlify/functions/assistant-ask       200
-/api/assistant/ui-copy   /.netlify/functions/assistant-ui-copy   200
-/api/security/challenge  /.netlify/functions/security-challenge  200
-/api/security/verify     /.netlify/functions/security-verify     200
-/api/admin/login         /.netlify/functions/admin-login         200
-/api/admin/outreach      /.netlify/functions/admin-outreach      200
+/api/assistant/challenge /.netlify/functions/rag                 200
+/api/assistant/ask       /.netlify/functions/rag                 200
+/api/assistant/ui-copy   /.netlify/functions/rag                 200
+/api/security/challenge  /.netlify/functions/rag                 200
+/api/security/verify     /.netlify/functions/rag                 200
+/api/admin/login         /.netlify/functions/admin               200
+/api/admin/session       /.netlify/functions/admin               200
+/api/admin/user          /.netlify/functions/admin               200
+/api/admin/outreach-records /.netlify/functions/admin            200
+/api/admin/outreach-summary /.netlify/functions/admin            200
+/api/admin/outreach-chart /.netlify/functions/admin              200
+/api/admin/outreach-export /.netlify/functions/admin             200
+/api/admin/outreach-import /.netlify/functions/admin             200
+/api/admin/outreach-record /.netlify/functions/admin             200
+/api/visit-log           /.netlify/functions/visit-log           200
+/api/admin/visit-metrics /.netlify/functions/admin               200
+/api/admin/visit-sessions /.netlify/functions/admin              200
+/api/admin/visit-journey /.netlify/functions/admin               200
+/api/admin/maintenance-retention /.netlify/functions/maintenance-retention 200
 /api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200
-/api/admin/assistant-conversations    /.netlify/functions/admin-assistant-conversations 200
+/api/admin/assistant-conversations    /.netlify/functions/admin  200
+/api/admin/assistant-conversation     /.netlify/functions/admin  200
 /mcp                     /.netlify/functions/mcp                 200
 
 # Trailing-slash canonicalization — fixes Ahrefs "3XX in sitemap" errors

@@ -49,7 +49,8 @@ npm run preview      # Preview production build
 └── src/
     ├── backend/
     │   ├── admin/                # Admin API, domain, application, and infrastructure
-    │   ├── public/               # Public discovery/MCP API
+    │   ├── maintenance/          # Scheduled maintenance API
+    │   ├── mcp/                  # Public discovery MCP API
     │   ├── rag/                  # Gaspar assistant apps, domain, ingestion, tests
     │   └── shared/               # Shared backend HTTP utilities
     ├── frontend/
@@ -92,7 +93,7 @@ npm run preview      # Preview production build
 | `npm run rag:test` | Run the RAG test and eval suite |
 | `npm run test:backend` | Run backend JS API tests |
 | `npm run test:netlify` | Run Netlify function and redirect wiring tests |
-| `npm run typecheck:rag` | Type-check the TypeScript RAG code |
+| `npm run typecheck:backend` | Type-check the TypeScript backend code |
 | `npm run database:rag:push` | Optional CLI push for only RAG migrations |
 | `npm run database:admin:push` | Optional CLI push for only admin/outreach migrations |
 
@@ -111,7 +112,7 @@ Current local routes:
 - `/api/assistant/ui-copy`
 - `/api/security/challenge`
 - `/api/security/verify`
-- `/api/admin/outreach`
+- `/api/admin/outreach-records`
 
 Production still uses the committed Netlify function adapters in `netlify/functions/`.
 
@@ -174,7 +175,7 @@ The `AppLink` component (SPA navigation) supports optional `trackEvent`/`trackDa
 
 ## Gaspar RAG Assistant
 
-Gaspar is the site assistant exposed through `src/frontend/components/widgets/AssistantWidget.jsx` and served by Netlify Functions. It uses a mounted app under `src/backend/rag/apps/gaspar/` to wire application use cases to concrete infrastructure adapters.
+Gaspar is the site assistant exposed through `src/frontend/components/widgets/AssistantWidget.jsx` and served by Netlify Functions. Public assistant and security routes are handled by controller-style apps under `src/backend/rag/apps/api/`, with dependency composition under `src/backend/rag/apps/di/`.
 
 ### Runtime Architecture
 
@@ -193,12 +194,12 @@ The RAG code is organized by dependency direction rather than by provider:
 | **Ingestion Manifests** | `src/backend/rag/infrastructure/ingestion/manifests/` | First-party and trusted-external source definitions and manifest types |
 | **Tests** | `src/backend/rag/tests/` | Unit tests, route/eval coverage, ingestion tests, security tests, and fakes |
 
-The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `src/backend/rag/infrastructure/`, and `src/backend/rag/apps/gaspar/` wires those adapters into application use cases.
+The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `src/backend/rag/infrastructure/`, and `src/backend/rag/apps/di/` wires those adapters into application use cases.
 
 ### Ask Flow
 
-1. `POST /api/assistant/ask` is handled by `netlify/functions/assistant-ask.js`.
-2. The function enforces origin checks, ALTCHA verification, and rate limits before calling the `askQuestion` use case with dependencies from `apps/di`.
+1. `POST /api/assistant/ask` is handled by `netlify/functions/rag.js`.
+2. The function delegates to `src/backend/rag/apps/api/api.ts`; route dispatch handles origin/method checks and `AssistantController` calls the assistant ask use case.
 3. The application use case validates input, applies language preference policy, classifies intent, plans retrieval, resolves a retrieval route, retrieves context through repository ports, and generates the answer through provider ports.
 4. The response returns answer text, resolved language, optional language preference updates, citations, article recommendations, and assistant actions such as `book_meeting`, `gaspar_message`, `contact_form`, or `email_hr`.
 
@@ -240,9 +241,9 @@ Optional tuning variables include `RAG_SITE_URL`, `RAG_COMPANY_NAME`, `RAG_CHUNK
 Run these before changing assistant behavior, retrieval routing, ingestion, provider adapters, or prompts:
 
 ```bash
-npm run typecheck:rag
+npm run typecheck:backend
 npm run rag:test
-npm run lint:rag
+npm run lint:backend
 npm run lint:app
 ```
 
@@ -262,7 +263,10 @@ Netlify Functions also serve assistant/security endpoints and scheduled maintena
 - `POST /api/assistant/ask`: Gaspar RAG endpoint with ALTCHA and rate limiting
 - `GET /api/assistant/ui-copy`: localized assistant widget copy
 - `GET /api/security/challenge` and `POST /api/security/verify`: ALTCHA flow for protected form submissions
-- Scheduled `maintenance-keep-database-alive`: periodically touches Supabase so the RAG and admin outreach databases remain warm
+- Scheduled `maintenance-retention`: quarterly cleanup for visit and assistant conversation data older than 90 days
+- Scheduled `maintenance-keep-database-alive`: daily Supabase keep-alive for the RAG and admin outreach databases
+
+Future database consolidation: the project currently uses separate Supabase projects for Admin and RAG/AI data. A future migration should consolidate them into one Supabase project using dedicated PostgreSQL schemas, likely `admin` and `ai`. This is not urgent; test the migration locally before applying it to any shared environment.
 
 ---
 

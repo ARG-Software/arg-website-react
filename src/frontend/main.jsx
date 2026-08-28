@@ -18,6 +18,7 @@ import './styles/home.css';
 import './styles/components.css';
 import './styles/legal.css';
 import './styles/effects.css';
+import './admin/admin.css';
 
 const PartnersPage = lazyWithRetry(() => import('./pages/PartnersPage.jsx'));
 const ProjectsPage = lazyWithRetry(() => import('./pages/ProjectsPage.jsx'));
@@ -92,20 +93,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     <Route path="/privacy/" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
                     <Route path="/terms/" element={<TermsPage />} />
-                    <Route path="/admin" element={<AdminPage />} />
-                    <Route path="/admin/" element={<AdminPage />} />
-                    <Route path="/admin/all" element={<AdminPage />} />
-                    <Route path="/admin/all/" element={<AdminPage />} />
-                    <Route path="/admin/sent" element={<AdminPage />} />
-                    <Route path="/admin/sent/" element={<AdminPage />} />
-                    <Route path="/admin/not-sent" element={<AdminPage />} />
-                    <Route path="/admin/not-sent/" element={<AdminPage />} />
-                    <Route path="/admin/ai-bot" element={<AdminPage />} />
-                    <Route path="/admin/ai-bot/" element={<AdminPage />} />
-                    <Route path="/admin/help" element={<AdminPage />} />
-                    <Route path="/admin/help/" element={<AdminPage />} />
-                    <Route path="/admin/settings" element={<AdminPage />} />
-                    <Route path="/admin/settings/" element={<AdminPage />} />
+                    <Route path="/admin/*" element={<AdminPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </Suspense>

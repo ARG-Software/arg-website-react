@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { NavMenu as UiNavMenu } from '@ui/navigation/NavMenu.jsx';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
-import { trackEvent, trackCTA } from '../../utils/analytics';
+import { trackEvent, trackCTA } from '@services/analytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { getExternalLink, EXTERNAL_LINK_KEYS } from '../../services/linksService';
 import projects from '../../data/projects.json';

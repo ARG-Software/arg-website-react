@@ -1,10 +1,10 @@
-import type { RetrievalPlan } from '../../../domain/retrieval/RetrievalPlan.js';
-import type { RetrievalRoute } from '../../../domain/retrieval/RetrievalRoute.js';
-import type { RagSourceType } from '../../../domain/content/RagSource.js';
+import type { IRetrievalPlan } from '../../../domain/retrieval/iretrievalplan.js';
+import type { IRetrievalRoute } from '../../../domain/retrieval/iretrievalroute.js';
+import type { RagSourceType } from '../../../domain/content/iragsource.js';
 import { normalizeName } from '../../common/text.js';
-import { getKnownProjectNames } from '../../sourceConfig.js';
+import { getKnownProjectNames } from '../../source.config.js';
 
-export type { RetrievalRoute, RetrievalRouteKind } from '../../../domain/retrieval/RetrievalRoute.js';
+export type { IRetrievalRoute, RetrievalRouteKind } from '../../../domain/retrieval/iretrievalroute.js';
 
 export const BLOG_SOURCE_TYPES: RagSourceType[] = ['blog_post'];
 export const OFFICIAL_WEBSITE_SOURCE_TYPES: RagSourceType[] = [
@@ -56,8 +56,8 @@ const KNOWN_PROJECT_NAMES = getKnownProjectNames();
 
 export function resolveRetrievalRoute(
   retrievalQuestion: string,
-  plan: Pick<RetrievalPlan, 'mode' | 'entity' | 'subject'>
-): RetrievalRoute {
+  plan: Pick<IRetrievalPlan, 'mode' | 'entity' | 'subject'>
+): IRetrievalRoute {
   const routeText = `${retrievalQuestion} ${plan.entity} ${plan.subject}`;
   const isGasparHumanLanguageQuestion = GASPAR_HUMAN_LANGUAGE_PATTERN.test(routeText);
   const isPrivacyPolicyQuestion = PRIVACY_POLICY_PATTERN.test(routeText);
@@ -187,10 +187,10 @@ export function resolveRetrievalRoute(
 }
 
 function createRoute(
-  kind: RetrievalRoute['kind'],
+  kind: IRetrievalRoute['kind'],
   firstPartySourceTypes: RagSourceType[] | null,
-  plan: Pick<RetrievalPlan, 'entity' | 'subject'>
-): RetrievalRoute {
+  plan: Pick<IRetrievalPlan, 'entity' | 'subject'>
+): IRetrievalRoute {
   return {
     kind,
     firstPartySourceTypes,
@@ -200,9 +200,9 @@ function createRoute(
 }
 
 function createCommercialRoute(
-  commercialKind: NonNullable<RetrievalRoute['commercialKind']>,
-  plan: Pick<RetrievalPlan, 'entity' | 'subject'>
-): RetrievalRoute {
+  commercialKind: NonNullable<IRetrievalRoute['commercialKind']>,
+  plan: Pick<IRetrievalPlan, 'entity' | 'subject'>
+): IRetrievalRoute {
   return {
     kind: 'commercial_delivery',
     commercialKind,
@@ -218,7 +218,7 @@ function createLegalPolicyRoute({
 }: {
   includePrivacy: boolean;
   includeTerms: boolean;
-}): RetrievalRoute {
+}): IRetrievalRoute {
   const sourceKeys = [
     ...(includePrivacy ? ['privacy-policy'] : []),
     ...(includeTerms ? ['terms-of-service'] : []),

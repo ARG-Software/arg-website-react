@@ -1,14 +1,14 @@
-import type { AssistantActionType } from '../../domain/assistant/AssistantAction.js';
-import type { ChatMessage, PageContext } from '../../domain/conversation/ChatMessage.js';
-import type { QuestionIntent } from '../../domain/conversation/QuestionIntent.js';
-import type { RetrievalPlan } from '../../domain/retrieval/RetrievalPlan.js';
+import type { AssistantActionType } from '../../domain/assistant/iassistantaction.js';
+import type { IChatMessage, IPageContext } from '../../domain/conversation/ichatmessage.js';
+import type { QuestionIntent } from '../../domain/conversation/questionintent.js';
+import type { IRetrievalPlan } from '../../domain/retrieval/iretrievalplan.js';
 import type {
   RagSourceMetadata,
   RagSourceOrigin,
   RagSourceType,
-} from '../../domain/content/RagSource.js';
+} from '../../domain/content/iragsource.js';
 
-export interface EvalSourceRow {
+export interface IEvalSourceRow {
   id: string;
   source_type: RagSourceType;
   source_key: string;
@@ -20,7 +20,7 @@ export interface EvalSourceRow {
   metadata: RagSourceMetadata | null;
 }
 
-export interface EvalChunkRow {
+export interface IEvalChunkRow {
   id: string;
   source_id: string;
   chunk_index: number;
@@ -28,7 +28,7 @@ export interface EvalChunkRow {
   metadata: RagSourceMetadata | null;
 }
 
-export interface EvalMatchRow {
+export interface IEvalMatchRow {
   chunk_id: string;
   source_id: string;
   source_type: RagSourceType;
@@ -44,18 +44,18 @@ export interface EvalMatchRow {
   origin: RagSourceOrigin;
 }
 
-export interface RagEvalCase {
+export interface IRagEvalCase {
   id: string;
   category: string;
   question: string;
-  messages?: ChatMessage[];
-  pageContext?: PageContext;
+  messages?: IChatMessage[];
+  pageContext?: IPageContext;
   intent?: QuestionIntent;
   intentResponse?: string;
-  plan?: Partial<RetrievalPlan>;
-  sources?: EvalSourceRow[];
-  chunks?: EvalChunkRow[];
-  rpcRows?: EvalMatchRow[];
+  plan?: Partial<IRetrievalPlan>;
+  sources?: IEvalSourceRow[];
+  chunks?: IEvalChunkRow[];
+  rpcRows?: IEvalMatchRow[];
   matchCount?: number;
   generatedAnswer?: string;
   expected?: {
@@ -301,7 +301,7 @@ const latestBlogChunks = [
   chunk('aggregates-blog-id', 'from-anemic-models-to-behaviour-rich-aggregates', 'Blog post\nTitle: From Anemic Models to Behaviour-rich Aggregates\nThe article covers behavior-rich aggregates in TypeScript domain models.'),
 ];
 
-export const executableRagEvalCases: RagEvalCase[] = [
+export const executableRagEvalCases: IRagEvalCase[] = [
   {
     id: 'small-talk-no-retrieval',
     category: 'smallTalk',
@@ -737,7 +737,7 @@ export const executableRagEvalCases: RagEvalCase[] = [
 
 function retrievalQuestion(
   query: string,
-  mode: RetrievalPlan['mode'],
+  mode: IRetrievalPlan['mode'],
   entity: string,
   subject: string
 ) {
@@ -752,7 +752,7 @@ function source(
   url: string | null = null,
   metadata: RagSourceMetadata = {},
   origin: RagSourceOrigin = 'first_party'
-): EvalSourceRow {
+): IEvalSourceRow {
   return {
     id,
     source_type: sourceType,
@@ -766,7 +766,7 @@ function source(
   };
 }
 
-function chunk(sourceId: string, suffix: string, content: string): EvalChunkRow {
+function chunk(sourceId: string, suffix: string, content: string): IEvalChunkRow {
   return {
     id: `chunk-${suffix}`,
     source_id: sourceId,
@@ -782,7 +782,7 @@ function match(
   title: string,
   content: string,
   origin: RagSourceOrigin = 'first_party'
-): EvalMatchRow {
+): IEvalMatchRow {
   return {
     chunk_id: `chunk-${sourceKey}`,
     source_id: `${sourceKey}-id`,

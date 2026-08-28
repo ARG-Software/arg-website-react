@@ -1,5 +1,5 @@
-import type { RagSourceOrigin, RagSourceType } from '../../domain/content/RagSource.js';
-import type { RetrievedContext } from '../../domain/retrieval/RetrievedContext.js';
+import type { RagSourceOrigin, RagSourceType } from '../../domain/content/iragsource.js';
+import type { IRetrievedContext } from '../../domain/retrieval/iretrievedcontext.js';
 
 export function createContextFixture(
   sourceType: RagSourceType,
@@ -7,7 +7,7 @@ export function createContextFixture(
   title: string,
   content: string,
   origin: RagSourceOrigin = 'first_party'
-): RetrievedContext {
+): IRetrievedContext {
   return {
     chunkId: `chunk-${sourceKey}`,
     sourceId: `source-${sourceKey}`,

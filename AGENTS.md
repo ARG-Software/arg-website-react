@@ -40,7 +40,8 @@ and comprehensive Google Analytics 4 instrumentation.
 └── src/
     ├── backend/
     │   ├── admin/          # Admin API, domain, application, and infrastructure
-    │   ├── public/         # Public discovery/MCP API
+    │   ├── maintenance/    # Scheduled maintenance API, application, and infrastructure
+    │   ├── mcp/            # Public discovery MCP API
     │   ├── rag/            # Gaspar apps, domain, application, infrastructure, ingestion, tests
     │   └── shared/         # Shared backend HTTP utilities
     ├── frontend/
@@ -136,6 +137,51 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Also provides email, social, and share URL builders
 - Never hardcode external URLs in components — always use this service
 
+### 3.9 Admin Backend Boundaries
+- Domain stays small and business-focused. It should own real business invariants only.
+- Domain must not know about HTTP status codes, request/response shapes, Supabase rows, CSV parsing, encryption/decryption, hashing, cookies, or persistence details.
+- Application owns use cases, error-to-status mapping, ports, and generic reusable mechanics.
+- Repository ports live in `src/backend/admin/application/ports/repositories/`.
+- User/session operations live in application use cases under `src/backend/admin/application/usecases/sessions/` and `src/backend/admin/application/usecases/users/`; controllers should only call those use cases and handle HTTP details.
+- Identity provider ports use user naming, such as `IUserIdentityProvider`; keep `Admin` naming for admin routes/config only.
+- Admin configuration should be exposed through an application-level interface, not by passing the concrete `AdminConfig` into infrastructure. Inject the configuration interface anywhere configuration is genuinely needed.
+- Generic crypto helpers live in `src/backend/admin/application/crypto/` as simple functions such as `encode`, `decode`, and `encodeIndex`; do not duplicate cipher logic per repository or domain type.
+- Admin HTTP endpoints should use controller-style apps under `src/backend/admin/apps/api/`.
+- Netlify functions are deployment adapters only. Keep Netlify `config` objects and schedules in `netlify/functions/*`; API route behavior belongs in the backend API app.
+- Scheduled maintenance behavior belongs in `src/backend/maintenance/apps/api/`; Netlify scheduled functions should only keep deployment schedules and call maintenance API runner exports.
+- `src/backend/admin/apps/api/api.ts` is the executable admin API entrypoint. It exports grouped router handlers such as `routeAuthRequest`, `routeOutreachRequest`, `routeVisitRequest`, and `routeAssistantConversationRequest`.
+- Admin controllers live under `src/backend/admin/apps/api/controllers/` and export their own route factories.
+- Admin controller methods should declare method/path and error metadata with `@route(...)` and `@errorResponse(...)`. Controller methods should not dispatch internally on HTTP method, query `scope`, IDs, or payload `action` values.
+- Admin controllers orchestrate HTTP only: read request body/query/cookies, call use cases, and return `Response`.
+- Protected admin controller methods should call `this.authenticateUser(request)` before parsing body/query or calling business use cases. Keep authorization out of non-auth business use cases.
+- Controllers must not talk to repositories, providers, Supabase clients, config, env, or dependency factories.
+- Controllers may receive dependencies through constructors, but those dependencies should be real use cases or use-case services, not env/config/repository containers.
+- DI is the composition root. It should resolve env/config internally, construct infrastructure adapters, construct use cases with explicit dependencies, and export a runtime container.
+- Use cases should receive their dependencies directly through constructors, following a .NET-style dependency injection model. Avoid opaque dependency objects when explicit constructor dependencies make the use case clearer.
+- Each controller method should call a use case. Reuse an existing use case when behavior is repeated; add a new use case when controller logic would otherwise reach into repositories/providers.
+- Supabase client creation belongs in the DI composition root/container, not in a separate generic factory file, unless reuse outside the container proves necessary.
+- Supabase adapter constructors should be consistent: receive the `SupabaseClient` first, then explicit adapter dependencies such as configuration interfaces or salts.
+- App-level HTTP helpers, such as cookie and request-header extraction, live in `src/backend/admin/apps/http/` because they are API concerns.
+- Admin route dispatch owns CORS, OPTIONS, 404, and 405 behavior. Controller error responses belong to `@errorResponse(...)`.
+- Infrastructure owns concrete adapters such as Supabase repositories, identity providers, geolocation providers, and CSV parser implementations.
+- Supabase repositories should connect table columns to domain objects directly in the repository unless the conversion is reused. Avoid vague helper files that only rename simple row mapping.
+- Keep table-specific conversion near the repository because DB columns and encrypted field envelopes are persistence details.
+- One-time scripts should not drive architecture. Disable or update them when needed instead of preserving stale helper APIs for them.
+- Centralized constants are useful when they define a stable contract, such as outreach CSV columns, but avoid deriving exported shapes implicitly from runtime object keys.
+
+### 3.10 Admin API Current State
+- `src/backend/admin/apps/api/api.ts` is the only admin API router entrypoint. There is no separate `router.ts`.
+- `api.ts` defines route groups and exports Netlify/local handlers: `routeAdminRequest`, `routeAuthRequest`, `routeUserRequest`, `routeOutreachRequest`, `routeVisitRequest`, and `routeAssistantConversationRequest`.
+- `src/backend/admin/apps/api/controllerroute.handler.ts` dispatches registered controller routes and owns CORS, origin guard, OPTIONS, 404, and 405 behavior.
+- Controllers live in `src/backend/admin/apps/api/controllers/` and keep route/error declarations beside methods using `@route(...)` and `@errorResponse(...)`.
+- Keep `methoddecorator.ts`, `routeregistry.ts`, `route.ts`, and `error.response.ts`; they intentionally make controllers cleaner.
+- Do not reintroduce `@cors`, `@options`, `allowMethods`, `BaseApi`, route files per controller, or `src/backend/admin/apps/api/router.ts` unless there is a concrete reason.
+- `ControllerBase` is admin-specific and intentionally small: `authenticateUser(request)`, `json(...)`, `body(...)`, `query(...)`, `errorBody(...)`, and `errorStatus(...)`.
+- Protected admin controller methods should authenticate first with `this.authenticateUser(request)`, then parse body/query, then call business use cases.
+- Non-auth business use cases should not perform authorization. Auth/session use cases may still use `UserAccessPolicy` because authentication and session validation are their purpose.
+- `netlify/functions/admin.js` handles admin feature endpoints. Keep route-specific deployment adapters only when Netlify config needs to differ, such as `assistant-conversation-log.js`, `visit-log.js`, and scheduled maintenance functions.
+- Recent verification passed: `npm run test:backend`, `npm run typecheck:backend`, `npm run lint:backend`, and `npm run test:netlify`.
+
 ---
 
 ## 4. Analytics
@@ -208,15 +254,35 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 
 ## 6. Component Conventions
 
+### 6.0 Code Simplification
+- Prefer the simplest readable implementation across the whole codebase.
+- Do not add new types, interfaces, helper functions, classes, wrappers, factories, or params objects unless they are clearly needed for reuse, clarity, or an existing pattern.
+- Do not use `Partial` for method inputs unless explicitly requested.
+- Prefer passing existing domain/application objects over creating method-specific DTO types.
+- Keep one-line logic inline instead of extracting it to a helper.
+- Keep behavior close to the code/data it belongs to; avoid moving logic into generic utilities unless it is reused.
+- For class-owned validation or normalization, prefer private class members over free helper functions.
+- Prefer direct immutable data shapes, such as `readonly` properties, over getters, setters, backing fields, and response wrappers unless there is a concrete need.
+- Keep only real business invariants in domain/application objects. Do not add redundant validation for values generated or enforced elsewhere, such as database IDs or client-generated UUIDs.
+- Do not normalize, sanitize, trim, reformat, or truncate data in domain code when that belongs to the API boundary or would silently change user/client data.
+- Preserve source data by default, especially transcripts, messages, imported records, and user-provided text. Derived display fields such as previews may be shortened separately.
+- Put security, encryption/decryption, persistence mapping, and HTTP response shaping outside domain objects.
+- Keep generic reusable mechanics such as crypto encode/decode in application helpers; keep adapter-specific details such as Supabase columns in infrastructure repositories.
+- Prefer direct repository-local column-to-domain conversion over separate mapper/helper files unless the conversion is reused or genuinely complex enough to justify extraction.
+- Prefer explicit imperative code with local variables and `if` statements over clever conditional spreads, nested ternaries, or `flatMap` tricks when constructing objects.
+- Before adding any abstraction, ask whether it reduces code or just names code. If it only names code, do not add it.
+
 ### 6.1 Imports
 - No barrel exports — import directly from component files
 - Use path aliases: `import { Navbar } from '@components/navigation/Navbar'`
 - Page files import their own CSS: `import '../styles/blog.css'`
+- Backend TypeScript files use NodeNext runtime `.js` specifiers for relative internal imports; Netlify JavaScript adapters may import backend `.ts` entrypoints at the deployment boundary.
 
 ### 6.2 Naming
 - Components: PascalCase files, named exports preferred
 - Custom hooks: camelCase, `use*` prefix
 - Service, utility, constant, and multi-word JSON module files: camelCase
+- Backend files: lowercase names with no word separators, plus `.` before terminal role suffixes such as `.types`, `.config`, `.controller`, `.repository`, `.provider`, `.parser`, `.usecase`, `.error`, `.handler`, `.container`, `.cookies`, `.logger`, and `.api`.
 - CSS, blog Markdown slugs, and generated/static route-oriented files: kebab-case or lowercase
 - CSS classes: kebab-case, scoped by page/component prefix (e.g. `footer-`, `pc-`, `pt-`)
 - Analytics events: `snake_case`
@@ -265,7 +331,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 - Dev server: port 3000, auto-open browser
 - Path aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`
 - Manual chunks: `vendor` (React/Router/Helmet), `three`, `gsap`, `hljs`
-- Local API routes: mounted through `plugins/local-api-dev/`, loaded with Vite SSR transforms, and delegated to backend API factories for assistant, security, and admin outreach endpoints
+- Local API routes: mounted through `plugins/local-api-dev/`, loaded with Vite SSR transforms, and delegated to backend API route handlers/factories
 - SPA fallback middleware for dev server
 - CSS preload injection plugin
 - Production: drops `console` and `debugger` statements

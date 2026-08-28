@@ -1,8 +1,7 @@
-import {
-  config,
-  createKeepDatabaseAliveApi,
-} from '../../src/backend/rag/apps/gaspar/keepDatabaseAliveApi.js';
+import { runKeepDatabaseAlive } from '../../src/backend/maintenance/apps/api/api.ts';
 
-export { config };
+export const config = {
+  schedule: '0 9 * * *',
+};
 
-export default createKeepDatabaseAliveApi({ env: process.env });
+export default runKeepDatabaseAlive;

@@ -1,4 +1,4 @@
-import { normalizeLanguageTag } from '../languageConfig.js';
+import { normalizeLanguageTag } from '../language.config.js';
 
 const RTL_LANGUAGES = new Set(['ar', 'fa', 'he', 'ur']);
 

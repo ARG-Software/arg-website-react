@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MOBILE_BREAKPOINT } from '@constants/ui';
-import { trackAssistantEvent } from '@utils/analytics';
+import { trackAssistantEvent } from '@services/analytics';
 import { isMobile } from '@utils/helpers';
 import { useAssistantChat } from './useAssistantChat';
 import { useAssistantConversationLogger } from './useAssistantConversationLogger';
@@ -356,7 +356,20 @@ export function useAssistantWidgetController({
       if (!trimmed || (loading && !isLeadActive)) return;
 
       if (isLeadActive) {
-        const result = handleLeadInput(trimmed);
+        const action =
+          leadStep === LEAD_STEPS.OFFER ? getPromptAction(trimmed, assistantCopy) : null;
+
+        if (leadStep === LEAD_STEPS.OFFER && !action) {
+          dismissLeadCaptureOnce(false);
+          cancelLeadCapture();
+          leadCaptureStartedRef.current = false;
+          leadDismissHandledRef.current = false;
+          setInputValue('');
+          submitChatMessage(trimmed);
+          return;
+        }
+
+        const result = handleLeadInput(trimmed, action);
         addLeadResultMessages(result, trimmed);
         if (result.type === 'submitting') {
           submitCurrentLead();
@@ -375,9 +388,14 @@ export function useAssistantWidgetController({
     },
     [
       addLeadResultMessages,
+      assistantCopy,
+      cancelLeadCapture,
+      dismissLeadCaptureOnce,
       handleLeadInput,
       inputValue,
       isLeadActive,
+      leadStep,
+      LEAD_STEPS.OFFER,
       loading,
       messages,
       submitCurrentLead,

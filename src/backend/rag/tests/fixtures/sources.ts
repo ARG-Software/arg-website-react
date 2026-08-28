@@ -1,7 +1,7 @@
-import type { RagSourceMetadata, RagSourceType } from '../../domain/content/RagSource.js';
-import type { RagSourceRecord } from '../../application/ports/RagReadRepository.js';
+import type { RagSourceMetadata, RagSourceType } from '../../domain/content/iragsource.js';
+import type { IRagSourceRecord } from '../../application/ports/iragread.repository.js';
 
-export interface ChunkFixture {
+export interface IChunkFixture {
   id: string;
   sourceId: string;
   chunkIndex: number;
@@ -16,7 +16,7 @@ export function createSourceFixture(
   sourceType: RagSourceType = 'blog_post',
   sourceKey = id,
   metadata: Record<string, unknown> = {}
-): RagSourceRecord {
+): IRagSourceRecord {
   return {
     id,
     sourceType,
@@ -34,7 +34,7 @@ export function createChunkFixture(
   sourceId: string,
   suffix: string,
   content = `Blog post ${suffix}`
-): ChunkFixture {
+): IChunkFixture {
   return {
     id: `chunk-${suffix}`,
     sourceId,

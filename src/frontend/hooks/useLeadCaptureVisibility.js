@@ -6,7 +6,7 @@ import {
   LEAD_CAPTURE_DISMISS_EXPIRY_MS,
   LEAD_CAPTURE_SESSION_DISMISSED_KEY,
 } from '@constants/ui';
-import { trackEvent } from '../utils/analytics';
+import { trackEvent } from '@services/analytics';
 
 const DEFAULT_IDLE_DELAY_MS = 10000;
 const CONTACT_PATH = '/contact';

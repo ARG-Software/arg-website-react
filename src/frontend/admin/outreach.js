@@ -8,12 +8,12 @@ export function getStatusLabel(status) {
 }
 
 export function buildMailtoUrl(record) {
-  const email = record.contact_email || extractEmail(record.contact_info);
+  const email = record.contactEmail || extractEmail(record.contactInfo);
   const params = [];
 
-  if (record.email_subject) params.push(`subject=${encodeURIComponent(record.email_subject)}`);
-  if (record.email_body) {
-    params.push(`body=${encodeURIComponent(normalizeEmailBody(record.email_body))}`);
+  if (record.emailSubject) params.push(`subject=${encodeURIComponent(record.emailSubject)}`);
+  if (record.emailBody) {
+    params.push(`body=${encodeURIComponent(normalizeEmailBody(record.emailBody))}`);
   }
 
   return `mailto:${email || ''}${params.length ? `?${params.join('&')}` : ''}`;
@@ -28,12 +28,12 @@ function normalizeEmailBody(value) {
 
 export function getRecordSearchText(record) {
   return [
-    record.company_name,
+    record.companyName,
     record.website,
-    record.contact_email,
-    record.contact_info,
-    record.fit_reason,
-    record.email_subject,
+    record.contactEmail,
+    record.contactInfo,
+    record.fitReason,
+    record.emailSubject,
     record.notes,
   ]
     .filter(Boolean)

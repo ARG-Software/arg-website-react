@@ -1,6 +1,6 @@
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
-import { trackCTA } from '@utils/analytics';
+import { trackCTA } from '@services/analytics';
 import { getProjectBriefFormLink } from '../services/linksService';
 import { Navbar } from '@components/navigation/Navbar';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';

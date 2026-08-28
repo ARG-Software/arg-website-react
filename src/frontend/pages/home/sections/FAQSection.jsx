@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
-import { trackFAQOpen } from '../../../utils/analytics';
+import { trackFAQOpen } from '@services/analytics';
 import HOMEPAGE from '../../../data/homePage.json';
 import FAQ from '../../../data/faq.json';
 

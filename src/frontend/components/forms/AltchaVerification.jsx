@@ -8,6 +8,7 @@ const SECURITY_CHALLENGE_ENDPOINT = getSecurityChallengeEndpoint();
 export function AltchaVerification({
   challengeEndpoint = SECURITY_CHALLENGE_ENDPOINT,
   onStateChange,
+  onVerified,
   theme,
 }) {
   const widgetRef = useRef(null);
@@ -17,7 +18,12 @@ export function AltchaVerification({
     if (!widget) return undefined;
 
     function handleStateChange(event) {
-      onStateChange?.(event.detail?.state || 'unverified');
+      const state = event.detail?.state || 'unverified';
+      onStateChange?.(state);
+
+      if (state === 'verified' && event.detail?.payload) {
+        onVerified?.(event.detail.payload);
+      }
     }
 
     widget.addEventListener('statechange', handleStateChange);
@@ -25,7 +31,7 @@ export function AltchaVerification({
     return () => {
       widget.removeEventListener('statechange', handleStateChange);
     };
-  }, [onStateChange]);
+  }, [onStateChange, onVerified]);
 
   return (
     <altcha-widget

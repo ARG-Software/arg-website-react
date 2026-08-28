@@ -1,5 +1,5 @@
 import { Footer as UiFooter } from '@ui/layout/Footer.jsx';
-import { trackSocial } from '../../utils/analytics';
+import { trackSocial } from '@services/analytics';
 import { MarkNameWhite } from '../icons/MarkNameWhite';
 import AppLink from '../navigation/AppLink';
 import SITE from '../../data/site.json';

@@ -1,4 +1,4 @@
-import type { FallbackQuestionIntent } from '../../domain/conversation/QuestionIntent.js';
+import type { FallbackQuestionIntent } from '../../domain/conversation/questionintent.js';
 import { buildAssistantPolicyInstructions, buildResponseLanguageInstruction } from './shared.js';
 
 export function buildIntentFallbackPrompt(

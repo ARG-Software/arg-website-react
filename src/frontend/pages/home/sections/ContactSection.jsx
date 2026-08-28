@@ -1,5 +1,5 @@
 import { CTASection } from '../../../components/layout/CTASection';
-import { trackCTA } from '../../../utils/analytics';
+import { trackCTA } from '@services/analytics';
 import { getPortfolioLink, getProjectBriefFormLink } from '../../../services/linksService';
 import HOMEPAGE from '../../../data/homePage.json';
 

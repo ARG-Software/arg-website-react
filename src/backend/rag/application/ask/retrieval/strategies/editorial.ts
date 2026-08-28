@@ -1,10 +1,10 @@
-import type { RagConfig } from '../../../ragConfig.js';
-import type { RetrievedContext } from '../../../../domain/retrieval/RetrievedContext.js';
-import type { EmbeddingProvider } from '../../../ports/ProviderPorts.js';
-import type { RetrievalRoute } from '../../../../domain/retrieval/RetrievalRoute.js';
-import type { RagReadRepository } from '../../../ports/RagReadRepository.js';
-import { resolveSemanticSearch, type SemanticSearchInput } from '../embeddings.js';
-import { retrieveContextsForOrigin } from '../vectorSearch.js';
+import type { IRagConfig } from '../../../config/irag.configuration.js';
+import type { IRetrievedContext } from '../../../../domain/retrieval/iretrievedcontext.js';
+import type { IEmbeddingProvider } from '../../../ports/iproviderports.js';
+import type { IRetrievalRoute } from '../../../../domain/retrieval/iretrievalroute.js';
+import type { IRagReadRepository } from '../../../ports/iragread.repository.js';
+import { resolveSemanticSearch, type ISemanticSearchInput } from '../embeddings.js';
+import { retrieveContextsForOrigin } from '../vectorsearch.js';
 
 const FIRST_PARTY_ORIGIN = 'first_party';
 
@@ -18,13 +18,13 @@ export async function retrieveEditorialContexts({
   semanticSearch,
 }: {
   retrievalQuestion: string;
-  route: RetrievalRoute;
-  config: RagConfig;
-  readRepository: RagReadRepository;
-  embeddingProvider: EmbeddingProvider;
-  fallbackEmbeddingProvider: EmbeddingProvider;
-  semanticSearch?: SemanticSearchInput;
-}): Promise<RetrievedContext[]> {
+  route: IRetrievalRoute;
+  config: IRagConfig;
+  readRepository: IRagReadRepository;
+  embeddingProvider: IEmbeddingProvider;
+  fallbackEmbeddingProvider: IEmbeddingProvider;
+  semanticSearch?: ISemanticSearchInput;
+}): Promise<IRetrievedContext[]> {
   const search = await resolveSemanticSearch(
     retrievalQuestion,
     embeddingProvider,

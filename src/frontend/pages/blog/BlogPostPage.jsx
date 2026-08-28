@@ -15,7 +15,7 @@ import AppLink from '@components/navigation/AppLink';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { TransitionContext } from '../../providers/TransitionProvider';
-import { trackBlogPostShare, trackCTA, trackEvent } from '@utils/analytics';
+import { trackBlogPostShare, trackCTA, trackEvent } from '@services/analytics';
 import {
   getCodeLanguageLabel,
   getCodeLineNumbers,

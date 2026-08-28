@@ -1,5 +1,5 @@
 import { SITE_URL } from '@constants/seo';
-import { trackAssistantEvent } from '@utils/analytics';
+import { trackAssistantEvent } from '@services/analytics';
 
 export function getInternalAssistantPath(url) {
   if (!url) return null;

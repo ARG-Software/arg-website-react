@@ -1,16 +1,16 @@
-import type { RagConfig } from '../../ragConfig.js';
-import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
-import type { EmbeddingProvider } from '../../ports/ProviderPorts.js';
-import type { EmbeddingIndex } from '../../ports/EmbeddingIndex.js';
-import type { RetrievalRoute } from '../../../domain/retrieval/RetrievalRoute.js';
-import type { RagSourceType } from '../../../domain/content/RagSource.js';
-import type { RagReadRepository } from '../../ports/RagReadRepository.js';
-import { retrieveCommercialDeliveryContexts } from './strategies/commercialDelivery.js';
+import type { IRagConfig } from '../../config/irag.configuration.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/iretrievedcontext.js';
+import type { IEmbeddingProvider } from '../../ports/iproviderports.js';
+import type { EmbeddingIndex } from '../../ports/embeddingindex.js';
+import type { IRetrievalRoute } from '../../../domain/retrieval/iretrievalroute.js';
+import type { RagSourceType } from '../../../domain/content/iragsource.js';
+import type { IRagReadRepository } from '../../ports/iragread.repository.js';
+import { retrieveCommercialDeliveryContexts } from './strategies/commercialdelivery.js';
 import { retrieveEditorialContexts } from './strategies/editorial.js';
-import { retrieveLatestBlogContexts } from './strategies/latestBlog.js';
-import { retrieveLinkActionContexts } from './strategies/linkAction.js';
-import { retrieveOpenSourceContexts } from './strategies/openSource.js';
-import { retrieveDirectEvidenceContexts } from './strategies/semanticDirectEvidence.js';
+import { retrieveLatestBlogContexts } from './strategies/latestblog.js';
+import { retrieveLinkActionContexts } from './strategies/linkaction.js';
+import { retrieveOpenSourceContexts } from './strategies/opensource.js';
+import { retrieveDirectEvidenceContexts } from './strategies/semanticdirectevidence.js';
 
 const CONTEXT_SOURCE_TYPES: RagSourceType[] = [
   'homepage',
@@ -23,18 +23,18 @@ const CONTEXT_SOURCE_TYPES: RagSourceType[] = [
   'blog_post',
 ];
 
-export interface RetrievalResult {
-  contexts: RetrievedContext[];
-  route: RetrievalRoute;
+export interface IRetrievalResult {
+  contexts: IRetrievedContext[];
+  route: IRetrievalRoute;
 }
 
-export interface RetrieveRoutedContextsInput {
+export interface IRetrieveRoutedContextsInput {
   retrievalQuestion: string;
-  route: RetrievalRoute;
-  config: RagConfig;
-  readRepository: RagReadRepository;
-  embeddingProvider: EmbeddingProvider;
-  fallbackEmbeddingProvider: EmbeddingProvider;
+  route: IRetrievalRoute;
+  config: IRagConfig;
+  readRepository: IRagReadRepository;
+  embeddingProvider: IEmbeddingProvider;
+  fallbackEmbeddingProvider: IEmbeddingProvider;
   embedding?: number[];
   index?: EmbeddingIndex;
 }
@@ -48,7 +48,7 @@ export async function retrieveRoutedContexts({
   fallbackEmbeddingProvider,
   embedding,
   index,
-}: RetrieveRoutedContextsInput): Promise<RetrievalResult> {
+}: IRetrieveRoutedContextsInput): Promise<IRetrievalResult> {
   if (route.kind === 'blog' && route.blogKind === 'latest') {
     return {
       contexts: await retrieveLatestBlogContexts(readRepository),

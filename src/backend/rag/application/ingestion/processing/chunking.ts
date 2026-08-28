@@ -3,12 +3,12 @@ import { normalizeText } from './text.js';
 const DEFAULT_CHUNK_SIZE = 1200;
 const DEFAULT_CHUNK_OVERLAP = 180;
 
-interface ChunkTextOptions {
+interface IChunkTextOptions {
   chunkSize?: number;
   chunkOverlap?: number;
 }
 
-export function chunkText(text: unknown, options: ChunkTextOptions = {}): string[] {
+export function chunkText(text: unknown, options: IChunkTextOptions = {}): string[] {
   const chunkSize = options.chunkSize ?? DEFAULT_CHUNK_SIZE;
   const chunkOverlap = options.chunkOverlap ?? DEFAULT_CHUNK_OVERLAP;
   const normalized = normalizeText(text);

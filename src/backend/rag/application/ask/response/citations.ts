@@ -1,13 +1,13 @@
-import type { RetrievedContext } from '../../../domain/retrieval/RetrievedContext.js';
-import type { Citation } from '../../../domain/assistant/AssistantResponse.js';
-import type { PageContext } from '../../../domain/conversation/ChatMessage.js';
+import type { IRetrievedContext } from '../../../domain/retrieval/iretrievedcontext.js';
+import type { ICitation } from '../../../domain/assistant/assistant.response.js';
+import type { IPageContext } from '../../../domain/conversation/ichatmessage.js';
 import { resolveUrl } from '../../common/url.js';
 
 export function createCitations(
-  contexts: RetrievedContext[],
+  contexts: IRetrievedContext[],
   siteUrl: string,
-  pageContext?: PageContext | null
-): Citation[] {
+  pageContext?: IPageContext | null
+): ICitation[] {
   if (
     contexts.some(
       context => context.origin === 'trusted_external' || context.sourceKey === 'assistant-policy'
@@ -49,9 +49,9 @@ export function createCitations(
 }
 
 function isCurrentPageContext(
-  context: RetrievedContext,
+  context: IRetrievedContext,
   siteUrl: string,
-  pageContext?: PageContext | null
+  pageContext?: IPageContext | null
 ): boolean {
   if (!pageContext?.pathname || !context.url) {
     return false;
@@ -72,7 +72,7 @@ function getComparablePath(url: string, siteUrl: string): string | null {
   }
 }
 
-function isNavigableFirstPartyContext(context: RetrievedContext, siteUrl: string): boolean {
+function isNavigableFirstPartyContext(context: IRetrievedContext, siteUrl: string): boolean {
   if (context.origin !== 'first_party' || !context.url) {
     return false;
   }

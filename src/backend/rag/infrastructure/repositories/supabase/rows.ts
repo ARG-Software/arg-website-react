@@ -2,9 +2,9 @@ import type {
   RagSourceMetadata,
   RagSourceOrigin,
   RagSourceType,
-} from '../../../domain/content/RagSource.js';
+} from '../../../domain/content/iragsource.js';
 
-export interface MatchRagChunkRow {
+export interface IMatchRagChunkRow {
   chunk_id: string;
   source_id: string;
   source_type: RagSourceType;
@@ -19,7 +19,7 @@ export interface MatchRagChunkRow {
   chunk_metadata: RagSourceMetadata | null;
 }
 
-export interface DirectSourceRow {
+export interface IDirectSourceRow {
   id: string;
   source_type: RagSourceType;
   source_key: string;
@@ -31,7 +31,7 @@ export interface DirectSourceRow {
   metadata: RagSourceMetadata | null;
 }
 
-export interface DirectChunkRow {
+export interface IDirectChunkRow {
   id: string;
   source_id: string;
   chunk_index: number;

@@ -1,5 +1,5 @@
 {
-  "copyVersion": "2026-07-30-1",
+  "copyVersion": "2026-08-27-1",
   "imageSrc": "/images/ai/gaspar.png",
   "name": "Gaspar",
   "statusText": "online now",
@@ -31,7 +31,7 @@
     "welcome": "Hi, I'm Gaspar, ARG's AI assistant. Ask me about our work, our research, or how to get in touch.",
     "leadCaptureOffer": "Want to send ARG a quick email? I can collect your email and message here.",
     "leadCaptureEmail": "What email should we reply to?",
-    "leadCaptureEdit": "Let's update the details. Enter the reply email again. You can add or change the message next.",
+    "leadCaptureEdit": "Let's update the details. Enter a new reply email, or write only the message to keep the current email.",
     "leadCaptureMessagePrompt": "Want to add a message? You can also say \"skip\".",
     "leadCaptureSuccess": "Done. We'll reply within 48h. Thanks for reaching out!",
     "leadCaptureDeclined": "No problem. Feel free to ask me anything else.",

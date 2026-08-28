@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { trackConsent } from '../../utils/analytics';
+import { trackConsent } from '@services/analytics';
 import { STORAGE_KEY } from '@constants/ui';
 import { LoadingContext } from '../../providers/LoadingProvider';
 

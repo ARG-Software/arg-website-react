@@ -1,11 +1,11 @@
 import type {
-  AssistantActionCopy,
-  AssistantUiCopy,
-} from '../../domain/assistant/AssistantUiCopy.js';
+  IAssistantActionCopy,
+  IAssistantUiCopy,
+} from '../../domain/assistant/iassistantuicopy.js';
 
 export function parseTranslatedAssistantUiCopy(
   content: string | undefined
-): Partial<AssistantUiCopy> {
+): Partial<IAssistantUiCopy> {
   if (!content) return {};
 
   const json = content
@@ -15,16 +15,16 @@ export function parseTranslatedAssistantUiCopy(
     .trim();
 
   try {
-    return JSON.parse(json) as Partial<AssistantUiCopy>;
+    return JSON.parse(json) as Partial<IAssistantUiCopy>;
   } catch {
     return {};
   }
 }
 
 export function normalizeTranslatedAssistantUiCopy(
-  fallback: AssistantUiCopy,
-  translation: Partial<AssistantUiCopy>
-): AssistantUiCopy {
+  fallback: IAssistantUiCopy,
+  translation: Partial<IAssistantUiCopy>
+): IAssistantUiCopy {
   return {
     statusText: readString(translation.statusText, fallback.statusText),
     quickPrompts: readTranslatedStringArray(fallback.quickPrompts, translation.quickPrompts),
@@ -44,7 +44,7 @@ export function normalizeTranslatedAssistantUiCopy(
   };
 }
 
-export function readActionCopy(value: unknown): Record<string, AssistantActionCopy> {
+export function readActionCopy(value: unknown): Record<string, IAssistantActionCopy> {
   if (!value || typeof value !== 'object') return {};
 
   return Object.fromEntries(
@@ -54,7 +54,7 @@ export function readActionCopy(value: unknown): Record<string, AssistantActionCo
         const label = readString((action as Record<string, unknown>).label);
         return label ? [key, { label }] : null;
       })
-      .filter((entry): entry is [string, AssistantActionCopy] => Boolean(entry))
+      .filter((entry): entry is [string, IAssistantActionCopy] => Boolean(entry))
   );
 }
 
@@ -93,9 +93,9 @@ function readTranslatedRecord(
 }
 
 function readTranslatedActions(
-  fallback: Record<string, AssistantActionCopy>,
+  fallback: Record<string, IAssistantActionCopy>,
   translation: unknown
-): Record<string, AssistantActionCopy> {
+): Record<string, IAssistantActionCopy> {
   const translated = readActionCopy(translation);
 
   return Object.fromEntries(
