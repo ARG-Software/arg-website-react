@@ -30,6 +30,7 @@ import {
 } from '../shared/formatters.js';
 
 const DEFAULT_RANGE = 'today';
+const COUNTRY_BREAKDOWN_PAGE_SIZE = 250;
 const STAT_CARDS = [
   { metric: 'page_views', label: 'Page views' },
   { metric: 'visits', label: 'Visits' },
@@ -63,7 +64,11 @@ function VisitsDashboard({ onSelectVisitSession }) {
   const eventsStatQuery = useVisitStat('events', statRanges.events);
   const countriesStatQuery = useVisitStat('countries', statRanges.countries);
   const chartQuery = useVisitChart(chartRange, chartSeries);
-  const countryQuery = useVisitCountryBreakdown(countryRange);
+  const countryQuery = useVisitCountryBreakdown(
+    countryRange,
+    { pageSize: COUNTRY_BREAKDOWN_PAGE_SIZE },
+    { keepPrevious: true }
+  );
   const sourcesQuery = useVisitBreakdown(
     'sources',
     sourcesRange,
@@ -162,6 +167,8 @@ function VisitsDashboard({ onSelectVisitSession }) {
             ranges={VISIT_CHART_RANGES}
             pie={formatCountryBreakdown(countryQuery.data?.records || [])}
             pieAriaLabel="Visitor countries"
+            pieLegendMode="list"
+            pieListValueUnit="visit"
             pieEmptyMessage="No country data available for the selected range."
             onRangeChange={setCountryRange}
             rangeClassName="admin-visit-range-select admin-visit-range-select--small"

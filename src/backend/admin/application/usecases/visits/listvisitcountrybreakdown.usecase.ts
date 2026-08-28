@@ -14,6 +14,7 @@ const ALLOWED_RANGES = new Set([
   'two_months',
   'all_time',
 ]);
+const MAX_COUNTRY_PAGE_SIZE = 250;
 
 export interface ListVisitCountryBreakdownInput {
   range?: string;
@@ -28,7 +29,7 @@ export class ListVisitCountryBreakdownUseCase {
     const result = await this.repository.getBreakdown(
       'countries',
       normalizeRange(input.range),
-      getPagination(input)
+      getPagination(input, { maxPageSize: MAX_COUNTRY_PAGE_SIZE })
     );
 
     return {

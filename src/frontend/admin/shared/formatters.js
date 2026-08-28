@@ -30,7 +30,8 @@ export function formatCountryBreakdown(items) {
       label: formatCountry(item.label),
       value: Number(item.value || 0),
     }))
-    .filter(item => item.value > 0);
+    .filter(item => item.value > 0)
+    .sort((left, right) => right.value - left.value);
 }
 
 export function createReferrerRow(item) {
