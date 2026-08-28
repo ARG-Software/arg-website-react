@@ -94,6 +94,43 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.admin-visit-stat-card {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.admin-visit-stat-card__header {
+  align-items: start;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.admin-visit-stat-card__header .ui-field {
+  max-width: 10rem;
+}
+
+.admin-visit-stat-card__label {
+  color: rgba(12, 0, 46, 0.62);
+  font-size: var(--type-ui);
+  font-weight: 600;
+}
+
+.admin-visit-stat-card__value {
+  color: #0c002e;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+}
+
+.admin-visit-analytics-grid {
+  align-items: stretch;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1.35fr) minmax(20rem, 0.65fr);
+}
+
 .admin-workspace {
   align-items: start;
   display: grid;
@@ -505,6 +542,10 @@
   }
 
   .admin-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-visit-analytics-grid {
     grid-template-columns: 1fr;
   }
 }

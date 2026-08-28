@@ -1,33 +1,53 @@
-import type { VisitMetricsData } from '../../../domain/types/visit.types.js';
+import type {
+  VisitBreakdownMetric,
+  VisitChartSeries,
+  VisitMetricRange,
+  VisitStatMetric,
+} from '../../../domain/types/visitmetrics.types.js';
 import type { IVisitRepository } from '../../ports/repositories/ivisit.repository.js';
 
-const ALLOWED_RANGES = new Set(['7d', '30d', '2m']);
+const ALLOWED_RANGES = new Set([
+  'today',
+  'yesterday',
+  'this_week',
+  'last_week',
+  'this_month',
+  'two_months',
+  'all_time',
+]);
+const STAT_METRICS = new Set(['page_views', 'visits', 'events', 'countries']);
+const BREAKDOWN_METRICS = new Set(['countries', 'pages', 'sources', 'referrers']);
+const CHART_SERIES = new Set(['all', 'page_views', 'visits', 'events']);
 
 export interface ListVisitMetricsInput {
+  metric?: string;
   range?: string;
+  series?: string;
 }
 
 export class ListVisitMetricsUseCase {
   constructor(private readonly repository: IVisitRepository) {}
 
-  async execute(input: ListVisitMetricsInput = {}): Promise<VisitMetricsData> {
-    const range = input.range || '30d';
-    const normalizedRange = ALLOWED_RANGES.has(range) ? range : '30d';
-    const data = await this.repository.getMetrics(normalizedRange);
+  async execute(input: ListVisitMetricsInput = {}) {
+    const range = normalizeRange(input.range);
+    const metric = input.metric || 'chart';
 
-    return {
-      summary: data.summary || {
-        total: 0,
-        visits: 0,
-        uniqueVisitors: 0,
-        today: 0,
-        countries: 0,
-      },
-      points: Array.isArray(data.points) ? data.points : [],
-      countryBreakdown: Array.isArray(data.countryBreakdown) ? data.countryBreakdown : [],
-      topPages: Array.isArray(data.topPages) ? data.topPages : [],
-      topReferrers: Array.isArray(data.topReferrers) ? data.topReferrers : [],
-      topSources: Array.isArray(data.topSources) ? data.topSources : [],
-    };
+    if (STAT_METRICS.has(metric)) {
+      return this.repository.getStat(metric as VisitStatMetric, range);
+    }
+
+    if (BREAKDOWN_METRICS.has(metric)) {
+      return this.repository.getBreakdown(metric as VisitBreakdownMetric, range);
+    }
+
+    return this.repository.getChart(range, normalizeSeries(input.series));
   }
+}
+
+function normalizeRange(value?: string): VisitMetricRange {
+  return (ALLOWED_RANGES.has(value || '') ? value : 'this_month') as VisitMetricRange;
+}
+
+function normalizeSeries(value?: string): VisitChartSeries {
+  return (CHART_SERIES.has(value || '') ? value : 'all') as VisitChartSeries;
 }

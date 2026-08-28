@@ -1,4 +1,4 @@
-import type { VisitSessionListResult } from '../../../domain/types/visit.types.js';
+import type { VisitSessionListResult } from '../../../domain/types/visitsession.types.js';
 import type { IVisitRepository } from '../../ports/repositories/ivisit.repository.js';
 import { getPagination } from '../pagination.js';
 

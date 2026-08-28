@@ -2,12 +2,20 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { IVisitRepository } from '../../../application/ports/repositories/ivisit.repository.js';
 import type {
-  VisitJourneyEvent,
-  VisitMetricsData,
+  VisitBreakdownMetric,
+  VisitBreakdownResult,
+  VisitChartResult,
+  VisitChartSeries,
+  VisitMetricRange,
+  VisitStatMetric,
+  VisitStatResult,
+} from '../../../domain/types/visitmetrics.types.js';
+import type { VisitJourneyEvent } from '../../../domain/types/visitevents.types.js';
+import type {
   VisitSessionListItem,
   VisitSessionListResult,
   VisitSessionRecord,
-} from '../../../domain/types/visit.types.js';
+} from '../../../domain/types/visitsession.types.js';
 
 type VisitSessionRow = {
   session_hash: string;
@@ -32,32 +40,29 @@ type VisitSessionRow = {
 
 type VisitJourneyRow = {
   session_hash: string;
-  country_code: string | null;
-  region: string;
-  city: string;
-  timezone: string;
   referrer: string | null;
   source: string | null;
   medium: string | null;
   campaign: string | null;
-  term: string | null;
-  content: string | null;
-  click_id: string | null;
-  page_views?: Array<{
-    sequence: string | number;
-    path: string;
-    title: string;
-    startedAt: string;
-    endedAt: string;
-    durationMs: string | number;
-  }>;
-  events?: Array<{
-    name: string;
-    params?: Record<string, string | number | boolean | null>;
-    sequence: string | number;
-    timestamp: string;
-    path: string;
-  }>;
+};
+
+type VisitPageViewRow = {
+  session_hash: string;
+  sequence: string | number;
+  path: string;
+  title: string;
+  started_at: string;
+  ended_at: string;
+  duration_ms: string | number;
+};
+
+type VisitEventRow = {
+  session_hash: string;
+  name: string;
+  params?: Record<string, string | number | boolean | null>;
+  sequence: string | number;
+  path: string;
+  occurred_at: string;
 };
 
 export class SupabaseVisitRepository implements IVisitRepository {
@@ -88,15 +93,43 @@ export class SupabaseVisitRepository implements IVisitRepository {
     if (error) throw error;
   }
 
-  async getMetrics(range: string = '30d'): Promise<VisitMetricsData> {
-    const { data, error } = await this.client.rpc('aggregate_visit_metrics', {
+  async getStat(metric: VisitStatMetric, range: VisitMetricRange): Promise<VisitStatResult> {
+    const { data, error } = await this.client.rpc('get_visit_stat', {
+      p_metric: metric,
       p_range: range,
       p_now: new Date().toISOString(),
     });
 
     if (error) throw error;
 
-    return data || {};
+    return (data || { metric, range, value: 0 }) as VisitStatResult;
+  }
+
+  async getChart(range: VisitMetricRange, series: VisitChartSeries): Promise<VisitChartResult> {
+    const { data, error } = await this.client.rpc('get_visit_chart', {
+      p_range: range,
+      p_series: series,
+      p_now: new Date().toISOString(),
+    });
+
+    if (error) throw error;
+
+    return (data || { range, series, points: [] }) as VisitChartResult;
+  }
+
+  async getBreakdown(
+    metric: VisitBreakdownMetric,
+    range: VisitMetricRange
+  ): Promise<VisitBreakdownResult> {
+    const { data, error } = await this.client.rpc('get_visit_breakdown', {
+      p_metric: metric,
+      p_range: range,
+      p_now: new Date().toISOString(),
+    });
+
+    if (error) throw error;
+
+    return (data || { metric, range, records: [] }) as VisitBreakdownResult;
   }
 
   async listSessions({
@@ -116,6 +149,7 @@ export class SupabaseVisitRepository implements IVisitRepository {
           count: 'exact',
         }
       )
+      .gte('last_seen_at', getRecentVisitsCutoff())
       .order('last_seen_at', { ascending: false })
       .range(from, to);
 
@@ -133,21 +167,41 @@ export class SupabaseVisitRepository implements IVisitRepository {
   }
 
   async listJourney(sessionHash: string): Promise<VisitJourneyEvent[]> {
-    const { data, error } = await this.client
-      .from('visit_sessions')
-      .select(
-        'session_hash, country_code, region, city, timezone, referrer, source, medium, campaign, term, content, click_id, page_views, events'
-      )
-      .eq('session_hash', sessionHash)
-      .single();
+    const [sessionResult, pageViewsResult, eventsResult] = await Promise.all([
+      this.client
+        .from('visit_sessions')
+        .select('session_hash, referrer, source, medium, campaign')
+        .eq('session_hash', sessionHash)
+        .single(),
+      this.client
+        .from('visit_page_views')
+        .select('session_hash, sequence, path, title, started_at, ended_at, duration_ms')
+        .eq('session_hash', sessionHash)
+        .order('sequence', { ascending: true }),
+      this.client
+        .from('visit_events')
+        .select('session_hash, name, params, sequence, path, occurred_at')
+        .eq('session_hash', sessionHash)
+        .neq('name', 'page_view')
+        .order('sequence', { ascending: true }),
+    ]);
 
-    if (error) throw error;
+    if (sessionResult.error) throw sessionResult.error;
+    if (pageViewsResult.error) throw pageViewsResult.error;
+    if (eventsResult.error) throw eventsResult.error;
 
-    return createJourneyEvents(data);
+    return createJourneyEvents(
+      sessionResult.data as VisitJourneyRow,
+      (pageViewsResult.data || []) as VisitPageViewRow[],
+      (eventsResult.data || []) as VisitEventRow[]
+    );
   }
 
   async deleteById(sessionHash: string): Promise<void> {
-    const { error } = await this.client.from('visit_sessions').delete().eq('session_hash', sessionHash);
+    const { error } = await this.client
+      .from('visit_sessions')
+      .delete()
+      .eq('session_hash', sessionHash);
 
     if (error) throw error;
   }
@@ -191,54 +245,66 @@ function toSessionRecord(row: VisitSessionRow): VisitSessionListItem {
   };
 }
 
-function createJourneyEvents(row: VisitJourneyRow): VisitJourneyEvent[] {
-  const pageViewEvents = (row?.page_views || []).map(pageView => ({
-    sessionHash: row.session_hash,
+function getRecentVisitsCutoff(): string {
+  const cutoff = new Date();
+  cutoff.setUTCHours(0, 0, 0, 0);
+  cutoff.setUTCDate(cutoff.getUTCDate() - 1);
+
+  return cutoff.toISOString();
+}
+
+function createJourneyEvents(
+  session: VisitJourneyRow,
+  pageViews: VisitPageViewRow[],
+  eventRows: VisitEventRow[]
+): VisitJourneyEvent[] {
+  const pageViewEvents = pageViews.map(pageView => ({
+    sessionHash: pageView.session_hash,
     type: 'page_view' as const,
     name: 'page_view',
     params: {},
     sequence: pageView.sequence,
     path: pageView.path,
     title: pageView.title,
-    countryCode: row.country_code,
-    region: row.region,
-    city: row.city,
-    timezone: row.timezone,
-    referrer: row.referrer,
-    source: row.source,
-    medium: row.medium,
-    campaign: row.campaign,
-    term: row.term,
-    content: row.content,
-    clickId: row.click_id,
-    visitedAt: pageView.startedAt,
-    endedAt: pageView.endedAt,
-    durationMs: pageView.durationMs,
+    countryCode: null,
+    region: '',
+    city: '',
+    timezone: '',
+    referrer: session.referrer,
+    source: session.source,
+    medium: session.medium,
+    campaign: session.campaign,
+    term: null,
+    content: null,
+    clickId: null,
+    visitedAt: pageView.started_at,
+    endedAt: pageView.ended_at,
+    durationMs: pageView.duration_ms,
   }));
 
-  const events = (row?.events || [])
-    .filter(event => event.name && event.timestamp && event.name !== 'page_view')
+  const events = eventRows
+    .filter(event => event.name && event.occurred_at)
     .map(event => ({
-      sessionHash: row.session_hash,
+      sessionHash: event.session_hash,
       type: 'event' as const,
       name: event.name,
       params: event.params || {},
       sequence: event.sequence || 0,
       path: event.path || String(event.params?.page_path || ''),
       title: event.name,
-      countryCode: row.country_code,
-      region: row.region,
-      city: row.city,
-      timezone: row.timezone,
-      referrer: row.referrer,
-      source: row.source,
-      medium: row.medium,
-      campaign: row.campaign,
-      term: row.term,
-      content: row.content,
-      clickId: row.click_id,
-      visitedAt: event.timestamp,
-      endedAt: event.timestamp,
+      countryCode: null,
+      region: '',
+      city: '',
+      timezone: '',
+      referrer: session.referrer,
+      source: session.source,
+      medium: session.medium,
+      campaign: session.campaign,
+      term: null,
+      content: null,
+      clickId: null,
+      visitedAt: event.occurred_at,
+      endedAt: event.occurred_at,
       durationMs: 0,
     }));
 

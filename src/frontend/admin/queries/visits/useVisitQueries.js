@@ -1,17 +1,33 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   deleteVisitSession,
+  fetchVisitBreakdown,
+  fetchVisitChart,
   fetchVisitJourney,
-  fetchVisitMetrics,
   fetchVisitSessions,
+  fetchVisitStat,
 } from '../../apis/visitMetricsApi.js';
 
 export const visitQueryKey = ['admin', 'visits'];
 
-export function useVisitMetrics(range) {
+export function useVisitStat(metric, range) {
   return useQuery({
-    queryKey: [...visitQueryKey, 'metrics', range],
-    queryFn: () => fetchVisitMetrics(range),
+    queryKey: [...visitQueryKey, 'stat', metric, range],
+    queryFn: () => fetchVisitStat(metric, range),
+  });
+}
+
+export function useVisitChart(range, series) {
+  return useQuery({
+    queryKey: [...visitQueryKey, 'chart', range, series],
+    queryFn: () => fetchVisitChart(range, series),
+  });
+}
+
+export function useVisitBreakdown(metric, range) {
+  return useQuery({
+    queryKey: [...visitQueryKey, 'breakdown', metric, range],
+    queryFn: () => fetchVisitBreakdown(metric, range),
   });
 }
 

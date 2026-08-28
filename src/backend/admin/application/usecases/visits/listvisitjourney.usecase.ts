@@ -1,5 +1,5 @@
 import { createAdminError } from '../../errors.js';
-import type { VisitJourneyEvent } from '../../../domain/types/visit.types.js';
+import type { VisitJourneyEvent } from '../../../domain/types/visitevents.types.js';
 import type { IVisitRepository } from '../../ports/repositories/ivisit.repository.js';
 
 export interface ListVisitJourneyInput {

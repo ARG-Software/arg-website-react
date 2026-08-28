@@ -17,14 +17,26 @@ export const CHART_RANGES = [
 ];
 
 export const VISIT_CHART_RANGES = [
-  { value: '7d', label: 'Last 7 days' },
-  { value: '30d', label: 'Last 30 days' },
-  { value: '2m', label: 'Last 2 months' },
+  { value: 'today', label: 'Today' },
+  { value: 'yesterday', label: 'Yesterday' },
+  { value: 'this_week', label: 'This week' },
+  { value: 'last_week', label: 'Last week' },
+  { value: 'this_month', label: 'This month' },
+  { value: 'two_months', label: 'Two months' },
+  { value: 'all_time', label: 'All time' },
+];
+
+export const VISIT_CHART_SERIES_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'page_views', label: 'Page views' },
+  { value: 'visits', label: 'Visits' },
+  { value: 'events', label: 'Events' },
 ];
 
 export const VISIT_CHART_LINES = [
-  { dataKey: 'visits', name: 'Page views', color: '#f0060d' },
-  { dataKey: 'uniqueVisitors', name: 'Visits', color: '#7904fd' },
+  { dataKey: 'pageViews', name: 'Page views', color: '#f0060d' },
+  { dataKey: 'visits', name: 'Visits', color: '#7904fd' },
+  { dataKey: 'events', name: 'Events', color: '#ffb020' },
 ];
 
 export const PAGE_SIZE = 10;

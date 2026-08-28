@@ -4,8 +4,8 @@ import type {
   VisitEventInput,
   VisitPageView,
   VisitPageViewInput,
-  VisitSessionConstructorParams,
-} from './types/visit.types.js';
+} from './types/visitevents.types.js';
+import type { VisitSessionConstructorParams } from './types/visitsession.types.js';
 
 export class VisitSession {
   readonly sessionHash: string;

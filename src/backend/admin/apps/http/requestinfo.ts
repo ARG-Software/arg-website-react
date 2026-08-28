@@ -1,5 +1,5 @@
 import { getClientIp as getSharedClientIp } from '../../../shared/api/http.js';
-import type { VisitGeolocationInput } from '../../domain/types/visit.types.js';
+import type { VisitGeolocationInput } from '../../domain/types/visitsession.types.js';
 
 export function getClientIp(request: Request): string {
   return getSharedClientIp(request);

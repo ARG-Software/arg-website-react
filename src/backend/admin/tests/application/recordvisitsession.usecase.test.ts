@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { RecordVisitSessionUseCase } from '../../application/usecases/visits/recordvisitsession.usecase.js';
-import type { VisitSessionRecord } from '../../domain/types/visit.types.js';
+import type { VisitSessionRecord } from '../../domain/types/visitsession.types.js';
 
 test('recordVisitSessionUseCase records geolocation provided by the HTTP boundary', async () => {
   let savedRecord: VisitSessionRecord | null = null;

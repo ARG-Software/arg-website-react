@@ -1,7 +1,11 @@
 import crypto from 'node:crypto';
 
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
-import { checkRateLimits, type IRateLimitConfig, type IRateLimitStore } from '../../../../shared/security/ratelimit.js';
+import {
+  checkRateLimits,
+  type IRateLimitConfig,
+  type IRateLimitStore,
+} from '../../../../shared/security/ratelimit.js';
 import type { IAdminConfiguration } from '../../config/iadmin.configuration.js';
 import type { IVisitRepository } from '../../ports/repositories/ivisit.repository.js';
 import { VisitSession } from '../../../domain/visit.js';
@@ -9,7 +13,7 @@ import { VisitDomainError } from '../../../domain/errors/visitdomain.error.js';
 import type {
   VisitAttributionInput,
   VisitGeolocationInput,
-} from '../../../domain/types/visit.types.js';
+} from '../../../domain/types/visitsession.types.js';
 
 export interface RecordVisitSessionInput {
   clientIp: string;

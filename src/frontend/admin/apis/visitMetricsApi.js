@@ -5,8 +5,18 @@ const VISIT_SESSIONS_ENDPOINT = '/api/admin/visit-sessions';
 const VISIT_SESSION_ENDPOINT = '/api/admin/visit-session';
 const VISIT_JOURNEY_ENDPOINT = '/api/admin/visit-journey';
 
-export async function fetchVisitMetrics(range = '30d') {
-  const response = await fetch(buildVisitMetricsUrl({ range }));
+export async function fetchVisitStat(metric, range) {
+  const response = await fetch(buildVisitMetricsUrl({ metric, range }));
+  return readAdminResponse(response);
+}
+
+export async function fetchVisitChart(range, series) {
+  const response = await fetch(buildVisitMetricsUrl({ metric: 'chart', range, series }));
+  return readAdminResponse(response);
+}
+
+export async function fetchVisitBreakdown(metric, range) {
+  const response = await fetch(buildVisitMetricsUrl({ metric, range }));
   return readAdminResponse(response);
 }
 
