@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -27,6 +27,7 @@ import {
   useExportOutreachCsv,
   useImportOutreachCsv,
 } from './queries/outreach/useOutreachQueries.js';
+import { useAssistantConversation } from './queries/assistant/useAssistantQueries.js';
 import { ADMIN_ROUTES } from './shared/constants.js';
 import '@ui/styles.css';
 import './admin.css';
@@ -66,6 +67,17 @@ function AdminWorkspace() {
   const pageLoading = queryFetching > 0 || queryMutating > 0;
   const view = getAdminView(location.pathname);
   const importStatus = getImportStatus(importMutation);
+  const deepLinkedConversationId =
+    view === 'aiBot' ? new URLSearchParams(location.search).get('conversationId') : '';
+  const deepLinkedConversationQuery = useAssistantConversation(deepLinkedConversationId, {
+    enabled: isAuthenticated,
+  });
+
+  useEffect(() => {
+    if (deepLinkedConversationQuery.data) {
+      setSelectedConversation(deepLinkedConversationQuery.data);
+    }
+  }, [deepLinkedConversationQuery.data]);
 
   async function handleSignOut() {
     await signOut?.();
@@ -76,6 +88,28 @@ function AdminWorkspace() {
 
   function handleRefresh() {
     queryClient.invalidateQueries({ queryKey: ['admin'] });
+  }
+
+  function handleSelectConversation(conversation) {
+    setSelectedConversation(conversation);
+
+    if (view !== 'aiBot') return;
+
+    const params = new URLSearchParams(location.search);
+    if (conversation?.id) {
+      params.set('conversationId', conversation.id);
+    } else {
+      params.delete('conversationId');
+    }
+
+    const search = params.toString();
+    navigate(
+      {
+        pathname: location.pathname,
+        search: search ? `?${search}` : '',
+      },
+      { replace: true }
+    );
   }
 
   async function handleExport() {
@@ -110,7 +144,12 @@ function AdminWorkspace() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
+    return (
+      <Navigate
+        to={`/admin/login?from=${encodeURIComponent(location.pathname + location.search)}`}
+        replace
+      />
+    );
   }
 
   return (
@@ -180,7 +219,7 @@ function AdminWorkspace() {
       {renderAdminFragment(view, {
         userEmail: user?.email,
         onSelectRecord: setSelectedRecord,
-        onSelectConversation: setSelectedConversation,
+        onSelectConversation: handleSelectConversation,
         onSelectVisitSession: setSelectedVisitSession,
       })}
       <OutreachEditor
@@ -191,7 +230,7 @@ function AdminWorkspace() {
       />
       <AssistantConversationOverlay
         conversation={selectedConversation}
-        onClose={() => setSelectedConversation(null)}
+        onClose={() => handleSelectConversation(null)}
       />
       <VisitJourneyOverlay
         session={selectedVisitSession}

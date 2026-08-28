@@ -15,11 +15,11 @@ export function useAssistantConversations(query, options = {}) {
   });
 }
 
-export function useAssistantConversation(id) {
+export function useAssistantConversation(id, options = {}) {
   return useQuery({
     queryKey: [...assistantQueryKey, 'detail', id],
     queryFn: () => fetchAssistantConversation(id),
-    enabled: Boolean(id),
+    enabled: Boolean(id) && options.enabled !== false,
   });
 }
 

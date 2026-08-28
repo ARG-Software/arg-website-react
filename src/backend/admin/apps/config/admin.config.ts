@@ -8,11 +8,14 @@ const DEFAULT_VISIT_LOG_RATE_LIMIT_SALT = 'arg-visit-log-rate-limit';
 const DEFAULT_ASSISTANT_CONVERSATION_LOG_RATE_LIMIT_SALT =
   'arg-assistant-conversation-log-rate-limit';
 const DEFAULT_VISIT_HASH_KEY = 'arg-visit-analytics-dev-key';
+const DEFAULT_ADMIN_SITE_URL = 'https://arg.software/admin/';
 
 export interface IAdminConfigValues {
   adminDatabaseUrl: string;
   adminDatabaseAnonKey: string;
   adminDatabaseServiceRoleKey: string;
+  adminSiteUrl: string;
+  notificationWebhookUrl: string;
   auditSalt: string;
   loginRateLimitPerMinute: number;
   loginRateLimitPerDay: number;
@@ -84,6 +87,14 @@ export class AdminConfig implements IAdminConfiguration {
 
   getAdminDatabaseServiceRoleKey(): string {
     return this.values.adminDatabaseServiceRoleKey;
+  }
+
+  getAdminSiteUrl(): string {
+    return this.values.adminSiteUrl;
+  }
+
+  getNotificationWebhookUrl(): string {
+    return this.values.notificationWebhookUrl;
   }
 
   getAuditSalt(): string {
@@ -168,6 +179,8 @@ export function readAdminConfigValues(env: NodeJS.ProcessEnv): IAdminConfigValue
     adminDatabaseUrl: requiredEnv(env, 'ADMIN_DATABASE_URL'),
     adminDatabaseAnonKey: requiredEnv(env, 'ADMIN_DATABASE_ANON_KEY'),
     adminDatabaseServiceRoleKey: requiredEnv(env, 'ADMIN_DATABASE_SERVICE_ROLE_KEY'),
+    adminSiteUrl: env.ADMIN_SITE_URL || env.URL || DEFAULT_ADMIN_SITE_URL,
+    notificationWebhookUrl: env.NOTIFICATION_WEBHOOK_URL || '',
     loginRateLimitPerMinute: getPositiveNumberEnv(env, 'ADMIN_LOGIN_RATE_LIMIT_PER_MINUTE', 6),
     loginRateLimitPerDay: getPositiveNumberEnv(env, 'ADMIN_LOGIN_RATE_LIMIT_PER_DAY', 30),
     loginGlobalRateLimitPerDay: getPositiveNumberEnv(

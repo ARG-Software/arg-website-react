@@ -10,7 +10,7 @@ export function AssistantConversationOverlay({ conversation, onClose }) {
 
   if (!conversation) return null;
 
-  const record = detailQuery.data?.record || conversation;
+  const record = detailQuery.data || conversation;
 
   return (
     <AdminRecordOverlay

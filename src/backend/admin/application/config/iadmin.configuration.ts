@@ -5,6 +5,8 @@ export interface IAdminConfiguration {
   getAdminDatabaseUrl(): string;
   getAdminDatabaseAnonKey(): string;
   getAdminDatabaseServiceRoleKey(): string;
+  getAdminSiteUrl(): string;
+  getNotificationWebhookUrl(): string;
   getAuditSalt(): string;
   getSecureCookies(): boolean;
   getVisitHashKey(): string;

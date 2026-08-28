@@ -31,6 +31,7 @@ import { SupabaseOutreachRepository } from '../../infrastructure/repositories/su
 import { SupabaseUserIdentityProvider } from '../../infrastructure/repositories/supabase/supabaseuseridentity.provider.js';
 import { SupabaseVisitRepository } from '../../infrastructure/repositories/supabase/supabasevisit.repository.js';
 import { systemClock } from '../../infrastructure/system/systemclock.js';
+import { DiscordWebhookProvider } from '../../infrastructure/webhooks/discordwebhook.provider.js';
 import { AdminConfig } from '../config/admin.config.js';
 
 export function createAdminContainer() {
@@ -52,6 +53,9 @@ export function createAdminContainer() {
   const outreachRepository = new SupabaseOutreachRepository(serviceClient, config);
   const visitRepository = new SupabaseVisitRepository(serviceClient);
   const csvParser = new OutreachCsvParser();
+  const assistantConversationWebhook = config.getNotificationWebhookUrl()
+    ? new DiscordWebhookProvider(config.getNotificationWebhookUrl())
+    : { send: async () => {} };
 
   const authenticateUserUseCase = new AuthenticateUserUseCase(identityProvider, userAccessPolicy);
 
@@ -106,6 +110,8 @@ export function createAdminContainer() {
       listAssistantConversationsUseCase: new ListAssistantConversationsUseCase(conversationRepository),
       logAssistantConversationUseCase: new LogAssistantConversationUseCase(
         conversationRepository,
+        assistantConversationWebhook,
+        config.getAdminSiteUrl(),
         {
           config: config.getAssistantConversationLogRateLimitConfig(),
           store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit', logger),

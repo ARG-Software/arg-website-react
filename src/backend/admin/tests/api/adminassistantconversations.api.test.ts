@@ -20,6 +20,7 @@ test('logs assistant conversations through the public write-only endpoint', asyn
   const api = createTestApi({
     async upsert(record) {
       savedRecord = record;
+      return record;
     },
   });
   const response = await api(createConversationLogRequest());
@@ -87,7 +88,9 @@ test('deletes assistant conversations through the authenticated admin endpoint',
 function createTestApi(repositoryOverrides = {}) {
   const conversation = createConversationRecord();
   const repository = {
-    async upsert() {},
+    async upsert(record) {
+      return record;
+    },
     async list() {
       return {
         records: [conversation],
@@ -105,6 +108,8 @@ function createTestApi(repositoryOverrides = {}) {
     getAssistantConversationUseCase: new GetAssistantConversationUseCase(repository as any),
     listAssistantConversationsUseCase: new ListAssistantConversationsUseCase(repository as any),
     logAssistantConversationUseCase: new LogAssistantConversationUseCase(repository as any, {
+      send: async () => {},
+    } as any, 'https://arg.software', {
       config: { perMinute: 20, perDay: 200, globalDaily: 1000, salt: 'test' },
       store: { hit: async () => ({ allowed: true }) },
     }),
