@@ -1,3 +1,3 @@
-Visit geolocation no longer reads a runtime `.mmdb` file from this directory.
+Visit geolocation no longer reads runtime assets from this directory.
 
-Import GeoLite2/IP range data into `public.geo_ip_locations`; the admin backend resolves locations through the `lookup_geo_location` Supabase RPC and falls back to provider country headers.
+The `visit-log` Netlify function adapter forwards `context.geo` through internal headers, and the backend records those values as best-effort visit metadata.

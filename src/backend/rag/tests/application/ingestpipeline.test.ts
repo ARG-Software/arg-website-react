@@ -18,6 +18,36 @@ const source: IRagSource = {
   content: 'A source that requires one embedding chunk.',
 };
 
+test('source hashes ignore local provenance paths', () => {
+  const windowsSource = {
+    ...source,
+    path: 'C:\\Work\\Arg\\Website-React\\src\\frontend\\blog\\post.md',
+    metadata: {
+      tag: 'Engineering',
+      source_file: 'C:\\Work\\Arg\\Website-React\\src\\frontend\\blog\\post.md',
+      source_files: ['C:\\Work\\Arg\\Website-React\\src\\frontend\\data\\about.json'],
+    },
+  };
+  const linuxSource = {
+    ...source,
+    path: '/opt/build/repo/src/frontend/blog/post.md',
+    metadata: {
+      tag: 'Engineering',
+      source_file: '/opt/build/repo/src/frontend/blog/post.md',
+      source_files: ['/opt/build/repo/src/frontend/data/about.json'],
+    },
+  };
+
+  assert.equal(createSourceHash(windowsSource), createSourceHash(linuxSource));
+});
+
+test('source hashes still include retrieval metadata', () => {
+  assert.notEqual(
+    createSourceHash({ ...source, metadata: { person_key: 'jose' } }),
+    createSourceHash({ ...source, metadata: { person_key: 'rui' } })
+  );
+});
+
 test('fallback-only ingestion bypasses unchanged content and never invokes the primary provider', async () => {
   let primaryCalls = 0;
   let fallbackCalls = 0;

@@ -40,7 +40,6 @@
     "outreach:import": "tsx scripts/import-outreach.ts \"external/arg-outreach (1).xlsx\"",
     "outreach:import:dry-run": "tsx scripts/import-outreach.ts \"external/arg-outreach (1).xlsx\" --dry-run",
     "admin:bootstrap": "node scripts/bootstrap-admin-users.js",
-    "geo:import": "tsx scripts/import-geo-ip-locations.ts",
     "sync:blog": "npm run blog:import:medium && npm run rag:ingest:local -- --all",
     "rag:ingest:local": "tsx src/backend/rag/scripts/ingestlocal.ts",
     "rag:ingest:external": "tsx src/backend/rag/scripts/ingestexternal.ts",

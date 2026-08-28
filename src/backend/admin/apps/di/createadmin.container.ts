@@ -26,7 +26,6 @@ import { createUserAccessPolicy } from '../../application/policies/useraccess.po
 import { OutreachCsvParser } from '../../infrastructure/csv/outreachcsv.parser.js';
 import { SupabaseAdminUserRepository } from '../../infrastructure/repositories/supabase/supabaseadminuser.repository.js';
 import { SupabaseAssistantConversationRepository } from '../../infrastructure/repositories/supabase/supabaseassistantconversation.repository.js';
-import { SupabaseGeolocationProvider } from '../../infrastructure/repositories/supabase/supabasegeolocation.provider.js';
 import { SupabaseOutreachAuditRepository } from '../../infrastructure/repositories/supabase/supabaseoutreachaudit.repository.js';
 import { SupabaseOutreachRepository } from '../../infrastructure/repositories/supabase/supabaseoutreach.repository.js';
 import { SupabaseUserIdentityProvider } from '../../infrastructure/repositories/supabase/supabaseuseridentity.provider.js';
@@ -93,7 +92,6 @@ export function createAdminContainer() {
       listVisitSessionsUseCase: new ListVisitSessionsUseCase(visitRepository),
       recordVisitSessionUseCase: new RecordVisitSessionUseCase(
         config,
-        new SupabaseGeolocationProvider(serviceClient),
         visitRepository,
         {
           config: config.getVisitLogRateLimitConfig(),

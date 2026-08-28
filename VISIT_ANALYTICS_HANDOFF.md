@@ -29,7 +29,7 @@ The feature records public-site visits only. Admin paths are skipped.
 - First-party page views are buffered in session memory with timestamps and flushed on window close/page hide using `navigator.sendBeacon` with `fetch(..., { keepalive: true })` fallback
 - Admin dashboard route: `/admin/visits/`
 - Visit metrics chart using the existing Recharts-based `AdminMetricChart`
-- Country/city breakdown using the `geo_ip_locations` database table when populated
+- Country/city breakdown using Netlify request geolocation when available
 - Top referrers grouped by host, while retaining the full referrer URL per session/event
 - Top pages table
 - Recent visits table
@@ -39,7 +39,8 @@ The feature records public-site visits only. Admin paths are skipped.
 ## Important Privacy Choices
 
 - Raw IP addresses are **not persisted**.
-- The IP is used only in-memory for rate limiting and country lookup.
+- The IP is used only in-memory for rate limiting.
+- Geolocation comes from Netlify function context and is passed through internal request headers.
 - Client session IDs are hashed server-side via `VISIT_BLIND_INDEX_KEY` before persistence.
 - The stored identifier is `session_hash`, truncated to 16 hex characters.
 - Referrer fragments (`#...`) are stripped server-side.
@@ -97,9 +98,9 @@ vite.config.js
 - Allows `POST` and `OPTIONS`.
 - Rate limits with the existing `hit_admin_rate_limit` RPC through `SupabaseRateLimitStore`.
 - Rate limiting fails open so tracking never breaks browsing.
-- Reads `x-nf-client-connection-ip` for rate limiting and database geolocation lookup only.
+- Reads `x-nf-client-connection-ip` for rate limiting only.
 - Creates a hashed session id via `visitSessionHasher.hashSessionId(payload.sessionId)`.
-- Resolves visit geo via `lookup_geo_location`, then `x-country` / `cf-ipcountry`, then `NULL` fields.
+- Reads visit geo from Netlify-enriched headers (`x-country`, `x-region`, `x-city`, `x-timezone`), then falls back to `cf-ipcountry` or `NULL` fields.
 - Validates and normalizes the request in `createVisitSessionRecord`.
 - Persists using `SupabaseVisitRepository.recordSession()`.
 
@@ -189,7 +190,7 @@ Returns JSON containing:
 
 - Replaces the previous utility-style analytics module.
 - Keeps the existing analytics API (`trackEvent`, `trackPageView`, `trackCTA`, etc.).
-- Selects a single provider from `VITE_ANALYTICS_PROVIDER`: `ga4`, `firstParty`, or `none`.
+- Selects providers from `VITE_ANALYTICS_PROVIDER`: `ga4`, `firstParty`, `both`, or `none`.
 - The GA4 provider sends events immediately through `window.gtag`.
 - The first-party provider buffers all events in memory and stores page-view history with active duration.
 - Stores `arg.visitor.session` in `localStorage`.
@@ -242,26 +243,23 @@ VISIT_LOG_RATE_LIMIT_PER_MINUTE=30
 VISIT_LOG_RATE_LIMIT_PER_DAY=2000
 VISIT_LOG_GLOBAL_RATE_LIMIT_PER_DAY=50000
 VISIT_LOG_RATE_LIMIT_SALT=arg-visit-log-rate-limit
-VITE_ANALYTICS_PROVIDER=ga4
+VITE_ANALYTICS_PROVIDER=both
 ```
 
 ## Geolocation Setup
 
-Visit geolocation no longer reads a licensed `.mmdb` file at runtime.
+Visit geolocation no longer reads a licensed `.mmdb` file at runtime and no longer uses a Supabase IP range table.
 
-Import GeoLite2/IP range data into:
-
-```text
-public.geo_ip_locations
-```
-
-The visit endpoint resolves IP metadata through:
+The Netlify `visit-log` function adapter reads `context.ip` and `context.geo`, forwards the IP through `x-nf-client-connection-ip`, and forwards location metadata through internal headers:
 
 ```text
-public.lookup_geo_location(p_client_ip text)
+x-country
+x-region
+x-city
+x-timezone
 ```
 
-If no database range matches, the backend falls back to provider headers (`x-country`, `cf-ipcountry`) and then `NULL`.
+If Netlify geo is unavailable, the backend falls back to `cf-ipcountry` and then `NULL` fields.
 
 ## Verification Already Run
 
@@ -285,16 +283,15 @@ Backend test result at the time:
 
 1. Review the SQL in `aggregate_visit_metrics`. It currently returns only days that have data. If the chart should show zero-value days, add a `generate_series` calendar CTE.
 2. Review whether `uniqueVisitors` should be renamed to `visits` in API responses. Current meaning is distinct `session_hash`.
-3. Add or document the GeoLite2/IP range import process for `geo_ip_locations`.
-4. Push admin DB migrations before deploying:
+3. Push admin DB migrations before deploying:
 
    ```text
    npm run database:admin:push
    ```
 
-5. Add production env vars in Netlify.
-6. After deploy, compare first-party counts against GA4 for 1-2 weeks before removing GA4.
-7. Consider adding dedicated backend tests for the new visit APIs. Existing backend test suite passes, but no visit-specific tests were added yet.
+4. Add production env vars in Netlify.
+5. After deploy, compare first-party counts against GA4 for 1-2 weeks before removing GA4.
+6. Consider adding broader backend tests for the visit APIs.
 
 ## Suggested Next Session Steps
 
@@ -317,5 +314,5 @@ Backend test result at the time:
    ```
 
 4. Push the admin database migrations.
-5. Add the MaxMind database file and production env vars.
+5. Add production env vars.
 6. Deploy and validate `/admin/visits/`.

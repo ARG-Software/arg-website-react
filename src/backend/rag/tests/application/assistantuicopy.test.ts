@@ -9,7 +9,7 @@ import {
 test('assistant UI copy exposes the manual copy version', () => {
   const source = readAssistantSourceCopy();
 
-  assert.equal(source.copyVersion, '2026-07-30-1');
+  assert.equal(source.copyVersion, '2026-08-27-1');
   assert.equal(source.actions.gaspar_message.label, 'Want me to contact the team?');
   assert.equal(source.leadConfirm.title, 'Send this to ARG?');
 });
@@ -19,7 +19,7 @@ test('English assistant UI copy returns without calling translation', async () =
 
   assert.equal(result.language, 'en');
   assert.equal(result.direction, 'ltr');
-  assert.equal(result.copyVersion, '2026-07-30-1');
+  assert.equal(result.copyVersion, '2026-08-27-1');
   assert.equal(result.copy.labels.send, 'Send');
 });
 

@@ -20,7 +20,7 @@ export class VisitsController extends ControllerBase {
       const payload = await this.body(request);
       await this.visits.recordVisitSessionUseCase.execute({
         clientIp: getClientIp(request),
-        fallbackGeo: getHeaderGeolocation(request),
+        geo: getHeaderGeolocation(request),
         sessionId: payload.sessionId,
         events: payload.events,
         pageViews: payload.pageViews,

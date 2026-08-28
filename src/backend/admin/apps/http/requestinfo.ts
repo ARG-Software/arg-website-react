@@ -8,11 +8,10 @@ export function getClientIp(request: Request): string {
 export function getHeaderGeolocation(request: Request): VisitGeolocationInput {
   return normalizeGeolocation({
     countryCode: request.headers.get('x-country') || request.headers.get('cf-ipcountry'),
+    region: request.headers.get('x-region'),
+    city: request.headers.get('x-city'),
+    timezone: request.headers.get('x-timezone'),
   });
-}
-
-export function hasGeolocation(value: VisitGeolocationInput): boolean {
-  return Boolean(value.countryCode || value.region || value.city || value.timezone);
 }
 
 function normalizeGeolocation(value: VisitGeolocationInput): VisitGeolocationInput {

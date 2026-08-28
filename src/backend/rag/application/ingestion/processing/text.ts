@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto';
 
 import type { IRagSource } from '../../../domain/content/iragsource.js';
 
+const HASH_IGNORED_METADATA_KEYS = new Set(['source_file', 'source_files']);
+
 export function normalizeText(value: unknown): string {
   return String(value ?? '')
     .replace(/\r\n/g, '\n')
@@ -30,24 +32,24 @@ export function createSourceHash(source: IRagSource): string {
   return createHash('sha256')
     .update(
       JSON.stringify({
+        schemaVersion: 2,
         sourceType: source.sourceType,
         sourceKey: source.sourceKey,
         title: source.title,
         url: source.url ?? null,
-        path: source.path ?? null,
         origin: source.origin,
         isPublic: source.isPublic,
-        metadata: sortHashValue(source.metadata ?? {}),
-        chunkMetadata: sortHashValue(source.chunkMetadata ?? {}),
+        metadata: stableHashValue(source.metadata ?? {}),
+        chunkMetadata: stableHashValue(source.chunkMetadata ?? {}),
         content: normalizeText(source.content),
       })
     )
     .digest('hex');
 }
 
-function sortHashValue(value: unknown): unknown {
+function stableHashValue(value: unknown): unknown {
   if (Array.isArray(value)) {
-    return value.map(sortHashValue);
+    return value.map(stableHashValue);
   }
 
   if (!value || typeof value !== 'object') {
@@ -56,7 +58,8 @@ function sortHashValue(value: unknown): unknown {
 
   return Object.fromEntries(
     Object.entries(value as Record<string, unknown>)
+      .filter(([key]) => !HASH_IGNORED_METADATA_KEYS.has(key))
       .sort(([left], [right]) => left.localeCompare(right))
-      .map(([key, nestedValue]) => [key, sortHashValue(nestedValue)])
+      .map(([key, nestedValue]) => [key, stableHashValue(nestedValue)])
   );
 }

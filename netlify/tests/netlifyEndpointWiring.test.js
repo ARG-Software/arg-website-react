@@ -81,6 +81,21 @@ test('TypeScript-backed maintenance retention function bundles', async () => {
   await buildFunction('functions/maintenance-retention.js');
 });
 
+test('TypeScript-backed visit log function bundles', async () => {
+  await buildFunction('functions/visit-log.js');
+});
+
+test('visit log adapter forwards Netlify context geolocation through headers', () => {
+  const content = readNetlifyFile('functions/visit-log.js');
+
+  assert.match(content, /context\.ip/);
+  assert.match(content, /context\.geo/);
+  assert.match(content, /x-country/);
+  assert.match(content, /x-region/);
+  assert.match(content, /x-city/);
+  assert.match(content, /x-timezone/);
+});
+
 test('public redirects expose function endpoints before the 404 fallback', () => {
   const redirects = readPublicFile('_redirects');
   const fallbackIndex = redirects.indexOf('/* /404.html 404');

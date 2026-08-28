@@ -3,7 +3,6 @@ import crypto from 'node:crypto';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { checkRateLimits, type IRateLimitConfig, type IRateLimitStore } from '../../../../shared/security/ratelimit.js';
 import type { IAdminConfiguration } from '../../config/iadmin.configuration.js';
-import type { IVisitGeolocationProvider } from '../../ports/ivisitgeolocation.provider.js';
 import type { IVisitRepository } from '../../ports/repositories/ivisit.repository.js';
 import { VisitSession } from '../../../domain/visit.js';
 import { VisitDomainError } from '../../../domain/errors/visitdomain.error.js';
@@ -11,7 +10,7 @@ import type { VisitGeolocationInput } from '../../../domain/types/visit.types.js
 
 export interface RecordVisitSessionInput {
   clientIp: string;
-  fallbackGeo: VisitGeolocationInput;
+  geo: VisitGeolocationInput;
   sessionId?: string;
   events?: unknown[];
   pageViews?: unknown[];
@@ -22,7 +21,6 @@ export interface RecordVisitSessionInput {
 export class RecordVisitSessionUseCase {
   constructor(
     private readonly configuration: IAdminConfiguration,
-    private readonly geolocationProvider: IVisitGeolocationProvider,
     private readonly visitRepository: IVisitRepository,
     private readonly visitRateLimit: { store: IRateLimitStore; config: IRateLimitConfig },
     private readonly logger?: ILogger
@@ -53,7 +51,6 @@ export class RecordVisitSessionUseCase {
 
     if (!input.sessionId) throw VisitDomainError.missingSessionId();
 
-    const databaseGeo = await this.geolocationProvider.lookup(input.clientIp);
     const record = new VisitSession({
       sessionHash: crypto
         .createHmac('sha256', this.configuration.getVisitHashKey())
@@ -62,15 +59,11 @@ export class RecordVisitSessionUseCase {
         .slice(0, 16),
       events: input.events as any,
       pageViews: input.pageViews as any,
-      geo: hasGeolocation(databaseGeo) ? databaseGeo : input.fallbackGeo,
+      geo: input.geo,
       language: input.language,
       referrer: input.referrer,
     });
 
     await this.visitRepository.recordSession(record);
   }
-}
-
-function hasGeolocation(value: VisitGeolocationInput): boolean {
-  return Boolean(value.countryCode || value.region || value.city || value.timezone);
 }
