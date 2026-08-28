@@ -31,6 +31,7 @@
 /api/admin/outreach-record /.netlify/functions/admin             200
 /api/visit-log           /.netlify/functions/visit-log           200
 /api/admin/visit-metrics /.netlify/functions/admin               200
+/api/admin/visit-country-breakdown /.netlify/functions/admin     200
 /api/admin/visit-sessions /.netlify/functions/admin              200
 /api/admin/all-visit-sessions /.netlify/functions/admin          200
 /api/admin/visit-session /.netlify/functions/admin               200

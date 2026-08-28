@@ -105,6 +105,7 @@ test('visit log adapter forwards Netlify context geolocation through headers', (
 test('public redirects expose function endpoints before the 404 fallback', () => {
   const redirects = readPublicFile('_redirects');
   const fallbackIndex = redirects.indexOf('/* /404.html 404');
+  const adminFunction = readNetlifyFile('functions/admin.js');
 
   assert.notEqual(fallbackIndex, -1);
 
@@ -124,6 +125,7 @@ test('public redirects expose function endpoints before the 404 fallback', () =>
     '/api/admin/outreach-import /.netlify/functions/admin             200',
     '/api/admin/outreach-record /.netlify/functions/admin             200',
     '/api/admin/visit-metrics /.netlify/functions/admin               200',
+    '/api/admin/visit-country-breakdown /.netlify/functions/admin     200',
     '/api/admin/visit-sessions /.netlify/functions/admin              200',
     '/api/admin/all-visit-sessions /.netlify/functions/admin          200',
     '/api/admin/visit-session /.netlify/functions/admin               200',
@@ -138,8 +140,17 @@ test('public redirects expose function endpoints before the 404 fallback', () =>
 
     assert.notEqual(redirectIndex, -1, `Missing redirect: ${redirect}`);
     assert.ok(redirectIndex < fallbackIndex, `Redirect must be before 404 fallback: ${redirect}`);
+
+    const [path, target] = redirect.split(/\s+/);
+    if (target === '/.netlify/functions/admin') {
+      assert.match(adminFunction, new RegExp(`['"]${escapeRegExp(path)}['"]`));
+    }
   }
 });
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 test('removed netlify implementation folder stays removed', () => {
   assert.equal(existsSync(join(NETLIFY_DIR, 'implementations')), false);

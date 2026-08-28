@@ -4,6 +4,7 @@ import test from 'node:test';
 import { VisitsController } from '../../apps/api/controllers/visits.controller.js';
 import { DeleteVisitSessionUseCase } from '../../application/usecases/visits/deletevisitsession.usecase.js';
 import { ListAllVisitSessionsUseCase } from '../../application/usecases/visits/listallvisitsessions.usecase.js';
+import { ListVisitCountryBreakdownUseCase } from '../../application/usecases/visits/listvisitcountrybreakdown.usecase.js';
 import { ListVisitMetricsUseCase } from '../../application/usecases/visits/listvisitmetrics.usecase.js';
 
 class TestVisitsController extends VisitsController {
@@ -74,7 +75,7 @@ test('routes visit chart requests with a selected series', async () => {
   assert.equal(receivedSeries, 'events');
 });
 
-test('routes visit breakdown requests independently', async () => {
+test('routes generic visit breakdown requests independently', async () => {
   let receivedMetric = '';
   let receivedPage = 0;
   let receivedPageSize = 0;
@@ -84,22 +85,105 @@ test('routes visit breakdown requests independently', async () => {
         receivedMetric = input.metric;
         receivedPage = input.page;
         receivedPageSize = input.pageSize;
-        return { metric: input.metric, range: input.range, records: [{ label: 'PT', value: 3 }] };
+        return {
+          metric: input.metric,
+          range: input.range,
+          records: [{ label: 'direct', value: 3 }],
+        };
       },
     },
   } as any);
   const response = await controller.metrics(
     new Request(
-      'https://arg.software/api/admin/visit-metrics?metric=countries&range=last_week&page=2&pageSize=10'
+      'https://arg.software/api/admin/visit-metrics?metric=sources&range=last_week&page=2&pageSize=10'
     )
   );
   const body = await response.json();
 
   assert.equal(response.status, 200);
+  assert.equal(receivedMetric, 'sources');
+  assert.equal(receivedPage, '2');
+  assert.equal(receivedPageSize, '10');
+  assert.deepEqual(body.records, [{ label: 'direct', value: 3 }]);
+});
+
+test('keeps country count on the visit metrics stat route', async () => {
+  let receivedMetric = '';
+  const useCase = new ListVisitMetricsUseCase({
+    async getStat(metric) {
+      receivedMetric = metric;
+      return { metric, range: 'today', value: 2 };
+    },
+  } as any);
+
+  const result = await useCase.execute({ metric: 'countries', range: 'today' });
+
   assert.equal(receivedMetric, 'countries');
+  assert.deepEqual(result, { metric: 'countries', range: 'today', value: 2 });
+});
+
+test('routes country breakdown through the dedicated endpoint', async () => {
+  let receivedRange = '';
+  let receivedPage = '';
+  let receivedPageSize = '';
+  const controller = new TestVisitsController({
+    listVisitCountryBreakdownUseCase: {
+      async execute(input: any) {
+        receivedRange = input.range;
+        receivedPage = input.page;
+        receivedPageSize = input.pageSize;
+        return {
+          metric: 'countries',
+          range: input.range,
+          records: [{ label: 'PT', value: 3 }],
+          pagination: { page: 2, pageSize: 10, totalRecords: 1, totalPages: 1 },
+        };
+      },
+    },
+  } as any);
+  const response = await controller.countryBreakdown(
+    new Request(
+      'https://arg.software/api/admin/visit-country-breakdown?range=last_week&page=2&pageSize=10'
+    )
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(receivedRange, 'last_week');
   assert.equal(receivedPage, '2');
   assert.equal(receivedPageSize, '10');
   assert.deepEqual(body.records, [{ label: 'PT', value: 3 }]);
+});
+
+test('passes country breakdown pagination to the repository', async () => {
+  let receivedMetric = '';
+  let receivedPage = 0;
+  let receivedPageSize = 0;
+  const useCase = new ListVisitCountryBreakdownUseCase({
+    async getBreakdown(metric, _range, pagination) {
+      receivedMetric = metric;
+      receivedPage = pagination.page;
+      receivedPageSize = pagination.pageSize;
+      return {
+        metric,
+        range: 'today',
+        records: [{ label: 'PT', value: 3 }],
+        pagination: {
+          page: receivedPage,
+          pageSize: receivedPageSize,
+          totalRecords: 1,
+          totalPages: 1,
+        },
+      };
+    },
+  } as any);
+
+  const result = await useCase.execute({ range: 'today', page: '2', pageSize: '20' });
+
+  assert.equal(receivedMetric, 'countries');
+  assert.equal(receivedPage, 2);
+  assert.equal(receivedPageSize, 20);
+  assert.deepEqual(result.records, [{ label: 'PT', value: 3 }]);
 });
 
 test('passes visit breakdown pagination to the repository', async () => {

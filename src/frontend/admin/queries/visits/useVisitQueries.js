@@ -4,6 +4,7 @@ import {
   fetchAllVisitSessions,
   fetchVisitBreakdown,
   fetchVisitChart,
+  fetchVisitCountryBreakdown,
   fetchVisitJourney,
   fetchVisitSessions,
   fetchVisitStat,
@@ -29,6 +30,14 @@ export function useVisitBreakdown(metric, range, query = {}, options = {}) {
   return useQuery({
     queryKey: [...visitQueryKey, 'breakdown', metric, range, query],
     queryFn: () => fetchVisitBreakdown(metric, range, query),
+    placeholderData: options.keepPrevious ? keepPreviousData : undefined,
+  });
+}
+
+export function useVisitCountryBreakdown(range, query = {}, options = {}) {
+  return useQuery({
+    queryKey: [...visitQueryKey, 'countryBreakdown', range, query],
+    queryFn: () => fetchVisitCountryBreakdown(range, query),
     placeholderData: options.keepPrevious ? keepPreviousData : undefined,
   });
 }

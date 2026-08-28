@@ -1,6 +1,7 @@
 import { readAdminResponse } from './adminResponse.js';
 
 const VISIT_METRICS_ENDPOINT = '/api/admin/visit-metrics';
+const VISIT_COUNTRY_BREAKDOWN_ENDPOINT = '/api/admin/visit-country-breakdown';
 const VISIT_SESSIONS_ENDPOINT = '/api/admin/visit-sessions';
 const ALL_VISIT_SESSIONS_ENDPOINT = '/api/admin/all-visit-sessions';
 const VISIT_SESSION_ENDPOINT = '/api/admin/visit-session';
@@ -18,6 +19,13 @@ export async function fetchVisitChart(range, series) {
 
 export async function fetchVisitBreakdown(metric, range, query = {}) {
   const response = await fetch(buildVisitMetricsUrl({ ...query, metric, range }));
+  return readAdminResponse(response);
+}
+
+export async function fetchVisitCountryBreakdown(range, query = {}) {
+  const response = await fetch(
+    buildVisitApiUrl(VISIT_COUNTRY_BREAKDOWN_ENDPOINT, { ...query, range })
+  );
   return readAdminResponse(response);
 }
 

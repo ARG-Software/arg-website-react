@@ -9,6 +9,7 @@ import {
   useAllVisitSessions,
   useVisitBreakdown,
   useVisitChart,
+  useVisitCountryBreakdown,
   useVisitSessions,
   useVisitStat,
 } from '../queries/visits/useVisitQueries.js';
@@ -62,7 +63,7 @@ function VisitsDashboard({ onSelectVisitSession }) {
   const eventsStatQuery = useVisitStat('events', statRanges.events);
   const countriesStatQuery = useVisitStat('countries', statRanges.countries);
   const chartQuery = useVisitChart(chartRange, chartSeries);
-  const countryQuery = useVisitBreakdown('countries', countryRange);
+  const countryQuery = useVisitCountryBreakdown(countryRange);
   const sourcesQuery = useVisitBreakdown(
     'sources',
     sourcesRange,

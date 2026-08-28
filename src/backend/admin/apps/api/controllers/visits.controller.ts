@@ -54,6 +54,17 @@ export class VisitsController extends ControllerBase {
     return this.json(200, await this.visits.listVisitMetricsUseCase.execute(this.query(request)));
   }
 
+  @route('GET', '/api/admin/visit-country-breakdown')
+  @errorResponse('visit_country_breakdown_request_failed', 'Admin request failed')
+  async countryBreakdown(request: Request): Promise<Response> {
+    await this.authenticateUser(request);
+
+    return this.json(
+      200,
+      await this.visits.listVisitCountryBreakdownUseCase.execute(this.query(request))
+    );
+  }
+
   @route('GET', '/api/admin/visit-sessions')
   @errorResponse('visit_sessions_request_failed', 'Admin request failed')
   async sessions(request: Request): Promise<Response> {

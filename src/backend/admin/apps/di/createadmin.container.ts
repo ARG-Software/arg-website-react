@@ -14,6 +14,7 @@ import { ImportOutreachCsvUseCase } from '../../application/usecases/outreach/im
 import { ListAssistantConversationsUseCase } from '../../application/usecases/assistantConversations/listassistantconversations.usecase.js';
 import { ListAllVisitSessionsUseCase } from '../../application/usecases/visits/listallvisitsessions.usecase.js';
 import { ListOutreachRecordsUseCase } from '../../application/usecases/outreach/listoutreachrecords.usecase.js';
+import { ListVisitCountryBreakdownUseCase } from '../../application/usecases/visits/listvisitcountrybreakdown.usecase.js';
 import { ListVisitJourneyUseCase } from '../../application/usecases/visits/listvisitjourney.usecase.js';
 import { ListVisitMetricsUseCase } from '../../application/usecases/visits/listvisitmetrics.usecase.js';
 import { ListVisitSessionsUseCase } from '../../application/usecases/visits/listvisitsessions.usecase.js';
@@ -99,6 +100,7 @@ export function createAdminContainer() {
     visits: {
       deleteVisitSessionUseCase: new DeleteVisitSessionUseCase(visitRepository),
       listAllVisitSessionsUseCase: new ListAllVisitSessionsUseCase(visitRepository),
+      listVisitCountryBreakdownUseCase: new ListVisitCountryBreakdownUseCase(visitRepository),
       listVisitJourneyUseCase: new ListVisitJourneyUseCase(visitRepository),
       listVisitMetricsUseCase: new ListVisitMetricsUseCase(visitRepository),
       listVisitSessionsUseCase: new ListVisitSessionsUseCase(visitRepository),

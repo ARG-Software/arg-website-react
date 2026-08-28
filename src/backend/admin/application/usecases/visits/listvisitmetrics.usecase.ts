@@ -17,7 +17,7 @@ const ALLOWED_RANGES = new Set([
   'all_time',
 ]);
 const STAT_METRICS = new Set(['page_views', 'visits', 'events', 'countries']);
-const BREAKDOWN_METRICS = new Set(['countries', 'pages', 'sources', 'referrers']);
+const BREAKDOWN_METRICS = new Set(['pages', 'sources', 'referrers']);
 const CHART_SERIES = new Set(['all', 'page_views', 'visits', 'events']);
 
 export interface ListVisitMetricsInput {
