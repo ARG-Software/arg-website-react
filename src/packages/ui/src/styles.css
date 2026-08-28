@@ -245,6 +245,7 @@
 .admin-metric-chart,
 .admin-data-table {
   padding: clamp(1rem, 3vw, 1.5rem);
+  height: fit-content;
 }
 
 .admin-metric-chart__header,
@@ -303,9 +304,7 @@
 }
 
 .admin-metric-chart__plots {
-  display: grid;
-  gap: 1.25rem;
-  grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.6fr);
+  gap: 1.5rem;
 }
 
 .admin-metric-chart__plots--line,
