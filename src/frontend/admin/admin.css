@@ -548,11 +548,11 @@
 
 .admin-nav__control {
   align-items: center;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #fff;
+  border: 1px solid rgba(121, 4, 253, 0.24);
   border-radius: 999px;
   box-sizing: border-box;
-  color: rgba(255, 255, 255, 0.72);
+  color: #7904fd;
   cursor: pointer;
   display: inline-flex;
   font: inherit;
@@ -570,9 +570,9 @@
 }
 
 .admin-nav__control:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.22);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(121, 4, 253, 0.52);
+  color: #0c002e;
 }
 
 .admin-nav__control:disabled {

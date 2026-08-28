@@ -1,5 +1,6 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  deleteVisitSession,
   fetchVisitJourney,
   fetchVisitMetrics,
   fetchVisitSessions,
@@ -27,5 +28,17 @@ export function useVisitJourney(sessionHash) {
     queryKey: [...visitQueryKey, 'journey', sessionHash],
     queryFn: () => fetchVisitJourney(sessionHash),
     enabled: Boolean(sessionHash),
+  });
+}
+
+export function useDeleteVisitSession() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: visitQueryKey,
+    mutationFn: deleteVisitSession,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: visitQueryKey });
+    },
   });
 }

@@ -10,5 +10,6 @@ export interface IVisitRepository {
   getMetrics(range?: string): Promise<VisitMetricsData>;
   listSessions(pagination?: { page?: number; pageSize?: number }): Promise<VisitSessionListResult>;
   listJourney(sessionHash: string): Promise<VisitJourneyEvent[]>;
+  deleteById(sessionHash: string): Promise<void>;
   deleteOlderThan(cutoffIso: string): Promise<{ events: number; sessions: number }>;
 }

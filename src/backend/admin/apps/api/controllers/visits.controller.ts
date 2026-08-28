@@ -66,6 +66,15 @@ export class VisitsController extends ControllerBase {
     return this.json(200, await this.visits.listVisitJourneyUseCase.execute(this.query(request)));
   }
 
+  @route('DELETE', '/api/admin/visit-session')
+  @errorResponse('visit_session_delete_failed', 'Admin delete request failed')
+  async delete(request: Request): Promise<Response> {
+    await this.authenticateUser(request);
+    await this.visits.deleteVisitSessionUseCase.execute(this.query(request));
+
+    return this.json(204, '');
+  }
+
 }
 
 let controller: VisitsController;

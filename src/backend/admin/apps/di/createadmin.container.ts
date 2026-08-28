@@ -5,6 +5,7 @@ import { SupabaseRateLimitStore } from '../../../shared/security/ratelimit.store
 import { AuthenticateUserUseCase } from '../../application/usecases/sessions/authenticateuser.usecase.js';
 import { CreateOutreachCsvUseCase } from '../../application/usecases/outreach/createoutreachcsv.usecase.js';
 import { DeleteAssistantConversationUseCase } from '../../application/usecases/assistantConversations/deleteassistantconversation.usecase.js';
+import { DeleteVisitSessionUseCase } from '../../application/usecases/visits/deletevisitsession.usecase.js';
 import { GetAssistantConversationUseCase } from '../../application/usecases/assistantConversations/getassistantconversation.usecase.js';
 import { GetOutreachChartUseCase } from '../../application/usecases/outreach/getoutreachchart.usecase.js';
 import { GetOutreachSummaryUseCase } from '../../application/usecases/outreach/getoutreachsummary.usecase.js';
@@ -91,6 +92,7 @@ export function createAdminContainer() {
       ),
     },
     visits: {
+      deleteVisitSessionUseCase: new DeleteVisitSessionUseCase(visitRepository),
       listVisitJourneyUseCase: new ListVisitJourneyUseCase(visitRepository),
       listVisitMetricsUseCase: new ListVisitMetricsUseCase(visitRepository),
       listVisitSessionsUseCase: new ListVisitSessionsUseCase(visitRepository),

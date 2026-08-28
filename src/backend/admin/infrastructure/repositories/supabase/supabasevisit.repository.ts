@@ -146,6 +146,12 @@ export class SupabaseVisitRepository implements IVisitRepository {
     return createJourneyEvents(data);
   }
 
+  async deleteById(sessionHash: string): Promise<void> {
+    const { error } = await this.client.from('visit_sessions').delete().eq('session_hash', sessionHash);
+
+    if (error) throw error;
+  }
+
   async deleteOlderThan(cutoffIso: string): Promise<{ events: number; sessions: number }> {
     const { count: sessionCount, error: sessionError } = await this.client
       .from('visit_sessions')

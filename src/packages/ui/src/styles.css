@@ -199,10 +199,11 @@
 
 .admin-nav a {
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #fff;
+  border: 1px solid rgba(121, 4, 253, 0.24);
   border-radius: 999px;
   box-sizing: border-box;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--arg-color-violet);
   display: inline-flex;
   font-size: var(--type-ui);
   font-weight: 500;
@@ -218,9 +219,9 @@
 }
 
 .admin-nav a:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.22);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(121, 4, 253, 0.52);
+  color: #0c002e;
 }
 
 .admin-nav a.is-active {
@@ -3586,14 +3587,18 @@
 
 .aw-header__title {
   color: #0c002e;
-  font: 600 14px/1.2 Neuemontreal, sans-serif;
+  font:
+    600 14px/1.2 Neuemontreal,
+    sans-serif;
 }
 
 .aw-header__status {
   align-items: center;
   color: rgba(12, 0, 46, 0.5);
   display: flex;
-  font: 400 11px/1.2 Neuemontreal, sans-serif;
+  font:
+    400 11px/1.2 Neuemontreal,
+    sans-serif;
   gap: 6px;
   margin-top: 2px;
 }
@@ -3676,7 +3681,9 @@
 }
 
 .aw-message {
-  font: 400 13px/1.55 Neuemontreal, sans-serif;
+  font:
+    400 13px/1.55 Neuemontreal,
+    sans-serif;
   max-width: 85%;
   padding: 10px 14px;
 }
@@ -3726,7 +3733,9 @@
   border-radius: 12px;
   color: #0c002e;
   display: inline-flex;
-  font: 600 12px/1.35 Neuemontreal, sans-serif;
+  font:
+    600 12px/1.35 Neuemontreal,
+    sans-serif;
   max-width: 100%;
   overflow-wrap: anywhere;
   padding: 8px 10px;
@@ -3773,7 +3782,9 @@
 .aw-action {
   background: #0c002e;
   color: #ffffff;
-  font: 600 12px/1.15 Neuemontreal, sans-serif;
+  font:
+    600 12px/1.15 Neuemontreal,
+    sans-serif;
   padding: 8px 12px;
   transition: opacity 0.15s;
 }
@@ -3796,7 +3807,9 @@
   border: 1.5px solid #0c002e;
   color: #0c002e;
   cursor: pointer;
-  font: 600 11px/1 Neuemontreal, sans-serif;
+  font:
+    600 11px/1 Neuemontreal,
+    sans-serif;
   padding: 8px 14px;
   transition:
     background 0.15s,
@@ -3856,7 +3869,9 @@
 .aw-pending__text {
   animation: aw-pending-fade 2s ease-in-out infinite;
   color: rgba(12, 0, 46, 0.5);
-  font: 400 13px/1.55 Neuemontreal, sans-serif;
+  font:
+    400 13px/1.55 Neuemontreal,
+    sans-serif;
 }
 
 @keyframes aw-bounce {
@@ -3892,13 +3907,17 @@
 .aw-error {
   background: rgba(211, 47, 47, 0.08);
   border-radius: 8px;
-  font: 400 13px/1.55 Neuemontreal, sans-serif;
+  font:
+    400 13px/1.55 Neuemontreal,
+    sans-serif;
   margin: 0 16px 12px;
   padding: 10px 14px;
 }
 
 .aw-lead-error {
-  font: 400 11px/1.4 Neuemontreal, sans-serif;
+  font:
+    400 11px/1.4 Neuemontreal,
+    sans-serif;
   padding: 4px 0 0;
 }
 
@@ -3920,7 +3939,9 @@
   border-radius: 8px;
   box-sizing: border-box;
   color: #0c002e;
-  font: 400 13px/1.55 Neuemontreal, sans-serif;
+  font:
+    400 13px/1.55 Neuemontreal,
+    sans-serif;
   outline: none;
   padding: 10px 44px 10px 14px;
   transition: border-color 0.2s ease;
@@ -3968,7 +3989,9 @@
 
 .aw-altcha-badge a {
   color: rgba(12, 0, 46, 0.3);
-  font: 400 10px/1.4 Neuemontreal, sans-serif;
+  font:
+    400 10px/1.4 Neuemontreal,
+    sans-serif;
   letter-spacing: 0.02em;
   text-decoration: none;
   transition: color 0.2s ease;

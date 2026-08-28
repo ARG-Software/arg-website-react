@@ -119,6 +119,7 @@ test('public redirects expose function endpoints before the 404 fallback', () =>
     '/api/admin/outreach-record /.netlify/functions/admin             200',
     '/api/admin/visit-metrics /.netlify/functions/admin               200',
     '/api/admin/visit-sessions /.netlify/functions/admin              200',
+    '/api/admin/visit-session /.netlify/functions/admin               200',
     '/api/admin/visit-journey /.netlify/functions/admin               200',
     '/api/admin/maintenance-retention /.netlify/functions/maintenance-retention 200',
     '/api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200',

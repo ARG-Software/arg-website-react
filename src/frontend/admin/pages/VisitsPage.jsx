@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
 import { AdminMetricChart } from '@ui/admin/AdminMetricChart.jsx';
+import { ConfirmDialog } from '@ui/overlays/ConfirmDialog.jsx';
 import { UiStat } from '@ui/primitives/UiStat.jsx';
-import { useVisitMetrics, useVisitSessions } from '../queries/visits/useVisitQueries.js';
+import {
+  useDeleteVisitSession,
+  useVisitMetrics,
+  useVisitSessions,
+} from '../queries/visits/useVisitQueries.js';
 import {
   PAGE_SIZE,
   VISIT_CHART_LINES,
@@ -21,13 +26,23 @@ import {
 export default function VisitsPage({ onSelectVisitSession }) {
   const [chartRange, setChartRange] = useState('30d');
   const [sessionPage, setSessionPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const metricsQuery = useVisitMetrics(chartRange);
   const sessionsQuery = useVisitSessions(
     { page: sessionPage, pageSize: PAGE_SIZE },
     { keepPrevious: true }
   );
+  const deleteMutation = useDeleteVisitSession();
   const metrics = metricsQuery.data;
   const summary = metrics?.summary;
+
+  async function deleteVisit() {
+    if (!deleteTarget) return;
+
+    await deleteMutation.mutateAsync(deleteTarget.sessionHash);
+    setDeleteTarget(null);
+    onSelectVisitSession(null);
+  }
 
   return (
     <div className="admin-content-grid">
@@ -94,9 +109,31 @@ export default function VisitsPage({ onSelectVisitSession }) {
           }}
           emptyMessage="No visits found."
           onRowClick={onSelectVisitSession}
+          rowActions={record => (
+            <button
+              type="button"
+              className="admin-table-action admin-table-action--danger"
+              disabled={deleteMutation.isPending}
+              onClick={() => setDeleteTarget(record)}
+            >
+              Delete
+            </button>
+          )}
           tone="light"
         />
       )}
+      <ConfirmDialog
+        isOpen={Boolean(deleteTarget)}
+        title="Delete this visit?"
+        cancelLabel="Keep visit"
+        confirmLabel={deleteMutation.isPending ? 'Deleting...' : 'Delete visit'}
+        confirmDisabled={deleteMutation.isPending}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={deleteVisit}
+      >
+        <p>This permanently removes the visit session and its journey events from analytics.</p>
+        {deleteMutation.isError && <p className="admin-error">{deleteMutation.error.message}</p>}
+      </ConfirmDialog>
     </div>
   );
 }

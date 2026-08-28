@@ -13,6 +13,7 @@ export const config = {
     '/api/admin/outreach-record',
     '/api/admin/visit-metrics',
     '/api/admin/visit-sessions',
+    '/api/admin/visit-session',
     '/api/admin/visit-journey',
     '/api/admin/assistant-conversations',
     '/api/admin/assistant-conversation',
