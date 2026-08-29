@@ -14,15 +14,16 @@ import { UiSpinner } from '@ui/primitives/UiSpinner.jsx';
 import { adminQueryClient } from './queryClient.js';
 import { AuthProvider, useAuth } from './hooks/auth/useAuth.jsx';
 import LoginPage from './pages/LoginPage.jsx';
-import DashboardPage from './pages/DashboardPage.jsx';
-import RecordsPage from './pages/RecordsPage.jsx';
+import OutreachDashboardPage from './pages/outreach/OutreachDashboardPage.jsx';
+import OutreachRecordsPage from './pages/outreach/OutreachRecordsPage.jsx';
 import AssistantConversationsPage from './pages/AssistantConversationsPage.jsx';
-import VisitsPage from './pages/VisitsPage.jsx';
+import VisitsDashboardPage from './pages/visits/VisitsDashboardPage.jsx';
+import VisitsListPage from './pages/visits/VisitsListPage.jsx';
 import HelpPage from './pages/HelpPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
-import { AssistantConversationOverlay } from './overlays/AssistantConversationOverlay.jsx';
-import { OutreachEditor } from './overlays/OutreachEditor.jsx';
-import { VisitJourneyOverlay } from './overlays/VisitJourneyOverlay.jsx';
+import { AssistantConversationOverlay } from './components/overlays/AssistantConversationOverlay.jsx';
+import { OutreachEditor } from './components/overlays/OutreachEditor.jsx';
+import { VisitJourneyOverlay } from './components/overlays/VisitJourneyOverlay.jsx';
 import {
   useExportOutreachCsv,
   useImportOutreachCsv,
@@ -251,7 +252,7 @@ function AdminWorkspace() {
 function renderAdminFragment(view, handlers) {
   if (view === 'all') {
     return (
-      <RecordsPage
+      <OutreachRecordsPage
         title="All emails"
         query={{}}
         emptyMessage="No outreach records found."
@@ -262,7 +263,7 @@ function renderAdminFragment(view, handlers) {
 
   if (view === 'sent') {
     return (
-      <RecordsPage
+      <OutreachRecordsPage
         title="Sent emails"
         query={{ status: 'sent' }}
         emptyMessage="No sent outreach records found."
@@ -273,7 +274,7 @@ function renderAdminFragment(view, handlers) {
 
   if (view === 'notSent') {
     return (
-      <RecordsPage
+      <OutreachRecordsPage
         title="Not sent emails"
         query={{ status: 'not_sent' }}
         emptyMessage="No not-sent outreach records found."
@@ -287,9 +288,11 @@ function renderAdminFragment(view, handlers) {
   }
 
   if (view === 'visits') {
-    return (
-      <VisitsPage view={handlers.visitsView} onSelectVisitSession={handlers.onSelectVisitSession} />
-    );
+    if (handlers.visitsView === 'all') {
+      return <VisitsListPage onSelectVisitSession={handlers.onSelectVisitSession} />;
+    }
+
+    return <VisitsDashboardPage onSelectVisitSession={handlers.onSelectVisitSession} />;
   }
 
   if (view === 'settings') {
@@ -300,7 +303,7 @@ function renderAdminFragment(view, handlers) {
     return <HelpPage />;
   }
 
-  return <DashboardPage onSelectRecord={handlers.onSelectRecord} />;
+  return <OutreachDashboardPage onSelectRecord={handlers.onSelectRecord} />;
 }
 
 function AdminShell({ actions, nav, sectionNav, loading = false, children }) {

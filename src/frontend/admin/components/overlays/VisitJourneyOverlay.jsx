@@ -1,9 +1,9 @@
 import { AdminRecordOverlay } from '@ui/admin/AdminRecordOverlay.jsx';
 import { AdminVisitJourney } from '@ui/admin/AdminVisitJourney.jsx';
 import { UiSpinner } from '@ui/primitives/UiSpinner.jsx';
-import { useVisitJourney } from '../queries/visits/useVisitQueries.js';
-import { ErrorCard } from '../shared/ErrorCard.jsx';
-import { formatCountry, formatDateTime, formatDuration } from '../shared/formatters.js';
+import { useVisitJourney } from '../../queries/visits/useVisitQueries.js';
+import { ErrorCard } from '../../shared/ErrorCard.jsx';
+import { formatCountry, formatDateTime, formatDuration } from '../../shared/formatters.js';
 
 export function VisitJourneyOverlay({ session, onClose }) {
   const journeyQuery = useVisitJourney(session?.sessionHash);

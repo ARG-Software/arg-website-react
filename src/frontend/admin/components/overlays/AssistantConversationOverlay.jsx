@@ -1,9 +1,9 @@
 import { AdminConversationTranscript } from '@ui/admin/AdminConversationTranscript.jsx';
 import { AdminRecordOverlay } from '@ui/admin/AdminRecordOverlay.jsx';
 import { UiSpinner } from '@ui/primitives/UiSpinner.jsx';
-import { useAssistantConversation } from '../queries/assistant/useAssistantQueries.js';
-import { ErrorCard } from '../shared/ErrorCard.jsx';
-import { formatDateTime } from '../shared/formatters.js';
+import { useAssistantConversation } from '../../queries/assistant/useAssistantQueries.js';
+import { ErrorCard } from '../../shared/ErrorCard.jsx';
+import { formatDateTime } from '../../shared/formatters.js';
 
 export function AssistantConversationOverlay({ conversation, onClose }) {
   const detailQuery = useAssistantConversation(conversation?.id);

@@ -1,34 +1,33 @@
 import { useState } from 'react';
 import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
 import { AdminMetricChart } from '@ui/admin/AdminMetricChart.jsx';
-import { ConfirmDialog } from '@ui/overlays/ConfirmDialog.jsx';
 import { UiButton } from '@ui/primitives/UiButton.jsx';
 import { UiCard } from '@ui/primitives/UiCard.jsx';
 import { UiSelect } from '@ui/primitives/UiField.jsx';
+import { VisitDeleteDialog } from '../../components/visits/VisitDeleteDialog.jsx';
+import { VisitSessionsTable } from '../../components/visits/VisitSessionsTable.jsx';
 import {
   useDeleteVisitSession,
-  useAllVisitSessions,
   useVisitBreakdown,
   useVisitChart,
   useVisitCountryBreakdown,
   useVisitSessions,
   useVisitStat,
-} from '../queries/visits/useVisitQueries.js';
+} from '../../queries/visits/useVisitQueries.js';
 import {
   PAGE_SIZE,
   VISIT_CHART_SERIES_OPTIONS,
   VISIT_CHART_LINES,
   VISIT_CHART_RANGES,
   createEmptyTableData,
-} from '../shared/constants.js';
-import { ErrorCard } from '../shared/ErrorCard.jsx';
+} from '../../shared/constants.js';
+import { ErrorCard } from '../../shared/ErrorCard.jsx';
 import {
   createReferrerRow,
-  formatCountry,
   formatCountryBreakdown,
   formatDateTime,
   formatDuration,
-} from '../shared/formatters.js';
+} from '../../shared/formatters.js';
 
 const DEFAULT_RANGE = 'this_week';
 const COUNTRY_BREAKDOWN_PAGE_SIZE = 250;
@@ -41,15 +40,7 @@ const STAT_CARDS = [
   { metric: 'countries', label: 'Countries' },
 ];
 
-export default function VisitsPage({ view = 'dashboard', onSelectVisitSession }) {
-  if (view === 'all') {
-    return <AllVisitsPage onSelectVisitSession={onSelectVisitSession} />;
-  }
-
-  return <VisitsDashboard onSelectVisitSession={onSelectVisitSession} />;
-}
-
-function VisitsDashboard({ onSelectVisitSession }) {
+export default function VisitsDashboardPage({ onSelectVisitSession }) {
   const [overviewRange, setOverviewRange] = useState(DEFAULT_RANGE);
   const [chartSeries, setChartSeries] = useState('all');
   const [countryPage, setCountryPage] = useState(1);
@@ -289,99 +280,6 @@ function VisitsDashboard({ onSelectVisitSession }) {
   );
 }
 
-function AllVisitsPage({ onSelectVisitSession }) {
-  const [sessionPage, setSessionPage] = useState(1);
-  const [deleteTarget, setDeleteTarget] = useState(null);
-  const sessionsQuery = useAllVisitSessions(
-    { page: sessionPage, pageSize: PAGE_SIZE },
-    { keepPrevious: true }
-  );
-  const deleteMutation = useDeleteVisitSession();
-
-  async function deleteVisit() {
-    if (!deleteTarget) return;
-
-    await deleteMutation.mutateAsync(deleteTarget.sessionHash);
-    setDeleteTarget(null);
-    onSelectVisitSession(null);
-  }
-
-  return (
-    <div className="admin-content-grid">
-      {sessionsQuery.isError ? (
-        <ErrorCard error={sessionsQuery.error} onRetry={() => sessionsQuery.refetch()} />
-      ) : (
-        <VisitSessionsTable
-          title="All visits"
-          description="Every recorded visit, ordered by latest activity. Open a row to view the ordered page journey."
-          query={sessionsQuery}
-          onPageChange={setSessionPage}
-          onSelectVisitSession={onSelectVisitSession}
-          onDelete={setDeleteTarget}
-          deleteMutation={deleteMutation}
-        />
-      )}
-      <VisitDeleteDialog
-        deleteTarget={deleteTarget}
-        deleteMutation={deleteMutation}
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={deleteVisit}
-      />
-    </div>
-  );
-}
-
-function VisitSessionsTable({
-  title,
-  description,
-  query,
-  onPageChange,
-  onSelectVisitSession,
-  onDelete,
-  deleteMutation,
-}) {
-  return (
-    <AdminDataTable
-      title={title}
-      description={description}
-      columns={getVisitSessionColumns()}
-      rows={query.data?.records || []}
-      loading={query.isLoading}
-      pagination={getTablePagination(query, onPageChange)}
-      emptyMessage="No visits found."
-      onRowClick={onSelectVisitSession}
-      rowActions={record => (
-        <button
-          type="button"
-          className="admin-table-action admin-table-action--danger"
-          disabled={deleteMutation.isPending}
-          onClick={() => onDelete(record)}
-        >
-          Delete
-        </button>
-      )}
-      tone="light"
-    />
-  );
-}
-
-function VisitDeleteDialog({ deleteTarget, deleteMutation, onCancel, onConfirm }) {
-  return (
-    <ConfirmDialog
-      isOpen={Boolean(deleteTarget)}
-      title="Delete this visit?"
-      cancelLabel="Keep visit"
-      confirmLabel={deleteMutation.isPending ? 'Deleting...' : 'Delete visit'}
-      confirmDisabled={deleteMutation.isPending}
-      onCancel={onCancel}
-      onConfirm={onConfirm}
-    >
-      <p>This permanently removes the visit session and its journey events from analytics.</p>
-      {deleteMutation.isError && <p className="admin-error">{deleteMutation.error.message}</p>}
-    </ConfirmDialog>
-  );
-}
-
 function CountrySummary({ items }) {
   const totalVisits = items.reduce((total, item) => total + Number(item.value || 0), 0);
   const topCountry = items[0];
@@ -563,58 +461,4 @@ function getVisitSourceColumns() {
     { key: 'label', label: 'Source' },
     { key: 'value', label: 'Page views' },
   ];
-}
-
-function getVisitSessionColumns() {
-  return [
-    {
-      key: 'startedAt',
-      label: 'Started',
-      render: record => formatDateTime(record.startedAt),
-    },
-    {
-      key: 'city',
-      label: 'Location',
-      render: record => formatLocation(record),
-    },
-    { key: 'entryPath', label: 'Entry page' },
-    {
-      key: 'referrer',
-      label: 'Referrer',
-      render: record => record.referrer || '(direct)',
-    },
-    {
-      key: 'source',
-      label: 'Source',
-      render: formatSource,
-    },
-    { key: 'pageCount', label: 'Pages' },
-    { key: 'eventCount', label: 'Events' },
-    {
-      key: 'durationMs',
-      label: 'Duration',
-      render: record => formatDuration(record.durationMs),
-    },
-    {
-      key: 'lastSeenAt',
-      label: 'Last seen',
-      render: record => formatDateTime(record.lastSeenAt),
-    },
-  ];
-}
-
-function formatLocation(record) {
-  return (
-    [record.city, record.region, formatCountry(record.countryCode)]
-      .filter(Boolean)
-      .filter(value => value !== 'Unknown')
-      .join(', ') || 'Unknown'
-  );
-}
-
-function formatSource(record) {
-  const source = record.source || (record.referrer ? '' : 'direct');
-  const medium = record.medium ? ` / ${record.medium}` : '';
-
-  return source ? `${source}${medium}` : '-';
 }

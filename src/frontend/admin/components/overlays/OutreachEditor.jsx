@@ -4,9 +4,9 @@ import { ConfirmDialog } from '@ui/overlays/ConfirmDialog.jsx';
 import { UiButton } from '@ui/primitives/UiButton.jsx';
 import { UiField, UiSelect, UiTextarea } from '@ui/primitives/UiField.jsx';
 import { UiStatusPill } from '@ui/primitives/UiStatusPill.jsx';
-import { buildMailtoUrl, getStatusLabel, OUTREACH_STATUSES } from '../outreach.js';
-import { useUpdateOutreachRecord } from '../queries/outreach/useOutreachQueries.js';
-import { EMPTY_FORM } from '../shared/constants.js';
+import { buildMailtoUrl, getStatusLabel, OUTREACH_STATUSES } from '../../outreach.js';
+import { useUpdateOutreachRecord } from '../../queries/outreach/useOutreachQueries.js';
+import { EMPTY_FORM } from '../../shared/constants.js';
 
 export function OutreachEditor({ record, onClose, onRecordUpdated }) {
   const [form, setForm] = useState(() => (record ? { ...EMPTY_FORM, ...record } : EMPTY_FORM));

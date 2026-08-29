@@ -3,24 +3,24 @@ import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
 import { AdminMetricChart } from '@ui/admin/AdminMetricChart.jsx';
 import { UiStat } from '@ui/primitives/UiStat.jsx';
 import { UiStatusPill } from '@ui/primitives/UiStatusPill.jsx';
-import { AdminTableFilters } from '../components/AdminTableFilters.jsx';
-import { useDebouncedValue } from '../hooks/shared/useDebouncedValue.js';
-import { getStatusLabel } from '../outreach.js';
+import { AdminTableFilters } from '../../components/outreach/AdminTableFilters.jsx';
+import { useDebouncedValue } from '../../hooks/shared/useDebouncedValue.js';
+import { getStatusLabel } from '../../outreach.js';
 import {
   useOutreachChart,
   useOutreachRecords,
   useOutreachSummary,
-} from '../queries/outreach/useOutreachQueries.js';
+} from '../../queries/outreach/useOutreachQueries.js';
 import {
   CHART_RANGES,
   EMPTY_TABLE_FILTERS,
   PAGE_SIZE,
   SEARCH_DEBOUNCE_MS,
   createEmptyTableData,
-} from '../shared/constants.js';
-import { ErrorCard } from '../shared/ErrorCard.jsx';
+} from '../../shared/constants.js';
+import { ErrorCard } from '../../shared/ErrorCard.jsx';
 
-export default function DashboardPage({ onSelectRecord }) {
+export default function OutreachDashboardPage({ onSelectRecord }) {
   const [lineChartRange, setLineChartRange] = useState('30d');
   const [tablePage, setTablePage] = useState(1);
   const [tableSort, setTableSort] = useState({ sortBy: 'dateSent', sortDirection: 'desc' });

@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
 import { UiStatusPill } from '@ui/primitives/UiStatusPill.jsx';
-import { AdminTableFilters } from '../components/AdminTableFilters.jsx';
-import { useDebouncedValue } from '../hooks/shared/useDebouncedValue.js';
-import { getStatusLabel } from '../outreach.js';
-import { useOutreachRecords } from '../queries/outreach/useOutreachQueries.js';
+import { AdminTableFilters } from '../../components/outreach/AdminTableFilters.jsx';
+import { useDebouncedValue } from '../../hooks/shared/useDebouncedValue.js';
+import { getStatusLabel } from '../../outreach.js';
+import { useOutreachRecords } from '../../queries/outreach/useOutreachQueries.js';
 import {
   EMPTY_TABLE_FILTERS,
   PAGE_SIZE,
   SEARCH_DEBOUNCE_MS,
   createEmptyTableData,
-} from '../shared/constants.js';
-import { ErrorCard } from '../shared/ErrorCard.jsx';
+} from '../../shared/constants.js';
+import { ErrorCard } from '../../shared/ErrorCard.jsx';
 
-export default function RecordsPage({ title, query = {}, emptyMessage, onSelectRecord }) {
+export default function OutreachRecordsPage({ title, query = {}, emptyMessage, onSelectRecord }) {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState({ sortBy: 'createdAt', sortDirection: 'desc' });
   const [filters, setFilters] = useState(EMPTY_TABLE_FILTERS);
