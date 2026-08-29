@@ -310,7 +310,7 @@ function AdminShell({ actions, nav, sectionNav, loading = false, children }) {
         <title>ARG Admin</title>
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
-      <header className="admin-header">
+      <header className={`admin-header${nav ? ' admin-header--with-nav' : ''}`}>
         <div className="admin-header__top">
           <div className="admin-header__main">
             <a href="/" className="admin-header__logo" aria-label="ARG Software home">

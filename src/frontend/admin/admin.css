@@ -12,6 +12,10 @@
   margin-bottom: 2rem;
 }
 
+.admin-header--with-nav {
+  margin-bottom: clamp(2.75rem, 5vw, 4rem);
+}
+
 .admin-header__top {
   align-items: center;
   display: flex;
@@ -731,6 +735,10 @@
   .admin-detail-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .admin-header--with-nav {
+    margin-bottom: 2.5rem;
   }
 
   .admin-stats-grid,
