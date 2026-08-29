@@ -56,8 +56,53 @@ test('rate limits admin login attempts before auth', async () => {
   assert.equal(loginCalled, false);
 });
 
-function createTestController({ rateLimitResult = { allowed: true }, onLogin = () => {} } = {}) {
+test('notifies when admin login rate limit is reached', async () => {
+  const notifications: any[] = [];
+  const controller = createTestController({
+    rateLimitResult: { allowed: false, retryAfterSeconds: 60, scope: 'minute' },
+    notificationProvider: {
+      async send(message) {
+        notifications.push(message);
+      },
+    },
+  });
+  const response = await controller.login(await createLoginRequest());
+
+  assert.equal(response.status, 429);
+  assert.equal(notifications.length, 1);
+  assert.equal(notifications[0].title, 'Admin login rate limit reached');
+  assert.deepEqual(notifications[0].fields.slice(0, 3), [
+    { name: 'Endpoint', value: '/api/admin/login' },
+    { name: 'Client IP', value: '127.0.0.1' },
+    { name: 'Scope', value: 'minute' },
+  ]);
+  assert.deepEqual(notifications[0].fields.slice(3, 4), [
+    { name: 'Retry after', value: '60s' },
+  ]);
+});
+
+test('does not notify when admin login rate limit allows the request', async () => {
+  let notified = false;
+  const controller = createTestController({
+    notificationProvider: {
+      async send() {
+        notified = true;
+      },
+    },
+  });
+
+  await controller.login(await createLoginRequest());
+
+  assert.equal(notified, false);
+});
+
+function createTestController({
+  rateLimitResult = { allowed: true },
+  onLogin = () => {},
+  notificationProvider = { send: async () => {} },
+}: any = {}) {
   return new AuthController({
+    authenticateUserUseCase: createAuthenticateUserUseCase(),
     altchaSettings,
     loginRateLimiter: {
       async check() {
@@ -77,7 +122,11 @@ function createTestController({ rateLimitResult = { allowed: true }, onLogin = (
       },
     },
     secureCookies: false,
-  } as any);
+  } as any, notificationProvider);
+}
+
+function createAuthenticateUserUseCase() {
+  return { execute: async () => ({ email: 'admin@arg.software' }) } as any;
 }
 
 async function createLoginRequest(overrides: Record<string, unknown> = {}) {

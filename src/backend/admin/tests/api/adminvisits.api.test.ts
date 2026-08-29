@@ -8,8 +8,8 @@ import { ListVisitCountryBreakdownUseCase } from '../../application/usecases/vis
 import { ListVisitMetricsUseCase } from '../../application/usecases/visits/listvisitmetrics.usecase.js';
 
 class TestVisitsController extends VisitsController {
-  protected override authenticateUser(): Promise<any> {
-    return Promise.resolve({ email: 'admin@arg.software' });
+  constructor(visits) {
+    super(visits, createAuthenticateUserUseCase());
   }
 }
 
@@ -310,4 +310,8 @@ function createVisitLogRequest() {
       language: 'en',
     }),
   });
+}
+
+function createAuthenticateUserUseCase() {
+  return { execute: async () => ({ email: 'admin@arg.software' }) } as any;
 }

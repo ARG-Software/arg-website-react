@@ -63,8 +63,8 @@ export function createAdminContainer() {
     logger
   );
   const csvParser = new OutreachCsvParser();
-  const assistantConversationWebhook = config.getNotificationWebhookUrl()
-    ? new DiscordWebhookProvider(config.getNotificationWebhookUrl())
+  const notificationWebhook = config.getNotificationWebhookUrl()
+    ? new DiscordWebhookProvider(config.getNotificationWebhookUrl(), logger)
     : { send: async () => {} };
 
   const authenticateUserUseCase = new AuthenticateUserUseCase(identityProvider, userAccessPolicy);
@@ -125,7 +125,7 @@ export function createAdminContainer() {
       ),
       logAssistantConversationUseCase: new LogAssistantConversationUseCase(
         conversationRepository,
-        assistantConversationWebhook,
+        notificationWebhook,
         config.getAdminSiteUrl(),
         logger
       ),
@@ -134,6 +134,7 @@ export function createAdminContainer() {
         config.getAssistantConversationLogRateLimitConfig()
       ),
     },
+    loginRateLimitNotifier: notificationWebhook,
     logger,
   };
 }

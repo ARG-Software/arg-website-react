@@ -1,11 +1,11 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
-import { ragContainer } from '../../di/rag.container.js';
+import { ragContainer, type RagContainer } from '../../di/rag.container.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class SecurityController extends ControllerBase {
   constructor(
-    private readonly security = ragContainer.security,
+    private readonly security: RagContainer['security'],
     logger?: ILogger
   ) {
     super(logger);

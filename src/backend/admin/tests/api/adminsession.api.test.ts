@@ -50,6 +50,7 @@ test('DELETE /api/admin/session clears cookies and returns 204', async () => {
 
 function createTestController({ getSessionResult = null } = {}) {
   return new AuthController({
+    authenticateUserUseCase: createAuthenticateUserUseCase(),
     getUserSessionUseCase: {
       execute: getSessionResult || (async () => ({ user: mockUser, session: null })),
     },
@@ -60,7 +61,11 @@ function createTestController({ getSessionResult = null } = {}) {
     },
     secureCookies: false,
     signOutUserUseCase: { execute: async () => {} },
-  } as any);
+  } as any, { send: async () => {} });
+}
+
+function createAuthenticateUserUseCase() {
+  return { execute: async () => mockUser } as any;
 }
 
 function createRequest(method, cookies = {}) {

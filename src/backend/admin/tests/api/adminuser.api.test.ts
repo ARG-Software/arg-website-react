@@ -8,15 +8,7 @@ import { UpdateUserUseCase } from '../../application/usecases/users/updateuser.u
 
 class TestUserController extends UserController {
   constructor(users, private readonly authenticatedUser = { email: 'admin@arg.software' }) {
-    super(users);
-  }
-
-  protected override authenticateUser(): Promise<any> {
-    if (this.authenticatedUser instanceof Error) {
-      return Promise.reject(this.authenticatedUser);
-    }
-
-    return Promise.resolve(this.authenticatedUser);
+    super(users, createAuthenticateUserUseCase(authenticatedUser));
   }
 }
 
@@ -117,4 +109,14 @@ function createTestController(
     },
     authenticatedUser
   );
+}
+
+function createAuthenticateUserUseCase(user: any) {
+  return {
+    execute: async () => {
+      if (user instanceof Error) throw user;
+
+      return user;
+    },
+  } as any;
 }

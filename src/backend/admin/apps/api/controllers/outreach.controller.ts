@@ -1,14 +1,15 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
-import { adminContainer } from '../../di/admin.container.js';
+import { adminContainer, type AdminContainer } from '../../di/admin.container.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class OutreachController extends ControllerBase {
   constructor(
-    private readonly outreachUseCases = adminContainer.outreach,
+    private readonly outreachUseCases: AdminContainer['outreach'],
+    authenticateUserUseCase: AdminContainer['auth']['authenticateUserUseCase'],
     logger?: ILogger
   ) {
-    super(logger);
+    super(authenticateUserUseCase, logger);
   }
 
   @route('GET', '/api/admin/outreach-records')
@@ -87,7 +88,11 @@ export class OutreachController extends ControllerBase {
 let controller: OutreachController;
 
 export function getOutreachRoutes() {
-  controller ||= new OutreachController(adminContainer.outreach, adminContainer.logger);
+  controller ||= new OutreachController(
+    adminContainer.outreach,
+    adminContainer.auth.authenticateUserUseCase,
+    adminContainer.logger
+  );
   return getControllerRoutes(controller);
 }
 

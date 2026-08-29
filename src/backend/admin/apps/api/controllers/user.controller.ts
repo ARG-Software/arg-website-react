@@ -1,15 +1,16 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
-import { adminContainer } from '../../di/admin.container.js';
+import { adminContainer, type AdminContainer } from '../../di/admin.container.js';
 import { getAccessToken } from '../../http/usersession.cookies.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class UserController extends ControllerBase {
   constructor(
-    private readonly users = adminContainer.users,
+    private readonly users: AdminContainer['users'],
+    authenticateUserUseCase: AdminContainer['auth']['authenticateUserUseCase'],
     logger?: ILogger
   ) {
-    super(logger);
+    super(authenticateUserUseCase, logger);
   }
 
   @route('PATCH', '/api/admin/user')
@@ -32,6 +33,10 @@ export class UserController extends ControllerBase {
 let controller: UserController;
 
 export function getUserRoutes() {
-  controller ||= new UserController(adminContainer.users, adminContainer.logger);
+  controller ||= new UserController(
+    adminContainer.users,
+    adminContainer.auth.authenticateUserUseCase,
+    adminContainer.logger
+  );
   return getControllerRoutes(controller);
 }

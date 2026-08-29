@@ -1,6 +1,6 @@
 import { createAdminContainer } from './createadmin.container.js';
 
-type AdminContainer = ReturnType<typeof createAdminContainer>;
+export type AdminContainer = ReturnType<typeof createAdminContainer>;
 
 let container: AdminContainer | null = null;
 
@@ -22,6 +22,9 @@ export const adminContainer = {
   },
   get assistantConversations() {
     return getAdminContainer().assistantConversations;
+  },
+  get loginRateLimitNotifier() {
+    return getAdminContainer().loginRateLimitNotifier;
   },
 };
 

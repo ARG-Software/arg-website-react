@@ -4,16 +4,17 @@ import {
   route,
 } from '../../../../shared/api/decorators/index.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
-import { adminContainer } from '../../di/admin.container.js';
+import { adminContainer, type AdminContainer } from '../../di/admin.container.js';
 import { getHeaderGeolocation } from '../../http/requestinfo.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class VisitsController extends ControllerBase {
   constructor(
-    private readonly visits = adminContainer.visits,
+    private readonly visits: AdminContainer['visits'],
+    authenticateUserUseCase: AdminContainer['auth']['authenticateUserUseCase'],
     logger?: ILogger
   ) {
-    super(logger);
+    super(authenticateUserUseCase, logger);
   }
 
   @route('POST', '/api/visit-log')
@@ -94,6 +95,10 @@ export class VisitsController extends ControllerBase {
 let controller: VisitsController;
 
 export function getVisitRoutes() {
-  controller ||= new VisitsController(adminContainer.visits, adminContainer.logger);
+  controller ||= new VisitsController(
+    adminContainer.visits,
+    adminContainer.auth.authenticateUserUseCase,
+    adminContainer.logger
+  );
   return getControllerRoutes(controller);
 }

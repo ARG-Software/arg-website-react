@@ -10,8 +10,8 @@ import { LogAssistantConversationUseCase } from '../../application/usecases/assi
 import { AssistantConversation } from '../../domain/assistantconversation.js';
 
 class TestAssistantConversationsController extends AssistantConversationsController {
-  protected override authenticateUser(): Promise<any> {
-    return Promise.resolve({ email: 'admin@arg.software' });
+  constructor(conversations) {
+    super(conversations, createAuthenticateUserUseCase());
   }
 }
 
@@ -227,4 +227,8 @@ function createConversationRecord() {
     createdAt: '2026-08-21T10:00:00.000Z',
     updatedAt: '2026-08-21T10:00:01.000Z',
   });
+}
+
+function createAuthenticateUserUseCase() {
+  return { execute: async () => ({ email: 'admin@arg.software' }) } as any;
 }

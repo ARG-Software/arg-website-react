@@ -156,6 +156,7 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Protected admin controller methods should call `this.authenticateUser(request)` before parsing body/query or calling business use cases. Keep authorization out of non-auth business use cases.
 - Controllers must not talk to repositories, providers, Supabase clients, config, env, or dependency factories.
 - Controllers may receive dependencies through constructors, but those dependencies should be real use cases or use-case services, not env/config/repository containers.
+- Controller constructors should not default dependencies from `adminContainer` or `ragContainer`; route factories and API composition are the wiring boundary.
 - DI is the composition root. It should resolve env/config internally, construct infrastructure adapters, construct use cases with explicit dependencies, and export a runtime container.
 - Use cases should receive their dependencies directly through constructors, following a .NET-style dependency injection model. Avoid opaque dependency objects when explicit constructor dependencies make the use case clearer.
 - Each controller method should call a use case. Reuse an existing use case when behavior is repeated; add a new use case when controller logic would otherwise reach into repositories/providers.

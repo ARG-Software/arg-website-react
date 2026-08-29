@@ -1,6 +1,6 @@
 import { createRagContainer } from './createrag.container.js';
 
-type RagContainer = ReturnType<typeof createRagContainer>;
+export type RagContainer = ReturnType<typeof createRagContainer>;
 
 let container: RagContainer | null = null;
 

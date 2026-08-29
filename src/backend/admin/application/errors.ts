@@ -1,6 +1,7 @@
 export class AdminApplicationError extends Error {
   statusCode: number;
   code: string;
+  limitScope?: string;
   retryAfterSeconds?: number;
 
   constructor(statusCode, code, message) {

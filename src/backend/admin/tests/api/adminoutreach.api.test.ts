@@ -14,8 +14,8 @@ import { Outreach } from '../../domain/outreach.js';
 import { OutreachCsvParser } from '../../infrastructure/csv/outreachcsv.parser.js';
 
 class TestOutreachController extends OutreachController {
-  protected override authenticateUser(): Promise<any> {
-    return Promise.resolve({ email: 'admin@arg.software' });
+  constructor(outreachUseCases) {
+    super(outreachUseCases, createAuthenticateUserUseCase());
   }
 }
 
@@ -386,6 +386,10 @@ function compareValues(first, second) {
   if (typeof first === 'number' && typeof second === 'number') return first - second;
 
   return String(first).localeCompare(String(second), undefined, { sensitivity: 'base' });
+}
+
+function createAuthenticateUserUseCase() {
+  return { execute: async () => ({ email: 'admin@arg.software' }) } as any;
 }
 
 function createGetRequest(path) {
