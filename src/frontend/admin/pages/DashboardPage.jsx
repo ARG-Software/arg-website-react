@@ -71,13 +71,26 @@ export default function DashboardPage({ onSelectRecord }) {
             <UiStat label="Replies" value={summary?.repliesObtained ?? '...'} tone="light" />
           </div>
           <AdminMetricChart
-            title="Sent and replies"
-            description="Outbound volume and reply outcomes for the selected time range."
+            title="Reply outcomes"
+            description="Reply split for outreach sent in the selected time range."
             range={chartRange}
+            rangeId="admin-outreach-reply-chart-range"
+            ranges={CHART_RANGES}
+            pie={chartQuery.data?.pie || []}
+            pieAriaLabel="Outreach reply outcomes"
+            onRangeChange={setChartRange}
+            mode="pie"
+            tone="light"
+          />
+          <AdminMetricChart
+            title="Sent and replies"
+            description="Outbound volume and replies obtained for the selected time range."
+            range={chartRange}
+            rangeId="admin-outreach-volume-chart-range"
             ranges={CHART_RANGES}
             points={chartQuery.data?.points || []}
-            pie={chartQuery.data?.pie || []}
             onRangeChange={setChartRange}
+            mode="line"
             tone="light"
           />
         </>
