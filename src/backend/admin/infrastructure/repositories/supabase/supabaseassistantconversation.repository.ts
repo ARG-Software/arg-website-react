@@ -1,5 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
+import { logOperation } from '../../../../shared/logger/logoperation.js';
 import type { IAdminConfiguration } from '../../../application/config/iadmin.configuration.js';
 import { decode, isValidKey } from '../../../application/crypto/decode.js';
 import { encode, type EncodedValue } from '../../../application/crypto/encode.js';
@@ -36,45 +38,61 @@ type AssistantConversationRow = {
 export class SupabaseAssistantConversationRepository implements IAssistantConversationRepository {
   constructor(
     private readonly client: SupabaseClient,
-    private readonly configuration: IAdminConfiguration
+    private readonly configuration: IAdminConfiguration,
+    private readonly logger?: ILogger
   ) {}
 
   async upsert(conversation: AssistantConversation): Promise<AssistantConversationUpsertResult> {
-    const encryptedPayload = encryptPayload(
+    return logOperation(
+      this.logger,
+      'Supabase assistant conversation upsert',
       {
-        conversationId: conversation.publicConversationId,
-        messages: conversation.messages,
-        pageContext: conversation.pageContext,
+        table: 'assistant_conversations',
+        conversationId: conversation.id,
+        publicConversationId: conversation.publicConversationId,
+        pagePath: conversation.pagePath,
         language: conversation.language,
-        savedAt: conversation.savedAt,
+        messageCount: conversation.messageCount,
       },
-      this.configuration
+      async () => {
+        const encryptedPayload = encryptPayload(
+          {
+            conversationId: conversation.publicConversationId,
+            messages: conversation.messages,
+            pageContext: conversation.pageContext,
+            language: conversation.language,
+            savedAt: conversation.savedAt,
+          },
+          this.configuration
+        );
+        const { data, error } = await this.client
+          .from('assistant_conversations')
+          .upsert(
+            {
+              public_conversation_id: conversation.publicConversationId,
+              payload_key_version: encryptedPayload.keyVersion,
+              payload_nonce: encryptedPayload.nonce,
+              payload_ciphertext: encryptedPayload.ciphertext,
+              payload_auth_tag: encryptedPayload.authTag,
+              message_count: conversation.messageCount,
+              page_path: conversation.pagePath,
+              language: conversation.language || null,
+              last_message_at: conversation.lastMessageAt,
+            },
+            { onConflict: 'public_conversation_id' }
+          )
+          .select('*')
+          .single();
+
+        if (error) throw error;
+
+        return {
+          conversation: toConversationRecord(data, this.configuration),
+          created: Boolean(data.created_at && data.updated_at && data.created_at === data.updated_at),
+        };
+      },
+      result => ({ created: result.created, persistedConversationId: result.conversation.id })
     );
-    const { data, error } = await this.client
-      .from('assistant_conversations')
-      .upsert(
-        {
-          public_conversation_id: conversation.publicConversationId,
-          payload_key_version: encryptedPayload.keyVersion,
-          payload_nonce: encryptedPayload.nonce,
-          payload_ciphertext: encryptedPayload.ciphertext,
-          payload_auth_tag: encryptedPayload.authTag,
-          message_count: conversation.messageCount,
-          page_path: conversation.pagePath,
-          language: conversation.language || null,
-          last_message_at: conversation.lastMessageAt,
-        },
-        { onConflict: 'public_conversation_id' }
-      )
-      .select('*')
-      .single();
-
-    if (error) throw error;
-
-    return {
-      conversation: toConversationRecord(data, this.configuration),
-      created: Boolean(data.created_at && data.updated_at && data.created_at === data.updated_at),
-    };
   }
 
   async list({
@@ -87,54 +105,85 @@ export class SupabaseAssistantConversationRepository implements IAssistantConver
     records: AssistantConversation[];
     pagination: AssistantConversationPagination;
   }> {
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
-    const { data, error, count } = await this.client
-      .from('assistant_conversations')
-      .select('*', { count: 'exact' })
-      .order('updated_at', { ascending: false })
-      .range(from, to);
+    return logOperation(
+      this.logger,
+      'Supabase assistant conversations query',
+      { table: 'assistant_conversations', page, pageSize },
+      async () => {
+        const from = (page - 1) * pageSize;
+        const to = from + pageSize - 1;
+        const { data, error, count } = await this.client
+          .from('assistant_conversations')
+          .select('*', { count: 'exact' })
+          .order('updated_at', { ascending: false })
+          .range(from, to);
 
-    if (error) throw error;
+        if (error) throw error;
 
-    return {
-      records: data.map(row => toConversationRecord(row, this.configuration)),
-      pagination: {
-        page,
-        pageSize,
-        totalRecords: count || 0,
-        totalPages: Math.max(1, Math.ceil((count || 0) / pageSize)),
+        return {
+          records: data.map(row => toConversationRecord(row, this.configuration)),
+          pagination: {
+            page,
+            pageSize,
+            totalRecords: count || 0,
+            totalPages: Math.max(1, Math.ceil((count || 0) / pageSize)),
+          },
+        };
       },
-    };
+      result => ({ recordCount: result.records.length, totalRecords: result.pagination.totalRecords })
+    );
   }
 
   async findById(id: string): Promise<AssistantConversation | null> {
-    const { data, error } = await this.client
-      .from('assistant_conversations')
-      .select('*')
-      .eq('id', id)
-      .single();
+    return logOperation(
+      this.logger,
+      'Supabase assistant conversation query',
+      { table: 'assistant_conversations', conversationId: id },
+      async () => {
+        const { data, error } = await this.client
+          .from('assistant_conversations')
+          .select('*')
+          .eq('id', id)
+          .single();
 
-    if (error || !data) return null;
+        if (error || !data) return null;
 
-    return toConversationRecord(data, this.configuration);
+        return toConversationRecord(data, this.configuration);
+      },
+      result => ({ found: Boolean(result) })
+    );
   }
 
   async deleteById(id: string): Promise<void> {
-    const { error } = await this.client.from('assistant_conversations').delete().eq('id', id);
+    await logOperation(
+      this.logger,
+      'Supabase assistant conversation delete',
+      { table: 'assistant_conversations', conversationId: id },
+      async () => {
+        const { error } = await this.client.from('assistant_conversations').delete().eq('id', id);
 
-    if (error) throw error;
+        if (error) throw error;
+      }
+    );
   }
 
   async deleteOlderThan(cutoffIso: string): Promise<number> {
-    const { count, error } = await this.client
-      .from('assistant_conversations')
-      .delete({ count: 'exact' })
-      .lt('updated_at', cutoffIso);
+    return logOperation(
+      this.logger,
+      'Supabase old assistant conversations delete',
+      { table: 'assistant_conversations', cutoffIso },
+      async () => {
+        const { count, error } = await this.client
+          .from('assistant_conversations')
+          .delete({ count: 'exact' })
+          .lt('updated_at', cutoffIso);
 
-    if (error) throw error;
+        if (error) throw error;
 
-    return count || 0;
+        return count || 0;
+      },
+      deletedCount => ({ deletedCount })
+    );
   }
 }
 

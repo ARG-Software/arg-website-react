@@ -17,9 +17,28 @@ export class LogAssistantConversationUseCase {
   async execute(input: LogAssistantConversationInput): Promise<void> {
     const conversation = new AssistantConversation(input);
 
-    if (!conversation.hasVisitorMessage()) return;
+    if (!conversation.hasVisitorMessage()) {
+      this.logger?.info('Assistant conversation save skipped', {
+        reason: 'no_visitor_messages',
+        conversationId: conversation.id,
+        messageCount: conversation.messageCount,
+      });
+      return;
+    }
 
+    this.logger?.info('Assistant conversation save started', {
+      conversationId: conversation.id,
+      pagePath: conversation.pagePath,
+      language: conversation.language,
+      messageCount: conversation.messageCount,
+    });
     const savedConversation = await this.conversationRepository.upsert(conversation);
+    this.logger?.info('Assistant conversation save completed', {
+      conversationId: savedConversation.conversation.id,
+      created: savedConversation.created,
+      messageCount: savedConversation.conversation.messageCount,
+    });
+
     if (savedConversation.created) {
       await this.notifyWebhook(savedConversation.conversation);
     }
@@ -27,6 +46,10 @@ export class LogAssistantConversationUseCase {
 
   private async notifyWebhook(conversation: AssistantConversation): Promise<void> {
     try {
+      this.logger?.info('Assistant conversation webhook started', {
+        conversationId: conversation.id,
+        messageCount: conversation.messageCount,
+      });
       await this.webhookProvider.send({
         title: 'New Gaspar conversation',
         description: conversation.preview || 'A visitor started a conversation with Gaspar.',
@@ -38,6 +61,7 @@ export class LogAssistantConversationUseCase {
           { name: 'Last activity', value: conversation.lastMessageAt || conversation.savedAt },
         ],
       });
+      this.logger?.info('Assistant conversation webhook completed', { conversationId: conversation.id });
     } catch (error) {
       this.logger?.error('Assistant conversation webhook failed', {
         error,

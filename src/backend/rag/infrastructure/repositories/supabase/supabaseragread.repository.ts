@@ -1,5 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
+import { logOperation } from '../../../../shared/logger/logoperation.js';
 import type { IRetrievedContext } from '../../../domain/retrieval/iretrievedcontext.js';
 import type { EmbeddingIndex } from '../../../application/ports/embeddingindex.js';
 import type { RagSourceOrigin } from '../../../domain/content/iragsource.js';
@@ -26,53 +28,71 @@ const MATCH_FUNCTION_BY_INDEX: Record<EmbeddingIndex, MatchFunction> = {
 export class SupabaseRagReadRepository implements IRagReadRepository {
   constructor(
     private readonly supabase: SupabaseClient,
-    private readonly siteUrl: string
+    private readonly siteUrl: string,
+    private readonly logger?: ILogger
   ) {}
 
   async findSources({
     sourceTypes,
     sourceOrigin = FIRST_PARTY_ORIGIN,
   }: IFindSourcesInput): Promise<IRagSourceRecord[]> {
-    const { data, error } = await this.supabase
-      .from('rag_sources')
-      .select(SOURCE_COLUMNS)
-      .in('source_type', sourceTypes)
-      .eq('origin', sourceOrigin)
-      .eq('is_public', true);
+    return logOperation(
+      this.logger,
+      'Supabase RAG sources query',
+      { table: 'rag_sources', sourceTypes, sourceOrigin },
+      async () => {
+        const { data, error } = await this.supabase
+          .from('rag_sources')
+          .select(SOURCE_COLUMNS)
+          .in('source_type', sourceTypes)
+          .eq('origin', sourceOrigin)
+          .eq('is_public', true);
 
-    if (error) {
-      throw error;
-    }
+        if (error) {
+          throw error;
+        }
 
-    return ((data ?? []) as IDirectSourceRow[]).map(row => toSourceRecord(row));
+        return ((data ?? []) as IDirectSourceRow[]).map(row => toSourceRecord(row));
+      },
+      result => ({ sourceCount: result.length })
+    );
   }
 
   async findFirstChunksForSources(sources: IRagSourceRecord[]): Promise<IRetrievedContext[]> {
     if (sources.length === 0) {
+      this.logger?.info('Supabase RAG first chunks query skipped', { reason: 'empty_sources' });
       return [];
     }
 
-    const { data, error } = await this.supabase
-      .from('rag_chunks')
-      .select(CHUNK_COLUMNS)
-      .in(
-        'source_id',
-        sources.map(source => source.id)
-      )
-      .eq('chunk_index', 0);
+    return logOperation(
+      this.logger,
+      'Supabase RAG first chunks query',
+      { table: 'rag_chunks', sourceCount: sources.length },
+      async () => {
+        const { data, error } = await this.supabase
+          .from('rag_chunks')
+          .select(CHUNK_COLUMNS)
+          .in(
+            'source_id',
+            sources.map(source => source.id)
+          )
+          .eq('chunk_index', 0);
 
-    if (error) {
-      throw error;
-    }
+        if (error) {
+          throw error;
+        }
 
-    const chunksBySourceId = new Map(
-      ((data ?? []) as IDirectChunkRow[]).map(chunk => [chunk.source_id, chunk])
+        const chunksBySourceId = new Map(
+          ((data ?? []) as IDirectChunkRow[]).map(chunk => [chunk.source_id, chunk])
+        );
+
+        return sources.flatMap(source => {
+          const chunk = chunksBySourceId.get(source.id);
+          return chunk ? [this.createDirectContext(source, chunk)] : [];
+        });
+      },
+      result => ({ contextCount: result.length })
     );
-
-    return sources.flatMap(source => {
-      const chunk = chunksBySourceId.get(source.id);
-      return chunk ? [this.createDirectContext(source, chunk)] : [];
-    });
   }
 
   async matchChunks({
@@ -84,34 +104,50 @@ export class SupabaseRagReadRepository implements IRagReadRepository {
     sourceTypes = null,
     sourceKeys = null,
   }: IMatchChunksInput): Promise<IRetrievedContext[]> {
-    const { data, error } = await this.supabase.rpc(MATCH_FUNCTION_BY_INDEX[index], {
-      query_embedding: toEmbeddingLiteral(embedding),
-      match_count: matchCount,
-      similarity_threshold: similarityThreshold,
-      source_types: sourceTypes,
-      source_keys: sourceKeys,
-      source_origins: [sourceOrigin],
-    });
+    return logOperation(
+      this.logger,
+      'Supabase RAG vector match query',
+      {
+        operation: MATCH_FUNCTION_BY_INDEX[index],
+        index,
+        matchCount,
+        similarityThreshold,
+        sourceOrigin,
+        sourceTypes,
+        sourceKeyCount: sourceKeys?.length ?? 0,
+      },
+      async () => {
+        const { data, error } = await this.supabase.rpc(MATCH_FUNCTION_BY_INDEX[index], {
+          query_embedding: toEmbeddingLiteral(embedding),
+          match_count: matchCount,
+          similarity_threshold: similarityThreshold,
+          source_types: sourceTypes,
+          source_keys: sourceKeys,
+          source_origins: [sourceOrigin],
+        });
 
-    if (error) {
-      throw error;
-    }
+        if (error) {
+          throw error;
+        }
 
-    return ((data ?? []) as IMatchRagChunkRow[]).map(row => ({
-      chunkId: row.chunk_id,
-      sourceId: row.source_id,
-      sourceType: row.source_type,
-      sourceKey: row.source_key,
-      title: row.title,
-      url: resolveUrl(row.url, this.siteUrl),
-      path: row.path,
-      chunkIndex: row.chunk_index,
-      content: row.content,
-      similarity: row.similarity,
-      sourceMetadata: row.source_metadata ?? {},
-      chunkMetadata: row.chunk_metadata ?? {},
-      origin: sourceOrigin,
-    }));
+        return ((data ?? []) as IMatchRagChunkRow[]).map(row => ({
+          chunkId: row.chunk_id,
+          sourceId: row.source_id,
+          sourceType: row.source_type,
+          sourceKey: row.source_key,
+          title: row.title,
+          url: resolveUrl(row.url, this.siteUrl),
+          path: row.path,
+          chunkIndex: row.chunk_index,
+          content: row.content,
+          similarity: row.similarity,
+          sourceMetadata: row.source_metadata ?? {},
+          chunkMetadata: row.chunk_metadata ?? {},
+          origin: sourceOrigin,
+        }));
+      },
+      result => ({ contextCount: result.length })
+    );
   }
 
   async findChunksByText({
@@ -123,52 +159,67 @@ export class SupabaseRagReadRepository implements IRagReadRepository {
     const searchableTerms = terms.map(normalizeTextSearchTerm).filter(Boolean);
 
     if (searchableTerms.length === 0) {
+      this.logger?.info('Supabase RAG text chunks query skipped', { reason: 'empty_terms' });
       return [];
     }
 
-    const { data: chunkRows, error: chunkError } = await this.supabase
-      .from('rag_chunks')
-      .select(CHUNK_COLUMNS)
-      .or(searchableTerms.map(term => `content.ilike.%${term}%`).join(','));
+    return logOperation(
+      this.logger,
+      'Supabase RAG text chunks query',
+      {
+        tables: ['rag_chunks', 'rag_sources'],
+        termCount: searchableTerms.length,
+        matchCount,
+        sourceOrigin,
+        sourceTypes,
+      },
+      async () => {
+        const { data: chunkRows, error: chunkError } = await this.supabase
+          .from('rag_chunks')
+          .select(CHUNK_COLUMNS)
+          .or(searchableTerms.map(term => `content.ilike.%${term}%`).join(','));
 
-    if (chunkError) {
-      throw chunkError;
-    }
+        if (chunkError) {
+          throw chunkError;
+        }
 
-    const chunks = (chunkRows ?? []) as IDirectChunkRow[];
+        const chunks = (chunkRows ?? []) as IDirectChunkRow[];
 
-    if (chunks.length === 0) {
-      return [];
-    }
+        if (chunks.length === 0) {
+          return [];
+        }
 
-    const sourceIds = [...new Set(chunks.map(chunk => chunk.source_id))];
-    let sourcesQuery = this.supabase
-      .from('rag_sources')
-      .select(SOURCE_COLUMNS)
-      .in('id', sourceIds)
-      .eq('origin', sourceOrigin)
-      .eq('is_public', true);
+        const sourceIds = [...new Set(chunks.map(chunk => chunk.source_id))];
+        let sourcesQuery = this.supabase
+          .from('rag_sources')
+          .select(SOURCE_COLUMNS)
+          .in('id', sourceIds)
+          .eq('origin', sourceOrigin)
+          .eq('is_public', true);
 
-    if (sourceTypes) {
-      sourcesQuery = sourcesQuery.in('source_type', sourceTypes);
-    }
+        if (sourceTypes) {
+          sourcesQuery = sourcesQuery.in('source_type', sourceTypes);
+        }
 
-    const { data: sourceRows, error: sourceError } = await sourcesQuery;
+        const { data: sourceRows, error: sourceError } = await sourcesQuery;
 
-    if (sourceError) {
-      throw sourceError;
-    }
+        if (sourceError) {
+          throw sourceError;
+        }
 
-    const sourcesById = new Map(
-      ((sourceRows ?? []) as IDirectSourceRow[]).map(row => [row.id, toSourceRecord(row)])
+        const sourcesById = new Map(
+          ((sourceRows ?? []) as IDirectSourceRow[]).map(row => [row.id, toSourceRecord(row)])
+        );
+
+        return chunks
+          .flatMap(chunk => {
+            const source = sourcesById.get(chunk.source_id);
+            return source ? [this.createDirectContext(source, chunk)] : [];
+          })
+          .slice(0, matchCount);
+      },
+      result => ({ contextCount: result.length })
     );
-
-    return chunks
-      .flatMap(chunk => {
-        const source = sourcesById.get(chunk.source_id);
-        return source ? [this.createDirectContext(source, chunk)] : [];
-      })
-      .slice(0, matchCount);
   }
 
   private createDirectContext(source: IRagSourceRecord, chunk: IDirectChunkRow): IRetrievedContext {

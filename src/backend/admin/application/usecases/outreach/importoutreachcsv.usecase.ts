@@ -1,3 +1,4 @@
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { Outreach } from '../../../domain/outreach.js';
 import { OutreachDomainError } from '../../../domain/errors/outreachdomain.error.js';
 import type { IClock } from '../../ports/iclock.js';
@@ -14,7 +15,8 @@ export class ImportOutreachCsvUseCase {
   constructor(
     private readonly clock: IClock,
     private readonly csvParser: IOutreachCsvParser,
-    private readonly outreachRepository: IOutreachRepository
+    private readonly outreachRepository: IOutreachRepository,
+    private readonly logger?: ILogger
   ) {}
 
   async execute(input: ImportOutreachCsvInput): Promise<{
@@ -23,7 +25,16 @@ export class ImportOutreachCsvUseCase {
     errors: { row: number; error: string }[];
   }> {
     const rows = this.csvParser.parse(input.csv || '');
-    if (rows.length > MAX_IMPORT_ROWS) throw OutreachDomainError.tooManyRows();
+    this.logger?.info('Outreach CSV import parsed', { rowCount: rows.length });
+
+    if (rows.length > MAX_IMPORT_ROWS) {
+      this.logger?.warn('Outreach CSV import rejected', {
+        reason: 'too_many_rows',
+        rowCount: rows.length,
+        maxRows: MAX_IMPORT_ROWS,
+      });
+      throw OutreachDomainError.tooManyRows();
+    }
 
     const records: Outreach[] = [];
     const errors: { row: number; error: string }[] = [];
@@ -41,14 +52,18 @@ export class ImportOutreachCsvUseCase {
     });
 
     if (errors.length) {
+      this.logger?.warn('Outreach CSV import rejected', { reason: 'invalid_rows', errorCount: errors.length });
       return { imported: 0, errors };
     }
 
     try {
+      this.logger?.info('Outreach CSV import create started', { recordCount: records.length });
       const createdRecords = await this.outreachRepository.createMany(records);
+      this.logger?.info('Outreach CSV import create completed', { imported: createdRecords.length });
       return { imported: createdRecords.length, records: createdRecords, errors: [] };
     } catch (error) {
       if (isDuplicateDatabaseError(error)) {
+        this.logger?.warn('Outreach CSV import rejected', { reason: 'duplicate_record', error });
         throw OutreachDomainError.duplicateRecord();
       }
 

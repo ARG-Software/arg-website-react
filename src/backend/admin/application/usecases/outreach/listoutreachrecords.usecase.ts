@@ -1,3 +1,4 @@
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { OUTREACH_STATUSES } from '../../../domain/outreach.js';
 import { OutreachDomainError } from '../../../domain/errors/outreachdomain.error.js';
 import type { OutreachStatus } from '../../../domain/types/outreach.types.js';
@@ -25,13 +26,12 @@ export interface ListOutreachRecordsInput {
 const SORTABLE_FIELDS: readonly SortableOutreachField[] = ['companyName', 'createdAt', 'dateSent', 'followUpDate'];
 
 export class ListOutreachRecordsUseCase {
-  constructor(private readonly outreachRepository: IOutreachRepository) {}
+  constructor(private readonly outreachRepository: IOutreachRepository, private readonly logger?: ILogger) {}
 
   async execute(query: ListOutreachRecordsInput = {}) {
     const pagination = getPagination(query);
     const sort = getSort(query);
-
-    return this.outreachRepository.listRecords({
+    const repositoryQuery = {
       ...pagination,
       status: getRequestedStatus(query) || undefined,
       companyName: getCompanyFilter(query.companyName),
@@ -40,7 +40,27 @@ export class ListOutreachRecordsUseCase {
       sortBy: sort.field,
       sortDirection: sort.direction,
       recentSent: isRecentSentQuery(query),
+    };
+
+    this.logger?.info('Outreach records list use case started', {
+      page: repositoryQuery.page,
+      pageSize: repositoryQuery.pageSize,
+      status: repositoryQuery.status,
+      sortBy: repositoryQuery.sortBy,
+      sortDirection: repositoryQuery.sortDirection,
+      recentSent: repositoryQuery.recentSent,
+      hasCompanyNameFilter: Boolean(repositoryQuery.companyName),
+      hasDateSentFrom: Boolean(repositoryQuery.dateSentFrom),
+      hasDateSentTo: Boolean(repositoryQuery.dateSentTo),
     });
+
+    const result = await this.outreachRepository.listRecords(repositoryQuery);
+    this.logger?.info('Outreach records list use case completed', {
+      recordCount: result.records.length,
+      totalRecords: result.pagination.totalRecords,
+    });
+
+    return result;
   }
 }
 

@@ -51,12 +51,12 @@ export function createAdminContainer() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  const adminUserRepository = new SupabaseAdminUserRepository(serviceClient);
+  const adminUserRepository = new SupabaseAdminUserRepository(serviceClient, logger);
   const userAccessPolicy = createUserAccessPolicy(adminUserRepository, logger);
   const identityProvider = new SupabaseUserIdentityProvider(authClient, logger);
-  const conversationRepository = new SupabaseAssistantConversationRepository(serviceClient, config);
-  const outreachRepository = new SupabaseOutreachRepository(serviceClient, config);
-  const visitRepository = new SupabaseVisitRepository(serviceClient);
+  const conversationRepository = new SupabaseAssistantConversationRepository(serviceClient, config, logger);
+  const outreachRepository = new SupabaseOutreachRepository(serviceClient, config, logger);
+  const visitRepository = new SupabaseVisitRepository(serviceClient, logger);
   const adminRateLimitRepository = new SupabaseRateLimitRepository(
     serviceClient,
     'hit_admin_rate_limit',
@@ -67,61 +67,70 @@ export function createAdminContainer() {
     ? new DiscordWebhookProvider(config.getNotificationWebhookUrl(), logger)
     : { send: async () => {} };
 
-  const authenticateUserUseCase = new AuthenticateUserUseCase(identityProvider, userAccessPolicy);
+  const authenticateUserUseCase = new AuthenticateUserUseCase(identityProvider, userAccessPolicy, logger);
 
   return {
     auth: {
       authenticateUserUseCase,
-      getUserSessionUseCase: new GetUserSessionUseCase(identityProvider, userAccessPolicy),
+      getUserSessionUseCase: new GetUserSessionUseCase(identityProvider, userAccessPolicy, logger),
       loginUserUseCase: new LoginUserUseCase(
         identityProvider,
-        userAccessPolicy
+        userAccessPolicy,
+        logger
       ),
       loginRateLimiter: new RateLimiter(adminRateLimitRepository, config.getLoginRateLimitConfig()),
-      refreshUserSessionUseCase: new RefreshUserSessionUseCase(identityProvider, userAccessPolicy),
+      refreshUserSessionUseCase: new RefreshUserSessionUseCase(identityProvider, userAccessPolicy, logger),
       altchaSettings: config.getAltchaSettings(),
       secureCookies: config.getSecureCookies(),
-      signOutUserUseCase: new SignOutUserUseCase(identityProvider),
+      signOutUserUseCase: new SignOutUserUseCase(identityProvider, logger),
     },
     users: {
-      updateUserUseCase: new UpdateUserUseCase(identityProvider),
+      updateUserUseCase: new UpdateUserUseCase(identityProvider, logger),
     },
     outreach: {
-      createOutreachCsvUseCase: new CreateOutreachCsvUseCase(csvParser, outreachRepository),
+      createOutreachCsvUseCase: new CreateOutreachCsvUseCase(csvParser, outreachRepository, logger),
       getOutreachChartUseCase: new GetOutreachChartUseCase(outreachRepository, systemClock),
       getOutreachRecordUseCase: new GetOutreachRecordUseCase(outreachRepository),
       getOutreachSummaryUseCase: new GetOutreachSummaryUseCase(outreachRepository),
       importOutreachCsvUseCase: new ImportOutreachCsvUseCase(
         systemClock,
         csvParser,
-        outreachRepository
+        outreachRepository,
+        logger
       ),
-      listOutreachRecordsUseCase: new ListOutreachRecordsUseCase(outreachRepository),
+      listOutreachRecordsUseCase: new ListOutreachRecordsUseCase(outreachRepository, logger),
       updateOutreachRecordUseCase: new UpdateOutreachRecordUseCase(
         new SupabaseOutreachAuditRepository(serviceClient, config, logger),
-        outreachRepository
+        outreachRepository,
+        logger
       ),
     },
     visits: {
-      deleteVisitSessionUseCase: new DeleteVisitSessionUseCase(visitRepository),
-      listAllVisitSessionsUseCase: new ListAllVisitSessionsUseCase(visitRepository),
-      listVisitCountryBreakdownUseCase: new ListVisitCountryBreakdownUseCase(visitRepository),
-      listVisitJourneyUseCase: new ListVisitJourneyUseCase(visitRepository),
-      listVisitMetricsUseCase: new ListVisitMetricsUseCase(visitRepository),
-      listVisitSessionsUseCase: new ListVisitSessionsUseCase(visitRepository),
+      deleteVisitSessionUseCase: new DeleteVisitSessionUseCase(visitRepository, logger),
+      listAllVisitSessionsUseCase: new ListAllVisitSessionsUseCase(visitRepository, logger),
+      listVisitCountryBreakdownUseCase: new ListVisitCountryBreakdownUseCase(visitRepository, logger),
+      listVisitJourneyUseCase: new ListVisitJourneyUseCase(visitRepository, logger),
+      listVisitMetricsUseCase: new ListVisitMetricsUseCase(visitRepository, logger),
+      listVisitSessionsUseCase: new ListVisitSessionsUseCase(visitRepository, logger),
       recordVisitSessionUseCase: new RecordVisitSessionUseCase(
         config,
-        visitRepository
+        visitRepository,
+        logger
       ),
       visitLogRateLimiter: new RateLimiter(adminRateLimitRepository, config.getVisitLogRateLimitConfig()),
     },
     assistantConversations: {
       deleteAssistantConversationUseCase: new DeleteAssistantConversationUseCase(
-        conversationRepository
+        conversationRepository,
+        logger
       ),
-      getAssistantConversationUseCase: new GetAssistantConversationUseCase(conversationRepository),
+      getAssistantConversationUseCase: new GetAssistantConversationUseCase(
+        conversationRepository,
+        logger
+      ),
       listAssistantConversationsUseCase: new ListAssistantConversationsUseCase(
-        conversationRepository
+        conversationRepository,
+        logger
       ),
       logAssistantConversationUseCase: new LogAssistantConversationUseCase(
         conversationRepository,

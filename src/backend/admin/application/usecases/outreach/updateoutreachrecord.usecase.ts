@@ -1,3 +1,4 @@
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { Outreach } from '../../../domain/outreach.js';
 import { OutreachDomainError } from '../../../domain/errors/outreachdomain.error.js';
 import type {
@@ -15,29 +16,39 @@ export interface UpdateOutreachRecordInput {
 export class UpdateOutreachRecordUseCase {
   constructor(
     private readonly auditRepository: IOutreachAuditRepository,
-    private readonly outreachRepository: IOutreachRepository
+    private readonly outreachRepository: IOutreachRepository,
+    private readonly logger?: ILogger
   ) {}
 
   async execute(input: UpdateOutreachRecordInput): Promise<{ record: Outreach }> {
     if (!input.id) {
+      this.logger?.warn('Outreach record update rejected', { reason: 'missing_id' });
       throw OutreachDomainError.missingId();
     }
 
+    this.logger?.info('Outreach record update started', { outreachId: input.id });
     const record = await this.outreachRepository.findById(input.id);
 
     if (!record) {
+      this.logger?.warn('Outreach record update rejected', { reason: 'not_found', outreachId: input.id });
       throw OutreachDomainError.notFound();
     }
 
     const nextRecord = record.update(
       input.record instanceof Outreach ? input.record : new Outreach(input.record)
     );
+    const changedFields = getChangedFields(record, nextRecord);
     const updatedRecord = await this.outreachRepository.save(nextRecord);
 
     await this.auditRepository.recordUpdated({
       recordId: input.id,
       actorEmail: input.actorEmail,
-      changedFields: getChangedFields(record, nextRecord),
+      changedFields,
+    });
+
+    this.logger?.info('Outreach record update completed', {
+      outreachId: input.id,
+      changedFields,
     });
 
     return { record: updatedRecord };

@@ -1,3 +1,5 @@
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
+import { logOperation } from '../../../../shared/logger/logoperation.js';
 import { buildSystemPrompt } from '../../../application/prompts/answering.js';
 import {
   buildConversationTransformPrompt,
@@ -36,7 +38,7 @@ type DeepSeekAnswerConfig = {
 };
 
 export class DeepSeekAnswerClient implements IAnswerProvider {
-  constructor(private readonly config: DeepSeekAnswerConfig) {}
+  constructor(private readonly config: DeepSeekAnswerConfig, private readonly logger?: ILogger) {}
 
   async generateAnswer(
     question: string,
@@ -57,12 +59,23 @@ export class DeepSeekAnswerClient implements IAnswerProvider {
       },
     ];
 
-    const data = await createDeepSeekChatCompletion({
-      config,
-      messages: chatMessages,
-      temperature: 0.2,
-      errorPrefix: 'DeepSeek answer request failed',
-    });
+    const data = await logOperation(
+      this.logger,
+      'DeepSeek answer request',
+      {
+        provider: 'deepseek',
+        model: config.model,
+        contextCount: contexts.length,
+        historyMessageCount: messages.length,
+        responseLanguage,
+      },
+      () => createDeepSeekChatCompletion({
+        config,
+        messages: chatMessages,
+        temperature: 0.2,
+        errorPrefix: 'DeepSeek answer request failed',
+      })
+    );
 
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
@@ -73,17 +86,27 @@ export class DeepSeekAnswerClient implements IAnswerProvider {
     pageContext: IPageContext | null
   ): Promise<IRetrievalPlan> {
     const config = this.getConfig();
-    const data = await createDeepSeekChatCompletion({
-      config,
-      temperature: 0,
-      errorPrefix: 'DeepSeek retrieval-plan request failed',
-      messages: [
-        { role: 'system', content: buildRetrievalPlanPrompt() },
-        ...buildPageContextMessages(pageContext),
-        ...buildHistoryMessages(messages),
-        { role: 'user', content: question },
-      ],
-    });
+    const data = await logOperation(
+      this.logger,
+      'DeepSeek retrieval-plan request',
+      {
+        provider: 'deepseek',
+        model: config.model,
+        hasPageContext: Boolean(pageContext),
+        historyMessageCount: messages.length,
+      },
+      () => createDeepSeekChatCompletion({
+        config,
+        temperature: 0,
+        errorPrefix: 'DeepSeek retrieval-plan request failed',
+        messages: [
+          { role: 'system', content: buildRetrievalPlanPrompt() },
+          ...buildPageContextMessages(pageContext),
+          ...buildHistoryMessages(messages),
+          { role: 'user', content: question },
+        ],
+      })
+    );
 
     return parseRetrievalPlan(data.choices?.[0]?.message?.content);
   }
@@ -94,23 +117,33 @@ export class DeepSeekAnswerClient implements IAnswerProvider {
     pageContext: IPageContext | null
   ): Promise<IQuestionIntentResult> {
     const config = this.getConfig();
-    const data = await createDeepSeekChatCompletion({
-      config,
-      temperature: 0,
-      errorPrefix: 'DeepSeek intent classification request failed',
-      messages: [
-        {
-          role: 'system',
-          content: buildIntentPrompt(config.companyName),
-        },
-        ...buildPageContextMessages(pageContext),
-        ...buildHistoryMessages(messages),
-        {
-          role: 'user',
-          content: question,
-        },
-      ],
-    });
+    const data = await logOperation(
+      this.logger,
+      'DeepSeek intent classification request',
+      {
+        provider: 'deepseek',
+        model: config.model,
+        hasPageContext: Boolean(pageContext),
+        historyMessageCount: messages.length,
+      },
+      () => createDeepSeekChatCompletion({
+        config,
+        temperature: 0,
+        errorPrefix: 'DeepSeek intent classification request failed',
+        messages: [
+          {
+            role: 'system',
+            content: buildIntentPrompt(config.companyName),
+          },
+          ...buildPageContextMessages(pageContext),
+          ...buildHistoryMessages(messages),
+          {
+            role: 'user',
+            content: question,
+          },
+        ],
+      })
+    );
 
     return parseIntentResponse(data.choices?.[0]?.message?.content);
   }
@@ -121,22 +154,32 @@ export class DeepSeekAnswerClient implements IAnswerProvider {
     responseLanguage: string
   ): Promise<string> {
     const config = this.getConfig();
-    const data = await createDeepSeekChatCompletion({
-      config,
-      temperature: 0.2,
-      errorPrefix: 'DeepSeek insufficient context response request failed',
-      messages: [
-        {
-          role: 'system',
-          content: buildInsufficientContextPrompt(config.companyName, responseLanguage),
-        },
-        ...buildHistoryMessages(messages),
-        {
-          role: 'user',
-          content: question,
-        },
-      ],
-    });
+    const data = await logOperation(
+      this.logger,
+      'DeepSeek insufficient-context response request',
+      {
+        provider: 'deepseek',
+        model: config.model,
+        historyMessageCount: messages.length,
+        responseLanguage,
+      },
+      () => createDeepSeekChatCompletion({
+        config,
+        temperature: 0.2,
+        errorPrefix: 'DeepSeek insufficient context response request failed',
+        messages: [
+          {
+            role: 'system',
+            content: buildInsufficientContextPrompt(config.companyName, responseLanguage),
+          },
+          ...buildHistoryMessages(messages),
+          {
+            role: 'user',
+            content: question,
+          },
+        ],
+      })
+    );
 
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
@@ -147,42 +190,52 @@ export class DeepSeekAnswerClient implements IAnswerProvider {
     responseLanguage: string
   ): Promise<string> {
     const config = this.getConfig();
-    const data = await createDeepSeekChatCompletion({
-      config,
-      temperature: 0.2,
-      errorPrefix: 'DeepSeek intent fallback response request failed',
-      messages: [
-        {
-          role: 'system',
-          content: buildIntentFallbackPrompt(config.companyName, intent, responseLanguage),
-        },
-        {
-          role: 'user',
-          content: question,
-        },
-      ],
-    });
+    const data = await logOperation(
+      this.logger,
+      'DeepSeek intent fallback response request',
+      { provider: 'deepseek', model: config.model, intent, responseLanguage },
+      () => createDeepSeekChatCompletion({
+        config,
+        temperature: 0.2,
+        errorPrefix: 'DeepSeek intent fallback response request failed',
+        messages: [
+          {
+            role: 'system',
+            content: buildIntentFallbackPrompt(config.companyName, intent, responseLanguage),
+          },
+          {
+            role: 'user',
+            content: question,
+          },
+        ],
+      })
+    );
 
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
 
   async generatePersonClarification(question: string, responseLanguage: string): Promise<string> {
     const config = this.getConfig();
-    const data = await createDeepSeekChatCompletion({
-      config,
-      temperature: 0.2,
-      errorPrefix: 'DeepSeek person clarification response request failed',
-      messages: [
-        {
-          role: 'system',
-          content: buildPersonClarificationPrompt(responseLanguage),
-        },
-        {
-          role: 'user',
-          content: question,
-        },
-      ],
-    });
+    const data = await logOperation(
+      this.logger,
+      'DeepSeek person clarification request',
+      { provider: 'deepseek', model: config.model, responseLanguage },
+      () => createDeepSeekChatCompletion({
+        config,
+        temperature: 0.2,
+        errorPrefix: 'DeepSeek person clarification response request failed',
+        messages: [
+          {
+            role: 'system',
+            content: buildPersonClarificationPrompt(responseLanguage),
+          },
+          {
+            role: 'user',
+            content: question,
+          },
+        ],
+      })
+    );
 
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
@@ -194,21 +247,26 @@ export class DeepSeekAnswerClient implements IAnswerProvider {
     responseLanguage: string
   ): Promise<string> {
     const config = this.getConfig();
-    const data = await createDeepSeekChatCompletion({
-      config,
-      temperature: 0.2,
-      errorPrefix: 'DeepSeek conversation transform request failed',
-      messages: [
-        {
-          role: 'system',
-          content: buildConversationTransformPrompt(task, responseLanguage),
-        },
-        {
-          role: 'user',
-          content: buildConversationTransformUserPrompt(instruction, previousAnswer),
-        },
-      ],
-    });
+    const data = await logOperation(
+      this.logger,
+      'DeepSeek conversation transform request',
+      { provider: 'deepseek', model: config.model, task, responseLanguage },
+      () => createDeepSeekChatCompletion({
+        config,
+        temperature: 0.2,
+        errorPrefix: 'DeepSeek conversation transform request failed',
+        messages: [
+          {
+            role: 'system',
+            content: buildConversationTransformPrompt(task, responseLanguage),
+          },
+          {
+            role: 'user',
+            content: buildConversationTransformUserPrompt(instruction, previousAnswer),
+          },
+        ],
+      })
+    );
 
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }

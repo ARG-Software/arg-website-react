@@ -59,6 +59,7 @@ function VisitsDashboard({ onSelectVisitSession }) {
   const [referrersPage, setReferrersPage] = useState(1);
   const [pagesRange, setPagesRange] = useState(DEFAULT_RANGE);
   const [pagesPage, setPagesPage] = useState(1);
+  const [pagesSort, setPagesSort] = useState({ sortBy: 'pageViews', sortDirection: 'desc' });
   const [sessionPage, setSessionPage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const pageViewsStatQuery = useVisitStat('page_views', overviewRange);
@@ -86,7 +87,7 @@ function VisitsDashboard({ onSelectVisitSession }) {
   const pagesQuery = useVisitBreakdown(
     'pages',
     pagesRange,
-    { page: pagesPage, pageSize: PAGE_SIZE },
+    { ...pagesSort, page: pagesPage, pageSize: PAGE_SIZE },
     { keepPrevious: true }
   );
   const sessionsQuery = useVisitSessions(
@@ -105,6 +106,11 @@ function VisitsDashboard({ onSelectVisitSession }) {
   function updateOverviewRange(range) {
     setOverviewRange(range);
     setCountryPage(1);
+  }
+
+  function updatePagesSort(sortBy) {
+    setPagesPage(1);
+    setPagesSort(current => createNextTableSort(current, sortBy));
   }
 
   async function deleteVisit() {
@@ -252,6 +258,8 @@ function VisitsDashboard({ onSelectVisitSession }) {
           filtersClassName="admin-data-table__filters--compact"
           columns={getVisitPageColumns()}
           rows={pagesQuery.data?.records || []}
+          sort={pagesSort}
+          onSortChange={updatePagesSort}
           loading={pagesQuery.isLoading}
           pagination={getTablePagination(pagesQuery, setPagesPage)}
           emptyMessage="No page views found."
@@ -499,6 +507,13 @@ function getTablePagination(query, onPageChange) {
   };
 }
 
+function createNextTableSort(current, sortBy) {
+  return {
+    sortBy,
+    sortDirection: current.sortBy === sortBy && current.sortDirection === 'asc' ? 'desc' : 'asc',
+  };
+}
+
 function getVisitChartLines(series) {
   if (series === 'all') return VISIT_CHART_LINES;
 
@@ -519,12 +534,13 @@ function getCountryChartItems(items) {
 
 function getVisitPageColumns() {
   return [
-    { key: 'path', label: 'Page' },
-    { key: 'pageViews', label: 'Page views' },
-    { key: 'uniqueVisitors', label: 'Visits' },
+    { key: 'path', label: 'Page', sortable: true },
+    { key: 'pageViews', label: 'Page views', sortable: true },
+    { key: 'uniqueVisitors', label: 'Visits', sortable: true },
     {
       key: 'averageDurationMs',
       label: 'Avg. time',
+      sortable: true,
       render: record => formatDuration(record.averageDurationMs),
     },
     {

@@ -1,5 +1,7 @@
 import { readJsonBody } from '../../../shared/api/http.js';
+import { createRequestLogContext } from '../../../shared/api/requestlogcontext.js';
 import type { ILogger } from '../../../shared/logger/ilogger.js';
+import { getLogContextValue, runWithLogContext } from '../../../shared/logger/logcontext.js';
 import { mcpContainer } from '../di/mcp.container.js';
 import type {
   JsonRpcError,
@@ -57,19 +59,27 @@ export function createMcpApi() {
 export const handleMcp = createMcpApi();
 
 async function handleMcpRequest(request: Request, logger: ILogger): Promise<Response> {
-  const startedAt = Date.now();
   const { pathname } = new URL(request.url);
-  logger.info('MCP API request started', { method: request.method, path: pathname });
+
+  return runWithLogContext(createRequestLogContext('mcp', request, pathname), () =>
+    handleMcpRequestWithLogContext(request, logger)
+  );
+}
+
+async function handleMcpRequestWithLogContext(
+  request: Request,
+  logger: ILogger
+): Promise<Response> {
+  const startedAt = Date.now();
+  logger.info('MCP API request started');
 
   if (request.method === 'OPTIONS') {
-    return logMcpResponse(logger, request, pathname, startedAt, createResponse(204, null));
+    return logMcpResponse(logger, startedAt, createResponse(204, null));
   }
 
   if (request.method !== 'POST') {
     return logMcpResponse(
       logger,
-      request,
-      pathname,
       startedAt,
       createResponse(405, createJsonRpcError(null, -32600, 'Method not allowed'))
     );
@@ -82,8 +92,6 @@ async function handleMcpRequest(request: Request, logger: ILogger): Promise<Resp
     logger.warn('MCP API request JSON parse failed', { error });
     return logMcpResponse(
       logger,
-      request,
-      pathname,
       startedAt,
       createResponse(400, createJsonRpcError(null, -32700, 'Parse error'))
     );
@@ -91,10 +99,10 @@ async function handleMcpRequest(request: Request, logger: ILogger): Promise<Resp
 
   const response = handleJsonRpc(payload, logger);
   if (response === null) {
-    return logMcpResponse(logger, request, pathname, startedAt, createResponse(204, null));
+    return logMcpResponse(logger, startedAt, createResponse(204, null));
   }
 
-  return logMcpResponse(logger, request, pathname, startedAt, createResponse(200, response));
+  return logMcpResponse(logger, startedAt, createResponse(200, response));
 }
 
 function handleJsonRpc(payload: unknown, logger: ILogger): JsonRpcResponse | JsonRpcResponse[] | null {
@@ -205,15 +213,15 @@ function createResponse(status: number, body: unknown): Response {
 
 function logMcpResponse(
   logger: ILogger,
-  request: Request,
-  path: string,
   startedAt: number,
   response: Response
 ): Response {
   const level = response.status >= 400 ? 'warn' : 'info';
+  const requestId = getLogContextValue('requestId');
+
+  if (requestId) response.headers.set('X-Request-ID', String(requestId));
+
   logger[level]('MCP API request completed', {
-    method: request.method,
-    path,
     status: response.status,
     durationMs: Date.now() - startedAt,
   });

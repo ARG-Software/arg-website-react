@@ -1,4 +1,5 @@
 import type {
+  VisitBreakdownQuery,
   VisitBreakdownMetric,
   VisitBreakdownResult,
   VisitChartResult,
@@ -20,7 +21,7 @@ export interface IVisitRepository {
   getBreakdown(
     metric: VisitBreakdownMetric,
     range: VisitMetricRange,
-    pagination?: { page?: number; pageSize?: number }
+    query?: VisitBreakdownQuery
   ): Promise<VisitBreakdownResult>;
   listSessions(pagination?: { page?: number; pageSize?: number }): Promise<VisitSessionListResult>;
   listAllSessions(pagination?: {

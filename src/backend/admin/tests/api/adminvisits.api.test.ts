@@ -254,6 +254,27 @@ test('passes visit breakdown pagination to the repository', async () => {
   assert.equal(receivedPageSize, 12);
 });
 
+test('passes page breakdown sorting to the repository', async () => {
+  let receivedSortBy = '';
+  let receivedSortDirection = '';
+  const useCase = new ListVisitMetricsUseCase({
+    async getBreakdown(_metric, _range, query) {
+      receivedSortBy = query.sortBy;
+      receivedSortDirection = query.sortDirection;
+      return {
+        metric: 'pages',
+        range: 'today',
+        records: [],
+      };
+    },
+  } as any);
+
+  await useCase.execute({ metric: 'pages', sortBy: 'averageDurationMs', sortDirection: 'asc' });
+
+  assert.equal(receivedSortBy, 'averageDurationMs');
+  assert.equal(receivedSortDirection, 'asc');
+});
+
 test('routes all visit sessions through the dedicated endpoint', async () => {
   let receivedPage = '';
   const controller = new TestVisitsController({

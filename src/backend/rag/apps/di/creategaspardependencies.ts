@@ -42,15 +42,16 @@ export function createGasparDependencies({ config = RagConfig.load() }: IGasparD
       config: ragConfig,
       readRepository: new SupabaseRagReadRepository(
         createSupabaseServiceClient(createSupabaseConfig(config)),
-        config.getSiteConfig().siteUrl
+        config.getSiteConfig().siteUrl,
+        logger
       ),
       answerProvider: new DeepSeekAnswerClient({
         apiKey: config.getAiModelApiKey(),
         model: config.getAiModel(),
         companyName: config.getSiteConfig().companyName,
-      }),
-      embeddingProvider: new GeminiEmbeddingClient(() => createGeminiConfig(config)),
-      fallbackEmbeddingProvider: new GeminiEmbeddingClient(() => createFallbackGeminiConfig(config)),
+      }, logger),
+      embeddingProvider: new GeminiEmbeddingClient(() => createGeminiConfig(config), logger),
+      fallbackEmbeddingProvider: new GeminiEmbeddingClient(() => createFallbackGeminiConfig(config), logger),
     };
   }
 
@@ -59,7 +60,7 @@ export function createGasparDependencies({ config = RagConfig.load() }: IGasparD
       translator: createDeepSeekAssistantUiCopyTranslator({
         apiKey: config.getAiModelApiKey(),
         model: config.getAiModel(),
-      }),
+      }, logger),
     };
   }
 
@@ -68,17 +69,18 @@ export function createGasparDependencies({ config = RagConfig.load() }: IGasparD
       chunkingConfig: config.getChunkingConfig(),
       repository: new SupabaseRagWriteRepository(
         createSupabaseServiceClient(createSupabaseConfig(config)),
-        config.getChunkingConfig()
+        config.getChunkingConfig(),
+        logger
       ),
-      embeddingProvider: new GeminiEmbeddingClient(() => createGeminiConfig(config)),
-      fallbackEmbeddingProvider: new GeminiEmbeddingClient(() => createFallbackGeminiConfig(config)),
+      embeddingProvider: new GeminiEmbeddingClient(() => createGeminiConfig(config), logger),
+      fallbackEmbeddingProvider: new GeminiEmbeddingClient(() => createFallbackGeminiConfig(config), logger),
     };
   }
 
   function createMaintenanceDependencies() {
     return {
       supabase: createSupabaseServiceClient(createSupabaseConfig(config)),
-      fallbackEmbeddingProvider: new GeminiEmbeddingClient(() => createFallbackGeminiConfig(config)),
+      fallbackEmbeddingProvider: new GeminiEmbeddingClient(() => createFallbackGeminiConfig(config), logger),
     };
   }
 

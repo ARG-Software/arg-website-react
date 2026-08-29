@@ -52,6 +52,15 @@ export type VisitChartSeries = 'all' | 'page_views' | 'visits' | 'events';
 
 export type VisitBreakdownMetric = 'countries' | 'pages' | 'sources' | 'referrers';
 
+export type VisitPageBreakdownSortField = 'path' | 'pageViews' | 'uniqueVisitors' | 'averageDurationMs';
+
+export type VisitBreakdownQuery = {
+  page?: number;
+  pageSize?: number;
+  sortBy?: VisitPageBreakdownSortField;
+  sortDirection?: 'asc' | 'desc';
+};
+
 export type VisitStatResult = {
   metric: VisitStatMetric;
   range: VisitMetricRange;

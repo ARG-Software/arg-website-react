@@ -8,10 +8,12 @@ export function createRagContainer() {
   return {
     assistant: {
       askAssistantQuestionUseCase: new AskAssistantQuestionUseCase(
-        dependencies.createAskQuestionDependencies()
+        dependencies.createAskQuestionDependencies(),
+        dependencies.logger
       ),
       getAssistantUiCopyUseCase: new GetAssistantUiCopyUseCase(
-        dependencies.createAssistantUiCopyDependencies()
+        dependencies.createAssistantUiCopyDependencies(),
+        dependencies.logger
       ),
     },
     security: {

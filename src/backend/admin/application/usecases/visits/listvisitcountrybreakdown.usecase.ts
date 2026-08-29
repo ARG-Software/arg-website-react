@@ -1,3 +1,4 @@
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import type {
   VisitBreakdownResult,
   VisitMetricRange,
@@ -23,14 +24,22 @@ export interface ListVisitCountryBreakdownInput {
 }
 
 export class ListVisitCountryBreakdownUseCase {
-  constructor(private readonly repository: IVisitRepository) {}
+  constructor(private readonly repository: IVisitRepository, private readonly logger?: ILogger) {}
 
   async execute(input: ListVisitCountryBreakdownInput = {}): Promise<VisitBreakdownResult> {
+    const range = normalizeRange(input.range);
+    const pagination = getPagination(input, { maxPageSize: MAX_COUNTRY_PAGE_SIZE });
+    this.logger?.info('Visit country breakdown use case started', { range, ...pagination });
     const result = await this.repository.getBreakdown(
       'countries',
-      normalizeRange(input.range),
-      getPagination(input, { maxPageSize: MAX_COUNTRY_PAGE_SIZE })
+      range,
+      pagination
     );
+    this.logger?.info('Visit country breakdown use case completed', {
+      range,
+      recordCount: result.records?.length || 0,
+      totalRecords: result.pagination?.totalRecords,
+    });
 
     return {
       ...result,

@@ -1,3 +1,5 @@
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
+import { logOperation } from '../../../../shared/logger/logoperation.js';
 import type { IEmbeddingProvider } from '../../../application/ports/iproviderports.js';
 import {
   EmbeddingQuotaExceededError,
@@ -32,7 +34,10 @@ interface IGeminiBatchEmbeddingResponse {
 }
 
 export class GeminiEmbeddingClient implements IEmbeddingProvider {
-  constructor(private readonly configSource: GeminiEmbeddingConfigSource) {}
+  constructor(
+    private readonly configSource: GeminiEmbeddingConfigSource,
+    private readonly logger?: ILogger
+  ) {}
 
   async embedText(text: string): Promise<number[]> {
     const [embedding] = await this.embedTexts([text]);
@@ -41,26 +46,36 @@ export class GeminiEmbeddingClient implements IEmbeddingProvider {
 
   async embedTexts(texts: string[]): Promise<number[][]> {
     if (!Array.isArray(texts) || texts.length === 0) {
+      this.logger?.info('Gemini embedding request skipped', { reason: 'empty_input' });
       return [];
     }
 
-    if (texts.length === 1) {
-      return [await this.embedTextContent(texts[0])];
-    }
-
-    const embeddings: number[][] = [];
     const config = this.getConfig();
 
-    for (let index = 0; index < texts.length; index += MAX_BATCH_SIZE) {
-      const batch = texts.slice(index, index + MAX_BATCH_SIZE);
-      embeddings.push(...(await this.embedBatch(batch)));
+    return logOperation(
+      this.logger,
+      'Gemini embedding request',
+      { provider: 'gemini', model: config.model, inputCount: texts.length },
+      async () => {
+        if (texts.length === 1) {
+          return [await this.embedTextContent(texts[0])];
+        }
 
-      if (index + MAX_BATCH_SIZE < texts.length && config.requestDelayMs > 0) {
-        await sleep(config.requestDelayMs);
-      }
-    }
+        const embeddings: number[][] = [];
 
-    return embeddings;
+        for (let index = 0; index < texts.length; index += MAX_BATCH_SIZE) {
+          const batch = texts.slice(index, index + MAX_BATCH_SIZE);
+          embeddings.push(...(await this.embedBatch(batch)));
+
+          if (index + MAX_BATCH_SIZE < texts.length && config.requestDelayMs > 0) {
+            await sleep(config.requestDelayMs);
+          }
+        }
+
+        return embeddings;
+      },
+      embeddings => ({ embeddingCount: embeddings.length })
+    );
   }
 
   private async embedTextContent(text: string): Promise<number[]> {

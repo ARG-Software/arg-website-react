@@ -42,14 +42,18 @@ export abstract class ApiControllerBase {
     settings: Pick<AltchaSettings, 'altchaHmacKey'>
   ): Promise<void> {
     if (!altcha) {
+      this.logger?.warn('Bot verification rejected', { reason: 'missing_payload' });
       throw this.createBotVerificationError('Verification required');
     }
 
     const result = await verifyAltchaPayload(String(altcha), settings).catch(() => null);
 
     if (!result?.verified) {
+      this.logger?.warn('Bot verification rejected', { reason: 'invalid_payload' });
       throw this.createBotVerificationError('Verification failed');
     }
+
+    this.logger?.info('Bot verification completed');
   }
 
   protected async verifyAltchaChallenge(
@@ -59,14 +63,18 @@ export abstract class ApiControllerBase {
     const payload = getAltchaChallenge(altcha);
 
     if (!payload) {
+      this.logger?.warn('Bot challenge verification rejected', { reason: 'missing_challenge' });
       throw this.createBotVerificationError('Verification required');
     }
 
     const result = await verifyAltchaChallenge(payload, settings).catch(() => null);
 
     if (!result?.verified) {
+      this.logger?.warn('Bot challenge verification rejected', { reason: 'invalid_challenge' });
       throw this.createBotVerificationError('Verification failed');
     }
+
+    this.logger?.info('Bot challenge verification completed');
   }
 
   protected async checkRateLimit(request: Request, rateLimiter: IRateLimiter): Promise<void> {
@@ -80,8 +88,14 @@ export abstract class ApiControllerBase {
     }
 
     if (!result.allowed) {
+      this.logger?.warn('API rate limit rejected request', {
+        scope: result.scope,
+        retryAfterSeconds: result.retryAfterSeconds,
+      });
       throw this.createRateLimitError(result);
     }
+
+    this.logger?.info('API rate limit allowed request', { scope: result.scope });
   }
 
   protected abstract createBotVerificationError(message: string): Error;

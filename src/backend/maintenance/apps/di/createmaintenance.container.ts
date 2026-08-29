@@ -16,7 +16,7 @@ export function createMaintenanceContainer() {
   const ragClient = createClient(config.getRagDatabaseUrl(), config.getRagDatabaseServiceRoleKey(), {
     auth: { autoRefreshToken: false, persistSession: false },
   });
-  const maintenanceRepository = new SupabaseMaintenanceRepository(adminClient, ragClient);
+  const maintenanceRepository = new SupabaseMaintenanceRepository(adminClient, ragClient, logger);
 
   return {
     deleteOldAssistantConversationsUseCase: new DeleteOldAssistantConversationsUseCase(

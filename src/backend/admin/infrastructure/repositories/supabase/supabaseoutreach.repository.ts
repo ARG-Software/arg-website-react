@@ -1,5 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import type { ILogger } from '../../../../shared/logger/ilogger.js';
+import { logOperation } from '../../../../shared/logger/logoperation.js';
 import type {
   IOutreachRepository,
   OutreachChartRecord,
@@ -87,129 +89,203 @@ const LIST_OUTREACH_COLUMNS = [
 const CHART_OUTREACH_COLUMNS = 'created_at, updated_at, date_sent, reply_obtained';
 
 export class SupabaseOutreachRepository implements IOutreachRepository {
-  constructor(private readonly client: SupabaseClient, private readonly config: IAdminConfiguration) {}
+  constructor(
+    private readonly client: SupabaseClient,
+    private readonly config: IAdminConfiguration,
+    private readonly logger?: ILogger
+  ) {}
 
   async list(): Promise<Outreach[]> {
-    const { data, error } = await this.client
-      .from('outreach_records')
-      .select(FULL_OUTREACH_COLUMNS)
-      .order('created_at', { ascending: false });
+    return logOperation(
+      this.logger,
+      'Supabase outreach list query',
+      { table: 'outreach_records' },
+      async () => {
+        const { data, error } = await this.client
+          .from('outreach_records')
+          .select(FULL_OUTREACH_COLUMNS)
+          .order('created_at', { ascending: false });
 
-    if (error) throw error;
+        if (error) throw error;
 
-    return toOutreachRows(data).map(row => createOutreach(row, this.config));
+        return toOutreachRows(data).map(row => createOutreach(row, this.config));
+      },
+      result => ({ recordCount: result.length })
+    );
   }
 
   async listRecords(query: OutreachRecordListQuery): Promise<OutreachRecordListResult> {
     if (shouldListInMemory(query)) return this.listRecordsInMemory(query);
 
-    const from = (query.page - 1) * query.pageSize;
-    const to = getPageEnd(query, from);
+    return logOperation(
+      this.logger,
+      'Supabase outreach records query',
+      createOutreachListLogContext(query, false),
+      async () => {
+        const from = (query.page - 1) * query.pageSize;
+        const to = getPageEnd(query, from);
 
-    if (query.recentSent && from >= RECENT_SENT_LIMIT) {
-      return createListResult([], Math.min(await this.countRecords(query), RECENT_SENT_LIMIT), query);
-    }
+        if (query.recentSent && from >= RECENT_SENT_LIMIT) {
+          return createListResult([], Math.min(await this.countRecords(query), RECENT_SENT_LIMIT), query);
+        }
 
-    const request = this.createListQuery(query, true).order(getSortColumn(query.sortBy), {
-      ascending: query.sortDirection === 'asc',
-      nullsFirst: false,
-    });
+        const request = this.createListQuery(query, true).order(getSortColumn(query.sortBy), {
+          ascending: query.sortDirection === 'asc',
+          nullsFirst: false,
+        });
 
-    const { data, error, count } = await request.range(from, to);
+        const { data, error, count } = await request.range(from, to);
 
-    if (error) throw error;
+        if (error) throw error;
 
-    const totalRecords = query.recentSent ? Math.min(count || 0, RECENT_SENT_LIMIT) : count || 0;
-    return createListResult(toOutreachRows(data).map(row => createOutreach(row, this.config)), totalRecords, query);
+        const totalRecords = query.recentSent ? Math.min(count || 0, RECENT_SENT_LIMIT) : count || 0;
+        return createListResult(
+          toOutreachRows(data).map(row => createOutreach(row, this.config)),
+          totalRecords,
+          query
+        );
+      },
+      result => ({ recordCount: result.records.length, totalRecords: result.pagination.totalRecords })
+    );
   }
 
   async getSummary() {
-    const [total, sent, repliesObtained] = await Promise.all([
-      this.countSummaryRecords(),
-      this.countSummaryRecords({ status: 'sent' }),
-      this.countSummaryRecords({ status: 'sent', replyObtained: true }),
-    ]);
+    return logOperation(
+      this.logger,
+      'Supabase outreach summary query',
+      { table: 'outreach_records' },
+      async () => {
+        const [total, sent, repliesObtained] = await Promise.all([
+          this.countSummaryRecords(),
+          this.countSummaryRecords({ status: 'sent' }),
+          this.countSummaryRecords({ status: 'sent', replyObtained: true }),
+        ]);
 
-    return {
-      total,
-      sent,
-      notSent: total - sent,
-      repliesObtained,
-      sentWithoutReply: sent - repliesObtained,
-    };
+        return {
+          total,
+          sent,
+          notSent: total - sent,
+          repliesObtained,
+          sentWithoutReply: sent - repliesObtained,
+        };
+      },
+      result => ({ total: result.total, sent: result.sent, repliesObtained: result.repliesObtained })
+    );
   }
 
   async listChartRecords({ dateSentFrom = '' }: { dateSentFrom?: string } = {}): Promise<OutreachChartRecord[]> {
-    let query = this.client
-      .from('outreach_records')
-      .select(CHART_OUTREACH_COLUMNS)
-      .eq('status', 'sent')
-      .order('date_sent', { ascending: true });
+    return logOperation(
+      this.logger,
+      'Supabase outreach chart query',
+      { table: 'outreach_records', hasDateSentFrom: Boolean(dateSentFrom) },
+      async () => {
+        let query = this.client
+          .from('outreach_records')
+          .select(CHART_OUTREACH_COLUMNS)
+          .eq('status', 'sent')
+          .order('date_sent', { ascending: true });
 
-    if (dateSentFrom) query = query.gte('date_sent', dateSentFrom);
+        if (dateSentFrom) query = query.gte('date_sent', dateSentFrom);
 
-    const { data, error } = await query;
+        const { data, error } = await query;
 
-    if (error) throw error;
+        if (error) throw error;
 
-    return toOutreachRows(data).map(toChartRecord);
+        return toOutreachRows(data).map(toChartRecord);
+      },
+      result => ({ recordCount: result.length })
+    );
   }
 
   async findById(id: string): Promise<Outreach | null> {
-    const { data, error } = await this.client
-      .from('outreach_records')
-      .select(FULL_OUTREACH_COLUMNS)
-      .eq('id', id)
-      .single();
+    return logOperation(
+      this.logger,
+      'Supabase outreach record query',
+      { table: 'outreach_records', outreachId: id },
+      async () => {
+        const { data, error } = await this.client
+          .from('outreach_records')
+          .select(FULL_OUTREACH_COLUMNS)
+          .eq('id', id)
+          .single();
 
-    if (error || !data) return null;
+        if (error || !data) return null;
 
-    return createOutreach(data as unknown as OutreachRow, this.config);
+        return createOutreach(data as unknown as OutreachRow, this.config);
+      },
+      result => ({ found: Boolean(result) })
+    );
   }
 
   async save(outreach: Outreach): Promise<Outreach> {
-    const { data, error } = await this.client
-      .from('outreach_records')
-      .update(createOutreachRow(outreach, this.config))
-      .eq('id', outreach.id)
-      .select(FULL_OUTREACH_COLUMNS)
-      .single();
+    return logOperation(
+      this.logger,
+      'Supabase outreach record update',
+      { table: 'outreach_records', outreachId: outreach.id, status: outreach.status },
+      async () => {
+        const { data, error } = await this.client
+          .from('outreach_records')
+          .update(createOutreachRow(outreach, this.config))
+          .eq('id', outreach.id)
+          .select(FULL_OUTREACH_COLUMNS)
+          .single();
 
-    if (error) throw error;
+        if (error) throw error;
 
-    return createOutreach(data as unknown as OutreachRow, this.config);
+        return createOutreach(data as unknown as OutreachRow, this.config);
+      }
+    );
   }
 
   async createMany(outreaches: Outreach[]): Promise<Outreach[]> {
     if (!outreaches.length) return [];
 
-    const rows = outreaches.map(outreach => createOutreachRow(outreach, this.config));
-    const { data, error } = await this.client.from('outreach_records').insert(rows).select(FULL_OUTREACH_COLUMNS);
+    return logOperation(
+      this.logger,
+      'Supabase outreach records create',
+      { table: 'outreach_records', requestedCount: outreaches.length },
+      async () => {
+        const rows = outreaches.map(outreach => createOutreachRow(outreach, this.config));
+        const { data, error } = await this.client
+          .from('outreach_records')
+          .insert(rows)
+          .select(FULL_OUTREACH_COLUMNS);
 
-    if (error) throw error;
+        if (error) throw error;
 
-    return toOutreachRows(data).map(row => createOutreach(row, this.config));
+        return toOutreachRows(data).map(row => createOutreach(row, this.config));
+      },
+      result => ({ createdCount: result.length })
+    );
   }
 
   private async listRecordsInMemory(query: OutreachRecordListQuery): Promise<OutreachRecordListResult> {
-    let request = this.createListQuery(query, false);
+    return logOperation(
+      this.logger,
+      'Supabase outreach records in-memory query',
+      createOutreachListLogContext(query, true),
+      async () => {
+        let request = this.createListQuery(query, false);
 
-    if (query.recentSent) {
-      request = request.order('date_sent', { ascending: false, nullsFirst: false }).limit(RECENT_SENT_LIMIT);
-    }
+        if (query.recentSent) {
+          request = request.order('date_sent', { ascending: false, nullsFirst: false }).limit(RECENT_SENT_LIMIT);
+        }
 
-    const { data, error } = await request;
+        const { data, error } = await request;
 
-    if (error) throw error;
+        if (error) throw error;
 
-    const records = sortRecords(
-      toOutreachRows(data)
-        .map(row => createOutreach(row, this.config))
-        .filter(record => isCompanyNameMatch(record, query.companyName)),
-      query
+        const records = sortRecords(
+          toOutreachRows(data)
+            .map(row => createOutreach(row, this.config))
+            .filter(record => isCompanyNameMatch(record, query.companyName)),
+          query
+        );
+
+        return createListResult(getPageRecords(records, query), records.length, query);
+      },
+      result => ({ recordCount: result.records.length, totalRecords: result.pagination.totalRecords })
     );
-
-    return createListResult(getPageRecords(records, query), records.length, query);
   }
 
   private createListQuery(query: OutreachRecordListQuery, includeCount: boolean) {
@@ -256,6 +332,22 @@ function toOutreachRows(data: unknown): OutreachRow[] {
 
 function shouldListInMemory(query: OutreachRecordListQuery): boolean {
   return Boolean(query.companyName) || query.sortBy === 'companyName' || (query.recentSent && query.sortBy !== 'dateSent');
+}
+
+function createOutreachListLogContext(query: OutreachRecordListQuery, inMemory: boolean) {
+  return {
+    table: 'outreach_records',
+    inMemory,
+    page: query.page,
+    pageSize: query.pageSize,
+    sortBy: query.sortBy,
+    sortDirection: query.sortDirection,
+    status: query.status,
+    recentSent: query.recentSent,
+    hasCompanyNameFilter: Boolean(query.companyName),
+    hasDateSentFrom: Boolean(query.dateSentFrom),
+    hasDateSentTo: Boolean(query.dateSentTo),
+  };
 }
 
 function getSortColumn(field: OutreachRecordSortField): string {
