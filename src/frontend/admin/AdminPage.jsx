@@ -26,6 +26,7 @@ import { VisitJourneyOverlay } from './overlays/VisitJourneyOverlay.jsx';
 import {
   useExportOutreachCsv,
   useImportOutreachCsv,
+  useOutreachRecord,
 } from './queries/outreach/useOutreachQueries.js';
 import { useAssistantConversation } from './queries/assistant/useAssistantQueries.js';
 import { ADMIN_ROUTES } from './shared/constants.js';
@@ -57,11 +58,14 @@ function AdminWorkspace() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user, isAuthenticated, isLoading, signOut } = useAuth();
-  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [selectedRecordId, setSelectedRecordId] = useState('');
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [selectedVisitSession, setSelectedVisitSession] = useState(null);
   const exportMutation = useExportOutreachCsv();
   const importMutation = useImportOutreachCsv();
+  const selectedRecordQuery = useOutreachRecord(selectedRecordId, {
+    enabled: isAuthenticated && Boolean(selectedRecordId),
+  });
   const queryFetching = useIsFetching({ queryKey: ['admin'] });
   const queryMutating = useIsMutating({ mutationKey: ['admin'] });
   const pageLoading = queryFetching > 0 || queryMutating > 0;
@@ -82,7 +86,7 @@ function AdminWorkspace() {
 
   async function handleSignOut() {
     await signOut?.();
-    setSelectedRecord(null);
+    setSelectedRecordId('');
     setSelectedConversation(null);
     setSelectedVisitSession(null);
   }
@@ -221,16 +225,16 @@ function AdminWorkspace() {
     >
       {renderAdminFragment(view, {
         userEmail: user?.email,
-        onSelectRecord: setSelectedRecord,
+        onSelectRecord: record => setSelectedRecordId(record.id),
         onSelectConversation: handleSelectConversation,
         onSelectVisitSession: setSelectedVisitSession,
         visitsView,
       })}
       <OutreachEditor
-        key={selectedRecord?.id ?? 'closed'}
-        record={selectedRecord}
-        onClose={() => setSelectedRecord(null)}
-        onRecordUpdated={setSelectedRecord}
+        key={selectedRecordId || 'closed'}
+        record={selectedRecordQuery.data?.record}
+        onClose={() => setSelectedRecordId('')}
+        onRecordUpdated={record => setSelectedRecordId(record.id)}
       />
       <AssistantConversationOverlay
         conversation={selectedConversation}

@@ -41,6 +41,14 @@ export class OutreachController extends ControllerBase {
     );
   }
 
+  @route('GET', '/api/admin/outreach-record')
+  @errorResponse('admin_outreach_record_failed', 'Admin request failed')
+  async record(request: Request): Promise<Response> {
+    await this.authenticateUser(request);
+
+    return this.json(200, await this.outreachUseCases.getOutreachRecordUseCase.execute(this.query(request)));
+  }
+
   @route('GET', '/api/admin/outreach-export')
   @errorResponse('admin_outreach_export_failed', 'Admin request failed')
   async exportCsv(request: Request): Promise<Response> {

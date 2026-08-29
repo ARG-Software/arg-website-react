@@ -1,6 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { IOutreachRepository } from '../../../application/ports/repositories/ioutreach.repository.js';
+import type {
+  IOutreachRepository,
+  OutreachChartRecord,
+  OutreachRecordListQuery,
+  OutreachRecordListResult,
+  OutreachRecordSortField,
+} from '../../../application/ports/repositories/ioutreach.repository.js';
 import { decode, isValidKey } from '../../../application/crypto/decode.js';
 import {
   encode,
@@ -23,30 +29,142 @@ type ProtectedOutreachField = 'companyName' | 'contactEmail' | 'emailSubject' | 
 type SupabaseRowValue = string | number | boolean | null | undefined;
 type OutreachRow = Record<string, SupabaseRowValue>;
 
+const RECENT_SENT_LIMIT = 30;
+const FULL_OUTREACH_COLUMNS = [
+  'id',
+  'created_at',
+  'updated_at',
+  'company_name_key_version',
+  'company_name_nonce',
+  'company_name_ciphertext',
+  'company_name_auth_tag',
+  'company_name_blind_index',
+  'contact_email_key_version',
+  'contact_email_nonce',
+  'contact_email_ciphertext',
+  'contact_email_auth_tag',
+  'contact_email_blind_index',
+  'website',
+  'contact_info',
+  'contact_method',
+  'fit_reason',
+  'email_subject_key_version',
+  'email_subject_nonce',
+  'email_subject_ciphertext',
+  'email_subject_auth_tag',
+  'email_body_key_version',
+  'email_body_nonce',
+  'email_body_ciphertext',
+  'email_body_auth_tag',
+  'status',
+  'date_sent',
+  'follow_up_date',
+  'reply_obtained',
+  'reply_summary',
+  'notes',
+].join(', ');
+
+const LIST_OUTREACH_COLUMNS = [
+  'id',
+  'created_at',
+  'updated_at',
+  'company_name_key_version',
+  'company_name_nonce',
+  'company_name_ciphertext',
+  'company_name_auth_tag',
+  'contact_email_key_version',
+  'contact_email_nonce',
+  'contact_email_ciphertext',
+  'contact_email_auth_tag',
+  'website',
+  'contact_info',
+  'status',
+  'date_sent',
+  'follow_up_date',
+  'reply_obtained',
+].join(', ');
+
+const CHART_OUTREACH_COLUMNS = 'created_at, updated_at, date_sent, reply_obtained';
+
 export class SupabaseOutreachRepository implements IOutreachRepository {
   constructor(private readonly client: SupabaseClient, private readonly config: IAdminConfiguration) {}
 
   async list(): Promise<Outreach[]> {
     const { data, error } = await this.client
       .from('outreach_records')
-      .select('*')
+      .select(FULL_OUTREACH_COLUMNS)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
 
-    return data.map(row => createOutreach(row, this.config));
+    return toOutreachRows(data).map(row => createOutreach(row, this.config));
+  }
+
+  async listRecords(query: OutreachRecordListQuery): Promise<OutreachRecordListResult> {
+    if (shouldListInMemory(query)) return this.listRecordsInMemory(query);
+
+    const from = (query.page - 1) * query.pageSize;
+    const to = getPageEnd(query, from);
+
+    if (query.recentSent && from >= RECENT_SENT_LIMIT) {
+      return createListResult([], Math.min(await this.countRecords(query), RECENT_SENT_LIMIT), query);
+    }
+
+    const request = this.createListQuery(query, true).order(getSortColumn(query.sortBy), {
+      ascending: query.sortDirection === 'asc',
+      nullsFirst: false,
+    });
+
+    const { data, error, count } = await request.range(from, to);
+
+    if (error) throw error;
+
+    const totalRecords = query.recentSent ? Math.min(count || 0, RECENT_SENT_LIMIT) : count || 0;
+    return createListResult(toOutreachRows(data).map(row => createOutreach(row, this.config)), totalRecords, query);
+  }
+
+  async getSummary() {
+    const [total, sent, repliesObtained] = await Promise.all([
+      this.countSummaryRecords(),
+      this.countSummaryRecords({ status: 'sent' }),
+      this.countSummaryRecords({ status: 'sent', replyObtained: true }),
+    ]);
+
+    return {
+      total,
+      sent,
+      notSent: total - sent,
+      repliesObtained,
+      sentWithoutReply: sent - repliesObtained,
+    };
+  }
+
+  async listChartRecords({ dateSentFrom = '' }: { dateSentFrom?: string } = {}): Promise<OutreachChartRecord[]> {
+    let query = this.client
+      .from('outreach_records')
+      .select(CHART_OUTREACH_COLUMNS)
+      .eq('status', 'sent')
+      .order('date_sent', { ascending: true });
+
+    if (dateSentFrom) query = query.gte('date_sent', dateSentFrom);
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+
+    return toOutreachRows(data).map(toChartRecord);
   }
 
   async findById(id: string): Promise<Outreach | null> {
     const { data, error } = await this.client
       .from('outreach_records')
-      .select('*')
+      .select(FULL_OUTREACH_COLUMNS)
       .eq('id', id)
       .single();
 
     if (error || !data) return null;
 
-    return createOutreach(data, this.config);
+    return createOutreach(data as unknown as OutreachRow, this.config);
   }
 
   async save(outreach: Outreach): Promise<Outreach> {
@@ -54,24 +172,161 @@ export class SupabaseOutreachRepository implements IOutreachRepository {
       .from('outreach_records')
       .update(createOutreachRow(outreach, this.config))
       .eq('id', outreach.id)
-      .select('*')
+      .select(FULL_OUTREACH_COLUMNS)
       .single();
 
     if (error) throw error;
 
-    return createOutreach(data, this.config);
+    return createOutreach(data as unknown as OutreachRow, this.config);
   }
 
   async createMany(outreaches: Outreach[]): Promise<Outreach[]> {
     if (!outreaches.length) return [];
 
     const rows = outreaches.map(outreach => createOutreachRow(outreach, this.config));
-    const { data, error } = await this.client.from('outreach_records').insert(rows).select('*');
+    const { data, error } = await this.client.from('outreach_records').insert(rows).select(FULL_OUTREACH_COLUMNS);
 
     if (error) throw error;
 
-    return data.map(row => createOutreach(row, this.config));
+    return toOutreachRows(data).map(row => createOutreach(row, this.config));
   }
+
+  private async listRecordsInMemory(query: OutreachRecordListQuery): Promise<OutreachRecordListResult> {
+    let request = this.createListQuery(query, false);
+
+    if (query.recentSent) {
+      request = request.order('date_sent', { ascending: false, nullsFirst: false }).limit(RECENT_SENT_LIMIT);
+    }
+
+    const { data, error } = await request;
+
+    if (error) throw error;
+
+    const records = sortRecords(
+      toOutreachRows(data)
+        .map(row => createOutreach(row, this.config))
+        .filter(record => isCompanyNameMatch(record, query.companyName)),
+      query
+    );
+
+    return createListResult(getPageRecords(records, query), records.length, query);
+  }
+
+  private createListQuery(query: OutreachRecordListQuery, includeCount: boolean) {
+    let request = this.client.from('outreach_records').select(
+      LIST_OUTREACH_COLUMNS,
+      includeCount
+        ? {
+            count: 'exact' as const,
+          }
+        : undefined
+    );
+
+    if (query.recentSent) request = request.eq('status', 'sent');
+    if (!query.recentSent && query.status) request = request.eq('status', query.status);
+    if (query.dateSentFrom) request = request.gte('date_sent', query.dateSentFrom);
+    if (query.dateSentTo) request = request.lte('date_sent', query.dateSentTo);
+
+    return request;
+  }
+
+  private async countRecords(query: OutreachRecordListQuery): Promise<number> {
+    const { error, count } = await this.createListQuery(query, true).limit(0);
+    if (error) throw error;
+
+    return count || 0;
+  }
+
+  private async countSummaryRecords(filters: { status?: OutreachStatus; replyObtained?: boolean } = {}): Promise<number> {
+    let request = this.client.from('outreach_records').select('id', { count: 'exact', head: true });
+
+    if (filters.status) request = request.eq('status', filters.status);
+    if (filters.replyObtained !== undefined) request = request.eq('reply_obtained', filters.replyObtained);
+
+    const { error, count } = await request;
+    if (error) throw error;
+
+    return count || 0;
+  }
+}
+
+function toOutreachRows(data: unknown): OutreachRow[] {
+  return (data || []) as OutreachRow[];
+}
+
+function shouldListInMemory(query: OutreachRecordListQuery): boolean {
+  return Boolean(query.companyName) || query.sortBy === 'companyName' || (query.recentSent && query.sortBy !== 'dateSent');
+}
+
+function getSortColumn(field: OutreachRecordSortField): string {
+  if (field === 'dateSent') return 'date_sent';
+  if (field === 'followUpDate') return 'follow_up_date';
+  if (field === 'createdAt') return 'created_at';
+
+  return 'created_at';
+}
+
+function getPageEnd(query: OutreachRecordListQuery, from: number): number {
+  const to = from + query.pageSize - 1;
+
+  return query.recentSent ? Math.min(to, RECENT_SENT_LIMIT - 1) : to;
+}
+
+function createListResult(records: Outreach[], totalRecords: number, query: OutreachRecordListQuery): OutreachRecordListResult {
+  return {
+    records,
+    pagination: {
+      page: query.page,
+      pageSize: query.pageSize,
+      totalRecords,
+      totalPages: Math.max(1, Math.ceil(totalRecords / query.pageSize)),
+    },
+  };
+}
+
+function isCompanyNameMatch(record: Outreach, companyName = ''): boolean {
+  return !companyName || record.companyName.toLowerCase().includes(companyName);
+}
+
+function sortRecords(records: Outreach[], query: OutreachRecordListQuery): Outreach[] {
+  const direction = query.sortDirection === 'asc' ? 1 : -1;
+
+  return [...records].sort((first, second) => {
+    const comparison = compareValues(
+      getSortValue(first, query.sortBy),
+      getSortValue(second, query.sortBy)
+    );
+
+    return comparison * direction;
+  });
+}
+
+function getSortValue(record: Outreach, field: OutreachRecordSortField): string | number {
+  if (field === 'createdAt') return Date.parse(record.createdAt || '') || 0;
+  if (field === 'dateSent') return Date.parse(record.dateSent || '') || 0;
+  if (field === 'followUpDate') return Date.parse(record.followUpDate || '') || 0;
+
+  return String(record.companyName || '').toLowerCase();
+}
+
+function compareValues(first: string | number, second: string | number): number {
+  if (typeof first === 'number' && typeof second === 'number') return first - second;
+
+  return String(first).localeCompare(String(second), undefined, { sensitivity: 'base' });
+}
+
+function getPageRecords(records: Outreach[], query: OutreachRecordListQuery): Outreach[] {
+  const start = (query.page - 1) * query.pageSize;
+  return records.slice(start, start + query.pageSize);
+}
+
+function toChartRecord(row: OutreachRow): OutreachChartRecord {
+  return {
+    createdAt: row.created_at as string | undefined,
+    updatedAt: row.updated_at as string | undefined,
+    dateSent: (row.date_sent as string) || '',
+    replyObtained: Boolean(row.reply_obtained),
+  };
 }
 
 function createOutreach(row: OutreachRow, config: IAdminConfiguration): Outreach {

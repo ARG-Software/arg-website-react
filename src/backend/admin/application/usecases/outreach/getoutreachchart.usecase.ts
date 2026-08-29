@@ -1,6 +1,8 @@
-import { Outreach } from '../../../domain/outreach.js';
 import type { IClock } from '../../ports/iclock.js';
-import type { IOutreachRepository } from '../../ports/repositories/ioutreach.repository.js';
+import type {
+  IOutreachRepository,
+  OutreachChartRecord,
+} from '../../ports/repositories/ioutreach.repository.js';
 
 interface OutreachChartPoint {
   label: string;
@@ -16,15 +18,16 @@ export class GetOutreachChartUseCase {
   constructor(private readonly outreachRepository: IOutreachRepository, private readonly clock: IClock) {}
 
   async execute(input: GetOutreachChartInput = {}) {
-    const records = await this.outreachRepository.list();
     const range = input.range || 'all';
     const now = getClockDate(this.clock);
-    const sentRecords = records.filter(record => record.status === 'sent');
-    const buckets = createBuckets(range, now, sentRecords);
-    const repliesObtained = sentRecords.filter(record => record.replyObtained).length;
-    const sentWithoutReply = sentRecords.length - repliesObtained;
+    const records = await this.outreachRepository.listChartRecords({
+      dateSentFrom: getChartStartDate(range, now),
+    });
+    const buckets = createBuckets(range, now, records);
+    const repliesObtained = records.filter(record => record.replyObtained).length;
+    const sentWithoutReply = records.length - repliesObtained;
 
-    for (const record of sentRecords) {
+    for (const record of records) {
       const date = parseRecordDate(record);
       const key = getBucketKey(date, buckets.granularity);
       const bucket = buckets.items.get(key);
@@ -49,11 +52,29 @@ function getClockDate(clock: IClock): Date {
   return clock?.today ? new Date(`${clock.today()}T00:00:00.000Z`) : new Date();
 }
 
-function parseRecordDate(record: Outreach): Date {
+function parseRecordDate(record: OutreachChartRecord): Date {
   return new Date(record.dateSent || record.updatedAt || record.createdAt || '');
 }
 
-function createBuckets(range: string, now: Date, records: Outreach[]) {
+function getChartStartDate(range: string, now: Date): string {
+  if (range === '7d') return toDateKey(addUtcDays(now, -6));
+  if (range === '30d') return toDateKey(addUtcDays(now, -29));
+  if (range === 'monthly') return toDateKey(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 11, 1)));
+
+  return '';
+}
+
+function addUtcDays(date: Date, days: number): Date {
+  const next = new Date(date);
+  next.setUTCDate(next.getUTCDate() + days);
+  return next;
+}
+
+function toDateKey(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function createBuckets(range: string, now: Date, records: OutreachChartRecord[]) {
   if (range === '7d') return createDailyBuckets(now, 7);
   if (range === '30d') return createDailyBuckets(now, 30);
   if (range === 'monthly') return createMonthlyBuckets(now, 12);
@@ -86,7 +107,7 @@ function createMonthlyBuckets(now: Date, months: number): { granularity: 'month'
   return { granularity: 'month', items };
 }
 
-function createAllTimeBuckets(records: Outreach[]): { granularity: 'month'; items: Map<string, OutreachChartPoint> } {
+function createAllTimeBuckets(records: OutreachChartRecord[]): { granularity: 'month'; items: Map<string, OutreachChartPoint> } {
   const keys = records
     .map(record => getBucketKey(parseRecordDate(record), 'month'))
     .filter(Boolean)

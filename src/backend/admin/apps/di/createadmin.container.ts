@@ -9,6 +9,7 @@ import { DeleteAssistantConversationUseCase } from '../../application/usecases/a
 import { DeleteVisitSessionUseCase } from '../../application/usecases/visits/deletevisitsession.usecase.js';
 import { GetAssistantConversationUseCase } from '../../application/usecases/assistantConversations/getassistantconversation.usecase.js';
 import { GetOutreachChartUseCase } from '../../application/usecases/outreach/getoutreachchart.usecase.js';
+import { GetOutreachRecordUseCase } from '../../application/usecases/outreach/getoutreachrecord.usecase.js';
 import { GetOutreachSummaryUseCase } from '../../application/usecases/outreach/getoutreachsummary.usecase.js';
 import { GetUserSessionUseCase } from '../../application/usecases/sessions/getusersession.usecase.js';
 import { ImportOutreachCsvUseCase } from '../../application/usecases/outreach/importoutreachcsv.usecase.js';
@@ -88,6 +89,7 @@ export function createAdminContainer() {
     outreach: {
       createOutreachCsvUseCase: new CreateOutreachCsvUseCase(csvParser, outreachRepository),
       getOutreachChartUseCase: new GetOutreachChartUseCase(outreachRepository, systemClock),
+      getOutreachRecordUseCase: new GetOutreachRecordUseCase(outreachRepository),
       getOutreachSummaryUseCase: new GetOutreachSummaryUseCase(outreachRepository),
       importOutreachCsvUseCase: new ImportOutreachCsvUseCase(
         systemClock,

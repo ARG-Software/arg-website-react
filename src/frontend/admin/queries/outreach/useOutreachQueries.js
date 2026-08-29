@@ -2,6 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import {
   exportOutreachCsv,
   fetchOutreachChart,
+  fetchOutreachRecord,
   fetchOutreachRecords,
   fetchOutreachSummary,
   importOutreachCsv,
@@ -29,6 +30,14 @@ export function useOutreachChart(range) {
   return useQuery({
     queryKey: [...outreachQueryKey, 'chart', range],
     queryFn: () => fetchOutreachChart(range),
+  });
+}
+
+export function useOutreachRecord(id, options = {}) {
+  return useQuery({
+    queryKey: [...outreachQueryKey, 'record', id],
+    queryFn: () => fetchOutreachRecord(id),
+    enabled: options.enabled ?? Boolean(id),
   });
 }
 

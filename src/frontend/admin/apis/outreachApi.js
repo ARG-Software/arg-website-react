@@ -25,6 +25,12 @@ export async function fetchOutreachChart(range) {
   return readAdminResponse(response);
 }
 
+export async function fetchOutreachRecord(id) {
+  const response = await fetch(createOutreachUrl(ADMIN_OUTREACH_RECORD_ENDPOINT, { id }));
+
+  return readAdminResponse(response);
+}
+
 export async function updateOutreachRecord(id, record) {
   const response = await fetch(ADMIN_OUTREACH_RECORD_ENDPOINT, {
     method: 'PATCH',

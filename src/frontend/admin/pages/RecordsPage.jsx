@@ -15,7 +15,7 @@ import { ErrorCard } from '../shared/ErrorCard.jsx';
 
 export default function RecordsPage({ title, query = {}, emptyMessage, onSelectRecord }) {
   const [page, setPage] = useState(1);
-  const [sort, setSort] = useState({ sortBy: 'companyName', sortDirection: 'asc' });
+  const [sort, setSort] = useState({ sortBy: 'createdAt', sortDirection: 'desc' });
   const [filters, setFilters] = useState(EMPTY_TABLE_FILTERS);
   const debouncedCompanyName = useDebouncedValue(filters.companyName, SEARCH_DEBOUNCE_MS);
   const queryFilters = createTableQueryFilters(filters, debouncedCompanyName);
