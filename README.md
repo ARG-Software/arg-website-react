@@ -199,9 +199,23 @@ The domain and application layers do not import concrete provider or repository 
 ### Ask Flow
 
 1. `POST /api/assistant/ask` is handled by `netlify/functions/rag.js`.
-2. The function delegates to `src/backend/rag/apps/api/api.ts`; route dispatch handles origin/method checks and `AssistantController` calls the assistant ask use case.
+2. The function delegates to `src/backend/rag/apps/api/api.ts`; route dispatch handles origin/method checks, `AssistantController` applies the shared rate limiter, and then calls the assistant ask use case.
 3. The application use case validates input, applies language preference policy, classifies intent, plans retrieval, resolves a retrieval route, retrieves context through repository ports, and generates the answer through provider ports.
 4. The response returns answer text, resolved language, optional language preference updates, citations, article recommendations, and assistant actions such as `book_meeting`, `gaspar_message`, `contact_form`, or `email_hr`.
+
+### Rate Limits And Conversation Logging
+
+Public write endpoints are rate-limited at the controller/API boundary, not inside use cases. Controllers depend on the shared `IRateLimiter` contract in `src/backend/shared/security/ratelimit.ts`; production persistence uses `SupabaseRateLimitRepository` under `src/backend/shared/infrastructure/repositories/supabase/`, while in-memory repositories are test fakes only.
+
+Current rate-limited public writes:
+- `POST /api/admin/login`
+- `POST /api/visit-log`
+- `POST /api/admin/assistant-conversation-log`
+- `POST /api/assistant/ask`
+
+Assistant rate-limit responses include structured retry metadata. The widget renders natural first-person cooldown or handoff messages from `src/frontend/data/assistant.json` as display-only bubbles with `source: 'rate_limit_notice'`, and those notices are excluded from AI conversation context.
+
+Assistant conversation logging keeps periodic saves plus visibility/pagehide saves. It avoids idle flushes while an assistant response is still loading, and Discord webhook notifications are sent only when a conversation is first created, not on every save/upsert.
 
 ### Source And Indexing Model
 
@@ -262,6 +276,7 @@ Netlify Functions also serve assistant/security endpoints and scheduled maintena
 - `GET /api/assistant/challenge`: ALTCHA challenge for Gaspar requests
 - `POST /api/assistant/ask`: Gaspar RAG endpoint with ALTCHA and rate limiting
 - `GET /api/assistant/ui-copy`: localized assistant widget copy
+- `POST /api/admin/assistant-conversation-log`: public assistant conversation save endpoint with origin guard and rate limiting
 - `GET /api/security/challenge` and `POST /api/security/verify`: ALTCHA flow for protected form submissions
 - Scheduled `maintenance-retention`: quarterly cleanup for visit and assistant conversation data older than 90 days
 - Scheduled `maintenance-keep-database-alive`: daily Supabase keep-alive for the RAG and admin outreach databases

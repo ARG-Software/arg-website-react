@@ -21,7 +21,7 @@ and comprehensive Google Analytics 4 instrumentation.
 | **Analytics** | GA4 via gtag — all tracking centralized in `src/frontend/utils/analytics.js` |
 | **Build** | `npm run build` → lint:fix → Vite → prerender → image optimization |
 | **Lint** | ESLint 9 with React + React Hooks + Prettier plugins |
-| **Test** | No automated test suite currently configured |
+| **Test** | Backend/API suites via npm scripts; no frontend test suite currently configured |
 
 ---
 
@@ -163,6 +163,11 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Supabase adapter constructors should be consistent: receive the `SupabaseClient` first, then explicit adapter dependencies such as configuration interfaces or salts.
 - App-level HTTP helpers, such as cookie and request-header extraction, live in `src/backend/admin/apps/http/` because they are API concerns.
 - Admin route dispatch owns CORS, OPTIONS, 404, and 405 behavior. Controller error responses belong to `@errorResponse(...)`.
+- Rate limiting belongs at the controller/API boundary for public write endpoints. Use cases should not receive client IPs or rate-limit dependencies.
+- Controllers should depend on the shared `IRateLimiter` contract from `src/backend/shared/security/ratelimit.ts`, not free functions, repositories, stores, or Supabase clients.
+- Production rate-limit persistence belongs in shared infrastructure repositories, currently `SupabaseRateLimitRepository` under `src/backend/shared/infrastructure/repositories/supabase/`.
+- In-memory rate-limit repositories are test fakes only unless there is an explicit local/dev runtime requirement.
+- Same-origin/origin checks and rate limits are complementary: origin checks reduce cross-site browser abuse, while rate limits protect public unauthenticated write endpoints from volume/script abuse.
 - Infrastructure owns concrete adapters such as Supabase repositories, identity providers, geolocation providers, and CSV parser implementations.
 - Supabase repositories should connect table columns to domain objects directly in the repository unless the conversion is reused. Avoid vague helper files that only rename simple row mapping.
 - Keep table-specific conversion near the repository because DB columns and encrypted field envelopes are persistence details.
@@ -179,6 +184,8 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - `ControllerBase` is admin-specific and intentionally small: `authenticateUser(request)`, `json(...)`, `body(...)`, `query(...)`, `errorBody(...)`, and `errorStatus(...)`.
 - Protected admin controller methods should authenticate first with `this.authenticateUser(request)`, then parse body/query, then call business use cases.
 - Non-auth business use cases should not perform authorization. Auth/session use cases may still use `UserAccessPolicy` because authentication and session validation are their purpose.
+- Public write endpoints are rate-limited at controller level: `POST /api/admin/login`, `POST /api/visit-log`, `POST /api/admin/assistant-conversation-log`, and `POST /api/assistant/ask`.
+- `POST /api/admin/assistant-conversation-log` is public despite the `/api/admin/...` path; do not require an admin session for assistant conversation saves.
 - `netlify/functions/admin.js` handles admin feature endpoints. Keep route-specific deployment adapters only when Netlify config needs to differ, such as `assistant-conversation-log.js`, `visit-log.js`, and scheduled maintenance functions.
 - Recent verification passed: `npm run test:backend`, `npm run typecheck:backend`, `npm run lint:backend`, and `npm run test:netlify`.
 
@@ -420,6 +427,12 @@ export default function MyPage() {
 }
 ```
 
+### Assistant Rate Limits and Logging
+- Assistant rate-limit notices are display-only assistant bubbles with `source: 'rate_limit_notice'` and must be excluded from AI conversation context.
+- The assistant widget should show natural first-person cooldown or handoff copy from `src/frontend/data/assistant.json` rather than raw API error text.
+- Conversation logging should keep periodic saves, visibility/pagehide saves, and avoid idle flushes while an assistant response is still loading.
+- Discord webhook notifications for assistant conversations should be sent only when the conversation is first created, not on every upsert/save.
+
 ### Animation Guidelines
 - Use `useScrollAnimations()` hook for scroll-triggered animations
 - Use `data-animate-scope` on parent, `data-animate="preset"` on children
@@ -462,3 +475,7 @@ export default function MyPage() {
 | `src/frontend/hooks/useLeadCaptureVisibility.js` | Lead-capture offer visibility rules for the assistant widget |
 | `src/frontend/services/assistantActionsService.js` | Assistant CTA action mapping (e.g. `email_hello` → in-chat lead capture) |
 | `src/frontend/workers/altchaPbkdf2Worker.js` | Web Worker used for browser-side ALTCHA proof-of-work solving |
+| `src/backend/shared/security/ratelimit.ts` | Shared rate-limit contracts and `RateLimiter` implementation |
+| `src/backend/shared/infrastructure/repositories/supabase/supabaseratelimit.repository.ts` | Production Supabase-backed rate-limit repository |
+| `src/backend/shared/api/controllerbase.ts` | Shared API helpers, including controller-level rate-limit checks |
+| `src/backend/rag/tests/fakes/inmemoryratelimit.repository.ts` | Test-only in-memory rate-limit repository fake |
