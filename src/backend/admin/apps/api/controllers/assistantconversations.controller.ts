@@ -1,8 +1,6 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
-import { createErrorBody } from '../../../../shared/api/http.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { adminContainer } from '../../di/admin.container.js';
-import { getClientIp } from '../../http/requestinfo.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class AssistantConversationsController extends ControllerBase {
@@ -47,29 +45,19 @@ export class AssistantConversationsController extends ControllerBase {
   @route('POST', '/api/admin/assistant-conversation-log')
   @errorResponse('conversation_log_failed', 'Unable to log conversation')
   async log(request: Request): Promise<Response> {
-    try {
-      const payload = await this.body(request);
+    await this.checkRateLimit(request, this.conversations.conversationLogRateLimiter);
 
-      await this.conversations.logAssistantConversationUseCase.execute({
-        clientIp: getClientIp(request),
-        publicConversationId: payload.conversationId,
-        messages: payload.messages,
-        pageContext: payload.pageContext,
-        language: payload.language,
-        savedAt: payload.savedAt,
-      });
+    const payload = await this.body(request);
 
-      return this.json(204, '');
-    } catch (error) {
-      if ((error as Error & { code?: string }).code === 'rate_limited') {
-        return this.json(
-          429,
-          createErrorBody('rate_limited', 'Too many requests. Please try again later.')
-        );
-      }
+    await this.conversations.logAssistantConversationUseCase.execute({
+      publicConversationId: payload.conversationId,
+      messages: payload.messages,
+      pageContext: payload.pageContext,
+      language: payload.language,
+      savedAt: payload.savedAt,
+    });
 
-      throw error;
-    }
+    return this.json(204, '');
   }
 
 }

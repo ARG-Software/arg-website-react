@@ -3,7 +3,6 @@ import test from 'node:test';
 
 import { AuthController } from '../../apps/api/controllers/auth.controller.js';
 import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from '../../apps/http/usersession.cookies.js';
-import { createAdminError } from '../../application/errors.js';
 import { createAltchaChallenge } from '../../../shared/security/altcha.js';
 
 const altchaSettings = {
@@ -41,23 +40,33 @@ test('rejects login when ALTCHA verification fails', async () => {
 });
 
 test('rate limits admin login attempts before auth', async () => {
-  const error = createAdminError(429, 'rate_limited', 'Too many login attempts');
-  error.retryAfterSeconds = 60;
-  const controller = createTestController({ loginError: error });
+  let loginCalled = false;
+  const controller = createTestController({
+    rateLimitResult: { allowed: false, retryAfterSeconds: 60 },
+    onLogin: () => {
+      loginCalled = true;
+    },
+  });
   const response = await controller.login(await createLoginRequest());
   const body = await response.json();
 
   assert.equal(response.status, 429);
   assert.equal(response.headers.get('Retry-After'), '60');
   assert.equal(body.error.code, 'rate_limited');
+  assert.equal(loginCalled, false);
 });
 
-function createTestController({ loginError = null } = {}) {
+function createTestController({ rateLimitResult = { allowed: true }, onLogin = () => {} } = {}) {
   return new AuthController({
     altchaSettings,
+    loginRateLimiter: {
+      async check() {
+        return rateLimitResult;
+      },
+    },
     loginUserUseCase: {
       async execute(input) {
-        if (loginError) throw loginError;
+        onLogin();
 
         assert.equal(input.altcha, undefined);
 

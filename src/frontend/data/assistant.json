@@ -41,7 +41,11 @@
     "emptyResponse": "Please enter a valid response.",
     "sending": "Sending...",
     "noMessageAdded": "No message added.",
-    "leadCaptureUnclear": "I didn't catch that — please use the buttons to continue."
+    "leadCaptureUnclear": "I didn't catch that — please use the buttons to continue.",
+    "rateLimitMinute": "I need to pause for a moment. Try again in about a minute. If you'd rather keep moving now, contact ARG and I'll keep the conversation so far ready for the team.",
+    "rateLimitDaily": "I need to pause here for today. If you want to continue, leave your email and I'll make sure the team has the conversation so far so they can pick it up with context.",
+    "rateLimitGlobal": "I need to pause here for now because I've reached my daily capacity. If this is important, leave your email and I'll make sure the team has the conversation so far.",
+    "rateLimitCooldown": "I'm still paused for a moment. You'll be able to continue shortly."
   },
   "actions": {
     "book_meeting": {
@@ -92,6 +96,8 @@
     "leadConfirm": "Use the buttons above...",
     "leadSubmitting": "Sending...",
     "leadSuccess": "Sent!",
-    "confirm": "Use the buttons above..."
+    "confirm": "Use the buttons above...",
+    "rateLimitCooldown": "Try again shortly...",
+    "rateLimitPaused": "Conversation paused..."
   }
 }

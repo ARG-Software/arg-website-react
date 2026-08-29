@@ -13,6 +13,47 @@ class TestVisitsController extends VisitsController {
   }
 }
 
+test('logs visits through the public write-only endpoint after rate limiting', async () => {
+  let recordedSessionId = '';
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute(input) {
+        recordedSessionId = input.sessionId;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(createVisitLogRequest());
+
+  assert.equal(response.status, 204);
+  assert.equal(recordedSessionId, 'visitor-session');
+});
+
+test('rate limits visit logs before reading the body', async () => {
+  let recordCalled = false;
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute() {
+        recordCalled = true;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: false, retryAfterSeconds: 20 }) },
+  } as any);
+  const response = await controller.log(
+    new Request('https://arg.software/api/visit-log', {
+      method: 'POST',
+      headers: { 'x-nf-client-connection-ip': '203.0.113.10' },
+      body: '{',
+    })
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 429);
+  assert.equal(response.headers.get('Retry-After'), '20');
+  assert.equal(body.error.code, 'rate_limited');
+  assert.equal(recordCalled, false);
+});
+
 test('deletes visit sessions through the authenticated admin endpoint', async () => {
   let deletedSessionHash = '';
   const controller = new TestVisitsController({
@@ -254,3 +295,19 @@ test('defaults visit metric requests to today', async () => {
 
   assert.equal(receivedRange, 'today');
 });
+
+function createVisitLogRequest() {
+  return new Request('https://arg.software/api/visit-log', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-nf-client-connection-ip': '203.0.113.10',
+    },
+    body: JSON.stringify({
+      sessionId: 'visitor-session',
+      events: [],
+      pageViews: [],
+      language: 'en',
+    }),
+  });
+}

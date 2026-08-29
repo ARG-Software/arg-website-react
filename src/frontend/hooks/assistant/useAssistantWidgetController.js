@@ -16,9 +16,13 @@ import {
 import {
   CHAT_SOURCE,
   LEAD_SOURCE,
+  RATE_LIMIT_SOURCE,
   getLeadAssistantMessage,
   getLeadMessagesForResult,
+  getRateLimitAssistantMessage,
 } from './utils/leadMessages';
+
+const DAILY_RATE_LIMIT_SCOPES = new Set(['day', 'global_day']);
 
 function getChatUserMessage(content) {
   return { role: 'user', content, source: CHAT_SOURCE, createdAt: new Date().toISOString() };
@@ -36,6 +40,26 @@ function getChatHistory(messages) {
 
 function shouldAutoStartLeadCapture(actions) {
   return actions?.some(action => action.type === 'gaspar_message' && action.autoStart) || false;
+}
+
+function getRateLimitCopy(copy, limitScope) {
+  if (limitScope === 'global_day') return copy.messages.rateLimitGlobal;
+  if (limitScope === 'day') return copy.messages.rateLimitDaily;
+
+  return copy.messages.rateLimitMinute;
+}
+
+function getRateLimitPlaceholder(copy, limitScope) {
+  if (limitScope === 'minute') return copy.placeholders.rateLimitCooldown;
+
+  return copy.placeholders.rateLimitPaused;
+}
+
+function addRateLimitNotice(messages, content) {
+  const lastMessage = messages[messages.length - 1];
+  if (lastMessage?.source === RATE_LIMIT_SOURCE && lastMessage.content === content) return messages;
+
+  return [...messages, getRateLimitAssistantMessage(content)];
 }
 
 function useMobileFullscreen() {
@@ -67,6 +91,7 @@ export function useAssistantWidgetController({
   const [inputValue, setInputValue] = useState('');
   const [preferredLanguage, setPreferredLanguage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [rateLimitState, setRateLimitState] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const leadCaptureStartedRef = useRef(false);
@@ -85,6 +110,7 @@ export function useAssistantWidgetController({
     messages,
     isOpen,
     language: activeLanguage,
+    loading,
   });
 
   const dismissLeadCaptureOnce = useCallback(
@@ -124,15 +150,19 @@ export function useAssistantWidgetController({
   });
 
   const showLeadPrompts = isLeadActive && leadStep === LEAD_STEPS.OFFER;
+  const rateLimitBlocksChat = Boolean(rateLimitState) && !isLeadActive;
   const canClearConversation = messages.length > 0 || inputValue.length > 0 || Boolean(error);
-  const inputPlaceholder = getInputPlaceholder({
-    isLeadActive,
-    leadStep,
-    LEAD_STEPS,
-    copy: assistantCopy,
-  });
-  const isInputDisabled = loading && !isLeadActive;
-  const isSubmitDisabled = (loading && !isLeadActive) || !inputValue.trim();
+  const inputPlaceholder = rateLimitBlocksChat
+    ? getRateLimitPlaceholder(assistantCopy, rateLimitState.limitScope)
+    : getInputPlaceholder({
+        isLeadActive,
+        leadStep,
+        LEAD_STEPS,
+        copy: assistantCopy,
+      });
+  const isInputDisabled = (loading || rateLimitBlocksChat) && !isLeadActive;
+  const isSubmitDisabled =
+    ((loading || rateLimitBlocksChat) && !isLeadActive) || !inputValue.trim();
   const isClearDisabled = loading || !canClearConversation;
 
   const addLeadResultMessages = useCallback(
@@ -170,6 +200,33 @@ export function useAssistantWidgetController({
     [LEAD_STEPS.EMAIL, assistantCopy, panelState, mobileViewport, startLeadCapture, setError]
   );
 
+  const handleRateLimitedResult = useCallback(
+    result => {
+      const limitScope = result.limitScope || 'minute';
+      const retryAfterSeconds = Math.max(Number(result.retryAfterSeconds) || 0, 0);
+      const content = getRateLimitCopy(assistantCopy, limitScope);
+
+      setRateLimitState({
+        limitScope,
+        expiresAt: Date.now() + retryAfterSeconds * 1000,
+      });
+      setMessages(prev => addRateLimitNotice(prev, content));
+
+      if (DAILY_RATE_LIMIT_SCOPES.has(limitScope) && !isLeadActive) {
+        leadCaptureStartedRef.current = true;
+        leadDismissHandledRef.current = false;
+        startLeadCapture(LEAD_STEPS.EMAIL);
+        setMessages(prev => [
+          ...prev,
+          getLeadAssistantMessage(assistantCopy.messages.leadCaptureEmail),
+        ]);
+      }
+
+      setTimeout(() => flushConversation({ keepalive: true }), 0);
+    },
+    [LEAD_STEPS.EMAIL, assistantCopy, flushConversation, isLeadActive, startLeadCapture]
+  );
+
   const submitChatMessage = useCallback(
     async question => {
       const chatHistory = getChatHistory(messages);
@@ -178,7 +235,13 @@ export function useAssistantWidgetController({
 
       const result = await submitQuestion(question, chatHistory);
 
+      if (result?.rateLimited) {
+        handleRateLimitedResult(result);
+        return;
+      }
+
       if (result?.success && result.message) {
+        setRateLimitState(null);
         const languagePreference = result.message.languagePreference;
         if (languagePreference?.action === 'set' && languagePreference.language) {
           setPreferredLanguage(languagePreference.language);
@@ -198,7 +261,15 @@ export function useAssistantWidgetController({
         }
       }
     },
-    [assistantCopy, isLeadActive, messages, setActiveLanguage, startLeadCaptureFlow, submitQuestion]
+    [
+      assistantCopy,
+      handleRateLimitedResult,
+      isLeadActive,
+      messages,
+      setActiveLanguage,
+      startLeadCaptureFlow,
+      submitQuestion,
+    ]
   );
 
   const submitCurrentLead = useCallback(async () => {
@@ -212,6 +283,15 @@ export function useAssistantWidgetController({
   useEffect(() => {
     onOpenChange?.(isOpen);
   }, [isOpen, onOpenChange]);
+
+  useEffect(() => {
+    if (rateLimitState?.limitScope !== 'minute') return undefined;
+
+    const delay = Math.max(rateLimitState.expiresAt - Date.now(), 0);
+    const timer = window.setTimeout(() => setRateLimitState(null), delay);
+
+    return () => window.clearTimeout(timer);
+  }, [rateLimitState]);
 
   useEffect(() => {
     if (!leadCaptureVisible || panelState !== 'closed' || leadCaptureStartedRef.current) return;
@@ -319,6 +399,7 @@ export function useAssistantWidgetController({
     setMessages([]);
     setInputValue('');
     setPreferredLanguage('');
+    setRateLimitState(null);
     setError(null);
     resetConversationLog();
     leadCaptureStartedRef.current = false;
@@ -354,6 +435,8 @@ export function useAssistantWidgetController({
       e.preventDefault();
       const trimmed = inputValue.trim();
       if (!trimmed || (loading && !isLeadActive)) return;
+
+      if (rateLimitBlocksChat) return;
 
       if (isLeadActive) {
         const action =
@@ -398,6 +481,7 @@ export function useAssistantWidgetController({
       LEAD_STEPS.OFFER,
       loading,
       messages,
+      rateLimitBlocksChat,
       submitCurrentLead,
       submitChatMessage,
     ]
@@ -413,12 +497,21 @@ export function useAssistantWidgetController({
         return;
       }
 
+      if (rateLimitBlocksChat) return;
+
       trackAssistantEvent('quick_prompt', { prompt_text: prompt });
       trackAssistantEvent('submit', { has_history: false, question_length: prompt.length });
       setInputValue('');
       submitChatMessage(prompt);
     },
-    [addLeadResultMessages, assistantCopy, handleLeadInput, isLeadActive, submitChatMessage]
+    [
+      addLeadResultMessages,
+      assistantCopy,
+      handleLeadInput,
+      isLeadActive,
+      rateLimitBlocksChat,
+      submitChatMessage,
+    ]
   );
 
   const handleLeadConfirm = useCallback(() => {

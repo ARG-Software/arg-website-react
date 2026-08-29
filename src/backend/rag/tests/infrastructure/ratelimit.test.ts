@@ -2,14 +2,14 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  checkRateLimits,
   getMinuteBucket,
   getDayBucket,
   getGlobalDayBucket,
   hashIp,
+  RateLimiter,
   type IRateLimitConfig,
 } from '../../../shared/security/ratelimit.js';
-import { InMemoryRateLimitStore } from '../../../shared/security/ratelimit.stores.js';
+import { InMemoryRateLimitRepository } from '../fakes/inmemoryratelimit.repository.js';
 
 function createConfig(overrides: Partial<IRateLimitConfig> = {}): IRateLimitConfig {
   return {
@@ -22,64 +22,72 @@ function createConfig(overrides: Partial<IRateLimitConfig> = {}): IRateLimitConf
 }
 
 test('requests within limits are allowed', async () => {
-  const store = new InMemoryRateLimitStore();
-  const config = createConfig();
+  const limiter = new RateLimiter(new InMemoryRateLimitRepository(), createConfig());
 
-  const result = await checkRateLimits('192.168.1.1', store, config);
+  const result = await limiter.check('192.168.1.1');
 
   assert.equal(result.allowed, true);
   assert.equal(result.retryAfterSeconds, undefined);
+  assert.equal(result.scope, undefined);
 });
 
 test('requests exceeding per-minute limit are denied', async () => {
-  const store = new InMemoryRateLimitStore();
-  const config = createConfig({ perMinute: 2 });
+  const limiter = new RateLimiter(new InMemoryRateLimitRepository(), createConfig({ perMinute: 2 }));
   const ip = '10.0.0.1';
 
-  await checkRateLimits(ip, store, config);
-  await checkRateLimits(ip, store, config);
-  const result = await checkRateLimits(ip, store, config);
+  await limiter.check(ip);
+  await limiter.check(ip);
+  const result = await limiter.check(ip);
 
   assert.equal(result.allowed, false);
+  assert.equal(result.scope, 'minute');
   assert.ok(result.retryAfterSeconds != null && result.retryAfterSeconds > 0);
   assert.ok(result.retryAfterSeconds != null && result.retryAfterSeconds <= 60);
 });
 
 test('requests exceeding per-day limit are denied', async () => {
-  const store = new InMemoryRateLimitStore();
-  const config = createConfig({ perDay: 2, perMinute: 100 });
+  const limiter = new RateLimiter(
+    new InMemoryRateLimitRepository(),
+    createConfig({ perDay: 2, perMinute: 100 })
+  );
   const ip = '10.0.0.2';
 
-  await checkRateLimits(ip, store, config);
-  await checkRateLimits(ip, store, config);
-  const result = await checkRateLimits(ip, store, config);
+  await limiter.check(ip);
+  await limiter.check(ip);
+  const result = await limiter.check(ip);
 
   assert.equal(result.allowed, false);
+  assert.equal(result.scope, 'day');
   assert.ok(result.retryAfterSeconds != null && result.retryAfterSeconds > 0);
 });
 
 test('global daily limit is shared across IPs', async () => {
-  const store = new InMemoryRateLimitStore();
-  const config = createConfig({ globalDaily: 2, perMinute: 100, perDay: 100 });
+  const limiter = new RateLimiter(
+    new InMemoryRateLimitRepository(),
+    createConfig({ globalDaily: 2, perMinute: 100, perDay: 100 })
+  );
 
-  await checkRateLimits('10.0.0.1', store, config);
-  await checkRateLimits('10.0.0.2', store, config);
-  const result = await checkRateLimits('10.0.0.3', store, config);
+  await limiter.check('10.0.0.1');
+  await limiter.check('10.0.0.2');
+  const result = await limiter.check('10.0.0.3');
 
   assert.equal(result.allowed, false);
+  assert.equal(result.scope, 'global_day');
 });
 
 test('different IPs have independent per-minute limits', async () => {
-  const store = new InMemoryRateLimitStore();
-  const config = createConfig({ perMinute: 2, perDay: 100, globalDaily: 100 });
+  const limiter = new RateLimiter(
+    new InMemoryRateLimitRepository(),
+    createConfig({ perMinute: 2, perDay: 100, globalDaily: 100 })
+  );
 
-  await checkRateLimits('10.0.0.1', store, config);
-  await checkRateLimits('10.0.0.1', store, config);
-  const blockedSame = await checkRateLimits('10.0.0.1', store, config);
+  await limiter.check('10.0.0.1');
+  await limiter.check('10.0.0.1');
+  const blockedSame = await limiter.check('10.0.0.1');
 
   assert.equal(blockedSame.allowed, false);
 
-  const allowedDifferent = await checkRateLimits('10.0.0.2', store, config);
+  const allowedDifferent = await limiter.check('10.0.0.2');
 
   assert.equal(allowedDifferent.allowed, true);
 });
@@ -106,11 +114,11 @@ test('bucket names include time windows', () => {
 });
 
 test('in-memory store resets expired windows', async () => {
-  const store = new InMemoryRateLimitStore();
+  const repository = new InMemoryRateLimitRepository();
 
-  const first = await store.hit('test-bucket', 60, 1);
+  const first = await repository.hit('test-bucket', 60, 1);
   assert.equal(first.allowed, true);
 
-  const second = await store.hit('test-bucket', 60, 1);
+  const second = await repository.hit('test-bucket', 60, 1);
   assert.equal(second.allowed, false);
 });

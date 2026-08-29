@@ -3,7 +3,10 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { IAdminConfiguration } from '../../../application/config/iadmin.configuration.js';
 import { decode, isValidKey } from '../../../application/crypto/decode.js';
 import { encode, type EncodedValue } from '../../../application/crypto/encode.js';
-import type { IAssistantConversationRepository } from '../../../application/ports/repositories/iassistantconversation.repository.js';
+import type {
+  AssistantConversationUpsertResult,
+  IAssistantConversationRepository,
+} from '../../../application/ports/repositories/iassistantconversation.repository.js';
 import { AssistantConversation } from '../../../domain/assistantconversation.js';
 import type {
   AssistantConversationMessage,
@@ -36,7 +39,7 @@ export class SupabaseAssistantConversationRepository implements IAssistantConver
     private readonly configuration: IAdminConfiguration
   ) {}
 
-  async upsert(conversation: AssistantConversation): Promise<AssistantConversation> {
+  async upsert(conversation: AssistantConversation): Promise<AssistantConversationUpsertResult> {
     const encryptedPayload = encryptPayload(
       {
         conversationId: conversation.publicConversationId,
@@ -68,7 +71,10 @@ export class SupabaseAssistantConversationRepository implements IAssistantConver
 
     if (error) throw error;
 
-    return toConversationRecord(data, this.configuration);
+    return {
+      conversation: toConversationRecord(data, this.configuration),
+      created: Boolean(data.created_at && data.updated_at && data.created_at === data.updated_at),
+    };
   }
 
   async list({

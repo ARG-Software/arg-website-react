@@ -59,7 +59,7 @@ test('logAssistantConversationUseCase succeeds when the webhook fails', async ()
     repository: {
       upsert: async record => {
         saved = true;
-        return record;
+        return { conversation: record, created: true };
       },
     },
     webhookProvider: {
@@ -74,13 +74,34 @@ test('logAssistantConversationUseCase succeeds when the webhook fails', async ()
   assert.equal(saved, true);
 });
 
+test('logAssistantConversationUseCase does not send a webhook after the first save', async () => {
+  let webhookCalled = false;
+  const useCase = createUseCase({
+    repository: {
+      upsert: async record => ({ conversation: record, created: false }),
+    },
+    webhookProvider: {
+      send: async () => {
+        webhookCalled = true;
+      },
+    },
+  });
+
+  await useCase.execute(createInput());
+
+  assert.equal(webhookCalled, false);
+});
+
 function createUseCase({ repository = {}, webhookProvider = {} } = {}) {
   return new LogAssistantConversationUseCase(
     {
       upsert: async record =>
-        new AssistantConversation({
-          ...record,
-          id: 'conversation-id',
+        ({
+          conversation: new AssistantConversation({
+            ...record,
+            id: 'conversation-id',
+          }),
+          created: true,
         }),
       ...repository,
     } as any,
@@ -88,17 +109,12 @@ function createUseCase({ repository = {}, webhookProvider = {} } = {}) {
       send: async () => {},
       ...webhookProvider,
     } as any,
-    'https://arg.software/admin/',
-    {
-      config: { perMinute: 20, perDay: 200, globalDaily: 1000, salt: 'test' },
-      store: { hit: async () => ({ allowed: true }) },
-    }
+    'https://arg.software/admin/'
   );
 }
 
 function createInput() {
   return {
-    clientIp: '203.0.113.10',
     publicConversationId: 'public-conversation-id',
     messages: [
       {

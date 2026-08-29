@@ -20,7 +20,7 @@ test('logs assistant conversations through the public write-only endpoint', asyn
   const api = createTestApi({
     async upsert(record) {
       savedRecord = record;
-      return record;
+      return { conversation: record, created: true };
     },
   });
   const response = await api(createConversationLogRequest());
@@ -43,6 +43,32 @@ test('ignores assistant-only conversation logs through the public write-only end
   assert.equal(response.status, 204);
   assert.equal(upsertCalled, false);
 });
+
+test('rate limits assistant conversation logs before reading the body', async () => {
+  let upsertCalled = false;
+  const api = createTestApi(
+    {
+      async upsert() {
+        upsertCalled = true;
+      },
+    },
+    { allowed: false, retryAfterSeconds: 30 }
+  );
+  const response = await api(
+    new Request('https://arg.software/api/admin/assistant-conversation-log', {
+      method: 'POST',
+      headers: { 'x-nf-client-connection-ip': '203.0.113.10' },
+      body: '{',
+    })
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 429);
+  assert.equal(response.headers.get('Retry-After'), '30');
+  assert.equal(body.error.code, 'rate_limited');
+  assert.equal(upsertCalled, false);
+});
+
 
 test('lists assistant conversations through the authenticated admin endpoint', async () => {
   const api = createTestApi();
@@ -85,11 +111,11 @@ test('deletes assistant conversations through the authenticated admin endpoint',
   assert.equal(deletedId, 'conversation-id');
 });
 
-function createTestApi(repositoryOverrides = {}) {
+function createTestApi(repositoryOverrides = {}, rateLimitResult = { allowed: true }) {
   const conversation = createConversationRecord();
   const repository = {
     async upsert(record) {
-      return record;
+      return { conversation: record, created: true };
     },
     async list() {
       return {
@@ -109,10 +135,12 @@ function createTestApi(repositoryOverrides = {}) {
     listAssistantConversationsUseCase: new ListAssistantConversationsUseCase(repository as any),
     logAssistantConversationUseCase: new LogAssistantConversationUseCase(repository as any, {
       send: async () => {},
-    } as any, 'https://arg.software', {
-      config: { perMinute: 20, perDay: 200, globalDaily: 1000, salt: 'test' },
-      store: { hit: async () => ({ allowed: true }) },
-    }),
+    } as any, 'https://arg.software'),
+    conversationLogRateLimiter: {
+      async check() {
+        return rateLimitResult;
+      },
+    },
   } as any);
 
   return async function api(request) {

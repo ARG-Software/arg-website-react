@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 import { ConsoleLogger } from '../../../shared/logger/console.logger.js';
-import { SupabaseRateLimitStore } from '../../../shared/security/ratelimit.stores.js';
+import { SupabaseRateLimitRepository } from '../../../shared/infrastructure/repositories/supabase/supabaseratelimit.repository.js';
+import { RateLimiter } from '../../../shared/security/ratelimit.js';
 import { AuthenticateUserUseCase } from '../../application/usecases/sessions/authenticateuser.usecase.js';
 import { CreateOutreachCsvUseCase } from '../../application/usecases/outreach/createoutreachcsv.usecase.js';
 import { DeleteAssistantConversationUseCase } from '../../application/usecases/assistantConversations/deleteassistantconversation.usecase.js';
@@ -55,6 +56,11 @@ export function createAdminContainer() {
   const conversationRepository = new SupabaseAssistantConversationRepository(serviceClient, config);
   const outreachRepository = new SupabaseOutreachRepository(serviceClient, config);
   const visitRepository = new SupabaseVisitRepository(serviceClient);
+  const adminRateLimitRepository = new SupabaseRateLimitRepository(
+    serviceClient,
+    'hit_admin_rate_limit',
+    logger
+  );
   const csvParser = new OutreachCsvParser();
   const assistantConversationWebhook = config.getNotificationWebhookUrl()
     ? new DiscordWebhookProvider(config.getNotificationWebhookUrl())
@@ -68,12 +74,9 @@ export function createAdminContainer() {
       getUserSessionUseCase: new GetUserSessionUseCase(identityProvider, userAccessPolicy),
       loginUserUseCase: new LoginUserUseCase(
         identityProvider,
-        {
-          config: config.getLoginRateLimitConfig(),
-          store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit', logger),
-        },
         userAccessPolicy
       ),
+      loginRateLimiter: new RateLimiter(adminRateLimitRepository, config.getLoginRateLimitConfig()),
       refreshUserSessionUseCase: new RefreshUserSessionUseCase(identityProvider, userAccessPolicy),
       altchaSettings: config.getAltchaSettings(),
       secureCookies: config.getSecureCookies(),
@@ -106,13 +109,9 @@ export function createAdminContainer() {
       listVisitSessionsUseCase: new ListVisitSessionsUseCase(visitRepository),
       recordVisitSessionUseCase: new RecordVisitSessionUseCase(
         config,
-        visitRepository,
-        {
-          config: config.getVisitLogRateLimitConfig(),
-          store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit', logger),
-        },
-        logger
+        visitRepository
       ),
+      visitLogRateLimiter: new RateLimiter(adminRateLimitRepository, config.getVisitLogRateLimitConfig()),
     },
     assistantConversations: {
       deleteAssistantConversationUseCase: new DeleteAssistantConversationUseCase(
@@ -126,11 +125,11 @@ export function createAdminContainer() {
         conversationRepository,
         assistantConversationWebhook,
         config.getAdminSiteUrl(),
-        {
-          config: config.getAssistantConversationLogRateLimitConfig(),
-          store: new SupabaseRateLimitStore(serviceClient, 'hit_admin_rate_limit', logger),
-        },
         logger
+      ),
+      conversationLogRateLimiter: new RateLimiter(
+        adminRateLimitRepository,
+        config.getAssistantConversationLogRateLimitConfig()
       ),
     },
     logger,

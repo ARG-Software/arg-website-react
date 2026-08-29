@@ -1,7 +1,6 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import { adminContainer } from '../../di/admin.container.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
-import { getClientIp } from '../../http/requestinfo.js';
 import {
   clearUserSessionCookies,
   copyResponseHeaders,
@@ -22,6 +21,8 @@ export class AuthController extends ControllerBase {
   @route('POST', '/api/admin/login')
   @errorResponse('admin_login_failed', 'Admin login failed')
   async login(request: Request): Promise<Response> {
+    await this.checkRateLimit(request, this.auth.loginRateLimiter);
+
     const cookieResponse = new Response(null);
     const payload = await this.body(request, { fallback: {}, trimStrings: false });
 
@@ -30,7 +31,6 @@ export class AuthController extends ControllerBase {
     const result = await this.auth.loginUserUseCase.execute({
       email: payload.email,
       password: payload.password,
-      clientIp: getClientIp(request),
     });
 
     setUserSessionCookies(

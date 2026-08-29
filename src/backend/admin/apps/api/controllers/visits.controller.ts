@@ -3,10 +3,9 @@ import {
   getControllerRoutes,
   route,
 } from '../../../../shared/api/decorators/index.js';
-import { createErrorBody } from '../../../../shared/api/http.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { adminContainer } from '../../di/admin.container.js';
-import { getClientIp, getHeaderGeolocation } from '../../http/requestinfo.js';
+import { getHeaderGeolocation } from '../../http/requestinfo.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class VisitsController extends ControllerBase {
@@ -20,30 +19,20 @@ export class VisitsController extends ControllerBase {
   @route('POST', '/api/visit-log')
   @errorResponse('visit_log_failed', 'Unable to log visit')
   async log(request: Request): Promise<Response> {
-    try {
-      const payload = await this.body(request);
-      await this.visits.recordVisitSessionUseCase.execute({
-        clientIp: getClientIp(request),
-        geo: getHeaderGeolocation(request),
-        sessionId: payload.sessionId,
-        events: payload.events,
-        pageViews: payload.pageViews,
-        language: payload.language,
-        referrer: payload.referrer,
-        attribution: payload.attribution,
-      });
+    await this.checkRateLimit(request, this.visits.visitLogRateLimiter);
 
-      return this.json(204, '');
-    } catch (error) {
-      if ((error as Error & { code?: string }).code === 'rate_limited') {
-        return this.json(
-          429,
-          createErrorBody('rate_limited', 'Too many requests. Please try again later.')
-        );
-      }
+    const payload = await this.body(request);
+    await this.visits.recordVisitSessionUseCase.execute({
+      geo: getHeaderGeolocation(request),
+      sessionId: payload.sessionId,
+      events: payload.events,
+      pageViews: payload.pageViews,
+      language: payload.language,
+      referrer: payload.referrer,
+      attribution: payload.attribution,
+    });
 
-      throw error;
-    }
+    return this.json(204, '');
   }
 
   @route('GET', '/api/admin/visit-metrics')

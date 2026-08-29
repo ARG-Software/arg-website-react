@@ -1,6 +1,6 @@
 import type { Challenge, Solution } from 'altcha-lib';
 
-import { readJsonBody, readSearchParams } from './http.js';
+import { getClientIp, readJsonBody, readSearchParams } from './http.js';
 import {
   createAltchaChallenge as createChallenge,
   type AltchaSettings,
@@ -8,6 +8,7 @@ import {
   verifyAltchaPayload,
 } from '../security/altcha.js';
 import type { ILogger } from '../logger/ilogger.js';
+import type { IRateLimiter, IRateLimitResult } from '../security/ratelimit.js';
 
 export abstract class ApiControllerBase {
   constructor(protected readonly logger?: ILogger) {}
@@ -68,7 +69,24 @@ export abstract class ApiControllerBase {
     }
   }
 
+  protected async checkRateLimit(request: Request, rateLimiter: IRateLimiter): Promise<void> {
+    let result: IRateLimitResult;
+
+    try {
+      result = await rateLimiter.check(getClientIp(request));
+    } catch (error) {
+      this.logger?.error('API rate limit check failed open', { error });
+      return;
+    }
+
+    if (!result.allowed) {
+      throw this.createRateLimitError(result);
+    }
+  }
+
   protected abstract createBotVerificationError(message: string): Error;
+
+  protected abstract createRateLimitError(result: IRateLimitResult): Error;
 }
 
 function getAltchaChallenge(value: unknown): { challenge: Challenge; solution: Solution } | null {

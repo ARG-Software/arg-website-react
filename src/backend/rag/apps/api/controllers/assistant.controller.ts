@@ -1,5 +1,4 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
-import { getClientIp } from '../../../../shared/api/http.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { ragContainer } from '../../di/rag.container.js';
 import { ControllerBase } from './controllerbase.js';
@@ -24,12 +23,13 @@ export class AssistantController extends ControllerBase {
   @route('POST', '/api/assistant/ask')
   @errorResponse('answer_failed', 'Unable to answer the question')
   async ask(request: Request): Promise<Response> {
+    await this.checkRateLimit(request, this.security.askRateLimiter);
+
     const payload = await this.body(request);
 
     await this.verifyAltchaChallenge(payload.altcha, this.security.altchaSettings);
 
     const result = await this.assistant.askAssistantQuestionUseCase.execute({
-      clientIp: getClientIp(request),
       messages: payload.messages,
       pageContext: payload.pageContext,
       preferredLanguage: payload.preferredLanguage,

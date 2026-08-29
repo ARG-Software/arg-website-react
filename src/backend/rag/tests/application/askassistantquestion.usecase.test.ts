@@ -3,37 +3,20 @@ import test from 'node:test';
 
 import { AskAssistantQuestionUseCase } from '../../application/usecases/assistant/askassistantquestion.usecase.js';
 
-test('AskAssistantQuestionUseCase rate limits assistant questions', async () => {
-  const useCase = createUseCase({ rateLimitAllowed: false });
+test('AskAssistantQuestionUseCase delegates assistant questions without rate limiting', async () => {
+  const useCase = new AskAssistantQuestionUseCase({
+    config: {} as any,
+    readRepository: {} as any,
+    embeddingProvider: {} as any,
+    fallbackEmbeddingProvider: {} as any,
+    answerProvider: {
+      async classifyQuestionIntent() {
+        return { intent: 'small_talk', response: 'Hello from Gaspar.', language: 'en' };
+      },
+    } as any,
+  });
 
-  await assert.rejects(
-    () =>
-      useCase.execute({
-        clientIp: '203.0.113.10',
-      }),
-    {
-      code: 'rate_limited',
-      message: 'Too many requests. Please try again later.',
-      statusCode: 429,
-    }
-  );
+  const result = await useCase.execute({ question: 'Hi', messages: [] });
+
+  assert.equal(result.answer, 'Hello from Gaspar.');
 });
-
-function createUseCase({ rateLimitAllowed = true } = {}) {
-  return new AskAssistantQuestionUseCase(
-    {} as any,
-    {
-      config: {
-        perMinute: 1,
-        perDay: 1,
-        globalDaily: 1,
-        salt: 'test',
-      },
-      store: {
-        async hit() {
-          return { allowed: rateLimitAllowed };
-        },
-      },
-    }
-  );
-}

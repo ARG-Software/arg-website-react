@@ -1,6 +1,7 @@
 import { ApiControllerBase } from '../../../../shared/api/controllerbase.js';
 import { createErrorBody } from '../../../../shared/api/http.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
+import type { IRateLimitResult } from '../../../../shared/security/ratelimit.js';
 import { createRagError, getRagErrorStatus, isConfigurationError } from '../../../application/errors.js';
 
 export class ControllerBase extends ApiControllerBase {
@@ -22,6 +23,17 @@ export class ControllerBase extends ApiControllerBase {
     }
 
     if (error?.code && statusCode !== 500) {
+      if (statusCode === 429) {
+        return {
+          error: {
+            code: error.code,
+            message: error.message,
+            limitScope: error.limitScope,
+            retryAfterSeconds: error.retryAfterSeconds,
+          },
+        };
+      }
+
       return createErrorBody(error.code, error.message);
     }
 
@@ -34,5 +46,17 @@ export class ControllerBase extends ApiControllerBase {
 
   protected createBotVerificationError(message: string): Error {
     return createRagError(403, 'bot_verification_failed', message);
+  }
+
+  protected createRateLimitError(result: IRateLimitResult): Error {
+    const error = createRagError(429, 'rate_limited', 'Too many requests. Please try again later.') as Error & {
+      limitScope?: string;
+      retryAfterSeconds?: number;
+    };
+
+    error.limitScope = result.scope;
+    error.retryAfterSeconds = result.retryAfterSeconds;
+
+    return error;
   }
 }

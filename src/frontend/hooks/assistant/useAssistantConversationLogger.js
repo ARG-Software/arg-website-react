@@ -6,7 +6,7 @@ import { submitAssistantConversationLog } from '@services/apiService';
 const CONVERSATION_ID_STORAGE_KEY = 'arg.assistant.conversationId';
 const IDLE_SAVE_MS = 8000;
 
-export function useAssistantConversationLogger({ messages, isOpen, language }) {
+export function useAssistantConversationLogger({ messages, isOpen, language, loading = false }) {
   const location = useLocation();
   const activeSection = useActiveHomepageSection(location.pathname);
   const [conversationId, setConversationId] = useState(createStoredConversationId);
@@ -68,6 +68,8 @@ export function useAssistantConversationLogger({ messages, isOpen, language }) {
       window.clearTimeout(saveTimerRef.current);
     }
 
+    if (loading) return undefined;
+
     saveTimerRef.current = window.setTimeout(() => {
       flushConversation();
     }, IDLE_SAVE_MS);
@@ -78,7 +80,15 @@ export function useAssistantConversationLogger({ messages, isOpen, language }) {
         saveTimerRef.current = null;
       }
     };
-  }, [activeSection, conversationId, flushConversation, language, location.pathname, messages]);
+  }, [
+    activeSection,
+    conversationId,
+    flushConversation,
+    language,
+    loading,
+    location.pathname,
+    messages,
+  ]);
 
   useEffect(() => {
     if (wasOpenRef.current && !isOpen) {

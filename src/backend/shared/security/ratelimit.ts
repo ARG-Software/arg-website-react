@@ -3,12 +3,19 @@ import { createHash } from 'node:crypto';
 const MINUTE_SECONDS = 60;
 const DAY_SECONDS = 86_400;
 
+export type RateLimitScope = 'minute' | 'day' | 'global_day';
+
 export interface IRateLimitResult {
   allowed: boolean;
   retryAfterSeconds?: number;
+  scope?: RateLimitScope;
 }
 
-export interface IRateLimitStore {
+export interface IRateLimiter {
+  check(ip: string): Promise<IRateLimitResult>;
+}
+
+export interface IRateLimitRepository {
   hit(bucket: string, windowSeconds: number, limit: number): Promise<IRateLimitResult>;
 }
 
@@ -17,6 +24,47 @@ export interface IRateLimitConfig {
   perDay: number;
   globalDaily: number;
   salt: string;
+}
+
+export class RateLimiter implements IRateLimiter {
+  constructor(
+    private readonly repository: IRateLimitRepository,
+    private readonly config: IRateLimitConfig
+  ) {}
+
+  async check(ip: string): Promise<IRateLimitResult> {
+    const ipHash = hashIp(ip, this.config.salt);
+    const checks = [
+      {
+        bucket: getMinuteBucket(ipHash),
+        windowSeconds: MINUTE_SECONDS,
+        limit: this.config.perMinute,
+        scope: 'minute' as const,
+      },
+      {
+        bucket: getDayBucket(ipHash),
+        windowSeconds: DAY_SECONDS,
+        limit: this.config.perDay,
+        scope: 'day' as const,
+      },
+      {
+        bucket: getGlobalDayBucket(),
+        windowSeconds: DAY_SECONDS,
+        limit: this.config.globalDaily,
+        scope: 'global_day' as const,
+      },
+    ];
+
+    for (const check of checks) {
+      const result = await this.repository.hit(check.bucket, check.windowSeconds, check.limit);
+
+      if (!result.allowed) {
+        return { ...result, scope: check.scope };
+      }
+    }
+
+    return { allowed: true };
+  }
 }
 
 export function hashIp(ip: string, salt: string): string {
@@ -36,27 +84,4 @@ export function getDayBucket(ipHash: string): string {
 export function getGlobalDayBucket(): string {
   const day = Math.floor(Date.now() / (DAY_SECONDS * 1000));
   return `global:d:${day}`;
-}
-
-export async function checkRateLimits(
-  ip: string,
-  store: IRateLimitStore,
-  config: IRateLimitConfig
-): Promise<IRateLimitResult> {
-  const ipHash = hashIp(ip, config.salt);
-  const checks = [
-    { bucket: getMinuteBucket(ipHash), windowSeconds: MINUTE_SECONDS, limit: config.perMinute },
-    { bucket: getDayBucket(ipHash), windowSeconds: DAY_SECONDS, limit: config.perDay },
-    { bucket: getGlobalDayBucket(), windowSeconds: DAY_SECONDS, limit: config.globalDaily },
-  ];
-
-  for (const check of checks) {
-    const result = await store.hit(check.bucket, check.windowSeconds, check.limit);
-
-    if (!result.allowed) {
-      return result;
-    }
-  }
-
-  return { allowed: true };
 }

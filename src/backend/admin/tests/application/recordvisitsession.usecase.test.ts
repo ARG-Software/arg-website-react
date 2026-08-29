@@ -12,15 +12,10 @@ test('recordVisitSessionUseCase records geolocation provided by the HTTP boundar
       recordSession: async record => {
         savedRecord = record;
       },
-    } as any,
-    {
-      config: { perMinute: 100, perDay: 100, globalDaily: 100, salt: 'visit-rate-limit' },
-      store: { hit: async () => ({ allowed: true }) },
-    }
+    } as any
   );
 
   await useCase.execute({
-    clientIp: '203.0.113.10',
     sessionId: 'visitor-session',
     geo: {
       countryCode: 'PT',
@@ -55,15 +50,10 @@ test('recordVisitSessionUseCase records empty geolocation when none is provided'
       recordSession: async record => {
         savedRecord = record;
       },
-    } as any,
-    {
-      config: { perMinute: 100, perDay: 100, globalDaily: 100, salt: 'visit-rate-limit' },
-      store: { hit: async () => ({ allowed: true }) },
-    }
+    } as any
   );
 
   await useCase.execute({
-    clientIp: '203.0.113.10',
     sessionId: 'visitor-session',
     geo: {},
     events: [
@@ -92,15 +82,10 @@ test('recordVisitSessionUseCase records visit attribution fields', async () => {
       recordSession: async record => {
         savedRecord = record;
       },
-    } as any,
-    {
-      config: { perMinute: 100, perDay: 100, globalDaily: 100, salt: 'visit-rate-limit' },
-      store: { hit: async () => ({ allowed: true }) },
-    }
+    } as any
   );
 
   await useCase.execute({
-    clientIp: '203.0.113.10',
     sessionId: 'visitor-session',
     geo: {},
     attribution: {

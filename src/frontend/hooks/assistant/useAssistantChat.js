@@ -69,14 +69,37 @@ export function useAssistantChat({ getPayload, consumePayload, preferredLanguage
 
         setPendingStatus('Writing answer...');
 
-        if (response.status === 403 || response.status === 429) {
-          let code = response.status === 429 ? 'rate_limited' : 'bot_verification_failed';
+        if (response.status === 429) {
+          let errorData = null;
+
+          try {
+            errorData = await response.json();
+          } catch {
+            // non-JSON 429 from Netlify native rate limit
+          }
+
+          const retryAfterSeconds = Number(
+            response.headers.get('Retry-After') || errorData?.error?.retryAfterSeconds || 0
+          );
+          const limitScope = errorData?.error?.limitScope || '';
+
+          trackAssistantEvent('error', { error_code: 'rate_limited', limit_scope: limitScope });
+          return {
+            success: false,
+            rateLimited: true,
+            limitScope,
+            retryAfterSeconds: Number.isFinite(retryAfterSeconds) ? retryAfterSeconds : 0,
+          };
+        }
+
+        if (response.status === 403) {
+          let code = 'bot_verification_failed';
 
           try {
             const errorData = await response.json();
             code = errorData.error?.code || code;
           } catch {
-            // non-JSON 429 from Netlify native rate limit
+            // non-JSON bot verification failure
           }
 
           if (code === 'bot_verification_failed') {

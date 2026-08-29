@@ -6,7 +6,8 @@ import { createSupabaseServiceClient } from '../../infrastructure/repositories/s
 import { SupabaseRagReadRepository } from '../../infrastructure/repositories/supabase/supabaseragread.repository.js';
 import { SupabaseRagWriteRepository } from '../../infrastructure/repositories/supabase/supabaseragwrite.repository.js';
 import type { IRateLimitConfig } from '../../../shared/security/ratelimit.js';
-import { SupabaseRateLimitStore } from '../../../shared/security/ratelimit.stores.js';
+import { SupabaseRateLimitRepository } from '../../../shared/infrastructure/repositories/supabase/supabaseratelimit.repository.js';
+import { RateLimiter } from '../../../shared/security/ratelimit.js';
 import { DeepSeekAnswerClient } from '../../infrastructure/llm/deepseek/deepseekanswer.provider.js';
 import { createDeepSeekAssistantUiCopyTranslator } from '../../infrastructure/llm/deepseek/deepseekassistantuicopy.translator.js';
 
@@ -82,15 +83,14 @@ export function createGasparDependencies({ config = RagConfig.load() }: IGasparD
   }
 
   function createRateLimitDependencies() {
-    return {
-      config: getCachedRateLimitConfig(),
-      store: new SupabaseRateLimitStore(
+    return new RateLimiter(
+      new SupabaseRateLimitRepository(
         createSupabaseServiceClient(createSupabaseConfig(config)),
         'hit_rag_rate_limit',
         logger
       ),
-      logger,
-    };
+      getCachedRateLimitConfig()
+    );
   }
 
   function getCachedRateLimitConfig() {

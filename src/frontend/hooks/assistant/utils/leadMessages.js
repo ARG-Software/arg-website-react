@@ -2,6 +2,7 @@ import assistantContent from '@data/assistant.json';
 
 export const LEAD_SOURCE = 'lead_capture';
 export const CHAT_SOURCE = 'chat';
+export const RATE_LIMIT_SOURCE = 'rate_limit_notice';
 
 export function getLeadAssistantMessage(content, extra = {}) {
   return { role: 'assistant', content, source: LEAD_SOURCE, ...extra };
@@ -9,6 +10,10 @@ export function getLeadAssistantMessage(content, extra = {}) {
 
 export function getLeadUserMessage(content) {
   return { role: 'user', content, source: LEAD_SOURCE };
+}
+
+export function getRateLimitAssistantMessage(content) {
+  return { role: 'assistant', content, source: RATE_LIMIT_SOURCE };
 }
 
 export function getLeadConfirmMessage(email, message, copy = assistantContent) {

@@ -3,6 +3,7 @@ import type { IUserIdentity } from '../../../application/ports/iuseridentity.pro
 import { ApiControllerBase } from '../../../../shared/api/controllerbase.js';
 import { createErrorBody } from '../../../../shared/api/http.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
+import type { IRateLimitResult } from '../../../../shared/security/ratelimit.js';
 import { adminContainer } from '../../di/admin.container.js';
 import { getAccessToken } from '../../http/usersession.cookies.js';
 
@@ -29,5 +30,12 @@ export class ControllerBase extends ApiControllerBase {
 
   protected createBotVerificationError(message: string): Error {
     return createAdminError(403, 'bot_verification_failed', message);
+  }
+
+  protected createRateLimitError(result: IRateLimitResult): Error {
+    const error = createAdminError(429, 'rate_limited', 'Too many requests. Please try again later.');
+    error.retryAfterSeconds = result.retryAfterSeconds;
+
+    return error;
   }
 }

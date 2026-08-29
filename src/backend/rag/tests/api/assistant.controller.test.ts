@@ -21,23 +21,56 @@ test('assistant challenge returns the existing wrapped challenge body', async ()
   assert.equal(body.challenge.parameters.algorithm, 'PBKDF2/SHA-256');
 });
 
-test('assistant ask passes HTTP payload and client IP to the use case', async () => {
+test('assistant ask checks the rate limit and passes HTTP payload to the use case', async () => {
   let input: any;
+  let rateLimitChecked = false;
   const controller = createController({
     async ask(payload) {
       input = payload;
       return createAnswer();
+    },
+    async checkRateLimit() {
+      rateLimitChecked = true;
+      return { allowed: true };
     },
   });
   const response = await controller.ask(await createAskRequest());
   const body = await response.json();
 
   assert.equal(response.status, 200);
-  assert.equal(input.clientIp, '203.0.113.10');
+  assert.equal(rateLimitChecked, true);
   assert.equal(input.question, 'What does ARG build?');
   assert.equal(input.altcha, undefined);
   assert.equal(body.contexts, undefined);
   assert.equal(body.answer, 'ARG builds software products.');
+});
+
+test('assistant ask returns rate limit metadata before bot verification', async () => {
+  let askCalled = false;
+  const controller = createController({
+    async ask() {
+      askCalled = true;
+      return createAnswer();
+    },
+    async checkRateLimit() {
+      return { allowed: false, retryAfterSeconds: 45, scope: 'minute' };
+    },
+  });
+  const response = await controller.ask(
+    new Request('https://arg.software/api/assistant/ask', {
+      method: 'POST',
+      headers: { 'x-nf-client-connection-ip': '203.0.113.10' },
+      body: '{',
+    })
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 429);
+  assert.equal(response.headers.get('Retry-After'), '45');
+  assert.equal(body.error.code, 'rate_limited');
+  assert.equal(body.error.limitScope, 'minute');
+  assert.equal(body.error.retryAfterSeconds, 45);
+  assert.equal(askCalled, false);
 });
 
 test('assistant ask returns invalid_json for malformed request bodies', async () => {
@@ -92,7 +125,12 @@ test('assistant UI copy reads the language query and returns use case output', a
 });
 
 function createController(options: AssistantUseCases = {}) {
-  return new AssistantController(createAssistantUseCases(options), { altchaSettings } as any);
+  return new AssistantController(createAssistantUseCases(options), {
+    altchaSettings,
+    askRateLimiter: {
+      check: options.checkRateLimit || (async () => ({ allowed: true })),
+    },
+  } as any);
 }
 
 function createAssistantUseCases({ ask = async (_payload: any) => createAnswer() }: AssistantUseCases = {}) {
@@ -108,6 +146,7 @@ function createAssistantUseCases({ ask = async (_payload: any) => createAnswer()
 
 interface AssistantUseCases {
   ask?: (payload: any) => Promise<any>;
+  checkRateLimit?: () => Promise<any>;
 }
 
 async function createAskRequest(overrides: Record<string, unknown> = {}) {
