@@ -30,7 +30,7 @@ import {
   formatDuration,
 } from '../shared/formatters.js';
 
-const DEFAULT_RANGE = 'today';
+const DEFAULT_RANGE = 'this_week';
 const COUNTRY_BREAKDOWN_PAGE_SIZE = 250;
 const COUNTRY_DONUT_SLICE_COUNT = 6;
 const COUNTRY_RANKING_PAGE_SIZE = 8;
@@ -50,10 +50,8 @@ export default function VisitsPage({ view = 'dashboard', onSelectVisitSession })
 }
 
 function VisitsDashboard({ onSelectVisitSession }) {
-  const [statRanges, setStatRanges] = useState(createDefaultStatRanges);
-  const [chartRange, setChartRange] = useState(DEFAULT_RANGE);
+  const [overviewRange, setOverviewRange] = useState(DEFAULT_RANGE);
   const [chartSeries, setChartSeries] = useState('all');
-  const [countryRange, setCountryRange] = useState(DEFAULT_RANGE);
   const [countryPage, setCountryPage] = useState(1);
   const [sourcesRange, setSourcesRange] = useState(DEFAULT_RANGE);
   const [sourcesPage, setSourcesPage] = useState(1);
@@ -63,13 +61,13 @@ function VisitsDashboard({ onSelectVisitSession }) {
   const [pagesPage, setPagesPage] = useState(1);
   const [sessionPage, setSessionPage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const pageViewsStatQuery = useVisitStat('page_views', statRanges.page_views);
-  const visitsStatQuery = useVisitStat('visits', statRanges.visits);
-  const eventsStatQuery = useVisitStat('events', statRanges.events);
-  const countriesStatQuery = useVisitStat('countries', statRanges.countries);
-  const chartQuery = useVisitChart(chartRange, chartSeries);
+  const pageViewsStatQuery = useVisitStat('page_views', overviewRange);
+  const visitsStatQuery = useVisitStat('visits', overviewRange);
+  const eventsStatQuery = useVisitStat('events', overviewRange);
+  const countriesStatQuery = useVisitStat('countries', overviewRange);
+  const chartQuery = useVisitChart(overviewRange, chartSeries);
   const countryQuery = useVisitCountryBreakdown(
-    countryRange,
+    overviewRange,
     { pageSize: COUNTRY_BREAKDOWN_PAGE_SIZE },
     { keepPrevious: true }
   );
@@ -104,12 +102,8 @@ function VisitsDashboard({ onSelectVisitSession }) {
   };
   const countryItems = formatCountryBreakdown(countryQuery.data?.records || []);
 
-  function updateStatRange(metric, range) {
-    setStatRanges(current => ({ ...current, [metric]: range }));
-  }
-
-  function updateCountryRange(range) {
-    setCountryRange(range);
+  function updateOverviewRange(range) {
+    setOverviewRange(range);
     setCountryPage(1);
   }
 
@@ -123,17 +117,25 @@ function VisitsDashboard({ onSelectVisitSession }) {
 
   return (
     <div className="admin-content-grid">
-      <div className="admin-stats-grid">
-        {STAT_CARDS.map(card => (
-          <VisitStatCard
-            key={card.metric}
-            label={card.label}
-            range={statRanges[card.metric]}
-            query={statQueries[card.metric]}
-            onRangeChange={range => updateStatRange(card.metric, range)}
+      <UiCard className="admin-visit-overview-card" tone="light">
+        <div className="admin-visit-overview-card__header">
+          <div>
+            <h2>Visit overview</h2>
+            <p>Summary for the selected time range.</p>
+          </div>
+          <RangeSelect
+            id="admin-visit-overview-range"
+            className="admin-visit-range-select--small"
+            value={overviewRange}
+            onChange={updateOverviewRange}
           />
-        ))}
-      </div>
+        </div>
+        <div className="admin-stats-grid">
+          {STAT_CARDS.map(card => (
+            <VisitStatCard key={card.metric} label={card.label} query={statQueries[card.metric]} />
+          ))}
+        </div>
+      </UiCard>
       <div className="admin-visit-analytics-grid">
         {chartQuery.isError ? (
           <ErrorCard error={chartQuery.error} onRetry={() => chartQuery.refetch()} />
@@ -141,13 +143,9 @@ function VisitsDashboard({ onSelectVisitSession }) {
           <AdminMetricChart
             title="Page views, visits, and events"
             description="First-party traffic collected without storing raw IP addresses."
-            range={chartRange}
-            rangeId="admin-visit-chart-range"
-            ranges={VISIT_CHART_RANGES}
             points={chartQuery.data?.points || []}
             lines={getVisitChartLines(chartSeries)}
             emptyMessage="No analytics data available for the selected range."
-            onRangeChange={setChartRange}
             controls={
               <UiSelect
                 id="admin-visit-chart-series"
@@ -174,16 +172,10 @@ function VisitsDashboard({ onSelectVisitSession }) {
               <AdminMetricChart
                 title="Visitors by country"
                 description="Country split for visits in the selected range."
-                range={countryRange}
-                rangeId="admin-visit-country-range"
-                ranges={VISIT_CHART_RANGES}
                 pie={getCountryChartItems(countryItems)}
                 pieAriaLabel="Visitor countries"
                 pieLegendMode="none"
                 pieEmptyMessage="No country data available for the selected range."
-                onRangeChange={updateCountryRange}
-                rangeClassName="admin-visit-range-select admin-visit-range-select--small"
-                rangeLabelHidden
                 mode="pie"
                 tone="light"
               >
@@ -463,16 +455,11 @@ function CountryRankingCard({ items, page, onPageChange }) {
   );
 }
 
-function VisitStatCard({ label, range, query, onRangeChange }) {
+function VisitStatCard({ label, query }) {
   return (
     <UiCard className="admin-visit-stat-card" tone="light">
       <div className="admin-visit-stat-card__header">
         <span className="admin-visit-stat-card__label">{label}</span>
-        <RangeSelect
-          id={`admin-visit-stat-${label.toLowerCase().replace(/\s+/g, '-')}`}
-          value={range}
-          onChange={onRangeChange}
-        />
       </div>
       <strong className="admin-visit-stat-card__value">
         {query.isError ? 'Error' : (query.data?.value ?? '...')}
@@ -510,10 +497,6 @@ function getTablePagination(query, onPageChange) {
     ...(query.data?.pagination ?? createEmptyTableData().pagination),
     onPageChange,
   };
-}
-
-function createDefaultStatRanges() {
-  return Object.fromEntries(STAT_CARDS.map(card => [card.metric, DEFAULT_RANGE]));
 }
 
 function getVisitChartLines(series) {

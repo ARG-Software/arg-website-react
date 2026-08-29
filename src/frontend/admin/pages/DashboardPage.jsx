@@ -21,7 +21,7 @@ import {
 import { ErrorCard } from '../shared/ErrorCard.jsx';
 
 export default function DashboardPage({ onSelectRecord }) {
-  const [chartRange, setChartRange] = useState('30d');
+  const [lineChartRange, setLineChartRange] = useState('30d');
   const [tablePage, setTablePage] = useState(1);
   const [tableSort, setTableSort] = useState({ sortBy: 'dateSent', sortDirection: 'desc' });
   const [tableFilters, setTableFilters] = useState(EMPTY_TABLE_FILTERS);
@@ -29,7 +29,8 @@ export default function DashboardPage({ onSelectRecord }) {
   const tableQueryFilters = createTableQueryFilters(tableFilters, debouncedCompanyName);
 
   const summaryQuery = useOutreachSummary();
-  const chartQuery = useOutreachChart(chartRange);
+  const replyOutcomesQuery = useOutreachChart('all');
+  const lineChartQuery = useOutreachChart(lineChartRange);
   const tableQuery = useOutreachRecords(
     {
       scope: 'recent_sent',
@@ -54,12 +55,13 @@ export default function DashboardPage({ onSelectRecord }) {
 
   return (
     <div className="admin-content-grid">
-      {summaryQuery.isError || chartQuery.isError ? (
+      {summaryQuery.isError || replyOutcomesQuery.isError || lineChartQuery.isError ? (
         <ErrorCard
-          error={summaryQuery.error ?? chartQuery.error}
+          error={summaryQuery.error ?? replyOutcomesQuery.error ?? lineChartQuery.error}
           onRetry={() => {
             summaryQuery.refetch();
-            chartQuery.refetch();
+            replyOutcomesQuery.refetch();
+            lineChartQuery.refetch();
           }}
         />
       ) : (
@@ -72,24 +74,20 @@ export default function DashboardPage({ onSelectRecord }) {
           </div>
           <AdminMetricChart
             title="Reply outcomes"
-            description="Reply split for outreach sent in the selected time range."
-            range={chartRange}
-            rangeId="admin-outreach-reply-chart-range"
-            ranges={CHART_RANGES}
-            pie={chartQuery.data?.pie || []}
+            description="All-time reply split for sent outreach."
+            pie={replyOutcomesQuery.data?.pie || []}
             pieAriaLabel="Outreach reply outcomes"
-            onRangeChange={setChartRange}
             mode="pie"
             tone="light"
           />
           <AdminMetricChart
             title="Sent and replies"
             description="Outbound volume and replies obtained for the selected time range."
-            range={chartRange}
+            range={lineChartRange}
             rangeId="admin-outreach-volume-chart-range"
             ranges={CHART_RANGES}
-            points={chartQuery.data?.points || []}
-            onRangeChange={setChartRange}
+            points={lineChartQuery.data?.points || []}
+            onRangeChange={setLineChartRange}
             mode="line"
             tone="light"
           />

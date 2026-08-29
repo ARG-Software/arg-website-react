@@ -94,6 +94,35 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.admin-visit-overview-card {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.admin-visit-overview-card__header {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.admin-visit-overview-card__header h2 {
+  color: #0c002e;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  line-height: 1;
+  margin: 0 0 0.35rem;
+}
+
+.admin-visit-overview-card__header p {
+  color: rgba(12, 0, 46, 0.62);
+  margin: 0;
+}
+
+.admin-visit-overview-card__header .ui-field {
+  margin-left: auto;
+}
+
 .admin-visit-stat-card {
   display: grid;
   gap: 1rem;
@@ -709,6 +738,15 @@
   .admin-table-filters,
   .admin-detail-form {
     grid-template-columns: 1fr;
+  }
+
+  .admin-visit-overview-card__header {
+    flex-direction: column;
+  }
+
+  .admin-visit-overview-card__header .ui-field {
+    margin-left: 0;
+    width: 100%;
   }
 }
 
