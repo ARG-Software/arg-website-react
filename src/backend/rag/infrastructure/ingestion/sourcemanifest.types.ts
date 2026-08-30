@@ -1,4 +1,4 @@
-import type { RagSourceMetadata, RagSourceType } from '../../domain/content/iragsource.js';
+import type { RagSourceMetadata, RagSourceType } from '../../domain/sources/ragsource.types.js';
 
 export interface IJsonManifestEntry {
   kind: 'json';

@@ -17,6 +17,15 @@ export function getPagination(
   };
 }
 
+export function createPagination(page: number, pageSize: number, totalRecords: number) {
+  return {
+    page,
+    pageSize,
+    totalRecords,
+    totalPages: Math.max(1, Math.ceil(totalRecords / pageSize)),
+  };
+}
+
 function clampNumber(
   value: string | number | undefined,
   min: number,

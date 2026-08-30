@@ -52,6 +52,7 @@ export default function VisitsDashboardPage({ onSelectVisitSession }) {
   const [pagesPage, setPagesPage] = useState(1);
   const [pagesSort, setPagesSort] = useState({ sortBy: 'pageViews', sortDirection: 'desc' });
   const [sessionPage, setSessionPage] = useState(1);
+  const [sessionSort, setSessionSort] = useState({ sortBy: 'lastSeenAt', sortDirection: 'desc' });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const pageViewsStatQuery = useVisitStat('page_views', overviewRange);
   const visitsStatQuery = useVisitStat('visits', overviewRange);
@@ -82,7 +83,7 @@ export default function VisitsDashboardPage({ onSelectVisitSession }) {
     { keepPrevious: true }
   );
   const sessionsQuery = useVisitSessions(
-    { page: sessionPage, pageSize: PAGE_SIZE },
+    { ...sessionSort, page: sessionPage, pageSize: PAGE_SIZE },
     { keepPrevious: true }
   );
   const deleteMutation = useDeleteVisitSession();
@@ -102,6 +103,11 @@ export default function VisitsDashboardPage({ onSelectVisitSession }) {
   function updatePagesSort(sortBy) {
     setPagesPage(1);
     setPagesSort(current => createNextTableSort(current, sortBy));
+  }
+
+  function updateSessionSort(sortBy) {
+    setSessionPage(1);
+    setSessionSort(current => createNextTableSort(current, sortBy));
   }
 
   async function deleteVisit() {
@@ -265,6 +271,8 @@ export default function VisitsDashboardPage({ onSelectVisitSession }) {
           description="Today and yesterday only. Open a row to view the ordered page journey."
           query={sessionsQuery}
           onPageChange={setSessionPage}
+          sort={sessionSort}
+          onSortChange={updateSessionSort}
           onSelectVisitSession={onSelectVisitSession}
           onDelete={setDeleteTarget}
           deleteMutation={deleteMutation}

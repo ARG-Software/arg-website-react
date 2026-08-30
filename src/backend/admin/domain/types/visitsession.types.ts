@@ -82,6 +82,20 @@ export type VisitPagination = {
   totalPages: number;
 };
 
+export type VisitSessionSortField =
+  | 'entryPath'
+  | 'pageCount'
+  | 'eventCount'
+  | 'durationMs'
+  | 'lastSeenAt';
+
+export type VisitSessionListQuery = {
+  page?: number;
+  pageSize?: number;
+  sortBy?: VisitSessionSortField;
+  sortDirection?: 'asc' | 'desc';
+};
+
 export type VisitSessionListResult = {
   records: VisitSessionListItem[];
   pagination: VisitPagination;

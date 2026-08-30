@@ -1,5 +1,5 @@
 import { normalizeText } from './text.js';
-import { escapeRegExp } from '../../common/regex.js';
+import { escapeRegExp } from '../../shared/regex.js';
 
 const CV_REDACTIONS = [
   /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,

@@ -34,7 +34,10 @@ import { SupabaseAssistantConversationRepository } from '../../infrastructure/re
 import { SupabaseOutreachAuditRepository } from '../../infrastructure/repositories/supabase/supabaseoutreachaudit.repository.js';
 import { SupabaseOutreachRepository } from '../../infrastructure/repositories/supabase/supabaseoutreach.repository.js';
 import { SupabaseUserIdentityProvider } from '../../infrastructure/repositories/supabase/supabaseuseridentity.provider.js';
-import { SupabaseVisitRepository } from '../../infrastructure/repositories/supabase/supabasevisit.repository.js';
+import { SupabaseVisitEventRepository } from '../../infrastructure/repositories/supabase/supabasevisitevent.repository.js';
+import { SupabaseVisitPageViewRepository } from '../../infrastructure/repositories/supabase/supabasevisitpageview.repository.js';
+import { SupabaseVisitSessionRepository } from '../../infrastructure/repositories/supabase/supabasevisitsession.repository.js';
+import { SupabaseVisitSessionRecorderRepository } from '../../infrastructure/repositories/supabase/supabasevisitsessionrecorder.repository.js';
 import { systemClock } from '../../infrastructure/system/systemclock.js';
 import { DiscordWebhookProvider } from '../../infrastructure/webhooks/discordwebhook.provider.js';
 import { AdminConfig } from '../config/admin.config.js';
@@ -56,7 +59,10 @@ export function createAdminContainer() {
   const identityProvider = new SupabaseUserIdentityProvider(authClient, logger);
   const conversationRepository = new SupabaseAssistantConversationRepository(serviceClient, config, logger);
   const outreachRepository = new SupabaseOutreachRepository(serviceClient, config, logger);
-  const visitRepository = new SupabaseVisitRepository(serviceClient, logger);
+  const visitSessionRepository = new SupabaseVisitSessionRepository(serviceClient, logger);
+  const visitPageViewRepository = new SupabaseVisitPageViewRepository(serviceClient, logger);
+  const visitEventRepository = new SupabaseVisitEventRepository(serviceClient, logger);
+  const visitSessionRecorderRepository = new SupabaseVisitSessionRecorderRepository(serviceClient, logger);
   const adminRateLimitRepository = new SupabaseRateLimitRepository(
     serviceClient,
     'hit_admin_rate_limit',
@@ -106,15 +112,29 @@ export function createAdminContainer() {
       ),
     },
     visits: {
-      deleteVisitSessionUseCase: new DeleteVisitSessionUseCase(visitRepository, logger),
-      listAllVisitSessionsUseCase: new ListAllVisitSessionsUseCase(visitRepository, logger),
-      listVisitCountryBreakdownUseCase: new ListVisitCountryBreakdownUseCase(visitRepository, logger),
-      listVisitJourneyUseCase: new ListVisitJourneyUseCase(visitRepository, logger),
-      listVisitMetricsUseCase: new ListVisitMetricsUseCase(visitRepository, logger),
-      listVisitSessionsUseCase: new ListVisitSessionsUseCase(visitRepository, logger),
+      deleteVisitSessionUseCase: new DeleteVisitSessionUseCase(visitSessionRepository, logger),
+      listAllVisitSessionsUseCase: new ListAllVisitSessionsUseCase(visitSessionRepository, logger),
+      listVisitCountryBreakdownUseCase: new ListVisitCountryBreakdownUseCase(
+        visitSessionRepository,
+        visitPageViewRepository,
+        logger
+      ),
+      listVisitJourneyUseCase: new ListVisitJourneyUseCase(
+        visitSessionRepository,
+        visitPageViewRepository,
+        visitEventRepository,
+        logger
+      ),
+      listVisitMetricsUseCase: new ListVisitMetricsUseCase(
+        visitSessionRepository,
+        visitPageViewRepository,
+        visitEventRepository,
+        logger
+      ),
+      listVisitSessionsUseCase: new ListVisitSessionsUseCase(visitSessionRepository, logger),
       recordVisitSessionUseCase: new RecordVisitSessionUseCase(
         config,
-        visitRepository,
+        visitSessionRecorderRepository,
         logger
       ),
       visitLogRateLimiter: new RateLimiter(adminRateLimitRepository, config.getVisitLogRateLimitConfig()),

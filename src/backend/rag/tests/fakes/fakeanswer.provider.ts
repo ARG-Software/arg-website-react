@@ -1,13 +1,14 @@
-import type { IAnswerProvider } from '../../application/ports/iproviderports.js';
+import type { ILlmProvider } from '../../application/ports/iproviderports.js';
+import type { IAssistantUiCopy } from '../../domain/assistant/assistantcopy.types.js';
 import type {
   ConversationTransformTask,
-} from '../../domain/conversation/conversationtransform.js';
+} from '../../domain/conversation/conversationtransform.types.js';
 import type {
   QuestionIntent,
-} from '../../domain/conversation/questionintent.js';
+} from '../../domain/conversation/questionintent.types.js';
 import type {
   IRetrievalPlan,
-} from '../../domain/retrieval/iretrievalplan.js';
+} from '../../domain/routing/retrievalplan.types.js';
 
 export interface IFakeAnswerProviderBehavior {
   intent?: QuestionIntent;
@@ -19,6 +20,7 @@ export interface IFakeAnswerProviderBehavior {
   intentFallbackResponse?: string;
   personClarificationAnswer?: string;
   rewrittenAnswer?: string;
+  translatedUiCopy?: Partial<IAssistantUiCopy>;
   transformTask?: ConversationTransformTask;
   onClassifyIntent?: (question: string, pageContext: unknown) => void;
   onGenerateAnswer?: (question: string) => void;
@@ -28,12 +30,13 @@ export interface IFakeAnswerProviderBehavior {
     previousAnswer: string,
     task: ConversationTransformTask
   ) => void;
+  onTranslateAssistantUiCopy?: () => void;
 }
 
 export function createFakeAnswerProvider(
   planQuery: string,
   behavior: IFakeAnswerProviderBehavior = {}
-): IAnswerProvider {
+): ILlmProvider {
   const {
     intent = 'rag_question',
     intentResponse = '',
@@ -44,11 +47,13 @@ export function createFakeAnswerProvider(
     intentFallbackResponse = 'Please ask about our website.',
     personClarificationAnswer = 'Who do you mean? Please tell me the person name.',
     rewrittenAnswer = 'Rewritten answer.',
+    translatedUiCopy = {},
     transformTask,
     onClassifyIntent,
     onGenerateAnswer,
     onGeneratePersonClarification,
     onRewritePreviousAnswer,
+    onTranslateAssistantUiCopy,
   } = behavior;
 
   const retrievalPlan: IRetrievalPlan = {
@@ -84,6 +89,10 @@ export function createFakeAnswerProvider(
     async rewritePreviousAnswer(instruction, previousAnswer, task) {
       onRewritePreviousAnswer?.(instruction, previousAnswer, task);
       return rewrittenAnswer;
+    },
+    async translateAssistantUiCopy() {
+      onTranslateAssistantUiCopy?.();
+      return translatedUiCopy;
     },
   };
 }

@@ -1,4 +1,4 @@
-import { ASSISTANT_POLICY_CONTENT } from '../../domain/assistant/assistant.policy.js';
+import { ASSISTANT_POLICY_CONTENT } from '../../domain/assistant/assistantpolicy.js';
 import sourceManifestConfigJson from '../../config/sources.json' with { type: 'json' };
 import type {
   IExternalSourceManifestEntry,

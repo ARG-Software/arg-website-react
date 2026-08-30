@@ -10,12 +10,18 @@ import { ErrorCard } from '../../shared/ErrorCard.jsx';
 
 export default function VisitsListPage({ onSelectVisitSession }) {
   const [sessionPage, setSessionPage] = useState(1);
+  const [sessionSort, setSessionSort] = useState({ sortBy: 'lastSeenAt', sortDirection: 'desc' });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const sessionsQuery = useAllVisitSessions(
-    { page: sessionPage, pageSize: PAGE_SIZE },
+    { ...sessionSort, page: sessionPage, pageSize: PAGE_SIZE },
     { keepPrevious: true }
   );
   const deleteMutation = useDeleteVisitSession();
+
+  function updateSessionSort(sortBy) {
+    setSessionPage(1);
+    setSessionSort(current => createNextTableSort(current, sortBy));
+  }
 
   async function deleteVisit() {
     if (!deleteTarget) return;
@@ -35,6 +41,8 @@ export default function VisitsListPage({ onSelectVisitSession }) {
           description="Every recorded visit, ordered by latest activity. Open a row to view the ordered page journey."
           query={sessionsQuery}
           onPageChange={setSessionPage}
+          sort={sessionSort}
+          onSortChange={updateSessionSort}
           onSelectVisitSession={onSelectVisitSession}
           onDelete={setDeleteTarget}
           deleteMutation={deleteMutation}
@@ -48,4 +56,11 @@ export default function VisitsListPage({ onSelectVisitSession }) {
       />
     </div>
   );
+}
+
+function createNextTableSort(current, sortBy) {
+  return {
+    sortBy,
+    sortDirection: current.sortBy === sortBy && current.sortDirection === 'asc' ? 'desc' : 'asc',
+  };
 }

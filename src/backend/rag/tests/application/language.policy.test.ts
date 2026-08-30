@@ -1,10 +1,19 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { resolveLanguagePolicy } from '../../application/assistant/language.policy.js';
+import { resolveLanguagePolicy } from '../../domain/assistant/languagepolicy.js';
+import { getLanguageTagForName } from '../../application/config/languages.config.js';
+
+function resolvePolicy(input: {
+  question: string;
+  detectedLanguage: string;
+  preferredLanguage?: string;
+}) {
+  return resolveLanguagePolicy({ ...input, getLanguageTagForName });
+}
 
 test('language policy treats language capability as a topic, not a response preference', () => {
-  const result = resolveLanguagePolicy({
+  const result = resolvePolicy({
     question: 'Olá, falas espanhol?',
     detectedLanguage: 'pt-PT',
   });
@@ -15,7 +24,7 @@ test('language policy treats language capability as a topic, not a response pref
 });
 
 test('language policy sets persistent response language when explicitly requested', () => {
-  const result = resolveLanguagePolicy({
+  const result = resolvePolicy({
     question: 'Answer in Spanish from now on',
     detectedLanguage: 'en',
   });
@@ -27,7 +36,7 @@ test('language policy sets persistent response language when explicitly requeste
 });
 
 test('language policy resolves configured language aliases beyond the original allowlist', () => {
-  const result = resolveLanguagePolicy({
+  const result = resolvePolicy({
     question: 'Answer in Japanese from now on',
     detectedLanguage: 'en',
   });
@@ -38,7 +47,7 @@ test('language policy resolves configured language aliases beyond the original a
 });
 
 test('language policy accepts valid BCP-47 language tags directly', () => {
-  const result = resolveLanguagePolicy({
+  const result = resolvePolicy({
     question: 'Answer in pt-BR from now on',
     detectedLanguage: 'en',
   });
@@ -49,7 +58,7 @@ test('language policy accepts valid BCP-47 language tags directly', () => {
 });
 
 test('language policy uses saved preference when there is no explicit change', () => {
-  const result = resolveLanguagePolicy({
+  const result = resolvePolicy({
     question: 'What does ARG do?',
     detectedLanguage: 'en',
     preferredLanguage: 'es',
@@ -61,7 +70,7 @@ test('language policy uses saved preference when there is no explicit change', (
 });
 
 test('language policy clears saved preference when requested', () => {
-  const result = resolveLanguagePolicy({
+  const result = resolvePolicy({
     question: 'Clear my preferred language',
     detectedLanguage: 'en',
     preferredLanguage: 'es',

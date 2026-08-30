@@ -120,7 +120,7 @@ function createTestApi(repositoryOverrides = {}, rateLimitResult = { allowed: tr
     async list() {
       return {
         records: [conversation],
-        pagination: { page: 1, pageSize: 10, totalRecords: 1, totalPages: 1 },
+        totalRecords: 1,
       };
     },
     async findById() {

@@ -42,7 +42,7 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── admin/          # Admin API, domain, application, and infrastructure
     │   ├── maintenance/    # Scheduled maintenance API, application, and infrastructure
     │   ├── mcp/            # Public discovery MCP API
-    │   ├── rag/            # Gaspar apps, domain, application, infrastructure, ingestion, tests
+    │   ├── rag/            # Gaspar assistant: apps (api + di), domain, application, infrastructure, tests
     │   └── shared/         # Shared backend HTTP utilities
     ├── frontend/
     │   ├── main.jsx        # React entry — providers shell, route table, lazy imports
@@ -189,6 +189,18 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - `POST /api/admin/assistant-conversation-log` is public despite the `/api/admin/...` path; do not require an admin session for assistant conversation saves.
 - `netlify/functions/admin.js` handles admin feature endpoints. Keep route-specific deployment adapters only when Netlify config needs to differ, such as `assistant-conversation-log.js`, `visit-log.js`, and scheduled maintenance functions.
 - Recent verification passed: `npm run test:backend`, `npm run typecheck:backend`, `npm run lint:backend`, and `npm run test:netlify`.
+
+### 3.11 RAG Assistant Backend (Gaspar)
+- `src/backend/rag/` follows domain → application → infrastructure → apps. Domain and application never import infrastructure. `apps/di/createrag.container.ts` is the composition root; `apps/di/rag.container.ts` is its lazy singleton wrapper for API handlers.
+- `application/usecases/` holds executable use cases grouped by entrypoint surface (`assistant/`, `ingestion/`, `maintenance/`). Feature logic lives in feature slices: `retrieval/`, `retrievalplanning/`, `answering/`, `assistantcopy/`, `llm/`, `ingestion/`, `config/`, `shared/`.
+- `IngestSourceUseCase` lives in `application/usecases/ingestion/ingestsource.usecase.ts`. Keep ingestion helpers such as chunking, redaction, source factories, and shared ingestion run types under `application/ingestion/`.
+- `application/retrieval/` layout: `retrievalstrategy.ts` (strategy contract), `routedcontextretriever.ts` (chain runner), `createroutedcontextretriever.ts` (single source of truth for the ordered strategy chain — used by both the container and test fakes), `embeddingresolver.ts` (`SemanticEmbeddingResolver` primary/fallback embedding resolution + `ISemanticSearchInput`), `semanticsearch.ts` (two-threshold context search), `contextsmapper.ts` (record-to-context mappers), and `strategies/` with one retrieval strategy per file.
+- Repository ports are split by direction: `IRagSourceReadRepository`/`IRagSourceWriteRepository` and `IRagChunkReadRepository`/`IRagChunkWriteRepository`. `IRagReadRepositories` bundles the read ports for retrieval. Supabase adapters implement both sides and the container passes the same instance to read and write slots.
+- Ports hold contracts plus symbols shared across the boundary: `providererrors.ts` defines `EmbeddingQuotaExceededError`, which infrastructure throws and application catches. Pure vocabulary types such as `EmbeddingIndex` belong in domain (`domain/sources/ragsource.types.ts`), not ports.
+- Infrastructure owns mechanisms (filesystem, network, format libraries, config files), not only port implementations. Add a port only when a second implementation or a test fake needs it.
+- `infrastructure/ingestion/loaders/` is split per source family: `loadfirstpartysources.ts` (entry with manifest dispatch and selection filtering), `loadjsonmanifestsources.ts`, `loadprojectsources.ts`, `loadpartnersources.ts`, `loadteamprofilesources.ts`, `loadblogsources.ts`, `loadlocaldocumentsources.ts`, `loadtrustedexternalsources.ts`, plus `loaderfiles.ts` for shared file/path/selection mechanics. Family loaders must not import back from the entry file.
+- Source manifests live at the `infrastructure/ingestion/` root: `sourcemanifest.config.ts`, `sourcemanifest.types.ts`, and `sitedata.types.ts` (shapes of the site data files on disk).
+- CLI entry points live in `src/backend/rag/apps/scripts/` because they are executable app entrypoints. Ingest scripts (`ingestlocal.ts`, `ingestexternal.ts`) share batch mechanics from `apps/scripts/cli.ts`.
 
 ---
 
@@ -480,3 +492,8 @@ export default function MyPage() {
 | `src/backend/shared/infrastructure/repositories/supabase/supabaseratelimit.repository.ts` | Production Supabase-backed rate-limit repository |
 | `src/backend/shared/api/controllerbase.ts` | Shared API helpers, including controller-level rate-limit checks |
 | `src/backend/rag/tests/fakes/inmemoryratelimit.repository.ts` | Test-only in-memory rate-limit repository fake |
+| `src/backend/rag/apps/di/createrag.container.ts` | RAG composition root — wires Supabase adapters and providers into use cases |
+| `src/backend/rag/application/retrieval/createroutedcontextretriever.ts` | Single source of truth for the ordered retrieval strategy chain |
+| `src/backend/rag/application/usecases/ingestion/ingestsource.usecase.ts` | `IngestSourceUseCase` — normalize, chunk, embed, and upsert pipeline |
+| `src/backend/rag/infrastructure/ingestion/loaders/loadfirstpartysources.ts` | First-party ingestion entry — manifest dispatch and selection filtering over per-family loaders |
+| `src/backend/rag/apps/scripts/cli.ts` | Shared ingest CLI batch mechanics for local/external ingest scripts |

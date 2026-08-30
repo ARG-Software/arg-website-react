@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   CartesianGrid,
   Cell,
@@ -18,6 +19,26 @@ const COLOR_SENT = '#f0060d';
 const COLOR_REPLIED = '#7904fd';
 const COLOR_NO_REPLY = '#ffb020';
 const PIE_COLORS = [COLOR_REPLIED, COLOR_SENT, COLOR_NO_REPLY, '#0ea5e9', '#22c55e', '#64748b'];
+const TOOLTIP_CONTENT_STYLE = {
+  background: '#fff',
+  border: '1px solid rgba(12, 0, 46, 0.1)',
+  borderRadius: '0.75rem',
+  boxShadow: '0 1rem 2rem rgba(4, 0, 18, 0.12)',
+  color: '#0c002e',
+  padding: '0.75rem',
+};
+const TOOLTIP_LABEL_STYLE = {
+  color: 'rgba(12, 0, 46, 0.62)',
+  fontSize: '0.75rem',
+  marginBottom: '0.25rem',
+};
+const TOOLTIP_ITEM_STYLE = {
+  alignItems: 'center',
+  display: 'flex',
+  gap: '0.5rem',
+  justifyContent: 'space-between',
+  minWidth: '9rem',
+};
 const DEFAULT_LINES = [
   { dataKey: 'sent', name: 'Sent', color: COLOR_SENT },
   { dataKey: 'repliesObtained', name: 'Replies obtained', color: COLOR_REPLIED },
@@ -44,6 +65,7 @@ export function AdminMetricChart({
   tone = 'default',
   children,
 }) {
+  const [activeLineKey, setActiveLineKey] = useState(null);
   const showLineChart = mode !== 'pie';
   const showPieChart = mode !== 'line';
   const hasData =
@@ -86,7 +108,11 @@ export function AdminMetricChart({
           <div className="admin-metric-chart__plot" role="img" aria-label={title}>
             {hasData ? (
               <ResponsiveContainer width="100%" height="100%" minHeight={320}>
-                <LineChart data={points} margin={{ top: 8, right: 16, bottom: 8, left: -8 }}>
+                <LineChart
+                  data={points}
+                  margin={{ top: 8, right: 16, bottom: 8, left: -8 }}
+                  onMouseLeave={() => setActiveLineKey(null)}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(12, 0, 46, 0.08)" />
                   <XAxis
                     dataKey="label"
@@ -104,15 +130,10 @@ export function AdminMetricChart({
                     tickLine={{ stroke: 'rgba(12, 0, 46, 0.14)' }}
                   />
                   <Tooltip
-                    contentStyle={{
-                      background: '#fff',
-                      border: '1px solid rgba(12, 0, 46, 0.1)',
-                      borderRadius: '0.75rem',
-                      boxShadow: '0 1rem 2rem rgba(4, 0, 18, 0.12)',
-                      color: '#0c002e',
-                    }}
+                    content={<LineTooltip activeLineKey={activeLineKey} />}
+                    contentStyle={TOOLTIP_CONTENT_STYLE}
                     itemStyle={{ color: '#0c002e' }}
-                    labelStyle={{ color: 'rgba(12, 0, 46, 0.62)', marginBottom: '0.25rem' }}
+                    labelStyle={TOOLTIP_LABEL_STYLE}
                   />
                   <Legend wrapperStyle={{ paddingTop: '1rem' }} iconType="circle" />
                   {lines.map(line => (
@@ -123,8 +144,14 @@ export function AdminMetricChart({
                       name={line.name}
                       stroke={line.color}
                       strokeWidth={2}
-                      dot={{ r: 3, fill: line.color, strokeWidth: 0 }}
-                      activeDot={{ r: 5 }}
+                      dot={{
+                        r: 3,
+                        fill: line.color,
+                        strokeWidth: 0,
+                        onMouseEnter: () => setActiveLineKey(line.dataKey),
+                      }}
+                      activeDot={{ r: 5, onMouseEnter: () => setActiveLineKey(line.dataKey) }}
+                      onMouseEnter={() => setActiveLineKey(line.dataKey)}
                     />
                   ))}
                 </LineChart>
@@ -175,6 +202,25 @@ export function AdminMetricChart({
       </div>
       {children}
     </UiCard>
+  );
+}
+
+function LineTooltip({ active, payload = [], label, activeLineKey }) {
+  if (!active || !payload.length) return null;
+
+  const items = activeLineKey ? payload.filter(item => item.dataKey === activeLineKey) : payload;
+  if (!items.length) return null;
+
+  return (
+    <div style={TOOLTIP_CONTENT_STYLE}>
+      <div style={TOOLTIP_LABEL_STYLE}>{label}</div>
+      {items.map(item => (
+        <div key={item.dataKey} style={TOOLTIP_ITEM_STYLE}>
+          <span style={{ color: item.color }}>{item.name}</span>
+          <strong>{Number(item.value || 0).toLocaleString()}</strong>
+        </div>
+      ))}
+    </div>
   );
 }
 

@@ -1,19 +1,20 @@
-import type { IAssistantUiCopy } from '../../domain/assistant/iassistantuicopy.js';
-import type { IChatMessage, IPageContext } from '../../domain/conversation/ichatmessage.js';
-import type { IRetrievedContext } from '../../domain/retrieval/iretrievedcontext.js';
-import type { ConversationTransformTask } from '../../domain/conversation/conversationtransform.js';
+import type { IAssistantUiCopy } from '../../domain/assistant/assistantcopy.types.js';
+import type { IChatMessage } from '../../domain/conversation/chatmessage.types.js';
+import type { IPageContext } from '../../domain/conversation/pagecontext.types.js';
+import type { IRetrievedContext } from '../../domain/sources/retrievedcontext.types.js';
+import type { ConversationTransformTask } from '../../domain/conversation/conversationtransform.types.js';
 import type {
   FallbackQuestionIntent,
   IQuestionIntentResult,
-} from '../../domain/conversation/questionintent.js';
-import type { IRetrievalPlan } from '../../domain/retrieval/iretrievalplan.js';
+} from '../../domain/conversation/questionintent.types.js';
+import type { IRetrievalPlan } from '../../domain/routing/retrievalplan.types.js';
 
 export interface IEmbeddingProvider {
   embedText(text: string): Promise<number[]>;
   embedTexts(texts: string[]): Promise<number[][]>;
 }
 
-export interface IAnswerProvider {
+export interface ILlmProvider {
   classifyQuestionIntent(
     question: string,
     messages: IChatMessage[],
@@ -47,9 +48,6 @@ export interface IAnswerProvider {
     task: ConversationTransformTask,
     responseLanguage: string
   ): Promise<string>;
-}
-
-export interface IAssistantUiCopyTranslator {
   translateAssistantUiCopy(
     source: IAssistantUiCopy,
     language: string

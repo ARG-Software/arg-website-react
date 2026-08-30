@@ -1,10 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
-  getAssistantUiCopy,
-  readAssistantSourceCopy,
-} from '../../application/assistantUiCopy/getassistantuicopy.js';
+import { readAssistantSourceCopy } from '../../application/assistantcopy/sourcecopy.js';
+import { GetAssistantUiCopyUseCase } from '../../application/usecases/assistant/getassistantuicopy.usecase.js';
+import { createFakeAnswerProvider } from '../fakes/fakeanswer.provider.js';
 
 test('assistant UI copy exposes the manual copy version', () => {
   const source = readAssistantSourceCopy();
@@ -15,7 +14,14 @@ test('assistant UI copy exposes the manual copy version', () => {
 });
 
 test('English assistant UI copy returns without calling translation', async () => {
-  const result = await getAssistantUiCopy('en');
+  const useCase = new GetAssistantUiCopyUseCase(
+    createFakeAnswerProvider('unused', {
+      onTranslateAssistantUiCopy() {
+        throw new Error('English copy must not be translated');
+      },
+    })
+  );
+  const result = await useCase.execute('en');
 
   assert.equal(result.language, 'en');
   assert.equal(result.direction, 'ltr');
@@ -24,17 +30,16 @@ test('English assistant UI copy returns without calling translation', async () =
 });
 
 test('non-English assistant UI copy uses the injected translator', async () => {
-  const result = await getAssistantUiCopy('pt', {
-    translator: {
-      async translateAssistantUiCopy() {
-        return {
-          labels: {
-            send: 'Enviar',
-          },
-        };
+  const useCase = new GetAssistantUiCopyUseCase(
+    createFakeAnswerProvider('unused', {
+      translatedUiCopy: {
+        labels: {
+          send: 'Enviar',
+        },
       },
-    },
-  });
+    })
+  );
+  const result = await useCase.execute('pt');
 
   assert.equal(result.language, 'pt-PT');
   assert.equal(result.direction, 'ltr');

@@ -5,16 +5,13 @@ import { getTrustedExternalSourceEntries } from '../sourcemanifest.config.js';
 import { extractHtmlText, fetchExternalHtml } from '../extractors/extracthtmltext.js';
 import { createSource } from '../../../application/ingestion/source.factory.js';
 import type { IIngestionRunOptions } from '../../../application/ingestion/iingestion.types.js';
-import type { IRagSource } from '../../../domain/content/iragsource.js';
+import type { IRagSource } from '../../../domain/sources/ragsource.types.js';
 import type { IExternalSourceManifestEntry } from '../sourcemanifest.types.js';
-import { escapeRegExp } from '../../../application/common/regex.js';
+import { escapeRegExp } from '../../../application/shared/regex.js';
 
 export async function loadTrustedExternalSourceEntries(
-  rootDir = process.cwd(),
   selection?: IIngestionRunOptions
 ): Promise<IExternalSourceManifestEntry[]> {
-  void rootDir;
-
   return filterExternalSourceEntries(getTrustedExternalSourceEntries().map(validateExternalSourceEntry), selection);
 }
 

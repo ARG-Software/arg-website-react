@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import type { IAdminConfiguration } from '../../config/iadmin.configuration.js';
-import type { IVisitRepository } from '../../ports/repositories/ivisit.repository.js';
+import type { IVisitSessionRecorderRepository } from '../../ports/repositories/ivisitsessionrecorder.repository.js';
 import { VisitSession } from '../../../domain/visit.js';
 import { VisitDomainError } from '../../../domain/errors/visitdomain.error.js';
 import type {
@@ -23,7 +23,7 @@ export interface RecordVisitSessionInput {
 export class RecordVisitSessionUseCase {
   constructor(
     private readonly configuration: IAdminConfiguration,
-    private readonly visitRepository: IVisitRepository,
+    private readonly visitRepository: IVisitSessionRecorderRepository,
     private readonly logger?: ILogger
   ) {}
 

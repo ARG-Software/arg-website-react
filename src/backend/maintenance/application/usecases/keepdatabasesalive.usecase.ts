@@ -1,9 +1,9 @@
-import type { IMaintenanceRepository } from '../ports/repositories/imaintenance.repository.js';
+import type { ITableKeepAliveProbe } from '../ports/itablekeepaliveprobe.js';
 
 export class KeepDatabasesAliveUseCase {
-  constructor(private readonly maintenanceRepository: IMaintenanceRepository) {}
+  constructor(private readonly probes: ITableKeepAliveProbe[]) {}
 
   async execute(): Promise<void> {
-    await this.maintenanceRepository.keepDatabasesAlive();
+    await Promise.all(this.probes.map(probe => probe.touch()));
   }
 }

@@ -176,9 +176,9 @@ test('netlify functions do not reference removed implementation folders or old c
 
 test('function-bound JSON config is imported instead of read from deployment paths', () => {
   for (const file of [
-    'rag/application/source.config.ts',
-    'rag/application/language.config.ts',
-    'rag/application/assistantUiCopy/sourcecopy.ts',
+    'rag/application/config/sourcecatalog.config.ts',
+    'rag/application/config/languages.config.ts',
+    'rag/application/assistantcopy/sourcecopy.ts',
     'rag/infrastructure/ingestion/sourcemanifest.config.ts',
   ]) {
     const content = readBackendFile(file);

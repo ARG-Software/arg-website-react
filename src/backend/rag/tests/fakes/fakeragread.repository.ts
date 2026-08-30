@@ -1,32 +1,27 @@
-import type { RagSourceOrigin } from '../../domain/content/iragsource.js';
-import type { IRetrievedContext } from '../../domain/retrieval/iretrievedcontext.js';
-import type {
-  IFindChunksByTextInput,
-  IFindSourcesInput,
-  IMatchChunksInput,
-  IRagReadRepository,
-  IRagSourceRecord,
-} from '../../application/ports/iragread.repository.js';
-import { resolveUrl } from '../../application/common/url.js';
+import type { RagSourceOrigin } from '../../domain/sources/ragsource.types.js';
+import type { IRetrievedContext } from '../../domain/sources/retrievedcontext.types.js';
+import type { IRagReadRepositories } from '../../application/ports/iragread.repository.js';
+import type { RagChunkRecord } from '../../application/ports/iragchunk.repository.js';
+import type { IFindChunksByTextInput, IMatchChunksInput } from '../../application/ports/iragchunksearch.repository.js';
+import type { IFindRagSourcesInput, RagSourceRecord } from '../../application/ports/iragsource.repository.js';
 import type { IChunkFixture } from '../fixtures/sources.js';
 
-const TEST_SITE_URL = 'https://arg.software';
 const FIRST_PARTY_ORIGIN: RagSourceOrigin = 'first_party';
 
 export interface IFakeRagReadRepositoryFixtures {
-  sources?: IRagSourceRecord[];
+  sources?: RagSourceRecord[];
   chunks?: IChunkFixture[];
   contexts?: IRetrievedContext[];
 }
 
 export interface IFakeRagReadRepositoryCalls {
-  findSources: IFindSourcesInput[];
-  findFirstChunksForSources: IRagSourceRecord[][];
+  findSources: IFindRagSourcesInput[];
+  findFirstChunksForSources: RagSourceRecord[][];
   matchChunks: IMatchChunksInput[];
   findChunksByText: IFindChunksByTextInput[];
 }
 
-export class FakeRagReadRepository implements IRagReadRepository {
+export class FakeRagReadRepository implements IRagReadRepositories {
   readonly calls: IFakeRagReadRepositoryCalls = {
     findSources: [],
     findFirstChunksForSources: [],
@@ -34,9 +29,28 @@ export class FakeRagReadRepository implements IRagReadRepository {
     findChunksByText: [],
   };
 
+  readonly sourceRepository = {
+    findByKey: async () => null,
+    findPublicByTypes: (input: IFindRagSourcesInput) => this.findSources(input),
+  };
+
+  readonly chunkRepository = {
+    findBySourceId: async (sourceId: string) =>
+      this.chunkRecords().filter(chunk => chunk.sourceId === sourceId),
+    findFirstBySourceIds: (sourceIds: string[]) => this.findFirstChunksBySourceIds(sourceIds),
+    count: async () => this.chunkRecords().length,
+    listPage: async (offset: number, pageSize: number) =>
+      this.chunkRecords().slice(offset, offset + pageSize),
+  };
+
+  readonly chunkSearchRepository = {
+    matchChunks: (input: IMatchChunksInput) => this.matchChunks(input),
+    findChunksByText: (input: IFindChunksByTextInput) => this.findChunksByText(input),
+  };
+
   constructor(private readonly fixtures: IFakeRagReadRepositoryFixtures = {}) {}
 
-  async findSources(input: IFindSourcesInput): Promise<IRagSourceRecord[]> {
+  private async findSources(input: IFindRagSourcesInput): Promise<RagSourceRecord[]> {
     this.calls.findSources.push(input);
     const sourceOrigin = input.sourceOrigin ?? FIRST_PARTY_ORIGIN;
 
@@ -48,31 +62,36 @@ export class FakeRagReadRepository implements IRagReadRepository {
     );
   }
 
-  async findFirstChunksForSources(sources: IRagSourceRecord[]): Promise<IRetrievedContext[]> {
+  private async findFirstChunksBySourceIds(sourceIds: string[]) {
+    const sources = (this.fixtures.sources ?? []).filter(source => sourceIds.includes(source.id));
     this.calls.findFirstChunksForSources.push(sources);
-    const chunksBySourceId = new Map(
-      (this.fixtures.chunks ?? [])
-        .filter(chunk => chunk.chunkIndex === 0)
-        .map(chunk => [chunk.sourceId, chunk])
-    );
 
-    return sources.flatMap(source => {
-      const chunk = chunksBySourceId.get(source.id);
-      return chunk ? [createDirectContext(source, chunk)] : [];
-    });
+    return this.chunkRecords()
+      .filter(chunk => sourceIds.includes(chunk.sourceId))
+      .filter(chunk => chunk.chunkIndex === 0);
   }
 
-  async matchChunks(input: IMatchChunksInput): Promise<IRetrievedContext[]> {
+  private chunkRecords(): RagChunkRecord[] {
+    return (this.fixtures.chunks ?? []).map(chunk => ({
+      id: chunk.id,
+      sourceId: chunk.sourceId,
+      chunkIndex: chunk.chunkIndex,
+      content: chunk.content,
+      metadata: chunk.metadata,
+    }));
+  }
+
+  private async matchChunks(input: IMatchChunksInput) {
     this.calls.matchChunks.push(input);
 
     return (this.fixtures.contexts ?? [])
       .filter(context => !input.sourceTypes || input.sourceTypes.includes(context.sourceType))
       .filter(context => !input.sourceKeys || input.sourceKeys.includes(context.sourceKey))
       .filter(context => context.origin === input.sourceOrigin)
-      .map(resolveContextUrl);
+      .map(toMatchedChunkRecord);
   }
 
-  async findChunksByText(input: IFindChunksByTextInput): Promise<IRetrievedContext[]> {
+  private async findChunksByText(input: IFindChunksByTextInput) {
     this.calls.findChunksByText.push(input);
     const sourceOrigin = input.sourceOrigin ?? FIRST_PARTY_ORIGIN;
     const terms = input.terms.map(term => term.toLowerCase());
@@ -82,31 +101,24 @@ export class FakeRagReadRepository implements IRagReadRepository {
       .filter(context => !input.sourceTypes || input.sourceTypes.includes(context.sourceType))
       .filter(context => terms.some(term => context.content.toLowerCase().includes(term)))
       .slice(0, input.matchCount)
-      .map(resolveContextUrl);
+      .map(toMatchedChunkRecord);
   }
 }
 
-function createDirectContext(source: IRagSourceRecord, chunk: IChunkFixture): IRetrievedContext {
+function toMatchedChunkRecord(context: IRetrievedContext) {
   return {
-    chunkId: chunk.id,
-    sourceId: source.id,
-    sourceType: source.sourceType,
-    sourceKey: source.sourceKey,
-    title: source.title,
-    url: resolveUrl(source.url, TEST_SITE_URL),
-    path: source.path,
-    chunkIndex: chunk.chunkIndex,
-    content: chunk.content,
-    similarity: 1,
-    sourceMetadata: source.metadata ?? {},
-    chunkMetadata: chunk.metadata ?? {},
-    origin: source.origin,
-  };
-}
-
-function resolveContextUrl(context: IRetrievedContext): IRetrievedContext {
-  return {
-    ...context,
-    url: resolveUrl(context.url, TEST_SITE_URL),
+    chunkId: context.chunkId,
+    sourceId: context.sourceId,
+    sourceType: context.sourceType,
+    sourceKey: context.sourceKey,
+    title: context.title,
+    url: context.url,
+    path: context.path,
+    chunkIndex: context.chunkIndex,
+    content: context.content,
+    similarity: context.similarity,
+    sourceMetadata: context.sourceMetadata,
+    chunkMetadata: context.chunkMetadata,
+    origin: context.origin,
   };
 }

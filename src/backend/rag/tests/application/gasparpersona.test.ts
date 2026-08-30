@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildSystemPrompt } from '../../application/prompts/answering.js';
-import { buildIntentFallbackPrompt } from '../../application/prompts/fallback.js';
-import { buildInsufficientContextPrompt } from '../../application/prompts/insufficientcontext.js';
-import { buildIntentPrompt } from '../../application/prompts/intent.js';
-import { buildRetrievalPlanPrompt } from '../../application/prompts/retrievalplan.js';
+import { buildSystemPrompt } from '../../application/llm/prompts/answering.js';
+import { buildIntentFallbackPrompt } from '../../application/llm/prompts/fallback.js';
+import { buildInsufficientContextPrompt } from '../../application/llm/prompts/insufficientcontext.js';
+import { buildIntentPrompt } from '../../application/llm/prompts/intent.js';
+import { buildRetrievalPlanPrompt } from '../../application/llm/prompts/retrievalplan.js';
 
 const COMPANY_NAME = 'ARG Software';
 

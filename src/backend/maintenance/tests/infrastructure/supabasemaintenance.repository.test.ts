@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { SupabaseMaintenanceRepository } from '../../infrastructure/repositories/supabase/supabasemaintenance.repository.js';
+import { SupabaseVisitSessionRepository } from '../../../admin/infrastructure/repositories/supabase/supabasevisitsession.repository.js';
+import { SupabaseAssistantConversationRetentionRepository } from '../../infrastructure/repositories/supabase/supabaseassistantconversationretention.repository.js';
+import { SupabaseTableKeepAliveProbe } from '../../infrastructure/repositories/supabase/supabasetablekeepaliveprobe.js';
 
 test('deletes old assistant conversations from the admin database', async () => {
   const adminClient = createSupabaseClient({ count: 3 });
-  const repository = new SupabaseMaintenanceRepository(adminClient, createSupabaseClient());
+  const repository = new SupabaseAssistantConversationRetentionRepository(adminClient);
 
-  const deleted = await repository.deleteOldAssistantConversations('2026-01-01T00:00:00.000Z');
+  const deleted = await repository.deleteOlderThan('2026-01-01T00:00:00.000Z');
 
   assert.equal(deleted, 3);
   assert.deepEqual(adminClient.calls, [
@@ -19,9 +21,9 @@ test('deletes old assistant conversations from the admin database', async () => 
 
 test('deletes old visit sessions from the admin database', async () => {
   const adminClient = createSupabaseClient({ count: 5 });
-  const repository = new SupabaseMaintenanceRepository(adminClient, createSupabaseClient());
+  const repository = new SupabaseVisitSessionRepository(adminClient);
 
-  const deleted = await repository.deleteOldVisitSessions('2026-01-01T00:00:00.000Z');
+  const deleted = await repository.deleteOlderThan('2026-01-01T00:00:00.000Z');
 
   assert.deepEqual(deleted, { events: 0, sessions: 5 });
   assert.deepEqual(adminClient.calls, [
@@ -31,20 +33,14 @@ test('deletes old visit sessions from the admin database', async () => {
   ]);
 });
 
-test('keeps admin and RAG databases alive', async () => {
-  const adminClient = createSupabaseClient();
-  const ragClient = createSupabaseClient();
-  const repository = new SupabaseMaintenanceRepository(adminClient, ragClient);
+test('keeps configured database tables alive', async () => {
+  const client = createSupabaseClient();
+  const probe = new SupabaseTableKeepAliveProbe(client, 'rag_sources');
 
-  await repository.keepDatabasesAlive();
+  await probe.touch();
 
-  assert.deepEqual(ragClient.calls, [
+  assert.deepEqual(client.calls, [
     ['from', 'rag_sources'],
-    ['select', 'id'],
-    ['limit', 1],
-  ]);
-  assert.deepEqual(adminClient.calls, [
-    ['from', 'outreach_records'],
     ['select', 'id'],
     ['limit', 1],
   ]);

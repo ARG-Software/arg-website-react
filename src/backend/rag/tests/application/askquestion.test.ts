@@ -9,12 +9,41 @@ import { createContextFixture as matchRow } from '../fixtures/contexts.js';
 import { createTestConfig } from '../fixtures/config.js';
 import { createChunkFixture as chunk, createSourceFixture as source } from '../fixtures/sources.js';
 import { loadFirstPartySources } from '../../infrastructure/ingestion/loaders/loadfirstpartysources.js';
-import { buildInsufficientContextPrompt } from '../../application/prompts/insufficientcontext.js';
-import { askQuestion, retrieveRelevantChunks, resolveRetrievalRoute } from '../../application/ask/askquestion.js';
-import { createAssistantActions } from '../../application/ask/response/actions.js';
-import { createCitations } from '../../application/ask/response/citations.js';
+import { buildInsufficientContextPrompt } from '../../application/llm/prompts/insufficientcontext.js';
+import type { IRetrievalPlan } from '../../domain/routing/retrievalplan.types.js';
+import { resolveRetrievalRoute as resolveDomainRetrievalRoute } from '../../domain/routing/retrievalroute.js';
+import { createAssistantActions } from '../../domain/assistant/actions.js';
+import { getKnownProjectNames } from '../../application/config/sourcecatalog.config.js';
+import { createCitations } from '../../application/answering/citations.js';
+import { createAssistantUseCases, type TestAssistantUseCaseInput } from '../fakes/createassistantusecases.js';
 
 const config = createTestConfig({ matchCount: 1 });
+
+interface TestAskQuestionInput extends TestAssistantUseCaseInput {
+  question?: unknown;
+  messages?: unknown;
+  pageContext?: unknown;
+  retrievalQuestion?: string;
+  preferredLanguage?: string;
+}
+
+function askQuestion(input: TestAskQuestionInput) {
+  const useCases = createAssistantUseCases(input);
+  return useCases.askAssistantQuestionUseCase.execute(input);
+}
+
+function retrieveRelevantChunks(input: TestAskQuestionInput) {
+  const useCases = createAssistantUseCases(input);
+  return useCases.retrieveRelevantChunksUseCase.execute(input);
+}
+
+function resolveRetrievalRoute(
+  retrievalQuestion: string,
+  plan: Pick<IRetrievalPlan, 'mode' | 'entity' | 'subject'>
+) {
+  return resolveDomainRetrievalRoute(retrievalQuestion, plan, getKnownProjectNames());
+}
+
 
 const APPROVED_PROJECT_COMMERCIAL_FACTS = [
   {

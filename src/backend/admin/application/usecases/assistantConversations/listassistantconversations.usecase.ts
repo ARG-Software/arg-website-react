@@ -1,6 +1,6 @@
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import type { IAssistantConversationRepository } from '../../ports/repositories/iassistantconversation.repository.js';
-import { getPagination } from '../pagination.js';
+import { createPagination, getPagination } from '../pagination.js';
 import { createAssistantConversationListItem } from './assistantconversation.response.js';
 
 export interface ListAssistantConversationsInput {
@@ -20,12 +20,12 @@ export class ListAssistantConversationsUseCase {
     const result = await this.conversationRepository.list(pagination);
     this.logger?.info('Assistant conversations list use case completed', {
       recordCount: result.records.length,
-      totalRecords: result.pagination.totalRecords,
+      totalRecords: result.totalRecords,
     });
 
     return {
       records: result.records.map(createAssistantConversationListItem),
-      pagination: result.pagination,
+      pagination: createPagination(pagination.page, pagination.pageSize, result.totalRecords),
     };
   }
 }

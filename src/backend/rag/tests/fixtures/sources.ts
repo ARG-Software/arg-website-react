@@ -1,5 +1,5 @@
-import type { RagSourceMetadata, RagSourceType } from '../../domain/content/iragsource.js';
-import type { IRagSourceRecord } from '../../application/ports/iragread.repository.js';
+import type { RagSourceMetadata, RagSourceType } from '../../domain/sources/ragsource.types.js';
+import type { RagSourceRecord } from '../../application/ports/iragsource.repository.js';
 
 export interface IChunkFixture {
   id: string;
@@ -16,7 +16,7 @@ export function createSourceFixture(
   sourceType: RagSourceType = 'blog_post',
   sourceKey = id,
   metadata: Record<string, unknown> = {}
-): IRagSourceRecord {
+): RagSourceRecord {
   return {
     id,
     sourceType,
@@ -27,6 +27,7 @@ export function createSourceFixture(
     origin: 'first_party',
     isPublic: true,
     metadata: { ...(date ? { date } : {}), ...metadata },
+    contentHash: null,
   };
 }
 

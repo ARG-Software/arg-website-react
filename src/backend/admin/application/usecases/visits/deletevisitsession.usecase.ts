@@ -1,13 +1,13 @@
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { createAdminError } from '../../errors.js';
-import type { IVisitRepository } from '../../ports/repositories/ivisit.repository.js';
+import type { IVisitSessionRepository } from '../../ports/repositories/ivisitsession.repository.js';
 
 export interface DeleteVisitSessionInput {
   sessionHash?: string;
 }
 
 export class DeleteVisitSessionUseCase {
-  constructor(private readonly repository: IVisitRepository, private readonly logger?: ILogger) {}
+  constructor(private readonly repository: IVisitSessionRepository, private readonly logger?: ILogger) {}
 
   async execute(input: DeleteVisitSessionInput = {}): Promise<void> {
     const sessionHash = input.sessionHash || '';

@@ -51,7 +51,7 @@ npm run preview      # Preview production build
     │   ├── admin/                # Admin API, domain, application, and infrastructure
     │   ├── maintenance/          # Scheduled maintenance API
     │   ├── mcp/                  # Public discovery MCP API
-    │   ├── rag/                  # Gaspar assistant apps, domain, ingestion, tests
+    │   ├── rag/                  # Gaspar assistant: apps, domain, application, infrastructure, tests
     │   └── shared/               # Shared backend HTTP utilities
     ├── frontend/
     │   ├── main.jsx              # App entry, provider tree, route definitions
@@ -185,16 +185,18 @@ The RAG code is organized by dependency direction rather than by provider:
 |---|---|---|
 | **Apps** | `src/backend/rag/apps/` | Concrete app mounts that compose application use cases with infrastructure adapters |
 | **Domain** | `src/backend/rag/domain/` | Provider-agnostic types and policies: assistant actions/responses, language policy, conversation intent, retrieval plans/routes, and content/source types |
-| **Application** | `src/backend/rag/application/` | Use cases, ports, ingestion pipeline, retrieval orchestration, assistant UI copy, config value types, common helpers, and provider-agnostic prompts |
-| **Application Ports** | `src/backend/rag/application/ports/` | Interfaces implemented by infrastructure: answer provider, embedding provider, RAG read/write repositories, provider errors, and embedding index types |
-| **Infrastructure** | `src/backend/rag/infrastructure/` | Provider, repository, security, source-loading, extraction, and manifest adapters |
-| **Prompts** | `src/backend/rag/application/prompts/` | Provider-agnostic prompt builders for intent, retrieval planning, answering, fallback, and UI translation |
-| **Ingestion Loaders** | `src/backend/rag/infrastructure/ingestion/loaders/` | First-party and trusted-external source loaders that create `RagSource` objects |
+| **Application** | `src/backend/rag/application/` | Use cases, ports, retrieval orchestration and strategies, ingestion pipeline, assistant UI copy, config value types, common helpers, and provider-agnostic prompts |
+| **Application Ports** | `src/backend/rag/application/ports/` | Interfaces implemented by infrastructure: answer provider, embedding provider, and split RAG source/chunk read+write repositories; also shared provider errors such as `EmbeddingQuotaExceededError` |
+| **Infrastructure** | `src/backend/rag/infrastructure/` | Provider, repository, source-loading, extraction, and manifest adapters |
+| **Prompts** | `src/backend/rag/application/llm/prompts/` | Provider-agnostic prompt builders for intent, retrieval planning, answering, fallback, and UI translation |
+| **Ingestion Loaders** | `src/backend/rag/infrastructure/ingestion/loaders/` | Per-source-family loaders that create `RagSource` objects: `loadfirstpartysources.ts` entry, family loaders, `loadtrustedexternalsources.ts`, and shared `loaderfiles.ts` mechanics |
 | **Ingestion Extractors** | `src/backend/rag/infrastructure/ingestion/extractors/` | PDF, HTML, Markdown, and JSON text extraction helpers |
-| **Ingestion Manifests** | `src/backend/rag/infrastructure/ingestion/manifests/` | First-party and trusted-external source definitions and manifest types |
+| **Ingestion Manifests** | `src/backend/rag/infrastructure/ingestion/` | Source manifest config and types (`sourcemanifest.config.ts`, `sourcemanifest.types.ts`) plus site data shapes (`sitedata.types.ts`) |
 | **Tests** | `src/backend/rag/tests/` | Unit tests, route/eval coverage, ingestion tests, security tests, and fakes |
 
 The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `src/backend/rag/infrastructure/`, and `src/backend/rag/apps/di/` wires those adapters into application use cases.
+
+Retrieval orchestration lives in `src/backend/rag/application/retrieval/`: `createroutedcontextretriever.ts` composes the ordered strategy chain (single source of truth shared by the container and test fakes), `routedcontextretriever.ts` runs it, `embeddingresolver.ts` resolves primary/fallback embeddings, `semanticsearch.ts` performs two-threshold context search, `contexts.mapper.ts` maps repository records to retrieved contexts, and `strategies/` holds one retrieval strategy per file.
 
 ### Ask Flow
 

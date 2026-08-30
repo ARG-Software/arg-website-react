@@ -7,6 +7,8 @@ export function VisitSessionsTable({
   description,
   query,
   onPageChange,
+  sort,
+  onSortChange,
   onSelectVisitSession,
   onDelete,
   deleteMutation,
@@ -17,6 +19,8 @@ export function VisitSessionsTable({
       description={description}
       columns={getVisitSessionColumns()}
       rows={query.data?.records || []}
+      sort={sort}
+      onSortChange={onSortChange}
       loading={query.isLoading}
       pagination={{
         ...(query.data?.pagination ?? createEmptyTableData().pagination),
@@ -51,7 +55,7 @@ function getVisitSessionColumns() {
       label: 'Location',
       render: record => formatLocation(record),
     },
-    { key: 'entryPath', label: 'Entry page' },
+    { key: 'entryPath', label: 'Entry page', sortable: true },
     {
       key: 'referrer',
       label: 'Referrer',
@@ -62,16 +66,18 @@ function getVisitSessionColumns() {
       label: 'Source',
       render: formatSource,
     },
-    { key: 'pageCount', label: 'Pages' },
-    { key: 'eventCount', label: 'Events' },
+    { key: 'pageCount', label: 'Pages', sortable: true },
+    { key: 'eventCount', label: 'Events', sortable: true },
     {
       key: 'durationMs',
       label: 'Duration',
+      sortable: true,
       render: record => formatDuration(record.durationMs),
     },
     {
       key: 'lastSeenAt',
       label: 'Last seen',
+      sortable: true,
       render: record => formatDateTime(record.lastSeenAt),
     },
   ];

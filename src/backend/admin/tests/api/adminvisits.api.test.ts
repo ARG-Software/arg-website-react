@@ -6,6 +6,7 @@ import { DeleteVisitSessionUseCase } from '../../application/usecases/visits/del
 import { ListAllVisitSessionsUseCase } from '../../application/usecases/visits/listallvisitsessions.usecase.js';
 import { ListVisitCountryBreakdownUseCase } from '../../application/usecases/visits/listvisitcountrybreakdown.usecase.js';
 import { ListVisitMetricsUseCase } from '../../application/usecases/visits/listvisitmetrics.usecase.js';
+import { ListVisitSessionsUseCase } from '../../application/usecases/visits/listvisitsessions.usecase.js';
 
 class TestVisitsController extends VisitsController {
   constructor(visits) {
@@ -149,17 +150,28 @@ test('routes generic visit breakdown requests independently', async () => {
 });
 
 test('keeps country count on the visit metrics stat route', async () => {
-  let receivedMetric = '';
-  const useCase = new ListVisitMetricsUseCase({
-    async getStat(metric) {
-      receivedMetric = metric;
-      return { metric, range: 'today', value: 2 };
+  let receivedSessionHashes: string[] = [];
+  const useCase = new ListVisitMetricsUseCase(
+    {
+      async findMetricsByHashes(sessionHashes) {
+        receivedSessionHashes = sessionHashes;
+        return [
+          createMetricSession('session-a', 'PT'),
+          createMetricSession('session-b', 'US'),
+        ];
+      },
     },
-  } as any);
+    {
+      async findForMetricRange() {
+        return [createMetricPageView('session-a'), createMetricPageView('session-b')];
+      },
+    },
+    { async findForMetricRange() { return []; } } as any
+  );
 
   const result = await useCase.execute({ metric: 'countries', range: 'today' });
 
-  assert.equal(receivedMetric, 'countries');
+  assert.deepEqual(receivedSessionHashes, ['session-a', 'session-b']);
   assert.deepEqual(result, { metric: 'countries', range: 'today', value: 2 });
 });
 
@@ -196,126 +208,184 @@ test('routes country breakdown through the dedicated endpoint', async () => {
   assert.deepEqual(body.records, [{ label: 'PT', value: 3 }]);
 });
 
-test('passes country breakdown pagination to the repository', async () => {
-  let receivedMetric = '';
-  let receivedPage = 0;
-  let receivedPageSize = 0;
-  const useCase = new ListVisitCountryBreakdownUseCase({
-    async getBreakdown(metric, _range, pagination) {
-      receivedMetric = metric;
-      receivedPage = pagination.page;
-      receivedPageSize = pagination.pageSize;
-      return {
-        metric,
-        range: 'today',
-        records: [{ label: 'PT', value: 3 }],
-        pagination: {
-          page: receivedPage,
-          pageSize: receivedPageSize,
-          totalRecords: 1,
-          totalPages: 1,
-        },
-      };
+test('paginates country breakdown in the use case', async () => {
+  const useCase = new ListVisitCountryBreakdownUseCase(
+    {
+      async findMetricsByHashes() {
+        return [
+          createMetricSession('session-a', 'PT'),
+          createMetricSession('session-b', 'US'),
+          createMetricSession('session-c', 'BR'),
+        ];
+      },
     },
-  } as any);
+    {
+      async findForMetricRange() {
+        return [
+          createMetricPageView('session-a'),
+          createMetricPageView('session-b'),
+          createMetricPageView('session-c'),
+        ];
+      },
+    }
+  );
 
-  const result = await useCase.execute({ range: 'today', page: '2', pageSize: '20' });
+  const result = await useCase.execute({ range: 'today', page: '2', pageSize: '2' });
 
-  assert.equal(receivedMetric, 'countries');
-  assert.equal(receivedPage, 2);
-  assert.equal(receivedPageSize, 20);
-  assert.deepEqual(result.records, [{ label: 'PT', value: 3 }]);
+  assert.equal(result.metric, 'countries');
+  assert.deepEqual(result.records, [{ id: 'US', label: 'US', value: 1 }]);
+  assert.deepEqual(result.pagination, { page: 2, pageSize: 2, totalRecords: 3, totalPages: 2 });
 });
 
-test('passes visit breakdown pagination to the repository', async () => {
-  let receivedPage = 0;
-  let receivedPageSize = 0;
-  const useCase = new ListVisitMetricsUseCase({
-    async getBreakdown(_metric, _range, pagination) {
-      receivedPage = pagination.page;
-      receivedPageSize = pagination.pageSize;
-      return {
-        metric: 'sources',
-        range: 'today',
-        records: [],
-        pagination: {
-          page: receivedPage,
-          pageSize: receivedPageSize,
-          totalRecords: 0,
-          totalPages: 1,
-        },
-      };
+test('paginates visit breakdown in the use case', async () => {
+  const useCase = new ListVisitMetricsUseCase(
+    {
+      async findMetricsByHashes() {
+        return [
+          { ...createMetricSession('session-a', 'PT'), source: 'google' },
+          { ...createMetricSession('session-b', 'US'), source: 'linkedin' },
+          { ...createMetricSession('session-c', 'BR'), source: 'github' },
+        ];
+      },
     },
-  } as any);
+    {
+      async findForMetricRange() {
+        return [
+          createMetricPageView('session-a'),
+          createMetricPageView('session-b'),
+          createMetricPageView('session-c'),
+        ];
+      },
+    },
+    { async findForMetricRange() { return []; } } as any
+  );
 
-  await useCase.execute({ metric: 'sources', page: '3', pageSize: '12' });
+  const result = await useCase.execute({ metric: 'sources', page: '2', pageSize: '2' });
 
-  assert.equal(receivedPage, 3);
-  assert.equal(receivedPageSize, 12);
+  assert.equal(result.metric, 'sources');
+  assert.deepEqual(result.records, [{ id: 'linkedin', label: 'linkedin', value: 1 }]);
+  assert.deepEqual(result.pagination, { page: 2, pageSize: 2, totalRecords: 3, totalPages: 2 });
 });
 
-test('passes page breakdown sorting to the repository', async () => {
-  let receivedSortBy = '';
-  let receivedSortDirection = '';
-  const useCase = new ListVisitMetricsUseCase({
-    async getBreakdown(_metric, _range, query) {
-      receivedSortBy = query.sortBy;
-      receivedSortDirection = query.sortDirection;
-      return {
-        metric: 'pages',
-        range: 'today',
-        records: [],
-      };
+test('sorts page breakdown in the use case', async () => {
+  const useCase = new ListVisitMetricsUseCase(
+    { async findMetricsByHashes() { return []; } } as any,
+    {
+      async findForMetricRange() {
+        return [
+          createMetricPageView('session-a', '/slow', 400),
+          createMetricPageView('session-b', '/fast', 100),
+        ];
+      },
     },
-  } as any);
+    { async findForMetricRange() { return []; } } as any
+  );
 
-  await useCase.execute({ metric: 'pages', sortBy: 'averageDurationMs', sortDirection: 'asc' });
+  const result = await useCase.execute({ metric: 'pages', sortBy: 'averageDurationMs', sortDirection: 'asc' });
 
-  assert.equal(receivedSortBy, 'averageDurationMs');
-  assert.equal(receivedSortDirection, 'asc');
+  assert.deepEqual(result.records.map(record => record.path), ['/fast', '/slow']);
 });
 
 test('routes all visit sessions through the dedicated endpoint', async () => {
   let receivedPage = '';
+  let receivedSortBy = '';
   const controller = new TestVisitsController({
     listAllVisitSessionsUseCase: new ListAllVisitSessionsUseCase({
-      async listAllSessions(input) {
+      async findMany(input) {
         receivedPage = String(input?.page || '');
+        receivedSortBy = String(input?.sortBy || '');
         return {
           records: [],
-          pagination: {
-            page: input?.page || 1,
-            pageSize: input?.pageSize || 10,
-            totalRecords: 0,
-            totalPages: 1,
-          },
+          totalRecords: 0,
         };
       },
     } as any),
   } as any);
   const response = await controller.allSessions(
-    new Request('https://arg.software/api/admin/all-visit-sessions?page=2&pageSize=10')
+    new Request(
+      'https://arg.software/api/admin/all-visit-sessions?page=2&pageSize=10&sortBy=durationMs&sortDirection=asc'
+    )
   );
   const body = await response.json();
 
   assert.equal(response.status, 200);
   assert.equal(receivedPage, '2');
+  assert.equal(receivedSortBy, 'durationMs');
   assert.equal(body.pagination.page, 2);
 });
 
-test('defaults visit metric requests to today', async () => {
-  let receivedRange = '';
-  const useCase = new ListVisitMetricsUseCase({
-    async getChart(range) {
-      receivedRange = range;
-      return { range, series: 'all', points: [] };
+test('passes recent visit session sorting to the repository', async () => {
+  let receivedSortBy = '';
+  let receivedSortDirection = '';
+  const useCase = new ListVisitSessionsUseCase({
+    async findMany(input) {
+      receivedSortBy = String(input?.sortBy || '');
+      receivedSortDirection = String(input?.sortDirection || '');
+      return {
+        records: [],
+        totalRecords: 0,
+      };
     },
   } as any);
 
-  await useCase.execute({ metric: 'chart' });
+  await useCase.execute({ sortBy: 'entryPath', sortDirection: 'asc' });
 
-  assert.equal(receivedRange, 'today');
+  assert.equal(receivedSortBy, 'entryPath');
+  assert.equal(receivedSortDirection, 'asc');
 });
+
+test('defaults invalid visit session sorting to latest activity first', async () => {
+  let receivedSortBy = '';
+  let receivedSortDirection = '';
+  const useCase = new ListAllVisitSessionsUseCase({
+    async findMany(input) {
+      receivedSortBy = String(input?.sortBy || '');
+      receivedSortDirection = String(input?.sortDirection || '');
+      return {
+        records: [],
+        totalRecords: 0,
+      };
+    },
+  } as any);
+
+  await useCase.execute({ sortBy: 'unknown', sortDirection: 'sideways' });
+
+  assert.equal(receivedSortBy, 'lastSeenAt');
+  assert.equal(receivedSortDirection, 'desc');
+});
+
+test('defaults visit metric requests to today', async () => {
+  const useCase = new ListVisitMetricsUseCase(
+    { async findMetricsByHashes() { return []; } } as any,
+    { async findForMetricRange() { return []; } },
+    { async findForMetricRange() { return []; } }
+  );
+
+  const result = await useCase.execute({ metric: 'chart' });
+
+  assert.equal(result.range, 'today');
+});
+
+function createMetricPageView(sessionHash: string, path = '/', durationMs = 100) {
+  return {
+    sessionHash,
+    path,
+    startedAt: '2026-01-01T00:00:00.000Z',
+    endedAt: '2026-01-01T00:00:01.000Z',
+    durationMs,
+  };
+}
+
+function createMetricSession(sessionHash: string, countryCode: string) {
+  return {
+    sessionHash,
+    countryCode,
+    referrer: null,
+    source: null,
+    campaign: null,
+    clickId: null,
+  };
+}
 
 function createVisitLogRequest() {
   return new Request('https://arg.software/api/visit-log', {

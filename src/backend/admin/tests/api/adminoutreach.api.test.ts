@@ -266,7 +266,6 @@ function createTestApi(records, repositoryOverrides = {}) {
   const outreachRepository = {
     list: async () => storedRecords,
     listRecords: async query => listRecords(storedRecords, query),
-    getSummary: async () => createSummary(storedRecords),
     listChartRecords: async ({ dateSentFrom = '' } = {}) =>
       storedRecords
         .filter(record => record.status === 'sent')
@@ -333,35 +332,8 @@ function listRecords(records, query) {
 
   return {
     records: result.slice(start, start + query.pageSize),
-    pagination: {
-      page: query.page,
-      pageSize: query.pageSize,
-      totalRecords: result.length,
-      totalPages: Math.max(1, Math.ceil(result.length / query.pageSize)),
-    },
+    totalRecords: result.length,
   };
-}
-
-function createSummary(records) {
-  return records.reduce(
-    (summary, record) => {
-      summary.total += 1;
-
-      if (record.status === 'sent') {
-        summary.sent += 1;
-        if (record.replyObtained) {
-          summary.repliesObtained += 1;
-        } else {
-          summary.sentWithoutReply += 1;
-        }
-      } else {
-        summary.notSent += 1;
-      }
-
-      return summary;
-    },
-    { total: 0, sent: 0, notSent: 0, repliesObtained: 0, sentWithoutReply: 0 }
-  );
 }
 
 function sortRecords(records, query) {

@@ -1,4 +1,4 @@
-import type { IRagSource } from '../../domain/content/iragsource.js';
+import type { IRagSource } from '../../domain/sources/ragsource.types.js';
 
 export function createSource(
   overrides: Partial<IRagSource> & Pick<IRagSource, 'sourceType' | 'sourceKey' | 'title'>

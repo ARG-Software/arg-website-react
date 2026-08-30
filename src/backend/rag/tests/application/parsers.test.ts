@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { parseIntentResponse } from '../../application/prompts/outputparsers.js';
+import { parseIntentResponse } from '../../application/llm/outputparsers.js';
 
 test('intent parser accepts conversation transform tasks', () => {
   const result = parseIntentResponse(

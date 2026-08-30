@@ -3,18 +3,16 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { logOperation } from '../../../../shared/logger/logoperation.js';
 import type { IAdminConfiguration } from '../../../application/config/iadmin.configuration.js';
-import { decode, isValidKey } from '../../../application/crypto/decode.js';
+import { decode } from '../../../application/crypto/decode.js';
 import { encode, type EncodedValue } from '../../../application/crypto/encode.js';
 import type {
   AssistantConversationUpsertResult,
   IAssistantConversationRepository,
 } from '../../../application/ports/repositories/iassistantconversation.repository.js';
 import { AssistantConversation } from '../../../domain/assistantconversation.js';
-import type {
-  AssistantConversationMessage,
-  AssistantConversationPagination,
-  AssistantConversationPageContext,
-} from '../../../domain/types/assistantconversation.types.js';
+import type { AssistantConversationMessage, AssistantConversationPageContext } from '../../../domain/types/assistantconversation.types.js';
+import { SupabaseRepositoryBase } from '../../../../shared/infrastructure/repositories/supabase/supabaserepositorybase.js';
+import { readEncodedField, validateEncryptionKey, type SupabaseRow, toEncodedValue } from './encryptedcolumns.js';
 
 type AssistantConversationPayload = {
   conversationId: string;
@@ -24,7 +22,7 @@ type AssistantConversationPayload = {
   savedAt: string;
 };
 
-type AssistantConversationRow = {
+type AssistantConversationRow = SupabaseRow & {
   id?: string;
   public_conversation_id: string;
   payload_key_version: number;
@@ -35,12 +33,17 @@ type AssistantConversationRow = {
   updated_at?: string;
 };
 
-export class SupabaseAssistantConversationRepository implements IAssistantConversationRepository {
+export class SupabaseAssistantConversationRepository
+  extends SupabaseRepositoryBase
+  implements IAssistantConversationRepository
+{
   constructor(
     private readonly client: SupabaseClient,
     private readonly configuration: IAdminConfiguration,
     private readonly logger?: ILogger
-  ) {}
+  ) {
+    super();
+  }
 
   async upsert(conversation: AssistantConversation): Promise<AssistantConversationUpsertResult> {
     return logOperation(
@@ -103,15 +106,14 @@ export class SupabaseAssistantConversationRepository implements IAssistantConver
     pageSize?: number;
   } = {}): Promise<{
     records: AssistantConversation[];
-    pagination: AssistantConversationPagination;
+    totalRecords: number;
   }> {
     return logOperation(
       this.logger,
       'Supabase assistant conversations query',
       { table: 'assistant_conversations', page, pageSize },
       async () => {
-        const from = (page - 1) * pageSize;
-        const to = from + pageSize - 1;
+        const { from, to } = this.getPageRange(page, pageSize);
         const { data, error, count } = await this.client
           .from('assistant_conversations')
           .select('*', { count: 'exact' })
@@ -122,15 +124,10 @@ export class SupabaseAssistantConversationRepository implements IAssistantConver
 
         return {
           records: data.map(row => toConversationRecord(row, this.configuration)),
-          pagination: {
-            page,
-            pageSize,
-            totalRecords: count || 0,
-            totalPages: Math.max(1, Math.ceil((count || 0) / pageSize)),
-          },
+          totalRecords: count || 0,
         };
       },
-      result => ({ recordCount: result.records.length, totalRecords: result.pagination.totalRecords })
+      result => ({ recordCount: result.records.length, totalRecords: result.totalRecords })
     );
   }
 
@@ -192,12 +189,7 @@ function toConversationRecord(
   configuration: IAdminConfiguration
 ): AssistantConversation {
   const payload = decryptPayload(
-    {
-      keyVersion: row.payload_key_version,
-      nonce: row.payload_nonce,
-      ciphertext: row.payload_ciphertext,
-      authTag: row.payload_auth_tag,
-    },
+    toEncodedValue(readEncodedField(row, 'payload')),
     configuration
   );
 
@@ -232,26 +224,5 @@ function decryptPayload(
 
 function getEncryptionKey(version: number, configuration: IAdminConfiguration): string {
   const value = configuration.getAssistantConversationEncryptionKey(version);
-  if (!value) {
-    throw createEncryptionError(
-      'missing_assistant_conversation_encryption_key',
-      `Missing assistant conversation encryption key for version ${version}`
-    );
-  }
-
-  if (!isValidKey(value)) {
-    throw createEncryptionError(
-      'invalid_assistant_conversation_encryption_key',
-      `Assistant conversation encryption key version ${version} must decode to 32 bytes`
-    );
-  }
-
-  return value;
-}
-
-function createEncryptionError(code: string, message: string): Error & { code: string } {
-  const error = new Error(message) as Error & { code: string };
-  error.code = code;
-
-  return error;
+  return validateEncryptionKey(value, `assistant conversation encryption key version ${version}`);
 }

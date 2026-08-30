@@ -9,14 +9,14 @@ import {
   type IEvalSourceRow,
   type IRagEvalCase,
 } from '../evals/cases.js';
-import type { IRetrievedContext } from '../../domain/retrieval/iretrievedcontext.js';
+import type { IRetrievedContext } from '../../domain/sources/retrievedcontext.types.js';
 import { createFakeAnswerProvider } from '../fakes/fakeanswer.provider.js';
 import { createFakeEmbeddingProvider } from '../fakes/fakeembedding.provider.js';
 import { FakeRagReadRepository } from '../fakes/fakeragread.repository.js';
+import { createAssistantUseCases } from '../fakes/createassistantusecases.js';
 import { createTestConfig } from '../fixtures/config.js';
 import type { IChunkFixture } from '../fixtures/sources.js';
-import type { IRagSourceRecord } from '../../application/ports/iragread.repository.js';
-import { askQuestion } from '../../application/ask/askquestion.js';
+import type { RagSourceRecord } from '../../application/ports/iragsource.repository.js';
 
 const config = createTestConfig();
 
@@ -45,15 +45,17 @@ for (const ragCase of executableRagEvalCases) {
       return texts.map((_, index) => [index + 0.1, index + 0.2]);
     });
 
-    const result = await askQuestion({
-      question: ragCase.question,
-      messages: ragCase.messages,
-      pageContext: ragCase.pageContext,
+    const useCases = createAssistantUseCases({
       config: { ...config, matchCount: ragCase.matchCount ?? config.matchCount },
       readRepository,
       answerProvider: createAnswerProviderForCase(ragCase, generatedQuestions),
       embeddingProvider,
       fallbackEmbeddingProvider: embeddingProvider,
+    });
+    const result = await useCases.askAssistantQuestionUseCase.execute({
+      question: ragCase.question,
+      messages: ragCase.messages,
+      pageContext: ragCase.pageContext,
     });
 
     const expected = ragCase.expected ?? {};
@@ -148,7 +150,7 @@ function createReadRepository({
   });
 }
 
-function toSourceRecord(row: IEvalSourceRow): IRagSourceRecord {
+function toSourceRecord(row: IEvalSourceRow): RagSourceRecord {
   return {
     id: row.id,
     sourceType: row.source_type,
@@ -159,6 +161,7 @@ function toSourceRecord(row: IEvalSourceRow): IRagSourceRecord {
     origin: row.origin,
     isPublic: row.is_public,
     metadata: row.metadata,
+    contentHash: null,
   };
 }
 

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import type { IRagSource } from '../../../domain/content/iragsource.js';
+import type { IRagSource } from '../../../domain/sources/ragsource.types.js';
 
 const HASH_IGNORED_METADATA_KEYS = new Set(['source_file', 'source_files']);
 

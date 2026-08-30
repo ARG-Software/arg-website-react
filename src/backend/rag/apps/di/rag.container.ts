@@ -14,6 +14,12 @@ export const ragContainer = {
   get security() {
     return getRagContainer().security;
   },
+  get ingestion() {
+    return getRagContainer().ingestion;
+  },
+  get maintenance() {
+    return getRagContainer().maintenance;
+  },
 };
 
 function getRagContainer(): RagContainer {

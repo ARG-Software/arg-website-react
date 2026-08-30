@@ -1,5 +1,5 @@
 import type { Outreach } from '../../../domain/outreach.js';
-import type { OutreachStatus, OutreachSummary } from '../../../domain/types/outreach.types.js';
+import type { OutreachStatus } from '../../../domain/types/outreach.types.js';
 
 export type OutreachRecordSortField = 'companyName' | 'createdAt' | 'dateSent' | 'followUpDate';
 
@@ -17,12 +17,7 @@ export interface OutreachRecordListQuery {
 
 export interface OutreachRecordListResult {
   records: Outreach[];
-  pagination: {
-    page: number;
-    pageSize: number;
-    totalRecords: number;
-    totalPages: number;
-  };
+  totalRecords: number;
 }
 
 export interface OutreachChartRecord {
@@ -35,7 +30,6 @@ export interface OutreachChartRecord {
 export interface IOutreachRepository {
   list(): Promise<Outreach[]>;
   listRecords(query: OutreachRecordListQuery): Promise<OutreachRecordListResult>;
-  getSummary(): Promise<OutreachSummary>;
   listChartRecords(input?: { dateSentFrom?: string }): Promise<OutreachChartRecord[]>;
   findById(id: string): Promise<Outreach | null>;
   save(outreach: Outreach): Promise<Outreach>;
