@@ -17,6 +17,12 @@ const CLEAR_PREFERENCE_PATTERN =
   /\b(?:stop|clear|reset)\b.{0,40}\b(?:language preference|preferred language)\b|\b(?:para|limpa|remove|repõe|reseta)\b.{0,40}\b(?:prefer[eê]ncia de idioma|idioma preferido|língua preferida)\b/iu;
 const GASPAR_LANGUAGE_CAPABILITY_PATTERN =
   /\b(?:human\s+languages?|languages?\s+(?:can\s+)?(?:you|gaspar)\s+(?:speak|understand|answer|reply|respond|use)|(?:can|could|do|will)\s+(?:you|gaspar)\s+(?:answer|reply|respond)\s+in\b|(?:can|could|do)\s+(?:you|gaspar)\s+speak\s+(?!to\b|with\b)|(?:que|quais)\s+(?:idiomas?|l[ií]nguas?)\s+(?:falas|fala|entendes|compreendes|usas)|(?:falas|fala)\s+(?!com\b|sobre\b|de\b|da\b|do\b|a\b|ao\b|para\b)|(?:respondes|responder|entendes|compreendes)\s+em\b|(?:parles|parlez)\s+(?!avec\b)|(?:hablas|habla)\s+(?!con\b))\b/iu;
+const ENGLISH_LANGUAGE_MARKERS = [
+  /\b(?:i|you|your|we|they|the|a|an|to|with|why|what|when|where|how|can|could|would|should|want|need|speak|talk|contact|team|answering|english)\b/giu,
+];
+const PORTUGUESE_LANGUAGE_MARKERS = [
+  /\b(?:eu|tu|v[oó]s|voc[eê]s|o|a|os|as|um|uma|para|com|porque|porqu[eê]|qual|quais|quando|onde|como|posso|podes|quero|preciso|falar|contactar|equipa|responder|portugu[eê]s|convosco|ol[aá]|obrigad[oa]|j[aá])\b/giu,
+];
 
 export function resolveLanguagePolicy({
   question,
@@ -59,6 +65,16 @@ export function resolveLanguagePolicy({
   };
 }
 
+export function detectLatestQuestionLanguage(question: string): string | null {
+  const englishScore = countLanguageMarkers(question, ENGLISH_LANGUAGE_MARKERS);
+  const portugueseScore = countLanguageMarkers(question, PORTUGUESE_LANGUAGE_MARKERS);
+
+  if (englishScore >= portugueseScore + 2) return 'en';
+  if (portugueseScore >= englishScore + 2) return 'pt-PT';
+
+  return null;
+}
+
 function getRequestedResponseLanguage(
   question: string,
   getLanguageTagForName: LanguageTagResolver
@@ -71,4 +87,8 @@ function getRequestedResponseLanguage(
   }
 
   return getLanguageTagForName(languageName);
+}
+
+function countLanguageMarkers(question: string, markers: RegExp[]): number {
+  return markers.reduce((total, marker) => total + (question.match(marker)?.length || 0), 0);
 }

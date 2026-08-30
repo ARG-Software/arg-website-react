@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { resolveLanguagePolicy } from '../../domain/assistant/languagepolicy.js';
+import {
+  detectLatestQuestionLanguage,
+  resolveLanguagePolicy,
+} from '../../domain/assistant/languagepolicy.js';
 import { getLanguageTagForName } from '../../application/config/languages.config.js';
 
 function resolvePolicy(input: {
@@ -79,4 +82,18 @@ test('language policy clears saved preference when requested', () => {
   assert.equal(result.responseLanguage, 'en');
   assert.equal(result.preferenceAction, 'clear');
   assert.equal(result.topic, 'response_preference');
+});
+
+test('latest question language detection catches clear English switches', () => {
+  assert.equal(detectLatestQuestionLanguage('I want to speak with Jose'), 'en');
+  assert.equal(detectLatestQuestionLanguage('Why are you answering in portuguese?'), 'en');
+});
+
+test('latest question language detection catches clear Portuguese switches', () => {
+  assert.equal(detectLatestQuestionLanguage('Vocês já trabalharam com a industria Maritima?'), 'pt-PT');
+  assert.equal(detectLatestQuestionLanguage('Quero fazer uma piscina'), 'pt-PT');
+});
+
+test('latest question language detection stays conservative for ambiguous text', () => {
+  assert.equal(detectLatestQuestionLanguage('MVP'), null);
 });

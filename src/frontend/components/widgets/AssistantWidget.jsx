@@ -192,7 +192,10 @@ function buildActionNodes(message, controller, isLatestLeadAssistantMessage = fa
 
   return visibleActions
     .map((action, index) => {
-      const details = getAssistantActionDetails(action.type, controller.assistantCopy);
+      const details = getAssistantActionDetails(
+        action.type,
+        message.assistantCopy || controller.assistantCopy
+      );
       if (!details) return null;
 
       return {

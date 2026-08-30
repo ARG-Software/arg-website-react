@@ -666,6 +666,31 @@ test('general pricing questions retrieve FAQ pricing context without policy fact
   assert.equal(supabase.calls.matchChunks.length, 0);
 });
 
+test('latest English question overrides stale Portuguese intent language', async () => {
+  const result = await askQuestion({
+    question: 'I want to speak with Jose',
+    messages: [
+      { role: 'user', content: 'Olá, tudo bem?' },
+      { role: 'assistant', content: 'Olá! Está tudo ótimo por aqui.' },
+    ],
+    config,
+    readRepository: createSupabase({}).repository,
+    answerProvider: createAnswerProvider('Unsupported answer', {
+      intent: 'unsupported',
+      intentResponse: 'Please ask about ARG Software.',
+      language: 'pt-PT',
+    }),
+    embeddingProvider: createEmbeddingProvider(() => {
+      throw new Error('Embeddings must not be generated for unsupported questions');
+    }),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => {
+      throw new Error('Embeddings must not be generated for unsupported questions');
+    }),
+  });
+
+  assert.equal(result.language, 'en');
+});
+
 test('general MVP timeline questions retrieve FAQ timeline context', async () => {
   const faq = source('faq-id', 'Frequently Asked Questions', null, 'faq', 'faq');
   const supabase = createSupabase({

@@ -4,7 +4,10 @@ import type { IChatMessage } from '../../../domain/conversation/chatmessage.type
 import type { ConversationTransformTask } from '../../../domain/conversation/conversationtransform.types.js';
 import type { IAskQuestionResult } from '../../../domain/answers/assistantanswer.types.js';
 import type { IRetrievedContext } from '../../../domain/sources/retrievedcontext.types.js';
-import { resolveLanguagePolicy } from '../../../domain/assistant/languagepolicy.js';
+import {
+  detectLatestQuestionLanguage,
+  resolveLanguagePolicy,
+} from '../../../domain/assistant/languagepolicy.js';
 import { createRoutedRetrievalItems } from '../../../domain/routing/retrievalitems.js';
 import { mergeRetrievedContexts } from '../../../domain/sources/contextmerge.js';
 import { createAssistantActions, createInsufficientContextActions } from '../../../domain/assistant/actions.js';
@@ -75,9 +78,10 @@ export class AskAssistantQuestionUseCase {
       getStaticPageSourceKeys,
     });
     const intent = await this.answerProvider.classifyQuestionIntent(question, messages, pageContext);
+    const detectedLanguage = detectLatestQuestionLanguage(question) || normalizeLanguage(intent.language);
     const languagePolicy = resolveLanguagePolicy({
       question,
-      detectedLanguage: normalizeLanguage(intent.language),
+      detectedLanguage,
       preferredLanguage: input.preferredLanguage,
       getLanguageTagForName,
     });

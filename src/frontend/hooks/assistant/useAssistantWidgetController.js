@@ -243,16 +243,21 @@ export function useAssistantWidgetController({
       if (result?.success && result.message) {
         setRateLimitState(null);
         const languagePreference = result.message.languagePreference;
-        if (languagePreference?.action === 'set' && languagePreference.language) {
-          setPreferredLanguage(languagePreference.language);
-        } else if (languagePreference?.action === 'clear') {
+        if (languagePreference?.action === 'clear') {
           setPreferredLanguage('');
+        } else if (languagePreference?.action === 'set' && languagePreference.language) {
+          setPreferredLanguage(languagePreference.language);
+        } else if (result.message.language) {
+          setPreferredLanguage(result.message.language);
         }
 
         const nextCopy = result.message.language
           ? await setActiveLanguage(result.message.language)
           : assistantCopy;
-        const assistantMessage = getChatAssistantMessage(result.message);
+        const assistantMessage = {
+          ...getChatAssistantMessage(result.message),
+          assistantCopy: nextCopy,
+        };
 
         setMessages(prev => [...prev, assistantMessage]);
 
