@@ -6,7 +6,7 @@ tags: AI, Security, Architecture
 title: Part 4: Guardrails as Architecture: How We Stopped Our Chatbot from Lying About Us
 subtitle: Why telling an AI to “behave” isn’t enough, and what it actually takes to stop a chatbot from making things up.
 intro: Why telling an AI to “behave” isn’t enough, and what it actually takes to stop a chatbot from making things up.
-date: August 16, 2026
+date: August 17, 2026
 dateModified: August 19, 2026
 readTime: 8 min read
 mediumUrl: https://medium.com/p/93a4d22ff549
