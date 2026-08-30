@@ -78,6 +78,9 @@ function AdminWorkspace() {
   const deepLinkedConversationQuery = useAssistantConversation(deepLinkedConversationId, {
     enabled: isAuthenticated,
   });
+  const selectedRecord = selectedRecordQuery.data?.record;
+  const selectedRecordForEditor =
+    selectedRecord?.id === selectedRecordId ? selectedRecord : undefined;
 
   useEffect(() => {
     if (deepLinkedConversationQuery.data) {
@@ -232,8 +235,8 @@ function AdminWorkspace() {
         visitsView,
       })}
       <OutreachEditor
-        key={selectedRecordId || 'closed'}
-        record={selectedRecordQuery.data?.record}
+        key={selectedRecordForEditor?.id || 'closed'}
+        record={selectedRecordForEditor}
         onClose={() => setSelectedRecordId('')}
         onRecordUpdated={record => setSelectedRecordId(record.id)}
       />
