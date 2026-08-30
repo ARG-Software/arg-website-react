@@ -1,9 +1,8 @@
-import crypto from 'node:crypto';
-
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import type { IAdminConfiguration } from '../../../application/config/iadmin.configuration.js';
+import { hashWithSalt } from '../../../application/crypto/encode.js';
 import type { IOutreachAuditRepository } from '../../../application/ports/repositories/ioutreach.repository.js';
 
 export class SupabaseOutreachAuditRepository implements IOutreachAuditRepository {
@@ -24,7 +23,7 @@ export class SupabaseOutreachAuditRepository implements IOutreachAuditRepository
   }): Promise<void> {
     const { error } = await this.client.from('outreach_audit_events').insert({
       outreach_record_id: recordId,
-      actor_email_hash: this.hashEmail(actorEmail),
+      actor_email_hash: hashWithSalt(actorEmail.toLowerCase(), this.configuration.getAuditSalt()),
       action: 'outreach_record_updated',
       metadata: { changed_fields: changedFields },
     });
@@ -32,12 +31,5 @@ export class SupabaseOutreachAuditRepository implements IOutreachAuditRepository
     if (error) {
       this.logger?.error('Outreach audit event write failed', { error, changedFieldCount: changedFields.length });
     }
-  }
-
-  private hashEmail(email: string): string {
-    return crypto
-      .createHash('sha256')
-      .update(`${email.toLowerCase()}:${this.configuration.getAuditSalt()}`)
-      .digest('hex');
   }
 }

@@ -27,3 +27,10 @@ export function encode(value: string, key: string, keyVersion: number): EncodedV
 export function encodeIndex(value: string, key: string): string {
   return crypto.createHmac(INDEX_ENCODING_ALGORITHM, key).update(value).digest('hex');
 }
+
+export function hashWithSalt(value: string, salt: string): string {
+  return crypto
+    .createHash(INDEX_ENCODING_ALGORITHM)
+    .update(`${value}:${salt}`)
+    .digest('hex');
+}

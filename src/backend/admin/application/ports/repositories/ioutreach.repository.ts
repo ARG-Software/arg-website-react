@@ -29,6 +29,7 @@ export interface OutreachChartRecord {
 
 export interface IOutreachRepository {
   list(): Promise<Outreach[]>;
+  listOverview(): Promise<Outreach[]>;
   listRecords(query: OutreachRecordListQuery): Promise<OutreachRecordListResult>;
   listChartRecords(input?: { dateSentFrom?: string }): Promise<OutreachChartRecord[]>;
   findById(id: string): Promise<Outreach | null>;

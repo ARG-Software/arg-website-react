@@ -164,6 +164,35 @@ test('records endpoint uses the paginated repository method', async () => {
   assert.equal(response.status, 200);
 });
 
+test('company name filtering uses the lightweight overview method', async () => {
+  const api = createTestApi([createRecord(1, { companyName: 'ARG Software' })], {
+    list: async () => {
+      throw new Error('full list should not decrypt email fields for filtering');
+    },
+  });
+  const response = await api(createGetRequest('/api/admin/outreach-records?companyName=arg&pageSize=10'));
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(
+    body.records.map(record => record.companyName),
+    ['ARG Software']
+  );
+});
+
+test('summary endpoint uses the lightweight overview method', async () => {
+  const api = createTestApi(createRecords(2), {
+    list: async () => {
+      throw new Error('full list should not decrypt email fields for summary');
+    },
+  });
+  const response = await api(createGetRequest('/api/admin/outreach-summary'));
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.summary.total, 2);
+});
+
 test('returns outreach chart data from the chart endpoint', async () => {
   const api = createTestApi([
     createRecord(1, { status: 'sent', dateSent: '2026-08-13' }),
@@ -265,6 +294,7 @@ function createTestApi(records, repositoryOverrides = {}) {
   const csvParser = new OutreachCsvParser();
   const outreachRepository = {
     list: async () => storedRecords,
+    listOverview: async () => storedRecords,
     listRecords: async query => listRecords(storedRecords, query),
     listChartRecords: async ({ dateSentFrom = '' } = {}) =>
       storedRecords

@@ -4,7 +4,7 @@ export class GetOutreachSummaryUseCase {
   constructor(private readonly outreachRepository: IOutreachRepository) {}
 
   async execute() {
-    const records = await this.outreachRepository.list();
+    const records = await this.outreachRepository.listOverview();
     const sent = records.filter(record => record.status === 'sent').length;
     const repliesObtained = records.filter(
       record => record.status === 'sent' && record.replyObtained

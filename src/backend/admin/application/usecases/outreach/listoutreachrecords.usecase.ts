@@ -75,7 +75,7 @@ export class ListOutreachRecordsUseCase {
   private async listRecordsInMemory(query: OutreachRecordListQuery) {
     let filteredRecords = query.recentSent
       ? await this.listRecentSentRecords(query)
-      : await this.outreachRepository.list();
+      : await this.outreachRepository.listOverview();
 
     filteredRecords = filteredRecords
       .filter(record => !query.status || record.status === query.status)

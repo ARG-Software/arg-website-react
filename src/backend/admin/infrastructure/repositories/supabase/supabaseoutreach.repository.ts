@@ -117,6 +117,25 @@ export class SupabaseOutreachRepository extends SupabaseRepositoryBase implement
     );
   }
 
+  async listOverview(): Promise<Outreach[]> {
+    return logOperation(
+      this.logger,
+      'Supabase outreach overview query',
+      { table: 'outreach_records' },
+      async () => {
+        const { data, error } = await this.client
+          .from('outreach_records')
+          .select(LIST_OUTREACH_COLUMNS)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        return toOutreachRows(data).map(row => createOutreach(row, this.config));
+      },
+      result => ({ recordCount: result.length })
+    );
+  }
+
   async listRecords(query: OutreachRecordListQuery): Promise<OutreachRecordListResult> {
     return logOperation(
       this.logger,

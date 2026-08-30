@@ -1,6 +1,5 @@
-import crypto from 'node:crypto';
-
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
+import { encodeIndex } from '../../crypto/encode.js';
 import type { IAdminConfiguration } from '../../config/iadmin.configuration.js';
 import type { IVisitSessionRecorderRepository } from '../../ports/repositories/ivisitsessionrecorder.repository.js';
 import { VisitSession } from '../../../domain/visit.js';
@@ -34,11 +33,7 @@ export class RecordVisitSessionUseCase {
     }
 
     const record = new VisitSession({
-      sessionHash: crypto
-        .createHmac('sha256', this.configuration.getVisitHashKey())
-        .update(input.sessionId)
-        .digest('hex')
-        .slice(0, 16),
+      sessionHash: encodeIndex(input.sessionId, this.configuration.getVisitHashKey()).slice(0, 16),
       events: input.events as any,
       pageViews: input.pageViews as any,
       geo: input.geo,
