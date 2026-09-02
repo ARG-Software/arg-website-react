@@ -330,7 +330,25 @@
 .admin-table-filters {
   display: grid;
   gap: 0.75rem;
-  grid-template-columns: minmax(14rem, 1fr) minmax(10rem, 0.7fr) minmax(10rem, 0.7fr);
+  grid-template-columns: minmax(14rem, 1fr) minmax(10rem, 0.7fr) repeat(2, minmax(9rem, 0.6fr));
+}
+
+.ui-card--light.admin-data-table td a {
+  color: #7904fd;
+  font-weight: 600;
+  text-decoration-color: rgba(121, 4, 253, 0.35);
+}
+
+.ui-card--light.admin-data-table td a:hover,
+.ui-card--light.admin-data-table td a:focus-visible {
+  color: #0c002e;
+  text-decoration-color: currentColor;
+}
+
+.ui-card--light.admin-data-table tbody tr:hover td a,
+.ui-card--light.admin-data-table tbody tr:focus-visible td a {
+  color: #fff;
+  text-decoration-color: rgba(255, 255, 255, 0.72);
 }
 
 .admin-help-card h1,
