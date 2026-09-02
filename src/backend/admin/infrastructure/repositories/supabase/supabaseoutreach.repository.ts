@@ -81,6 +81,7 @@ const LIST_OUTREACH_COLUMNS = [
   'contact_email_auth_tag',
   'website',
   'contact_info',
+  'contact_method',
   'status',
   'date_sent',
   'follow_up_date',
@@ -247,6 +248,19 @@ export class SupabaseOutreachRepository extends SupabaseRepositoryBase implement
     );
   }
 
+  async deleteById(id: string): Promise<void> {
+    await logOperation(
+      this.logger,
+      'Supabase outreach record delete',
+      { table: 'outreach_records', outreachId: id },
+      async () => {
+        const { error } = await this.client.from('outreach_records').delete().eq('id', id);
+
+        if (error) throw error;
+      }
+    );
+  }
+
   private createListQuery(query: OutreachRecordListQuery, includeCount: boolean) {
     let request = this.client.from('outreach_records').select(
       LIST_OUTREACH_COLUMNS,
@@ -258,6 +272,7 @@ export class SupabaseOutreachRepository extends SupabaseRepositoryBase implement
     );
 
     if (query.status) request = request.eq('status', query.status);
+    if (query.contactMethod) request = request.eq('contact_method', query.contactMethod);
     if (query.dateSentFrom) request = request.gte('date_sent', query.dateSentFrom);
     if (query.dateSentTo) request = request.lte('date_sent', query.dateSentTo);
 
@@ -279,6 +294,7 @@ function createOutreachListLogContext(query: OutreachRecordListQuery) {
     status: query.status,
     recentSent: query.recentSent,
     hasCompanyNameFilter: Boolean(query.companyName),
+    contactMethod: query.contactMethod,
     hasDateSentFrom: Boolean(query.dateSentFrom),
     hasDateSentTo: Boolean(query.dateSentTo),
   };

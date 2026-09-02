@@ -6,6 +6,7 @@ import { RateLimiter } from '../../../shared/security/ratelimit.js';
 import { AuthenticateUserUseCase } from '../../application/usecases/sessions/authenticateuser.usecase.js';
 import { CreateOutreachCsvUseCase } from '../../application/usecases/outreach/createoutreachcsv.usecase.js';
 import { DeleteAssistantConversationUseCase } from '../../application/usecases/assistantConversations/deleteassistantconversation.usecase.js';
+import { DeleteOutreachRecordUseCase } from '../../application/usecases/outreach/deleteoutreachrecord.usecase.js';
 import { DeleteVisitSessionUseCase } from '../../application/usecases/visits/deletevisitsession.usecase.js';
 import { GetAssistantConversationUseCase } from '../../application/usecases/assistantConversations/getassistantconversation.usecase.js';
 import { GetOutreachChartUseCase } from '../../application/usecases/outreach/getoutreachchart.usecase.js';
@@ -95,6 +96,7 @@ export function createAdminContainer() {
     },
     outreach: {
       createOutreachCsvUseCase: new CreateOutreachCsvUseCase(csvParser, outreachRepository, logger),
+      deleteOutreachRecordUseCase: new DeleteOutreachRecordUseCase(outreachRepository, logger),
       getOutreachChartUseCase: new GetOutreachChartUseCase(outreachRepository, systemClock),
       getOutreachRecordUseCase: new GetOutreachRecordUseCase(outreachRepository),
       getOutreachSummaryUseCase: new GetOutreachSummaryUseCase(outreachRepository),

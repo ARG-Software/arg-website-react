@@ -1,7 +1,7 @@
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { OUTREACH_STATUSES } from '../../../domain/outreach.js';
 import { OutreachDomainError } from '../../../domain/errors/outreachdomain.error.js';
-import type { OutreachStatus } from '../../../domain/types/outreach.types.js';
+import type { OutreachContactMethod, OutreachStatus } from '../../../domain/types/outreach.types.js';
 import type {
   IOutreachRepository,
   OutreachRecordListQuery,
@@ -18,6 +18,7 @@ export interface ListOutreachRecordsInput {
   page?: string | number;
   pageSize?: string | number;
   status?: string;
+  contactMethod?: string;
   companyName?: string;
   dateSentFrom?: string;
   dateSentTo?: string;
@@ -38,6 +39,7 @@ export class ListOutreachRecordsUseCase {
     const repositoryQuery = {
       ...pagination,
       status: getRequestedStatus(query) || undefined,
+      contactMethod: getRequestedContactMethod(query) || undefined,
       companyName: getCompanyFilter(query.companyName),
       dateSentFrom: getDateFilter(query.dateSentFrom),
       dateSentTo: getDateFilter(query.dateSentTo),
@@ -50,6 +52,7 @@ export class ListOutreachRecordsUseCase {
       page: repositoryQuery.page,
       pageSize: repositoryQuery.pageSize,
       status: repositoryQuery.status,
+      contactMethod: repositoryQuery.contactMethod,
       sortBy: repositoryQuery.sortBy,
       sortDirection: repositoryQuery.sortDirection,
       recentSent: repositoryQuery.recentSent,
@@ -79,6 +82,7 @@ export class ListOutreachRecordsUseCase {
 
     filteredRecords = filteredRecords
       .filter(record => !query.status || record.status === query.status)
+      .filter(record => !query.contactMethod || record.contactMethod === query.contactMethod)
       .filter(record => isCompanyNameMatch(record, query.companyName))
       .filter(record => !query.dateSentFrom || record.dateSent >= query.dateSentFrom)
       .filter(record => !query.dateSentTo || record.dateSent <= query.dateSentTo);
@@ -123,6 +127,17 @@ function getRequestedStatus(query: ListOutreachRecordsInput): OutreachStatus | '
   return status as OutreachStatus;
 }
 
+function getRequestedContactMethod(query: ListOutreachRecordsInput): OutreachContactMethod | '' {
+  if (!query.contactMethod) return '';
+
+  const contactMethod = String(query.contactMethod).trim();
+  if (contactMethod !== 'email' && contactMethod !== 'contact_form') {
+    throw OutreachDomainError.invalidContactMethod();
+  }
+
+  return contactMethod;
+}
+
 function getCompanyFilter(value: string | undefined): string {
   return String(value || '')
     .trim()
@@ -140,7 +155,7 @@ function getSort(query: ListOutreachRecordsInput): { field: SortableOutreachFiel
     return { field: 'dateSent', direction: 'desc' };
   }
 
-  const field = String(query.sortBy || 'createdAt') as SortableOutreachField;
+  const field = String(query.sortBy || 'companyName') as SortableOutreachField;
   const defaultDirection = field === 'companyName' ? 'asc' : 'desc';
   const direction =
     String(query.sortDirection || defaultDirection).toLowerCase() === 'asc' ? 'asc' : 'desc';

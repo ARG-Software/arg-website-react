@@ -1,5 +1,5 @@
 import type { Outreach } from '../../../domain/outreach.js';
-import type { OutreachStatus } from '../../../domain/types/outreach.types.js';
+import type { OutreachContactMethod, OutreachStatus } from '../../../domain/types/outreach.types.js';
 
 export type OutreachRecordSortField = 'companyName' | 'createdAt' | 'dateSent' | 'followUpDate';
 
@@ -7,6 +7,7 @@ export interface OutreachRecordListQuery {
   page: number;
   pageSize: number;
   status?: OutreachStatus;
+  contactMethod?: OutreachContactMethod;
   companyName?: string;
   dateSentFrom?: string;
   dateSentTo?: string;
@@ -35,6 +36,7 @@ export interface IOutreachRepository {
   findById(id: string): Promise<Outreach | null>;
   save(outreach: Outreach): Promise<Outreach>;
   createMany(outreaches: Outreach[]): Promise<Outreach[]>;
+  deleteById(id: string): Promise<void>;
 }
 
 export interface IOutreachAuditRepository {

@@ -45,6 +45,7 @@ export const SEARCH_DEBOUNCE_MS = 350;
 
 export const EMPTY_TABLE_FILTERS = {
   companyName: '',
+  contactMethod: '',
   dateSentFrom: '',
   dateSentTo: '',
 };

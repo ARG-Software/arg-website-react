@@ -4,6 +4,7 @@ import test from 'node:test';
 import { OutreachController } from '../../apps/api/controllers/outreach.controller.js';
 import { ACCESS_COOKIE_NAME } from '../../apps/http/usersession.cookies.js';
 import { CreateOutreachCsvUseCase } from '../../application/usecases/outreach/createoutreachcsv.usecase.js';
+import { DeleteOutreachRecordUseCase } from '../../application/usecases/outreach/deleteoutreachrecord.usecase.js';
 import { GetOutreachChartUseCase } from '../../application/usecases/outreach/getoutreachchart.usecase.js';
 import { GetOutreachRecordUseCase } from '../../application/usecases/outreach/getoutreachrecord.usecase.js';
 import { GetOutreachSummaryUseCase } from '../../application/usecases/outreach/getoutreachsummary.usecase.js';
@@ -85,6 +86,37 @@ test('filters outreach records by sent date range', async () => {
   assert.equal(body.pagination.totalRecords, 1);
 });
 
+test('filters outreach records by contact method', async () => {
+  const api = createTestApi([
+    createRecord(1, { companyName: 'Email Co', contactMethod: 'email' }),
+    createRecord(2, { companyName: 'Form Co', contactMethod: 'contact_form' }),
+  ]);
+  const response = await api(createGetRequest('/api/admin/outreach-records?contactMethod=contact_form&pageSize=10'));
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(
+    body.records.map(record => record.companyName),
+    ['Form Co']
+  );
+  assert.equal(body.pagination.totalRecords, 1);
+});
+
+test('defaults outreach records to company name order', async () => {
+  const api = createTestApi([
+    createRecord(1, { companyName: 'Zulu Labs' }),
+    createRecord(2, { companyName: 'Alpha Finance' }),
+    createRecord(3, { companyName: 'Media Beta' }),
+  ]);
+  const response = await api(createGetRequest('/api/admin/outreach-records?pageSize=10'));
+  const body = await response.json();
+
+  assert.deepEqual(
+    body.records.map(record => record.companyName),
+    ['Alpha Finance', 'Media Beta', 'Zulu Labs']
+  );
+});
+
 test('rejects removed contact email sorting', async () => {
   const api = createTestApi(createRecords(1));
   const response = await api(createGetRequest('/api/admin/outreach-records?sortBy=contactEmail'));
@@ -153,13 +185,26 @@ test('returns one full outreach record from the detail endpoint', async () => {
   assert.equal(body.record.notes, 'Private note');
 });
 
-test('records endpoint uses the paginated repository method', async () => {
+test('deletes outreach records through the authenticated admin endpoint', async () => {
+  let deletedId = '';
+  const api = createTestApi(createRecords(1), {
+    deleteById: async id => {
+      deletedId = id;
+    },
+  });
+  const response = await api(createDeleteRequest('/api/admin/outreach-record?id=record-1'));
+
+  assert.equal(response.status, 204);
+  assert.equal(deletedId, 'record-1');
+});
+
+test('records endpoint uses the paginated repository method for database-sortable fields', async () => {
   const api = createTestApi(createRecords(1), {
     list: async () => {
       throw new Error('full list should only be used for export');
     },
   });
-  const response = await api(createGetRequest('/api/admin/outreach-records?pageSize=10'));
+  const response = await api(createGetRequest('/api/admin/outreach-records?sortBy=dateSent&pageSize=10'));
 
   assert.equal(response.status, 200);
 });
@@ -309,10 +354,12 @@ function createTestApi(records, repositoryOverrides = {}) {
     findById: async id => storedRecords.find(record => record.id === id) || null,
     save: async record => record,
     createMany: async records => records.map((record, index) => new Outreach({ ...record, id: `record-${index + 1}` })),
+    deleteById: async () => {},
     ...repositoryOverrides,
   };
   const controller = new TestOutreachController({
     createOutreachCsvUseCase: new CreateOutreachCsvUseCase(csvParser, outreachRepository as any),
+    deleteOutreachRecordUseCase: new DeleteOutreachRecordUseCase(outreachRepository as any),
     getOutreachChartUseCase: new GetOutreachChartUseCase(
       outreachRepository as any,
       { today: () => '2026-08-14' }
@@ -340,6 +387,7 @@ function createTestApi(records, repositoryOverrides = {}) {
     if (request.method === 'GET' && pathname === '/api/admin/outreach-export') return controller.exportCsv(request);
     if (request.method === 'POST' && pathname === '/api/admin/outreach-import') return controller.importCsv(request);
     if (request.method === 'PATCH' && pathname === '/api/admin/outreach-record') return controller.update(request);
+    if (request.method === 'DELETE' && pathname === '/api/admin/outreach-record') return controller.delete(request);
 
     return new Response(null, { status: 404 });
   };
@@ -348,6 +396,7 @@ function createTestApi(records, repositoryOverrides = {}) {
 function listRecords(records, query) {
   let result = records
     .filter(record => !query.status || record.status === query.status)
+    .filter(record => !query.contactMethod || record.contactMethod === query.contactMethod)
     .filter(record => !query.companyName || record.companyName.toLowerCase().includes(query.companyName))
     .filter(record => !query.dateSentFrom || record.dateSent >= query.dateSentFrom)
     .filter(record => !query.dateSentTo || record.dateSent <= query.dateSentTo);
@@ -412,6 +461,16 @@ function createPostRequest(path, body) {
       Cookie: `${ACCESS_COOKIE_NAME}=token`,
     },
     body: JSON.stringify(body),
+  });
+}
+
+function createDeleteRequest(path) {
+  return new Request(`https://arg.software${path}`, {
+    method: 'DELETE',
+    headers: {
+      Origin: 'https://arg.software',
+      Cookie: `${ACCESS_COOKIE_NAME}=token`,
+    },
   });
 }
 

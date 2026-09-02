@@ -43,6 +43,16 @@ export async function updateOutreachRecord(id, record) {
   return readAdminResponse(response);
 }
 
+export async function deleteOutreachRecord(id) {
+  const response = await fetch(createOutreachUrl(ADMIN_OUTREACH_RECORD_ENDPOINT, { id }), {
+    method: 'DELETE',
+  });
+
+  if (response.status === 204) return { deleted: true };
+
+  return readAdminResponse(response);
+}
+
 export async function importOutreachCsv(csv) {
   const response = await fetch(ADMIN_OUTREACH_IMPORT_ENDPOINT, {
     method: 'POST',

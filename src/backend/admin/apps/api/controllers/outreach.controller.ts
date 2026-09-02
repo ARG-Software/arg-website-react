@@ -83,6 +83,15 @@ export class OutreachController extends ControllerBase {
       })
     );
   }
+
+  @route('DELETE', '/api/admin/outreach-record')
+  @errorResponse('admin_outreach_delete_failed', 'Admin delete request failed')
+  async delete(request: Request): Promise<Response> {
+    await this.authenticateUser(request);
+    await this.outreachUseCases.deleteOutreachRecordUseCase.execute(this.query(request));
+
+    return this.json(204, '');
+  }
 }
 
 let controller: OutreachController;

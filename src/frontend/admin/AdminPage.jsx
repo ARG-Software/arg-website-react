@@ -230,6 +230,9 @@ function AdminWorkspace() {
       {renderAdminFragment(view, {
         userEmail: user?.email,
         onSelectRecord: record => setSelectedRecordId(record.id),
+        onRecordDeleted: record => {
+          if (record.id === selectedRecordId) setSelectedRecordId('');
+        },
         onSelectConversation: handleSelectConversation,
         onSelectVisitSession: setSelectedVisitSession,
         visitsView,
@@ -260,6 +263,7 @@ function renderAdminFragment(view, handlers) {
         query={{}}
         emptyMessage="No outreach records found."
         onSelectRecord={handlers.onSelectRecord}
+        onRecordDeleted={handlers.onRecordDeleted}
       />
     );
   }
@@ -271,6 +275,7 @@ function renderAdminFragment(view, handlers) {
         query={{ status: 'sent' }}
         emptyMessage="No sent outreach records found."
         onSelectRecord={handlers.onSelectRecord}
+        onRecordDeleted={handlers.onRecordDeleted}
       />
     );
   }
@@ -282,6 +287,7 @@ function renderAdminFragment(view, handlers) {
         query={{ status: 'not_sent' }}
         emptyMessage="No not-sent outreach records found."
         onSelectRecord={handlers.onSelectRecord}
+        onRecordDeleted={handlers.onRecordDeleted}
       />
     );
   }

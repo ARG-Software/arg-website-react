@@ -101,6 +101,13 @@ export function OutreachEditor({ record, onClose, onRecordUpdated }) {
           disabled={isContactForm}
           onChange={event => updateField('contactEmail', event.target.value)}
         />
+        <UiField
+          id="contact-info"
+          label={isContactForm ? 'Contact form URL' : 'Contact info'}
+          type={isContactForm ? 'url' : 'text'}
+          value={form.contactInfo}
+          onChange={event => updateField('contactInfo', event.target.value)}
+        />
         <UiSelect
           id="contact-method"
           label="Contact method"

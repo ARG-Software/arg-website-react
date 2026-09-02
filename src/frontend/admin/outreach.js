@@ -3,8 +3,21 @@ export const OUTREACH_STATUSES = [
   { value: 'not_sent', label: 'Not sent' },
 ];
 
+export const OUTREACH_CONTACT_METHODS = [
+  { value: 'email', label: 'Email' },
+  { value: 'contact_form', label: 'Contact form' },
+];
+
 export function getStatusLabel(status) {
   return OUTREACH_STATUSES.find(item => item.value === status)?.label || status || 'Not sent';
+}
+
+export function getContactMethodLabel(contactMethod) {
+  return (
+    OUTREACH_CONTACT_METHODS.find(item => item.value === contactMethod)?.label ||
+    contactMethod ||
+    '-'
+  );
 }
 
 export function buildMailtoUrl(record) {

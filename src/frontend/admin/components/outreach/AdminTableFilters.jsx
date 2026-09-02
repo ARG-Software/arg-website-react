@@ -1,5 +1,6 @@
 import { UiDatePicker } from '@ui/primitives/UiDatePicker.jsx';
-import { UiField } from '@ui/primitives/UiField.jsx';
+import { UiField, UiSelect } from '@ui/primitives/UiField.jsx';
+import { OUTREACH_CONTACT_METHODS } from '../../outreach.js';
 
 export function AdminTableFilters({ filters, onFilterChange }) {
   return (
@@ -12,6 +13,21 @@ export function AdminTableFilters({ filters, onFilterChange }) {
         value={filters.companyName}
         onChange={event => onFilterChange('companyName', event.target.value)}
       />
+      <UiSelect
+        id="admin-contact-method-filter"
+        label="Contact method"
+        labelHidden
+        aria-label="Contact method"
+        value={filters.contactMethod}
+        onChange={event => onFilterChange('contactMethod', event.target.value)}
+      >
+        <option value="">All methods</option>
+        {OUTREACH_CONTACT_METHODS.map(method => (
+          <option key={method.value} value={method.value}>
+            {method.label}
+          </option>
+        ))}
+      </UiSelect>
       <UiDatePicker
         id="admin-date-sent-from"
         aria-label="Date sent from"
