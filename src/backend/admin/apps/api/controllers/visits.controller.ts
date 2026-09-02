@@ -6,6 +6,10 @@ import {
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { adminContainer, type AdminContainer } from '../../di/admin.container.js';
 import { getHeaderGeolocation } from '../../http/requestinfo.js';
+import {
+  isKnownVisitBotUserAgent,
+  shouldSkipVisitPayload,
+} from '../../http/visittrafficfilter.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class VisitsController extends ControllerBase {
@@ -22,7 +26,18 @@ export class VisitsController extends ControllerBase {
   async log(request: Request): Promise<Response> {
     await this.checkRateLimit(request, this.visits.visitLogRateLimiter);
 
+    if (isKnownVisitBotUserAgent(request.headers.get('user-agent'))) {
+      this.logger?.info('Visit session skipped', { reason: 'known_bot_user_agent' });
+      return this.json(204, '');
+    }
+
     const payload = await this.body(request);
+
+    if (shouldSkipVisitPayload(payload)) {
+      this.logger?.info('Visit session skipped', { reason: 'low_engagement' });
+      return this.json(204, '');
+    }
+
     await this.visits.recordVisitSessionUseCase.execute({
       geo: getHeaderGeolocation(request),
       sessionId: payload.sessionId,

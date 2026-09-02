@@ -55,6 +55,137 @@ test('rate limits visit logs before reading the body', async () => {
   assert.equal(recordCalled, false);
 });
 
+test('skips known bot visit logs before reading the body', async () => {
+  let recordCalled = false;
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute() {
+        recordCalled = true;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    new Request('https://arg.software/api/visit-log', {
+      method: 'POST',
+      headers: {
+        'user-agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+        'x-nf-client-connection-ip': '203.0.113.10',
+      },
+      body: '{',
+    })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordCalled, false);
+});
+
+test('skips low-engagement visit logs with one short page view and no events', async () => {
+  let recordCalled = false;
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute() {
+        recordCalled = true;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    createVisitLogRequest({
+      events: [],
+      pageViews: [createVisitPageView(1000)],
+    })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordCalled, false);
+});
+
+test('skips low-engagement visit logs with only the automatic page view event', async () => {
+  let recordCalled = false;
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute() {
+        recordCalled = true;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    createVisitLogRequest({
+      events: [{ name: 'page_view', timestamp: '2026-08-28T10:00:00.000Z', path: '/' }],
+      pageViews: [createVisitPageView(1000)],
+    })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordCalled, false);
+});
+
+test('records short visit logs with attribution', async () => {
+  let recordedSessionId = '';
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute(input) {
+        recordedSessionId = input.sessionId;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    createVisitLogRequest({
+      attribution: { source: 'linkedin', campaign: 'founders-post' },
+      events: [],
+      pageViews: [createVisitPageView(1000)],
+    })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordedSessionId, 'visitor-session');
+});
+
+test('records short visit logs with meaningful events', async () => {
+  let recordedSessionId = '';
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute(input) {
+        recordedSessionId = input.sessionId;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    createVisitLogRequest({
+      events: [{ name: 'cta_click', timestamp: '2026-08-28T10:00:01.000Z', path: '/' }],
+      pageViews: [createVisitPageView(1000)],
+    })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordedSessionId, 'visitor-session');
+});
+
+test('records longer visit logs without events', async () => {
+  let recordedSessionId = '';
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute(input) {
+        recordedSessionId = input.sessionId;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    createVisitLogRequest({
+      events: [],
+      pageViews: [createVisitPageView(5000)],
+    })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordedSessionId, 'visitor-session');
+});
+
 test('deletes visit sessions through the authenticated admin endpoint', async () => {
   let deletedSessionHash = '';
   const controller = new TestVisitsController({
@@ -387,7 +518,7 @@ function createMetricSession(sessionHash: string, countryCode: string) {
   };
 }
 
-function createVisitLogRequest() {
+function createVisitLogRequest(payload = {}) {
   return new Request('https://arg.software/api/visit-log', {
     method: 'POST',
     headers: {
@@ -399,8 +530,20 @@ function createVisitLogRequest() {
       events: [],
       pageViews: [],
       language: 'en',
+      ...payload,
     }),
   });
+}
+
+function createVisitPageView(durationMs: number) {
+  return {
+    path: '/',
+    title: 'ARG Software',
+    sequence: 1,
+    startedAt: '2026-08-28T10:00:00.000Z',
+    endedAt: '2026-08-28T10:00:01.000Z',
+    durationMs,
+  };
 }
 
 function createAuthenticateUserUseCase() {
