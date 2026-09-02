@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "ARG Software Public Discovery",
+  "name_for_model": "arg_software_public_discovery",
+  "description_for_human": "Read-only public discovery for ARG Software services, projects, engineering articles, and contact paths.",
+  "description_for_model": "Use this plugin to discover public information about ARG Software, including services, projects, blog articles, public API discovery resources, LLM context files, MCP metadata, and contact paths. Do not assume access to private admin APIs, OAuth credentials, or automated agent registration.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://arg.software/.well-known/openapi.json"
+  },
+  "logo_url": "https://arg.software/favicon-48x48.png",
+  "contact_email": "hello@arg.software",
+  "legal_info_url": "https://arg.software/terms/"
+}

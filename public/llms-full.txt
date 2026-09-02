@@ -13,6 +13,12 @@ Canonical website: https://arg.software/
 - Email: hello@arg.software
 - Project brief: https://arg.software/contact/#brief
 - Portfolio PDF: https://arg.software/files/portfolio.pdf
+- Agent access policy: https://arg.software/auth.md
+- AI plugin manifest: https://arg.software/ai-plugin.json
+- API catalog: https://arg.software/.well-known/api-catalog
+- OpenAPI document: https://arg.software/.well-known/openapi.json
+- MCP server card: https://arg.software/.well-known/mcp/server-card.json
+- Agent skill index: https://arg.software/.well-known/agent-skills/index.json
 - LinkedIn: https://www.linkedin.com/company/arg-software
 - GitHub: https://github.com/ARG-Software
 - Medium: https://medium.com/@arg-software

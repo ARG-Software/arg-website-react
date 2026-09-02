@@ -6,6 +6,12 @@
 
 - Website: https://arg.software/
 - Full LLM context: https://arg.software/llms-full.txt
+- Agent access policy: https://arg.software/auth.md
+- AI plugin manifest: https://arg.software/ai-plugin.json
+- API catalog: https://arg.software/.well-known/api-catalog
+- OpenAPI document: https://arg.software/.well-known/openapi.json
+- MCP server card: https://arg.software/.well-known/mcp/server-card.json
+- Agent skill index: https://arg.software/.well-known/agent-skills/index.json
 - Location: Funchal and Porto, Portugal
 - Works with: clients worldwide
 - Contact: hello@arg.software

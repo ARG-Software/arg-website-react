@@ -32,9 +32,9 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
         /* invalid date — skip published_time */
       }
     }
-    if (meta.dateModified || meta.updated) {
+    if (meta.dateModified || meta.updated || meta.date) {
       try {
-        const iso = new Date(meta.dateModified || meta.updated).toISOString();
+        const iso = new Date(meta.dateModified || meta.updated || meta.date).toISOString();
         extra += `<meta property="article:modified_time" content="${iso}">\n  `;
       } catch {
         /* invalid date — skip modified_time */
