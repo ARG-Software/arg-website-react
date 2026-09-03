@@ -25,7 +25,7 @@ However, in a distributed system with competing consumers, you rarely get that g
 
 The hard truth: You cannot force your infrastructure to guarantee order across all failure modes. Instead of trying to prevent the disorder, you must design your system to handle it. That job belongs to idempotency.
 
-![Stop Trusting Your Message Broker: Why Idempotency is the Only Real Guarantee](/images/blog/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee/image-2.webp)
+![Message broker idempotency workflow for duplicate event handling](/images/blog/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee/image-2.webp)
 
 The events were published in order. They were not handled in order. Techniques such as single consumers, partitioned queues (Kafka partitions, SQS FIFO queues, message groups, Azure Service Bus sessions), and chained workflows can restore per-aggregate ordering. None of them makes the system correct on their own.
 
@@ -103,7 +103,7 @@ Because your code can check that 0 rows were affected, it can safely ignore the 
 
 The general-purpose approach. You maintain a table of processed message IDs and check it before doing any work, inside the same transaction as the domain write.
 
-![Stop Trusting Your Message Broker: Why Idempotency is the Only Real Guarantee](/images/blog/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee/image-3.webp)
+![Idempotent message processing architecture for distributed systems](/images/blog/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee/image-3.webp)
 
 Inbox Pattern
 
@@ -134,7 +134,7 @@ The unique constraint on message_id also serves as a safety net. If two consumer
 
 Each event carries the aggregate version it was produced from. The handler only applies the event if the stored version matches the expected predecessor. One mechanism handles both duplicates and out-of-order delivery.
 
-![Stop Trusting Your Message Broker: Why Idempotency is the Only Real Guarantee](/images/blog/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee/image-4.webp)
+![Message broker reliability limits and idempotency guarantees](/images/blog/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee/image-4.webp)
 
 Version Based Idempotency
 

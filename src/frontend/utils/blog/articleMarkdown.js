@@ -34,7 +34,7 @@ export function parseFrontmatter(raw) {
 export function extractMetadata(meta, body) {
   let image = meta.image || '';
   if (!image) {
-    const imgMatch = body.match(/!\[[^\]]*\]\(([^)]+)\)/);
+    const imgMatch = body.match(/!\[[^\]]*\]\((\S+)(?:\s+["'][^"']*["'])?\)/);
     if (imgMatch) image = imgMatch[1];
   }
 
@@ -176,9 +176,9 @@ export function parseBlocks(body) {
     }
 
     if (trimmed.startsWith('![')) {
-      const match = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)/);
+      const match = trimmed.match(/^!\[([^\]]*)\]\((\S+)(?:\s+["']([^"']*)["'])?\)/);
       if (match) {
-        blocks.push({ type: 'image', alt: match[1], src: match[2] });
+        blocks.push({ type: 'image', alt: match[1], src: match[2], caption: match[3] || '' });
         continue;
       }
     }

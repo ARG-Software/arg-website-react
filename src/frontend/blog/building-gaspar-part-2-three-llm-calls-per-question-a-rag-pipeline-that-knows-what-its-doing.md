@@ -42,7 +42,7 @@ Gaspar now runs a pipeline. A pipeline is just a sequence of steps, where each s
 
 For a full question about ARG, that means three separate LLM calls: classify → plan → answer. Simpler messages (small talk, off-topic requests, “rewrite that”) take shorter paths and skip some of these steps.
 
-![Part 2: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-2.webp)
+![RAG pipeline planning with three LLM calls per question](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-2.webp)
 
 ## 🧩 Call 1: Figure out what the visitor actually wants
 
@@ -95,7 +95,7 @@ If planning fails for any reason, Gaspar falls back to a single search using the
 
 ## 🔍 Retrieval: Pick the right search strategy
 
-![Part 2: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-3.webp)
+![AI assistant retrieval flow for RAG answer quality](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-3.webp)
 
 This is where numerous RAG systems get lazy. They turn everything into a vector search.
 

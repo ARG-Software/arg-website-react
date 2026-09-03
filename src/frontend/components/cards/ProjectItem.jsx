@@ -146,7 +146,7 @@ export function ProjectItem({
               draggable={false}
               loading="lazy"
               decoding="async"
-              alt=""
+              alt={`${title} ${subtitle} case study`}
               src={coverSrc}
               sizes="(max-width: 767px) 91vw, (max-width: 991px) 88vw, 24vw"
               srcSet={coverSrcSet}

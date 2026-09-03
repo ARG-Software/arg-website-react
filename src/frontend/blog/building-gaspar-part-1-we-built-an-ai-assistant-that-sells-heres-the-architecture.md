@@ -48,7 +48,7 @@ Mode 2: Lead capture. When someone signals they would like to work with us, the 
 
 If they choose to message through Gaspar, the flow becomes guided: email, optional message, confirmation, submit. No natural language guessing for this part. Personal details go to Web3Forms(a free form email provider) and never touch the LLM, the large language model that writes the AI answers.
 
-![Part 1: We Built an AI Assistant That Sells. Here’s the Architecture.](/images/blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture-3.webp)
+![Gaspar AI sales assistant architecture and RAG workflow](/images/blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture-3.webp)
 
 Gaspar can also start the conversation itself. After the homepage intro finishes, it can pop up after someone browses quietly for a while, on any page except the contact page. Dismiss it once, and it stays quiet for that visit. Say, “Don’t show me again,” and it won’t ask for two days.
 

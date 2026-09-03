@@ -80,7 +80,7 @@ We updated module imports, provided services at the correct levels, and fixed in
 
 While Angular 14+ introduced standalone components as a modern alternative to NgModules, we made a conscious decision not to use standalone components in this project. Instead, we kept all component definitions with standalone set to false.
 
-![Component decorator example with standalone: false](/images/blog/angular-migration/standalone-false-decorator.webp)
+![Angular component decorator example with standalone false](/images/blog/angular-migration/standalone-false-decorator.webp)
 
 This decision was made for a reason we believe is the core angular way of structuring modules. So while we modernized much of the project - including RxJS and NgRx updates - we chose to retain the classic NgModule structure for component declarations to ensure long-term stability and reduce migration risk. Also Angular by default uses standalone: true in its component declarations so we had to explicitly set it to false for it to work with the older structure.
 
@@ -101,9 +101,9 @@ The modular file structure (actions, reducers, effects, and selectors split per 
 - **Predictability.** We knew where to look when updating or debugging code.
 - **Stability.** Since the structure didn't change, we avoided regressions and onboarding friction.
 
-![File structure for a module](/images/blog/angular-migration/module-file-structure.webp)
+![Angular module file structure after legacy migration](/images/blog/angular-migration/module-file-structure.webp)
 
-![NgRx workflow for a specific module](/images/blog/angular-migration/ngrx-workflow.webp)
+![Angular NgRx workflow for a migrated feature module](/images/blog/angular-migration/ngrx-workflow.webp)
 
 ## Property Accessibility Errors
 
@@ -131,7 +131,7 @@ Newer TS versions enabled stricter checks, which flagged:
 
 We had to tune the tsconfig.json progressively to enable stricter rules, which created more issues, but it helped catch bugs early and improved overall app stability.
 
-![App Config Changes](/images/blog/angular-migration/app-stability.webp)
+![Angular app configuration changes for migration stability](/images/blog/angular-migration/app-stability.webp)
 
 ## Clarity UI Compatibility
 
@@ -154,7 +154,7 @@ We also resolved these to silence warnings and improve accessibility.
 
 To improve debugging and gain better visibility into our application's state, we added @ngrx/store-devtools. This allowed us to inspect dispatched actions, track state changes over time, and even time-travel through state history. It's a small addition that greatly improves developer experience, especially during migrations and feature development.
 
-![Redux DevTools Integration](/images/blog/angular-migration/redux-devtools-integration.webp)
+![Angular Redux DevTools integration for NgRx migration](/images/blog/angular-migration/redux-devtools-integration.webp)
 
 ## NgRx Signals: Experimenting with Simpler State Management
 

@@ -95,8 +95,8 @@ export function useLeadCaptureVisibility({
       if (hasShown || isLeadCaptureSuppressed() || isSuppressed || inMemoryDismissed) return;
 
       hasShown = true;
-      trackEvent('lead_capture', {
-        action: 'impression',
+      trackEvent('assistant_lead_capture', {
+        action: 'offer_shown',
         page_path: normalizedPath,
         source: 'idle_timer',
       });
@@ -133,8 +133,9 @@ export function useLeadCaptureVisibility({
       setStorageItem(getClientStorage('sessionStorage'), LEAD_CAPTURE_SESSION_DISMISSED_KEY, '1');
     }
 
-    trackEvent('lead_capture', {
-      action: mode === TWO_DAY_DISMISS ? 'dismiss_two_days' : 'dismiss_session',
+    trackEvent('assistant_lead_capture', {
+      action: 'dismissed',
+      dismissal_scope: mode === TWO_DAY_DISMISS ? 'two_days' : 'session',
       page_path: normalizedPath,
       source: 'idle_timer',
     });

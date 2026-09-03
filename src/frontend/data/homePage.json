@@ -163,7 +163,7 @@
         "personKey": "JOSE",
         "imgSrc": "/images/team/Jose.jpg",
         "imgSrcSet": "/images/team/Jose.jpg 1024w",
-        "imgAlt": "JoseAntunes - ARG"
+        "imgAlt": "Jose Antunes, ARG Software co-founder and software engineer"
       },
       {
         "name": "Rui Rocha",
@@ -171,7 +171,7 @@
         "personKey": "RUI",
         "imgSrc": "/images/team/Rocha.jpg",
         "imgSrcSet": "/images/team/Rocha.jpg 1024w",
-        "imgAlt": "RuiRocha - ARG"
+        "imgAlt": "Rui Rocha, ARG Software co-founder and software engineer"
       }
     ]
   },

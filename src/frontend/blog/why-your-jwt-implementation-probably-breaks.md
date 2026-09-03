@@ -315,7 +315,7 @@ The server doesn’t know who’s legitimate, so it revokes the entire family of
 
 This is OAuth 2.0 compliance.
 
-![Why Your JWT Implementation Probably Breaks](/images/blog/why-your-jwt-implementation-probably-breaks/why-your-jwt-implementation-probably-breaks-2.webp)
+![JWT implementation validation and security failure example](/images/blog/why-your-jwt-implementation-probably-breaks/why-your-jwt-implementation-probably-breaks-2.webp)
 
 ## The Production Recipe (All Together) 👨🍳
 

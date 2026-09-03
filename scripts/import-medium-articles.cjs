@@ -53,6 +53,8 @@ const TYPO_REPLACEMENTS = [
   },
 ];
 
+const WEAK_IMAGE_TEXT_PATTERN =
+  /^(?:image|photo|picture|screenshot|screen shot|diagram|chart|graph|stats|statistics|table|header|cover)$/i;
 const typoFixes = [];
 
 const decodeEntities = value =>
@@ -152,7 +154,15 @@ const escapeMarkdownLinkText = value =>
     .replace(/\]/g, '\\]')
     .trim();
 
-const escapeMarkdownLinkUrl = value => String(value || '').trim().replace(/\)/g, '%29');
+const escapeMarkdownLinkUrl = value =>
+  String(value || '')
+    .trim()
+    .replace(/\)/g, '%29');
+
+const escapeMarkdownImageTitle = value =>
+  String(value || '')
+    .trim()
+    .replace(/"/g, "'");
 
 const formatDate = value =>
   new Intl.DateTimeFormat('en-US', {
@@ -176,9 +186,37 @@ const getPostTags = (post, title, subtitle) => {
   return [getTag(`${title} ${subtitle}`)];
 };
 
+const limitAltText = value => {
+  const normalized = sanitizeTitle(value).replace(/\s+/g, ' ').trim();
+  if (normalized.length <= 110) return normalized;
+
+  return normalized.slice(0, 107).replace(/\s+\S*$/, '') + '...';
+};
+
+const buildImageAlt = ({ caption, title, tags, imageIndex, recentHeading }) => {
+  const cleanCaption = sanitizeTitle(caption);
+  if (cleanCaption && cleanCaption.length > 12 && !WEAK_IMAGE_TEXT_PATTERN.test(cleanCaption)) {
+    return limitAltText(cleanCaption);
+  }
+
+  const tag = tags[0] || getTag(title);
+  const context = sanitizeTitle(recentHeading) || removePartPrefix(title);
+  const role = imageIndex === 1 ? 'hero image' : cleanCaption || 'technical illustration';
+  return limitAltText(`${tag} ${context} ${role}`);
+};
+
 const inferLang = hint => {
-  const normalized = String(hint || '').trim().toLowerCase();
-  const aliases = { ts: 'typescript', tsx: 'typescript', js: 'javascript', sh: 'bash', shell: 'bash', txt: 'text' };
+  const normalized = String(hint || '')
+    .trim()
+    .toLowerCase();
+  const aliases = {
+    ts: 'typescript',
+    tsx: 'typescript',
+    js: 'javascript',
+    sh: 'bash',
+    shell: 'bash',
+    txt: 'text',
+  };
   return aliases[normalized] || normalized;
 };
 
@@ -232,7 +270,13 @@ const applyParagraphLinks = paragraph => {
       end: Number(markup.end),
       url: getMarkupUrl(markup),
     }))
-    .filter(markup => markup.url && Number.isFinite(markup.start) && Number.isFinite(markup.end) && markup.end > markup.start)
+    .filter(
+      markup =>
+        markup.url &&
+        Number.isFinite(markup.start) &&
+        Number.isFinite(markup.end) &&
+        markup.end > markup.start
+    )
     .sort((a, b) => a.start - b.start || a.end - b.end);
 
   if (!linkMarkups.length) return sanitizeMarkdownText(text).trim();
@@ -344,7 +388,8 @@ const extractEditorPayload = html => {
   return JSON.parse(html.slice(start + MEDIUM_EDITOR_PAYLOAD.length, end)).value;
 };
 
-const getExportAssetsDir = htmlPath => path.join(path.dirname(htmlPath), `${path.basename(htmlPath, '.html')}_files`);
+const getExportAssetsDir = htmlPath =>
+  path.join(path.dirname(htmlPath), `${path.basename(htmlPath, '.html')}_files`);
 
 const findExportedImage = (assetsDir, imageId) => {
   if (!imageId || !fs.existsSync(assetsDir)) return '';
@@ -364,7 +409,15 @@ const cleanArticleImageDir = articleSlug => {
   fs.rmSync(imageDir, { recursive: true, force: true });
 };
 
-const localizeMediumImage = async (paragraph, articleSlug, title, imageIndex, assetsDir) => {
+const localizeMediumImage = async (
+  paragraph,
+  articleSlug,
+  title,
+  tags,
+  imageIndex,
+  assetsDir,
+  recentHeading
+) => {
   const imageId = paragraph.metadata?.id || paragraph.metadata?.imageId || '';
   const exportedFile = findExportedImage(assetsDir, imageId);
   if (!exportedFile) return '';
@@ -372,8 +425,10 @@ const localizeMediumImage = async (paragraph, articleSlug, title, imageIndex, as
   const imageDir = path.join(IMAGE_ROOT, articleSlug);
   fs.mkdirSync(imageDir, { recursive: true });
 
-  const alt = sanitizeText(paragraph.text) || title;
-  const baseName = imageIndex === 1 ? `${articleSlug}-header` : `${slugify(alt) || 'image'}-${imageIndex}`;
+  const caption = sanitizeText(paragraph.text);
+  const alt = buildImageAlt({ caption, title, tags, imageIndex, recentHeading });
+  const baseName =
+    imageIndex === 1 ? `${articleSlug}-header` : `${slugify(alt) || 'image'}-${imageIndex}`;
   const fileName = `${baseName}.webp`;
   const sourcePath = path.join(assetsDir, exportedFile);
   const outputPath = path.join(imageDir, fileName);
@@ -386,14 +441,18 @@ const localizeMediumImage = async (paragraph, articleSlug, title, imageIndex, as
     fs.copyFileSync(sourcePath, outputPath);
   }
 
+  if (caption && caption !== alt)
+    return `![${alt}](${publicPath} "${escapeMarkdownImageTitle(caption)}")`;
   return `![${alt}](${publicPath})`;
 };
 
-const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title, htmlPath) => {
+const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title, subtitle, htmlPath) => {
   const paragraphs = post.content?.bodyModel?.paragraphs || [];
   const assetsDir = getExportAssetsDir(htmlPath);
+  const tags = getPostTags(post, title, subtitle);
   const blocks = [];
   let imageIndex = 0;
+  let recentHeading = '';
 
   for (const paragraph of paragraphs) {
     if (paragraph.type === 8) {
@@ -411,7 +470,15 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title, htmlPat
 
     if (paragraph.type === 4) {
       imageIndex += 1;
-      const image = await localizeMediumImage(paragraph, articleSlug, title, imageIndex, assetsDir);
+      const image = await localizeMediumImage(
+        paragraph,
+        articleSlug,
+        title,
+        tags,
+        imageIndex,
+        assetsDir,
+        recentHeading
+      );
       if (image) blocks.push(image);
       continue;
     }
@@ -429,11 +496,13 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title, htmlPat
     }
 
     if (paragraph.type === 13) {
+      recentHeading = text;
       blocks.push(`### ${text}`);
       continue;
     }
 
     if (paragraph.type === 3) {
+      recentHeading = text;
       blocks.push(`## ${text}`);
       continue;
     }
@@ -444,14 +513,24 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title, htmlPat
   return blocks;
 };
 
-const convertPostToMarkdown = async (post, articleSlug, title, htmlPath) => {
-  const blocks = await getMarkdownBlocksFromParagraphs(post, articleSlug, title, htmlPath);
-  return blocks.join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
+const convertPostToMarkdown = async (post, articleSlug, title, subtitle, htmlPath) => {
+  const blocks = await getMarkdownBlocksFromParagraphs(
+    post,
+    articleSlug,
+    title,
+    subtitle,
+    htmlPath
+  );
+  return blocks
+    .join('\n\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 };
 
 const getPostUrl = post => `https://medium.com/p/${post.id}`;
 
-const getTimestamp = post => post.firstPublishedAt || post.latestPublishedAt || post.createdAt || post.updatedAt || Date.now();
+const getTimestamp = post =>
+  post.firstPublishedAt || post.latestPublishedAt || post.createdAt || post.updatedAt || Date.now();
 
 const getDateModified = post => (post.updatedAt ? formatDate(post.updatedAt) : '');
 
@@ -466,7 +545,9 @@ const getSlug = (post, title) => {
 const buildFrontmatter = (post, slug, title, markdown) => {
   const collection = COLLECTION_BY_MEDIUM_ID[post.id];
   const subtitle = applyTypoFixes(
-    sanitizeText(post.content?.subtitle || post.virtuals?.subtitle || post.previewContent2?.subtitle || ''),
+    sanitizeText(
+      post.content?.subtitle || post.virtuals?.subtitle || post.previewContent2?.subtitle || ''
+    ),
     `${post.id} subtitle`
   );
   const seoTitle = applyTypoFixes(sanitizeTitle(post.seoTitle || title), `${post.id} seoTitle`);
@@ -504,18 +585,32 @@ const findExistingPost = (existingPosts, post, slug, title) =>
 const writePost = async (post, htmlPath, existingPosts) => {
   const title = applyTypoFixes(sanitizeTitle(post.title), `${post.id} title`);
   const slug = getSlug(post, title);
+  const subtitle = applyTypoFixes(
+    sanitizeText(
+      post.content?.subtitle || post.virtuals?.subtitle || post.previewContent2?.subtitle || ''
+    ),
+    `${post.id} subtitle`
+  );
   cleanArticleImageDir(slug);
-  const markdown = await convertPostToMarkdown(post, slug, title, htmlPath);
+  const markdown = await convertPostToMarkdown(post, slug, title, subtitle, htmlPath);
 
   if (!markdown) throw new Error(`Empty markdown after conversion for ${post.id}`);
 
   const outputPath = path.join(BLOG_DIR, `${slug}.md`);
   const existingPost = findExistingPost(existingPosts, post, slug, title);
-  if (existingPost && existingPost.fullPath !== outputPath && fs.existsSync(existingPost.fullPath)) {
+  if (
+    existingPost &&
+    existingPost.fullPath !== outputPath &&
+    fs.existsSync(existingPost.fullPath)
+  ) {
     fs.unlinkSync(existingPost.fullPath);
   }
 
-  fs.writeFileSync(outputPath, `${buildFrontmatter(post, slug, title, markdown)}${markdown}\n`, 'utf8');
+  fs.writeFileSync(
+    outputPath,
+    `${buildFrontmatter(post, slug, title, markdown)}${markdown}\n`,
+    'utf8'
+  );
 
   return {
     id: post.id,
@@ -558,7 +653,12 @@ const importFromLocalHtml = async sourceDir => {
     skipped,
     typoFixes: typoFixes.filter(
       (fix, index, fixes) =>
-        fixes.findIndex(candidate => candidate.context === fix.context && candidate.from === fix.from && candidate.to === fix.to) === index
+        fixes.findIndex(
+          candidate =>
+            candidate.context === fix.context &&
+            candidate.from === fix.from &&
+            candidate.to === fix.to
+        ) === index
     ),
   };
 };

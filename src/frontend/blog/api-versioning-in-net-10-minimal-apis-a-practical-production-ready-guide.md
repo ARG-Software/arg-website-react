@@ -520,7 +520,7 @@ Goal: simplify your system and eliminate maintenance overhead.
 
 ⚠️ Common mistake: never removing old versions. Set a deadline — and enforce it.
 
-![API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide](/images/blog/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide/image-2.webp)
+![.NET 10 Minimal API versioning endpoint examples](/images/blog/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide/image-2.webp)
 
 API versioning follows a controlled lifecycle: release new versions, deprecate old ones, monitor adoption, and retire safely.
 

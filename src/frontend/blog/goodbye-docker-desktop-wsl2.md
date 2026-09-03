@@ -28,7 +28,7 @@ WSL lets you run a full Linux environment directly on Windows, no virtual machin
 
 Our recommendation? Go with WSL 2 - it's the default now for good reason and supports all the modern Linux tools you'll need. As Microsoft explains in its official documentation, WSL 2 provides a full Linux kernel experience right within Windows, making it perfect for container development.
 
-![WSL version comparison](/images/blog/goodbye-wsl/setting-up-wsl.webp)
+![WSL2 Docker development environment version comparison](/images/blog/goodbye-wsl/setting-up-wsl.webp)
 
 ## Setting Up WSL on Windows 10/11
 
@@ -44,7 +44,7 @@ Want to see what other distros are available?
 wsl --list --online
 ```
 
-![List of distros available](/images/blog/goodbye-wsl/distros-list.webp)
+![WSL2 Linux distributions available for Docker development](/images/blog/goodbye-wsl/distros-list.webp)
 
 To install a specific one (e.g., Debian):
 
@@ -137,7 +137,7 @@ docker run -d -p 8000:8000 -p 9443:9443 --name portainer \
 
 Open your browser and go to http://localhost:9443 to access the Portainer interface. You'll be prompted to create an admin user on the first login.
 
-![Portainer Login Screen](/images/blog/goodbye-wsl/portainer-login.webp)
+![Portainer login screen for Docker on WSL2](/images/blog/goodbye-wsl/portainer-login.webp)
 
 ![Portainer environment](/images/blog/goodbye-wsl/portainer-environment.webp)
 

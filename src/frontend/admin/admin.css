@@ -329,24 +329,25 @@
 
 .admin-table-filters {
   display: grid;
-  gap: 0.75rem;
-  grid-template-columns: minmax(14rem, 1fr) minmax(10rem, 0.7fr) repeat(2, minmax(9rem, 0.6fr));
+  column-gap: 1.25rem;
+  grid-template-columns: minmax(14rem, 1fr) minmax(10rem, 0.7fr) repeat(2, minmax(10.5rem, 0.75fr));
+  row-gap: 0.75rem;
 }
 
-.ui-card--light.admin-data-table td a {
-  color: #7904fd;
+.ui-card--light.admin-data-table .admin-table-link {
+  color: inherit;
   font-weight: 600;
-  text-decoration-color: rgba(121, 4, 253, 0.35);
+  text-decoration-color: rgba(12, 0, 46, 0.35);
 }
 
-.ui-card--light.admin-data-table td a:hover,
-.ui-card--light.admin-data-table td a:focus-visible {
+.ui-card--light.admin-data-table .admin-table-link:hover,
+.ui-card--light.admin-data-table .admin-table-link:focus-visible {
   color: #0c002e;
   text-decoration-color: currentColor;
 }
 
-.ui-card--light.admin-data-table tbody tr:hover td a,
-.ui-card--light.admin-data-table tbody tr:focus-visible td a {
+.ui-card--light.admin-data-table tbody tr:hover .admin-table-link,
+.ui-card--light.admin-data-table tbody tr:focus-visible .admin-table-link {
   color: #fff;
   text-decoration-color: rgba(255, 255, 255, 0.72);
 }

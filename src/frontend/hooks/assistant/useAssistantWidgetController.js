@@ -215,7 +215,7 @@ export function useAssistantWidgetController({
       if (DAILY_RATE_LIMIT_SCOPES.has(limitScope) && !isLeadActive) {
         leadCaptureStartedRef.current = true;
         leadDismissHandledRef.current = false;
-        startLeadCapture(LEAD_STEPS.EMAIL);
+        startLeadCapture(LEAD_STEPS.EMAIL, 'rate_limit');
         setMessages(prev => [
           ...prev,
           getLeadAssistantMessage(assistantCopy.messages.leadCaptureEmail),
@@ -308,7 +308,7 @@ export function useAssistantWidgetController({
     requestAnimationFrame(() => {
       setPanelState(next);
       setError(null);
-      startLeadCapture();
+      startLeadCapture(undefined, LEAD_SOURCE);
       setMessages(prev => [
         ...prev,
         getLeadAssistantMessage(assistantCopy.messages.leadCaptureOffer),

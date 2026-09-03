@@ -59,7 +59,7 @@ describe('POST /orders', () => {
 
 ❌ Cons: Slower to run. Requires infrastructure (Docker). More complex setup.
 
-![Testcontainers Best Practices for NestJS Integration Testing](/images/blog/testcontainers-best-practices-nestjs/testcontainers-best-practices-nestjs-unit-vs-integration.webp)
+![NestJS Testcontainers unit versus integration testing comparison](/images/blog/testcontainers-best-practices-nestjs/testcontainers-best-practices-nestjs-unit-vs-integration.webp)
 
 ## Which Gives You More Confidence When Changing Code?
 

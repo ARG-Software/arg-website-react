@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
 import { ConfirmDialog } from '@ui/overlays/ConfirmDialog.jsx';
-import { UiStatusPill } from '@ui/primitives/UiStatusPill.jsx';
 import { AdminTableFilters } from '../../components/outreach/AdminTableFilters.jsx';
+import { getOutreachRecordColumns } from '../../components/outreach/outreachRecordColumns.jsx';
 import { useDebouncedValue } from '../../hooks/shared/useDebouncedValue.js';
-import { getContactMethodLabel, getStatusLabel } from '../../outreach.js';
 import {
   useDeleteOutreachRecord,
   useOutreachRecords,
@@ -64,7 +63,7 @@ export default function OutreachRecordsPage({
         <AdminDataTable
           title={title}
           filters={<AdminTableFilters filters={filters} onFilterChange={handleFilterChange} />}
-          columns={getRecordColumns()}
+          columns={getOutreachRecordColumns()}
           rows={recordsQuery.data?.records || []}
           sort={sort}
           pagination={{
@@ -102,46 +101,6 @@ export default function OutreachRecordsPage({
   );
 }
 
-function getRecordColumns() {
-  return [
-    { key: 'companyName', label: 'Company' },
-    {
-      key: 'website',
-      label: 'Site URL',
-      render: record => <WebsiteLink website={record.website} />,
-    },
-    {
-      key: 'contactEmail',
-      label: 'Contact',
-      render: record => record.contactEmail || record.contactInfo || record.website || 'No contact',
-    },
-    {
-      key: 'contactMethod',
-      label: 'Method',
-      render: record => getContactMethodLabel(record.contactMethod),
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      render: record => (
-        <UiStatusPill status={record.status}>{getStatusLabel(record.status)}</UiStatusPill>
-      ),
-    },
-    {
-      key: 'dateSent',
-      label: 'Date sent',
-      sortable: true,
-      render: record => record.dateSent || '-',
-    },
-    {
-      key: 'followUpDate',
-      label: 'Follow up',
-      sortable: true,
-      render: record => record.followUpDate || '-',
-    },
-  ];
-}
-
 function createTableQueryFilters(filters, companyName) {
   return {
     companyName,
@@ -149,19 +108,4 @@ function createTableQueryFilters(filters, companyName) {
     dateSentFrom: filters.dateSentFrom,
     dateSentTo: filters.dateSentTo,
   };
-}
-
-function WebsiteLink({ website }) {
-  if (!website) return '-';
-
-  return (
-    <a
-      href={website}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={event => event.stopPropagation()}
-    >
-      {website}
-    </a>
-  );
 }

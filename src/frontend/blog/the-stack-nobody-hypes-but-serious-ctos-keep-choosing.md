@@ -134,7 +134,7 @@ Go can build all of these things as well. Its minimalism is often a strength, bu
 
 ## So who should choose what?
 
-![The Stack Nobody Hypes, but Serious CTOs Keep Choosing](/images/blog/the-stack-nobody-hypes-but-serious-ctos-keep-choosing/the-stack-nobody-hypes-but-serious-ctos-keep-choosing-2.webp)
+![.NET C# PostgreSQL Angular stack chosen by serious CTOs](/images/blog/the-stack-nobody-hypes-but-serious-ctos-keep-choosing/the-stack-nobody-hypes-but-serious-ctos-keep-choosing-2.webp)
 
 These are starting points, not universal rules.
 

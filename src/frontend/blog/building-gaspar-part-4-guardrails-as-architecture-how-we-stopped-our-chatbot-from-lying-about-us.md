@@ -40,7 +40,7 @@ That one small bug taught us something big:
 
 > A prompt can be ignored, misread, or simply outweighed by whatever context gets pulled in. Real guardrails have to be built into the architecture, not just politely requested.
 
-![Part 4: Guardrails as Architecture: How We Stopped Our Chatbot from Lying About Us](/images/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us-2.webp)
+![AI chatbot guardrails architecture for safer business answers](/images/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us-2.webp)
 
 ## ðŸ§± Layer 1: Policy as Data
 
@@ -120,7 +120,7 @@ And the model would try to extract the email and the message. It mostly workedâ€
 
 So we made a decision: remove the AI model from that process entirely.
 
-![Part 4: Guardrails as Architecture: How We Stopped Our Chatbot from Lying About Us](/images/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us-3.webp)
+![AI chatbot hallucination prevention with RAG guardrails](/images/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us-3.webp)
 
 Instead, lead capture now runs as a state machine, a way of saying it follows a fixed, predictable sequence of steps, like a flowchart:
 

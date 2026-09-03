@@ -33,7 +33,7 @@ npm install
 
 This single command gives us what we need: a clean development environment with hot module replacement, TypeScript configuration, and a minimal React setup optimized for extension development.
 
-![File structure](/images/blog/chrome-extension-react-vite/chrome-extension-react-folder-structure.webp)
+![React Vite Chrome extension file structure](/images/blog/chrome-extension-react-vite/chrome-extension-react-folder-structure.webp)
 
 Key files we'll be working with:
 

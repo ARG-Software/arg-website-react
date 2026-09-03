@@ -11,7 +11,7 @@ readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/the-rules-are-in-the-readme-the-readme-is-a-lie-ce6597218a29
 ---
 
-![The rules are in the README](/images/blog/the-rules-are-in-the-readme/the-rules-are-in-the-readme-header.webp)
+![TypeScript Clean Architecture rules documented in the README](/images/blog/the-rules-are-in-the-readme/the-rules-are-in-the-readme-header.webp)
 
 You wrote the docs. You did the PR reviews. You explained it in the onboarding. And yet, six months later, a bunch of controllers are directly importing a repository, and nobody noticed.
 
@@ -182,4 +182,4 @@ Your architecture is only as strong as your ability to enforce it. Docs rot, mem
 
 Add them to your CI pipeline, write them the same day you establish a new rule, and never have another "how did this get in here" moment in a PR review again.
 
-![Just fix it later meme](/images/blog/the-rules-are-in-the-readme/the-rules-are-in-the-readme-meme.webp)
+![TypeScript Clean Architecture just fix it later meme](/images/blog/the-rules-are-in-the-readme/the-rules-are-in-the-readme-meme.webp)

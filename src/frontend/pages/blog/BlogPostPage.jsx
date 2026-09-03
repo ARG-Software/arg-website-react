@@ -158,7 +158,7 @@ const renderBlock = (block, i) => {
       return (
         <figure key={i} className="bp-figure">
           <img src={block.src} alt={block.alt} className="bp-image" loading="lazy" />
-          {block.alt ? <figcaption>{block.alt}</figcaption> : null}
+          {block.caption ? <figcaption>{block.caption}</figcaption> : null}
         </figure>
       );
     default:
@@ -389,7 +389,7 @@ export default function BlogPostPage() {
                         alt={heroImage.alt || BLOG_POST.title}
                         loading="eager"
                       />
-                      {heroImage.alt ? <figcaption>{heroImage.alt}</figcaption> : null}
+                      {heroImage.caption ? <figcaption>{heroImage.caption}</figcaption> : null}
                     </figure>
                   )}
 

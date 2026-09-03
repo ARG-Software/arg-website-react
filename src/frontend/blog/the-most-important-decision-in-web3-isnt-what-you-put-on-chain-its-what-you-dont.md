@@ -178,7 +178,7 @@ But they remove the need for trust.
 
 You cannot optimize for both simultaneously.
 
-![The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/image-2.webp)
+![Web3 architecture decision for on-chain and off-chain data](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/image-2.webp)
 
 On-chain and off-chain systems optimize for fundamentally different properties. Every product decision lives somewhere along this spectrum.
 
@@ -198,7 +198,7 @@ Your boundary defines:
 - What feels instant
 - What is permanent
 
-![The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/image-3.webp)
+![Web3 off-chain storage strategy for scalable product systems](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/image-3.webp)
 
 Your product is defined by the boundary between off-chain convenience and on-chain guarantees — and the bridge that connects them.
 
@@ -206,7 +206,7 @@ It’s not a technical detail. It’s the architecture of trust your product is 
 
 ## A Framework That Actually Works
 
-![The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/image-4.webp)
+![Blockchain product architecture tradeoffs for Web3 applications](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/image-4.webp)
 
 Start with what must be guaranteed — not where code should live. This decision framework prevents the most common Web3 architecture mistakes.
 
@@ -274,7 +274,7 @@ The common mistake:
 
 The result: maximum friction, minimal trustlessness.
 
-![The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/image-5.webp)
+![Web3 data architecture for reliable off-chain application state](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/image-5.webp)
 
 A well-designed marketplace keeps high-frequency actions off-chain, while anchoring final outcomes on-chain through a verification bridge.
 

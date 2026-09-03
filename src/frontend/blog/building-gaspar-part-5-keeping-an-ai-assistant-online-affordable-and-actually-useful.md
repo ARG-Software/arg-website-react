@@ -54,7 +54,7 @@ Here’s the flow:
 
 ## 🛡 Three Layers of Abuse Protection
 
-![Part 5: Keeping an AI Assistant Online, Affordable, and Actually Useful](/images/blog/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful/part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful-2.webp)
+![AI assistant rate limits and proof of work security architecture](/images/blog/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful/part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful-2.webp)
 
 We don’t rely on one single wall; we built three, stacked on top of each other:
 
@@ -138,7 +138,7 @@ The goal was never to nag people into converting. It’s about making the next s
 
 Every meaningful interaction gets tracked through Google Analytics, but here’s the important part: we never send actual message content to analytics. Only structural, anonymous metadata. Privacy first. 🔒
 
-![Part 5: Keeping an AI Assistant Online, Affordable, and Actually Useful](/images/blog/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful/part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful-3.webp)
+![Affordable AI chatbot operations with budget controls](/images/blog/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful/part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful-3.webp)
 
 Here’s what we track:
 

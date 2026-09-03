@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
 import { AdminMetricChart } from '@ui/admin/AdminMetricChart.jsx';
 import { UiStat } from '@ui/primitives/UiStat.jsx';
-import { UiStatusPill } from '@ui/primitives/UiStatusPill.jsx';
 import { AdminTableFilters } from '../../components/outreach/AdminTableFilters.jsx';
+import { getOutreachRecordColumns } from '../../components/outreach/outreachRecordColumns.jsx';
 import { useDebouncedValue } from '../../hooks/shared/useDebouncedValue.js';
-import { getStatusLabel } from '../../outreach.js';
 import {
   useOutreachChart,
   useOutreachRecords,
@@ -101,7 +100,7 @@ export default function OutreachDashboardPage({ onSelectRecord }) {
           filters={
             <AdminTableFilters filters={tableFilters} onFilterChange={handleTableFilterChange} />
           }
-          columns={getRecordColumns()}
+          columns={getOutreachRecordColumns({ sortableCompany: true })}
           rows={tableQuery.data?.records || []}
           sort={tableSort}
           onSortChange={handleTableSortChange}
@@ -118,36 +117,6 @@ export default function OutreachDashboardPage({ onSelectRecord }) {
   );
 }
 
-function getRecordColumns() {
-  return [
-    { key: 'companyName', label: 'Company', sortable: true },
-    {
-      key: 'contactEmail',
-      label: 'Contact',
-      render: record => record.contactEmail || record.contactInfo || record.website || 'No contact',
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      render: record => (
-        <UiStatusPill status={record.status}>{getStatusLabel(record.status)}</UiStatusPill>
-      ),
-    },
-    {
-      key: 'dateSent',
-      label: 'Date sent',
-      sortable: true,
-      render: record => record.dateSent || '-',
-    },
-    {
-      key: 'followUpDate',
-      label: 'Follow up',
-      sortable: true,
-      render: record => record.followUpDate || '-',
-    },
-  ];
-}
-
 function createNextTableSort(current, sortBy) {
   return {
     sortBy,
@@ -158,6 +127,7 @@ function createNextTableSort(current, sortBy) {
 function createTableQueryFilters(filters, companyName) {
   return {
     companyName,
+    contactMethod: filters.contactMethod,
     dateSentFrom: filters.dateSentFrom,
     dateSentTo: filters.dateSentTo,
   };

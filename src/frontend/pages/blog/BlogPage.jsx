@@ -176,7 +176,7 @@ export default function BlogPage() {
                           {article.image && (
                             <img
                               src={article.image}
-                              alt=""
+                              alt={article.seoTitle || article.title}
                               className="blp-row-image"
                               loading={i === 0 ? 'eager' : 'lazy'}
                             />

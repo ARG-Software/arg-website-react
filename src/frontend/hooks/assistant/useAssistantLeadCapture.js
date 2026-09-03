@@ -63,13 +63,13 @@ export function useAssistantLeadCapture({ copy, onDismiss, onComplete }) {
     setLeadError('');
   }, []);
 
-  const startLeadCapture = useCallback((initialStep = LEAD_STEPS.OFFER) => {
+  const startLeadCapture = useCallback((initialStep = LEAD_STEPS.OFFER, source = 'assistant') => {
     if (successTimerRef.current) clearTimeout(successTimerRef.current);
     setLeadStep(initialStep);
     setCapturedEmail('');
     setCapturedMessage('');
     setLeadError('');
-    trackEvent('lead_capture', { action: 'impression', source: 'assistant' });
+    trackEvent('assistant_lead_capture', { action: 'flow_started', source });
   }, []);
 
   const cancelLeadCapture = useCallback(() => {
@@ -85,14 +85,14 @@ export function useAssistantLeadCapture({ copy, onDismiss, onComplete }) {
     setLeadStep(null);
     setCapturedEmail('');
     setCapturedMessage('');
-    trackEvent('lead_capture', { action: 'dismiss', source: 'assistant' });
+    trackEvent('assistant_lead_capture', { action: 'dismissed', source: 'assistant' });
     onDismiss?.();
   }, [onDismiss]);
 
   const submitLead = useCallback(async () => {
     setLeadStep(LEAD_STEPS.SUBMITTING);
     setLeadError('');
-    trackEvent('lead_capture', { action: 'submit', source: 'assistant' });
+    trackEvent('assistant_lead_capture', { action: 'submitted', source: 'assistant' });
 
     try {
       if (!capturedEmail) {
@@ -119,7 +119,7 @@ export function useAssistantLeadCapture({ copy, onDismiss, onComplete }) {
       } catch {
         /* storage unavailable */
       }
-      trackEvent('lead_capture', { action: 'success', source: 'assistant' });
+      trackEvent('assistant_lead_capture', { action: 'succeeded', source: 'assistant' });
       onComplete?.();
 
       successTimerRef.current = setTimeout(resetToNormal, SUCCESS_RESET_MS);
@@ -128,7 +128,7 @@ export function useAssistantLeadCapture({ copy, onDismiss, onComplete }) {
       const message = copy.messages.answerFailed || 'Something went wrong. Please try again.';
       setLeadStep(LEAD_STEPS.ERROR);
       setLeadError(message);
-      trackEvent('lead_capture', { action: 'error', source: 'assistant' });
+      trackEvent('assistant_lead_capture', { action: 'failed', source: 'assistant' });
       return {
         success: false,
         error,

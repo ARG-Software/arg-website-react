@@ -44,7 +44,7 @@ Several options exist for local Kubernetes development, including Minikube, Dock
 - **Closer to Production.** k3s is a certified Kubernetes distribution used in production environments, especially edge and IoT deployments. This means your local setup closely resembles a real-world scenario.
 - **Registry Integration.** Built-in support for local registries makes it simple to test images without pushing them to external repositories.
 
-![k3d Alternatives](/images/blog/from-zero-to-hero/k3d-alternatives.webp)
+![k3d Kubernetes alternatives for local NestJS PostgreSQL development](/images/blog/from-zero-to-hero/k3d-alternatives.webp)
 
 As the table shows, k3d excels in resource efficiency, startup speed, and multi-cluster support, making it ideal for our development workflow where rapid iteration is key. While Minikube offers the most complete Kubernetes experience and Docker Desktop provides UI integration, k3d's lightweight nature and speed make it the perfect choice for our NestJS and PostgreSQL development environment.
 

@@ -28,7 +28,7 @@ Give it a flat dump of your website, and it’ll answer vaguely. Give it nothing
 
 The corpus is the body of information Gaspar can search. Ours isn’t one giant text file, it’s a set of typed sources, each with its own role.
 
-![Part 3: The knowledge design behind a business AI assistant that doesn’t guess](/images/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess-2.webp)
+![Business AI assistant knowledge design for reliable RAG answers](/images/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess-2.webp)
 
 Gaspar indexes public website content: homepage sections, project pages, partner information, FAQs, the About page, careers, and Working With Us content. It also indexes our blog posts, because many visitor questions are technical, and a blog article is often the best handoff.
 
@@ -86,7 +86,7 @@ Why bother? Because visitors often remember the headline, not the details inside
 
 ## 🔁 Dual embedding indexes
 
-![Part 3: The knowledge design behind a business AI assistant that doesn’t guess](/images/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess-3.webp)
+![RAG knowledge sources for a trustworthy business AI assistant](/images/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess-3.webp)
 
 Gaspar stores two embeddings for each chunk: a primary and a fallback. Both come from configured Gemini embedding models, and both live in Supabase pgvector.
 

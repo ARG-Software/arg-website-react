@@ -198,7 +198,7 @@ That’s it. The service went from 40+ lines to about 8. And crucially, it conta
 
 ## 📊 Before vs. After
 
-![From Anemic Models to Behaviour-rich Aggregates: Behavior-Driven Design in TypeScript](/images/blog/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript-2.webp)
+![TypeScript behavior-driven design aggregate model example](/images/blog/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript-2.webp)
 
 ## ✅ What You Actually Gained
 
