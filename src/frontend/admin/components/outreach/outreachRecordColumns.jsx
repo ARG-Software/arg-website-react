@@ -47,24 +47,28 @@ export function getOutreachRecordColumns({ sortableCompany = false } = {}) {
 }
 
 function CompanyLink({ record }) {
-  if (!record.website) return record.companyName || '-';
+  const href = getWebsiteHref(record.website);
+  if (!href) return record.companyName || '-';
 
   return (
-    <WebsiteAnchor website={record.website}>{record.companyName || record.website}</WebsiteAnchor>
+    <WebsiteAnchor className="admin-table-link--company" href={href}>
+      {record.companyName || record.website}
+    </WebsiteAnchor>
   );
 }
 
 function WebsiteLink({ website }) {
-  if (!website) return '-';
+  const href = getWebsiteHref(website);
+  if (!href) return '-';
 
-  return <WebsiteAnchor website={website}>{website}</WebsiteAnchor>;
+  return <WebsiteAnchor href={href}>{website}</WebsiteAnchor>;
 }
 
-function WebsiteAnchor({ website, children }) {
+function WebsiteAnchor({ href, className, children }) {
   return (
     <a
-      className="admin-table-link"
-      href={website}
+      className={['admin-table-link', className].filter(Boolean).join(' ')}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       onClick={event => event.stopPropagation()}
@@ -72,4 +76,10 @@ function WebsiteAnchor({ website, children }) {
       {children}
     </a>
   );
+}
+
+function getWebsiteHref(website) {
+  if (!website) return null;
+
+  return /^https?:\/\//i.test(website) ? website : `https://${website}`;
 }
