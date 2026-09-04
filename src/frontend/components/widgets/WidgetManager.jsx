@@ -72,20 +72,6 @@ function AssistantTrigger({ onOpen }) {
   );
 }
 
-function LeadCaptureAutoStart({ active }) {
-  useEffect(() => {
-    if (!active) return undefined;
-
-    const frame = requestAnimationFrame(() => {
-      window.dispatchEvent(new CustomEvent('gaspar:start-lead-capture'));
-    });
-
-    return () => cancelAnimationFrame(frame);
-  }, [active]);
-
-  return null;
-}
-
 export function WidgetManager() {
   const location = useLocation();
   const [assistantOpen, setAssistantOpen] = useState(false);
@@ -97,6 +83,13 @@ export function WidgetManager() {
   const loadingDone = useContext(LoadingContext);
   const normalizedPath = normalizePath(location.pathname);
   const renderAssistant = shouldLoadAssistant || pendingLeadCaptureOpen;
+
+  useEffect(() => {
+    if (!loadingDone || shouldLoadAssistant) return undefined;
+
+    const timer = window.setTimeout(() => setShouldLoadAssistant(true), 0);
+    return () => window.clearTimeout(timer);
+  }, [loadingDone, shouldLoadAssistant]);
 
   useEffect(() => {
     if (
@@ -197,9 +190,9 @@ export function WidgetManager() {
       <AssistantWidget
         onOpenChange={handleAssistantOpenChange}
         reopenRequest={reopenRequest}
+        leadCaptureVisible={pendingLeadCaptureOpen}
         onLeadCaptureDismiss={handleLeadCaptureDismiss}
       />
-      <LeadCaptureAutoStart active={pendingLeadCaptureOpen} />
     </Suspense>
   );
 }
