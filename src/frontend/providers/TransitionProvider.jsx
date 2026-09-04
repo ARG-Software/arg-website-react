@@ -113,6 +113,7 @@ export function TransitionProvider({ children }) {
     const navigateOptions = { ...options };
     delete navigateOptions.transition;
     delete navigateOptions.sourceImage;
+    delete navigateOptions.targetImage;
     delete navigateOptions.scrollMode;
     delete navigateOptions.updateUrl;
     delete navigateOptions.mobileMenuDelay;
@@ -274,7 +275,10 @@ export function TransitionProvider({ children }) {
       };
 
       if (variant === 'project-image') {
-        preloadTransitionImage(transitionOptions?.sourceImage).then(startCover);
+        Promise.all([
+          preloadTransitionImage(transitionOptions?.sourceImage),
+          preloadTransitionImage(transitionOptions?.targetImage),
+        ]).then(startCover);
         return;
       }
 

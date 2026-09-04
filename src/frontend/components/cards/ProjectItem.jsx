@@ -66,6 +66,11 @@ export function ProjectItem({
           height: rect.height,
         },
       },
+      targetImage: {
+        src: imgSrc,
+        srcSet: imgSrcSet,
+        sizes: '100vw',
+      },
     };
   };
 
