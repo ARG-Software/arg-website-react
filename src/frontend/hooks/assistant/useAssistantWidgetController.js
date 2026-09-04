@@ -82,7 +82,7 @@ function useMobileFullscreen() {
 export function useAssistantWidgetController({
   onOpenChange,
   reopenRequest = 0,
-  timedLeadCaptureRequest = 0,
+  leadCaptureVisible = false,
   onLeadCaptureDismiss,
   onLeadCaptureComplete,
 }) {
@@ -96,7 +96,6 @@ export function useAssistantWidgetController({
   const inputRef = useRef(null);
   const leadCaptureStartedRef = useRef(false);
   const leadDismissHandledRef = useRef(false);
-  const handledTimedLeadCaptureRequestRef = useRef(0);
   const { activeLanguage, assistantCopy, assistantDirection, setActiveLanguage } =
     useAssistantCopy();
 
@@ -300,18 +299,23 @@ export function useAssistantWidgetController({
   }, [rateLimitState]);
 
   useEffect(() => {
-    if (
-      !timedLeadCaptureRequest ||
-      handledTimedLeadCaptureRequestRef.current === timedLeadCaptureRequest ||
-      leadCaptureStartedRef.current
-    ) {
-      return;
-    }
+    if (!leadCaptureVisible || panelState !== 'closed' || leadCaptureStartedRef.current) return;
 
-    handledTimedLeadCaptureRequestRef.current = timedLeadCaptureRequest;
-    const frame = requestAnimationFrame(() => startLeadCaptureFlow());
-    return () => cancelAnimationFrame(frame);
-  }, [startLeadCaptureFlow, timedLeadCaptureRequest]);
+    leadCaptureStartedRef.current = true;
+    leadDismissHandledRef.current = false;
+    const next = getPanelStateForViewport(mobileViewport);
+
+    requestAnimationFrame(() => {
+      setPanelState(next);
+      setError(null);
+      startLeadCapture(undefined, LEAD_SOURCE);
+      setMessages(prev => [
+        ...prev,
+        getLeadAssistantMessage(assistantCopy.messages.leadCaptureOffer),
+      ]);
+      trackAssistantEvent('open', { source: LEAD_SOURCE });
+    });
+  }, [assistantCopy, leadCaptureVisible, mobileViewport, panelState, startLeadCapture, setError]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

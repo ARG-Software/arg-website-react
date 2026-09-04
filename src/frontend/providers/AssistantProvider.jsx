@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { AssistantWidget } from '@components/widgets/AssistantWidget';
 import {
   ALREADY_SUBSCRIBED_KEY,
   LEAD_CAPTURE_DISMISS_EXPIRY_KEY,
   LEAD_CAPTURE_DISMISS_EXPIRY_MS,
   LEAD_CAPTURE_SESSION_DISMISSED_KEY,
 } from '@constants/ui';
+import { LoadingContext } from '@providers/LoadingProvider';
 import { trackEvent } from '@services/analytics';
 
 const DEFAULT_IDLE_DELAY_MS = 10000;
@@ -64,35 +66,38 @@ function isLeadCaptureSuppressed() {
   );
 }
 
-export function useLeadCaptureVisibility({
-  delayMs = DEFAULT_IDLE_DELAY_MS,
-  isSuppressed = false,
-} = {}) {
+export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
   const location = useLocation();
   const normalizedPath = normalizePath(location.pathname);
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [reopenRequest, setReopenRequest] = useState(0);
   const [visiblePath, setVisiblePath] = useState(null);
   const [inMemoryDismissed, setInMemoryDismissed] = useState(false);
-  const visible =
+  const assistantWasOpenRef = useRef(false);
+  const loadingDone = useContext(LoadingContext);
+  const leadCaptureVisible =
     visiblePath === normalizedPath &&
+    !assistantOpen &&
     !isContactPath(location.pathname) &&
-    !isSuppressed &&
     !inMemoryDismissed &&
     !isLeadCaptureSuppressed();
 
   useEffect(() => {
     if (
+      !loadingDone ||
+      assistantOpen ||
       isContactPath(location.pathname) ||
       isLeadCaptureSuppressed() ||
-      isSuppressed ||
       inMemoryDismissed
-    )
-      return;
+    ) {
+      return undefined;
+    }
 
     let idleTimer;
     let hasShown = false;
 
     function showLeadCapture() {
-      if (hasShown || isLeadCaptureSuppressed() || isSuppressed || inMemoryDismissed) return;
+      if (hasShown || isLeadCaptureSuppressed() || inMemoryDismissed) return;
 
       hasShown = true;
       trackEvent('assistant_lead_capture', {
@@ -106,7 +111,7 @@ export function useLeadCaptureVisibility({
     function resetIdleTimer() {
       if (hasShown) return;
       clearTimeout(idleTimer);
-      idleTimer = setTimeout(showLeadCapture, delayMs);
+      idleTimer = setTimeout(showLeadCapture, idleDelayMs);
     }
 
     resetIdleTimer();
@@ -120,9 +125,18 @@ export function useLeadCaptureVisibility({
       window.removeEventListener('wheel', resetIdleTimer);
       window.removeEventListener('touchmove', resetIdleTimer);
     };
-  }, [delayMs, inMemoryDismissed, isSuppressed, location.pathname, normalizedPath]);
+  }, [
+    assistantOpen,
+    idleDelayMs,
+    inMemoryDismissed,
+    loadingDone,
+    location.pathname,
+    normalizedPath,
+  ]);
 
-  function dismiss(mode = SESSION_DISMISS) {
+  function handleLeadCaptureDismiss(options) {
+    const mode = options?.mode || SESSION_DISMISS;
+
     if (mode === TWO_DAY_DISMISS) {
       setStorageItem(
         getClientStorage('localStorage'),
@@ -141,7 +155,27 @@ export function useLeadCaptureVisibility({
     });
     setVisiblePath(null);
     setInMemoryDismissed(true);
+
+    if (options?.reopenAsChat && assistantOpen) {
+      assistantWasOpenRef.current = true;
+    }
   }
 
-  return { visible, dismiss };
+  function handleAssistantOpenChange(isOpen) {
+    setAssistantOpen(isOpen);
+
+    if (!isOpen && assistantWasOpenRef.current) {
+      assistantWasOpenRef.current = false;
+      setReopenRequest(request => request + 1);
+    }
+  }
+
+  return (
+    <AssistantWidget
+      onOpenChange={handleAssistantOpenChange}
+      reopenRequest={reopenRequest}
+      leadCaptureVisible={leadCaptureVisible}
+      onLeadCaptureDismiss={handleLeadCaptureDismiss}
+    />
+  );
 }

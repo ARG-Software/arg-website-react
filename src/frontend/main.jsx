@@ -8,7 +8,7 @@ import HomePage from './pages/home/HomePage.jsx';
 import { LenisProvider } from './providers/LenisProvider.jsx';
 import { TransitionProvider } from './providers/TransitionProvider.jsx';
 import { CookieConsent } from '@components/overlays/CookieConsent';
-import { WidgetManager } from '@components/widgets/WidgetManager';
+import { AssistantProvider } from '@providers/AssistantProvider';
 import { WebMCPProvider } from '@providers/WebMCPProvider';
 import { ErrorBoundary } from '@components/layout/ErrorBoundary';
 import { lazyWithRetry } from '@utils/lazyWithRetry';
@@ -52,7 +52,7 @@ function GlobalOverlays() {
 
   return (
     <>
-      <WidgetManager />
+      <AssistantProvider />
       <WebMCPProvider />
       <CookieConsent />
     </>
