@@ -82,6 +82,7 @@ function useMobileFullscreen() {
 export function useAssistantWidgetController({
   onOpenChange,
   reopenRequest = 0,
+  leadCaptureRequest = 0,
   leadCaptureVisible = false,
   onLeadCaptureDismiss,
   onLeadCaptureComplete,
@@ -96,6 +97,7 @@ export function useAssistantWidgetController({
   const inputRef = useRef(null);
   const leadCaptureStartedRef = useRef(false);
   const leadDismissHandledRef = useRef(false);
+  const handledLeadCaptureRequestRef = useRef(0);
   const { activeLanguage, assistantCopy, assistantDirection, setActiveLanguage } =
     useAssistantCopy();
 
@@ -299,7 +301,16 @@ export function useAssistantWidgetController({
   }, [rateLimitState]);
 
   useEffect(() => {
-    if (!leadCaptureVisible || panelState !== 'closed' || leadCaptureStartedRef.current) return;
+    const hasNewLeadCaptureRequest =
+      leadCaptureRequest > 0 && handledLeadCaptureRequestRef.current !== leadCaptureRequest;
+
+    if (!leadCaptureVisible && !hasNewLeadCaptureRequest) return;
+
+    if (hasNewLeadCaptureRequest) {
+      handledLeadCaptureRequestRef.current = leadCaptureRequest;
+    }
+
+    if (panelState !== 'closed' || leadCaptureStartedRef.current) return;
 
     leadCaptureStartedRef.current = true;
     leadDismissHandledRef.current = false;
@@ -315,7 +326,15 @@ export function useAssistantWidgetController({
       ]);
       trackAssistantEvent('open', { source: LEAD_SOURCE });
     });
-  }, [assistantCopy, leadCaptureVisible, mobileViewport, panelState, startLeadCapture, setError]);
+  }, [
+    assistantCopy,
+    leadCaptureRequest,
+    leadCaptureVisible,
+    mobileViewport,
+    panelState,
+    startLeadCapture,
+    setError,
+  ]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
