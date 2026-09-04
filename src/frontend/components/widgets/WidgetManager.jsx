@@ -77,12 +77,12 @@ export function WidgetManager() {
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [shouldLoadAssistant, setShouldLoadAssistant] = useState(false);
   const [reopenRequest, setReopenRequest] = useState(0);
-  const [pendingLeadCaptureOpen, setPendingLeadCaptureOpen] = useState(false);
+  const [timedLeadCaptureRequest, setTimedLeadCaptureRequest] = useState(0);
   const assistantWasOpenRef = useRef(false);
   const autoOfferDoneRef = useRef(false);
   const loadingDone = useContext(LoadingContext);
   const normalizedPath = normalizePath(location.pathname);
-  const renderAssistant = shouldLoadAssistant || pendingLeadCaptureOpen;
+  const renderAssistant = shouldLoadAssistant || timedLeadCaptureRequest > 0;
 
   useEffect(() => {
     if (!loadingDone || shouldLoadAssistant) return undefined;
@@ -114,7 +114,7 @@ export function WidgetManager() {
         source: 'idle_timer',
       });
       setShouldLoadAssistant(true);
-      setPendingLeadCaptureOpen(true);
+      setTimedLeadCaptureRequest(request => request + 1);
     }
 
     function resetIdleTimer() {
@@ -171,10 +171,6 @@ export function WidgetManager() {
 
     setAssistantOpen(isOpen);
 
-    if (isOpen) {
-      setPendingLeadCaptureOpen(false);
-    }
-
     if (!isOpen && assistantWasOpenRef.current) {
       assistantWasOpenRef.current = false;
       setReopenRequest(request => request + 1);
@@ -190,7 +186,7 @@ export function WidgetManager() {
       <AssistantWidget
         onOpenChange={handleAssistantOpenChange}
         reopenRequest={reopenRequest}
-        leadCaptureVisible={pendingLeadCaptureOpen}
+        timedLeadCaptureRequest={timedLeadCaptureRequest}
         onLeadCaptureDismiss={handleLeadCaptureDismiss}
       />
     </Suspense>
