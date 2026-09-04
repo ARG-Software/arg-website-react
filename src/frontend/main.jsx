@@ -17,9 +17,7 @@ import './styles/base.css';
 import '@ui/styles.css';
 import './styles/home.css';
 import './styles/components.css';
-import './styles/legal.css';
 import './styles/effects.css';
-import './admin/admin.css';
 
 const PartnersPage = lazyWithRetry(() => import('./pages/PartnersPage.jsx'));
 const ProjectsPage = lazyWithRetry(() => import('./pages/ProjectsPage.jsx'));

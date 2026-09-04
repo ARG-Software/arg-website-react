@@ -9,6 +9,7 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA } from '@services/analytics';
 import legalPages from '@data/legalPages.json';
 import { EMAIL_KEYS, getEmailAddress, getMailtoLink } from '../services/linksService';
+import '../styles/legal.css';
 
 const CONTACT_EMAIL = getEmailAddress(EMAIL_KEYS.INFO);
 const PAGE = legalPages.privacyPolicy;
