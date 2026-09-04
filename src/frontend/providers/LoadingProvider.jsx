@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
 import { LoadingScreen } from '@components/layout/LoadingScreen';
-import PROJECTS from '../data/projects.json';
 
 export const LoadingContext = createContext(true);
 
@@ -28,21 +27,6 @@ export function LoadingProvider({ children }) {
       const timer = setTimeout(() => setReady(true), 0);
       return () => clearTimeout(timer);
     }
-  }, [shouldShow]);
-
-  useEffect(() => {
-    if (!shouldShow) return;
-
-    PROJECTS.forEach(project => {
-      if (project.imgSrc) {
-        const img = new Image();
-        img.src = project.imgSrc;
-      }
-      if (project.mockupSrc) {
-        const img = new Image();
-        img.src = project.mockupSrc;
-      }
-    });
   }, [shouldShow]);
 
   const handleComplete = () => {
