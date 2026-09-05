@@ -12,7 +12,6 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
     if (!canvas) return;
 
     let mounted = true;
-    let THREE = null;
     let renderer = null;
     let scene = null;
     let camera = null;
@@ -57,20 +56,35 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
     const init = async () => {
       if (!mounted) return;
 
-      THREE = await import('three');
+      const {
+        AmbientLight,
+        BoxGeometry,
+        Color,
+        DirectionalLight,
+        FogExp2,
+        Group,
+        InstancedMesh,
+        Mesh,
+        MeshStandardMaterial,
+        Object3D,
+        PerspectiveCamera,
+        PlaneGeometry,
+        Scene,
+        WebGLRenderer,
+      } = await import('three');
       const container = canvas.parentElement;
       const width = container.offsetWidth || window.innerWidth;
       const height = container.offsetHeight || window.innerHeight;
 
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0xf8f9fa);
-      scene.fog = new THREE.FogExp2(0xf8f9fa, 0.009);
+      scene = new Scene();
+      scene.background = new Color(0xf8f9fa);
+      scene.fog = new FogExp2(0xf8f9fa, 0.009);
 
-      camera = new THREE.PerspectiveCamera(35, width / height, 1, 500);
+      camera = new PerspectiveCamera(35, width / height, 1, 500);
       camera.position.set(0, 30, 100);
       camera.lookAt(0, 8, 0);
 
-      renderer = new THREE.WebGLRenderer({
+      renderer = new WebGLRenderer({
         canvas,
         antialias: true,
         powerPreference: 'high-performance',
@@ -79,31 +93,31 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, CONFIG.perf.pixelRatioCap));
       renderer.setClearColor(0xf8f9fa);
 
-      scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-      sun = new THREE.DirectionalLight(0xffffff, 0.6);
+      scene.add(new AmbientLight(0xffffff, 1.2));
+      sun = new DirectionalLight(0xffffff, 0.6);
       sun.position.set(50, 100, 50);
       scene.add(sun);
 
       const roadLen = CONFIG.city.gridSize * CONFIG.city.spacing * 2.5;
-      road = new THREE.Mesh(
-        new THREE.PlaneGeometry(CONFIG.city.roadWidth, roadLen),
-        new THREE.MeshStandardMaterial({ color: 0xe5e5e5 })
+      road = new Mesh(
+        new PlaneGeometry(CONFIG.city.roadWidth, roadLen),
+        new MeshStandardMaterial({ color: 0xe5e5e5 })
       );
       road.rotation.x = -Math.PI / 2;
       road.position.y = -9.99;
       scene.add(road);
 
-      cityMaterial = new THREE.MeshStandardMaterial({
+      cityMaterial = new MeshStandardMaterial({
         color: CONFIG.city.buildingColor,
         transparent: true,
         opacity: 0.9,
       });
-      instancedCity = new THREE.InstancedMesh(
-        new THREE.BoxGeometry(1, 1, 1),
+      instancedCity = new InstancedMesh(
+        new BoxGeometry(1, 1, 1),
         cityMaterial,
         Math.pow(CONFIG.city.gridSize * 2, 2)
       );
-      const dummy = new THREE.Object3D();
+      const dummy = new Object3D();
       let count = 0;
 
       const gridLimit = CONFIG.city.gridSize * CONFIG.city.spacing;
@@ -126,14 +140,14 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       }
       scene.add(instancedCity);
 
-      carMat = new THREE.MeshStandardMaterial({
+      carMat = new MeshStandardMaterial({
         color: CONFIG.traffic.carColor,
         emissive: CONFIG.traffic.carColor,
         emissiveIntensity: 0.4,
       });
       const createLane = dir => {
-        const mesh = new THREE.InstancedMesh(
-          new THREE.BoxGeometry(0.3, 0.2, 0.6),
+        const mesh = new InstancedMesh(
+          new BoxGeometry(0.3, 0.2, 0.6),
           carMat,
           CONFIG.traffic.count
         );
@@ -148,13 +162,13 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       carSystem2 = createLane(-1);
       scene.add(carSystem1.mesh, carSystem2.mesh);
 
-      logoGroup = new THREE.Group();
-      const c1 = new THREE.Color(CONFIG.logo.primary);
-      const c2 = new THREE.Color(CONFIG.logo.secondary);
+      logoGroup = new Group();
+      const c1 = new Color(CONFIG.logo.primary);
+      const c2 = new Color(CONFIG.logo.secondary);
       const addPart = (w, h, d, x, y, z, col) => {
-        const m = new THREE.Mesh(
-          new THREE.BoxGeometry(w, h, d),
-          new THREE.MeshStandardMaterial({
+        const m = new Mesh(
+          new BoxGeometry(w, h, d),
+          new MeshStandardMaterial({
             color: col,
             emissive: col,
             emissiveIntensity: 0.4,
@@ -181,7 +195,7 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       logoGroup.rotation.x = -0.1;
       scene.add(logoGroup);
 
-      const trafficDummy = new THREE.Object3D();
+      const trafficDummy = new Object3D();
       const updateTraffic = (sys, lx, limit) => {
         sys.data.forEach((car, i) => {
           car.z += CONFIG.traffic.speed * sys.dir;

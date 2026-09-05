@@ -23,68 +23,87 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
     const init = async () => {
       if (!mounted) return;
 
-      const THREE = await import('three');
+      const {
+        ACESFilmicToneMapping,
+        AmbientLight,
+        BackSide,
+        Color,
+        DirectionalLight,
+        DoubleSide,
+        HemisphereLight,
+        Mesh,
+        MeshBasicMaterial,
+        MeshPhysicalMaterial,
+        PCFShadowMap,
+        PMREMGenerator,
+        PerspectiveCamera,
+        PlaneGeometry,
+        Scene,
+        SphereGeometry,
+        SRGBColorSpace,
+        WebGLRenderer,
+      } = await import('three');
       const container = canvas.parentElement;
       const width = container.offsetWidth || 500;
       const height = container.offsetHeight || 500;
 
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
+      scene = new Scene();
+      camera = new PerspectiveCamera(35, width / height, 0.1, 100);
       camera.position.set(0, 0, 6);
       camera.lookAt(0, 0, 0);
       camera.layers.enableAll();
 
-      renderer = new THREE.WebGLRenderer({
+      renderer = new WebGLRenderer({
         canvas,
         antialias: true,
         alpha: true,
       });
       renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMapping = ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.5;
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.outputColorSpace = SRGBColorSpace;
       renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFShadowMap;
+      renderer.shadowMap.type = PCFShadowMap;
 
-      const pmremGenerator = new THREE.PMREMGenerator(renderer);
+      const pmremGenerator = new PMREMGenerator(renderer);
       pmremGenerator.compileEquirectangularShader();
 
-      const envScene = new THREE.Scene();
-      const domeMat = new THREE.MeshBasicMaterial({ color: 0xf0e8f4, side: THREE.BackSide });
-      const dome = new THREE.Mesh(
-        new THREE.SphereGeometry(10, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2),
+      const envScene = new Scene();
+      const domeMat = new MeshBasicMaterial({ color: 0xf0e8f4, side: BackSide });
+      const dome = new Mesh(
+        new SphereGeometry(10, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2),
         domeMat
       );
       envScene.add(dome);
 
-      const warmMat = new THREE.MeshBasicMaterial({ color: 0xf0d0d0 });
-      const warmSphere = new THREE.Mesh(new THREE.SphereGeometry(3, 16, 16), warmMat);
+      const warmMat = new MeshBasicMaterial({ color: 0xf0d0d0 });
+      const warmSphere = new Mesh(new SphereGeometry(3, 16, 16), warmMat);
       warmSphere.position.set(-6, 3, -1);
       envScene.add(warmSphere);
 
-      const coolMat = new THREE.MeshBasicMaterial({ color: 0xd8d0e8 });
-      const coolSphere = new THREE.Mesh(new THREE.SphereGeometry(3, 16, 16), coolMat);
+      const coolMat = new MeshBasicMaterial({ color: 0xd8d0e8 });
+      const coolSphere = new Mesh(new SphereGeometry(3, 16, 16), coolMat);
       coolSphere.position.set(6, -1, -2);
       envScene.add(coolSphere);
 
-      const floorMat = new THREE.MeshBasicMaterial({ color: 0xd8d0e0, side: THREE.DoubleSide });
-      const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), floorMat);
+      const floorMat = new MeshBasicMaterial({ color: 0xd8d0e0, side: DoubleSide });
+      const floor = new Mesh(new PlaneGeometry(20, 20), floorMat);
       floor.position.set(0, -6, 0);
       floor.rotation.x = -Math.PI / 2;
       envScene.add(floor);
 
-      const hemiLight = new THREE.HemisphereLight(0xfff4f8, 0xe0d8e8, 0.9);
+      const hemiLight = new HemisphereLight(0xfff4f8, 0xe0d8e8, 0.9);
       envScene.add(hemiLight);
 
       const envMap = pmremGenerator.fromScene(envScene, 0.04).texture;
       scene.environment = envMap;
       pmremGenerator.dispose();
 
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
+      const ambientLight = new AmbientLight(0xffffff, 0.35);
       scene.add(ambientLight);
 
-      const keyLight = new THREE.DirectionalLight(0xfff8f4, 2.8);
+      const keyLight = new DirectionalLight(0xfff8f4, 2.8);
       keyLight.position.set(-3, 5, 3);
       keyLight.layers.set(1);
       keyLight.castShadow = true;
@@ -100,12 +119,12 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
       keyLight.shadow.radius = 6;
       scene.add(keyLight);
 
-      const smallLight = new THREE.DirectionalLight(0xf4f0ff, 2.4);
+      const smallLight = new DirectionalLight(0xf4f0ff, 2.4);
       smallLight.position.set(3, 4, 4);
       smallLight.layers.set(2);
       scene.add(smallLight);
 
-      materialLarge = new THREE.MeshPhysicalMaterial({
+      materialLarge = new MeshPhysicalMaterial({
         color: 0xffffff,
         metalness: 0.1,
         roughness: 0.15,
@@ -115,7 +134,7 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
         ior: 1.6,
       });
 
-      materialSmall = new THREE.MeshPhysicalMaterial({
+      materialSmall = new MeshPhysicalMaterial({
         color: 0xffffff,
         metalness: 0.08,
         roughness: 0.12,
@@ -125,30 +144,26 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
         ior: 1.7,
       });
 
-      const GRADIENT_COLORS = [
-        new THREE.Color(0xf0060d),
-        new THREE.Color(0xc924d7),
-        new THREE.Color(0x7904fd),
-      ];
+      const GRADIENT_COLORS = [new Color(0xf0060d), new Color(0xc924d7), new Color(0x7904fd)];
 
-      const _cLarge = new THREE.Color();
-      const _cSmall = new THREE.Color();
-      const _gradientColor = new THREE.Color();
-      const _white = new THREE.Color(0xffffff);
+      const _cLarge = new Color();
+      const _cSmall = new Color();
+      const _gradientColor = new Color();
+      const _white = new Color(0xffffff);
 
       const RADIUS_LARGE = 1;
       const RADIUS_SMALL = 0.72;
 
-      geo1 = new THREE.SphereGeometry(RADIUS_LARGE, 160, 160);
-      geo2 = new THREE.SphereGeometry(RADIUS_SMALL, 160, 160);
+      geo1 = new SphereGeometry(RADIUS_LARGE, 160, 160);
+      geo2 = new SphereGeometry(RADIUS_SMALL, 160, 160);
 
-      sphere1 = new THREE.Mesh(geo1, materialLarge);
+      sphere1 = new Mesh(geo1, materialLarge);
       sphere1.castShadow = true;
       sphere1.receiveShadow = true;
       sphere1.layers.enable(1);
       scene.add(sphere1);
 
-      sphere2 = new THREE.Mesh(geo2, materialSmall);
+      sphere2 = new Mesh(geo2, materialSmall);
       sphere2.castShadow = true;
       sphere2.receiveShadow = true;
       sphere2.layers.enable(2);

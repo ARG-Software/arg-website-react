@@ -112,6 +112,18 @@ const NM_W = 64;
 const NM_H = 36;
 // Text-displacement filter: stops generating base64 data URLs when idle
 const TEXT_FILTER_ACTIVE_MS = 1800;
+const STARTUP_IDLE_TIMEOUT_MS = 2500;
+const STARTUP_FALLBACK_DELAY_MS = 1500;
+
+function scheduleStartupInit(callback) {
+  if (typeof window.requestIdleCallback === 'function') {
+    const idleId = window.requestIdleCallback(callback, { timeout: STARTUP_IDLE_TIMEOUT_MS });
+    return () => window.cancelIdleCallback(idleId);
+  }
+
+  const timeoutId = window.setTimeout(callback, STARTUP_FALLBACK_DELAY_MS);
+  return () => window.clearTimeout(timeoutId);
+}
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
@@ -127,15 +139,37 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     let mounted = true;
+    let initialized = false;
+    let cancelScheduledInit = null;
 
     const init = async () => {
+      if (!mounted || initialized) return;
+      initialized = true;
+
+      const {
+        HalfFloatType,
+        LinearFilter,
+        Mesh,
+        OrthographicCamera,
+        PlaneGeometry,
+        RGBAFormat,
+        Scene,
+        ShaderMaterial,
+        SRGBColorSpace,
+        UnsignedByteType,
+        Vector2,
+        Vector3,
+        VideoTexture,
+        WebGLRenderer,
+        WebGLRenderTarget,
+      } = await import('three');
       if (!mounted) return;
 
-      const THREE = await import('three');
-      if (!mounted) return;
+      const rect = canvas.getBoundingClientRect();
+      const W = Math.floor(rect.width || canvas.offsetWidth || window.innerWidth);
+      const H = Math.floor(rect.height || canvas.offsetHeight || window.innerHeight);
+      if (W <= 0 || H <= 0) return;
 
-      const W = canvas.offsetWidth || window.innerWidth;
-      const H = canvas.offsetHeight || window.innerHeight;
       const SIM_W = Math.floor(W / 2);
       const SIM_H = Math.floor(H / 2);
 
@@ -143,10 +177,10 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       const videoEl = document.getElementById('hero-video');
       let videoTexture = null;
       if (videoEl) {
-        videoTexture = new THREE.VideoTexture(videoEl);
-        videoTexture.colorSpace = THREE.SRGBColorSpace;
-        videoTexture.minFilter = THREE.LinearFilter;
-        videoTexture.magFilter = THREE.LinearFilter;
+        videoTexture = new VideoTexture(videoEl);
+        videoTexture.colorSpace = SRGBColorSpace;
+        videoTexture.minFilter = LinearFilter;
+        videoTexture.magFilter = LinearFilter;
         videoTexture.flipY = false;
       }
 
@@ -155,63 +189,63 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       if (videoBgWrapper) videoBgWrapper.style.visibility = 'hidden';
 
       // ── Renderer ────────────────────────────────────────────────────────
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
+      const renderer = new WebGLRenderer({ canvas, antialias: false, alpha: false });
       renderer.setPixelRatio(1);
       renderer.setSize(W, H, false);
       renderer.autoClear = false;
 
       // ── Render targets ───────────────────────────────────────────────────
       const rtOptions = {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat,
-        type: THREE.HalfFloatType,
+        minFilter: LinearFilter,
+        magFilter: LinearFilter,
+        format: RGBAFormat,
+        type: HalfFloatType,
       };
-      let rtA = new THREE.WebGLRenderTarget(SIM_W, SIM_H, rtOptions);
-      let rtB = new THREE.WebGLRenderTarget(SIM_W, SIM_H, rtOptions);
+      let rtA = new WebGLRenderTarget(SIM_W, SIM_H, rtOptions);
+      let rtB = new WebGLRenderTarget(SIM_W, SIM_H, rtOptions);
       let readTarget = rtA;
       let writeTarget = rtB;
 
       // ── Camera ───────────────────────────────────────────────────────────
-      const orthoCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const orthoCamera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
       // ── Simulation quad ──────────────────────────────────────────────────
-      const quadGeo = new THREE.PlaneGeometry(2, 2);
+      const quadGeo = new PlaneGeometry(2, 2);
 
-      const simMaterial = new THREE.ShaderMaterial({
+      const simMaterial = new ShaderMaterial({
         vertexShader: VERT,
         fragmentShader: SIM_FRAG,
         uniforms: {
           u_prev: { value: rtA.texture },
-          u_res: { value: new THREE.Vector2(SIM_W, SIM_H) },
-          u_mouse: { value: new THREE.Vector2(-1, -1) },
+          u_res: { value: new Vector2(SIM_W, SIM_H) },
+          u_mouse: { value: new Vector2(-1, -1) },
           u_radius: { value: MOUSE_RADIUS },
           u_strength: { value: MOUSE_STRENGTH },
           u_addImpulse: { value: 0 },
         },
       });
 
-      const simScene = new THREE.Scene();
-      simScene.add(new THREE.Mesh(quadGeo, simMaterial));
+      const simScene = new Scene();
+      simScene.add(new Mesh(quadGeo, simMaterial));
 
       // ── Display quad ─────────────────────────────────────────────────────
-      const displayMaterial = new THREE.ShaderMaterial({
+      const displayMaterial = new ShaderMaterial({
         vertexShader: VERT,
         fragmentShader: DISPLAY_FRAG,
         uniforms: {
           u_heightMap: { value: rtB.texture },
           u_video: { value: videoTexture },
-          u_res: { value: new THREE.Vector2(W, H) },
-          u_baseColor: { value: new THREE.Vector3(...BASE_COLOR) },
+          u_res: { value: new Vector2(W, H) },
+          u_baseColor: { value: new Vector3(...BASE_COLOR) },
           u_refractionScale: { value: REFRACTION_SCALE },
           u_videoOpacity: { value: VIDEO_OPACITY },
-          u_coverScale: { value: new THREE.Vector2(1, 1) },
-          u_coverOffset: { value: new THREE.Vector2(0, 0) },
+          u_coverScale: { value: new Vector2(1, 1) },
+          u_coverOffset: { value: new Vector2(0, 0) },
         },
       });
 
-      const displayScene = new THREE.Scene();
-      displayScene.add(new THREE.Mesh(quadGeo, displayMaterial));
+      const displayScene = new Scene();
+      displayScene.add(new Mesh(quadGeo, displayMaterial));
 
       // ── Cover UV (simulates object-fit: cover for the video) ─────────────
       const setVideoCover = () => {
@@ -270,24 +304,24 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       }
 
       // ── Normal-map pass (drives text displacement) ────────────────────────
-      const nmRt = new THREE.WebGLRenderTarget(NM_W, NM_H, {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat,
-        type: THREE.UnsignedByteType,
+      const nmRt = new WebGLRenderTarget(NM_W, NM_H, {
+        minFilter: LinearFilter,
+        magFilter: LinearFilter,
+        format: RGBAFormat,
+        type: UnsignedByteType,
       });
 
-      const normalMaterial = new THREE.ShaderMaterial({
+      const normalMaterial = new ShaderMaterial({
         vertexShader: VERT,
         fragmentShader: NORMAL_FRAG,
         uniforms: {
           u_heightMap: { value: null },
-          u_res: { value: new THREE.Vector2(SIM_W, SIM_H) },
+          u_res: { value: new Vector2(SIM_W, SIM_H) },
         },
       });
 
-      const normalScene = new THREE.Scene();
-      normalScene.add(new THREE.Mesh(quadGeo, normalMaterial));
+      const normalScene = new Scene();
+      normalScene.add(new Mesh(quadGeo, normalMaterial));
 
       const nmPixels = new Uint8Array(NM_W * NM_H * 4);
       const nmImageData = new ImageData(NM_W, NM_H);
@@ -470,16 +504,16 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
             const SW = Math.floor(W2 / 2);
             const SH = Math.floor(H2 / 2);
 
-            const currentWidth = renderer.getSize(new THREE.Vector2()).x;
-            const currentHeight = renderer.getSize(new THREE.Vector2()).y;
+            const currentWidth = renderer.getSize(new Vector2()).x;
+            const currentHeight = renderer.getSize(new Vector2()).y;
 
             if (Math.abs(W2 - currentWidth) > 1 || Math.abs(H2 - currentHeight) > 1) {
               renderer.setSize(W2, H2, false);
 
               rtA.dispose();
               rtB.dispose();
-              rtA = new THREE.WebGLRenderTarget(SW, SH, rtOptions);
-              rtB = new THREE.WebGLRenderTarget(SW, SH, rtOptions);
+              rtA = new WebGLRenderTarget(SW, SH, rtOptions);
+              rtB = new WebGLRenderTarget(SW, SH, rtOptions);
               readTarget = rtA;
               writeTarget = rtB;
 
@@ -517,6 +551,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       };
 
       const handleContextRestored = () => {
+        initialized = false;
         if (mounted) init();
       };
 
@@ -563,7 +598,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting) {
-          init();
+          cancelScheduledInit = scheduleStartupInit(init);
           observer.disconnect();
         }
       },
@@ -575,6 +610,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
     return () => {
       mounted = false;
       observer.disconnect();
+      cancelScheduledInit?.();
       if (cleanupRef.current) cleanupRef.current();
     };
   }, [canvasId]);
