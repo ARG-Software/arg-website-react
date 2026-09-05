@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { Suspense, useContext, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { AssistantWidget } from '@components/widgets/AssistantWidget';
+import assistantContent from '@data/assistant.json';
 import {
   ALREADY_SUBSCRIBED_KEY,
   LEAD_CAPTURE_DISMISS_EXPIRY_KEY,
@@ -9,6 +9,13 @@ import {
 } from '@constants/ui';
 import { LoadingContext } from '@providers/LoadingProvider';
 import { trackEvent } from '@services/analytics';
+import { lazyWithRetry } from '@utils/lazyWithRetry';
+
+const AssistantWidget = lazyWithRetry(() =>
+  import('@components/widgets/AssistantWidget').then(module => ({
+    default: module.AssistantWidget,
+  }))
+);
 
 const DEFAULT_IDLE_DELAY_MS = 10000;
 const CONTACT_PATH = '/contact';
@@ -66,10 +73,21 @@ function isLeadCaptureSuppressed() {
   );
 }
 
+function AssistantTrigger({ onOpen }) {
+  return (
+    <button className="aw-trigger" onClick={onOpen} aria-label="Open assistant" type="button">
+      <span className="aw-trigger__icon">
+        <img src={assistantContent.imageSrc} alt="" />
+      </span>
+    </button>
+  );
+}
+
 export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
   const location = useLocation();
   const normalizedPath = normalizePath(location.pathname);
   const [assistantOpen, setAssistantOpen] = useState(false);
+  const [shouldLoadAssistant, setShouldLoadAssistant] = useState(false);
   const [reopenRequest, setReopenRequest] = useState(0);
   const [visiblePath, setVisiblePath] = useState(null);
   const [inMemoryDismissed, setInMemoryDismissed] = useState(false);
@@ -105,6 +123,7 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
         page_path: normalizedPath,
         source: 'idle_timer',
       });
+      setShouldLoadAssistant(true);
       setVisiblePath(normalizedPath);
     }
 
@@ -161,6 +180,11 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
     }
   }
 
+  function handleTriggerOpen() {
+    setShouldLoadAssistant(true);
+    setReopenRequest(request => request + 1);
+  }
+
   function handleAssistantOpenChange(isOpen) {
     setAssistantOpen(isOpen);
 
@@ -170,12 +194,18 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
     }
   }
 
+  if (!shouldLoadAssistant && !leadCaptureVisible) {
+    return <AssistantTrigger onOpen={handleTriggerOpen} />;
+  }
+
   return (
-    <AssistantWidget
-      onOpenChange={handleAssistantOpenChange}
-      reopenRequest={reopenRequest}
-      leadCaptureVisible={leadCaptureVisible}
-      onLeadCaptureDismiss={handleLeadCaptureDismiss}
-    />
+    <Suspense fallback={<AssistantTrigger onOpen={handleTriggerOpen} />}>
+      <AssistantWidget
+        onOpenChange={handleAssistantOpenChange}
+        reopenRequest={reopenRequest}
+        leadCaptureVisible={leadCaptureVisible}
+        onLeadCaptureDismiss={handleLeadCaptureDismiss}
+      />
+    </Suspense>
   );
 }
