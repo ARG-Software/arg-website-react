@@ -13,6 +13,7 @@ test('ARD manifest publishes the supported public agent resources', () => {
   const manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf8'));
   const identifiers = manifest.entries.map(entry => entry.identifier);
 
+  assert.equal(manifest.specVersion, '1.0');
   assert.equal(manifest.entries.length, 3);
   assert.equal(new Set(identifiers).size, identifiers.length);
   assert.deepEqual(
