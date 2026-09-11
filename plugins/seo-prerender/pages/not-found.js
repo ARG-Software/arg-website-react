@@ -6,8 +6,8 @@ import { replaceMetaTags } from '../html-utils.js';
 
 export function writeNotFoundPage({ distDir, baseHtml, generated }) {
   let html = replaceMetaTags(baseHtml, {
-    title: 'Page Not Found | Arg Software',
-    description: "The page you're looking for doesn't exist. Head back to Arg Software's homepage.",
+    title: 'Page Not Found | ARG Software',
+    description: "The page you're looking for doesn't exist. Head back to ARG Software's homepage.",
     url: `${SITE_URL}/`,
     type: 'website',
     includeGlobalJsonLd: false,

@@ -2,7 +2,7 @@ DOKUTAR
 
 Industry: Compliance Tech
 Client: mb-netzwerk (dokutar.de)
-Timeline: 2 Years
+Featured engagement: 2 Years
 Services: Backend Redesign, Database Migration, Multitenancy, Security
 
 THE CHALLENGE
@@ -22,12 +22,12 @@ ARG stepped in to rebuild the backend from the ground up — not a patch, but a 
 
 THE RESULTS
 
-Dokutar now operates on a backend built to scale. The platform processes over 50,000 documents monthly across 5 multitenant client workspaces, maintaining a 98%+ compliance accuracy rate.
+Dokutar now operates on a backend built to scale. The platform processes over 50,000 documents monthly across 5 multitenant client workspaces, maintaining a 98%+ platform compliance accuracy rate.
 
 Key Metrics:
-- Documents processed monthly: 50,000+
-- Compliance accuracy rate: 98%+
-- Multitenant client workspaces: 5
+- Documents processed monthly on the platform: 50,000+
+- Platform compliance accuracy: 98%+
+- Multitenant client workspaces on the platform: 5
 
 More importantly, every new client no longer introduces risk — it's just another tenant on a platform designed for growth.
 

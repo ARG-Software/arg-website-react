@@ -49,7 +49,7 @@ export function NavMenu({
             to: '/',
             className: 'nav-menu__logo',
             children: logo,
-            'aria-label': 'Arg Software',
+            'aria-label': 'ARG Software',
           })}
 
           <button

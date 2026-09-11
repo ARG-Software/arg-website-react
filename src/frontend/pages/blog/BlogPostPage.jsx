@@ -370,7 +370,7 @@ export default function BlogPostPage() {
               <span className="bp-header-meta__sep" aria-hidden="true" />
               <span>{BLOG_POST.readTime}</span>
               <span className="bp-header-meta__sep" aria-hidden="true" />
-              <span>{BLOG_POST.author || 'Arg Software'}</span>
+              <span>{BLOG_POST.author || 'ARG Software'}</span>
             </div>
           </PageHeader>
 

@@ -2,7 +2,7 @@ MOJALOOP
 
 Industry: Fintech
 Client: Mojaloop Foundation (mojaloop.io)
-Timeline: Ongoing
+Featured engagement: 2021-2023
 Services: Core Platform Rebuild, Payments Architecture, Backend, Frontend Implementation, Mobile App Development, QA & Testing
 
 THE CHALLENGE
@@ -22,12 +22,12 @@ ARG joined the core Mojaloop vNext team to help redesign and rebuild the payment
 
 THE RESULTS
 
-Mojaloop vNext is now built on a foundation that can scale. The platform processes over 2,000 transactions per second, maintains 99.9%+ uptime, and impacts financial infrastructure across more than 6 countries.
+Mojaloop vNext is built on a foundation designed to scale. Load testing verified platform capability above 2,000 transactions per second. The platform maintains 99.9%+ uptime and reaches financial infrastructure across more than 6 countries.
 
 Key Metrics:
-- Transactions per second: 2,000+
-- Countries impacted: 6+
-- Uptime: 99.9%+
+- Transactions per second verified in load testing: 2,000+
+- Countries reached by the platform: 6+
+- Platform uptime: 99.9%+
 
 The rebuild moved Mojaloop from a constrained prototype to a controllable, secure, and bank-ready payment switch — one capable of supporting the interoperable, high-volume financial infrastructure the unbanked world needs.
 

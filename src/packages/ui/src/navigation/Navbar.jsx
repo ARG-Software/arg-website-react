@@ -28,7 +28,7 @@ export function Navbar({
           {renderHomeLink({
             className: 'nav_logo-wrapper',
             children: <div className="nav_logo_icon">{logo}</div>,
-            'aria-label': 'Arg Software',
+            'aria-label': 'ARG Software',
             'data-animate': 'fade-up',
             'data-animate-trigger': 'load',
             'data-animate-order': '0',

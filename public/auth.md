@@ -9,6 +9,7 @@ Agents may use the public discovery resources below without registration:
 - Website: `https://arg.software/`
 - LLM summary: `https://arg.software/llms.txt`
 - Full LLM context: `https://arg.software/llms-full.txt`
+- ARD manifest: `https://arg.software/.well-known/ard.json`
 - API catalog: `https://arg.software/.well-known/api-catalog`
 - OpenAPI document: `https://arg.software/.well-known/openapi.json`
 - MCP server card: `https://arg.software/.well-known/mcp/server-card.json`

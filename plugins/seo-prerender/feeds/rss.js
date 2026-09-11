@@ -26,9 +26,9 @@ export function generateRss({ distDir, blogPostMetas }) {
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
-    <title>Arg Software Blog</title>
+    <title>ARG Software Blog</title>
     <link>${SITE_URL}/blog/</link>
-    <description>Technical articles, engineering insights, and best practices from the Arg Software team.</description>
+    <description>Technical articles, engineering insights, and best practices from the ARG Software team.</description>
     <language>en</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${SITE_URL}/rss.xml" rel="self" type="application/rss+xml" />
@@ -62,13 +62,13 @@ export function generateAtom({ distDir, blogPostMetas }) {
 
   const atomXml = `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Arg Software Blog</title>
+  <title>ARG Software Blog</title>
   <link href="${SITE_URL}/blog/" />
   <link href="${SITE_URL}/atom.xml" rel="self" type="application/atom+xml" />
   <updated>${new Date().toISOString()}</updated>
   <id>${SITE_URL}/blog/</id>
   <author>
-    <name>Arg Software</name>
+    <name>ARG Software</name>
   </author>
 ${atomEntries}
 </feed>`;

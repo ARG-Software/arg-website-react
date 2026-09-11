@@ -16,7 +16,6 @@ export const OFFICIAL_WEBSITE_SOURCE_TYPES: RagSourceType[] = [
 ];
 export const FAQ_SOURCE_TYPES: RagSourceType[] = ['faq'];
 export const CAREERS_SOURCE_TYPES: RagSourceType[] = ['careers'];
-export const LOCAL_DOCUMENT_SOURCE_TYPES: RagSourceType[] = ['local_document'];
 export const TRUSTED_EXTERNAL_SOURCE_TYPES: RagSourceType[] = ['external_page'];
 export const DIRECT_EVIDENCE_SOURCE_TYPES: RagSourceType[] = [
   ...OFFICIAL_WEBSITE_SOURCE_TYPES,
@@ -95,7 +94,7 @@ export function resolveRetrievalRoute(
   const hasProjectEntity = Boolean(projectEntity);
 
   if (OPEN_SOURCE_PATTERN.test(routeText)) {
-    return createRoute('open_source', LOCAL_DOCUMENT_SOURCE_TYPES, plan);
+    return createRoute('open_source', ['homepage'], plan);
   }
 
   if (isExternalLinkQuestion(routeText)) {

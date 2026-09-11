@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { SITE_URL } from '../constants.js';
-import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { replaceMetaTags } from '../html-utils.js';
 import { getProjectExtraLinks } from '../links.js';
+import { buildProjectStaticContent, injectStaticContent } from '../static-content.js';
 import { buildProjectSchema } from '../../../src/frontend/utils/structuredData.js';
 
 export function writeProjectPages({ distDir, baseHtml, generated }) {
@@ -18,7 +18,7 @@ export function writeProjectPages({ distDir, baseHtml, generated }) {
     if (!project.slug) continue;
 
     const projectUrl = `${SITE_URL}/projects/${project.slug}/`;
-    const title = `${project.title} - Use Case | Arg Software`;
+    const title = `${project.title} - Use Case | ARG Software`;
     const description = (project.intro || project.challenge || '')
       .replace(/\n+/g, ' ')
       .slice(0, 160)
@@ -33,14 +33,7 @@ export function writeProjectPages({ distDir, baseHtml, generated }) {
       jsonLd: buildProjectSchema(project),
     });
 
-    html = injectCrawlableBlock(
-      html,
-      buildCrawlableBlock(project.title || project.slug, {
-        description,
-        subtitle: project.subtitle || '',
-        extraLinks: projectLinks,
-      })
-    );
+    html = injectStaticContent(html, buildProjectStaticContent(project, projectLinks));
 
     const dir = path.join(distDir, 'projects', project.slug);
     fs.mkdirSync(dir, { recursive: true });

@@ -2,7 +2,7 @@ ROYALTY FLUSH
 
 Industry: Music Rights
 Client: North Music Group (northmusicgroup.com)
-Timeline: 1 Year
+Featured engagement: 1 Year
 Services: Royalty Engine, CWR Processing, Reporting, Backend
 
 THE CHALLENGE
@@ -26,8 +26,8 @@ Royalty Flush now manages over 1,000 music catalogs through a single engine — 
 
 Key Metrics:
 - Royalty engine built: 1
-- CWR file types supported: 30+
-- Music catalogs managed: 1,000+
+- CWR file types supported by the engine: 30+
+- Music catalogs managed on the platform: 1,000+
 
 The shift from manual spreadsheets to a purpose-built engine didn't just reduce errors — it gave North Music Group the operational confidence to scale their catalog without scaling their risk.
 

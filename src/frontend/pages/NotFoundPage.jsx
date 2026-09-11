@@ -23,8 +23,8 @@ export default function NotFoundPage() {
       data-animate-default-stagger="120"
     >
       <SEO
-        title="Page Not Found | Arg Software"
-        description="The page you're looking for doesn't exist. Head back to Arg Software's homepage."
+        title="Page Not Found | ARG Software"
+        description="The page you're looking for doesn't exist. Head back to ARG Software's homepage."
         path="/404/"
         noIndex
       />
@@ -34,7 +34,7 @@ export default function NotFoundPage() {
       </div>
 
       <div className="top-ui" data-animate-order="0">
-        <AppLink to="/" aria-label="Arg Software" className="site-logo-wrapper">
+        <AppLink to="/" aria-label="ARG Software" className="site-logo-wrapper">
           <Logo className="site-logo" />
         </AppLink>
       </div>

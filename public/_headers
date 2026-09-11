@@ -10,6 +10,7 @@
 # HTML pages — revalidate on each request but allow bfcache
 /index.html
   Cache-Control: no-cache
+  Link: </.well-known/ard.json>; rel="ard"; type="application/json"
   Link: </.well-known/api-catalog>; rel="api-catalog"
   Link: </.well-known/openapi.json>; rel="service-desc"; type="application/openapi+json"
   Link: </docs/api.md>; rel="service-doc"; type="text/markdown"
@@ -22,6 +23,7 @@
 
 /
   Cache-Control: no-cache
+  Link: </.well-known/ard.json>; rel="ard"; type="application/json"
   Link: </.well-known/api-catalog>; rel="api-catalog"
   Link: </.well-known/openapi.json>; rel="service-desc"; type="application/openapi+json"
   Link: </docs/api.md>; rel="service-doc"; type="text/markdown"
@@ -47,6 +49,11 @@
 /.well-known/api-catalog
   Cache-Control: no-cache
   Content-Type: application/linkset+json; charset=utf-8
+
+/.well-known/ard.json
+  Cache-Control: no-cache
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
 
 /.well-known/openapi.json
   Cache-Control: no-cache

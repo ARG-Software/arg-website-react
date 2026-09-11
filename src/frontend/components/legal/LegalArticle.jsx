@@ -51,7 +51,7 @@ function renderBlock(block, index, page, contactEmail) {
     case 'contact':
       return (
         <p key={index}>
-          Arg Software
+          ARG Software
           <br />
           Funchal and Porto, Portugal
           <br />

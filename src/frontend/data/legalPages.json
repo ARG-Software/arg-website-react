@@ -1,13 +1,13 @@
 {
   "privacyPolicy": {
     "title": "Privacy Policy",
-    "description": "Arg Software's privacy policy - how we collect, use, and protect your personal data.",
+    "description": "ARG Software's privacy policy - how we collect, use, and protect your personal data.",
     "path": "/privacy/",
     "headerTitle": ["Privacy Policy", "How we collect, use, and protect your personal data"],
     "breadcrumbLabel": "Privacy",
     "ctaSubject": "Privacy Inquiry",
     "lastUpdated": "August 2026",
-    "intro": "This Privacy Policy describes how Arg Software (\"ARG,\" \"we,\" \"us,\" or \"our\") collects, uses, stores, and protects your personal data when you visit our website (arg.software), use our services, or interact with us. We are committed to protecting your privacy and handling your data in an open and transparent manner.",
+    "intro": "This Privacy Policy describes how ARG Software (\"ARG,\" \"we,\" \"us,\" or \"our\") collects, uses, stores, and protects your personal data when you visit our website (arg.software), use our services, or interact with us. We are committed to protecting your privacy and handling your data in an open and transparent manner.",
     "sections": [
       {
         "heading": "1. Information We Collect",
@@ -184,13 +184,13 @@
   },
   "termsOfService": {
     "title": "Terms of Service",
-    "description": "Arg Software's terms of service - the conditions governing the use of our website and services.",
+    "description": "ARG Software's terms of service - the conditions governing the use of our website and services.",
     "path": "/terms/",
     "headerTitle": ["Terms of Service", "Conditions governing the use of our website and services"],
     "breadcrumbLabel": "Terms",
     "ctaSubject": "Terms Inquiry",
     "lastUpdated": "April 2026",
-    "intro": "These Terms of Service (\"Terms\") govern your access to and use of the Arg Software website (arg.software) and any related services provided by Arg Software (\"ARG,\" \"we,\" \"us,\" or \"our\"). By accessing our website or engaging our services, you agree to be bound by these Terms. If you do not agree, please do not use our website or services.",
+    "intro": "These Terms of Service (\"Terms\") govern your access to and use of the ARG Software website (arg.software) and any related services provided by ARG Software (\"ARG,\" \"we,\" \"us,\" or \"our\"). By accessing our website or engaging our services, you agree to be bound by these Terms. If you do not agree, please do not use our website or services.",
     "sections": [
       {
         "heading": "1. Services",

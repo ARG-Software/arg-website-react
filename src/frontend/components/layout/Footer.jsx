@@ -33,7 +33,7 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
         { label: 'Privacy Policy', href: '/privacy/' },
         { label: 'Terms of Service', href: '/terms/' },
       ]}
-      copyright="© 2020-2026 Arg Software. All rights reserved."
+      copyright="© 2020-2026 ARG Software. All rights reserved."
       renderLink={renderFooterAppLink}
       renderExternalLink={renderFooterExternalLink}
       animate={animate}

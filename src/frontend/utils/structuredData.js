@@ -92,7 +92,7 @@ export function buildOrganizationSchema() {
     founder: [
       {
         '@type': 'Person',
-        name: 'Jose Antunes',
+        name: 'José Antunes',
         jobTitle: 'Co-founder and software developer',
         sameAs: 'https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/',
       },

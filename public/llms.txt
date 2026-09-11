@@ -1,6 +1,6 @@
-# Arg Software
+# ARG Software
 
-> Arg Software is a Portugal-based software studio building secure, scalable digital platforms for fintech, open payments, music technology, media, and high-growth technology companies. The team is architecture-first, senior-led, and focused on production-ready systems.
+> ARG Software is a Portugal-based software studio building secure, scalable digital platforms for fintech, open payments, music technology, media, and high-growth technology companies. The team is architecture-first, senior-led, and focused on production-ready systems.
 
 ## Company
 
@@ -8,6 +8,7 @@
 - Full LLM context: https://arg.software/llms-full.txt
 - Agent access policy: https://arg.software/auth.md
 - AI plugin manifest: https://arg.software/ai-plugin.json
+- ARD manifest: https://arg.software/.well-known/ard.json
 - API catalog: https://arg.software/.well-known/api-catalog
 - OpenAPI document: https://arg.software/.well-known/openapi.json
 - MCP server card: https://arg.software/.well-known/mcp/server-card.json
@@ -41,18 +42,18 @@
 - Mojaloop: https://arg.software/projects/mojaloop/
 - People's Clearinghouse: https://arg.software/projects/peoples-clearinghouse/
 - Dokutar: https://arg.software/projects/dokutar/
-- Sky Tracks: https://arg.software/projects/sky-tracks/
+- SkyTracks: https://arg.software/projects/sky-tracks/
 - TV Cine: https://arg.software/projects/tv-cine/
 - Royalty Flush: https://arg.software/projects/royalty-flush/
 - Vector: https://arg.software/projects/vector/
 
 ## Selected Partners
 
-- Cyberbones: systems architecture and technical leadership consultancy, partnered with Arg Software from 2021 to 2026.
+- Cyberbones: systems architecture and technical leadership consultancy, partnered with ARG Software from 2021 to 2026.
 
 ## Key Pages
 
-- Working with Arg Software: https://arg.software/working-with-us/
+- Working with ARG Software: https://arg.software/working-with-us/
 - Partners: https://arg.software/partners/
 - Blog and engineering insights: https://arg.software/blog/
 - Careers: https://arg.software/careers/

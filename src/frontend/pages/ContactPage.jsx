@@ -96,7 +96,7 @@ export default function ContactPage() {
     <>
       <SEO
         title="Contact"
-        description="Contact Arg Software with a clear project brief. Tell us what you are building, what feels risky, and where senior engineering help is needed."
+        description="Contact ARG Software with a clear project brief. Tell us what you are building, what feels risky, and where senior engineering help is needed."
         path="/contact/"
       />
       <div className="page-wrapper">

@@ -1,8 +1,8 @@
 {
   "seo": {
     "title": "Careers",
-    "openRolesDescription": "Explore open roles at Arg Software and apply to join an architecture-first engineering team building complex production systems.",
-    "noRolesDescription": "Arg Software is not hiring today. Learn what we look for in architecture-first engineers and how to reach the founders directly."
+    "openRolesDescription": "Explore open roles at ARG Software and apply to join an architecture-first engineering team building complex production systems.",
+    "noRolesDescription": "ARG Software is not hiring today. Learn what we look for in architecture-first engineers and how to reach the founders directly."
   },
   "hero": {
     "openRolesTitle": ["Careers at ARG", "Open Roles"],
@@ -63,14 +63,14 @@
     "intro": "No recruiter wall, no ATS black hole. If you think you'd fit at ARG, the fastest way in is a short note to one of us.",
     "cards": [
       {
-        "name": "Jose Antunes",
+        "name": "José Antunes",
         "initials": "JA",
         "role": "Co-founder - Software Engineer",
         "focus": "Backend - Systems - Data - AI",
         "replyTime": "~ 36 hours",
         "personKey": "JOSE",
         "emailKey": "JOSE",
-        "emailSubject": "Career Inquiry - Jose Antunes"
+        "emailSubject": "Career Inquiry - José Antunes"
       },
       {
         "name": "Rui Rocha",

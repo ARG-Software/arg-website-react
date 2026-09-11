@@ -75,7 +75,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'sky-tracks',
-    title: 'Sky Tracks',
+    title: 'SkyTracks',
     category: 'Music Tech',
     url: 'https://arg.software/projects/sky-tracks/',
     summary:

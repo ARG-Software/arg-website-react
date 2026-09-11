@@ -140,7 +140,7 @@
         "headline": "ARG moved from formation to a broader portfolio.",
         "summary": "The studio expanded across music technology, financial technology, documentation products, and food-service software, while keeping the same pattern: senior delivery, architecture, code review, CI/CD, and maintainability.",
         "highlights": [
-          "Skytracks, based in Canada, brought cloud-based music production work across Node.js, Koa, RxJS, Angular, Jest, Docker, queues, and MySQL.",
+          "SkyTracks, based in Canada, brought cloud-based music production work across Node.js, Koa, RxJS, Angular, Jest, Docker, queues, and MySQL.",
           "Mojaloop, worldwide open source initiative, added open-source payment infrastructure work involving TypeScript, Express, Kafka, Angular, Docker, MongoDB, Elasticsearch, and Kibana.",
           "Leeroy, a company based in Stockholm, bringing a PWA for food service, using React, Storybook, Framer Motion, GraphQL, Fastify, MongoDB, Redis, AWS, Docker, Argo CD, GitHub Actions, and Datadog."
         ],
@@ -160,7 +160,7 @@
         "headline": "Growth through trust, not headcount.",
         "summary": "ARG today is a small software studio built around senior ownership and carefully selected collaborators. The company does not scale by adding people for optics; it scales by assembling trusted capability around the problem.",
         "highlights": [
-          "Current and past ARG clients include AngryVentures, Cyberbones, Hopupon, Hostelier, MB-Netzwerk, Mojaloop Foundation, North Music Group, SEFA, SkyTracks, and others.",
+          "Current and past ARG clients include Angry Ventures, Cyberbones, Hopupon, Hostelier, mb-netzwerk, Mojaloop Foundation, North Music Group, SEFA, SkyTracks, and others.",
           "The work spans payment infrastructure, music technology, travel, hospitality, documentation, SaaS products, backend systems, frontend applications, cloud infrastructure, and AI-enabled product thinking.",
           "The operating model remains consistent: architecture, code review, testing, CI/CD, direct communication, and accountability from discovery to production."
         ],

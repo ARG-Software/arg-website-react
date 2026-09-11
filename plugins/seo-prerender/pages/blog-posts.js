@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { SITE_URL } from '../constants.js';
-import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { replaceMetaTags, escapeHtml } from '../html-utils.js';
+import { buildBlogPostStaticContent, injectStaticContent } from '../static-content.js';
 import { DEFAULT_AUTHOR } from '../../../src/frontend/constants/seo.js';
+import { parseBlocks } from '../../../src/frontend/utils/blog/articleContent.js';
 import { buildArticleSchema } from '../../../src/frontend/utils/structuredData.js';
 
 export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) {
@@ -18,7 +19,7 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
     }
 
     const articleUrl = `${SITE_URL}/blog/${meta.slug}/`;
-    const title = `${meta.seoTitle || meta.title || meta.slug} | Arg Software`;
+    const title = `${meta.seoTitle || meta.title || meta.slug} | ARG Software`;
     const description = meta.subtitle || '';
     const author = meta.author || DEFAULT_AUTHOR.name;
     const authorUrl = meta.authorUrl || DEFAULT_AUTHOR.url;
@@ -41,7 +42,7 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
       }
     }
     extra += `<meta property="article:author" content="${escapeHtml(author)}">`;
-    extra += `\n  <meta property="article:publisher" content="Arg Software">`;
+    extra += `\n  <meta property="article:publisher" content="ARG Software">`;
     if (meta.tag) {
       extra += `\n  <meta property="article:section" content="${escapeHtml(meta.tag)}">`;
     }
@@ -58,13 +59,7 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
       jsonLd: buildArticleSchema({ ...meta, author, authorUrl, image }),
     });
 
-    html = injectCrawlableBlock(
-      html,
-      buildCrawlableBlock(meta.title || meta.slug, {
-        description: meta.subtitle || '',
-        extraLinks: [{ href: '/blog/', label: 'Blog' }],
-      })
-    );
+    html = injectStaticContent(html, buildBlogPostStaticContent(meta, parseBlocks(body)));
 
     const dir = path.join(distDir, 'blog', meta.slug);
     fs.mkdirSync(dir, { recursive: true });

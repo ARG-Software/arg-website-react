@@ -137,7 +137,7 @@
       },
       {
         "value": "2000",
-        "label": "Finance transactions per second",
+        "label": "Transactions per second verified in Mojaloop load testing",
         "imageSrc": "/images/homepage/stats-tps.webp"
       },
       {
@@ -158,12 +158,12 @@
     "intro": "ARG is led by senior engineers who stay close to the architecture, code, and production reality. You do not get layers of account management. You work with the people responsible for the technical decisions.",
     "members": [
       {
-        "name": "Jose Antunes",
+        "name": "José Antunes",
         "role": "Co-founder, Software Engineer",
         "personKey": "JOSE",
         "imgSrc": "/images/team/Jose.jpg",
         "imgSrcSet": "/images/team/Jose.jpg 1024w",
-        "imgAlt": "Jose Antunes, ARG Software co-founder and software engineer"
+        "imgAlt": "José Antunes, ARG Software co-founder and software engineer"
       },
       {
         "name": "Rui Rocha",

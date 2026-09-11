@@ -6,21 +6,21 @@ Mexico's community banking sector connects millions of rural people to financial
 
 WHAT ARG DELIVERED
 
-ARG built the clearinghouse end-to-end — from payment API engineering to mobile app flows to live demo preparation.
+ARG delivered payment API engineering, mobile app flows, and live demo preparation in partnership with Cyberbones, which led the overall system architecture.
 
 - Designed PCH-specific switch and participant flows for community banks, savings coops, and regulated payment institutions
-- Load-tested payment APIs at ~1,000–2,000 requests per second with linear scalability and zero functional errors across multi-million request runs
-- Tuned lookup and quote workflows to ~200–300ms, with ledger transfers averaging ~770ms
+- Load-tested payment APIs at 1,000–2,000 requests per second with linear scalability and zero functional errors across multi-million request runs
+- Tuned lookup and quote workflows to 200–300 ms, with ledger transfers averaging 770 ms
 - Built mobile app paths for transfers, QR merchant payments, and full transaction visibility
 - Prepared the main-stage Interledger Summit demo where rural merchants transacted with ~100 attendees — zero failures
 
 THE RESULTS
 
-Zero transfer failures across ~1,000+ live transactions at Interledger Summit 2025 — on stage and in the hands of rural merchants selling goods through the app.
+Roughly 100 participants completed more than 1,000 fictional-money transfers with zero failures at Interledger Summit 2025 — on stage and in the hands of rural merchants selling goods through the app.
 
 Key Metrics:
-- Requests per second (sustained): ~2,000
-- Average ledger transfer time: ~770ms
+- Requests per second in sustained cluster load tests: 1,000–2,000
+- Average ledger transfer time in load tests: 770 ms
 - Live showcase transfers (zero failures): 1,000+
 
 The APIs proved they can support national-scale transaction switching — the foundation Mexico's community banking network needs to move from pilot to production.

@@ -2,7 +2,7 @@ VECTOR
 
 Industry: Fintech
 Client: Liminality Labs (quantapes.com)
-Timeline: 6 Months
+Featured engagement: 6 Months
 Services: Backend Rebuild, Authentication, Exchange Integrations, Trading Automation
 
 THE CHALLENGE
@@ -22,12 +22,12 @@ ARG rebuilt Vector from the inside out — connecting the frontend to real funct
 
 THE RESULTS
 
-Vector went from a non-functional prototype to a live trading platform in six months. Execution times average under 10ms, the platform connects to 5+ exchanges, and runs with 24/7 monitoring.
+Vector went from a non-functional prototype to a live trading platform in six months. Production execution times average under 10 ms, ARG delivered integrations with 5+ exchanges, and the platform runs with 24/7 monitoring.
 
 Key Metrics:
-- Average execution time: <10ms
-- Exchange integrations: 5+
-- Daily monitoring coverage: 24 hours
+- Average production execution time: <10 ms
+- Exchange integrations delivered: 5+
+- Production monitoring: 24/7
 
 The product that was once just a convincing interface is now a working financial platform — one that trades, executes, and monitors in real time.
 

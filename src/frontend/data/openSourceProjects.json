@@ -1,0 +1,32 @@
+{
+  "title": "Featured Open Source Projects",
+  "description": "A curated selection of public repositories maintained by ARG Software.",
+  "github": "https://github.com/ARG-Software",
+  "projects": [
+    {
+      "name": "Nx-Monorepo-Boilerplate",
+      "description": "A boilerplate for building scalable monorepo applications using Nx, featuring API integration, webhooks, messaging, and CQRS.",
+      "url": "https://github.com/ARG-Software/Nx-Monorepo-Boilerplate"
+    },
+    {
+      "name": "Chrome-Extension-ReactVite-Boilerplate",
+      "description": "A boilerplate for building Chrome extensions with React, TypeScript, and Vite that is fast, modular, and ready to customize.",
+      "url": "https://github.com/ARG-Software/Chrome-Extension-ReactVite-Boilerplate"
+    },
+    {
+      "name": "Clean-Architecture",
+      "description": "A pragmatic Clean Architecture template for scalable, testable, and maintainable software.",
+      "url": "https://github.com/ARG-Software/Clean-Architecture"
+    },
+    {
+      "name": "Angular-Redux",
+      "description": "An Angular project integrating Redux for state management, demonstrating a structured and modular approach to handling application state.",
+      "url": "https://github.com/ARG-Software/Angular-Redux"
+    },
+    {
+      "name": "Kubernetes-Poc",
+      "description": "A proof of concept for deploying a NestJS logging API with PostgreSQL in a Kubernetes cluster using K3d, showcasing deployments, services, and configuration management.",
+      "url": "https://github.com/ARG-Software/Kubernetes-Poc"
+    }
+  ]
+}

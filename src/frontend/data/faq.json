@@ -16,9 +16,9 @@
     {
       "id": "timeline",
       "q": "How long does it take to build an MVP?",
-      "schemaAnswer": "Most focused MVPs take 8 to 14 weeks, depending on feature complexity, product clarity, integration depth, and security or compliance needs. We move quickly without creating throwaway foundations.",
+      "schemaAnswer": "Most focused MVPs take 8–14 weeks, depending on feature complexity, product clarity, integration depth, and security or compliance needs. We move quickly without creating throwaway foundations.",
       "answer": [
-        { "type": "paragraph", "text": "Most focused MVPs take 8 to 14 weeks, depending on:" },
+        { "type": "paragraph", "text": "Most focused MVPs take 8–14 weeks, depending on:" },
         { "type": "list", "items": ["Feature complexity", "Product clarity", "Integration depth", "Security or compliance needs"] },
         { "type": "paragraph", "text": "We move quickly, but we do not build throwaway foundations. The goal is a product you can learn from and keep evolving." }
       ]

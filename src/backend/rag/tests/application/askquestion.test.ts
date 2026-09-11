@@ -463,6 +463,26 @@ test('site-links RAG source exposes Gaspar messaging and one general email', asy
   assert.doesNotMatch(siteLinks.content, /info@arg\.software/u);
 });
 
+test('featured open-source projects load from their dedicated source', async () => {
+  const sources = await loadFirstPartySources(process.cwd(), {
+    all: false,
+    force: false,
+    fallbackOnly: false,
+    sourceKeys: ['open-source-projects'],
+    filePaths: [],
+    urls: [],
+  });
+  const openSourceProjects = sources.find(item => item.sourceKey === 'open-source-projects');
+
+  assert.ok(openSourceProjects);
+  assert.match(openSourceProjects.content, /Nx-Monorepo-Boilerplate/u);
+  assert.match(openSourceProjects.content, /Chrome-Extension-ReactVite-Boilerplate/u);
+  assert.match(openSourceProjects.content, /Clean-Architecture/u);
+  assert.match(openSourceProjects.content, /Angular-Redux/u);
+  assert.match(openSourceProjects.content, /Kubernetes-Poc/u);
+  assert.doesNotMatch(openSourceProjects.content, /portfolio\.pdf/u);
+});
+
 test('direct message-through-Gaspar questions request lead capture auto-start', () => {
   const questions = [
     'Can I send a message through you?',
@@ -1142,20 +1162,14 @@ test('blog page context retrieves the current article source', async () => {
   assert.equal(supabase.calls.matchChunks.length, 0);
 });
 
-test('open-source questions search only the portfolio PDF source', async () => {
+test('open-source questions search only current first-party web sources', async () => {
   const supabase = createSupabase({
     rpcRows: [
       matchRow(
-        'local_document',
-        'portfolio-pdf',
-        'ARG Software Portfolio',
-        "People's Clearinghouse is a client project that extends Mojaloop vNext."
-      ),
-      matchRow(
-        'local_document',
-        'portfolio-pdf',
-        'ARG Software Portfolio',
-        'Our Open Source Projects\nNx-Monorepo-Boilerplate\nBrowser Extension Boilerplate\nClean-Architecture'
+        'homepage',
+        'open-source-projects',
+        'ARG Software Featured Open Source Projects',
+        'Featured repositories: Nx-Monorepo-Boilerplate, Chrome-Extension-ReactVite-Boilerplate, Clean-Architecture, Angular-Redux, and Kubernetes-Poc. GitHub: https://github.com/ARG-Software.'
       ),
     ],
   });
@@ -1171,10 +1185,9 @@ test('open-source questions search only the portfolio PDF source', async () => {
     fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
   });
 
-  assert.equal(result.contexts[0]?.sourceKey, 'portfolio-pdf');
-  assert.match(result.contexts[0]?.content ?? '', /Our Open Source Projects/u);
-  assert.doesNotMatch(result.contexts[0]?.content ?? '', /People's Clearinghouse/u);
-  assert.deepEqual(supabase.calls.matchChunks[0]?.sourceKeys, ['portfolio-pdf']);
+  assert.equal(result.contexts[0]?.sourceKey, 'open-source-projects');
+  assert.match(result.contexts[0]?.content ?? '', /github\.com\/ARG-Software/u);
+  assert.deepEqual(supabase.calls.matchChunks[0]?.sourceKeys, ['open-source-projects']);
   assert.equal(supabase.calls.matchChunks[0]?.sourceTypes, null);
 });
 

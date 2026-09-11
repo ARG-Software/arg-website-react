@@ -6,9 +6,7 @@ import { SemanticEmbeddingResolver } from '../embeddingresolver.js';
 import { retrieveContextsForOrigin } from '../semanticsearch.js';
 import type { IRetrievalStrategy, IRetrievalStrategyInput } from '../retrievalstrategy.js';
 
-const PORTFOLIO_SOURCE_KEY = 'portfolio-pdf';
-const OPEN_SOURCE_PORTFOLIO_PATTERN =
-  /\b(?:Our Open Source Projects|Nx-Monorepo-Boilerplate|Browser Extension Boilerplate|Clean-Architecture|Angular-Redux|Kubernetes-Poc)\b/i;
+const OPEN_SOURCE_SOURCE_KEYS = ['open-source-projects'];
 
 export class OpenSourceRetrievalStrategy implements IRetrievalStrategy {
   constructor(
@@ -30,13 +28,9 @@ export class OpenSourceRetrievalStrategy implements IRetrievalStrategy {
       index: search.index,
       config: this.config,
       sourceOrigin: 'first_party',
-      sourceKeys: [PORTFOLIO_SOURCE_KEY],
+      sourceKeys: OPEN_SOURCE_SOURCE_KEYS,
     });
 
-    const openSourceContexts = contexts.filter(context =>
-      OPEN_SOURCE_PORTFOLIO_PATTERN.test(context.content)
-    );
-
-    return openSourceContexts.length > 0 ? openSourceContexts : contexts;
+    return contexts;
   }
 }

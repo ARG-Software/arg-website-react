@@ -99,7 +99,7 @@ export default function BlogPage() {
     <>
       <SEO
         title="Blog & Insights"
-        description="Technical articles from the Arg Software team on architecture, TypeScript, .NET, DevOps, AI tooling, and the engineering decisions behind reliable software."
+        description="Technical articles from the ARG Software team on architecture, TypeScript, .NET, DevOps, AI tooling, and the engineering decisions behind reliable software."
         path="/blog/"
         rss
         atom

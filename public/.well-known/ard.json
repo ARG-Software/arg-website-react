@@ -1,0 +1,58 @@
+{
+  "entries": [
+    {
+      "identifier": "urn:air:arg.software:mcp:public-discovery",
+      "displayName": "ARG Software Public Discovery MCP",
+      "type": "application/mcp-server-card+json",
+      "url": "https://arg.software/.well-known/mcp/server-card.json",
+      "description": "Read-only MCP server for discovering ARG Software company information, services, projects, articles, and contact options.",
+      "capabilities": [
+        "get_company_profile",
+        "list_services",
+        "list_projects",
+        "get_project",
+        "get_blog_discovery",
+        "get_contact_options",
+        "get_llm_context"
+      ],
+      "representativeQueries": [
+        "What services does ARG Software offer?",
+        "Show me ARG Software's featured projects.",
+        "What has ARG Software published recently?",
+        "How can I contact ARG Software about a project?"
+      ]
+    },
+    {
+      "identifier": "urn:air:arg.software:api:public-website",
+      "displayName": "ARG Software Public Website API",
+      "type": "application/openapi+json",
+      "url": "https://arg.software/.well-known/openapi.json",
+      "description": "OpenAPI description for the ARG Software website assistant, verification, and public MCP endpoints.",
+      "capabilities": [
+        "assistant_challenge",
+        "assistant_question",
+        "assistant_ui_copy",
+        "security_verification",
+        "mcp_json_rpc"
+      ],
+      "representativeQueries": [
+        "Which public API endpoints does ARG Software expose?",
+        "How do I integrate with the ARG Software website assistant?",
+        "Where is the API schema for ARG Software's MCP endpoint?"
+      ]
+    },
+    {
+      "identifier": "urn:air:arg.software:skill:public-discovery",
+      "displayName": "ARG Software Public Discovery Skill",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://arg.software/.well-known/agent-skills/arg-public-discovery/SKILL.md",
+      "description": "Instructions for agents discovering ARG Software's public services, portfolio, articles, and contact paths.",
+      "capabilities": ["arg_public_discovery"],
+      "representativeQueries": [
+        "Help me understand what ARG Software builds.",
+        "Find ARG Software's projects, articles, and contact resources.",
+        "How should an agent discover public information about ARG Software?"
+      ]
+    }
+  ]
+}

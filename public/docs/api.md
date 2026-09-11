@@ -4,6 +4,7 @@ ARG Software exposes a small public API surface for the website assistant, human
 
 ## Discovery
 
+- ARD manifest: `https://arg.software/.well-known/ard.json`
 - API catalog: `https://arg.software/.well-known/api-catalog`
 - OpenAPI document: `https://arg.software/.well-known/openapi.json`
 - LLM summary: `https://arg.software/llms.txt`

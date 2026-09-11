@@ -1,10 +1,10 @@
 {
   "seo": {
     "title": "Working with Us",
-    "description": "Work with Arg Software when architecture, reliability, and senior execution matter from the first technical decision to production."
+    "description": "Work with ARG Software when architecture, reliability, and senior execution matter from the first technical decision to production."
   },
   "hero": {
-    "title": ["Work With", "Arg Software"],
+    "title": ["Work With", "ARG Software"],
     "subtitle": "Work with a small architecture-first team that designs the system before writing it, then stays close when it reaches production.",
     "breadcrumbs": [{ "label": "Home", "path": "/" }, { "label": "Working with Us" }],
     "sideItems": [

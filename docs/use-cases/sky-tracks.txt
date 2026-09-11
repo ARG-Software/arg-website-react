@@ -1,8 +1,8 @@
-SKY TRACKS
+SKYTRACKS
 
 Industry: Music Tech
 Client: SkyTracks (skytracks.io)
-Timeline: 1 Year
+Featured engagement: 1 Year
 Services: Frontend Migration, Latency Optimization, Instrument Connectivity, QA & Testing
 
 THE CHALLENGE
@@ -22,11 +22,11 @@ ARG helped SkyTracks rebuild the product experience from the frontend down — m
 
 THE RESULTS
 
-SkyTracks launched a version that musicians can actually use. The platform now hosts over 50,000 online tracks, runs under 2,000ms average latency, and has powered over 1,000 collaborative sessions.
+SkyTracks launched a version that musicians can actually use. The production platform hosts over 50,000 online tracks, operates with average data latency under 2,000 ms, and has powered over 1,000 collaborative sessions.
 
 Key Metrics:
 - Online tracks in production: 50,000+
-- Average latency: <2,000ms
+- Average production data latency: <2,000 ms
 - Collaborative sessions: 1,000+
 
 The platform moved from a promising concept to a working product — one that's fast enough for creative flow, stable enough for real use, and open enough to connect to the instruments musicians already own.

@@ -6,6 +6,7 @@ Allow: /full-llm.txt
 Allow: /llms-full.txt
 Allow: /auth.md
 Allow: /ai-plugin.json
+Allow: /.well-known/ard.json
 Allow: /.well-known/api-catalog
 Allow: /.well-known/openapi.json
 Allow: /.well-known/agent-skills/
@@ -36,6 +37,7 @@ Allow: /full-llm.txt
 Allow: /llms-full.txt
 Allow: /auth.md
 Allow: /ai-plugin.json
+Allow: /.well-known/ard.json
 Allow: /.well-known/api-catalog
 Allow: /.well-known/openapi.json
 Allow: /.well-known/agent-skills/
@@ -44,4 +46,5 @@ Content-Signal: ai-train=no, search=yes, ai-input=yes
 Disallow: /404.html
 Disallow: /404
 
+Agentmap: https://arg.software/.well-known/ard.json
 Sitemap: https://arg.software/sitemap.xml

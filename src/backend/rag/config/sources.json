@@ -27,7 +27,7 @@
     { "slug": "mojaloop", "name": "Mojaloop" },
     { "slug": "peoples-clearinghouse", "name": "People's Clearinghouse" },
     { "slug": "royalty-flush", "name": "Royalty Flush" },
-    { "slug": "sky-tracks", "name": "Sky Tracks", "aliases": ["Skytracks"] },
+    { "slug": "sky-tracks", "name": "SkyTracks", "aliases": ["Sky Tracks", "Skytracks"] },
     { "slug": "tv-cine", "name": "TV Cine" },
     { "slug": "vector", "name": "Vector" }
   ],
@@ -42,12 +42,12 @@
     { "kind": "json", "filePath": "src/frontend/data/legalPages.json", "dataKey": "privacyPolicy", "sourceType": "homepage", "sourceKey": "privacy-policy", "title": "Privacy Policy", "url": "/privacy/", "label": "privacy policy" },
     { "kind": "json", "filePath": "src/frontend/data/legalPages.json", "dataKey": "termsOfService", "sourceType": "homepage", "sourceKey": "terms-of-service", "title": "Terms of Service", "url": "/terms/", "label": "terms of service" },
     { "kind": "json", "filePath": "src/frontend/data/siteLinks.json", "sourceType": "homepage", "sourceKey": "site-links", "title": "ARG Links and Contact Options", "url": "/contact/", "label": "ARG links and contact options" },
+    { "kind": "json", "filePath": "src/frontend/data/openSourceProjects.json", "sourceType": "homepage", "sourceKey": "open-source-projects", "title": "ARG Software Featured Open Source Projects", "url": "https://github.com/ARG-Software", "label": "ARG Software featured open source projects" },
     { "kind": "json", "filePath": "src/frontend/data/assistant.json", "sourceType": "homepage", "sourceKey": "assistant-profile", "title": "Gaspar", "url": "/", "label": "Gaspar assistant profile" },
     { "kind": "assistant_policy", "sourceType": "working_with_us", "sourceKey": "assistant-policy", "title": "Assistant Response Policy", "label": "assistant response policy", "virtualPath": "src/backend/rag/config/sources.json#assistant-policy" },
     { "kind": "projects_json", "filePath": "src/frontend/data/projects.json" },
     { "kind": "partners_json", "filePath": "src/frontend/data/partners.json" },
     { "kind": "markdown_dir", "filePath": "src/frontend/blog" },
-    { "kind": "local_document", "format": "pdf", "filePath": "public/files/portfolio.pdf", "sourceKey": "portfolio-pdf", "title": "ARG Software Portfolio", "citationUrl": "/files/portfolio.pdf", "documentKind": "portfolio" },
     { "kind": "local_document", "format": "pdf", "filePath": "src/backend/rag/.rag_private/cvs/Jose_Francisco_Antunes_ATS_CV_2026.pdf", "sourceKey": "jose-antunes-cv", "title": "José Antunes", "citationUrl": "/about-us/", "documentKind": "cv", "personKey": "jose", "redaction": { "profile": "cv", "manualReview": true } },
     { "kind": "local_document", "format": "pdf", "filePath": "src/backend/rag/.rag_private/cvs/Rui_Rocha_ATS_CV_2026.pdf", "sourceKey": "rui-rocha-cv", "title": "Rui Rocha", "citationUrl": "/about-us/", "documentKind": "cv", "personKey": "rui", "redaction": { "profile": "cv", "manualReview": true } }
   ],

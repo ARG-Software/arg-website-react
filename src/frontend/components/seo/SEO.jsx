@@ -14,12 +14,12 @@ import { buildPageSchemas, stringifyJsonLd } from '../../utils/structuredData';
  * Reusable SEO component that injects per-page meta tags via react-helmet-async.
  *
  * @param {object}  props
- * @param {string}  [props.title]         – Page title (will be appended with " | Arg Software" unless noSuffix)
+ * @param {string}  [props.title]         – Page title (will be appended with " | ARG Software" unless noSuffix)
  * @param {string}  [props.description]   – Page meta description
  * @param {string}  [props.path]          – Path portion of the URL, e.g. "/blog"
  * @param {string}  [props.image]         – Absolute or relative URL for the OG image
  * @param {string}  [props.type]          – OG type (default "website", use "article" for blog posts)
- * @param {boolean} [props.noSuffix]      – If true, don't append " | Arg Software" to the title
+ * @param {boolean} [props.noSuffix]      – If true, don't append " | ARG Software" to the title
  * @param {boolean} [props.noIndex]       – If true, adds robots meta tag with "noindex, follow"
  * @param {string}  [props.publishedTime] – ISO 8601 date for blog posts
  * @param {string}  [props.author]        – Author name for blog posts
@@ -47,7 +47,7 @@ export function SEO({
   jsonLd,
   globalJsonLd = true,
 }) {
-  const pageTitle = title ? (noSuffix ? title : `${title} | Arg Software`) : DEFAULT_TITLE;
+  const pageTitle = title ? (noSuffix ? title : `${title} | ${SITE_NAME}`) : DEFAULT_TITLE;
 
   const pageDescription = description || DEFAULT_DESCRIPTION;
   const canonicalUrl = `${SITE_URL}${path}`;
@@ -125,7 +125,7 @@ export function SEO({
         <link
           rel="alternate"
           type="application/rss+xml"
-          title="Arg Software - RSS Feed"
+          title="ARG Software - RSS Feed"
           href={`${SITE_URL}${getFeedLink(EXTERNAL_LINK_KEYS.RSS_FEED)}`}
         />
       )}
@@ -133,7 +133,7 @@ export function SEO({
         <link
           rel="alternate"
           type="application/atom+xml"
-          title="Arg Software - Atom Feed"
+          title="ARG Software - Atom Feed"
           href={`${SITE_URL}${getFeedLink(EXTERNAL_LINK_KEYS.ATOM_FEED)}`}
         />
       )}

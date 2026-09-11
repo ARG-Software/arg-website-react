@@ -6,22 +6,22 @@ Mexico's community banking sector connects millions of rural people to financial
 
 WHAT ARG DELIVERED
 
-ARG extended years of Mojaloop vNext expertise into a purpose-built clearinghouse for Mexico's social financial sector — from payment API engineering to mobile app flows to live demo preparation.
+ARG extended years of Mojaloop vNext expertise into a purpose-built clearinghouse for Mexico's social financial sector — from payment API engineering to mobile app flows to live demo preparation — in partnership with Cyberbones, which led the overall system architecture.
 
 - Designed PCH-specific switch and participant flows for community banks, savings coops, and regulated payment institutions
-- Load-tested payment APIs under sustained cluster conditions, processing ~1,000–2,000 requests per second with linear scalability
-- Tuned lookup and quote workflows to ~200–300ms end-to-end, with ledger transfers averaging ~770ms
+- Load-tested payment APIs under sustained cluster conditions, processing 1,000–2,000 requests per second with linear scalability
+- Tuned lookup and quote workflows to 200–300 ms end-to-end, with ledger transfers averaging 770 ms
 - Validated reliability through multi-million request test runs with zero functional errors
 - Built mobile app paths for account transfers, QR merchant payments, confirmations, and full transaction visibility
 - Prepared the main-stage Interledger Summit demo and supported the live community showcase where rural merchants transacted with ~100 attendees without a single transfer failure
 
 THE RESULTS
 
-At Interledger Summit 2025, People's Clearinghouse proved it works — on stage, in front of a live audience, and immediately after in the hands of rural merchants selling coffee and traditional goods through the app. Zero transfer failures across ~1,000+ live transactions.
+At Interledger Summit 2025, People's Clearinghouse validated the exercised flow on stage and immediately afterward in the hands of rural merchants selling coffee and traditional goods through the app. Roughly 100 participants completed more than 1,000 fictional-money transfers with zero failures.
 
 Key Metrics:
-- Requests per second (sustained): ~2,000
-- Average ledger transfer time: ~770ms
+- Requests per second in sustained cluster load tests: 1,000–2,000
+- Average ledger transfer time in load tests: 770 ms
 - Live showcase transfers (zero failures): 1,000+
 
 The APIs proved they can support national-scale transaction switching — the foundation Mexico's community banking network needs to move from pilot to production.

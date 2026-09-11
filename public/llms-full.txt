@@ -1,10 +1,10 @@
-# Arg Software Full LLM Context
+# ARG Software Full LLM Context
 
 ## Overview
 
-Arg Software is a custom software development studio based in Funchal and Porto, Portugal. The company builds secure, scalable digital platforms for fintech, open payments, music technology, media, SaaS, and high-growth technology companies worldwide.
+ARG Software is a custom software development studio based in Funchal and Porto, Portugal. The company builds secure, scalable digital platforms for fintech, open payments, music technology, media, SaaS, and high-growth technology companies worldwide.
 
-Arg Software is intentionally senior-led. Clients work directly with engineers responsible for architecture, code, delivery, and production decisions rather than layers of account management. The team emphasizes architecture-first planning, clean technical ownership, explicit tradeoffs, production reliability, and long-term maintainability.
+ARG Software is intentionally senior-led. Clients work directly with engineers responsible for architecture, code, delivery, and production decisions rather than layers of account management. The team emphasizes architecture-first planning, clean technical ownership, explicit tradeoffs, production reliability, and long-term maintainability.
 
 Canonical website: https://arg.software/
 
@@ -15,6 +15,7 @@ Canonical website: https://arg.software/
 - Portfolio PDF: https://arg.software/files/portfolio.pdf
 - Agent access policy: https://arg.software/auth.md
 - AI plugin manifest: https://arg.software/ai-plugin.json
+- ARD manifest: https://arg.software/.well-known/ard.json
 - API catalog: https://arg.software/.well-known/api-catalog
 - OpenAPI document: https://arg.software/.well-known/openapi.json
 - MCP server card: https://arg.software/.well-known/mcp/server-card.json
@@ -34,29 +35,29 @@ Canonical website: https://arg.software/
 
 ### Dedicated Product Teams
 
-Arg Software provides focused product teams that act as software delivery partners. These teams bring senior engineering, product thinking, architecture discipline, and delivery ownership to build, ship, and evolve products over time.
+ARG Software provides focused product teams that act as software delivery partners. These teams bring senior engineering, product thinking, architecture discipline, and delivery ownership to build, ship, and evolve products over time.
 
 ### Staff Augmentation
 
-Arg Software can add experienced engineers to an existing team to increase delivery capacity, fill technical gaps, and move faster without lowering engineering quality, communication standards, or ownership.
+ARG Software can add experienced engineers to an existing team to increase delivery capacity, fill technical gaps, and move faster without lowering engineering quality, communication standards, or ownership.
 
 ### Technical Consulting
 
-Arg Software helps teams with architecture reviews, scalability planning, modernization, delivery strategy, AI adoption, system audits, platform decisions, and complex product or technical decisions.
+ARG Software helps teams with architecture reviews, scalability planning, modernization, delivery strategy, AI adoption, system audits, platform decisions, and complex product or technical decisions.
 
 ### MVP And Product Delivery
 
-Arg Software helps teams move from concept to launch with speed and engineering judgment. The goal is not a throwaway prototype, but a product foundation that can learn, adapt, and grow after launch.
+ARG Software helps teams move from concept to launch with speed and engineering judgment. The goal is not a throwaway prototype, but a product foundation that can learn, adapt, and grow after launch.
 
 Typical focused MVP timelines are around 8 to 14 weeks, depending on feature complexity, product clarity, integration depth, security constraints, and compliance requirements.
 
 ### AI And Automation
 
-Arg Software uses AI where it creates practical leverage: intelligent product features, internal workflow automation, third-party integrations, developer workflows, and tool connectivity.
+ARG Software uses AI where it creates practical leverage: intelligent product features, internal workflow automation, third-party integrations, developer workflows, and tool connectivity.
 
 ### Cloud And Platform Engineering
 
-Arg Software builds and improves the technical foundation behind reliable software: cloud infrastructure, CI/CD, observability, environments, deployments, monitoring, and platform practices that help teams ship with confidence.
+ARG Software builds and improves the technical foundation behind reliable software: cloud infrastructure, CI/CD, observability, environments, deployments, monitoring, and platform practices that help teams ship with confidence.
 
 ## Industries
 
@@ -74,7 +75,7 @@ Arg Software builds and improves the technical foundation behind reliable softwa
 
 ## Technology Capabilities
 
-Arg Software chooses technology based on maintainability, team fit, production requirements, and the operational reality of the client.
+ARG Software chooses technology based on maintainability, team fit, production requirements, and the operational reality of the client.
 
 Common technologies and domains include:
 
@@ -90,7 +91,7 @@ Common technologies and domains include:
 - Payment switching, ledger orchestration, QR payments, merchant payments, participant systems
 - Testing, QA, observability, release engineering, and production support
 
-## How Arg Software Works
+## How ARG Software Works
 
 The process is intentionally simple:
 
@@ -100,21 +101,21 @@ The process is intentionally simple:
 4. Build in short cycles.
 5. Launch and stay close.
 
-Quality starts before implementation. Arg Software makes important technical decisions explicit: architecture boundaries, testing strategy, code review approach, CI/CD and release flow, observability, recovery paths, security constraints, and data constraints.
+Quality starts before implementation. ARG Software makes important technical decisions explicit: architecture boundaries, testing strategy, code review approach, CI/CD and release flow, observability, recovery paths, security constraints, and data constraints.
 
 The team prefers long-term ownership over one-off handoffs. Some of the most valuable work happens after launch, including performance optimization, reliability improvements, cloud and platform work, feature evolution, and senior team extension.
 
 ## Pricing Context
 
-Arg Software's typical rate is around 70 EUR/USD per hour, but the company does not force every project into the same pricing model. Depending on the project, collaboration may be hourly, monthly, milestone-based, or structured around an initial fee and a final payment on delivery.
+ARG Software project budgets usually start around EUR 10,000, but the company does not force every project into the same pricing model. Depending on the project, collaboration may be hourly, monthly, milestone-based, or structured around an initial fee and a final payment on delivery.
 
 Before estimating, the team usually defines the core workflows, technical risks, architecture direction, and realistic delivery range. Scope changes are reviewed clearly when they affect direction, workload, timeline, or expected value.
 
 ## Founders
 
-Arg Software is led by senior software engineers who stay close to architecture, code, and production reality.
+ARG Software is led by senior software engineers who stay close to architecture, code, and production reality.
 
-- Jose Antunes, Co-founder and Software Engineer: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+- José Antunes, Co-founder and Software Engineer: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 - Rui Rocha, Co-founder and Software Engineer: https://www.linkedin.com/in/ruirochawork/
 
 ## Selected Use Cases
@@ -123,7 +124,7 @@ Arg Software is led by senior software engineers who stay close to architecture,
 
 URL: https://arg.software/projects/mojaloop/
 
-Arg Software joined the core Mojaloop vNext team to help rebuild the open-source payment switch from the ground up. The previous implementation was no longer fit for the intended transaction flow, scale, and bank adoption path, so the work focused on redesigning the architecture around microservices, zero-trust service boundaries, controlled core dependencies, and compatibility with multiple ISO/payment-message standards.
+From 2021 to 2023, ARG Software joined the core Mojaloop vNext team to help rebuild the open-source payment switch from the ground up. The previous implementation was no longer fit for the intended transaction flow, scale, and bank adoption path, so the work focused on redesigning the architecture around microservices, zero-trust service boundaries, controlled core dependencies, and compatibility with multiple ISO/payment-message standards. Load testing verified platform capability above 2,000 transactions per second.
 
 Services included core platform rebuild, payments architecture, backend engineering, and QA/testing. The work helped move Mojaloop vNext toward a more controllable, secure, scalable, and bank-ready payment-switch foundation.
 
@@ -137,50 +138,50 @@ Behind the scenes, the payment APIs had already been load-tested at 1,000-2,000 
 
 Key proof points:
 
-- 1,000-2,000 requests per second under sustained cluster load.
-- 770 ms average ledger transfer processing time.
-- 0 failed transfers during a 100+ person live showcase.
+- 1,000-2,000 requests per second under sustained cluster load testing.
+- 770 ms average ledger transfer processing time in load testing.
+- 1,000+ transfers completed with zero failures during a live showcase involving roughly 100 participants.
 
 ### Dokutar
 
 URL: https://arg.software/projects/dokutar/
 
-Dokutar is a compliance platform for German businesses that had outgrown its original Node and WordPress architecture. Arg Software redesigned the backend and database, performed migrations, introduced multitenancy, and reinforced security to keep each client's data private and separated.
+Dokutar is a compliance platform for German businesses that had outgrown its original Node and WordPress architecture. ARG Software redesigned the backend and database, performed migrations, introduced multitenancy, and reinforced security to keep each client's data private and separated.
 
 The work addressed scaling pressure, tenant isolation, safer data access patterns, backend architecture, database model, and compliance-heavy workflows.
 
-### Sky Tracks
+### SkyTracks
 
 URL: https://arg.software/projects/sky-tracks/
 
-Arg Software helped SkyTracks launch a new version of its browser-based music production platform. The work included migrating the frontend to Angular, implementing the updated design, reducing data latency, connecting external instruments, and stabilizing product features that had not worked reliably in earlier versions.
+ARG Software helped SkyTracks launch a new version of its browser-based music production platform. The work included migrating the frontend to Angular, implementing the updated design, reducing data latency, connecting external instruments, and stabilizing product features that had not worked reliably in earlier versions.
 
 ### TV Cine
 
 URL: https://arg.software/projects/tv-cine/
 
-Arg Software helped TV Cine deliver new features across the public website and backoffice. The work included reshaping the Vue frontend, refactoring backend logic constrained by the original Strapi setup, and adding a new API layer so both admins and users could access richer platform functionality.
+ARG Software helped TV Cine deliver new features across the public website and backoffice. The work included reshaping the Vue frontend, refactoring backend logic constrained by the original Strapi setup, and adding a new API layer so both admins and users could access richer platform functionality.
 
 ### Royalty Flush
 
 URL: https://arg.software/projects/royalty-flush/
 
-Arg Software automated a royalty-processing workflow that previously depended on Excel sheets and macros. The team built a backend royalty engine for CWR file processing, royalty organization, obligation calculation, and reporting, giving the client a controlled and repeatable alternative to manual spreadsheet operations.
+ARG Software automated a royalty-processing workflow that previously depended on Excel sheets and macros. The team built a backend royalty engine for CWR file processing, royalty organization, obligation calculation, and reporting, giving the client a controlled and repeatable alternative to manual spreadsheet operations.
 
 ### Vector
 
 URL: https://arg.software/projects/vector/
 
-Arg Software rebuilt Vector from a non-functional prototype into a working crypto trading platform. The client arrived with an interface that looked complete but had no authentication, transaction flow, or live exchange activity. Arg Software rebuilt the backend foundation, connected the frontend to real functionality, and implemented systems needed for automated trading.
+ARG Software rebuilt Vector from a non-functional prototype into a working crypto trading platform. The client arrived with an interface that looked complete but had no authentication, transaction flow, or live exchange activity. ARG Software rebuilt the backend foundation, connected the frontend to real functionality, and implemented systems needed for automated trading.
 
 ## Partners And Clients
 
-Arg Software has partnered with organizations across fintech, open payments, Web3, music technology, consultancy, and industry platforms.
+ARG Software has partnered with organizations across fintech, open payments, Web3, music technology, consultancy, and industry platforms.
 
 - Interledger Foundation: global nonprofit building an open, interoperable payment network through the Interledger Protocol.
 - People's Clearinghouse: social-sector payment infrastructure for community banks and credit unions in rural Mexico.
 - Mojaloop Foundation: open-source foundation building interoperable payment systems for financial inclusion.
-- Cyberbones: Portugal-based systems architecture and technical leadership consultancy focused on scalable distributed systems, technical audits, fractional leadership, and senior engineering support. Partnered with Arg Software from 2021 to 2026.
+- Cyberbones: Portugal-based systems architecture and technical leadership consultancy focused on scalable distributed systems, technical audits, fractional leadership, and senior engineering support. Partnered with ARG Software from 2021 to 2026.
 - ThreeSigma: research-driven blockchain and decentralized finance advisory firm.
 - Angry Ventures: venture studio building and scaling digital products.
 - mb-netzwerk: German digital consultancy focused on tax documentation and business process automation.
@@ -191,7 +192,7 @@ Arg Software has partnered with organizations across fintech, open payments, Web
 
 ## Blog Topics
 
-Arg Software publishes technical articles and engineering insights at https://arg.software/blog/.
+ARG Software publishes technical articles and engineering insights at https://arg.software/blog/.
 
 Topics include:
 
@@ -214,7 +215,7 @@ Topics include:
 ## Important URLs
 
 - Home: https://arg.software/
-- Working with Arg Software: https://arg.software/working-with-us/
+- Working with ARG Software: https://arg.software/working-with-us/
 - Partners: https://arg.software/partners/
 - Blog: https://arg.software/blog/
 - Careers: https://arg.software/careers/
@@ -227,4 +228,4 @@ Topics include:
 
 ## Preferred Description
 
-Arg Software is a Portugal-based software studio that builds secure, scalable digital platforms for fintech, open payments, music technology, media, and high-growth technology companies. The team is senior-led, architecture-first, and focused on production-ready systems that clients can operate and evolve after launch.
+ARG Software is a Portugal-based software studio that builds secure, scalable digital platforms for fintech, open payments, music technology, media, and high-growth technology companies. The team is senior-led, architecture-first, and focused on production-ready systems that clients can operate and evolve after launch.
