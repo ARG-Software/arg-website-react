@@ -4,6 +4,23 @@ const MOCK_FOOTER = {
   brand: {
     logo: <div className="storybook-logo-mark">UI</div>,
     tagline: 'Reusable Product Interface Kit',
+    actionsTitle: 'Ask via AI',
+    actions: [
+      {
+        key: 'ask-claude',
+        label: 'Claude',
+        href: 'https://claude.ai/new?q=What%20is%20this%20product%3F',
+        className: 'footer-ai-link',
+        html: <span className="footer-ai-link__mark">C</span>,
+      },
+      {
+        key: 'ask-chatgpt',
+        label: 'ChatGPT',
+        href: 'https://chatgpt.com/?q=What%20is%20this%20product%3F',
+        className: 'footer-ai-link',
+        html: <span className="footer-ai-link__mark footer-ai-link__mark--chatgpt">GPT</span>,
+      },
+    ],
   },
   columns: [
     {

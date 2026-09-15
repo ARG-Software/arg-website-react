@@ -1600,6 +1600,67 @@
   margin-bottom: 0.5rem;
 }
 
+.footer-left__actions {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-top: 1rem;
+}
+
+.footer-left__actions-title {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-footer-title);
+  font-weight: 500;
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+}
+
+.footer-left__actions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.footer-ai-link {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  height: 2.25rem;
+  justify-content: center;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+  width: 2.25rem;
+}
+
+.footer-ai-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.36);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.footer-ai-link__mark {
+  font-family: Neuemontreal, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.footer-ai-link__mark--chatgpt {
+  font-size: 0.625rem;
+}
+
 .footer-right {
   display: flex;
   flex-direction: column;
@@ -2752,6 +2813,14 @@
     text-align: left;
   }
 
+  .footer-left__actions {
+    align-items: flex-start;
+  }
+
+  .footer-left__actions-list {
+    justify-content: flex-start;
+  }
+
   .footer-left__tagline {
     font-size: 0.875rem;
   }
@@ -2871,6 +2940,11 @@
   .footer-socials {
     padding-bottom: 1.25rem;
     padding-top: 1.25rem;
+  }
+
+  .footer-ai-link {
+    height: 2rem;
+    width: 2rem;
   }
 
   .footer-bottom {

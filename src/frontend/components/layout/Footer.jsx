@@ -1,10 +1,11 @@
 import { Footer as UiFooter } from '@ui/layout/Footer.jsx';
-import { trackSocial } from '@services/analytics';
+import { trackEvent, trackSocial } from '@services/analytics';
 import { MarkNameWhite } from '../icons/MarkNameWhite';
 import AppLink from '../navigation/AppLink';
 import SITE from '../../data/site.json';
 import {
   EMAIL_KEYS,
+  getAiResearchLink,
   getCompanySocialLinks,
   getEmailAddress,
   getMailtoLink,
@@ -27,7 +28,12 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
 
   return (
     <UiFooter
-      brand={{ logo: <MarkNameWhite />, tagline: SITE.footer.tagline }}
+      brand={{
+        logo: <MarkNameWhite />,
+        tagline: SITE.footer.tagline,
+        actionsTitle: SITE.footer.askAi.title,
+        actions: buildFooterAiActions(),
+      }}
       columns={columns}
       legalLinks={[
         { label: 'Privacy Policy', href: '/privacy/' },
@@ -70,6 +76,27 @@ function buildFooterColumns(socialLinks, contactEmail) {
   ];
 }
 
+function buildFooterAiActions() {
+  const askAi = SITE.footer.askAi;
+  return askAi.providers.map(provider => ({
+    key: `ai-research-${provider.provider}`,
+    href: getAiResearchLink(provider.provider, askAi.prompt),
+    provider: provider.provider,
+    label: provider.label,
+    title: `Ask ${provider.label} about ARG Software`,
+    ariaLabel: `Ask ${provider.label} about ARG Software`,
+    className: 'footer-ai-link',
+    html: (
+      <span
+        className={`footer-ai-link__mark footer-ai-link__mark--${provider.provider}`}
+        aria-hidden="true"
+      >
+        {provider.mark}
+      </span>
+    ),
+  }));
+}
+
 function renderFooterAppLink({ item, className, children }) {
   return (
     <AppLink
@@ -85,6 +112,28 @@ function renderFooterAppLink({ item, className, children }) {
 }
 
 function renderFooterExternalLink({ item, className, children }) {
+  if (item.provider) {
+    return (
+      <a
+        key={item.key}
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+        aria-label={item.ariaLabel}
+        title={item.title}
+        onClick={() =>
+          trackEvent('ai_research_click', {
+            provider: item.provider,
+            link_location: 'footer',
+          })
+        }
+      >
+        {children}
+      </a>
+    );
+  }
+
   if (item.event) {
     return (
       <a

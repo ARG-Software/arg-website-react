@@ -105,6 +105,14 @@ export function getCompanySocialLinks() {
   ];
 }
 
+export function getAiResearchLink(providerKey, prompt) {
+  const url = new URL(
+    getRequiredValue(siteLinks.aiResearch[providerKey], `aiResearch.${providerKey}`)
+  );
+  url.searchParams.set('q', prompt);
+  return url.toString();
+}
+
 export function getLinkedInShareLink(url) {
   const shareUrl = new URL(getRequiredValue(siteLinks.share.linkedin, 'share.linkedin'));
   shareUrl.searchParams.set('url', url);

@@ -41,6 +41,12 @@
     "linkedin": "https://www.linkedin.com/sharing/share-offsite/",
     "twitter": "https://twitter.com/intent/tweet"
   },
+  "aiResearch": {
+    "claude": "https://claude.ai/new",
+    "chatgpt": "https://chatgpt.com/",
+    "perplexity": "https://www.perplexity.ai/",
+    "gemini": "https://gemini.google.com/app"
+  },
   "assets": {
     "portfolio": "/files/portfolio.pdf"
   }

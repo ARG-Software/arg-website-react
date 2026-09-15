@@ -1,6 +1,16 @@
 {
   "footer": {
     "tagline": "Architecture-First Software Studio",
+    "askAi": {
+      "title": "Ask via AI",
+      "prompt": "What is ARG Software (https://arg.software), and how does it help fintech, SaaS, and high-growth technology companies design, build, and scale production-ready software? Explain its architecture-first approach, services, technical capabilities, and evidence from public case studies. Use current public sources and cite them.",
+      "providers": [
+        { "provider": "claude", "label": "Claude", "mark": "C" },
+        { "provider": "chatgpt", "label": "ChatGPT", "mark": "GPT" },
+        { "provider": "perplexity", "label": "Perplexity", "mark": "P" },
+        { "provider": "gemini", "label": "Gemini", "mark": "G" }
+      ]
+    },
     "services": [
       "Dedicated Product Teams",
       "Senior Team Extension",

@@ -32,6 +32,23 @@ export function Footer({
             <div className="footer-left" data-animate-order={animate ? '0' : undefined}>
               {brand?.logo && <div className="footer-left__logo">{brand.logo}</div>}
               {brand?.tagline && <div className="footer-left__tagline">{brand.tagline}</div>}
+              {brand?.actions?.length > 0 && (
+                <div className="footer-left__actions">
+                  {brand.actionsTitle && (
+                    <div className="footer-left__actions-title">{brand.actionsTitle}</div>
+                  )}
+                  <div className="footer-left__actions-list">
+                    {brand.actions.map(action =>
+                      renderFooterLink(
+                        action,
+                        renderLink,
+                        renderExternalLink,
+                        action.className || 'footer-left__action'
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="footer-right">
@@ -103,8 +120,9 @@ function renderFooterItem(item, renderLink, renderExternalLink) {
 }
 
 function renderFooterLink(item, renderLink, renderExternalLink, className) {
-  if (item.path) return renderLink({ item, className, children: item.label });
-  return renderExternalLink({ item, className, children: item.label });
+  const children = item.html || item.label;
+  if (item.path) return renderLink({ item, className, children });
+  return renderExternalLink({ item, className, children });
 }
 
 function defaultRenderLink({ item, className, children }) {
