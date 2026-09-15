@@ -45,7 +45,7 @@
     "claude": "https://claude.ai/new",
     "chatgpt": "https://chatgpt.com/",
     "perplexity": "https://www.perplexity.ai/",
-    "gemini": "https://gemini.google.com/app"
+    "google_ai": "https://www.google.com/search?udm=50"
   },
   "assets": {
     "portfolio": "/files/portfolio.pdf"

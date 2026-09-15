@@ -8,7 +8,7 @@
         { "provider": "claude", "label": "Claude", "mark": "C" },
         { "provider": "chatgpt", "label": "ChatGPT", "mark": "GPT" },
         { "provider": "perplexity", "label": "Perplexity", "mark": "P" },
-        { "provider": "gemini", "label": "Gemini", "mark": "G" }
+        { "provider": "google_ai", "label": "Google AI", "mark": "G" }
       ]
     },
     "services": [
