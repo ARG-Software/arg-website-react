@@ -14,7 +14,7 @@
     "contact": { "sourceKey": "home:contact", "dataKey": "contact", "title": "Homepage Contact" }
   },
   "staticPageSourceKeys": {
-    "/about-us": ["about", "arg-team", "jose-antunes", "rui-rocha"],
+    "/about-us": ["about", "arg-team", "arg-team-capabilities", "jose-antunes", "rui-rocha"],
     "/careers": ["careers-page", "jobs"],
     "/contact": ["site-links"],
     "/partners": ["partners-page"],

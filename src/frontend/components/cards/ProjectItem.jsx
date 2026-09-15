@@ -175,7 +175,7 @@ export function ProjectItem({
             <div className="arrow_icon-embed large">{arrowSvg}</div>
           </div>
           <div className="text-button_list is-animated is-dark">
-            <h3 className="heading-style-h3">I want to know more</h3>
+            <h3 className="heading-style-h3">View the case study</h3>
             <div className="arrow_icon-embed large">{arrowSvg}</div>
           </div>
         </AppLink>

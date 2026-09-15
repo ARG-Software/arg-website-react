@@ -1,11 +1,11 @@
 {
   "seo": {
-    "title": "About Us",
-    "description": "ARG Software is a small architecture-first studio founded by José Antunes and Rui Rocha, built on technical trust, shared standards, and software that lasts."
+    "title": "About Our Architecture-First Studio",
+    "description": "Meet ARG Software, a small architecture-first engineering studio based in Portugal, Europe, built on senior ownership, technical trust and maintainable systems."
   },
   "hero": {
     "title": ["A way of working,", "before a company."],
-    "subtitle": "ARG Software is an architecture-first studio founded by José Antunes and Rui Rocha after years of working together across engineering, telecom, product, architecture, and international projects."
+    "subtitle": "ARG is a small, architecture-first software engineering studio founded by José Antunes and Rui Rocha after years of working together across architecture, product engineering and production systems."
   },
   "origin": {
     "title": "ARG was built on technical trust and shared standards.",
@@ -141,8 +141,8 @@
         "summary": "The studio expanded across music technology, financial technology, documentation products, and food-service software, while keeping the same pattern: senior delivery, architecture, code review, CI/CD, and maintainability.",
         "highlights": [
           "SkyTracks, based in Canada, brought cloud-based music production work across Node.js, Koa, RxJS, Angular, Jest, Docker, queues, and MySQL.",
-          "Mojaloop, worldwide open source initiative, added open-source payment infrastructure work involving TypeScript, Express, Kafka, Angular, Docker, MongoDB, Elasticsearch, and Kibana.",
-          "Leeroy, a company based in Stockholm, bringing a PWA for food service, using React, Storybook, Framer Motion, GraphQL, Fastify, MongoDB, Redis, AWS, Docker, Argo CD, GitHub Actions, and Datadog."
+          "Mojaloop, a global open-source initiative, added payment infrastructure work involving TypeScript, Express, Kafka, Angular, Docker, MongoDB, Elasticsearch and Kibana.",
+          "For Stockholm-based Leeroy, ARG contributed to a food-service PWA built with React, Storybook, Framer Motion, GraphQL, Fastify, MongoDB, Redis, AWS, Docker, Argo CD, GitHub Actions and Datadog."
         ],
         "whyItMattered": "This period showed that ARG's model could transfer across domains without becoming generic: the work changed, but the engineering standard stayed the same.",
         "details": [
@@ -161,7 +161,7 @@
         "summary": "ARG today is a small software studio built around senior ownership and carefully selected collaborators. The company does not scale by adding people for optics; it scales by assembling trusted capability around the problem.",
         "highlights": [
           "Current and past ARG clients include Angry Ventures, Cyberbones, Hopupon, Hostelier, mb-netzwerk, Mojaloop Foundation, North Music Group, SEFA, SkyTracks, and others.",
-          "The work spans payment infrastructure, music technology, travel, hospitality, documentation, SaaS products, backend systems, frontend applications, cloud infrastructure, and AI-enabled product thinking.",
+          "The work spans payment infrastructure, music technology, travel, hospitality, documentation, SaaS products, backend systems, frontend applications, cloud infrastructure and AI integration.",
           "The operating model remains consistent: architecture, code review, testing, CI/CD, direct communication, and accountability from discovery to production."
         ],
         "whyItMattered": "This is the company ARG intentionally became: selective, technical, direct, and built around people trusted to own the work properly.",
@@ -169,7 +169,7 @@
           {
             "label": "ARG",
             "tone": "arg",
-            "text": "ARG consolidates its presence in the market by selectively bringing in excellent collaborators, keeping the non-negotiable commitment that quality always wins over quantity."
+            "text": "ARG grows by bringing in trusted collaborators when the work requires it, while keeping quality over quantity non-negotiable."
           }
         ]
       }
@@ -177,14 +177,14 @@
   },
   "founders": {
     "title": "Two paths. One engineering standard.",
-    "intro": "Different journeys into software, held to the same bar. Neither leads alone; both carry the work.",
+    "intro": "Different paths into software, held to the same standard. Both remain close to the work and accountable for delivery.",
     "people": [
       {
         "id": "jose",
         "initials": "JA",
         "name": "José Antunes",
-        "role": "Co-founder - Software Engineer",
-        "bio": "Computer Science and an M.Sc. in Software Architecture from the University of Porto. Worked across backend, frontend, mobile, full-stack development, architecture, and technical leadership.",
+        "role": "Co-founder, Software Engineer",
+        "bio": "José studied Computer Science and earned an M.Sc. in Software Architecture from the University of Porto. His experience spans backend, frontend, mobile and full-stack development, alongside architecture and technical leadership.",
         "focus": "Architecture, scalable systems, and technical leadership",
         "tags": ["Backend", "Architecture", "Cloud", "Tech leadership"]
       },
@@ -192,9 +192,9 @@
         "id": "rui",
         "initials": "RR",
         "name": "Rui Rocha",
-        "role": "Co-founder - Software Engineer",
-        "bio": "Computer Engineering from ISEP. Built his path through freelance work, telecom, product delivery, and a programming studio serving international clients and national brands.",
-        "focus": "Product-minded delivery, frontend, mobile, and execution",
+        "role": "Co-founder, Software Engineer",
+        "bio": "Rui studied Computer Engineering at ISEP. His experience spans freelance work, telecommunications, product delivery and running a programming studio for international clients and national brands.",
+        "focus": "Product engineering, frontend, mobile and delivery",
         "tags": ["Frontend", "Mobile", "Product", "Delivery"]
       }
     ]
@@ -202,8 +202,8 @@
   "company": {
     "title": "From collaboration to company.",
     "paragraphs": [
-      "ARG was created in 2020 to formalize a way of working that already existed between the founders: direct communication, technical discipline, clear ownership, and a high standard for delivery.",
-      "The goal was never to become a large vendor. It was to help companies build software that can grow with the business, using the right team for the problem instead of adding people for the sake of scale."
+      "ARG was founded in 2020 to formalize a way of working that already existed between the founders: direct communication, technical discipline, clear ownership and a high standard for delivery.",
+      "The goal was never to become a large vendor. It was to help companies build production-ready systems that can evolve with the business, using the right senior team for each problem rather than adding headcount for the sake of scale."
     ],
     "points": [
       {
@@ -212,7 +212,7 @@
       },
       {
         "title": "Complementary skills",
-        "description": "Architecture, product thinking, delivery, and engineering execution covering each other’s blind spots."
+      "description": "Architecture, product thinking, delivery and engineering execution combine to challenge assumptions and cover blind spots."
       },
       {
         "title": "A shared definition of done",
@@ -222,27 +222,27 @@
   },
   "beliefs": {
     "title": "What we believe.",
-    "intro": "Long-term quality beats short-term volume. ARG is intentionally selective about the work we take and the people we bring into it.",
+    "intro": "Long-term quality beats short-term volume. We are selective about the work we take on and the people we bring into it.",
     "principles": [
       {
         "title": "Quality over quantity",
-        "description": "Great software is not made by adding bodies. We assemble the right capability for the work in front of us."
+        "description": "Great software does not come from adding headcount. We assemble the senior capability each problem requires."
       },
       {
         "title": "Trusted collaborators",
-        "description": "We work with people we trust, people who care about the craft, and people who know how to take ownership."
+        "description": "We work with people whose judgement and craft we know, and who take ownership of outcomes rather than tasks."
       },
       {
         "title": "Software built to last",
-        "description": "Technical discipline, clear communication, and maintainability matter because production systems outlive the first release."
+        "description": "Production systems outlive the first release. Architecture, testing and maintainability matter because the software must keep evolving after launch."
       }
     ]
   },
   "collaborators": {
-    "title": "We grow by trust, not headcount.",
+    "title": "A trusted network, assembled around the work.",
     "paragraphs": [
-      "ARG is more than two founders. Around the partnership is a network of excellent collaborators: people we have worked with, trust, and bring in when the work calls for their expertise.",
-      "The team combines backend systems, frontend applications, mobile development, cloud infrastructure, software architecture, product development, and technical leadership. More importantly, it combines people who know how to work together."
+      "ARG extends beyond its two founders through a trusted network of engineers and specialists we have worked with directly and bring in when their expertise fits the problem.",
+      "Together, they cover backend and frontend engineering, mobile development, cloud infrastructure, software architecture, product engineering, AI integration and technical leadership. More importantly, they already know how to work together."
     ],
     "disciplines": [
       "Backend",
@@ -250,8 +250,8 @@
       "Mobile",
       "Cloud",
       "Architecture",
-      "Product",
-      "AI",
+      "Product engineering",
+      "AI integration",
       "Technical leadership"
     ]
   }

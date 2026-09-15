@@ -1,6 +1,6 @@
 # ARG Software
 
-Corporate website for **ARG Software**, a Portugal-based software studio specializing in fintech, media, and high-growth tech. Architecture-first, production-ready digital platforms.
+Corporate website for **ARG Software**, an architecture-first software engineering company based in Portugal, Europe. Senior-led, production-ready systems for fintech, SaaS, and high-growth technology companies.
 
 Live at **[arg.software](https://arg.software)**
 

@@ -72,7 +72,7 @@ async function loadPublicDiscoveryTools() {
         name: 'ARG Software',
         website: 'https://arg.software/',
         summary:
-          'ARG Software is a Portugal-based software studio building secure, scalable digital platforms for fintech, open payments, music technology, media, web3, SaaS, and high-growth technology companies.',
+          'ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide.',
         locations: ['Funchal, Portugal', 'Porto, Portugal'],
         services: services.map(service => service.name),
       }),

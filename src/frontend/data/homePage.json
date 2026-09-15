@@ -1,15 +1,15 @@
 {
   "hero": {
     "title": ["Building systems", "that endure as you scale"],
-    "subtitle": "Software architecture beyond the MVP",
+    "subtitle": "Architecture beyond the MVP",
     "mailCta": {
       "label": "Talk through an idea",
-      "hoverLabel": "Write to us",
+      "hoverLabel": "Talk to an engineer",
       "subject": "I want to share my ideas"
     },
     "contactCta": {
       "label": "Start a project",
-      "hoverLabel": "Let's talk"
+      "hoverLabel": "Build it with ARG"
     }
   },
   "partners": {
@@ -19,18 +19,18 @@
     }
   },
   "infinityBand": [
-    "Dedicated Teams",
-    "Staff Augmentation",
+    "Software Architecture",
+    "Product Engineering",
+    "Dedicated Product Teams",
     "Technical Consulting",
     "MVP Delivery",
-    "AI Automation",
-    "Software Architecture",
     "Cloud Platforms",
-    "Product Engineering"
+    "Senior Team Extension",
+    "AI Integration"
   ],
   "overview": {
-    "title": ["Custom software,", "endless potential"],
-    "lead": "ARG builds digital products designed to grow with your business. From early MVPs to systems that need to scale, we work as a long-term engineering partner, not a handoff vendor.",
+    "title": ["Architecture first,", "built for production"],
+    "lead": "ARG is an architecture-first software engineering company for fintech, SaaS and high-growth technology teams. We solve complex technical problems and build production-ready systems designed to scale and remain maintainable.",
     "cta": {
       "label": "Build with ARG",
       "hoverLabel": "Start a project"
@@ -41,16 +41,16 @@
     },
     "values": [
       {
-        "title": "Solid architecture",
-        "description": "Built to scale - structural decisions that hold as load and complexity grow."
+        "title": "Architecture first",
+        "description": "Clear system boundaries and technical decisions designed for performance, reliability and scale."
       },
       {
-        "title": "Clean code",
-        "description": "Maintainable by design, so the next change is never the expensive one."
+        "title": "Production discipline",
+        "description": "Software engineered for testing, observability, deployment and real-world operation."
       },
       {
-        "title": "True partnership",
-        "description": "From first sprint to future iterations - accountable in production, not a handoff."
+        "title": "Senior ownership",
+        "description": "The engineers shaping the architecture stay accountable through delivery and production."
       }
     ]
   },
@@ -60,43 +60,43 @@
         "number": "01",
         "heading": "Dedicated Product Teams",
         "tags": ["Product Engineering", "Long-Term Delivery"],
-        "content": "A focused ARG team working as your software delivery partner. We bring senior engineers, product thinking, architecture discipline, and delivery ownership to build, ship, and evolve products over time."
+        "content": "Senior ARG engineers work as a focused product team with ownership across architecture, delivery and production. We build, ship and evolve software as a long-term engineering partner."
       },
       {
         "number": "02",
-        "heading": "Staff Augmentation",
+        "heading": "Senior Team Extension",
         "tags": ["Senior Engineers", "Team Extension"],
-        "content": "Add experienced engineers to your existing team without lowering the bar. We help companies increase delivery capacity, fill technical gaps, and move faster while keeping quality, communication, and ownership high."
+        "content": "Embed experienced engineers in your existing team to add delivery capacity, close technical gaps and strengthen architecture without lowering the engineering bar."
       },
       {
         "number": "03",
         "heading": "Technical Consulting",
         "tags": ["Architecture", "Audits", "Strategy"],
-        "content": "Bring us in when the technical decisions matter. We help with architecture reviews, scalability planning, modernization, delivery strategy, AI adoption, and complex product or platform decisions."
+        "content": "Architecture reviews, scalability planning, modernization and technical strategy for systems where the decisions carry long-term consequences."
       },
       {
         "number": "04",
         "heading": "MVP + Product Delivery",
         "tags": ["MVP", "Launch", "Iteration"],
-        "content": "We take ideas from concept to launch with the right balance of speed and engineering judgment. The result is not a throwaway prototype, but a product foundation ready to learn, adapt, and grow."
+        "content": "Focused MVPs can be delivered in 8-14 weeks, balancing speed with engineering judgment. The result is a production-ready foundation designed to learn, adapt and scale beyond the first release."
       },
       {
         "number": "05",
-        "heading": "AI + Automation",
+        "heading": "AI Integration",
         "tags": ["AI", "Integrations", "Workflows"],
-        "content": "We embrace AI where it creates real leverage. From intelligent product features to system integrations, internal automation, and developer workflows, we use AI and automation to reduce friction, connect tools, and help teams move faster."
+        "content": "Practical AI integrations, intelligent product features and workflow automation designed as reliable parts of production software, not isolated experiments."
       },
       {
         "number": "06",
         "heading": "Cloud + Platform Engineering",
-        "tags": ["Cloud", "DevOps", "Reliability"],
-        "content": "We build the technical foundation behind reliable software: cloud infrastructure, CI/CD, observability, environments, deployments, and platform practices that help teams ship with confidence."
+        "tags": ["Cloud", "Observability", "Reliability"],
+        "content": "Cloud infrastructure, CI/CD, observability and platform engineering designed for reliable deployments, resilient operation and real-world production workloads."
       }
     ]
   },
   "projects": {
     "title": "Proof in production, not promises.",
-    "intro": "This is a public selection, not the full archive. Many engagements stay private by design; these are the projects we can discuss within client privacy and NDA agreements.",
+    "intro": "Selected systems and products engineered for real-world use. Some engagements remain private by design; these are the projects we can discuss.",
     "tag": "Use Cases"
   },
   "testimonials": [
@@ -132,7 +132,7 @@
     "stats": [
       {
         "value": "1000",
-        "label": "Deploys into production, usually not on Friday",
+        "label": "Production deployments across real-world systems",
         "imageSrc": "/images/homepage/stats-deploys.webp"
       },
       {
@@ -147,7 +147,7 @@
       },
       {
         "value": "6",
-        "label": "Impacted countries",
+        "label": "Countries reached through our work",
         "imageSrc": "/images/homepage/stats-countries.webp"
       }
     ]
@@ -155,7 +155,7 @@
   "team": {
     "eyebrow": "Meet Our Team",
     "title": "Built by Engineers",
-    "intro": "ARG is led by senior engineers who stay close to the architecture, code, and production reality. You do not get layers of account management. You work with the people responsible for the technical decisions.",
+    "intro": "Small by design. Senior by default. ARG is led by engineers who stay close to the architecture, code and production reality. You work directly with the people responsible for the technical decisions.",
     "members": [
       {
         "name": "José Antunes",
@@ -184,7 +184,7 @@
     }
   },
   "social": {
-    "title": "What we share outside the site",
+    "title": "What we're building and learning",
     "eyebrow": "Social"
   },
   "faq": {
@@ -196,7 +196,7 @@
     "titleHighlight": "Let's solve it",
     "buttonTextNotHover": "Portfolio",
     "buttonTextHover": "See proof",
-    "secondButtonTextNotHover": "Start brief",
-    "secondButtonTextHover": "2 min"
+    "secondButtonTextNotHover": "Start a project",
+    "secondButtonTextHover": "Tell us about it"
   }
 }

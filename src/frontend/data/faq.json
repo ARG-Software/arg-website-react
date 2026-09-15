@@ -3,35 +3,32 @@
     {
       "id": "pricing",
       "q": "How much does custom software development cost?",
-      "schemaAnswer": "Project budgets usually start around EUR 10,000, but the final estimate depends on the application, scope, complexity, integrations, timeline, and delivery model. We review each case individually before giving a concrete proposal. Ongoing work can be hourly or monthly, smaller scoped projects can use an initial fee and final delivery payment, and larger scopes can be split by milestones.",
+      "schemaAnswer": "Project budgets usually start around EUR 10,000. The final estimate depends on scope, architecture, integrations, technical risk, and delivery model. Before estimating, we define the core workflows, technical risks, architecture direction, and a realistic delivery range. For evolving work, hourly or monthly collaboration may be the right model. Defined scopes can use milestone-based delivery.",
       "answer": [
-        { "type": "paragraph", "text": "Project budgets usually start around EUR 10,000, but we do not force every project into the same pricing model." },
-        { "type": "paragraph", "text": "The final estimate depends on the application, scope, complexity, integrations, timeline, and delivery model. We review each case individually before giving a concrete proposal." },
-        { "type": "paragraph", "text": "For ongoing or evolving work, hourly or monthly collaboration can make sense. For smaller, well-defined projects, we can agree on an initial fee to start and a final payment on delivery. For larger scopes, payments can be split by milestones or deliverables." },
-        { "type": "paragraph", "text": "Each case is reviewed individually. Before estimating, we usually define:" },
+        { "type": "paragraph", "text": "Project budgets usually start around EUR 10,000. The final estimate depends on scope, architecture, integrations, technical risk and delivery model." },
+        { "type": "paragraph", "text": "Before estimating, we define:" },
         { "type": "list", "items": ["The core workflows", "The technical risks", "The architecture direction", "A realistic delivery range"] },
-        { "type": "paragraph", "text": "Scope changes must be communicated clearly. If a change affects the current direction, workload, timeline, or expected value, we review it together before continuing." }
+        { "type": "paragraph", "text": "For evolving work, hourly or monthly collaboration may be the right model. Defined scopes can use milestone-based delivery. Any change affecting scope, timeline or technical direction is reviewed before work continues." }
       ]
     },
     {
       "id": "timeline",
       "q": "How long does it take to build an MVP?",
-      "schemaAnswer": "Most focused MVPs take 8–14 weeks, depending on feature complexity, product clarity, integration depth, and security or compliance needs. We move quickly without creating throwaway foundations.",
+      "schemaAnswer": "Most focused MVPs take 8–14 weeks, depending on feature complexity, product clarity, integration depth, and security or compliance needs. We move quickly without building a throwaway foundation. The goal is a production-ready first release your team can learn from and evolve.",
       "answer": [
         { "type": "paragraph", "text": "Most focused MVPs take 8–14 weeks, depending on:" },
         { "type": "list", "items": ["Feature complexity", "Product clarity", "Integration depth", "Security or compliance needs"] },
-        { "type": "paragraph", "text": "We move quickly, but we do not build throwaway foundations. The goal is a product you can learn from and keep evolving." }
+        { "type": "paragraph", "text": "We move quickly without building a throwaway foundation. The goal is a production-ready first release your team can learn from and evolve." }
       ]
     },
     {
       "id": "remote-work",
-      "q": "Do you work with clients outside the USA and Europe?",
-      "schemaAnswer": "Yes. ARG is remote-first and works with teams across regions. For hybrid mode, recurring on-site sessions, or a different collaboration rhythm, we assess the setup case by case. What matters is clear written context, direct technical conversations, predictable async updates, and enough overlap for decisions.",
+      "q": "Do you work with clients internationally?",
+      "schemaAnswer": "Yes. ARG is based in Portugal and works remotely with teams across regions. We rely on clear written context, direct technical conversations, predictable async updates, and enough overlap for decisions. If the problem is clear and ownership is real, distance is not the blocker. Hybrid or on-site collaboration is assessed case by case.",
       "answer": [
-        { "type": "paragraph", "text": "Yes. ARG is remote-first and works with teams across regions. What matters is not location, but whether the communication rhythm supports serious engineering work." },
-        { "type": "paragraph", "text": "If you need a specific hybrid mode, recurring on-site sessions, or a different collaboration setup, we assess that case by case before promising it." },
+        { "type": "paragraph", "text": "Yes. ARG is based in Portugal and works remotely with teams across regions. We rely on:" },
         { "type": "list", "items": ["Clear written context", "Direct technical conversations", "Predictable async updates", "Enough overlap for decisions"] },
-        { "type": "paragraph", "text": "If the problem is clear and the ownership is real, distance is not the blocker." }
+        { "type": "paragraph", "text": "If the problem is clear and ownership is real, distance is not the blocker. Hybrid or on-site collaboration is assessed case by case." }
       ]
     },
     {
@@ -47,11 +44,11 @@
     {
       "id": "technology",
       "q": "What technologies do you use?",
-      "schemaAnswer": "We choose technology for maintainability, team fit, and production requirements. Common choices include React, Next.js, TypeScript, Node.js, .NET, Java, AWS, Azure, GCP, Serverless Functions, Supabase, Vercel, Netlify, React Native, Flutter, PostgreSQL, and MongoDB.",
+      "schemaAnswer": "We choose technology based on system requirements, team fit, and long-term operability. Common choices include React, Next.js, Angular, React Native, TypeScript, Node.js, NestJS, .NET, Java, PostgreSQL, MongoDB, Kafka, RabbitMQ, Docker, Kubernetes, AWS, Azure, GCP, Scaleway, and serverless platforms.",
       "answer": [
-        { "type": "paragraph", "text": "We choose technology for maintainability, team fit, and production requirements. The stack is a tool, not the strategy." },
-        { "type": "list", "items": ["Web: React, Next.js, TypeScript", "Backend: Node.js, .NET, Java", "Cloud: AWS, Azure, GCP, Supabase, Vercel, Netlify, Serverless Functions", "Mobile: React Native and Flutter", "Databases: PostgreSQL, MongoDB"] },
-        { "type": "paragraph", "text": "The important part is choosing a system your team can operate after launch." }
+        { "type": "paragraph", "text": "We choose technology based on system requirements, team fit and long-term operability. The stack is a tool, not the strategy." },
+        { "type": "list", "items": ["Frontend and mobile: React, Next.js, Angular and React Native", "Backend: TypeScript, Node.js, NestJS, .NET and Java", "Data and messaging: PostgreSQL, MongoDB, Kafka and RabbitMQ", "Infrastructure: Docker, Kubernetes, AWS, Azure, GCP, Scaleway and serverless platforms"] },
+        { "type": "paragraph", "text": "The goal is a system your team can understand, operate and evolve after launch." }
       ]
     },
     {
@@ -77,7 +74,7 @@
     },
     {
       "id": "team-model",
-      "q": "Do you provide dedicated development teams?",
+      "q": "Do you provide dedicated product teams?",
       "schemaAnswer": "Yes. Depending on the need, we can provide a focused product team, senior engineers embedded with your team, or architecture and consulting support. We adapt the model to the work while keeping the team senior and accountable.",
       "answer": [
         { "type": "paragraph", "text": "Yes. Depending on the need, we can provide:" },

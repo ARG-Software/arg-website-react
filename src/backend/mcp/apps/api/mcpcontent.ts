@@ -9,7 +9,7 @@ export const COMPANY_PROFILE = {
   name: 'ARG Software',
   website: 'https://arg.software/',
   summary:
-    'ARG Software is a Portugal-based software studio building secure, scalable digital platforms for fintech, open payments, music technology, media, web3, SaaS, and high-growth technology companies.',
+    'ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide.',
   locations: ['Funchal, Portugal', 'Porto, Portugal'],
   operatingModel:
     'Senior-led, architecture-first product engineering with direct engineering ownership and long-term maintainability focus.',
@@ -19,32 +19,32 @@ export const SERVICES: Service[] = [
   {
     name: 'Dedicated Product Teams',
     description:
-      'Focused ARG teams that bring senior engineering, product thinking, architecture discipline, and delivery ownership to build, ship, and evolve software products.',
+      'Senior ARG engineers working as focused product teams with ownership across architecture, delivery, and production.',
   },
   {
-    name: 'Staff Augmentation',
+    name: 'Senior Team Extension',
     description:
-      'Experienced engineers added to existing teams to increase delivery capacity, fill technical gaps, and move faster without lowering quality or ownership.',
+      'Experienced engineers embedded in existing teams to add delivery capacity, close technical gaps, and strengthen architecture without lowering the engineering bar.',
   },
   {
     name: 'Technical Consulting',
     description:
-      'Architecture reviews, scalability planning, modernization, delivery strategy, AI adoption, audits, and complex product or platform decisions.',
+      'Architecture reviews, scalability planning, modernization, and technical strategy for systems where the decisions carry long-term consequences.',
   },
   {
     name: 'MVP + Product Delivery',
     description:
-      'Concept-to-launch delivery for product foundations that are built to learn, adapt, and grow after launch.',
+      'Focused MVP and product delivery for production-ready foundations designed to learn, adapt, and scale beyond the first release.',
   },
   {
-    name: 'AI + Automation',
+    name: 'AI Integration',
     description:
-      'Practical AI and automation for product features, integrations, internal workflows, and developer tooling.',
+      'Practical AI integrations, intelligent product features, and workflow automation designed as reliable parts of production software.',
   },
   {
     name: 'Cloud + Platform Engineering',
     description:
-      'Cloud infrastructure, CI/CD, observability, deployments, environments, and platform practices for reliable software delivery.',
+      'Cloud infrastructure, CI/CD, observability, deployments, and platform practices for resilient operation and production workloads.',
   },
 ];
 

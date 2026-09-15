@@ -7,8 +7,8 @@
 
 ## 1. Project Overview
 
-**arg.software** — the corporate website for ARG Software, a Portugal-based software
-studio specializing in fintech, media, and high-growth tech. Built as a single-page
+**arg.software** — the corporate website for ARG Software, an architecture-first software
+engineering company based in Portugal, Europe, building production-ready systems for fintech, SaaS, and high-growth technology companies. Built as a single-page
 React application (SPA) with client-side routing, server-side prerendering for SEO,
 and comprehensive Google Analytics 4 instrumentation.
 

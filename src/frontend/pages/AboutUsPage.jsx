@@ -223,12 +223,12 @@ export default function AboutUsPage() {
                     ))}
                   </div>
                   <div className="about-collaborators-right" data-animate-order="1">
-                    <h3 className="about-disc-title">Disciplines we assemble</h3>
+                    <h3 className="about-disc-title">Capabilities we bring together</h3>
                     <div className="about-disc-chips">
                       {ABOUT_DATA.collaborators.disciplines.map(discipline => (
                         <span
                           key={discipline}
-                          className={`about-disc-chip ${discipline === 'AI' ? 'about-disc-chip--ai' : ''}`.trim()}
+                          className={`about-disc-chip ${discipline === 'AI integration' ? 'about-disc-chip--ai' : ''}`.trim()}
                         >
                           {discipline}
                         </span>
@@ -245,8 +245,8 @@ export default function AboutUsPage() {
               title="Quality over"
               titleHighlight="headcount."
               mobileTitleHighlight="headcount."
-              buttonTextNotHover="Send us a message"
-              buttonTextHover="Let's talk"
+              buttonTextNotHover="Start a project"
+              buttonTextHover="Tell us about it"
               animationClass="cp-animate"
               animate={true}
               buttonLink={getProjectBriefFormLink()}

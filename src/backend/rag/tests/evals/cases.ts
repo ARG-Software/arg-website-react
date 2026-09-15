@@ -256,7 +256,7 @@ const commonSources = [
 
 const commonChunks = [
   chunk('homepage-id', 'homepage', 'ARG Software builds secure, scalable digital platforms for fintech, open payments, music technology, media, SaaS, and high-growth technology companies.'),
-  chunk('about-id', 'about', 'ARG Software was founded by Jose Antunes and Rui Rocha after years of working together across engineering, telecom, product, architecture, and international projects.'),
+  chunk('about-id', 'about', 'ARG Software was founded by Jose Antunes and Rui Rocha after years of working together across architecture, product engineering, and production systems.'),
   chunk('assistant-policy-id', 'assistant-policy', 'Answer pricing and timeline questions only from retrieved approved pricing, FAQ, project, or commercial-reference context. Do not invent budgets or durations.'),
   chunk('faq-id', 'faq', 'Project budgets usually start around EUR 10,000, but the final estimate depends on the application, scope, complexity, integrations, timeline, and delivery model. ARG is remote-first. Hybrid mode, recurring on-site sessions, or a different collaboration rhythm are assessed case by case.'),
   chunk('mojaloop-id', 'mojaloop', 'Mojaloop vNext was rebuilt as an open-source payment switch with microservices, zero-trust service boundaries, ISO/payment-message compatibility, and high-volume payment processing.'),

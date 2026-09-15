@@ -1,6 +1,6 @@
 # ARG Software
 
-> ARG Software is a Portugal-based software studio building secure, scalable digital platforms for fintech, open payments, music technology, media, and high-growth technology companies. The team is architecture-first, senior-led, and focused on production-ready systems.
+> ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide.
 
 ## Company
 
@@ -22,10 +22,10 @@
 ## What We Do
 
 - Dedicated product teams for long-term product engineering
-- Staff augmentation with senior engineers
-- Technical consulting, architecture reviews, modernization, and delivery strategy
-- MVP and product delivery for launch-ready software
-- AI and automation for product features, integrations, workflows, and internal tools
+- Senior team extension with experienced engineers
+- Technical consulting for architecture reviews, scalability planning, modernization, and delivery strategy
+- MVP and product delivery for production-ready first releases
+- AI integration for product features, workflows, and reliable software capabilities
 - Cloud and platform engineering, including CI/CD, observability, deployments, and reliability work
 
 ## Industries
@@ -63,11 +63,11 @@
 ## Technical Focus
 
 - Backend systems, APIs, distributed systems, and event-driven architecture
-- Frontend and product interfaces with React, Next.js, Angular, Vue, and TypeScript
+- Frontend and product interfaces with React, Next.js, Angular, React Native, Vue, and TypeScript
 - Payment switching, ledgers, interoperability, Open Payments, Interledger, and Mojaloop vNext
 - Cloud infrastructure, Docker, Kubernetes, CI/CD, observability, and production operations
-- Serverless functions, AWS, Azure, GCP, Supabase, Vercel, and Netlify
-- Databases and data workflows with PostgreSQL, MongoDB, MySQL, Kafka, and related tooling
+- Serverless functions, AWS, Azure, GCP, Scaleway, Supabase, Vercel, and Netlify
+- Databases and messaging with PostgreSQL, MongoDB, MySQL, Kafka, RabbitMQ, and related tooling
 
 ## Social Links
 

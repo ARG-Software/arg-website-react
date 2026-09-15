@@ -67,14 +67,14 @@ export const STATIC_PAGES = [
   },
   {
     path: '/about-us/',
-    title: 'About Us | ARG Software',
-    h1: 'About ARG Software',
+    title: 'About Our Architecture-First Studio | ARG Software',
+    h1: 'A way of working, before a company.',
     description:
-      'ARG Software is a small architecture-first studio built by two engineers with a long, tested working relationship. Quality over headcount, software built to last.',
+      'Meet ARG Software, a small architecture-first engineering studio based in Portugal, Europe, built on senior ownership, technical trust and maintainable systems.',
     paragraphs: [
       'ARG Software started as a way of working between two engineers before it became a company in 2020.',
-      'José Antunes and Rui Rocha spent years apart and together across engineering, telecom, product, architecture, and international projects. ARG is the result: a partnership tested in production, not assembled for a pitch.',
-      'We grow by trust, not headcount. Around the partnership is a small network of collaborators we have worked with and trust, assembled for the work in front of us rather than scaled for its own sake.',
+      'José Antunes and Rui Rocha formalized a partnership built on direct communication, technical discipline, clear ownership and a high standard for delivery.',
+      'ARG extends beyond its founders through a trusted network of engineers and specialists assembled around each problem, with quality over quantity kept non-negotiable.',
     ],
   },
   {

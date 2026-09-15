@@ -3,7 +3,7 @@ import path from 'node:path';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { injectStructuredData } from '../html-utils.js';
 import { getHomepageExtraLinks } from '../links.js';
-import { DEFAULT_TITLE } from '../../../src/frontend/constants/seo.js';
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from '../../../src/frontend/constants/seo.js';
 import { buildFAQPageSchema, buildWebPageSchema } from '../../../src/frontend/utils/structuredData.js';
 
 const FAQ = JSON.parse(
@@ -11,14 +11,13 @@ const FAQ = JSON.parse(
 );
 
 export function writeHomepage({ distDir, baseHtml }) {
-  const block = buildCrawlableBlock('Building digital solutions that grow with you', {
-    description:
-      'We build secure, scalable digital platforms for fintech, media, and high-growth tech companies. Architecture-first. Production-ready.',
+  const block = buildCrawlableBlock('Building systems that endure as you scale', {
+    description: DEFAULT_DESCRIPTION,
     paragraphs: [
-      'ARG Software is a custom software development company based in Funchal and Porto, Portugal. We design and build scalable backend systems, SaaS platforms, REST APIs, and cloud infrastructure for fintech, music technology, and high-growth tech companies worldwide.',
-      'Our services include custom software development, MVP and prototype delivery, server infrastructure, backend architecture, frontend development, and AI integration. We specialize in TypeScript, .NET, Node.js, React, Angular, PostgreSQL, Kafka, Docker, and Kubernetes.',
-      'Our work includes platforms reaching more than 6 countries, Mojaloop load testing that verified over 2,000 transactions per second, and more than 1,000 production deployments. Our clients include the Interledger Foundation, Mojaloop, SkyTracks, North Music Group, Dokutar, and TV Cine.',
-      'ARG Software works with startups, scale-ups, and established enterprises. We typically deliver focused MVPs in 8 to 14 weeks and build long-term partnerships to evolve products alongside your business.',
+      'ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide.',
+      'ARG provides dedicated product teams, senior team extension, technical consulting, MVP and product delivery, AI integration, and cloud and platform engineering. Technology is selected for system requirements, team fit and long-term operability.',
+      'ARG Software has worked on systems reaching more than 6 countries, Mojaloop load testing that verified more than 2,000 transactions per second, and more than 1,000 production deployments. Public work includes Interledger Foundation, Mojaloop, SkyTracks, North Music Group, Dokutar and TV Cine.',
+      'ARG works with startups, scale-ups and established companies when the problem is complex, the stakes are real and the system has to last. Focused MVPs typically take 8 to 14 weeks and are designed to evolve beyond the first release.',
     ],
     extraLinks: getHomepageExtraLinks(),
   });
@@ -27,8 +26,7 @@ export function writeHomepage({ distDir, baseHtml }) {
   const html = injectStructuredData(baseHtml, [
     buildWebPageSchema({
       title: DEFAULT_TITLE,
-      description:
-        'We build secure, scalable digital platforms for fintech, media, and high-growth tech companies. Architecture-first. Production-ready.',
+      description: DEFAULT_DESCRIPTION,
       path: '/',
     }),
     buildFAQPageSchema(FAQ.items),

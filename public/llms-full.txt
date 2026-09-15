@@ -2,7 +2,7 @@
 
 ## Overview
 
-ARG Software is a custom software development studio based in Funchal and Porto, Portugal. The company builds secure, scalable digital platforms for fintech, open payments, music technology, media, SaaS, and high-growth technology companies worldwide.
+ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide.
 
 ARG Software is intentionally senior-led. Clients work directly with engineers responsible for architecture, code, delivery, and production decisions rather than layers of account management. The team emphasizes architecture-first planning, clean technical ownership, explicit tradeoffs, production reliability, and long-term maintainability.
 
@@ -35,29 +35,29 @@ Canonical website: https://arg.software/
 
 ### Dedicated Product Teams
 
-ARG Software provides focused product teams that act as software delivery partners. These teams bring senior engineering, product thinking, architecture discipline, and delivery ownership to build, ship, and evolve products over time.
+Senior ARG engineers work as focused product teams with ownership across architecture, delivery, and production. They build, ship, and evolve software as long-term engineering partners.
 
-### Staff Augmentation
+### Senior Team Extension
 
-ARG Software can add experienced engineers to an existing team to increase delivery capacity, fill technical gaps, and move faster without lowering engineering quality, communication standards, or ownership.
+ARG Software can embed experienced engineers in an existing team to add delivery capacity, close technical gaps, and strengthen architecture without lowering the engineering bar.
 
 ### Technical Consulting
 
-ARG Software helps teams with architecture reviews, scalability planning, modernization, delivery strategy, AI adoption, system audits, platform decisions, and complex product or technical decisions.
+ARG Software helps teams with architecture reviews, scalability planning, modernization, and technical strategy for systems where the decisions carry long-term consequences.
 
 ### MVP And Product Delivery
 
-ARG Software helps teams move from concept to launch with speed and engineering judgment. The goal is not a throwaway prototype, but a product foundation that can learn, adapt, and grow after launch.
+ARG Software helps teams move from concept to launch with speed and engineering judgment. The goal is not a throwaway prototype, but a production-ready foundation that can learn, adapt, and scale beyond the first release.
 
 Typical focused MVP timelines are around 8 to 14 weeks, depending on feature complexity, product clarity, integration depth, security constraints, and compliance requirements.
 
-### AI And Automation
+### AI Integration
 
-ARG Software uses AI where it creates practical leverage: intelligent product features, internal workflow automation, third-party integrations, developer workflows, and tool connectivity.
+ARG Software builds practical AI integrations, intelligent product features, and workflow automation as reliable parts of production software, not isolated experiments.
 
 ### Cloud And Platform Engineering
 
-ARG Software builds and improves the technical foundation behind reliable software: cloud infrastructure, CI/CD, observability, environments, deployments, monitoring, and platform practices that help teams ship with confidence.
+ARG Software builds and improves the technical foundation behind reliable software: cloud infrastructure, CI/CD, observability, deployments, and platform practices designed for resilient operation and real-world production workloads.
 
 ## Industries
 
@@ -80,12 +80,12 @@ ARG Software chooses technology based on maintainability, team fit, production r
 Common technologies and domains include:
 
 - TypeScript, JavaScript, Node.js, NestJS, Express, Koa
-- React, Next.js, Angular, Vue, Nuxt
+- React, Next.js, Angular, React Native, Vue, Nuxt
 - .NET Core, Entity Framework, MediatR
 - PostgreSQL, MongoDB, MySQL, TypeORM, MikroORM, Knex
-- Kafka, event-driven architecture, distributed systems
+- Kafka, RabbitMQ, event-driven architecture, distributed systems
 - Docker, Kubernetes, CI/CD, Octopus Deploy, cloud platforms
-- AWS, Azure, GCP, Serverless Functions
+- AWS, Azure, GCP, Scaleway, Serverless Functions
 - Supabase, Vercel, Netlify
 - Open Payments, Interledger Protocol, Mojaloop vNext
 - Payment switching, ledger orchestration, QR payments, merchant payments, participant systems
@@ -228,4 +228,4 @@ Topics include:
 
 ## Preferred Description
 
-ARG Software is a Portugal-based software studio that builds secure, scalable digital platforms for fintech, open payments, music technology, media, and high-growth technology companies. The team is senior-led, architecture-first, and focused on production-ready systems that clients can operate and evolve after launch.
+ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide.
