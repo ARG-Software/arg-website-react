@@ -9,7 +9,7 @@ import {
 
 test('renders complete blog content inside the React root', () => {
   const blocks = parseBlocks(
-    `Intro with [ARG](https://arg.software).\n\n## Architecture\n\n- Safe by default\n- Production ready\n\n\`\`\`js\nconst safe = true;\n\`\`\``
+    `Intro with [\`ARG\`](https://arg.software), **strong \`defaults\`**, and \`inline code\`.\n\n## Architecture\n\n- **Use \`Result\`.** Safe by default\n- Production ready\n\n\`\`\`js\nconst safe = true;\n\`\`\``
   );
   const content = buildBlogPostStaticContent(
     { title: 'Engineering article', slug: 'engineering-article', author: 'ARG' },
@@ -22,6 +22,16 @@ test('renders complete blog content inside the React root', () => {
   assert.match(html, /Safe by default/);
   assert.match(html, /const safe = true;/);
   assert.match(html, /href="https:\/\/arg\.software"/);
+  assert.match(
+    html,
+    /<a href="https:\/\/arg\.software"[^>]*><code class="inline-markdown-code">ARG<\/code><\/a>/
+  );
+  assert.match(html, /<strong>strong <code class="inline-markdown-code">defaults<\/code><\/strong>/);
+  assert.match(
+    html,
+    /<span class="bp-list-label">Use <code class="inline-markdown-code">Result<\/code>\.<\/span>/
+  );
+  assert.match(html, /<code class="inline-markdown-code">inline code<\/code>/);
   assert.doesNotMatch(html, /aria-hidden="true"/);
 });
 

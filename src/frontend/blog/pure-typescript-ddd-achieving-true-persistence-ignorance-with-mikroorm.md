@@ -1,83 +1,115 @@
 ---
-seoTitle: Pure TypeScript DDD: Achieving True Persistence Ignorance with MikroORM
+seoTitle: Pure TypeScript DDD: Practical Persistence Ignorance with MikroORM
 slug: pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm
 tag: Architecture
 tags: Architecture, Backend
-title: Pure TypeScript DDD: Achieving True Persistence Ignorance with MikroORM
+title: Pure TypeScript DDD: Practical Persistence Ignorance with MikroORM
 subtitle: Decouple your business logic from your database. Discover how to build pure TypeScript DDD applications using MikroORM
 intro: Decouple your business logic from your database. Discover how to build pure TypeScript DDD applications using MikroORM
 date: April 13, 2026
+dateModified: September 17, 2026
 readTime: 9 min read
 ---
 ### How to decouple your Domain Model from the database layer to build scalable, testable, and future-proof enterprise systems.
 
-![Pure TypeScript DDD: Achieving True Persistence Ignorance with MikroORM](/images/blog/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm-header.webp)
+![Pure TypeScript DDD: Practical Persistence Ignorance with MikroORM](/images/blog/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm-header.webp)
 
 You’ve read the books. You’ve studied Domain-Driven Design (DDD). You’ve carefully crafted a src/domain folder in your TypeScript project, ready to isolate your core business logic from the messy outside world.
 
 Then, you install your ORM and do this:
 
 ```typescript
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
-// 💀 This is NOT a Domain Entity. This is an Active Record database model.
+import { Entity, PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
+
+// This domain class now owns MikroORM mapping metadata.
 @Entity()
 export class User {
-@PrimaryKey()
-id!: string;
-@Property({ unique: true })
-email!: string;
-@Property()
-isActive!: boolean;
+  @PrimaryKey()
+  id!: string;
+
+  @Property({ unique: true })
+  email!: string;
+
+  @Property()
+  isActive!: boolean;
 }
 ```
 
-If your “Domain Entities” are littered with @Entity() or @Column() decorators, you aren't doing Domain-Driven Design. You are building an Active Record architecture wrapped in a folder named "domain."
+Decorators do not turn this into Active Record. MikroORM follows the [Data Mapper pattern](https://martinfowler.com/eaaCatalog/dataMapper.html): persistence is coordinated by an `EntityManager` or repository, while an Active Record object would expose methods such as `save()` itself. Decorators are still ORM metadata inside the domain class, however, so they create a framework dependency that we may prefer to keep outside the domain boundary.
 
-The most fundamental rule of DDD is Persistence Ignorance. Your domain layer shouldn’t know how it is saved, where it is saved, or what library is doing the saving. If you decide to swap your database or ORM tomorrow, your core business rules should not require a single line of code to change.
+Persistence Ignorance is a useful DDD goal: the domain model should avoid depending on how and where it is stored. It does not make persistence concerns disappear, and an ORM or database change can still require mapping and application changes, but core business behavior is less likely to move with those details.
 
-Let’s look at a complete, top-to-bottom example of how to implement a “User Registration” feature using pure TypeScript DDD, leveraging MikroORM’s powerful (but hidden) EntitySchema, and handling errors like a pro.
+Let’s look at a complete, top-to-bottom example of how to implement a “User Registration” feature using pure TypeScript DDD, external MikroORM `EntitySchema` metadata, and explicit error handling. Current MikroORM documentation foregrounds [`defineEntity` and decorated classes](https://mikro-orm.io/docs/defining-entities); `EntitySchema` remains useful when keeping mapping metadata outside an existing domain class is the deliberate tradeoff.
 
 ## 🏛️ The Architecture Breakdown
 
 To keep our codebase scalable, we will organize our code into four distinct layers:
 
-- 💎 Domain: Pure business logic. No frameworks allowed.
+- 💎 Domain: Business logic without ORM dependencies.
 - ⚙️ Application: Orchestrates use cases. Talks to the domain and interfaces.
 - 🏗️ Infrastructure: Implementations of interfaces (MikroORM, external APIs).
 - 🚦 Presentation: The entry point (Express/Fastify controllers).
 
 ## 1. The Domain Layer (The Pure Core) 💎
 
-First, let’s strip away all the framework bloat. A true Domain Entity should be a plain TypeScript class. It protects its invariants (business rules) by hiding its constructor and mutating state only through intentional methods.
+First, let’s strip away the ORM dependency. Our Domain Entity is a plain TypeScript class. It protects its invariants (business rules) by hiding its constructor and mutating state only through intentional methods.
 
 ```typescript
 // src/domain/User.ts
-import { Result } from '../core/Result';
-// 🚀 Look ma, no decorators! Pure TypeScript.
+import { fail, ok, type Result } from '../shared/Result';
+
+// 🚀 Look ma, no ORM decorators! Plain TypeScript.
 export class User {
-// 1. Private constructor prevents invalid state creation
-private constructor(
-private readonly id: string,
-private email: string,
-private isActive: boolean,
-) {}
-// 2. Static factory method for creation (Returns a Result instead of throwing!)
-public static create(email: string): Result {
-if (!email.includes('@')) {
-return Result.fail("Invalid email format.");
+  // 1. Private constructor prevents invalid state creation
+  private constructor(
+    private readonly _id: string,
+    private _email: string,
+    private _isActive: boolean,
+  ) {}
+
+  // 2. Static factory method returns a Result instead of throwing
+  public static create(email: string): Result<User, string> {
+    if (!email.includes('@')) {
+      return fail('Invalid email format.');
+    }
+
+    return ok(new User(crypto.randomUUID(), email, true));
+  }
+
+  // 3. Intent-revealing methods for business logic
+  public deactivate(): void {
+    this._isActive = false;
+  }
+
+  // 4. Public read access, with mutation still controlled by the entity
+  public get id(): string {
+    return this._id;
+  }
+
+  public get email(): string {
+    return this._email;
+  }
+
+  public get isActive(): boolean {
+    return this._isActive;
+  }
+}
+```
+
+For the examples below, `Result` is a small discriminated union. Keeping one result shape across the domain, use case, and controller makes every return type explicit:
+
+```typescript
+// src/shared/Result.ts
+export type Result<T, E> =
+  | { readonly isSuccess: true; readonly value: T }
+  | { readonly isSuccess: false; readonly error: E };
+
+export function ok<T>(value: T): Result<T, never> {
+  return { isSuccess: true, value };
 }
 
-return Result.ok(new User(crypto.randomUUID(), email, true));
-}
-// 3. Intent-revealing methods for business logic
-public deactivate(): void {
-this.isActive = false;
-}
-
-// 4. Pragmatic getters for the Infrastructure layer to read state
-get getId() { return this.id; }
-get getEmail() { return this.email; }
-get getIsActive() { return this.isActive; }
+export function fail<E>(error: E): Result<never, E> {
+  return { isSuccess: false, error };
 }
 ```
 
@@ -86,9 +118,10 @@ Alongside the entity, we define the Repository Interface. This contract lives in
 ```typescript
 // src/domain/IUserRepository.ts
 import { User } from './User';
+
 export interface IUserRepository {
-findByEmail(email: string): Promise<User | null>;
-save(user: User): Promise<void>;
+  findByEmail(email: string): Promise<User | null>;
+  save(user: User): Promise<void>;
 }
 ```
 
@@ -100,54 +133,73 @@ The Application layer contains our Use Cases. It doesn’t know about HTTP reque
 // src/application/useCases/RegisterUserUseCase.ts
 import { IUserRepository } from '../../domain/IUserRepository';
 import { User } from '../../domain/User';
-import { Result } from '../../core/Result';
+import { fail, ok, type Result } from '../../shared/Result';
 
 export class RegisterUserUseCase {
-// 💉 We inject the INTERFACE, not the MikroORM implementation!
-constructor(private readonly userRepository: IUserRepository) {}
-async execute(email: string): Promise> {
-// 1. Check if user exists
-const existingUser = await this.userRepository.findByEmail(email);
-if (existingUser) {
-return Result.fail("Email already in use.");
-}
-// 2. Create pure domain entity
-const userOrError = User.create(email);
-if (userOrError.isFailure) {
-return Result.fail(userOrError.getError());
-}
-// 3. Save via interface
-await this.userRepository.save(userOrError.getValue());
+  // 💉 We inject the INTERFACE, not the MikroORM implementation!
+  constructor(private readonly userRepository: IUserRepository) {}
 
-return Result.ok();
-}
+  public async execute(email: string): Promise<Result<User, string>> {
+    // 1. Check if user exists
+    const existingUser = await this.userRepository.findByEmail(email);
+    if (existingUser) {
+      return fail('Email already in use.');
+    }
+
+    // 2. Create the domain entity
+    const userResult = User.create(email);
+    if (!userResult.isSuccess) {
+      return userResult;
+    }
+
+    // 3. Save via interface
+    await this.userRepository.save(userResult.value);
+
+    return ok(userResult.value);
+  }
 }
 ```
 
 ## 3. The Infrastructure Layer (The Secret Sauce) 🏗️
 
-The biggest misconception in the Node.js ecosystem is that using an ORM requires you to pollute your models with decorators.
+One common misconception in the Node.js ecosystem is that using an ORM always requires decorators in the model.
 
-While decorators are the default for MikroORM, the framework also provides the EntitySchema API. This allows you to define your database mapping completely externally.
+MikroORM also exposes the `EntitySchema` API, allowing us to define this mapping externally. The important detail for this class is that its persisted properties are private backing fields with public getters. The schema maps the public property names and uses `accessor` to tell MikroORM which backing fields to hydrate.
 
 ```typescript
 // src/infrastructure/database/schemas/UserSchema.ts
 import { EntitySchema } from '@mikro-orm/core';
 import { User } from '../../../domain/User';
 
-// 💡 We define the database rules HERE, keeping the Domain completely pure
-export const UserSchema = new EntitySchema({
-class: User, // Point MikroORM directly at our pure TypeScript class
-tableName: 'users',
-properties: {
-id: { type: 'uuid', primary: true, fieldName: 'id' },
-email: { type: 'string', unique: true, fieldName: 'email' },
-isActive: { type: 'boolean', fieldName: 'is_active' }
-},
+// 💡 We define database mapping here, outside the Domain
+export const UserSchema = new EntitySchema<User>({
+  // MikroORM supports private constructors at runtime; this assertion bridges
+  // the public-constructor constraint in EntitySchema's TypeScript type.
+  class: User as any,
+  tableName: 'users',
+  properties: {
+    id: {
+      type: 'uuid',
+      primary: true,
+      fieldName: 'id',
+      accessor: '_id',
+    },
+    email: {
+      type: 'string',
+      unique: true,
+      fieldName: 'email',
+      accessor: '_email',
+    },
+    isActive: {
+      type: 'boolean',
+      fieldName: 'is_active',
+      accessor: '_isActive',
+    },
+  },
 });
 ```
 
-Now we implement the Repository interface. Because MikroORM understands our vanilla class through the schema, it handles hydration automatically.
+Register `UserSchema` in MikroORM's `entities` configuration, then implement the repository interface. MikroORM can create loaded entities without calling their constructor and hydrate the mapped backing fields. TypeScript `private` fields are ordinary JavaScript properties at runtime; native `#private` fields need a different setup using accessors and `forceConstructor`, as covered in MikroORM's [entity constructor](https://mikro-orm.io/docs/entity-constructors#using-native-private-properties) and [private property accessor](https://mikro-orm.io/docs/defining-entities#private-property-accessors) documentation.
 
 ```typescript
 // src/infrastructure/repositories/MikroOrmUserRepository.ts
@@ -156,16 +208,17 @@ import { IUserRepository } from '../../domain/IUserRepository';
 import { User } from '../../domain/User';
 
 export class MikroOrmUserRepository implements IUserRepository {
-constructor(private readonly em: EntityManager) {}
-async findByEmail(email: string): Promise {
-// 🛡️ Returns a pure Domain object, not a bloated Active Record model
-return await this.em.findOne(User, { email });
-}
-async save(user: User): Promise {
-// 🪄 MikroORM tracks the pure class in its Unit of Work!
-this.em.persist(user);
-await this.em.flush();
-}
+  constructor(private readonly em: EntityManager) {}
+
+  public findByEmail(email: string): Promise<User | null> {
+    // 🛡️ Returns our domain class, not a separate persistence model
+    return this.em.findOne(User, { email });
+  }
+
+  public async save(user: User): Promise<void> {
+    // 🪄 MikroORM tracks the class through its Unit of Work
+    await this.em.persist(user).flush();
+  }
 }
 ```
 
@@ -181,25 +234,33 @@ import { Request, Response, NextFunction } from 'express';
 import { RegisterUserUseCase } from '../../application/useCases/RegisterUserUseCase';
 
 export class UserController {
-constructor(private readonly registerUserUseCase: RegisterUserUseCase) {}
-public register = async (req: Request, res: Response, next: NextFunction): Promise => {
-try {
-const { email } = req.body;
-// 1. Execute the use case
-const result = await this.registerUserUseCase.execute(email);
-// 2. 🛡️ Handle EXPECTED Domain Errors (Business Rules)
-if (result.isFailure) {
-res.status(400).json({ error: result.getError() });
-return;
-}
-// 3. Success
-res.status(201).json({ message: "User registered successfully." });
-} catch (error) {
-// 🚨 Handle UNEXPECTED System Exceptions (Database down, etc.)
-// Pass it down to the global error handler middleware
-next(error);
-}
-}
+  constructor(private readonly registerUserUseCase: RegisterUserUseCase) {}
+
+  public register = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { email } = req.body as { email: string };
+
+      // 1. Execute the use case
+      const result = await this.registerUserUseCase.execute(email);
+
+      // 2. 🛡️ Handle EXPECTED Domain Errors (Business Rules)
+      if (!result.isSuccess) {
+        res.status(400).json({ error: result.error });
+        return;
+      }
+
+      // 3. Success
+      res.status(201).json({ message: 'User registered successfully.' });
+    } catch (error) {
+      // 🚨 Handle UNEXPECTED System Exceptions (Database down, etc.)
+      // Pass it down to the global error handler middleware
+      next(error);
+    }
+  };
 }
 ```
 
@@ -211,27 +272,28 @@ Instead of handling database errors directly in the controller, we pass them to 
 // src/presentation/middleware/GlobalErrorHandler.ts
 import { Request, Response, NextFunction } from 'express';
 export function globalErrorHandler(
-err: Error,
-req: Request,
-res: Response,
-next: NextFunction
-) {
-// 1. Log the actual stack trace to your observability platform
-console.error('[CRITICAL INFRASTRUCTURE ERROR] 💥', err);
-// 2. Return a generic, sanitized response to the client
-res.status(500).json({
-error: "An unexpected internal server error occurred. Our team has been notified."
-});
+  err: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+): void {
+  // 1. Log the actual stack trace to your observability platform
+  console.error('[CRITICAL INFRASTRUCTURE ERROR] 💥', err);
+
+  // 2. Return a generic, sanitized response to the client
+  res.status(500).json({
+    error: 'An unexpected internal server error occurred. Our team has been notified.',
+  });
 }
 ```
 
-## 📈 The ROI of True Persistence Ignorance
+## 📈 The ROI of Persistence Ignorance
 
 Taking the time to structure your codebase this way provides massive dividends as your application scales:
 
 - ⚡️ Fast Unit Tests: You can test your RegisterUserUseCase and User entity in seconds. Swap the IUserRepository with an in-memory mock, and you don't even need a database container.
-- 🔓 Zero Framework Lock-in: If you decide to move from MikroORM to Drizzle, TypeORM, or raw SQL next year, your src/domain and src/application folders remain completely untouched.
-- 🧠 A Clearer Mental Model: When you open a file in the domain folder, you are looking exclusively at pure business rules. When you open a file in the infrastructure folder, you are looking at plumbing.
+- 🔓 Less Framework Lock-in: If you move from MikroORM to Drizzle, TypeORM, or raw SQL next year, the domain model is insulated from much of that change. Repository contracts or application queries may still need to evolve when persistence capabilities differ.
+- 🧠 A Clearer Mental Model: When you open a file in the domain folder, you are looking at business rules rather than ORM mapping. When you open a file in the infrastructure folder, you are looking at plumbing.
 
 Stop letting your database dictate your architecture. Clean up your domain, drop the decorators, and let vanilla TypeScript do what it does best.
 
@@ -245,9 +307,9 @@ Yes, migrating an enterprise application from PostgreSQL to MongoDB happens once
 
 You don’t decouple your core logic from your ORM just so you can swap databases in five years. You decouple it to survive what happens this year:
 
-- 💥 A ORM Major Version Upgrade: You might not swap TypeORM for Prisma, but what happens when your ORM releases a major version with breaking changes to its decorators or base classes? If your ORM is injected into 80 domain entities, a library upgrade halts product development for some time. If your domain is pure, you only update the infrastructure layer.
-- 🧪 You “Swap” Your Database 100 Times a Day: Every time you run your unit test suite, you are essentially swapping your database for an in-memory mock. If your domain entities are tightly coupled to an Active Record ORM, you are forced to spin up a Docker container or SQLite database just to test a if/else statement in your business rules. Pure domains enable test suites that run in milliseconds, not minutes.
+- 💥 An ORM Major Version Upgrade: You might not swap TypeORM for Prisma, but what happens when your ORM releases a major version with breaking changes to its metadata or base classes? If ORM APIs reach across 80 domain entities, a library upgrade can interrupt product work. With external mapping, most ORM-specific changes stay at the infrastructure boundary.
+- 🧪 You “Swap” Your Database 100 Times a Day: Every time you run your unit test suite, you can replace the repository with an in-memory fake. If business behavior calls ORM APIs directly, you may need a database just to test an `if` statement. An ORM-independent domain enables fast unit tests, while integration tests still exercise the real mapping and database.
 - 🔪 The Microservice Extraction: As your monolith grows, you might need to extract a specific bounded context (like Billing or Notifications) into its own service. If your business logic is tangled in a massive, interconnected ORM graph, extracting it is a nightmare. A pure domain can be lifted and shifted more easily.
 - ⚡️ Performance Overrides: Eventually, a specific read-query using your ORM will become too slow. You will need to bypass the ORM and write highly optimized, raw SQL for that one specific use case. If your application layer expects an ORM object, you are stuck. If it relies on a pure Repository Interface, you can quietly swap the underlying implementation for that specific query without breaking a sweat.
 
-Decoupling your database isn’t about predicting the future. It is about protecting the present. It ensures that your most valuable asset, your core business rules, remains testable, readable, and entirely under your control.
+Decoupling your database isn’t about predicting the future. It is about protecting the present. It helps keep your most valuable asset, your core business rules, testable, readable, and under your control.

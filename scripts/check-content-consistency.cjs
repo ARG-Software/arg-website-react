@@ -55,8 +55,45 @@ function isAllowedException(filePath, line) {
   );
 }
 
+function findBlogProseDoubleHyphens() {
+  const blogDir = path.join(ROOT_DIR, 'src/frontend/blog');
+  const violations = [];
+
+  for (const file of fs.readdirSync(blogDir).filter(name => name.endsWith('.md'))) {
+    const absolutePath = path.join(blogDir, file);
+    const lines = fs.readFileSync(absolutePath, 'utf8').split(/\r?\n/);
+    let inFrontmatter = lines[0]?.trim() === '---';
+    let inCodeFence = false;
+
+    lines.forEach((line, index) => {
+      if (inFrontmatter) {
+        if (index > 0 && line.trim() === '---') inFrontmatter = false;
+        return;
+      }
+      if (line.trimStart().startsWith('```')) {
+        inCodeFence = !inCodeFence;
+        return;
+      }
+      if (inCodeFence || /^[\s|:-]+$/.test(line)) return;
+
+      const prose = line
+        .replace(/<!--.*?-->/g, '')
+        .replace(/`[^`]*`/g, '')
+        .replace(/\]\([^\s)]+\)/g, ']')
+        .replace(/\b(?:https?:\/\/|mailto:|tel:)\S+/gi, '');
+      if (prose.includes('--')) {
+        violations.push(
+          `src/frontend/blog/${file}:${index + 1} contains a double hyphen in prose`
+        );
+      }
+    });
+  }
+
+  return violations;
+}
+
 const files = [...new Set(CONTENT_PATHS.flatMap(listFiles))];
-const violations = [];
+const violations = findBlogProseDoubleHyphens();
 
 for (const absolutePath of files) {
   const filePath = path.relative(ROOT_DIR, absolutePath).replace(/\\/g, '/');

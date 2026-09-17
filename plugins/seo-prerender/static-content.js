@@ -1,9 +1,8 @@
 import { NAV_LINKS } from './constants.js';
 import { escapeHtml } from './html-utils.js';
 import { getHeadingId } from '../../src/frontend/utils/blog/articleHelpers.js';
+import { parseInlineMarkdown } from '../../src/frontend/utils/inlineMarkdown.js';
 
-const INLINE_LINK_PATTERN = /\[([^\][]+)\]\(([^()\s]+)\)/g;
-const SAFE_HREF_PATTERN = /^(?:https?:\/\/|mailto:|tel:|\/|#)/i;
 const EXTERNAL_HREF_PATTERN = /^https?:\/\//i;
 
 export function injectStaticContent(html, content) {
@@ -119,7 +118,7 @@ function renderList(items, tag, className) {
   const listItems = items
     .map(item => {
       const label = item.label
-        ? `<span class="bp-list-label">${escapeHtml(item.label)}</span> `
+        ? `<span class="bp-list-label">${renderInlineText(item.label)}</span> `
         : '';
       return `<li class="bp-list-item">${label}${renderInlineText(item.text)}</li>`;
     })
@@ -133,22 +132,25 @@ function renderImage(image, className) {
 }
 
 function renderInlineText(text) {
-  let result = '';
-  let cursor = 0;
+  return renderInlineParts(parseInlineMarkdown(text));
+}
 
-  for (const match of text.matchAll(INLINE_LINK_PATTERN)) {
-    const [raw, label, href] = match;
-    if (!SAFE_HREF_PATTERN.test(href)) continue;
-
-    result += escapeHtml(text.slice(cursor, match.index));
-    const externalAttributes = EXTERNAL_HREF_PATTERN.test(href)
-      ? ' target="_blank" rel="noopener noreferrer"'
-      : '';
-    result += `<a href="${escapeHtml(href)}"${externalAttributes}>${escapeHtml(label)}</a>`;
-    cursor = match.index + raw.length;
-  }
-
-  return result + escapeHtml(text.slice(cursor));
+function renderInlineParts(parts) {
+  return parts
+    .map(part => {
+      if (part.type === 'link') {
+        const externalAttributes = EXTERNAL_HREF_PATTERN.test(part.href)
+          ? ' target="_blank" rel="noopener noreferrer"'
+          : '';
+        return `<a href="${escapeHtml(part.href)}"${externalAttributes}>${renderInlineParts(part.parts)}</a>`;
+      }
+      if (part.type === 'strong') return `<strong>${renderInlineParts(part.parts)}</strong>`;
+      if (part.type === 'code') {
+        return `<code class="inline-markdown-code">${escapeHtml(part.text)}</code>`;
+      }
+      return escapeHtml(part.text);
+    })
+    .join('');
 }
 
 function renderNavigation(extraLinks) {

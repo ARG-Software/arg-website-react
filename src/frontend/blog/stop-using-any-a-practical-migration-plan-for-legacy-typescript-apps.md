@@ -7,6 +7,7 @@ title: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Ap
 subtitle: any is spreading through your legacy codebase. A risk-based migration plan covering unknown, Zod validation, strict mode, and ESLint
 intro: any is spreading through your legacy codebase. A risk-based migration plan covering unknown, Zod validation, strict mode, and ESLint
 date: May 27, 2026
+dateModified: September 17, 2026
 readTime: 7 min read
 ---
 ![Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps](/images/blog/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps-header.webp)
@@ -22,7 +23,7 @@ Eventually, TypeScript remains in the project, but it is no longer safeguarding 
 
 The concern is when any spreads across API contracts, business logic, database models, events, and shared packages. At that point, TypeScript becomes decoration.
 
-This article is not about type purity. It is about removing⁣ any from a legacy TypeScript application without rewriting everything from scratch.
+This article is not about type purity. It is about removing any from a legacy TypeScript application without rewriting everything from scratch.
 
 ## 🧨 Why any Is Dangerous?
 
@@ -32,10 +33,10 @@ This compiles:
 
 ```typescript
 function calculateDiscount(user: any) {
-if (user.subscription.plan === "premium") {
-return 0.2;
-}
-return 0;
+  if (user.subscription.plan === "premium") {
+    return 0.2;
+  }
+  return 0;
 }
 ```
 
@@ -45,19 +46,19 @@ A safer version looks like this:
 
 ```typescript
 type User = {
-subscription?: {
-plan: "free" | "premium";
-};
+  subscription?: {
+    plan: "free" | "premium";
+  };
 };
 
 function calculateDiscount(user: User) {
-return user.subscription?.plan === "premium" ? 0.2 : 0;
+  return user.subscription?.plan === "premium" ? 0.2 : 0;
 }
 ```
 
 Now TypeScript helps you.
 
-It knows subscription may be missing the allowed values for plan, and forces the function to handle the data shape correctly.
+It knows subscription may be missing, knows the allowed values for plan, and forces the function to handle the data shape correctly.
 
 That is the whole point.
 
@@ -69,16 +70,16 @@ The real problem starts when any crosses important boundaries:
 
 ```typescript
 async function createPayment(payload: any) {
-const amount = payload.amount;
-const currency = payload.currency;
-const customerId = payload.customer.id;
-// process payment code below
+  const amount = payload.amount;
+  const currency = payload.currency;
+  const customerId = payload.customer.id;
+  // process payment code below
 }
 ```
 
 This is risky because the function is close to a business-critical flow. Payments. Orders. Authentication. Authorization. Webhooks. Billing. User data. These are precisely the places where you do not want TypeScript to be silent.
 
-A good rule would be
+A good rule would be:
 
 > any is most dangerous at the edges of your system and in the core of your business logic.
 
@@ -96,14 +97,20 @@ A simple start:
 grep -R "any" src --include="*.ts" --include="*.tsx"
 ```
 
-A better option using ESLint:
+A better option is ESLint. With the [current flat config format](https://typescript-eslint.io/getting-started/), start with a warning across TypeScript files:
 
-```json
-{
-"rules": {
-"@typescript-eslint/no-explicit-any": "warn"
-}
-}
+```javascript
+// eslint.config.mjs
+import { defineConfig } from "eslint/config";
+import tseslint from "typescript-eslint";
+
+export default defineConfig({
+  files: ["**/*.{ts,tsx}"],
+  extends: [tseslint.configs.recommended],
+  rules: {
+    "@typescript-eslint/no-explicit-any": "warn",
+  },
+});
 ```
 
 Start with warn, not error. Turning every any into a build failure is a great way to make the team disable the rule.
@@ -123,29 +130,28 @@ Now the migration is measurable. And measurable work is easier to defend and to 
 
 Before fixing old code, prevent new any from entering the codebase. Legacy code can have debt, but new code should not increase the interest rate.
 
-Start with:
+Keep the warning as a baseline, then make the rule stricter in new or critical modules by adding a scoped flat config object:
 
-```json
-{
-"rules": {
-"@typescript-eslint/no-explicit-any": "warn"
-}
-}
-```
+```javascript
+// eslint.config.mjs
+import { defineConfig } from "eslint/config";
+import tseslint from "typescript-eslint";
 
-Then make the rule stricter in new or critical modules:
-
-```json
-{
-"overrides": [
-{
-"files": ["src/modules/payments/**/*.ts"],
-"rules": {
-"@typescript-eslint/no-explicit-any": "error"
-}
-}
-]
-}
+export default defineConfig(
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [tseslint.configs.recommended],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
+  {
+    files: ["src/modules/payments/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "error",
+    },
+  },
+);
 ```
 
 This is realistic. You are not pretending the legacy codebase is perfect. You are simply saying the following:
@@ -160,7 +166,7 @@ This is unsafe:
 
 ```typescript
 async function parseWebhook(payload: any) {
-return payload.event.type;
+  return payload.event.type;
 }
 ```
 
@@ -168,10 +174,10 @@ Use unknown instead:
 
 ```typescript
 async function parseWebhook(payload: unknown) {
-if (!isWebhookPayload(payload)) {
-throw new Error("Invalid webhook payload");
-}
-return payload.event.type;
+  if (!isWebhookPayload(payload)) {
+    throw new Error("Invalid webhook payload");
+  }
+  return payload.event.type;
 }
 ```
 
@@ -179,17 +185,21 @@ With a type guard:
 
 ```typescript
 type WebhookPayload = {
-event: {
-type: string;
-};
+  event: {
+    type: string;
+  };
 };
 
 function isWebhookPayload(value: unknown): value is WebhookPayload {
-return (
-typeof value === "object" &&
-value !== null &&
-"event" in value
-);
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "event" in value &&
+    typeof value.event === "object" &&
+    value.event !== null &&
+    "type" in value.event &&
+    typeof value.event.type === "string"
+  );
 }
 ```
 
@@ -201,7 +211,7 @@ unknown says, “Prove it first.”
 
 That is undoubtedly what you want at system boundaries.
 
-A quick example using unknownfor you to understand better what we are talking about:
+A quick example using unknown makes the difference clearer:
 
 ```typescript
 let value: unknown = "hello";
@@ -215,7 +225,7 @@ The next segment compiles.
 ```typescript
 let value: unknown = "hello";
 if (typeof value === "string") {
-value.toUpperCase();
+  value.toUpperCase();
 }
 ```
 
@@ -225,20 +235,21 @@ As you can see, TypeScript forces you to check the value first.
 
 TypeScript checks your code. It does not validate JSON coming from an API, webhook, queue, database, or browser storage.
 
-That is why runtime validation matters. A practical and common option is Zod:
+That is why runtime validation matters. A practical and common option is [Zod](https://zod.dev/api#objects):
 
 ```typescript
 import { z } from "zod";
 
 const WebhookPayloadSchema = z.object({
-event: z.object({
-type: z.string(),
-}),
+  event: z.object({
+    type: z.string(),
+  }),
 });
 
-type WebhookPayload = z.infer;
+type WebhookPayload = z.infer<typeof WebhookPayloadSchema>;
+
 function parseWebhook(payload: unknown): WebhookPayload {
-return WebhookPayloadSchema.parse(payload);
+  return WebhookPayloadSchema.parse(payload);
 }
 ```
 
@@ -262,8 +273,8 @@ Because a type assertion does not validate anything. It only tells TypeScript to
 
 Not all any usages deserve the same priority.
 
-```bash
-#Priority:
+```text
+Priority:
 HTTP request bodies
 Webhook payloads
 Authentication data
@@ -275,7 +286,7 @@ Public API clients
 Message queue events
 Configuration objects
 
-#These can wait:
+These can wait:
 One-off scripts
 Test mocks
 Temporary migration files
@@ -283,7 +294,7 @@ Internal build tooling
 Prototype code
 ```
 
-These priority items can break important flows. It’s indispensable to control them, defining their types and boundaries, and creating a more attentive and aware system.
+These priority items can break important flows. Define their types and boundaries first so failures are caught before they reach critical business logic.
 
 A good migration is not random. It is risk-based.
 
@@ -295,35 +306,35 @@ Start with:
 
 ```json
 {
-"compilerOptions": {
-"noImplicitAny": true
-}
+  "compilerOptions": {
+    "noImplicitAny": true
+  }
 }
 ```
 
-noImplicitAny is the right starting point because it directly targets the problem you're already solving. Without it, TypeScript silently infers any in ambiguous cases.
+[`noImplicitAny`](https://www.typescriptlang.org/tsconfig/noImplicitAny.html) is a useful starting point because it reports places where TypeScript would otherwise infer any. It does not reject an explicit annotation such as `payload: any`; `@typescript-eslint/no-explicit-any` covers that separate problem.
 
 Then move toward:
 
 ```json
 {
-"compilerOptions": {
-"strict": true
-}
+  "compilerOptions": {
+    "strict": true
+  }
 }
 ```
 
-Once the codebase is stable with noImplicitAny, you can layer in strictNullChecks next - which tends to be the second biggest source of real bugs - and continue from there.
+Once the codebase is stable with noImplicitAny, consider strictNullChecks next, then continue based on the errors and risks in your codebase.
 
 If you'd like, you can also create a new tsconfig, applying strict rules only to new code.
 
 ```json
 {
-"extends": "./tsconfig.json",
-"compilerOptions": {
-"strict": true
-},
-"include": ["src/modules/new-feature/**/*.ts"]
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": true
+  },
+  "include": ["src/modules/new-feature/**/*.ts"]
 }
 ```
 
@@ -353,7 +364,7 @@ This works because it avoids the biggest migration mistake: trying to make every
 ## 🚫 What Not to Do
 
 - Do not replace every any with unknown blindly.
-- Do not replace any ⁣with massive interfaces nobody understands.
+- Do not replace any with massive interfaces nobody understands.
 - Do not enable strict across the whole project without a plan.
 - Do not use type assertions everywhere just to make errors disappear.
 

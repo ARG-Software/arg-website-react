@@ -7,7 +7,9 @@ const IMAGE_ROOT = path.resolve('public/images/blog');
 const ARTICLES_ROOT = path.resolve('external/articles');
 const PUBLISHED_DIR = path.join(ARTICLES_ROOT, 'published');
 const DRAFTS_DIR = path.join(ARTICLES_ROOT, 'drafts');
-const SOURCE_ARG = process.argv[2] || '--published';
+const IMPORT_ARGS = process.argv.slice(2);
+const OVERWRITE_EXISTING = IMPORT_ARGS.includes('--overwrite');
+const SOURCE_ARG = IMPORT_ARGS.find(argument => argument !== '--overwrite') || '--published';
 const MEDIUM_EDITOR_PAYLOAD = 'window["obvInit"](';
 
 const GASPAR_COLLECTION = {
@@ -404,14 +406,10 @@ const findExportedImage = (assetsDir, imageId) => {
   );
 };
 
-const cleanArticleImageDir = articleSlug => {
-  const imageDir = path.join(IMAGE_ROOT, articleSlug);
-  fs.rmSync(imageDir, { recursive: true, force: true });
-};
-
 const localizeMediumImage = async (
   paragraph,
   articleSlug,
+  imageOutputDir,
   title,
   tags,
   imageIndex,
@@ -422,8 +420,7 @@ const localizeMediumImage = async (
   const exportedFile = findExportedImage(assetsDir, imageId);
   if (!exportedFile) return '';
 
-  const imageDir = path.join(IMAGE_ROOT, articleSlug);
-  fs.mkdirSync(imageDir, { recursive: true });
+  fs.mkdirSync(imageOutputDir, { recursive: true });
 
   const caption = sanitizeText(paragraph.text);
   const alt = buildImageAlt({ caption, title, tags, imageIndex, recentHeading });
@@ -431,7 +428,7 @@ const localizeMediumImage = async (
     imageIndex === 1 ? `${articleSlug}-header` : `${slugify(alt) || 'image'}-${imageIndex}`;
   const fileName = `${baseName}.webp`;
   const sourcePath = path.join(assetsDir, exportedFile);
-  const outputPath = path.join(imageDir, fileName);
+  const outputPath = path.join(imageOutputDir, fileName);
   const publicPath = `/images/blog/${articleSlug}/${fileName}`;
 
   try {
@@ -446,7 +443,14 @@ const localizeMediumImage = async (
   return `![${alt}](${publicPath})`;
 };
 
-const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title, subtitle, htmlPath) => {
+const getMarkdownBlocksFromParagraphs = async (
+  post,
+  articleSlug,
+  imageOutputDir,
+  title,
+  subtitle,
+  htmlPath
+) => {
   const paragraphs = post.content?.bodyModel?.paragraphs || [];
   const assetsDir = getExportAssetsDir(htmlPath);
   const tags = getPostTags(post, title, subtitle);
@@ -473,6 +477,7 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title, subtitl
       const image = await localizeMediumImage(
         paragraph,
         articleSlug,
+        imageOutputDir,
         title,
         tags,
         imageIndex,
@@ -513,10 +518,18 @@ const getMarkdownBlocksFromParagraphs = async (post, articleSlug, title, subtitl
   return blocks;
 };
 
-const convertPostToMarkdown = async (post, articleSlug, title, subtitle, htmlPath) => {
+const convertPostToMarkdown = async (
+  post,
+  articleSlug,
+  imageOutputDir,
+  title,
+  subtitle,
+  htmlPath
+) => {
   const blocks = await getMarkdownBlocksFromParagraphs(
     post,
     articleSlug,
+    imageOutputDir,
     title,
     subtitle,
     htmlPath
@@ -591,26 +604,90 @@ const writePost = async (post, htmlPath, existingPosts) => {
     ),
     `${post.id} subtitle`
   );
-  cleanArticleImageDir(slug);
-  const markdown = await convertPostToMarkdown(post, slug, title, subtitle, htmlPath);
-
-  if (!markdown) throw new Error(`Empty markdown after conversion for ${post.id}`);
-
   const outputPath = path.join(BLOG_DIR, `${slug}.md`);
   const existingPost = findExistingPost(existingPosts, post, slug, title);
-  if (
-    existingPost &&
-    existingPost.fullPath !== outputPath &&
-    fs.existsSync(existingPost.fullPath)
-  ) {
-    fs.unlinkSync(existingPost.fullPath);
+  if (existingPost && !OVERWRITE_EXISTING) {
+    return {
+      id: post.id,
+      title,
+      slug: existingPost.slug,
+      file: path.relative(process.cwd(), existingPost.fullPath),
+      action: 'skipped',
+      reason: 'canonical website article already exists; pass --overwrite to replace it',
+    };
   }
 
-  fs.writeFileSync(
-    outputPath,
-    `${buildFrontmatter(post, slug, title, markdown)}${markdown}\n`,
-    'utf8'
-  );
+  const importToken = `${process.pid}-${Date.now()}`;
+  const transactionDir = path.join(ARTICLES_ROOT, '.import-staging', `${slug}-${importToken}`);
+  const imageDir = path.join(IMAGE_ROOT, slug);
+  const stagedImageDir = path.join(transactionDir, 'images');
+  const imageBackupDir = path.join(transactionDir, 'image-backup');
+  const stagedOutputPath = path.join(transactionDir, 'post.md');
+  const outputBackupPath = path.join(transactionDir, 'post-backup.md');
+  const previousPostBackupPath = path.join(transactionDir, 'previous-post.md');
+  let imageBackedUp = false;
+  let stagedImageInstalled = false;
+  let outputBackedUp = false;
+  let stagedOutputInstalled = false;
+  let previousPostBackedUp = false;
+  let committed = false;
+  let rollbackComplete = false;
+
+  try {
+    fs.mkdirSync(transactionDir, { recursive: true });
+    const markdown = await convertPostToMarkdown(
+      post,
+      slug,
+      stagedImageDir,
+      title,
+      subtitle,
+      htmlPath
+    );
+    if (!markdown) throw new Error(`Empty markdown after conversion for ${post.id}`);
+
+    fs.writeFileSync(
+      stagedOutputPath,
+      `${buildFrontmatter(post, slug, title, markdown)}${markdown}\n`,
+      'utf8'
+    );
+
+    if (fs.existsSync(imageDir)) {
+      fs.renameSync(imageDir, imageBackupDir);
+      imageBackedUp = true;
+    }
+    if (fs.existsSync(stagedImageDir)) {
+      fs.renameSync(stagedImageDir, imageDir);
+      stagedImageInstalled = true;
+    }
+    if (fs.existsSync(outputPath)) {
+      fs.renameSync(outputPath, outputBackupPath);
+      outputBackedUp = true;
+    }
+    fs.renameSync(stagedOutputPath, outputPath);
+    stagedOutputInstalled = true;
+
+    if (
+      existingPost &&
+      existingPost.fullPath !== outputPath &&
+      fs.existsSync(existingPost.fullPath)
+    ) {
+      fs.renameSync(existingPost.fullPath, previousPostBackupPath);
+      previousPostBackedUp = true;
+    }
+    committed = true;
+  } catch (error) {
+    if (stagedOutputInstalled) fs.rmSync(outputPath, { force: true });
+    if (outputBackedUp) fs.renameSync(outputBackupPath, outputPath);
+    if (previousPostBackedUp) fs.renameSync(previousPostBackupPath, existingPost.fullPath);
+    if (stagedImageInstalled) fs.rmSync(imageDir, { recursive: true, force: true });
+    if (imageBackedUp) fs.renameSync(imageBackupDir, imageDir);
+    rollbackComplete = true;
+    throw error;
+  } finally {
+    if (committed || rollbackComplete || (!imageBackedUp && !outputBackedUp)) {
+      fs.rmSync(transactionDir, { recursive: true, force: true });
+    }
+  }
 
   return {
     id: post.id,
@@ -637,8 +714,17 @@ const importFromLocalHtml = async sourceDir => {
       }
 
       const result = await writePost(post, htmlPath, existingPosts);
-      if (result.action === 'updated') updated.push(result);
-      else imported.push(result);
+      if (result.action === 'skipped') skipped.push(result);
+      else {
+        existingPosts.push({
+          id: result.id,
+          slug: result.slug,
+          title: result.title,
+          fullPath: path.resolve(result.file),
+        });
+        if (result.action === 'updated') updated.push(result);
+        else imported.push(result);
+      }
     } catch (error) {
       skipped.push({ file: path.relative(process.cwd(), htmlPath), reason: error.message });
     }

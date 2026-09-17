@@ -4,185 +4,143 @@ slug: functional-error-handling-typescript-result-pattern
 tag: Architecture
 tags: Architecture, Backend
 title: Functional Error Handling in TypeScript with the Result Pattern
-subtitle: Stop throwing exceptions! Learn the Result pattern for cleaner, faster error handling. Complete guide with code examples.
-intro: Stop throwing exceptions! Learn the Result pattern for cleaner, faster error handling. Complete guide with code examples.
+subtitle: Learn the Result pattern for explicit, type-safe error handling without treating every failure as an exception.
+intro: Learn the Result pattern for explicit, type-safe error handling without treating every failure as an exception.
 date: September 26, 2025
+dateModified: September 17, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/functional-error-handling-in-typescript-with-the-result-pattern-5b96a5abb6d3
 ---
 
 ![Functional Error Handling in Typescript](/images/blog/functional-error-handling-in-typescript/functional-error-handling-in-typescript-header.webp)
 
-Many developers default to throwing exceptions for error handling, but this approach has significant drawbacks that can make your codebase a nightmare to maintain.
+Many developers default to throwing exceptions for every failure, but this approach has drawbacks that can make a codebase harder to maintain. Exceptions are useful. The problem is using them where a failure is expected and the caller needs to make a decision about it.
 
 ## The Problem with Exception-Based Error Handling
 
-### Performance Impact - Exceptions Are Slow
+### Performance Is Context-Dependent
 
-Throwing exceptions is computationally expensive. When an exception is thrown, the JavaScript engine must create a stack trace, unwind the call stack, search for appropriate catch handlers, and clean up resources in the finally blocks. Exception throwing is roughly 1000x slower than a normal return, stack trace creation creates major CPU overhead, and the Result pattern carries nearly zero performance penalty.
+Throwing an exception transfers control to the nearest enclosing `catch`, unwinding through intervening calls. Engines may also capture stack information for `Error` objects. That is more work than a normal return, but there is no honest universal multiplier: JavaScript engines, stack settings, hot paths, and allocation patterns differ. A Result allocates too. Choose it for explicit control flow and measure your real workload if performance matters.
 
 ### Hidden Control Flow
 
 ```typescript
-// Bad: Hidden exceptions make control flow unpredictable
+// Hidden exceptions make the expected failure modes unclear.
 class UserService {
   async createUser(email: string): Promise<User> {
     if (!this.isValidEmail(email)) {
-      throw new Error("Invalid email format"); // Hidden in method signature
+      throw new Error('Invalid email format');
     }
-    
+
     if (await this.emailExists(email)) {
-      throw new Error("Email already exists"); // Another hidden exception
+      throw new Error('Email already exists');
     }
-    
+
     return this.saveUser(new User(email));
   }
 }
 
-// Caller has no idea what exceptions to expect
 try {
-  const user = await userService.createUser("invalid-email");
-} catch (error) {
-  // Which specific error occurred?
-  console.log(error.message); // Could be anything!
+  const user = await userService.createUser('invalid-email');
+  console.log(user);
+} catch (error: unknown) {
+  // JavaScript can throw any value, so narrow before reading Error properties.
+  if (error instanceof Error) {
+    console.log(error.message);
+  } else {
+    throw error;
+  }
 }
 ```
 
 ### Implicit Error Handling
 
-The method signature Promise<User> doesn't tell us anything about potential failures. Callers must dig into implementation details or documentation to understand what can go wrong. It's like navigating a minefield!
+The method signature `Promise<User>` doesn't tell us whether invalid input, a duplicate email, and a database outage are all thrown. Callers must read implementation details or documentation to understand what can go wrong.
 
 ### Inconsistent Error Handling
 
-Different developers might throw different types of exceptions for similar scenarios. One dev throws ValidationError, another throws Error, and someone else throws a string. Good luck handling that mess!
+Different developers might throw different types for similar scenarios. One dev throws `ValidationError`, another throws `Error`, and JavaScript even permits throwing a string. TypeScript's [`useUnknownInCatchVariables`](https://www.typescriptlang.org/tsconfig/useUnknownInCatchVariables.html) option exists for exactly this reason: a caught value must be narrowed before you assume it is an `Error`.
 
-### Testing Nightmare
+### Testing Expected Failures
 
-Testing exception scenarios requires try/catch blocks in every test, making test code verbose and more complicated to maintain, since the code gets bloated pretty quickly.
+Modern test frameworks can assert rejected promises directly, so exceptions do not require a manual `try`/`catch` in every test. The more important problem is that tests often end up coupled to an exception class or message that the function signature never promised:
 
 ```typescript
-// Messy exception testing
-it('should handle invalid email', async () => {
-  try {
-    await userService.createUser('invalid-email');
-    fail('Should have thrown an error');
-  } catch (error) {
-    expect(error.message).toContain('Invalid email'); // Fragile string matching
-  }
-});
+await expect(userService.createUser('invalid-email'))
+  .rejects.toThrow('Invalid email');
 ```
+
+That test is concise, but the expected failure remains implicit in the production API.
 
 ## The Result Pattern: A Better Way
 
-The Result pattern is a functional programming approach that makes error handling explicit, predictable, and type-safe. Instead of throwing exceptions, methods return a Result<T> object that either contains a successful value or an error.
+The Result pattern is a functional programming approach that makes expected failure explicit, predictable, and type-safe. Instead of throwing for a normal business outcome, a method returns a `Result<T, E>` that contains either a successful value or a known error.
 
-Think of it as a box that always has a label that tells you what's inside before you open it!
+Think of it as a box with a label that tells you what's inside before you open it.
 
-The Result pattern wraps your operation's outcome in a container that explicitly represents either success (contains the expected value) or failure (contains error information). This approach forces you to handle both cases explicitly, eliminating surprise exceptions and making your code more predictable.
+The label must do real type-system work. A boolean beside two optional fields still allows awkward states and returns `T | undefined` even after a success check. A discriminated union models success and failure as separate members and lets TypeScript narrow the value using ordinary control flow, as documented in the official [TypeScript narrowing guide](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions).
 
-### Result Class Implementation
-
-Let's break down how our Result class works internally to understand why it's so powerful:
+### Result Implementation
 
 ```typescript
-export class Result<T> {
-  // Private fields ensure immutability and controlled access
-  private readonly success: boolean;
-  private readonly value?: T;
-  private readonly error?: Error;
-  
-  // Private constructor prevents direct instantiation
-  // This forces users to use the static factory methods
-  private constructor(success: boolean, value?: T, error?: Error) {
-    this.success = success;
-    this.value = value;
-    this.error = error;
-  }
-  
-  // Static factory method for success cases
-  static success<T>(value?: T): Result<T> {
-    return new Result<T>(true, value);
-    // Notice: error is undefined in success cases
-  }
-  
-  // Static factory method for error cases  
-  static error<T>(error: Error): Result<T> {
-    return new Result<T>(false, undefined, error);
-    // Notice: value is undefined in error cases
-  }
-  
-  // Type guard methods for checking state
-  isSuccess(): boolean {
-    return this.success;
-  }
-  
-  isFailure(): boolean {
-    return !this.isSuccess();
-  }
-  
-  // Safe value extraction
-  getValue(): T | undefined {
-    return this.value;
-  }
-  
-  // Safe error extraction
-  getError(): Error | undefined {
-    return this.error;
-  }
+export type Result<T, E> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: E };
+
+export function success<T>(value: T): Result<T, never> {
+  return { ok: true, value };
+}
+
+export function failure<E>(error: E): Result<never, E> {
+  return { ok: false, error };
 }
 ```
 
 ### Why This Design Works
 
-**Immutability by Design.** Once created, Result objects can't be modified:
+**Compile-Time Immutability.** The fields can't be reassigned through TypeScript. This does not freeze the object at runtime:
 
 ```typescript
-const result = Result.success("Hello");
-result.success = false; // Compilation error!
+const result = success('Hello');
+result.ok = false; // Compilation error: ok is readonly.
 ```
 
-**Type Safety.** TypeScript knows the generic type:
+**Type-Safe Access.** Checking the discriminant exposes exactly one payload:
 
 ```typescript
-const userResult: Result<User> = await getUser(id);
-if (userResult.isSuccess()) {
-  const user: User = userResult.getValue(); // Type-safe!
+const userResult: Result<User, AppError> = await getUser(id);
+
+if (userResult.ok) {
+  const user: User = userResult.value;
+  console.log(user.email);
+} else {
+  console.log(userResult.error.code);
 }
 ```
 
-**Controlled Creation.** Only valid states are possible:
+Trying to read `userResult.value` in the failure branch is a compilation error. There is no `undefined` fallback pretending to be safe.
+
+**Distinct States.** Each union member has one discriminant and one payload:
 
 ```typescript
-// Can't create invalid states
-new Result(true, undefined, someError); 
-// Impossible due to private constructor
+const saved = success(data);
+const rejected = failure(someError);
 
-// Only valid states possible
-const success = Result.success(data);
-const failure = Result.error(someError);
+// Ordinary object-literal checks reject a mismatched payload.
 ```
 
-**Memory Efficiency.** No stack trace creation overhead like exceptions — just simple object allocation:
-
-```typescript
-const result = Result.error(new InvalidMailException());
-// vs
-throw new Error("Invalid email"); // Creates expensive stack trace
-```
+**Small Runtime Shape.** A Result is a plain object. It still allocates, and an error payload may itself be an `Error`, so do not claim that it is free. Its advantage is that expected control flow remains visible in the return type.
 
 ## Defining Structured Application Errors
 
-First, let's create a structured way to define errors that's both developer-friendly and machine-readable:
+First, let's create a structured way to define expected errors that's both developer-friendly and machine-readable. These are values, not thrown exceptions, so they do not need to extend `Error`:
 
 ```typescript
-export class AppError extends Error {
+export class AppError {
   constructor(
     public readonly code: string,
     public readonly description: string
-  ) {
-    super(description);
-    this.name = 'AppError';
-  }
+  ) {}
 }
 
 export class FollowerErrors {
@@ -190,182 +148,254 @@ export class FollowerErrors {
     'FOLLOWERS_SAME_USER',
     'Cannot follow yourself'
   );
-  
+
   static readonly NON_PUBLIC_PROFILE = new AppError(
     'FOLLOWERS_NON_PUBLIC_PROFILE',
     'Cannot follow non-public profiles'
   );
-  
+
   static readonly ALREADY_FOLLOWING = new AppError(
     'FOLLOWERS_ALREADY_FOLLOWING',
     'Already following this user'
   );
-  
+
   static readonly USER_NOT_FOUND = new AppError(
     'FOLLOWERS_USER_NOT_FOUND',
     'User not found'
   );
-  
+
   static readonly DATABASE_ERROR = new AppError(
     'FOLLOWERS_DATABASE_ERROR',
-    'Failed to save follower relationship'
+    'Failed to access follower relationships'
   );
 }
 ```
 
-This approach gives us unique error codes for easy identification, human-readable descriptions for better UX, and centralized error definitions for consistency.
+This gives us unique error codes for identification, human-readable descriptions for the UI, and centralized definitions for consistency.
 
 ## Result Pattern In Action
 
-Now let's see how to use the Result pattern in a service - notice how clearer it is:
+Now let's see how to use the Result pattern in a service - notice how the expected branches appear in the code and the signature:
 
 ```typescript
-// Result pattern approach
+interface IFollowerRepository {
+  getUserById(id: string): Promise<Result<User, AppError>>;
+  isAlreadyFollowing(
+    userId: string,
+    followedId: string
+  ): Promise<Result<boolean, AppError>>;
+  addFollower(
+    userId: string,
+    followedId: string
+  ): Promise<Result<void, AppError>>;
+}
+
 class FollowerService {
   constructor(private followerRepository: IFollowerRepository) {}
 
-  async startFollowing(user: User, followed: User): Promise<Result<void>> {
-    // Explicit error handling - no hidden exceptions
+  async startFollowing(
+    user: User,
+    followed: User
+  ): Promise<Result<void, AppError>> {
     if (user.id === followed.id) {
-      return Result.error(FollowerErrors.SAME_USER);
+      return failure(FollowerErrors.SAME_USER);
     }
     if (!followed.hasPublicProfile) {
-      return Result.error(FollowerErrors.NON_PUBLIC_PROFILE);
+      return failure(FollowerErrors.NON_PUBLIC_PROFILE);
     }
-    const isAlreadyFollowing = await this.followerRepository
-      .isAlreadyFollowing(user.id, followed.id);
-      
-    if (isAlreadyFollowing) {
-      return Result.error(FollowerErrors.ALREADY_FOLLOWING);
-    }
-    try {
-      await this.followerRepository.addFollower(user.id, followed.id);
-      return Result.success(); // Success
-    } catch (error) {
-      // Only use exceptions for truly unexpected errors
-      return Result.error(FollowerErrors.DATABASE_ERROR);
-    }
-  }
-}
 
-// Repository methods can also use Result pattern
-class FollowerRepository implements IFollowerRepository {
-  async getUserById(id: string): Promise<Result<User>> {
-    const user = await this.database.findUser(id);
-    
-    if (!user) {
-      return Result.error(FollowerErrors.USER_NOT_FOUND);
+    const existing = await this.followerRepository.isAlreadyFollowing(
+      user.id,
+      followed.id
+    );
+    if (!existing.ok) {
+      return existing;
     }
-    
-    return Result.success(user);
-  }
+    if (existing.value) {
+      return failure(FollowerErrors.ALREADY_FOLLOWING);
+    }
 
-  async isAlreadyFollowing(userId: string, followedId: string): Promise<boolean> {
-    // Simple boolean return - no error cases expected
-    return await this.database.checkFollowingRelation(userId, followedId);
-  }
-
-  async addFollower(userId: string, followedId: string): Promise<void> {
-    await this.database.insertFollower({ userId, followedId });
+    return this.followerRepository.addFollower(user.id, followed.id);
   }
 }
 ```
 
-Benefits of this approach: clear method signatures that indicate possible failures, explicit error handling for each scenario, structured and identifiable errors, and type-safe error handling.
+The repository is the right boundary for translating a known infrastructure failure into an application result. It should not swallow every thrown value, because a `TypeError` caused by a programming bug is not a database outcome:
+
+```typescript
+class FollowerRepository implements IFollowerRepository {
+  constructor(private database: DatabaseClient) {}
+
+  async getUserById(id: string): Promise<Result<User, AppError>> {
+    try {
+      const user = await this.database.findUser(id);
+      return user
+        ? success(user)
+        : failure(FollowerErrors.USER_NOT_FOUND);
+    } catch (error: unknown) {
+      return this.handleDatabaseError(error);
+    }
+  }
+
+  async isAlreadyFollowing(
+    userId: string,
+    followedId: string
+  ): Promise<Result<boolean, AppError>> {
+    try {
+      const exists = await this.database.checkFollowingRelation(
+        userId,
+        followedId
+      );
+      return success(exists);
+    } catch (error: unknown) {
+      return this.handleDatabaseError(error);
+    }
+  }
+
+  async addFollower(
+    userId: string,
+    followedId: string
+  ): Promise<Result<void, AppError>> {
+    try {
+      await this.database.insertFollower({ userId, followedId });
+      return success(undefined);
+    } catch (error: unknown) {
+      return this.handleDatabaseError(error);
+    }
+  }
+
+  private handleDatabaseError<T>(error: unknown): Result<T, AppError> {
+    if (error instanceof DatabaseError) {
+      return failure(FollowerErrors.DATABASE_ERROR);
+    }
+    throw error;
+  }
+}
+```
+
+Here, `DatabaseError` represents the database client's documented operational error type. Known database failures become a stable application error. Unknown values are rethrown unchanged rather than being mislabeled and hidden.
+
+Benefits of this approach: method signatures indicate expected failures, every business branch is explicit, errors are structured and identifiable, and success or failure payloads are type-safe.
 
 ## Testing with Result Pattern
 
-Testing becomes much more straightforward and reliable:
+Testing expected outcomes becomes straightforward and precise:
 
 ```typescript
-// Clean, explicit testing
 describe('FollowerService', () => {
   let followerService: FollowerService;
   let mockRepository: jest.Mocked<IFollowerRepository>;
 
   beforeEach(() => {
     mockRepository = {
+      getUserById: jest.fn(),
       isAlreadyFollowing: jest.fn(),
-      addFollower: jest.fn()
+      addFollower: jest.fn(),
     };
     followerService = new FollowerService(mockRepository);
   });
 
-  it('should return error when user tries to follow themselves', async () => {
-    const user: User = { id: '1', email: 'test@test.com', hasPublicProfile: true };
-    
+  it('returns an error when a user follows themselves', async () => {
+    const user: User = {
+      id: '1',
+      email: 'test@test.com',
+      hasPublicProfile: true,
+    };
+
     const result = await followerService.startFollowing(user, user);
-    
-    expect(result.isFailure()).toBe(true);
-    expect(result.getError()).toBe(FollowerErrors.SAME_USER);
-    // Exact error matching - no fragile string comparisons!
+
+    if (result.ok) {
+      throw new Error('Expected startFollowing to fail');
+    }
+    expect(result.error).toBe(FollowerErrors.SAME_USER);
   });
 
-  it('should return error when trying to follow non-public profile', async () => {
-    const user: User = { id: '1', email: 'user@test.com', hasPublicProfile: true };
-    const privateUser: User = { id: '2', email: 'private@test.com', hasPublicProfile: false };
-    
+  it('returns an error for a non-public profile', async () => {
+    const user: User = {
+      id: '1',
+      email: 'user@test.com',
+      hasPublicProfile: true,
+    };
+    const privateUser: User = {
+      id: '2',
+      email: 'private@test.com',
+      hasPublicProfile: false,
+    };
+
     const result = await followerService.startFollowing(user, privateUser);
-    
-    expect(result.isFailure()).toBe(true);
-    expect(result.getError()).toBe(FollowerErrors.NON_PUBLIC_PROFILE);
+
+    if (result.ok) {
+      throw new Error('Expected startFollowing to fail');
+    }
+    expect(result.error).toBe(FollowerErrors.NON_PUBLIC_PROFILE);
   });
 
-  it('should return success when following is valid', async () => {
-    const user: User = { id: '1', email: 'user@test.com', hasPublicProfile: true };
-    const followed: User = { id: '2', email: 'followed@test.com', hasPublicProfile: true };
-    
-    mockRepository.isAlreadyFollowing.mockResolvedValue(false);
-    
+  it('returns success when following is valid', async () => {
+    const user: User = {
+      id: '1',
+      email: 'user@test.com',
+      hasPublicProfile: true,
+    };
+    const followed: User = {
+      id: '2',
+      email: 'followed@test.com',
+      hasPublicProfile: true,
+    };
+
+    mockRepository.isAlreadyFollowing.mockResolvedValue(success(false));
+    mockRepository.addFollower.mockResolvedValue(success(undefined));
+
     const result = await followerService.startFollowing(user, followed);
-    
-    expect(result.isSuccess()).toBe(true);
+
+    expect(result.ok).toBe(true);
     expect(mockRepository.addFollower).toHaveBeenCalledWith('1', '2');
   });
 });
 ```
 
-Testing benefits: precise error checking with no more string matching, cleaner test code with no try/catch blocks needed, better test coverage since all error paths are easy to test, and faster tests with no exception overhead.
+The explicit `if` statements in the failure tests are not ceremony. They narrow the discriminated union before the test reads `error`, so the test itself obeys the same type-safe access rules as production code.
 
 ## When to Still Use Exceptions
 
-Reserve exceptions only for truly exceptional situations:
+Exceptions and Results solve different problems. Use a Result when failure is an expected part of the operation and the immediate caller can reasonably recover, branch, retry, or show a message. Use an exception when execution cannot sensibly continue at that layer, for programmer errors and broken invariants, or when an API already communicates failure by throwing.
+
+Do not catch an exception merely to relabel every possible value. Catch at a boundary where you can add context, translate a documented failure, retry, or clean up. Otherwise, let it propagate to a centralized handler. MDN's [`try...catch` reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch) also notes that `finally` runs before control leaves the construct, which makes it the right place for cleanup that must happen on both returns and throws.
 
 ```typescript
-// Appropriate use of exceptions
 class DatabaseService {
   async connect(): Promise<void> {
     try {
       await this.database.connect();
-    } catch (error) {
-      // System failure - appropriate to throw
-      throw new Error(`Failed to connect to database: ${error.message}`);
+    } catch (error: unknown) {
+      throw new Error('Failed to connect to database', { cause: error });
     }
   }
 }
 
 class ConfigurationService {
   loadConfig(): Config {
-    if (!process.env.DATABASE_URL) {
-      // Programming error - should never happen in production
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
       throw new Error('DATABASE_URL environment variable is required');
     }
-    
-    return new Config(process.env.DATABASE_URL);
+
+    return new Config(databaseUrl);
   }
 }
 ```
 
-Use exceptions for system failures (out of memory, network timeouts), programming errors (null reference, invalid configuration), external library failures you can't predict, and violations of preconditions or invariants.
+The first example adds startup context while preserving the original value as `cause`. The second stops startup because the application cannot satisfy a required invariant. A network timeout is not automatically “exceptional”: in a request workflow it may be an expected retryable Result, while during mandatory startup it may prevent the process from continuing. The right choice depends on who can handle the failure.
+
+Some failures, such as exhausted memory or process termination, are not useful candidates for ordinary application recovery at all. Do not promise that an exception policy can safely handle them.
 
 ## Summary
 
-The Result pattern transforms error handling from implicit and unpredictable to explicit and manageable. By making failures part of your method signatures, you create more reliable, testable, and maintainable TypeScript applications.
+The Result pattern transforms expected failures from implicit control flow into explicit data. By making those failures part of method signatures, you can create more predictable and maintainable TypeScript applications without pretending exceptions have no place.
 
-Key takeaways: use the Result pattern for expected failures and business logic errors, reserve exceptions for truly exceptional unexpected situations, make error handling explicit in your method signatures, enjoy cleaner more predictable code that's easier to test and maintain, structure your errors with codes and descriptions for better debugging, and chain operations cleanly without nested try/catch blocks.
+Key takeaways: use a Result for expected failures and business outcomes, use a discriminated union so TypeScript can narrow access safely, catch `unknown` and translate only failures you understand, preserve unexpected exceptions, keep cleanup in `finally` where appropriate, and benchmark before making performance claims.
 
-The small upfront cost of checking Result states pays massive dividends in code clarity, reliability, and developer confidence. Your future self (and your teammates) will thank you!
+The small upfront cost of checking a Result state often pays dividends in clarity and developer confidence. It is not a mandate to replace every throw.
 
-Tips for getting started: convert one service at a time to the Result pattern, create error catalogs to document all your application errors in one place, use TypeScript strict mode to catch potential undefined errors at compile time, and educate your team to make sure everyone understands the pattern.
+Tips for getting started: convert one service boundary at a time, create small error catalogs for stable application errors, enable TypeScript strict mode, and agree as a team on which failures are expected values versus exceptions.
 
-Ready to make your TypeScript code more robust and maintainable? Give the Result pattern a try - you'll never want to go back to exception-driven development!
+Ready to make your expected failure paths more explicit? Give the Result pattern a try - then keep exceptions for the jobs they do well.

@@ -40,8 +40,8 @@ const RULES = [
   {
     root: 'src/frontend/utils',
     extensions: ['.js'],
-    pattern: /^(index|[a-z][A-Za-z0-9]*)\.js$/,
-    description: 'camelCase.js or index.js',
+    pattern: /^(index|[a-z][A-Za-z0-9]*)(?:\.test)?\.js$/,
+    description: 'camelCase.js with an optional .test suffix, or index.js',
   },
   {
     root: 'src/frontend/constants',

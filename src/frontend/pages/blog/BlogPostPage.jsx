@@ -129,7 +129,11 @@ const renderBlock = (block, i) => {
         <ol key={i} className="bp-list bp-list--ordered">
           {block.items.map((item, j) => (
             <li key={j} className="bp-list-item">
-              {item.label ? <span className="bp-list-label">{item.label}</span> : null}{' '}
+              {item.label ? (
+                <span className="bp-list-label">
+                  <InlineLinkText text={item.label} />
+                </span>
+              ) : null}{' '}
               <InlineLinkText text={item.text} />
             </li>
           ))}
@@ -148,7 +152,11 @@ const renderBlock = (block, i) => {
         <ul key={i} className="bp-list">
           {block.items.map((item, j) => (
             <li key={j} className="bp-list-item">
-              {item.label ? <span className="bp-list-label">{item.label}</span> : null}{' '}
+              {item.label ? (
+                <span className="bp-list-label">
+                  <InlineLinkText text={item.label} />
+                </span>
+              ) : null}{' '}
               <InlineLinkText text={item.text} />
             </li>
           ))}

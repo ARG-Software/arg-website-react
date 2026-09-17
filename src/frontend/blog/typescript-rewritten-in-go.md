@@ -1,234 +1,205 @@
 ---
-seoTitle: TypeScript 7 Rewritten in Go: What to Do
+seoTitle: TypeScript 7 Native Go Port: What to Do
 slug: typescript-7-rewritten-in-go
 tag: Backend
 tags: Backend, Architecture
-title: TypeScript 7.0 Is Being Rewritten in Go. Here's Why You Should Care (and What to Do Today)
-subtitle: TypeScript 7 is rewritten in Go for 10x faster builds. TypeScript 6.0 prepares your codebase. Install tsgo preview, and start preparing.
-intro: TypeScript 7 is rewritten in Go for 10x faster builds. TypeScript 6.0 prepares your codebase. Install tsgo preview, and start preparing.
+title: TypeScript 7.0 Was Ported to Go. Here's Why You Should Care (and What to Do Today)
+subtitle: TypeScript 7 is now the stable native compiler, with much faster builds and a few important compatibility boundaries. Here is how to adopt it.
+intro: TypeScript 7 is now the stable native compiler, with much faster builds and a few important compatibility boundaries. Here is how to adopt it.
 date: March 24, 2026
+dateModified: September 17, 2026
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/typescript-7-rewritten-in-go
 ---
 
 ![TypeScript 7.0 rewritten in Go](/images/blog/typescript-7-rewritten-in-go/typescript-7-rewritten-in-go-header.webp)
 
-If you're a TypeScript developer, last week brought news that will fundamentally change how you work. The TypeScript 6.0 RC dropped - and it's the last JavaScript-based release ever. Starting with TypeScript 7.0 (codenamed "Project Corsa"), the compiler is being rewritten in Go. The early benchmarks are awesome: 10x faster type checking on large codebases.
+If you're a TypeScript developer, the biggest compiler shift in the project's history has landed. [TypeScript 7.0 shipped on July 8, 2026](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) as the stable native port of the compiler and language service to Go. TypeScript 6.0 is the final release from the JavaScript codebase, while TypeScript 7 is now the current `typescript` package on npm.
 
 ![TypeScript 7.0 rewritten in Go Benchmarks](/images/blog/typescript-7-rewritten-in-go/typescript-7-rewritten-in-go-stats.webp)
 
-But here's the thing: TypeScript 6.0 is the release you should care about right now. Let us explain why this matters, what's changing, and exactly what you need to do today to avoid migration headaches tomorrow.
+But here's the thing: this is a port, not a clean-sheet rewrite, and the preview instructions are now obsolete. Let us explain why this matters, what's changing, and exactly what you need to do today.
 
 ## The Numbers That Matter
 
-First, let's talk about what "10x faster" actually means in practice. The TypeScript team ran benchmarks on real-world codebases.
+First, let's talk about what "10x faster" actually means. The TypeScript team ran full-build benchmarks on real-world codebases and reported speedups from 7.7x to 11.9x in the TypeScript 7.0 release announcement.
 
 ![TypeScript 7.0 rewritten in Go Improvement](/images/blog/typescript-7-rewritten-in-go/typescript-7-rewritten-in-go-improvement.webp)
 
-Your tsc today taking 45 seconds on a large project? With tsgo, that becomes 4-5 seconds. Incremental builds, project references, --build mode - all ported and working.
+Those are benchmarks, not a promise that every build becomes exactly ten times faster. Project shape, hardware, checker count, and available memory all matter. The stable compiler supports incremental builds, project references, build mode, watch mode, JavaScript emit, and declaration emit. Benchmark your own repository before sizing the CI win.
 
 This isn't just about saving time. It's about changing your workflow: instant feedback loops, faster CI/CD pipelines, better developer experience, and more frequent type checking (because it no longer hurts).
 
 ## Why Go? Why Now?
 
-The TypeScript compiler was originally written in JavaScript (specifically TypeScript itself) because it made sense: the team used their own language. But over the years, the codebase grew. Today, the TypeScript compiler is a massive, complex piece of software that has to parse, type-check, and emit code for millions of developers.
+The existing TypeScript compiler was written in TypeScript and compiled to JavaScript because using the team's own language made sense. But over the years, the codebase grew into a massive, complex tool that has to parse, type-check, emit, and power editors for millions of developers.
 
-The JavaScript-based compiler has fundamental limitations: it is single-threaded by nature, memory-intensive for large projects, and slow to start due to JIT compilation.
+The old implementation was not designed to take full advantage of shared-memory parallelism. Large projects could pay for long startup, checking, and editor load times.
 
-Go solves all of these: true parallelism with goroutines, native compilation to machine code, efficient memory management, and excellent performance for CLI tools.
+The Go port combines native code with shared-memory multithreading and compiler-specific optimizations. The team deliberately [ported the existing implementation](https://github.com/microsoft/typescript-go/discussions/410) instead of designing a new type checker, because preserving TypeScript's many inference details and quirks was essential for compatibility.
 
-The result? A compiler that starts instantly, checks types in parallel, and finishes in seconds.
+The result is a compiler that can parse, check, and emit in parallel, with major improvements in full-build and editor startup times on the projects Microsoft measured.
 
-## The Catch: 74 Edge Cases
+## The Catch: It Is a New Toolchain
 
-The new Go-based compiler already passes 19,926 out of 20,000 compiler test cases - 99.6% compatibility. But those remaining 74 edge cases matter if your codebase relies on any of them.
+TypeScript 7 is a production release, but "ported faithfully" does not mean every integration is unchanged. The official release notes document new defaults, removed legacy options, intentional JavaScript and JSDoc changes, and one major ecosystem boundary: TypeScript 7.0 does not ship a stable programmatic compiler API.
 
-The TypeScript team has documented several categories where differences may occur.
+These are the differences worth checking instead of relying on a snapshot test count from an old preview.
 
 ### Module Resolution Differences
 
-The new compiler aligns more closely with how Node.js actually resolves modules today. If your project uses path aliases or older resolution shortcuts, you may hit errors. For example:
-```typescript
-// tsconfig.json
+TypeScript 7 removes the old `node` and `node10` module resolution modes, the `classic` mode, and `baseUrl`. Use `nodenext` for Node.js projects or `bundler` for projects whose bundler resolves imports. Path mappings are relative to the project unless you write another explicit base into each path:
+
+```json
 {
-  "paths": {
-    "@utils/*": ["src/utils/*"]
-  }
-}
-
-// This may no longer resolve
-import { formatDate } from "@utils/date";
-// (expecting date/index.ts to be found automatically)
-
-// Be explicit instead
-import { formatDate } from "@utils/date/index";
-```
-
-### isolatedModules Enforcement
-
-Tools like Babel and esbuild transpile each file independently, without seeing the full project. The new compiler is stricter about ensuring your code is safe for this. Re-exporting a type without the `type` keyword used to be allowed:
-```typescript
-// This will now error
-export { MyType } from "./types";
-
-// Do this instead
-export type { MyType } from "./types";
-```
-
-### Type Inference in Complex Conditional Types
-
-The new compiler is more precise when evaluating conditional types, which can expose type errors that the old compiler let slide:
-```typescript
-type OnlyStrings<T> = T extends string ? T : never;
-
-type Result = OnlyStrings<"hello" | 42 | "world">;
-//   Old compiler → string          ← collapses literals into the base type
-//   New compiler → "hello" | "world"  ← preserves the exact literals
-
-/* The old compiler knew the result was string-like,
-but lost the specific values along the way.
-   The new one keeps "hello" and "world" as distinct literals,
- which matters the moment you do something like:
-
-const greet = (val: Result) => {
-  if (val === "hello") { ... } // old: maybe works. new: guaranteed safe.
- }
-
-*/
-```
-
-### Declaration Evaluation Order
-
-When you have circular imports, the new compiler is stricter about the order in which types are resolved. In the old compiler, this could silently produce incorrect types depending on which file was evaluated first:
-```typescript
-// user.ts
-import { Role } from "./role";
-
-export type User = {
-  name: string;
-  role: Role;
-};
-
-// role.ts
-import { User } from "./user";
-
-export type Role = "admin" | "editor";
-
-export type RoleWithUser = {
-  role: Role;
-  assignedTo: User; // circular - User imports Role, Role imports User
-};
-```
-
-### const enum Handling
-
-`const enum` works by replacing every usage with the actual value at compile time, instead of generating a real JavaScript object. The old compiler did this aggressively, even across file boundaries:
-```typescript
-// constants.ts
-export const enum Direction { Up = "UP", Down = "DOWN" }
-
-// app.ts
-move(Direction.Up);
-// Old compiler silently inlined → move("UP")
-// New compiler → error
-```
-
-The new compiler refuses to inline `const enum` values imported from another file, because single-file tools like Babel and esbuild can't do that safely - they never see constants.ts when processing app.ts. The fix is simple:
-```typescript
-// Regular enum (generates a real JS object)
-export enum Direction { Up = "UP", Down = "DOWN" }
-
-// Or a plain const object
-export const Direction = { Up: "UP", Down: "DOWN" } as const;
-```
-
-If you use `const enum` across multiple files, this is the most likely breaking change you'll hit.
-
-### Exhaustiveness Checks with never
-
-A common pattern is using `never` as a guard to ensure every case in a union is handled:
-```typescript
-type Shape = { kind: "circle" } | { kind: "square" };
-function handle(shape: Shape) {
-  switch (shape.kind) {
-    case "circle": ...
-    case "square": ...
-    default:
-      const _check: never = shape; // errors if a case is missing
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@utils/*": ["./src/utils/*"]
+    }
   }
 }
 ```
 
-Add a new member to the union without handling it, and the default branch is reachable - meaning shape can't be `never` anymore. The old compiler sometimes missed this. The new one always catches it:
-```typescript
-type Shape = { kind: "circle" } | { kind: "square" } | { kind: "triangle" };
-//                                                        ^ not handled
-// Old compiler → no error
-// New compiler → Type '{ kind: "triangle" }' is not assignable to type 'never'
+### New Defaults Are Real Changes
+
+TypeScript 7 carries forward TypeScript 6's new defaults. Among them, `strict` is on, `types` defaults to an empty list, `rootDir` defaults to the directory containing the config, `module` defaults to `esnext`, and `target` defaults to the latest stable ECMAScript target. Be explicit where your project needs something else:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "rootDir": "./src",
+    "types": ["node", "jest"]
+  },
+  "include": ["./src"]
+}
 ```
 
-This is the new compiler working in your favour - it's catching real bugs that previously slipped through silently. The TypeScript team has published a preliminary list of known incompatibilities in GitHub issue #61754. Running tsgo in diagnostic mode will help you identify if any of these affect your project.
+### Template Literal Inference Changed
 
-## What's Changing in TypeScript 6.0
+One intentional type-system change is concrete and documented: template literal inference now consumes a complete Unicode code point instead of half of a UTF-16 surrogate pair.
 
-TypeScript 6.0 introduces several deprecations and behavioral changes designed to prepare your codebase. Strict mode is now enabled by default - if you've been relying on loose checking, now's the time to fix those `any` implicits. ES5/ES3 targets are deprecated; TypeScript 6.0 warns you and 7.0 will remove support. Generics inference is stricter in edge cases where TypeScript was previously too forgiving. Module resolution aligns better with actual Node.js behavior, which may affect some monorepo setups. Legacy `tsconfig.json` configuration options from 2015 are being removed.
+```typescript
+type HeadTail<S> = S extends `${infer Head}${infer Tail}` ? [Head, Tail] : never;
+
+type Result = HeadTail<"😀abc">;
+// TypeScript 6: ["\uD83D", "\uDE00abc"]
+// TypeScript 7: ["😀", "abc"]
+```
+
+### The Programmatic API Is Not Yet Stable
+
+TypeScript 7.0's `tsc` is ready for production, but its old JavaScript API is not part of the native package. Tools that import `typescript`, use custom transformers, embed the language service, or depend on TypeScript server plugins may still need the TypeScript 6 compatibility package. Check each tool's TypeScript 7 support rather than assuming command-line compatibility means API compatibility.
+
+### Legacy Targets and Options Are Gone
+
+TypeScript 7's lowest output target is ES2015. It also rejects options deprecated during the TypeScript 6 bridge release, including `downlevelIteration`, `outFile`, AMD, UMD, SystemJS, and `moduleResolution: node10`. If you still need ES5 output, use another transpilation step or stay on a compatible TypeScript 6 toolchain while you migrate.
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "nodenext"
+  }
+}
+```
+
+### JavaScript and JSDoc Have Intentional Differences
+
+The native compiler's JavaScript checking was reworked to behave more like TypeScript source. Some Closure-style JSDoc constructs are no longer recognized. For example, values used in JSDoc type positions now need `typeof`:
+
+```javascript
+const FORWARD = 1;
+const BACKWARD = 2;
+
+/** @typedef {typeof FORWARD | typeof BACKWARD} Direction */
+```
+
+The archived port repository keeps a detailed [list of intentional TypeScript 6 and 7 differences](https://github.com/microsoft/typescript-go/blob/main/CHANGES.md). That is a better migration checklist than speculative edge cases.
+
+## What Changed in TypeScript 6.0
+
+TypeScript 6.0 [shipped on March 23, 2026](https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/) as the final release from the JavaScript codebase. It was the bridge release: `strict` became the default, `types` defaulted to an empty list, `rootDir` changed, and legacy targets and module settings were deprecated or removed. TypeScript 7 enforces that migration boundary.
+
+TypeScript 6 is still useful when a build tool needs the old programmatic API. That does not make it the current compiler. The standard `typescript` package now installs TypeScript 7, while [`@typescript/typescript6`](https://www.npmjs.com/package/@typescript/typescript6) exists for compatibility.
 
 ## What You Need to Do Today
 
 The teams that test now avoid the scramble later. Here's your action plan.
 
-### Step 1: Install the Preview
+Before replacing the compiler, check the framework around it. Microsoft's TypeScript 7 release notes say Vue, MDX, Astro, and Svelte workflows still need TypeScript 6 for their embedded-language tooling. Angular can use TypeScript 7 for command-line checks while parts of its editor and tool integration remain on TypeScript 6. Those projects should start with the side-by-side setup below instead of treating a successful `tsc` run as proof that the whole toolchain is ready.
+
+### Step 1: Install the Stable Compiler
 ```bash
-npm i @typescript/native-preview
+npm install --save-dev typescript
+npx tsc --version
 ```
 
-This installs the Go-based compiler as `tsgo` in your `node_modules/.bin`.
+This installs the stable native compiler as `tsc`. The old `@typescript/native-preview` package and its `tsgo` command were the preview path, not the current installation path.
 
-### Step 2: Run Both Compilers Side-by-Side
+### Step 2: Run Your Existing Check
 ```bash
-npx tsc --noEmit   # current compiler
-npx tsgo --noEmit  # new native compiler
+npx tsc --noEmit
 ```
 
-Compare the output. Do you get the same errors? Different ones? Any crashes?
+Start with the same project and flags you use in CI. If you use project references, run your normal build mode command too.
 
 ### Step 3: Fix the Differences
 
-If tsgo reports errors that tsc doesn't, or vice versa, investigate. These are exactly the edge cases you need to address. Common issues to watch for: different type inference in complex generics, stricter null checks in certain patterns, different module resolution for non-standard paths.
+If TypeScript 7 reports errors, separate compiler configuration changes from tooling integration problems. Check `types`, `rootDir`, module resolution, removed options, JavaScript and JSDoc differences, and whether any part of the toolchain imports the TypeScript API.
 
-### Step 4: Update Your CI Pipeline
+### Step 4: Keep TypeScript 6 Only Where Needed
 
-Add both compilers to your CI for a while. Run them in parallel and alert on differences. This gives you a safety net while you migrate.
+Most projects should use TypeScript 7 directly. If a tool still requires the TypeScript 6 API, [Microsoft's supported compatibility setup](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-60) installs the native compiler under an alias and keeps TypeScript 6 under the package name expected by older tools:
+
+```json
+{
+  "devDependencies": {
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
+  }
+}
+```
+
+That gives you `tsc` for TypeScript 7 and `tsc6` for the JavaScript implementation:
+
+```bash
+npx tsc --noEmit
+npx tsc6 --noEmit
+```
 
 ## The Bigger Picture: What This Means for the Ecosystem
 
-This rewrite isn't happening in isolation. It's part of a broader trend. TypeScript is the last major piece of the JavaScript toolchain to go native. When TypeScript 7.0 ships, the entire modern frontend development stack will be native.
+This port didn't happen in isolation. It follows a broader move toward native implementations in JavaScript tooling, but it does not make every frontend tool native or remove JavaScript from the toolchain.
 
 ![TypeScript 7.0 rewritten in Go Comparison](/images/blog/typescript-7-rewritten-in-go/typescript-7-rewritten-in-go-comparison.webp)
 
-The result? Build pipelines that were minutes become seconds. Dev servers that were seconds become instant.
+The practical result is tighter feedback where TypeScript was the bottleneck. The size of that win depends on your project, and it does not automatically speed up unrelated bundling, testing, or deployment work.
 
 ## A Word on AI-Assisted Development
 
-The TypeScript team specifically mentioned that the Go rewrite will enable better AI integration. Why? Because a faster compiler means faster language servers, which means faster IDE feedback, which means faster AI completions. When your language server can re-type-check the entire project in 5 seconds instead of 45, AI tools can provide more contextually aware completions, suggest refactorings with instant type feedback, and generate code that actually type-checks on first try. The 10x speedup isn't just about your waiting time - it's about enabling a new class of developer tools.
+The TypeScript team has connected lower latency with larger windows of semantic information for AI-assisted tools. That is an opportunity, not a guarantee that generated code will type-check on the first try. The immediate benefit is simpler: humans and tools can ask the compiler for feedback more often and wait less for the answer.
 
 ## FAQ
 
-- **Will my existing code work?** For the vast majority of projects, yes. The TypeScript team is prioritizing compatibility. But you should test now to be sure.
-- **When will TypeScript 7.0 ship?** No official date yet, but given that 6.0 RC is out and the Go compiler already passes 99.6% of tests, probably within months, not years.
-- **Will the JavaScript-based compiler disappear immediately?** It will be deprecated but likely maintained for a transition period. However, new features will only land in the Go version.
-- **Do I need to change my code?** TypeScript 6.0 will warn you about things that need to change. Address those warnings, and you'll be ready.
-- **What about tsc plugins or custom transformers?** The Go version won't support JavaScript-based plugins. This is a significant change - if you rely on custom transformers, you'll need alternatives or to wait for a new plugin system.
-- **Will Deno/Bun/Node support the new compiler?** The TypeScript team is working with runtime authors to ensure smooth integration. The Go compiler can be used as a library, so expect native integrations.
+- **Will my existing code work?** TypeScript 7 aims for TypeScript 6 compatibility, but new defaults, removed options, and documented JavaScript differences can require changes. Run your own build.
+- **When did TypeScript 7.0 ship?** July 8, 2026. The current stable npm release is 7.0.2 as of September 17, 2026.
+- **Where is the JavaScript-based compiler?** TypeScript 6 is the final JavaScript line. The `@typescript/typescript6` compatibility package provides its API and a `tsc6` executable.
+- **Do I need the native preview?** No. Stable TypeScript 7 comes from `typescript` and runs as `tsc`. The preview package used `tsgo` during development.
+- **What about compiler plugins or custom transformers?** TypeScript 7.0 has no stable programmatic compiler API. Check the specific tool's support and keep TypeScript 6 available where its API is still required.
+- **Will my editor use TypeScript 7 automatically?** It depends on the editor. VS Code has Microsoft's TypeScript 7 extension, Visual Studio selects it from the workspace, and other editors can integrate through LSP.
 
 ## The Bottom Line
 
-TypeScript's rewrite in Go is the most significant change to the JavaScript ecosystem since ES6. It's not just about speed - though 10x faster compilation is life-changing. It's about what that speed enables: better developer experience, more sophisticated tooling, AI integration that actually works, faster CI/CD, and happier, more productive teams.
+TypeScript's Go port is a major change to the TypeScript toolchain. It is not just about a headline benchmark. Faster full builds, quicker editor startup, parallel project work, and lower feedback latency can change how often teams type-check and how quickly CI responds.
 
-But speed comes with a migration cost. The teams that test now, with TypeScript 6.0 and the tsgo preview, will be the ones shipping faster when 7.0 lands. Don't wait until the old compiler is gone. Install the preview today:
+But speed can still come with migration work. Install the stable compiler, run your real build, and audit tools that rely on the old API:
 ```bash
-npm i @typescript/native-preview
-npx tsgo --version
+npm install --save-dev typescript
+npx tsc --version
+npx tsc --noEmit
 ```
 
-Then run it alongside your current build. Find the edge cases. Fix them now. Your future self will thank you.
+Fix the concrete differences you find. Keep TypeScript 6 only where a tool still needs it, and measure the result on your own codebase.

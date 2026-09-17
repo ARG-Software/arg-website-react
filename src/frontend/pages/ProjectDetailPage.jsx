@@ -286,7 +286,7 @@ export default function ProjectDetailPage() {
                     data-animate="fade-up"
                     data-animate-delay={i * 150}
                   >
-                    {paragraph}
+                    <InlineLinkText text={paragraph} linkClassName="prp-inline-link" />
                   </p>
                 ))}
               </div>
@@ -337,7 +337,7 @@ export default function ProjectDetailPage() {
                   By the numbers
                 </h2>
                 <p className="prp-results-text" data-animate="fade-up">
-                  {project.impact}
+                  <InlineLinkText text={project.impact} linkClassName="prp-inline-link" />
                 </p>
               </div>
               <div className="prp-results-right">
