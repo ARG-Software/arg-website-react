@@ -8,6 +8,7 @@ subtitle: Learn to build a type-safe DI container in TypeScript from scratch —
 intro: Learn to build a type-safe DI container in TypeScript from scratch — no NestJS, no decorators, no reflect-metadata. Just pure TypeScript.
 date: March 3, 2026
 dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/typescript-dependency-injection-without-the-framework-and-why-you-might-prefer-it-8e78d77b6735
 ---

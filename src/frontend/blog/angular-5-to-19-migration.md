@@ -8,6 +8,7 @@ subtitle: A practical account of moving a legacy Angular 5 and NgRx application 
 intro: A practical account of moving a legacy Angular 5 and NgRx application to Angular 19, one module at a time.
 date: April 21, 2025
 dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/upgrading-angular-legacy-project-version-5-to-19-0216c5dd389a
 ---

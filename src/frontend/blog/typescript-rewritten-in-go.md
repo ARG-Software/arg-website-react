@@ -8,6 +8,7 @@ subtitle: TypeScript 7 is now the stable native compiler, with much faster build
 intro: TypeScript 7 is now the stable native compiler, with much faster builds and a few important compatibility boundaries. Here is how to adopt it.
 date: March 24, 2026
 dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/typescript-7-rewritten-in-go
 ---

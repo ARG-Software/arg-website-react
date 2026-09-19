@@ -8,6 +8,7 @@ subtitle: There’s a class of bug that doesn’t really look like a bug. No sta
 intro: There’s a class of bug that doesn’t really look like a bug. No stack trace. No obvious failure. Just an OrderService file with 300 lines of…
 date: July 3, 2026
 dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 9 min read
 mediumUrl: https://medium.com/@arg-software/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript-2789fc16762d
 ---

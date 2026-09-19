@@ -8,6 +8,7 @@ subtitle: Learn the Result pattern for explicit, type-safe error handling withou
 intro: Learn the Result pattern for explicit, type-safe error handling without treating every failure as an exception.
 date: September 26, 2025
 dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/functional-error-handling-in-typescript-with-the-result-pattern-5b96a5abb6d3
 ---

@@ -8,6 +8,7 @@ subtitle: any is spreading through your legacy codebase. A risk-based migration 
 intro: any is spreading through your legacy codebase. A risk-based migration plan covering unknown, Zod validation, strict mode, and ESLint
 date: May 27, 2026
 dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 7 min read
 ---
 ![Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps](/images/blog/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps-header.webp)

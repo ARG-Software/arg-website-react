@@ -8,6 +8,7 @@ subtitle: Learn to build Chrome extensions using React, TypeScript, and Vite. A 
 intro: Learn to build Chrome extensions using React, TypeScript, and Vite. A step-by-step guide.
 date: June 30, 2025
 dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 9 min read
 mediumUrl: https://arg-software.medium.com/building-a-chrome-extension-with-react-and-vite-a-modern-developers-guide-83f98ee937ed
 ---

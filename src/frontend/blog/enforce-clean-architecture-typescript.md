@@ -8,6 +8,7 @@ subtitle: Stop relying on PR reviews to enforce architecture. Learn how to use a
 intro: Stop relying on PR reviews to enforce architecture. Learn how to use architecture tests to automatically enforce principles.
 date: March 15, 2026
 dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/the-rules-are-in-the-readme-the-readme-is-a-lie-ce6597218a29
 ---

@@ -8,6 +8,7 @@ subtitle: Decouple your business logic from your database. Discover how to build
 intro: Decouple your business logic from your database. Discover how to build pure TypeScript DDD applications using MikroORM
 date: April 13, 2026
 dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 9 min read
 ---
 ### How to decouple your Domain Model from the database layer to build scalable, testable, and future-proof enterprise systems.
