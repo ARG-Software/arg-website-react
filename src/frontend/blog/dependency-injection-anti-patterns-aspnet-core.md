@@ -7,6 +7,8 @@ title: Dependency Injection Anti-Patterns Killing Your ASP.NET Core Apps
 subtitle: Avoid common DI mistakes in ASP.NET Core. Dependency injection anti-patterns that cause memory leaks, slowdowns & runtime crashes.
 intro: Avoid common DI mistakes in ASP.NET Core. Dependency injection anti-patterns that cause memory leaks, slowdowns & runtime crashes.
 date: September 19, 2025
+dateModified: September 19, 2026
+reviewedOn: September 19, 2026
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/dependency-injection-anti-patterns-killing-your-asp-net-core-apps-502f08d85d95
 ---
@@ -17,64 +19,69 @@ After optimizing several enterprise .NET applications, we've witnessed the same 
 
 The most frustrating part? These issues often fly under the radar during development, only to rear their ugly heads when your application is under real-world load. Let's dive into the six most dangerous DI anti-patterns that even senior developers fall victim to, and more importantly, how to fix them.
 
-## 1. The Memory Leak Trap: Injecting Scoped and Transient Services Into Singletons
+## 1. The Captive Dependency Trap: Injecting Short-Lived Services Into Singletons
 
-This is the most insidious anti-pattern we encounter. When your singleton service holds references to scoped or transient services, those supposedly short-lived services can never be garbage collected. They become prisoners in your singleton's memory space.
+This is one of the most damaging lifetime mismatches we encounter. A singleton that captures a scoped dependency promotes that instance to the singleton's effective lifetime. Request-specific state can then leak across requests, concurrent callers can share an object that was not designed for concurrency, and disposal is delayed until application shutdown. Capturing a transient similarly makes that particular instance long-lived, although it does not create a new captured instance on every request.
 
 ```csharp
 // DON'T DO THIS
-[Singleton]
-public class ReportingService
+builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddSingleton<ReportingService>();
+
+public sealed class ReportingService
 {
-    private readonly IDbContext _context; // Scoped service trapped!
+    private readonly ApplicationDbContext _context; // Scoped service trapped!
     
-    public ReportingService(IDbContext context)
+    public ReportingService(ApplicationDbContext context)
     {
         _context = context;
     }
 }
 ```
 
-The result? Memory leaks that compound with every request until your application inevitably crashes with an OutOfMemoryException.
+The result is not an automatically compounding per-request memory leak: the singleton is normally created once and captures one instance. The real risks are incorrect state, concurrency failures, and resources living much longer than intended. With scope validation enabled, the built-in container rejects a scoped service injected into a singleton.
 
-Embrace factory patterns to create scoped or transient services on demand:
+For EF Core, inject `IDbContextFactory<TContext>` and create one context per unit of work:
 
 ```csharp
-[Singleton]
-public class ReportingService
+builder.Services.AddDbContextFactory<ApplicationDbContext>();
+builder.Services.AddSingleton<ReportingService>();
+
+public sealed class ReportingService
 {
-    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
     
-    public ReportingService(IServiceScopeFactory scopeFactory)
+    public ReportingService(
+        IDbContextFactory<ApplicationDbContext> contextFactory)
     {
-        _scopeFactory = scopeFactory;
+        _contextFactory = contextFactory;
     }
     
     public async Task GenerateReportAsync()
     {
-        using var scope = _scopeFactory.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<IDbContext>();
-        // Use context safely
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        // Use this context for one unit of work.
     }
 }
 ```
 
 ## 2. The Performance Drain: Using Transient Services Everywhere
 
-We've seen developers register every service as transient "just to be safe." Each transient service creates memory overhead per request, and when you're dealing with hundreds of services across thousands of requests, this adds up fast.
+We've seen developers register every service with the same lifetime "just to be safe." Transient services are created each time they are resolved, so expensive object graphs can add allocation and construction overhead. That does not make transient lifetime inherently wrong: lightweight stateless services are often good transient candidates.
 
-Start with a strategic approach to service lifetimes:
+Choose lifetimes from state ownership and sharing requirements rather than adopting a universal default:
 
-- **Transient.** Only when you absolutely need a fresh instance every time (rare).
-- **Scoped.** Your default choice for most business logic services.
-- **Singleton.** For stateless services, configurations, and expensive-to-create objects.
+- **Transient.** A new instance for each resolution; suitable for lightweight services that do not share mutable state.
+- **Scoped.** One instance per request or explicit scope; suitable for request state and units of work such as EF Core `DbContext`.
+- **Singleton.** One application-wide instance; use only when process-wide sharing is intentional and the entire dependency graph is thread-safe.
 
 ```csharp
-// Better lifetime management
-services.AddScoped<IUserService, UserService>();        // Default choice
-services.AddSingleton<IConfiguration>(configuration);   // Stateless
-services.AddTransient<IEmailValidator, EmailValidator>(); // Only when needed
+builder.Services.AddTransient<IEmailValidator, EmailValidator>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton<IReferenceDataCache, ReferenceDataCache>();
 ```
+
+ASP.NET Core already registers `IConfiguration`; applications normally consume it directly or use the options pattern rather than registering it again.
 
 ## 3. The Concurrency Nightmare: Thread-Unsafe Singletons
 
@@ -82,10 +89,11 @@ Singleton services are shared across all requests and threads. Without proper sy
 
 ```csharp
 // DANGEROUS - NOT THREAD SAFE
-[Singleton]
-public class CacheService
+builder.Services.AddSingleton<CacheService>();
+
+public sealed class CacheService
 {
-    private Dictionary<string, object> _cache = new(); // Race condition waiting to happen
+    private readonly Dictionary<string, object> _cache = new();
     
     public void Set(string key, object value)
     {
@@ -97,17 +105,20 @@ public class CacheService
 Design singleton services to be immutable or implement proper thread synchronization:
 
 ```csharp
-[Singleton]
-public class CacheService
+builder.Services.AddSingleton<CacheService>();
+
+public sealed class CacheService
 {
     private readonly ConcurrentDictionary<string, object> _cache = new();
     
     public void Set(string key, object value)
     {
-        _cache[key] = value; // Thread-safe operations
+        _cache[key] = value; // This individual operation is thread-safe.
     }
 }
 ```
+
+`ConcurrentDictionary` makes individual operations such as this assignment safe. Multi-step read-and-update behavior still needs an atomic dictionary method or explicit synchronization.
 
 ## 4. The Testability Killer: Service Locator Anti-Pattern
 
@@ -118,11 +129,16 @@ The Service Locator pattern hides dependencies behind IServiceProvider.GetServic
 public class OrderService
 {
     private readonly IServiceProvider _serviceProvider;
+
+    public OrderService(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
     
     public void ProcessOrder(Order order)
     {
-        var validator = _serviceProvider.GetService<IOrderValidator>(); // Hidden dependency
-        var emailService = _serviceProvider.GetService<IEmailService>(); // Another hidden one
+        var validator = _serviceProvider.GetRequiredService<IOrderValidator>();
+        var emailService = _serviceProvider.GetRequiredService<IEmailService>();
         // Logic here
     }
 }
@@ -151,31 +167,48 @@ public class OrderService
 
 ## 5. The Memory Leak Landmine: Ignoring Service Disposal
 
-When you manually resolve services using IServiceProvider, you become responsible for their disposal. Services implementing IDisposable that aren't properly released create memory leaks that accumulate over time.
+The DI container owns and disposes services it creates. Transient and scoped services resolved within a scope are disposed when that scope ends, while singletons are disposed with the root container. The dangerous pattern is repeatedly resolving disposable transient services from the root provider: the root container retains them for disposal until application shutdown. Do not directly dispose a dependency that the container owns.
 
 ```csharp
-// Memory leak waiting to happen
-public class BackgroundProcessor
+// A disposable transient resolved from the root is retained until shutdown.
+builder.Services.AddTransient<IDataProcessor, DataProcessor>();
+builder.Services.AddSingleton<BackgroundProcessor>();
+
+public sealed class BackgroundProcessor
 {
+    private readonly IServiceProvider _rootProvider;
+
+    public BackgroundProcessor(IServiceProvider rootProvider)
+    {
+        _rootProvider = rootProvider;
+    }
+
     public void ProcessData()
     {
-        var service = _serviceProvider.GetService<IDataProcessor>(); // If IDisposable, never disposed
+        var service = _rootProvider.GetRequiredService<IDataProcessor>();
         service.Process();
     }
 }
 ```
 
-Always use proper disposal patterns when manually resolving services:
+Create an explicit scope for background work and dispose the scope. Use an asynchronous scope when dependencies may implement `IAsyncDisposable`:
 
 ```csharp
-public class BackgroundProcessor
+public sealed class BackgroundProcessor
 {
+    private readonly IServiceScopeFactory _scopeFactory;
+
+    public BackgroundProcessor(IServiceScopeFactory scopeFactory)
+    {
+        _scopeFactory = scopeFactory;
+    }
+
     public async Task ProcessDataAsync()
     {
-        using var scope = _serviceProvider.CreateScope();
+        await using var scope = _scopeFactory.CreateAsyncScope();
         var service = scope.ServiceProvider.GetRequiredService<IDataProcessor>();
         await service.ProcessAsync();
-        // Automatic disposal when scope ends
+        // The scope disposes container-owned scoped and transient services.
     }
 }
 ```
@@ -185,12 +218,12 @@ public class BackgroundProcessor
 Circular dependencies create an unsolvable puzzle for the DI container. Service A requires Service B, but Service B also requires Service A. This creates runtime exceptions that are particularly difficult to debug.
 
 ```csharp
-public class UserService
+public class UserService : IUserService
 {
     public UserService(IOrderService orderService) { } // Needs OrderService
 }
 
-public class OrderService
+public class OrderService : IOrderService
 {
     public OrderService(IUserService userService) { } // Needs UserService - CIRCULAR!
 }
@@ -199,12 +232,12 @@ public class OrderService
 Redesign your services to break the circular dependency. Consider using the mediator pattern or extracting shared logic into a separate service:
 
 ```csharp
-public class UserService
+public class UserService : IUserService
 {
     public UserService(ISharedBusinessLogic businessLogic) { }
 }
 
-public class OrderService
+public class OrderService : IOrderService
 {
     public OrderService(ISharedBusinessLogic businessLogic) { }
 }
@@ -212,20 +245,21 @@ public class OrderService
 
 ## Pro Tip: Validate Your Container at Startup
 
-Here's a game-changing practice that will save you from runtime surprises: force your ASP.NET Core application to validate all dependencies during startup rather than when they're first needed.
+Validate the ASP.NET Core service provider when the application is built so that constructor cycles, missing registrations, and captive scoped dependencies fail early.
 
 ```csharp
-public void ConfigureServices(IServiceCollection services)
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseDefaultServiceProvider(options =>
 {
-    // Your service registrations here
-    
-    // Validate container configuration at startup
-    services.AddOptions<ServiceProviderOptions>()
-        .Configure(options => options.ValidateOnBuild = true);
-}
+    options.ValidateOnBuild = true;
+    options.ValidateScopes = true;
+});
+
+// Register application services before builder.Build().
 ```
 
-This simple configuration change will catch dependency resolution issues immediately during application startup, rather than letting them lurk until runtime.
+`ValidateOnBuild` checks that registered services can be constructed. `ValidateScopes` rejects scoped services resolved from the root provider or injected into singletons. The Generic Host enables these checks by default in the Development environment; configuring them explicitly applies the policy in every environment. Open generic registrations are not checked by `ValidateOnBuild`, so startup validation cannot prove every runtime resolution path.
 
 ## The Bottom Line
 

@@ -4,9 +4,11 @@ slug: cqrs-without-mediatr
 tag: Architecture
 tags: Architecture, Backend, Refactoring
 title: .NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think
-subtitle: MediatR went commercial. Learn how to build a clean .NET CQRS architecture from scratch using interfaces, dispatchers, and decorators.
-intro: MediatR went commercial. Learn how to build a clean .NET CQRS architecture from scratch using interfaces, dispatchers, and decorators.
+subtitle: MediatR changed its licensing. Learn how to build a clean .NET CQRS architecture using interfaces, dispatchers, and decorators.
+intro: MediatR changed its licensing. Learn how to build a clean .NET CQRS architecture using interfaces, dispatchers, and decorators.
 date: February 23, 2026
+dateModified: September 19, 2026
+reviewedOn: September 19, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/net-cqrs-architecture-without-mediatr-your-exit-plan-is-simpler-than-you-think-3c8f99077a03
 ---
@@ -23,9 +25,9 @@ Here's the thing: CQRS is a pattern. MediatR is a library.
 
 They're not the same, and conflating them has been quietly making codebases more opaque than they need to be.
 
-Now that MediatR is moving to a commercial licensing model, many teams are finally asking a question they should have asked earlier: Do we even need this?
+MediatR 13 and later are no longer distributed under Apache-2.0. They are available under the Reciprocal Public License 1.5 or Lucky Penny's Community and commercial licenses, while MediatR 12.5 and earlier retain Apache-2.0. That change has many teams asking a question they should have asked earlier: Do we even need this dependency?
 
-Spoiler: you probably don't. And by the end of this article, you'll have a clean replacement that you fully own.
+Spoiler: many applications don't. And by the end of this article, you'll have a small dispatch layer that you own and can adapt to your needs.
 
 ## Why Most Teams Don't Actually Need MediatR
 
@@ -41,7 +43,7 @@ The actual CQRS value - separating reads from writes and making intent explicit 
 
 ## The Minimal CQRS Setup You Actually Need
 
-Let's build this from scratch. The goal is simple: a clean, explicit way to dispatch commands and queries with full support for cross-cutting concerns like logging and validation - no framework required.
+Let's build this from scratch. The goal is simple: a clean, explicit way to dispatch commands and queries with support for cross-cutting concerns like logging and validation, without a mediator package.
 
 ### Step 1: Define Your Intent Markers
 
@@ -54,6 +56,8 @@ public interface IQuery<TResponse>;
 ```
 
 These don't carry behavior. They declare intent. A class that implements ICommand<InvoiceDto> is unambiguously a write operation that returns an InvoiceDto. A class implementing IQuery<List<OrderSummary>> a read operation returning a list. The types communicate the design before you even read the logic.
+
+The semicolon-only declarations use C# 12. On earlier language versions, give each interface an empty brace body instead.
 
 ### Step 2: Define Handler Contracts
 
@@ -102,6 +106,13 @@ public interface IQueryDispatcher
 }
 ```
 
+There is one ergonomic difference from MediatR worth making explicit. C# cannot infer `TResponse` from a generic constraint or return type, so response-returning commands and queries must supply both type arguments:
+
+```csharp
+await commands.Dispatch<CreateInvoiceCommand, InvoiceDto>(command, ct);
+await queries.Dispatch<GetInvoiceQuery, InvoiceDto>(query, ct);
+```
+
 The implementations resolve the correct handler from the DI container at runtime using IServiceProvider:
 
 ```csharp
@@ -135,9 +146,9 @@ public class QueryDispatcher(IServiceProvider sp) : IQueryDispatcher
 }
 ```
 
-This is functionally similar to MediatR's ISender - but you wrote it, you understand every line of it, and it has no license attached.
+This is functionally similar to MediatR's ISender, but the dispatch code belongs to your application and carries no MediatR licensing obligation. It still depends on Microsoft DI, and handler presence, uniqueness, lifetime, and decoration remain container configuration concerns.
 
-Dispatchers should never live in Infrastructure (they don't talk to external systems) or in Domain (Domain has no knowledge of application orchestration). Application is their natural home.
+The dispatcher contracts fit naturally in Application, while Domain should know nothing about them. The shown implementations directly depend on `IServiceProvider` and `GetRequiredService`, so teams that keep Application independent of DI frameworks can place those implementations at the composition boundary instead. Keeping runtime service location confined to this small adapter is important because Microsoft recommends constructor injection over the service locator pattern in application code.
 
 ## A Real Example: Completing a Task
 
@@ -221,14 +232,15 @@ internal sealed class ValidationCommandHandler<TCommand, TResponse>(
     {
         var context = new ValidationContext<TCommand>(command);
 
-        var failures = (await Task.WhenAll(
-            validators.Select(v => v.ValidateAsync(context, cancellationToken))))
-            .SelectMany(r => r.Errors)
-            .Where(f => f != null)
-            .ToArray();
+        var failures = new List<ValidationFailure>();
+        foreach (var validator in validators)
+        {
+            var result = await validator.ValidateAsync(context, cancellationToken);
+            failures.AddRange(result.Errors.Where(f => f != null));
+        }
 
-        if (failures.Length > 0)
-            return Result.Failure<TResponse>(BuildValidationError(failures));
+        if (failures.Count > 0)
+            return Result.Failure<TResponse>(BuildValidationError(failures.ToArray()));
 
         return await inner.Handle(command, cancellationToken);
     }
@@ -238,7 +250,7 @@ internal sealed class ValidationCommandHandler<TCommand, TResponse>(
 }
 ```
 
-Each decorator wraps the inner handler with a single responsibility. They're composable, individually testable, and completely free of framework ceremony. And because the dispatcher resolves handlers from DI, the full decorator chain is automatically applied every time you call Dispatch(...) - without any extra wiring on the caller side.
+Each decorator wraps the inner handler with a single responsibility. They're composable, individually testable, and use ordinary DI decoration rather than mediator pipeline APIs. Because the dispatcher resolves handlers from DI, the configured decorator chain is applied every time you call Dispatch(...) without extra wiring on the caller side.
 
 ## Do You Even Need Scrutor?
 
@@ -255,57 +267,77 @@ The problem is obvious - this doesn't scale. Every time you add a new handler, y
 
 What Scrutor actually gives you is two things. The first is assembly scanning - it automatically discovers and registers all your handlers without you having to touch the DI setup every time you add a new one. The second is services.Decorate() - a clean API for wrapping registered services with decorators. Microsoft's built-in DI container doesn't have this out of the box.
 
-If you really want to skip Scrutor, you can replicate the scanning yourself with reflection:
+If you really want to skip Scrutor, you can replicate the scanning yourself with reflection. The scanner must select every exact handler interface and exclude abstract or open generic types, including the decorators:
 
 ```csharp
 var assembly = typeof(DependencyInjection).Assembly;
-var handlerTypes = assembly.GetTypes()
-    .Where(t => t.GetInterfaces()
-        .Any(i => i.IsGenericType &&
-             i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>)));
-
-foreach (var handlerType in handlerTypes)
+var handlerDefinitions = new[]
 {
-    var interfaceType = handlerType.GetInterfaces().First();
-    services.AddScoped(interfaceType, handlerType);
+    typeof(ICommandHandler<>),
+    typeof(ICommandHandler<,>),
+    typeof(IQueryHandler<,>)
+};
+
+foreach (var handlerType in assembly.DefinedTypes.Where(type =>
+             !type.IsAbstract &&
+             !type.IsInterface &&
+             !type.ContainsGenericParameters))
+{
+    foreach (var interfaceType in handlerType.ImplementedInterfaces.Where(type =>
+                 type.IsGenericType &&
+                 handlerDefinitions.Contains(type.GetGenericTypeDefinition())))
+    {
+        services.AddScoped(interfaceType, handlerType.AsType());
+    }
 }
 ```
 
-It works - but now you own that reflection code and have to maintain it. Scrutor is only 19KB with zero transitive dependencies. For most teams, the trade-off strongly favors just using it.
+It works, but now you own reflection code that needs tests as the handler model evolves. As of September 2026, Scrutor 7's NuGet package is 197.4KB and its .NET 8 assembly is about 60KB. It has two direct dependencies, `Microsoft.Extensions.DependencyInjection.Abstractions` and `Microsoft.Extensions.DependencyModel`. It remains a small, MIT-licensed package, and for most teams the trade-off favors using it instead of maintaining custom scanning and decoration code.
 
-With Scrutor, the full DI setup looks like this:
+The registration below also refers to `ValidationCommandHandlerBase<>`, `LoggingQueryHandler<,>`, and `LoggingCommandHandlerBase<>`. They are the non-response command and query equivalents of the decorators shown above; implement them before using these registrations, or remove the corresponding lines. The application's `Result`, error mapping, validators, and persistence abstractions are likewise project-specific rather than supplied by this setup.
+
+With those pieces in place, a representative Scrutor setup looks like this:
 
 ```csharp
 // Register all handlers via assembly scanning
 services.Scan(scan => scan
     .FromAssembliesOf(typeof(DependencyInjection))
-    .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
+    .AddClasses(c => c
+            .AssignableTo(typeof(IQueryHandler<,>))
+            .Where(type => !type.ContainsGenericParameters),
+        publicOnly: false)
         .AsImplementedInterfaces()
         .WithScopedLifetime()
-    .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<>)), publicOnly: false)
+    .AddClasses(c => c
+            .AssignableTo(typeof(ICommandHandler<>))
+            .Where(type => !type.ContainsGenericParameters),
+        publicOnly: false)
         .AsImplementedInterfaces()
         .WithScopedLifetime()
-    .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
+    .AddClasses(c => c
+            .AssignableTo(typeof(ICommandHandler<,>))
+            .Where(type => !type.ContainsGenericParameters),
+        publicOnly: false)
         .AsImplementedInterfaces()
         .WithScopedLifetime());
 
-// Apply decorators
-services.Decorate(typeof(ICommandHandler<,>), typeof(ValidationCommandHandler<,>));
-services.Decorate(typeof(ICommandHandler<>), typeof(ValidationCommandHandlerBase<>));
-services.Decorate(typeof(IQueryHandler<,>),  typeof(LoggingQueryHandler<,>));
-services.Decorate(typeof(ICommandHandler<,>), typeof(LoggingCommandHandler<,>));
-services.Decorate(typeof(ICommandHandler<>), typeof(LoggingCommandHandlerBase<>));
+// TryDecorate leaves optional handler families alone when none are registered
+services.TryDecorate(typeof(ICommandHandler<,>), typeof(ValidationCommandHandler<,>));
+services.TryDecorate(typeof(ICommandHandler<>), typeof(ValidationCommandHandlerBase<>));
+services.TryDecorate(typeof(IQueryHandler<,>),  typeof(LoggingQueryHandler<,>));
+services.TryDecorate(typeof(ICommandHandler<,>), typeof(LoggingCommandHandler<,>));
+services.TryDecorate(typeof(ICommandHandler<>), typeof(LoggingCommandHandlerBase<>));
 
 // Register the dispatchers
 services.AddScoped<ICommandDispatcher, CommandDispatcher>();
 services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 ```
 
-A subtle but important point: the last Decorate call becomes the outermost layer. In the setup above, logging runs first at runtime, then validation, then the core handler. This is exactly what you want - logging captures the full lifecycle, including early exits from validation failures.
+A subtle but important point: the last successful decoration becomes the outermost layer. In the setup above, logging runs first at runtime, then validation, then the core handler. This is exactly what you want: logging captures the full lifecycle, including early exits from validation failures. Filtering out types with unbound generic parameters is also essential here; otherwise the scan discovers the open generic decorators themselves and registers them as ordinary handlers.
 
 ## Using It in a Controller
 
-With the dispatchers registered, any controller only ever needs two dependencies - regardless of how many use cases it handles:
+With the dispatchers registered, a controller needs only two CQRS-facing dependencies regardless of how many commands and queries it handles:
 
 ```csharp
 [ApiController]
@@ -338,22 +370,22 @@ public class TasksController(
 }
 ```
 
-No matter how many actions you add to this controller, the constructor stays the same. ICommandDispatcher and IQueryDispatcher scale with your feature set without growing your dependency list. Add ten new use cases tomorrow - the controller signature doesn't change.
+No matter how many CQRS actions you add to this controller, those two dependencies stay the same. Other responsibilities may still require their own collaborators, but adding another handler does not add another constructor argument.
 
-This is the real reason the dispatcher pattern earns its place: it gives you MediatR's ergonomics without the library. You get a single unified entry point, a clean controller, full type safety - and you wrote every line of the infrastructure yourself.
+This is the real reason the dispatcher pattern earns its place: it gives you much of MediatR's request/handler ergonomics without the mediator package. You get a unified entry point and compile-time request constraints, while accepting that handler discovery and resolution are still runtime DI concerns.
 
 ## What You Actually Gain
 
-- **Debugging becomes trivial.** Stack traces go directly to the handler. No mediator indirection to unravel.
+- **The dispatch path stays small.** Stack traces can still include the dispatcher and decorators, but every layer is application-owned and easy to inspect.
 - **Onboarding is faster.** New developers don't need to know a library to understand the code - just the interfaces.
-- **Controllers stay lean.** Two constructor parameters, forever. Adding a new use case means adding a new handler class, not a new constructor argument.
-- **Testing is flexible.** Mock ICommandDispatcher at the controller level for integration-style tests, or mock individual ICommandHandler<T> implementations for pure unit tests - whatever granularity the situation calls for.
+- **Controllers stay lean.** Commands and queries share two entry points. Adding a use case means adding a handler rather than another CQRS constructor argument.
+- **Testing is flexible.** Mock the dispatcher for controller unit tests, instantiate handlers directly for handler unit tests, and use the real container and decorator chain for integration tests.
 - **You own the infrastructure.** Adding new handler variants, changing the decorator chain, or evolving the Result type doesn't require reading library documentation or waiting for updates.
 
 ## The Bigger Picture
 
 The question here isn't really "should I use MediatR?" The more valuable question is: do I understand what this abstraction is actually doing, and is the cost worth the benefit?
 
-MediatR earned its place in the ecosystem, and for complex scenarios - event-driven architectures, plugin systems, or teams that heavily rely on notification handlers - it still makes sense. But for the vast majority of apps, it was adding indirection without adding value.
+MediatR earned its place in the ecosystem, and for scenarios that rely heavily on in-process notifications, streams, pipeline behaviors, or plugin-style dispatch, it can still make sense. For many CRUD-oriented applications, however, a small explicit dispatcher may provide enough value with less indirection.
 
 CQRS is about making the intent of your operations explicit in the type system. That's an idea, not a library. And ideas don't come with license fees.

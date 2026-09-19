@@ -1,12 +1,14 @@
 ---
-seoTitle: Run Docker Natively on Windows with WSL2
+seoTitle: Run Docker Engine in WSL 2 Without Docker Desktop
 slug: goodbye-docker-desktop-wsl2
 tag: DevOps
 tags: DevOps
-title: Goodbye Docker Desktop: Run Linux & Docker Natively on Windows with WSL2
-subtitle: Set up a full-featured Linux development environment on Windows 10/11 - no virtual machines, no Docker Desktop, just performance.
-intro: Set up a full-featured Linux development environment on Windows 10/11 - no virtual machines, no Docker Desktop, just performance.
+title: Goodbye Docker Desktop: Run Docker Engine in WSL 2 on Windows
+subtitle: Set up a full-featured Linux development environment on Windows 10/11 without managing a traditional VM or installing Docker Desktop.
+intro: Set up a full-featured Linux development environment on Windows 10/11 without managing a traditional VM or installing Docker Desktop.
 date: May 5, 2025
+dateModified: September 19, 2026
+reviewedOn: September 19, 2026
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/goodbye-docker-desktop-run-linux-docker-natively-on-windows-with-wsl2-178ebb1deb51
 ---
@@ -17,44 +19,48 @@ At ARG, our development team works across different operating systems - some pre
 
 For our Windows developers, this meant finding a way to run the same Linux-based tools and containers that our Linux team members use natively. Windows Subsystem for Linux (WSL) has been our answer, providing a bridge between platforms.
 
-The best part of our solution? We've eliminated the need for Docker Desktop, which was consuming excessive resources on our Windows machines and slowing development. This guide shares our approach to setting up WSL2 and installing Docker directly inside WSL - giving you the same performance our Linux developers enjoy, but without leaving Windows. We'll also show you how to set up Portainer as a lightweight yet powerful alternative to Docker Desktop's resource-heavy GUI.
+The best part of our solution? We've eliminated the need for Docker Desktop on machines where its extra management features were not required. This guide shares our approach to setting up WSL 2 and installing Docker Engine directly inside a Linux distribution, giving Windows developers a familiar Linux container workflow. We'll also show you how to set up Portainer as a lightweight visual interface for Docker.
 
 ## What's WSL All About?
 
-WSL lets you run a full Linux environment directly on Windows, no virtual machine or dual-boot required. There are two versions worth knowing about:
+WSL lets you run a Linux distribution directly from Windows without managing a traditional virtual machine or dual-boot setup. WSL 2 still uses a lightweight utility VM behind the scenes. There are two versions worth knowing about:
 
-- **WSL 1.** Translates Linux system calls to Windows. It's faster for accessing files but has limited compatibility with container tools.
+- **WSL 1.** Translates Linux system calls to Windows. It can be faster when Linux tools must access files stored on the Windows filesystem, but it has limited compatibility with container tools.
 - **WSL 2.** Uses a lightweight VM with a full Linux kernel. This offers excellent compatibility with modern tools like Docker and Kubernetes.
 
 Our recommendation? Go with WSL 2 - it's the default now for good reason and supports all the modern Linux tools you'll need. As Microsoft explains in its official documentation, WSL 2 provides a full Linux kernel experience right within Windows, making it perfect for container development.
+
+This setup is for Linux containers. It does not replace Docker Desktop's Windows-container mode or features that are specific to Docker Desktop.
 
 ![WSL2 Docker development environment version comparison](/images/blog/goodbye-wsl/setting-up-wsl.webp)
 
 ## Setting Up WSL on Windows 10/11
 
-Getting WSL up and running is straightforward. Open PowerShell as Administrator and run:
+Getting WSL up and running is straightforward. These commands require Windows 10 version 2004, build 19041 or newer, or Windows 11. Open PowerShell as Administrator and run:
 
-```bash
+```powershell
 wsl --install
 ```
 
+Restart Windows when prompted, then launch the installed distribution to create your Linux user. The one-command installation applies when WSL is not already installed.
+
 Want to see what other distros are available?
 
-```bash
+```powershell
 wsl --list --online
 ```
 
 ![WSL2 Linux distributions available for Docker development](/images/blog/goodbye-wsl/distros-list.webp)
 
-To install a specific one (e.g., Debian):
+To install a specific one, such as Ubuntu 24.04:
 
-```bash
-wsl --install -d Debian
+```powershell
+wsl --install -d Ubuntu-24.04
 ```
 
 Once installed, set your default distro:
 
-```bash
+```powershell
 wsl --set-default <DistributionName>
 ```
 
@@ -62,62 +68,69 @@ wsl --set-default <DistributionName>
 
 ### The Architectural Sandwich Problem
 
-Docker Desktop implements a very complex architecture. It runs in a separate, isolated environment with its own Linux VM using LinuxKit, creating an additional virtualization layer that slows everything down. While Docker Desktop uses WSL2's dynamic memory allocation, it adds its own resource management systems that control how the Docker daemon interacts with the host system. Docker Desktop also runs in a separate distro and isolated namespace, requiring API proxies to translate paths between your user distro and the LinuxKit container.
+With the WSL 2 backend, Docker Desktop runs inside its isolated docker-desktop distribution and namespace within WSL's shared utility VM. It adds Desktop services, integration proxies, and management features, but it does not add a second VM on top of WSL 2. Docker Desktop's Hyper-V and Docker VMM backends use different architectures.
 
 ### File System Performance Issues
 
-One of the biggest bottlenecks comes from how Docker Desktop handles file system operations. When mounting Windows-based files into containers, there's significant performance degradation compared to keeping volumes inside WSL2. Docker Desktop uses cross-distro bindings to expose the daemon to your user distro and access your files from its contained environment, adding overhead to every file operation.
+One of the biggest bottlenecks is crossing between the Windows and Linux filesystems. When mounting Windows-based files into Linux containers, performance can degrade significantly compared with keeping projects and bind-mounted data in the WSL Linux filesystem. This recommendation applies whether you use Docker Desktop's WSL backend or a Docker Engine installed directly in your distribution.
 
 ### Memory Consumption
 
-The multi-layered approach of Docker Desktop is hungry for resources. Running Docker directly in WSL2 without Docker Desktop has been observed to use up to five times less memory in some tests. Docker Desktop also doesn't handle memory reclamation as efficiently, often leaving large amounts of memory tied up in the Linux kernel's page cache.
+Running Docker Engine directly removes Docker Desktop's UI and management services, which can reduce overhead on machines that do not need those features. Actual memory use depends on the workload, versions, idle state, and configuration. Cached-memory reclamation belongs to the shared WSL VM; WSL's autoMemoryReclaim setting can return unused page-cache memory to Windows.
 
 ### Real-World Performance Differences
 
-The numbers don't lie. Real-world tests have shown operations taking more than triple the time on Docker Desktop compared to native Docker, even when the native environment had fewer resources. Native Docker in WSL2 starts almost instantly, while Docker Desktop has a longer initialization process due to its additional management layers.
+Performance depends heavily on the workload and where project files are stored. Keeping Linux-container projects in the WSL filesystem is usually more important than the choice of interface around the Docker daemon. Measure your own build, startup, and memory usage before choosing between a direct Engine installation and Docker Desktop.
 
 ## Installing Docker in WSL
 
-Based on the latest best practices, here's how to install Docker directly in your WSL environment:
+The commands below follow Docker's current instructions for supported Ubuntu releases. If you chose Debian or another distribution, use Docker's installation instructions for that distribution instead. Before using this approach, disable Docker Desktop integration for the distribution and stop Docker Desktop to avoid connecting the CLI to the wrong daemon.
 
 ```bash
-# 1. Update and install dependencies
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y ca-certificates curl gnupg lsb-release
+# 1. Remove packages that conflict with Docker Engine
+for pkg in docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc docker-buildx; do
+  sudo apt remove -y "$pkg"
+done
 
-# 2. Add Docker's official GPG key
-sudo mkdir -m 0755 -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
-  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+# 2. Add Docker's official signing key
+sudo apt update
+sudo apt install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+  -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-# 3. Set up Docker's repository
-echo \
-  "deb [arch=$(dpkg --print-architecture) \
-  signed-by=/etc/apt/keyrings/docker.gpg] \
-  https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+# 3. Add Docker's apt repository
+sudo tee /etc/apt/sources.list.d/docker.sources > /dev/null <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
 
-# 4. Install Docker packages
+# 4. Install Docker Engine and its plugins
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# 5. Start Docker service
-sudo service docker start
+# 5. Start Docker now and on future distro launches
+sudo systemctl enable --now docker
+sudo systemctl status docker --no-pager
 
-# 6. Optional: Allow Docker commands without sudo
+# 5. Optional: allow Docker commands without sudo
 sudo usermod -aG docker $USER
 ```
 
-Log out and back into your WSL terminal (or restart the terminal) for group changes to take effect. Then test Docker:
+Current Ubuntu distributions installed through `wsl --install` enable systemd by default. Older installations and some other distributions may require systemd to be enabled in `/etc/wsl.conf` before `systemctl` can manage Docker.
+
+Important security note: membership in the `docker` group grants root-level privileges. Log out completely and back in, run `newgrp docker`, or terminate the distribution from PowerShell so group membership is re-evaluated. If that level of access is not appropriate, consider Docker's rootless mode instead. Then test Docker:
 
 ```bash
 docker run hello-world
 ```
 
 If you see the "Hello from Docker!" message, you're ready to go.
-
-Important note: As mentioned in the detailed installation guide by Jonathan Bowman, the iptables configuration is crucial for Docker networking to function properly in WSL. Without this step, container networking might fail.
 
 ## Installing Portainer: A GUI for Docker
 
@@ -127,25 +140,27 @@ If you like visual tools for managing containers, Portainer is a lightweight alt
 # Create a Docker volume for Portainer data
 docker volume create portainer_data
 
-# Run the Portainer container
-docker run -d -p 8000:8000 -p 9443:9443 --name portainer \
+# Run Portainer for local access only
+docker run -d -p 127.0.0.1:9443:9443 --name portainer \
   --restart=always \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v portainer_data:/data \
-  portainer/portainer-ce:latest
+  portainer/portainer-ce:lts
 ```
 
-Open your browser and go to http://localhost:9443 to access the Portainer interface. You'll be prompted to create an admin user on the first login.
+Open your browser and go to https://localhost:9443 to access the Portainer interface. Portainer uses a self-signed certificate by default, so your browser will display a certificate warning. Run `docker logs portainer`, find the `setup_token` value, and use it during first-time setup within five minutes. You can then create the administrator account.
+
+Mounting `/var/run/docker.sock` gives Portainer root-equivalent control over the Docker host. Only run a trusted Portainer image and do not expose the interface to untrusted networks. Port 8000 is only required for Portainer Edge Agents and is intentionally omitted here.
 
 ![Portainer login screen for Docker on WSL2](/images/blog/goodbye-wsl/portainer-login.webp)
 
 ![Portainer environment](/images/blog/goodbye-wsl/portainer-environment.webp)
 
-Developer tip: Portainer makes container management visual and intuitive. According to many developers working with WSL2, the combination of native Docker and Portainer provides most of the functionality of Docker Desktop without the resource overhead.
+Developer tip: Portainer makes container management visual and intuitive. A distro-local Docker Engine and Portainer cover the core container-management workflow without requiring Docker Desktop.
 
-## Optional: Tune WSL2 Performance with .wslconfig
+## Optional: Cap WSL 2 Resource Usage with .wslconfig
 
-By default, WSL2 can consume significant system resources depending on what you're running. You can control memory, CPU usage, and whether Linux GUI apps are supported by editing the .wslconfig file.
+By default, WSL 2 can consume significant system resources depending on what you're running. You can control memory, CPU usage, and whether Linux GUI apps are supported by editing the .wslconfig file. These limits apply globally to the shared WSL 2 VM and affect every WSL 2 distribution. Lower limits reduce host resource consumption but can also slow container builds and other Linux workloads.
 
 Create .wslconfig in your Windows user folder at C:\Users\<YourUsername>\.wslconfig and add the following configuration:
 
@@ -160,7 +175,7 @@ guiApplications=false
 
 To apply the configuration, run:
 
-```bash
+```powershell
 wsl --shutdown
 ```
 
@@ -168,8 +183,8 @@ This stops all WSL instances and reloads the .wslconfig settings on the next lau
 
 ## Wrapping Up
 
-You now have the best of both worlds - Windows for your desktop needs and a true Linux environment for development. This setup runs leaner and faster than Docker Desktop, especially on machines with limited resources.
+You now have the best of both worlds - Windows for your desktop needs and a Linux environment for development. This setup removes Docker Desktop's UI and management services, but the practical resource and performance difference depends on your workload and configuration.
 
-The beauty of this approach is that you're running Docker the same way you would on a Linux server, making your development environment more closely match production. With Portainer, you still get a clean web interface for managing your containers without the overhead of Docker Desktop.
+The beauty of this approach is that you're using the same Docker Engine and CLI model found on Linux servers, helping your development workflow more closely resemble production. With Portainer, you still get a clean web interface for managing your containers without installing Docker Desktop.
 
 Happy coding across platforms! Follow us for more developer tips and development guides.

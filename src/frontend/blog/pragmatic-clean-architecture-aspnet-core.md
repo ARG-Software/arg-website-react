@@ -7,6 +7,8 @@ title: Taming the Chaos: A Developer's Guide to Pragmatic Clean Architecture in 
 subtitle: Build maintainable code without overengineering. Practical examples for developers seeking cleaner, testable and maintainable solution.
 intro: Build maintainable code without overengineering. Practical examples for developers seeking cleaner, testable and maintainable solution.
 date: May 3, 2025
+dateModified: September 19, 2026
+reviewedOn: September 19, 2026
 readTime: 15 min read
 mediumUrl: https://arg-software.medium.com/taming-the-chaos-a-developers-guide-to-pragmatic-clean-architecture-in-net-%EF%B8%8F-c0b05de359a7
 ---
@@ -133,7 +135,9 @@ public sealed class PricingService
 {
     public Money CalculatePrice(Apartment apartment, DateRange period)
     {
-        var priceForPeriod = apartment.Price * period.Length;
+        var priceForPeriod = new Money(
+            apartment.Price.Amount * period.Length,
+            apartment.Price.Currency);
         
         var cleaningFee = apartment.CleaningFee;
         
@@ -142,10 +146,8 @@ public sealed class PricingService
         return priceForPeriod + cleaningFee + amenitiesUpgrade;
     }
     
-    private Money CalculateAmenitiesUpgrade(Apartment apartment)
-    {
-        // Calculate price increase based on premium amenities
-    }
+    private static Money CalculateAmenitiesUpgrade(Apartment apartment) =>
+        Money.Zero(apartment.Price.Currency); // Replace with the application's surcharge rules.
 }
 ```
 
@@ -189,11 +191,12 @@ internal sealed class ReserveBookingCommandHandler : ICommandHandler<ReserveBook
 
     // Constructor with dependency injection...
 
-    public async Task<Result<Guid>> Handle(
+    public Task<Result<Guid>> Handle(
         ReserveBookingCommand command,
         CancellationToken cancellationToken)
     {
-        // Application logic here...
+        // Application logic is omitted from this abbreviated example.
+        throw new NotImplementedException();
     }
 }
 ```
@@ -202,7 +205,7 @@ CQRS is particularly valuable in Clean Architecture for several key reasons:
 
 - **Separation of concerns.** By dividing read and write operations, each can be designed according to its specific requirements. Commands often involve complex business rules and validation, while queries are optimized for retrieval performance and "can improve the performance, scalability, and security of an application".
 - **Simplified command handlers.** Command handlers can focus exclusively on domain logic without the complexity of also handling query optimization, making them more maintainable.
-- **Independent scaling.** Read and write operations often have different performance profiles and scaling needs. CQRS allows each side to scale independently based on its specific load patterns.
+- **Independent scaling.** Read and write operations often have different performance profiles and scaling needs. When the read and write paths are deployed or stored separately, CQRS allows each side to scale independently. The in-process separation shown here improves organization but does not provide independent scaling by itself.
 - **Better alignment with domain events.** CQRS naturally aligns with event-driven architectures, making it easier to implement features like the Outbox Pattern, which we will explore below.
 - **Enhanced testability.** The clear separation makes it easier to test business rules independently of data retrieval operations.
 
@@ -213,7 +216,7 @@ Input validation is performed using FluentValidation, which is injected into Med
 ```csharp
 public class ValidationBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IBaseCommand
+    where TRequest : notnull
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -229,22 +232,25 @@ public class ValidationBehavior<TRequest, TResponse>
     {
         if (!_validators.Any())
         {
-            return await next();
+            return await next(cancellationToken);
         }
+
         var context = new ValidationContext<TRequest>(request);
-        var validationErrors = _validators
-            .Select(validator => validator.Validate(context))
-            .Where(validationResult => validationResult.Errors.Any())
-            .SelectMany(validationResult => validationResult.Errors)
-            .Select(validationFailure => new ValidationError(
-                validationFailure.PropertyName,
-                validationFailure.ErrorMessage))
-            .ToList();
+        var validationErrors = new List<ValidationError>();
+        foreach (var validator in _validators)
+        {
+            var result = await validator.ValidateAsync(context, cancellationToken);
+            validationErrors.AddRange(result.Errors.Select(validationFailure =>
+                new ValidationError(
+                    validationFailure.PropertyName,
+                    validationFailure.ErrorMessage)));
+        }
         if (validationErrors.Any())
         {
             throw new Exceptions.ValidationException(validationErrors);
         }
-        return await next();
+
+        return await next(cancellationToken);
     }
 }
 ```
@@ -271,7 +277,7 @@ public class ReserveBookingCommandValidator : AbstractValidator<ReserveBookingCo
             .GreaterThan(x => x.StartDate)
             .WithMessage("End date must be after start date");
         RuleFor(x => x)
-            .Must(x => (x.EndDate - x.StartDate).Days <= 14)
+            .Must(x => x.EndDate.DayNumber - x.StartDate.DayNumber <= 14)
             .WithMessage("Booking duration cannot exceed 14 days");
     }
 }
@@ -349,9 +355,9 @@ This approach offers several significant benefits:
 
 In distributed systems, ensuring reliable event publishing is critical. When domain events and database transactions need to happen together, a common problem arises: what if the database transaction succeeds but the event publishing fails? Or what if events are published, but the transaction later rolls back? This inconsistency can lead to data corruption, missing business events, or incorrect system state.
 
-The Outbox Pattern solves this problem by ensuring atomicity between database changes and event notifications. It functions as a transactional message buffer, ensuring that events are only published after their related database changes have been safely committed.
+The Outbox Pattern solves the transaction boundary problem by atomically storing database changes and an outbox record in the same transaction. It functions as a transactional message buffer, ensuring that only records associated with committed changes are available for later processing.
 
-We implement this pattern by capturing domain events during database transactions and persisting them into an outbox_messages table (part of the same transaction). A Quartz.NET background job then periodically reads these events and publishes them in-process using MediatR. This "store now, publish later" approach ensures that no events are lost if the application crashes after committing data, no events are published if the transaction fails, events are eventually consistent with the database state, and retry mechanisms can be implemented for failed event processing.
+We implement this pattern by capturing domain events during database transactions and persisting them into an outbox_messages table as part of the same transaction. A Quartz.NET background job then periodically reads these events and dispatches them in-process using MediatR. This "store now, publish later" approach preserves committed events across application restarts and supports retries. Processing is normally at least once, so handlers must tolerate duplicates and ordering must be designed explicitly. If other services need these notifications, a handler must publish an integration event through a durable broker rather than relying on MediatR alone.
 
 External services are also handled in this layer: authentication via Keycloak using JWT Bearer tokens, caching with Redis through ICacheService, email via a concrete EmailService, and time abstraction via IDateTimeProvider.
 
@@ -442,7 +448,7 @@ public static IServiceCollection AddApplication(this IServiceCollection services
     services.AddMediatR(config => 
     {
         config.RegisterServicesFromAssembly(typeof(ReserveBookingCommand).Assembly);
-        config.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        config.AddOpenBehavior(typeof(ValidationBehavior<,>));
     });
     
     // Register validators
@@ -475,7 +481,7 @@ public static IServiceCollection AddInfrastructure(
 
 When a request comes in, it follows this path: HTTP Request arrives and the Controller action is called. The Controller maps the request to a Command/Query and passes it to ISender. MediatR runs it through pipeline behaviors (validation, logging, etc.). The appropriate Handler processes the command/query. The Handler uses Domain entities and rules to perform business logic. The Handler interacts with Infrastructure through repositories and services. Results flow back up the chain to the controller. The controller transforms the result into an HTTP Response.
 
-This flow adheres to the dependency rule: outer layers depend on inner layers, but never the reverse.
+Business code in this flow adheres to the dependency rule: dependencies point toward the core. The composition root may reference Infrastructure solely to connect implementations to core interfaces.
 
 ## Testing Strategies
 

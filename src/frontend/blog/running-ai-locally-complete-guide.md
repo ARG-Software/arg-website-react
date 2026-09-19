@@ -4,87 +4,92 @@ slug: running-ai-locally-complete-guide
 tag: AI
 tags: AI, DevOps
 title: Break Free from ChatGPT: Your Complete Guide to Running AI on Your Own Computer
-subtitle: Learn how to run AI locally on your own computer and break free from cloud tools like ChatGPT. Boost privacy, speed, and control with ease.
-intro: Learn how to run AI locally on your own computer and break free from cloud tools like ChatGPT. Boost privacy, speed, and control with ease.
+subtitle: Learn how to run AI locally and understand the privacy, cost, performance, and control trade-offs.
+intro: Learn how to run AI locally and understand the privacy, cost, performance, and control trade-offs.
 date: December 2, 2025
+dateModified: September 19, 2026
+reviewedOn: September 19, 2026
 readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/break-free-from-chatgpt-your-complete-guide-to-running-ai-on-your-own-computer-b7f1b20da0bf
 ---
 
 ![Break Free from ChatGPT](/images/blog/break-free-from-chatgpt/break-free-from-chatgpt-header.webp)
 
-In an era where ChatGPT and Claude dominate the AI landscape, there's a powerful alternative that many people don't know about: running large language models (LLMs) directly on your own computer. This isn't just for tech wizards anymore - with the right tools, anyone can have their own private AI assistant running locally.
+In an era where ChatGPT and Claude dominate the AI landscape, there's a powerful alternative that many people don't know about: running large language models (LLMs) directly on your own computer. With the right tools and suitable hardware, you can run a locally hosted AI assistant without sending each inference request to a model provider.
 
 ## Why Your Next AI Assistant Should Run Locally
 
-### Complete Privacy - Your Data Stays Yours
+### More Control Over Data
 
-Your conversations never leave your computer. No data is sent to external servers, which means sensitive business information stays private, personal conversations remain confidential, there are no data retention policies to worry about, and you get full compliance with data protection regulations.
+Prompts sent to a locally hosted Ollama model remain local to Ollama. They can leave your computer if you select an Ollama cloud model, enable web search, connect Open WebUI to a hosted provider, install networked tools, or expose the local server. Local deployment can reduce third-party data transfer, but it does not automatically protect chats stored on disk or establish compliance with data protection regulations.
 
-### Zero Ongoing Costs - Pay Once, Use Forever
+For strict local-only Ollama operation, set `disable_ollama_cloud` in `~/.ollama/server.json`, then restart Ollama:
 
-After the initial setup, there are no subscription fees or API costs. Use your AI as much as you want without worrying about monthly subscription payments, per-token pricing, usage limits or rate restrictions, or credit card requirements.
+```json
+{
+  "disable_ollama_cloud": true
+}
+```
 
-### Unlimited Usage - No More Rate Limits
+### No Per-Token Provider Bill
 
-No daily message limits, no throttling, no waiting in queues. Your local LLM is always available, even without an internet connection.
+Local inference avoids per-token provider charges for locally licensed models. Hardware, electricity, storage, maintenance, backups, and upgrades still have ongoing costs, so it is not accurate to describe local AI as free after setup.
+
+### Usage Limited by Your Hardware
+
+Local inference has no external provider message quota, but throughput is limited by your hardware. Ollama queues work when models or accelerators are busy and returns an HTTP 503 response if its configured queue is full.
 
 ### Customization Freedom - Make It Yours
 
-You can fine-tune models for specific tasks, run multiple models simultaneously, and experiment with different configurations without restrictions.
+You can customize system prompts and runtime parameters, import compatible GGUF or Safetensors models, and run multiple models when memory permits. Training or fine-tuning generally requires separate tooling before you import the resulting weights into Ollama.
 
 ### Offline Capability - Work Anywhere
 
-Once downloaded, your LLM works completely offline - perfect for travel, areas with poor connectivity.
+After Ollama, the selected local model, and any supporting UI models are downloaded, local inference can run offline. Disable cloud features and avoid web search, hosted providers, and networked tools if strict offline behavior is required.
 
 ## Understanding Model Sizes and Hardware Requirements
 
-The performance of local LLMs heavily depends on two factors: the model size (measured in billions of parameters) and your computer's specifications.
+Model memory depends on the exact artifact, quantization, context length, parallel requests, and CPU or GPU offloading. Parameter count alone is not enough, and download size is only a lower bound because the runtime and context cache need additional memory.
 
-### 3B Parameter Models (Entry Level)
+Use the exact tag in the Ollama library to check artifact size and quantization before downloading. These examples illustrate the range rather than rank model quality:
 
-RAM Required: 8 GB minimum. GPU: Optional (helps with speed). Storage: 2–4 GB. Best for: Basic tasks, coding assistance, quick Q&A. Examples: Llama 3.2 3B, Phi-3 Mini.
+| Example tag | Download size | Practical guidance |
+| --- | ---: | --- |
+| `llama3.2:3b` | About 2.0 GB | A modest starting point for systems with 8 GB of RAM |
+| `mistral:7b` | About 4.4 GB | A Q4 model that benefits from more memory for context and other applications |
+| `gpt-oss:20b` | About 14 GB | Designed to run with 16 GB of memory, but additional headroom is useful |
+| `llama3.1:70b` | About 43 GB | Plan for roughly 64 GB or more system memory, especially with larger contexts |
 
-### 7–8B Parameter Models (Sweet Spot)
-
-RAM Required: 16 GB minimum. GPU: 6–8 GB VRAM recommended. Storage: 4–8 GB. Best for: General-purpose tasks, balanced performance. Examples: Mistral 7B, Llama 3.1 8B.
-
-### 13B Parameter Models (Advanced)
-
-RAM Required: 32 GB minimum. GPU: 12 GB VRAM recommended. Storage: 8–14 GB. Best for: Complex reasoning, professional use. Examples: Llama 2 13B, WizardLM 13B.
-
-### 70B+ Parameter Models (Professional)
-
-RAM Required: 64 GB minimum. GPU: 24 GB+ VRAM (or multiple GPUs). Storage: 40–80 GB. Best for: Production environments, highest quality outputs. Examples: Llama 3.1 70B, Mixtral 8x22B.
+A compatible GPU can improve speed, but the model and its context must fit available VRAM for full GPU placement. Ollama can split some models between CPU and GPU memory at lower performance. Long context windows and parallel requests can add substantial memory use even when the model weights fit.
 
 ## Step-by-Step Installation Guide
 
 ### Method 1: Ollama (Recommended for Beginners)
 
-Ollama is the easiest way to get started with local LLMs. It handles everything automatically.
+Ollama provides native applications and a command-line interface for downloading and running local models.
 
-Install Ollama on macOS/Linux:
+On Linux, install Ollama with:
 
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
 ```
 
-On Windows, download the installer from ollama.com/download.
+On macOS, download the DMG from ollama.com/download, move Ollama to Applications, and launch it. On Windows, download and run the installer from the same page.
 
 Download your first model by opening your terminal and running:
 
 ```bash
-# For 8 GB RAM systems
+# A modest 2.0 GB model artifact
 ollama pull llama3.2:3b
 
-# For 16 GB RAM systems (recommended)
+# A 4.4 GB Q4 model artifact
 ollama pull mistral:7b
 
-# For 32 GB+ RAM systems
-ollama pull llama3.1:70b
+# A larger reasoning model with a 14 GB artifact
+ollama pull gpt-oss:20b
 ```
 
-The download might take 5–30 minutes, depending on model size and internet speed.
+Download time depends on the artifact size and your connection. Leave enough disk space for both the model and future updates.
 
 Start chatting:
 
@@ -98,15 +103,21 @@ You'll see a prompt where you can start chatting immediately:
 >>> Hello! How are you today?
 ```
 
-For a ChatGPT-like experience, install Open WebUI:
+For a browser-based chat experience, install Docker, generate a persistent secret, and run Open WebUI:
 
 ```bash
-docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway \
-  -v open-webui:/app/backend/data --name open-webui \
+export WEBUI_SECRET_KEY="$(openssl rand -hex 32)"
+
+docker run -d -p 127.0.0.1:3000:8080 --add-host=host.docker.internal:host-gateway \
+  -v open-webui:/app/backend/data \
+  -e WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" \
+  --name open-webui \
   --restart always ghcr.io/open-webui/open-webui:main
 ```
 
 Then visit http://localhost:3000 in your browser.
+
+Binding to `127.0.0.1` keeps the first-run administrator setup off untrusted networks. The `:main` image is a rolling build. Pin a specific Open WebUI version tag when reproducibility matters. Open WebUI can connect to local or hosted providers, so review its connections and enabled tools before using sensitive data.
 
 ### Method 2: LM Studio (Best for Windows Users)
 
@@ -118,7 +129,7 @@ LM Studio advantages: no command line required, visual model management, built-i
 
 ```bash
 # List installed models
-ollama list
+ollama ls
 
 # Remove a model
 ollama rm llama3.2:3b
@@ -126,54 +137,62 @@ ollama rm llama3.2:3b
 # Show model information
 ollama show mistral:7b
 
-# Copy a model (for customization)
-ollama cp mistral:7b my-custom-model
+# Copy a model into your Ollama account namespace
+ollama cp mistral:7b your-username/my-custom-model
 
-# Push to Ollama registry (if you've customized)
-ollama push my-custom-model
+# Sign in and push it to the Ollama registry
+ollama signin
+ollama push your-username/my-custom-model
 ```
+
+Pushing publishes model data to Ollama rather than keeping it only on your computer. Review the source model's license and do not include private data in a model you publish.
 
 ## Performance Optimization Tips
 
 ### Enable GPU Acceleration
 
-For NVIDIA GPUs, verify CUDA is available and Ollama will use it automatically:
+Ollama automatically uses a supported NVIDIA GPU when it can. `nvidia-smi` confirms that the driver can see the GPU; `ollama ps` confirms where Ollama loaded the model:
 
 ```bash
-# Verify CUDA is available
+# Verify that the NVIDIA driver sees the GPU
 nvidia-smi
 
-# Ollama automatically uses GPU if available
-# Check with:
-ollama run mistral:7b --verbose
+# Run a model, then check placement from another terminal
+ollama run mistral:7b
+ollama ps
 ```
 
-Apple Silicon (M1/M2/M3/M4): Ollama automatically uses Metal acceleration. No configuration needed!
+The `PROCESSOR` column reports full GPU, full CPU, or split CPU and GPU placement. Consult Ollama's current hardware support matrix because GPU families and minimum driver versions change over time.
 
-For AMD GPUs with ROCm:
+On supported Apple M-series Macs, Ollama uses Metal acceleration. On Windows and Linux, Ollama supports listed AMD GPUs through ROCm and supports additional hardware through Vulkan. Vulkan is enabled by default when its backend is installed.
 
-```bash
-# Ensure ROCm is installed
-rocm-smi
-
-# Set environment variable
-export HSA_OVERRIDE_GFX_VERSION=10.3.0  # Adjust for your GPU
-```
+Do not set `HSA_OVERRIDE_GFX_VERSION` as a routine AMD configuration step. It is an experimental Linux workaround for specific unsupported targets and must match the GPU architecture. Start with the official compatibility table and driver instructions instead.
 
 ### Adjust Context Window for Speed
 
-Smaller context windows = faster responses and less RAM usage:
+Smaller context windows reduce context-cache memory and prompt-processing work. They can improve performance, but they also reduce how much conversation or document history the model can use.
 
-```
-# Create a Modelfile with optimized context
+Create a `Modelfile` with one context setting:
+
+```dockerfile
 FROM mistral:7b
-PARAMETER num_ctx 2048  # Default is usually 4096
-
-# For maximum speed
-PARAMETER num_ctx 1024
+PARAMETER num_ctx 2048
 ```
 
-Trade-off: Smaller windows mean less conversation memory.
+Then create and run the customized model:
+
+```bash
+ollama create mistral-2k -f Modelfile
+ollama run mistral-2k
+```
+
+For a temporary change in an interactive `ollama run` session, use:
+
+```text
+/set parameter num_ctx 2048
+```
+
+Ollama's default context allocation varies with available VRAM. Use `ollama ps` to inspect the active context and processor placement instead of assuming one universal default.
 
 ### Use Appropriate Quantization Levels
 
@@ -182,10 +201,14 @@ Think of quantization like compressing a high-resolution photo. The original ima
 ![Break free from ChatGPT Statistics](/images/blog/break-free-from-chatgpt/break-free-from-chatgpt-stats.webp)
 
 ```bash
-# Download specific quantization
-ollama pull mistral:7b-q4_K_M
-ollama pull llama3.1:8b-q8_0
+# mistral:7b is already Q4_K_M
+ollama pull mistral:7b
+
+# An explicit higher-precision Llama 3.1 instruct tag
+ollama pull llama3.1:8b-instruct-q8_0
 ```
+
+Higher-precision artifacts such as Q8 or F16 consume more storage and memory than Q4. F16 is not a quantized format.
 
 ### Monitor System Resources
 
@@ -208,13 +231,15 @@ On Windows, use Task Manager (Ctrl+Shift+Esc) or PowerShell:
 Get-Process ollama
 ```
 
-### Optimize Environment Variables
+### Configure Server Environment Variables
+
+These examples apply when you launch `ollama serve` from the same shell. Desktop applications and Linux system services require setting variables through the operating system or service configuration and then restarting Ollama.
 
 ```bash
-# Allow multiple models loaded simultaneously
+# Cap concurrently loaded models; each must fit available memory
 export OLLAMA_MAX_LOADED_MODELS=2
 
-# Increase parallel request handling
+# Allow parallel requests; this increases context-cache memory use
 export OLLAMA_NUM_PARALLEL=4
 
 # Set custom model storage location
@@ -222,34 +247,38 @@ export OLLAMA_MODELS=/path/to/fast/ssd
 
 # Adjust keep-alive time (seconds models stay in memory)
 export OLLAMA_KEEP_ALIVE=300
+
+ollama serve
 ```
+
+Increasing concurrency is not automatically an optimization. Required memory grows with parallel requests and context length, and requests are queued when Ollama cannot load another model safely.
 
 ### Hardware-Specific Optimizations
 
-For systems with limited RAM: use smaller models (3B-7B), aggressive quantization (Q4), smaller context windows (2048), and close unnecessary applications.
+For systems with limited RAM: choose a smaller artifact, prefer Q4 when it meets your quality needs, use a context window appropriate to the task, and close unnecessary applications.
 
-For systems with good GPU but limited RAM: use quantized models (Q4/Q5), let the GPU handle the computation, and use moderate context windows (4096).
+For systems with sufficient VRAM but limited system RAM: choose a model that fits the GPU, verify placement with `ollama ps`, and leave memory headroom for the context cache.
 
-For high-end systems: use larger models (70B), higher quantization (Q8/F16), large context windows (16k-128k), and run multiple models simultaneously.
+For high-end systems: increase model size, precision, context, or concurrency only when the workload benefits and monitoring confirms that the added memory and latency are acceptable.
 
 ## Local vs Cloud LLMs: When to Use Each
 
-Use local LLMs for privacy-critical work (medical, legal, financial data), offline environments (air-gapped systems, travel), high-volume usage to save on API costs, custom requirements like fine-tuning and specialized prompts, learning and experimentation, and data sovereignty for regulatory compliance.
+Use local LLMs when reducing third-party data transfer is important, an offline environment is required, predictable local capacity is preferable to per-token billing, or you need direct control over models and prompts. Medical, legal, financial, and other sensitive uses still require security controls, legal or compliance review, appropriate model evaluation, and human oversight. Local hosting alone does not create compliance.
 
-Use cloud LLMs for maximum quality on critical business decisions, access to the latest capabilities and newest models, situations with limited hardware like basic laptops, collaborative features and team workspaces, mobile access with full-featured apps, and when you want no maintenance with automatic updates.
+Use hosted LLMs when you need capabilities unavailable on local hardware, managed scaling, collaboration features, mobile access, or reduced operational maintenance. More capable models do not make consequential business decisions safe by themselves; validated workflows and accountable human review remain necessary.
 
 ### The Hybrid Approach
 
-Use local for draft generation and iteration, code autocomplete and snippets, internal documentation, and brainstorming sessions. Use cloud for final content review, complex reasoning tasks, public-facing communications, and latest model capabilities.
+Route work according to data sensitivity, required capability, latency, cost, and governance. For example, local models can handle low-risk drafts or internal retrieval while approved hosted models handle tasks that need capabilities unavailable locally. Public-facing and consequential outputs require review regardless of where inference runs.
 
-Cost example: Company cloud LLM at $200/month versus a hybrid approach at $40/month cloud plus local results in savings of $1,920/year.
+Estimate costs from actual hosted usage, hardware amortization, electricity, storage, maintenance, and support. The break-even point varies substantially by workload.
 
 ## Final Thoughts
 
-Running LLMs locally is a game-changer. What once required massive data centers is now possible on your laptop. Whether you're concerned about privacy, want unlimited usage, need offline capability, or love tech, local LLMs are an incredible alternative.
+Running useful LLMs locally is now practical on many laptops and workstations. Local inference can improve control and enable offline work, but privacy, speed, output quality, and cost depend on the complete configuration and hardware.
 
-Start small with 3B or 7B models, experiment with configurations, learn what works for you, and gradually explore advanced use cases.
+Start with a current model artifact that fits comfortably in available memory, choose a modest context window, and inspect actual CPU or GPU placement with `ollama ps`. Then evaluate output quality on your own tasks before increasing model size or precision.
 
-Remember: quantization makes powerful models accessible, privacy and control are immediate benefits, cost savings compound over time, customization possibilities are endless, and technology keeps improving.
+Remember: quantization can make larger models accessible, but every deployment still needs deliberate privacy controls, realistic cost accounting, output evaluation, and maintenance.
 
 Your AI journey doesn't have to be cloud-dependent. Take control, run it locally, and have fun!

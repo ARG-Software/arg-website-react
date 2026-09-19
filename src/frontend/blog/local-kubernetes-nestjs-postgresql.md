@@ -7,6 +7,8 @@ title: From Zero to Hero: Mastering Local Kubernetes with NestJS and PostgreSQL 
 subtitle: A step-by-step guide to running containerized applications locally with the speed and simplicity developers need.
 intro: A step-by-step guide to running containerized applications locally with the speed and simplicity developers need.
 date: May 14, 2025
+dateModified: September 19, 2026
+reviewedOn: September 19, 2026
 readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/from-zero-to-hero-mastering-local-kubernetes-with-nestjs-and-postgresql-in-minutes-4f3718c09004
 ---
@@ -25,7 +27,7 @@ Key Kubernetes components include:
 
 - **Pods.** The most minor deployable units in Kubernetes that can be created and managed. A pod contains one or more containers (like Docker containers) that are guaranteed to be co-located on the host machine.
 - **Nodes.** Worker machines (either physical or virtual) that run your applications. Each node contains the services necessary to run pods.
-- **Control Panel.** The Kubernetes brain that manages the cluster's worker nodes and pods. It makes global decisions about the cluster and detects/responds to cluster events.
+- **Control plane.** The Kubernetes brain that manages the cluster's worker nodes and pods. It makes global decisions about the cluster and detects/responds to cluster events.
 - **Services.** An abstraction that defines a logical set of pods and a policy to access them. Services enable network access to pods, acting like a load balancer.
 - **Deployments.** Provides declarative updates for pods and replica sets. You describe a desired state in a deployment, and the deployment controller changes the actual state to match your desired state.
 
@@ -54,7 +56,7 @@ While Kubernetes excels in production environments, testing configurations local
 
 ## Setting Up Our Proof of Concept
 
-Now that we understand why k3d is our tool of choice let's look at what our PoC will demonstrate. This project shows how to use Kubernetes to deploy a NestJS API using Kubernetes Deployments, run PostgreSQL within the cluster, expose services using LoadBalancer and NodePort, configure applications with ConfigMaps, and manage database migrations.
+Now that we understand why k3d is our tool of choice let's look at what our PoC will demonstrate. This project shows how to use Kubernetes to deploy a NestJS API using Kubernetes Deployments, run PostgreSQL within the cluster, expose services using ClusterIP and LoadBalancer, configure applications with ConfigMaps and Secrets, and manage database migrations.
 
 ## Our Kubernetes Components
 
@@ -76,7 +78,7 @@ Why it matters: Keeps all logging components isolated from other applications, p
 
 ### Deployments: Running our Applications
 
-Our setup includes two key deployments. The NestJS API Deployment runs our logging service API with automatic scaling and recovery:
+Our setup includes two key deployments. The NestJS API Deployment runs two replicas of our logging service and recreates failed pods. Automatic scaling requires a separate HorizontalPodAutoscaler, which we cover later.
 
 ```yaml
 # api/deployment.yaml
@@ -85,21 +87,50 @@ kind: Deployment
 metadata:
   name: logger
   namespace: logger-k8s
+  labels:
+    app: logger
 spec:
-  replicas: 2  # High availability!
+  replicas: 2
+  selector:
+    matchLabels:
+      app: logger
   template:
+    metadata:
+      labels:
+        app: logger
     spec:
       containers:
         - name: logger
           image: argsoftware/logger:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           envFrom:
             - configMapRef:
-                name: logger-config  # Configuration injection
+                name: logger-config
+            - secretRef:
+                name: logger-secrets
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
 ```
 
-What it does: Two replicas ensure one service stays up even if the other fails. All settings come from a single ConfigMap. imagePullPolicy: Always keeps the service always with the most recent version.
+What it does: The Deployment maintains two replicas and replaces failed pods. The Downward API exposes each pod name to the sample application, and the readiness probe keeps a starting or unhealthy API pod out of Service endpoints. Two replicas improve pod-level availability, but they do not protect this single-node local cluster from node failure. The companion PoC's available `argsoftware/logger:latest` image is ARM64-only. Use an ARM64 host for this exact walkthrough; on AMD64, build and publish an equivalent NestJS image for that architecture and replace the image in both API manifests. The mutable `latest` tag is retained only because the companion PoC does not publish versioned tags.
 
 The PostgreSQL Deployment manages our database instance. It runs a single-instance PostgreSQL container and mounts a persistent volume for data storage:
 
@@ -110,22 +141,48 @@ kind: Deployment
 metadata:
   name: logger-database
   namespace: logger-k8s
+  labels:
+    app: logger-database
 spec:
-  containers:
-    - name: database
-      image: postgres:15
-      ports:
-        - containerPort: 5432
-      volumeMounts:
-        - mountPath: /var/lib/postgresql/data
-          name: database-data  # Persistent storage
-  volumes:
-    - name: database-data
-      persistentVolumeClaim:
-        claimName: database-data-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logger-database
+  template:
+    metadata:
+      labels:
+        app: logger-database
+    spec:
+      containers:
+        - name: database
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: logger-config
+            - secretRef:
+                name: logger-secrets
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 12
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: database-data
+      volumes:
+        - name: database-data
+          persistentVolumeClaim:
+            claimName: database-data-pvc
 ```
 
-What it does: Logs survive pod restarts and node failures. Database credentials come from the same ConfigMap. The official PostgreSQL 15 image provides reliability.
+What it does: PostgreSQL receives ordinary settings from the ConfigMap and credentials from the Secret. Its data survives pod recreation while the k3d node and host-mounted storage remain available. This local `hostPath` setup does not provide node-failure resilience. PostgreSQL 15 remains supported through November 2027, and `/var/lib/postgresql/data` is the correct data mount for that image version.
 
 ### Services: Connecting our Pods
 
@@ -143,12 +200,13 @@ metadata:
 spec:
   ports:
     - port: 5432
+      targetPort: 5432
   selector:
     app: logger-database
-  type: ClusterIP  # Internal access only
+  type: ClusterIP
 ```
 
-Why ClusterIP: ClusterIP makes the database accessible only within the Kubernetes cluster, preventing potential attackers from reaching your database directly. API pods can find the database using logger-database as the hostname, and traffic gets routed to the correct database pod even if it moves to a different node.
+Why ClusterIP: ClusterIP gives the database a stable address reachable within the cluster without publishing it directly on the host. API pods can use `logger-database` as the hostname. ClusterIP reduces external exposure, but it is not an authorization boundary; authentication and NetworkPolicies are still relevant in shared clusters.
 
 The NestJS API Service uses LoadBalancer to expose the API externally:
 
@@ -160,15 +218,17 @@ metadata:
   name: logger
   namespace: logger-k8s
 spec:
+  selector:
+    app: logger
   ports:
     - port: 8000
       targetPort: 8000
-  type: LoadBalancer  # Exposes to the world!
+  type: LoadBalancer
 ```
 
-Why LoadBalancer: It creates an external IP address that can be accessed from anywhere, distributes incoming traffic across all API replicas, automatically routes traffic to healthy pods if one fails, and when running in cloud providers (AWS, GCP, Azure) it provisions a real load balancer.
+Why LoadBalancer: A LoadBalancer Service asks the cluster's load-balancer implementation to publish the Service. K3s includes ServiceLB, and the k3d port mapping shown later makes this Service available at `localhost:8000`. Other Kubernetes environments need their own cloud or local load-balancer implementation. The Service distributes traffic across ready API endpoints selected by `app: logger`.
 
-When to use what: ClusterIP for internal components (databases, caches, internal services). LoadBalancer for externally accessible components (APIs, web frontends). NodePort (not used here) for development or when you need a specific port exposed on each node.
+When to use what: ClusterIP is the default for internal components such as databases and caches. LoadBalancer is useful when the environment provides an implementation for externally reachable services. NodePort publishes a port on each node and is sometimes useful for development or infrastructure without a load balancer.
 
 ### Persistent Volume
 
@@ -180,9 +240,13 @@ metadata:
 spec:
   capacity:
     storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-path
   hostPath:
     path: /tmp/database-data
+    type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -190,18 +254,22 @@ metadata:
   name: database-data-pvc
   namespace: logger-k8s
 spec:
+  accessModes:
+    - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
+  storageClassName: local-path
+  volumeName: database-data-pv
 ```
 
-How it works: The PersistentVolume reserves 5GB of storage on the host. The PersistentVolumeClaim requests this storage for your database. The Retain policy ensures your data isn't deleted if the claim is removed.
+How it works: The PersistentVolume advertises 5 GiB of node-local storage, and `volumeName` binds the claim to that specific volume. The Retain policy prevents Kubernetes from automatically reclaiming the volume when the claim is deleted. Because k3d nodes are Docker containers, the cluster command below bind-mounts `/tmp/database-data` to a directory on the developer machine. This is appropriate for a single-node local PoC, not for resilient production storage.
 
-### ConfigMap
+### ConfigMap and Secret
 
-Used to centralize and inject environment variables into API and database deployments. We define a ConfigMap called logger-config to store all configuration values that would otherwise be hardcoded in our pods. This improves maintainability and allows us to keep application code and configuration separate.
+The ConfigMap stores non-sensitive application and database settings. The Secret stores the database password and connection URL. This keeps credentials out of the ConfigMap, although a Kubernetes Secret still requires careful access control and storage handling.
 
-Note: The repository includes a api/configmap.yaml.example file. Before deploying, you must copy it to api/configmap.yaml and edit the file to include your own database credentials and configuration values.
+Create local `api/configmap.yaml` and `api/secret.yaml` files before deploying. Do not commit the Secret file. If you start from the companion repository, replace its API Deployment, migration Job, database Deployment, Services, and persistent-volume manifests with the complete versions shown here. The original PoC predates the Secret split and readiness-gated deployment sequence.
 
 ```yaml
 # api/configmap.yaml
@@ -211,15 +279,30 @@ metadata:
   name: logger-config
   namespace: logger-k8s
 data:
-  DATABASE_URL: "postgresql://logs-user:logs123!@logger-database:5432/logs-db?schema=public"
   POSTGRES_DB: "logs-db"
   POSTGRES_USER: "logs-user"
-  POSTGRES_PASSWORD: "logs123!"  # Change in production!
+  POSTGRES_HOST: "logger-database"
+  POSTGRES_PORT: "5432"
+  POSTGRES_SCHEMA: "public"
+  PORT: "8000"
+```
+
+```yaml
+# api/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: logger-secrets
+  namespace: logger-k8s
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "local-only-password"
+  DATABASE_URL: "postgresql://logs-user:local-only-password@logger-database:5432/logs-db?schema=public"
 ```
 
 ### Database Migration Job: Automatic Setup
 
-Used to apply Prisma database migrations during deployment automatically. We define a Kubernetes Job that runs npx prisma migrate deploy from within the same Docker image used by the API. This ensures the database schema is up to date before the app starts.
+Used to apply Prisma database migrations before the API is deployed. We define a Kubernetes Job that runs the migration CLI from the same Docker image used by the API. The deployment sequence waits for PostgreSQL readiness, recreates the Job for each run, and waits for successful completion before starting the API.
 
 ```yaml
 # api/migrate-job.yaml
@@ -229,28 +312,36 @@ metadata:
   name: prisma-migrate-job
   namespace: logger-k8s
 spec:
+  backoffLimit: 1
   template:
     spec:
       containers:
         - name: migrate
           image: argsoftware/logger:latest
+          imagePullPolicy: Always
           command: ["npx", "prisma", "migrate", "deploy"]
           envFrom:
             - configMapRef:
                 name: logger-config
+            - secretRef:
+                name: logger-secrets
       restartPolicy: Never
 ```
 
-Why: This job automatically sets up your database schema before your app starts, using the same Docker image as your API. No manual migration steps are needed.
+Why: This Job applies pending migrations using the same application image before the API starts. The shown `prisma migrate deploy` command requires Prisma ORM 7 or earlier. Prisma ORM 8 uses `prisma db migrate`; pin the application image and use the command that matches its installed Prisma version.
 
 ## Deploying the Environment with k3d
 
 Let's walk through the deployment process step by step.
 
-First, create the Kubernetes cluster and expose port 8000:
+First, create a host directory for PostgreSQL data, then create the Kubernetes cluster. Port 8000 exposes the LoadBalancer Service directly, while port 8080 is available for the optional Traefik example later.
 
 ```bash
-k3d cluster create kubernetes-poc-cluster --port "8000:8000@loadbalancer"
+mkdir -p .k3d-data
+k3d cluster create kubernetes-poc-cluster \
+  --port "8000:8000@loadbalancer" \
+  --port "8080:80@loadbalancer" \
+  --volume "$PWD/.k3d-data:/tmp/database-data@server:0"
 ```
 
 Next, apply our configuration files in the proper sequence:
@@ -260,18 +351,22 @@ Next, apply our configuration files in the proper sequence:
 kubectl apply -f namespace.yaml
 kubectl apply -f database/pvc.yaml
 kubectl apply -f api/configmap.yaml
+kubectl apply -f api/secret.yaml
 
 # Deploy the PostgreSQL database
 kubectl apply -f database/deployment.yaml
 kubectl apply -f database/service.yaml
+kubectl rollout status deployment/logger-database -n logger-k8s --timeout=120s
 
 # Run Prisma migrations before starting the API
+kubectl delete job prisma-migrate-job -n logger-k8s --ignore-not-found
 kubectl apply -f api/migrate-job.yaml
-kubectl wait --for=condition=complete job/prisma-migrate-job -n logger-k8s
+kubectl wait --for=condition=complete job/prisma-migrate-job -n logger-k8s --timeout=120s
 
 # Finally, deploy the backend API
 kubectl apply -f api/deployment.yaml
 kubectl apply -f api/service.yaml
+kubectl rollout status deployment/logger -n logger-k8s --timeout=120s
 ```
 
 To ensure everything is running correctly, check your pods and services:
@@ -281,7 +376,7 @@ kubectl get pods -n logger-k8s
 kubectl get svc -n logger-k8s
 ```
 
-Prisma migrations are automatically applied via a dedicated Kubernetes Job in this setup. The job runs npx prisma migrate deploy inside the same Docker image used for the API, applying all pending migrations on startup. To inspect migration logs:
+Prisma migrations are applied via a dedicated Kubernetes Job in this setup. Deleting and recreating the fixed-name Job makes each deployment run it again. To inspect migration logs:
 
 ```bash
 kubectl logs job/prisma-migrate-job -n logger-k8s
@@ -309,33 +404,65 @@ You should see responses from different pods, confirming that the load balancer 
 
 While this setup is perfect for local development, several enhancements would make it production-ready.
 
-### Replace ConfigMaps with Secrets
+### Harden Secret Management
 
-Kubernetes Secrets store sensitive information like passwords, OAuth tokens, and SSH keys. Unlike ConfigMaps, Secrets are base64 encoded by default, can be encrypted at rest when using appropriate storage backends, have stricter access controls through RBAC (Role-Based Access Control), and can be mounted as temporary files that aren't persisted on the disk. Implementing Secrets would significantly improve our security posture, especially for database credentials and API keys.
+This PoC already separates credentials into a Kubernetes Secret, but base64 encoding is not encryption. For production, enable encryption at rest, restrict Secret access with RBAC, avoid committing Secret manifests, and consider an external secret manager. Secret volumes are normally memory-backed on Linux nodes, but applications can still expose values through environment variables, logs, or copied files.
 
 ### Implement Horizontal Pod Autoscaling
 
-Horizontal Pod Autoscaler (HPA) automatically scales the number of pods in a deployment based on observed CPU utilization or custom metrics. This enhancement would automatically adjust resources based on actual demand, ensure optimal performance during traffic spikes, reduce costs during low-demand periods, increase application resilience, and eliminate manual scaling operations.
+The current Deployment maintains a fixed two replicas. A Horizontal Pod Autoscaler can adjust that count from observed metrics. CPU utilization targets require container CPU requests, which the API Deployment now defines, plus a working metrics pipeline. A minimal example is:
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: logger
+  namespace: logger-k8s
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: logger
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+```
 
 ### Add Automated Migration Tools in CI/CD Pipelines
 
-Tools like Flyway, Liquibase, or custom migration scripts integrated into your CI/CD pipeline automatically apply database schema changes. Automated migrations would eliminate error-prone manual migration steps, ensure consistent database states across environments, create a traceable history of schema changes, allow versioning and rollback capabilities, and synchronize application code and database schema changes.
+The local Job demonstrates migration ordering, but production pipelines should create a uniquely named Job or run the pinned migration image as a release step. Keep migration files in version control, review destructive operations before deployment, and stop the application rollout when migration execution fails.
 
-### Configure TLS-Secured Ingress for Encrypted Traffic
+### Use the Bundled Traefik Controller
 
-Ingress resources with TLS certificates encrypt traffic between clients and your services. Implementing TLS would protect data in transit from interception, establish trust with users through verified certificates, meet compliance requirements for data protection, prevent man-in-the-middle attacks, and enable HTTP/2 and other modern web protocols.
+K3s installs Traefik by default, so a second ingress controller is unnecessary. The following Ingress routes `http://localhost:8080` to the API when the cluster is created with the port mapping shown earlier:
 
-### Adding NGINX Ingress Controller
-
-You could also add NGINX ingress for improved routing:
-
-```bash
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo update
-helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: logger
+  namespace: logger-k8s
+spec:
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: logger
+                port:
+                  number: 8000
 ```
 
-NGINX Ingress Controller is a Kubernetes resource that manages external service access and provides advanced routing capabilities. It would add URL-based routing to different services, TLS termination in a centralized location, rate limiting and traffic control, load balancing with advanced algorithms, rewrite rules and request/response modifications, and WebSocket support and HTTP/2.
+For TLS, configure a trusted certificate and a `tls` section on the Ingress. TLS normally terminates at Traefik; traffic from Traefik to the Service is not automatically encrypted. For new production designs that need richer, role-oriented routing, prefer Gateway API. Current K3s releases can enable Traefik's Gateway API provider through `HelmChartConfig`. The Kubernetes ingress-nginx project was retired in March 2026 and should not be installed for new deployments.
 
 ## Conclusion
 
@@ -343,4 +470,4 @@ This proof of concept demonstrates how to create a functional local Kubernetes e
 
 Running Kubernetes locally speeds up your feedback cycles and ensures that your development environment closely mirrors production, reducing "it works on my machine" problems.
 
-Ready to try it yourself? The complete source code and configuration files are available on GitHub: https://github.com/ARG-Software/Kubernetes-Poc
+Ready to try it yourself? The original companion proof-of-concept repository is available on GitHub: https://github.com/ARG-Software/Kubernetes-Poc

@@ -6,6 +6,8 @@ title: Testcontainers Best Practices for NestJS Integration Testing
 subtitle: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don’t do it right.
 intro: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don’t do it right.
 date: March 10, 2026
+dateModified: September 19, 2026
+reviewedOn: September 19, 2026
 readTime: 9 min read
 mediumUrl: https://arg-software.medium.com/testcontainers-best-practices-for-nestjs-integration-testing
 ---
@@ -95,103 +97,132 @@ npm install --save-dev @nestjs/testing supertest
 Here's how to set up your containers with proper configuration:
 
 ```typescript
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
+import { PostgreSqlContainer } from '@testcontainers/postgresql';
+import { RedisContainer } from '@testcontainers/redis';
 
-const postgresContainer = await new PostgreSqlContainer('postgres:17')
+const postgresContainer = await new PostgreSqlContainer('postgres:17.11-bookworm')
   .withDatabase('myapp')
   .withUsername('postgres')
   .withPassword('postgres')
   .start();
-const redisContainer = await new RedisContainer('redis:7').start();
+const redisContainer = await new RedisContainer('redis:7.4.11-bookworm').start();
 ```
 
-To start and stop containers cleanly across your test suite, use Jest's globalSetup / globalTeardown, or manage them inside beforeAll / afterAll blocks in a shared setup file:
+Choose the lifecycle that matches the isolation you need. Jest's globalSetup / globalTeardown can start one container set for the entire run. For per-file isolation, use an explicit helper so the test owns the application and container shutdown order:
 
 ```typescript
-// test/setup.ts
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
+// test/start-test-dependencies.ts
+import { PostgreSqlContainer } from '@testcontainers/postgresql';
+import { RedisContainer } from '@testcontainers/redis';
 
-let postgresContainer: StartedPostgreSqlContainer;
-let redisContainer: StartedRedisContainer;
-
-beforeAll(async () => {
-  postgresContainer = await new PostgreSqlContainer('postgres:17')
+export async function startTestDependencies() {
+  const postgres = await new PostgreSqlContainer('postgres:17.11-bookworm')
     .withDatabase('myapp')
     .withUsername('postgres')
     .withPassword('postgres')
     .start();
-  redisContainer = await new RedisContainer('redis:7').start();
-});
+  try {
+    const redis = await new RedisContainer('redis:7.4.11-bookworm').start();
 
-afterAll(async () => {
-  await postgresContainer.stop();
-  await redisContainer.stop();
-});
+    return {
+      databaseUrl: postgres.getConnectionUri(),
+      redisUrl: redis.getConnectionUrl(),
+      async stop() {
+        try {
+          await redis.stop();
+        } finally {
+          await postgres.stop();
+        }
+      },
+    };
+  } catch (error) {
+    await postgres.stop().catch(() => undefined);
+    throw error;
+  }
+}
 ```
 
-This ensures containers are ready before tests run and properly cleaned up afterward - no leftover Docker state, no race conditions.
+Awaiting the helper ensures the containers have passed their configured readiness checks before the test file compiles its NestJS application. Each file can run safely in a separate Jest worker because it receives its own containers and dynamic ports.
 
-> ⚠️ Tip: Always pin your image versions (like postgres:17) to avoid surprises from upstream changes. I learned this the hard way when a patch update caused my tests to fail unexpectedly.
+> ⚠️ Tip: Pin the complete image version and distribution, such as postgres:17.11-bookworm and redis:7.4.11-bookworm. Major-only tags such as postgres:17 and redis:7 move when new releases are published. Use an image digest when you need a bit-for-bit immutable image.
 
 ## Pass Configuration to Your NestJS App Dynamically
 
 The biggest mistake we see is hardcoding connection strings. Testcontainers assigns dynamic ports - you can't know them ahead of time.
 
-Instead, override your NestJS module configuration using Test.createTestingModule and replace environment values at runtime:
+Instead, override your NestJS module configuration using Test.createTestingModule and replace environment values at runtime. If your application exposes its own DATA_SOURCE_OPTIONS provider, you can override it directly:
 
 ```typescript
-import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppModule } from '../src/app.module';
+import type { INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { startTestDependencies } from './start-test-dependencies';
 
-let app: INestApplication;
+let app: INestApplication | undefined;
+let dependencies: Awaited<ReturnType<typeof startTestDependencies>> | undefined;
 
 beforeAll(async () => {
+  dependencies = await startTestDependencies();
+  process.env.DATABASE_URL = dependencies.databaseUrl;
+  process.env.REDIS_URL = dependencies.redisUrl;
+
+  // A dynamic import also supports applications that read config at module load time.
+  const { AppModule } = await import('../src/app.module');
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   })
     .overrideProvider('DATA_SOURCE_OPTIONS')
     .useValue({
       type: 'postgres',
-      url: postgresContainer.getConnectionUri(),
+      url: dependencies.databaseUrl,
       // ...entities, migrations, etc.
     })
     .compile();
   app = moduleFixture.createNestApplication();
   await app.init();
+}, 60_000);
+
+afterAll(async () => {
+  try {
+    await app?.close();
+  } finally {
+    try {
+      await dependencies?.stop();
+    } finally {
+      delete process.env.DATABASE_URL;
+      delete process.env.REDIS_URL;
+    }
+  }
 });
 ```
 
-Or, if you're using ConfigService or environment variables directly, set them before the module compiles:
+The setup assigns `DATABASE_URL` and `REDIS_URL` after the containers start and before the application module loads:
 
 ```typescript
-process.env.DATABASE_URL = postgresContainer.getConnectionUri();
-process.env.REDIS_URL = redisContainer.getConnectionUrl();
+process.env.DATABASE_URL = dependencies.databaseUrl;
+process.env.REDIS_URL = dependencies.redisUrl;
 ```
 
-The key is to never hardcode ports. Let Testcontainers tell you where things are, then pass that forward.
+The key is to never hardcode ports. Let Testcontainers tell you where things are, then pass that forward. The explicit hook timeout leaves room for container startup, while guarded cleanup still closes the app, both containers, and the environment if setup or teardown fails partway through.
 
 ## Share Expensive Setup with a Base Test Class
 
-Spinning up containers is expensive. Starting one per test file defeats the purpose. The right move is to share them across your suite.
+For dependencies with slow startup or migrations, sharing containers across the suite can reduce setup time. Per-file containers remain a good choice when isolation and parallel execution matter more. A shared container requires either sequential tests or separate databases, schemas, and cache namespaces for each worker.
 
 Create a shared IntegrationTestSetup class that wraps the app factory and exposes helpers:
 
 ```typescript
 // test/integration-test.setup.ts
-import { INestApplication } from '@nestjs/common';
+import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import * as request from 'supertest';
 
 export class IntegrationTestSetup {
-  app: INestApplication;
+  app!: INestApplication;
 
   async init(databaseUrl: string, redisUrl: string) {
     process.env.DATABASE_URL = databaseUrl;
     process.env.REDIS_URL = redisUrl;
+    const { AppModule } = await import('../src/app.module');
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -209,14 +240,14 @@ export class IntegrationTestSetup {
 }
 ```
 
-Then in your jest.config.ts, configure a global setup file to start containers once and share them:
+The simplest shared-container setup runs test files sequentially. Configure global setup and teardown to manage the containers:
 
 ```typescript
 // jest.config.ts
 export default {
   globalSetup: './test/global-setup.ts',
   globalTeardown: './test/global-teardown.ts',
-  setupFilesAfterFramework: ['./test/setup.ts'],
+  maxWorkers: 1,
 };
 ```
 
@@ -226,33 +257,45 @@ import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { RedisContainer } from '@testcontainers/redis';
 
 export default async () => {
-  const postgres = await new PostgreSqlContainer('postgres:17')
+  const postgres = await new PostgreSqlContainer('postgres:17.11-bookworm')
     .withDatabase('myapp')
     .withUsername('postgres')
     .withPassword('postgres')
     .start();
-  const redis = await new RedisContainer('redis:7').start();
+  try {
+    const redis = await new RedisContainer('redis:7.4.11-bookworm').start();
 
-  // Share via global so teardown can stop them
-  (global as any).__POSTGRES__ = postgres;
-  (global as any).__REDIS__ = redis;
-  process.env.DATABASE_URL = postgres.getConnectionUri();
-  process.env.REDIS_URL = redis.getConnectionUrl();
+    // Container objects are available to globalTeardown, not to test files.
+    (globalThis as any).__POSTGRES__ = postgres;
+    (globalThis as any).__REDIS__ = redis;
+
+    // Test workers receive serializable connection details through the environment.
+    process.env.DATABASE_URL = postgres.getConnectionUri();
+    process.env.REDIS_URL = redis.getConnectionUrl();
+  } catch (error) {
+    await postgres.stop().catch(() => undefined);
+    throw error;
+  }
 };
 ```
 
 ```typescript
 // test/global-teardown.ts
 export default async () => {
-  await (global as any).__POSTGRES__?.stop();
-  await (global as any).__REDIS__?.stop();
+  try {
+    await (globalThis as any).__REDIS__?.stop();
+  } finally {
+    await (globalThis as any).__POSTGRES__?.stop();
+  }
 };
 ```
 
 ⚖️ When to isolate per test file vs share globally:
 
-- 🌍 Global containers - when test files don't modify shared state or when you clean up after each test. Faster, requires discipline.
-- 📁 Per-file containers - when tests modify global state or when debugging interactions becomes difficult. Slower but safer.
+- 🌍 Global containers - when startup is expensive and tests run sequentially, or when every worker has an isolated database, schema, and Redis namespace.
+- 📁 Per-file containers - when you want stronger isolation and parallel test-file execution. Startup is slower, but cleanup cannot interfere with another file.
+
+Cleaning shared tables after each test does not make parallel files safe: one file can still truncate data while another is using it. If you remove maxWorkers: 1, isolate state per worker instead of relying only on cleanup.
 
 ## Utility Methods for Auth and Cleanup
 
@@ -262,9 +305,9 @@ Your setup class should expose helpers to keep test files focused on business lo
 export class IntegrationTestSetup {
   // ... previous code
 
-  async createAuthenticatedRequest(userId: string) {
+  async createAuthorizationHeader(userId: string) {
     const token = await this.generateTestToken(userId);
-    return request(this.getHttpServer()).set('Authorization', `Bearer ${token}`);
+    return `Bearer ${token}`;
   }
 
   async cleanDatabase() {
@@ -276,6 +319,12 @@ export class IntegrationTestSetup {
     }
   }
 
+  async cleanRedis() {
+    // Replace REDIS_CLIENT with your application's node-redis provider token.
+    const redis = this.app.get<{ flushDb(): Promise<unknown> }>('REDIS_CLIENT');
+    await redis.flushDb();
+  }
+
   private async generateTestToken(userId: string): Promise<string> {
     const jwtService = this.app.get(JwtService);
     return jwtService.sign({ sub: userId });
@@ -283,30 +332,34 @@ export class IntegrationTestSetup {
 }
 ```
 
-Call cleanDatabase() in afterEach if you're sharing containers across tests:
+Reset every shared stateful dependency in afterEach when tests run sequentially against global containers:
 
 ```typescript
 afterEach(async () => {
   await setup.cleanDatabase();
+  await setup.cleanRedis();
 });
 ```
 
-🚨 This is your safety net. Without it, tests will bleed state into each other, and you'll spend hours chasing phantom failures.
+This prevents one sequential test from inheriting PostgreSQL or Redis state from the previous test. It is not a substitute for worker-level isolation when test files run in parallel.
 
 ## Writing Maintainable Integration Tests
 
 With the infrastructure properly configured, your actual tests should focus on business logic, not plumbing:
 
 ```typescript
+import request from 'supertest';
+
 describe('POST /orders', () => {
   it('should return 400 when stock is insufficient', async () => {
     // Arrange
     const product = await createTestProduct({ stock: 2 });
     const user = await createTestUser();
+    const authorization = await setup.createAuthorizationHeader(user.id);
     // Act
-    const response = await setup
-      .createAuthenticatedRequest(user.id)
+    const response = await request(setup.getHttpServer())
       .post('/orders')
+      .set('Authorization', authorization)
       .send({ productId: product.id, quantity: 5 });
     // Assert
     expect(response.status).toBe(400);
