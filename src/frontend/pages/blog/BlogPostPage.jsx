@@ -375,6 +375,12 @@ export default function BlogPostPage() {
               data-animate-order="3"
             >
               <span>{BLOG_POST.date}</span>
+              {BLOG_POST.reviewedOn ? (
+                <>
+                  <span className="bp-header-meta__sep" aria-hidden="true" />
+                  <span>Reviewed on {BLOG_POST.reviewedOn}</span>
+                </>
+              ) : null}
               <span className="bp-header-meta__sep" aria-hidden="true" />
               <span>{BLOG_POST.readTime}</span>
               <span className="bp-header-meta__sep" aria-hidden="true" />

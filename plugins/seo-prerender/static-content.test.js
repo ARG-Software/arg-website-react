@@ -12,7 +12,12 @@ test('renders complete blog content inside the React root', () => {
     `Intro with [\`ARG\`](https://arg.software), **strong \`defaults\`**, and \`inline code\`.\n\n## Architecture\n\n- **Use \`Result\`.** Safe by default\n- Production ready\n\n\`\`\`js\nconst safe = true;\n\`\`\``
   );
   const content = buildBlogPostStaticContent(
-    { title: 'Engineering article', slug: 'engineering-article', author: 'ARG' },
+    {
+      title: 'Engineering article',
+      slug: 'engineering-article',
+      author: 'ARG',
+      reviewedOn: 'September 17, 2026',
+    },
     blocks
   );
   const html = injectStaticContent('<body><div id="root"></div></body>', content);
@@ -32,6 +37,7 @@ test('renders complete blog content inside the React root', () => {
     /<span class="bp-list-label">Use <code class="inline-markdown-code">Result<\/code>\.<\/span>/
   );
   assert.match(html, /<code class="inline-markdown-code">inline code<\/code>/);
+  assert.match(html, /Reviewed on September 17, 2026/);
   assert.doesNotMatch(html, /aria-hidden="true"/);
 });
 

@@ -7,6 +7,8 @@ title: Scaling with Confidence: A Practical Nx + NestJS Monorepo Boilerplate
 subtitle: Discover a scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems.
 intro: Discover a scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems.
 date: April 27, 2025
+dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/scaling-with-confidence-a-practical-nx-nestjs-monorepo-boilerplate-b30b9266f6ba
 ---
@@ -32,6 +34,8 @@ The Nx Monorepo structure ensures consistent project organization, enforceable c
 
 NestJS complements this by providing a modular, opinionated backend framework ideal for Domain-Driven Design (DDD), Dependency Injection (DI), and microservice architecture. Combined, Nx and NestJS allow rapid development of distributed systems with shared tooling, isolated runtime contexts, efficient CI/CD pipelines, and native support for background jobs, messaging patterns, scheduled tasks, and centralized configuration.
 
+The workspace currently uses Nx 23.2.1 and NestJS 11.2.5. The two backend applications are bundled with Webpack, while the frontend uses Next.js 15.5 with React 18. Nx provides the project graph and task orchestration across all three applications and the shared packages.
+
 ## Repository Structure & Key Components
 
 The repository is organized to promote modularity and scalability:
@@ -56,7 +60,7 @@ A NestJS backend service acting as the main public API. It handles user authenti
 
 ### frontend
 
-A React application. It provides the UI for interacting with the backend services, though it is currently minimal and intended as a starter template for frontends.
+A Next.js application built with React 18. It provides the UI for interacting with the backend services, including authentication and user-management flows, while remaining intentionally small enough to use as a starter.
 
 ## Packages Folder Overview
 
@@ -77,8 +81,8 @@ The Bus Layer defines a consistent way to dispatch commands and queries using th
 
 ```typescript
 export interface IBus {
-  commandCreate<T>(command: ICommand): Promise<Result<T>>;
-  commandUpdate<T>(command: ICommand): Promise<Result<T>>;
+  commandCreate<_T>(command: ICommand): Promise<Result<string>>;
+  commandUpdate<_T>(command: ICommand): Promise<Result<boolean>>;
   query<T>(query: IQuery): Promise<Result<T>>;
 }
 ```
@@ -86,12 +90,21 @@ export interface IBus {
 The Messaging Layer in the Application module defines how events and messages are structured, validated, and routed across the system. It ensures that when the application wants to emit a domain event (like a log, an action log, etc.) the shape of the message is known, the topic to which it will be sent is clear, the payload is validated upfront, and optional things like compression are handled too.
 
 ```typescript
-export interface IMessage<T = MessagePayload> {
-  key: string;
+export interface IMessageRecord {
   topic: string;
-  value: T;
   messageType: string;
+  messages: IMessage[];
+  acks?: number;
+  timeout?: number;
   compression?: CompressionTypes;
+}
+
+export interface IMessage {
+  key: Buffer | string;
+  value: Buffer | string;
+  partition?: number;
+  headers?: Buffer | string | (Buffer | string)[];
+  timestamp?: bigint;
 }
 ```
 
@@ -109,7 +122,8 @@ Example of how to create a message. First, create the payload:
 export interface LogMessagePayload {
   message: string;
   level: string;
-  context?: string;
+  error: Error | string | undefined;
+  context: string;
 }
 ```
 
@@ -117,12 +131,20 @@ Then create the message class:
 
 ```typescript
 export class LogMessageEvent extends Message<LogMessagePayload> {
-  override topic = LOG_TOPIC; // 'logs'
-  override messageType = this.constructor.name;
+  override topic: string = LOG_TOPIC;
+  override messageType: string = this.constructor.name;
 
-  protected override validatePayload(payload: LogMessagePayload) {
-    if (!payload.message || !payload.level) {
-      throw new Error('Message and level are required.');
+  constructor(payload: LogMessagePayload[]) {
+    super(payload);
+    payload.forEach((item) => this.validatePayload(item));
+  }
+
+  override validatePayload(payload: LogMessagePayload): void {
+    if (!payload.message) {
+      throw new Error('message is required.');
+    }
+    if (!payload.level) {
+      throw new Error('level is required.');
     }
   }
 }
@@ -131,11 +153,14 @@ export class LogMessageEvent extends Message<LogMessagePayload> {
 Then send a new event:
 
 ```typescript
-const logEvent = new LogMessageEvent({
-  message: 'User not found',
-  level: 'error',
-  context: 'AuthService',
-});
+const logEvent = new LogMessageEvent([
+  {
+    message: 'User not found',
+    level: 'error',
+    error: undefined,
+    context: 'AuthService',
+  },
+]);
 
 // Now `logEvent` can be sent to Kafka, Redis, or another broker
 ```
@@ -155,10 +180,20 @@ export class CreateActionLogCommand implements ICommand {
 // 2. Implement the handler
 @CommandHandler(CreateActionLogCommand)
 export class CreateActionLogCommandHandler implements ICommandHandler<CreateActionLogCommand> {
-  constructor(/* inject repositories/services */) {}
+  constructor(
+    @Inject(IUserRepository) private readonly userRepository: IUserRepository,
+    @Inject(IActionLogRepository) private readonly actionLogRepository: IActionLogRepository
+  ) {}
 
-  async execute(command: CreateActionLogCommand): Promise<Result<void>> {
-    // Business logic: check user exists, save action log entry
+  async execute(command: CreateActionLogCommand): Promise<Result<string>> {
+    const user = await this.userRepository.findById(command.userId);
+    if (!user) {
+      return Result.error(new NotFoundException('User does not exist'));
+    }
+
+    const actionLog = new ActionLog(command.userId, command.action);
+    const actionLogId = await this.actionLogRepository.create(actionLog);
+    return Result.success(actionLogId);
   }
 }
 ```
@@ -168,7 +203,7 @@ export class CreateActionLogCommandHandler implements ICommandHandler<CreateActi
 The infrastructure layer is responsible for aspects such as asynchronous job queuing, environment configuration, scheduled tasks (via cron jobs), email notifications, application health checks, logging, caching, messaging with Kafka, and persistence using an ORM.
 
 - **Bull Module.** Integrates the Bull job queue with NestJS. It uses asynchronous configuration to initialize the connection to Redis dynamically. This module also offers a helper to register different-named queues.
-- **Configuration Module.** Centralizes the application's configuration settings. It wraps the native NestJS ConfigModule and exposes a method ConfigurationService that retrieves environment-dependent values, including Kafka, Redis, and other service endpoints.
+- **Configuration Module.** Centralizes the application's configuration settings. It wraps the native NestJS ConfigModule and exposes a ConfigurationService that retrieves environment-dependent values, including Kafka, Redis, and other service endpoints.
 - **Cronjob Module.** Sets up scheduled tasks using Nest's built-in scheduling module. It defines a CronJob interface and a service that registers a recurring job.
 - **Email Module.** Handles various email notifications using a queued approach. It defines interface contracts for different email types and processes email jobs through a Bull queue.
 - **Health Module.** Exposes REST endpoints to check the application's critical components via Terminus. It monitors database connectivity, memory usage, disk storage, and messaging system health.
@@ -184,71 +219,62 @@ The tools/ folder centralizes essential infrastructure utilities for the project
 Inside tools/, you'll find:
 
 - **tools/database/.** Contains MikroORM configuration files for two database schemas: Main schema (app) holds primary application data like users and authentication, and Action-Log schema (action-log) separates audit logs from core business data. Each schema has a production configuration and a testing configuration that accepts dynamic database URLs for clean integration testing.
-- **tools/docker/.** Contains scripts like publish_docker.js, which automates Docker image building and publishing. This script is integrated into the CI/CD pipeline, ensuring services like client-api, action-log-service, and frontend are containerized and pushed to a Docker registry with minimal manual effort.
+- **tools/docker/.** Contains Dockerfiles, Compose definitions, and publish_docker.js. CI builds each image to verify its production packaging, but registry publication remains an explicit release action. The publisher validates project names, passes Docker arguments without a shell, reads credentials through standard input, and refuses to overwrite an existing version tag.
 
-All apps are built on top of the shared libraries from the packages/ folder (like application/ and infrastructure/). Backend apps reuse messaging, caching, database, and CQRS logic. Frontend can connect to APIs exposed by client-api. Thanks to Nx, each app can be built (nx build app-name), tested (nx test app-name), served locally (nx serve app-name), and deployed individually (e.g., to Docker, Kubernetes).
+All apps are built on top of the shared libraries from the packages/ folder (like application/ and infrastructure/). Backend apps reuse messaging, caching, database, and CQRS logic. Frontend can connect to APIs exposed by client-api. Thanks to Nx, each app can be built, served locally, and deployed individually. The repository currently keeps focused Jest suites in the domain and shared utilities packages instead of advertising empty test targets for every project.
 
-## Automated Versioning and Docker Publishing: The Perfect Marriage
+## Safe Versioning and Docker Publishing
 
-In our monorepo architecture, we've implemented a streamlined system that automatically handles versioning and Docker publishing in perfect synchronization. Let's dive into how this elegant solution works.
+Versioning and image publication are deliberately separate. Every application uses @jscutlery/semver, but the checked-in target defaults to `push: false`. This makes local runs and dry runs safe, and it prevents a version calculation from silently publishing Git state or a container image.
 
-### The Version-First Approach
+### The Versioning Target
 
-Every application in our monorepo, like the Action Log Service, uses semantic versioning through @jscutlery/semver. When we trigger a release, the system first runs the versioning target, which bumps the version according to conventional commits, tags the Git repository with a formatted tag like action-log-service-0.0.8, and updates the CHANGELOG.md automatically.
+```json
+"versioning": {
+  "executor": "@jscutlery/semver:version",
+  "parallelism": false,
+  "options": {
+    "baseBranch": "main",
+    "push": false,
+    "remote": "origin",
+    "tagPrefix": "{projectName}-"
+  }
+}
+```
 
-### The Docker Publishing Flow
+Before a release, all three applications can be evaluated without modifying files, tags, or remotes:
 
-Once versioning completes, the publish-docker target kicks in:
+```bash
+pnpm release:dry-run
+```
+
+An authorized release process can then run the selected versioning target with pushing explicitly enabled. Version targets are serialized so two applications cannot race while updating Git state.
+
+### The Docker Target
 
 ```json
 "publish-docker": {
   "executor": "nx:run-commands",
-  "dependsOn": ["versioning"],
+  "dependsOn": ["build"],
+  "parallelism": false,
   "options": {
     "command": "node ./tools/docker/publish_docker.js {projectName} true"
   }
 }
 ```
 
-The publish_docker.js script reads the fresh version tag and builds a Docker image, tags it with the same version (ensuring version consistency), and pushes to our Docker registry.
+The Docker target depends on a successful production build, not on versioning. After the version commit and tag are established, the release process invokes Docker publication separately. The script reads the version from the selected application's package.json, logs in with `docker login --password-stdin`, checks the registry, and stops if the versioned image already exists. This keeps tags immutable and makes retries safer.
 
-### The Publishing Flow: From Commit to Container
+### CI Without Accidental Releases
 
-The journey begins with a code change. When developers commit to the main branch, they can trigger the publishing flow in two ways. Manual Trigger: Running nx run action-log-service:publish-docker. CI/CD Pipeline: Automated workflows that detect changes and run the publish command.
+The GitHub Actions workflow installs with a frozen lockfile, lints all 16 projects, runs the meaningful Jest suites, builds all three applications, audits production dependencies, builds the Docker images, and scans the repository for secrets. It never pushes a Git tag or Docker image.
 
-Once triggered, the process starts with the versioning target:
+This separation provides four practical guarantees:
 
-```json
-"versioning": {
-  "executor": "@jscutlery/semver:version",
-  "options": {
-    "baseBranch": "HEAD:main",
-    "tagPrefix": "${projectName}-",
-    "changelog": true
-  }
-}
-```
-
-This automatically analyzes commits to determine the version bump (major, minor, patch), updates the package version, creates a Git tag (e.g., action-log-service-0.0.8), and generates or updates the CHANGELOG.md.
-
-The publish-docker target depends on versioning, ensuring it runs only after a successful version bump:
-
-```bash
-node ./tools/docker/publish_docker.js {projectName} true
-```
-
-The publish script then reads the new version from the package.json or Git tag, builds the Docker image using the service's Dockerfile, tags the image with the version (e.g., action-log-service:0.0.8), and pushes to the configured Docker registry.
-
-### Why This Matters
-
-This automated flow eliminates human error and ensures that our Docker images are always up to date with their corresponding code versions. The benefits include:
-
-- **Consistency.** Every published image has a unique, traceable version.
-- **Synchronization.** Versions in Git match versions in Docker.
-- **Automation.** The process is reproducible and automated.
-- **Safety.** Local testing doesn't interfere with production releases.
-
-The beauty of this system lies in its simplicity and reliability - developers focus on writing code, while the tooling handles the complexities of versioning and publishing.
+- **Traceability.** Git tags and container tags use the same application version.
+- **Immutability.** An existing versioned container tag cannot be overwritten by the publisher.
+- **Verification.** CI exercises production builds and Docker packaging before release.
+- **Control.** Only an explicit release operation can push version metadata or images.
 
 ## Conclusion
 
