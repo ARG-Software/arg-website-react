@@ -62,6 +62,7 @@ export function extractMetadata(meta, body) {
     authorType: meta.authorType || '',
     authorSameAs: meta.authorSameAs || '',
     dateModified: meta.dateModified || meta.updated || '',
+    reviewedOn: meta.reviewedOn || '',
     image,
   };
 }
@@ -87,6 +88,7 @@ export function parseBlogPostMarkdown(raw) {
     authorType: meta.authorType || '',
     authorSameAs: meta.authorSameAs || '',
     dateModified: meta.dateModified || meta.updated || '',
+    reviewedOn: meta.reviewedOn || '',
   };
 }
 

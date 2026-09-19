@@ -14,13 +14,22 @@ export function buildBlogPostStaticContent(meta, blocks) {
   const heroImageIndex = blocks.findIndex(block => block.type === 'image');
   const heroImage = heroImageIndex >= 0 ? blocks[heroImageIndex] : null;
   const articleBlocks = blocks.filter((_, index) => index !== heroImageIndex);
+  const headerMeta = [
+    meta.date,
+    meta.reviewedOn ? `Reviewed on ${meta.reviewedOn}` : '',
+    meta.readTime,
+    meta.author || 'ARG Software',
+  ]
+    .filter(Boolean)
+    .map(escapeHtml)
+    .join(' · ');
 
   return `<div class="page-wrapper" data-prerendered-content>
   <main class="main-wrapper">
     <header class="bp-article-page-header">
       <h1>${escapeHtml(meta.title || meta.slug)}</h1>
       ${meta.subtitle ? `<p>${escapeHtml(meta.subtitle)}</p>` : ''}
-      <p>${[meta.date, meta.readTime, meta.author || 'ARG Software'].filter(Boolean).map(escapeHtml).join(' · ')}</p>
+      <p>${headerMeta}</p>
     </header>
     <section class="bp-body background-color-white padding-section-large border-radius-all">
       <div class="bp-body-inner container container--section padding-global">

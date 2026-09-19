@@ -8,6 +8,7 @@ subtitle: Discover a scalable Nx + NestJS monorepo boilerplate for microservices
 intro: Discover a scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems.
 date: April 27, 2025
 dateModified: September 17, 2026
+reviewedOn: September 17, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/scaling-with-confidence-a-practical-nx-nestjs-monorepo-boilerplate-b30b9266f6ba
 ---
@@ -15,8 +16,6 @@ mediumUrl: https://arg-software.medium.com/scaling-with-confidence-a-practical-n
 ![Scaling with Confidence](/images/blog/nestjs-monorepo/nestjs-monorepo-header.webp)
 
 When building out backends for modern applications - especially in microservice-driven or modular environments - managing multiple repositories quickly becomes a headache. Enter monorepos, and more specifically, Nx: a powerful toolkit for managing monorepos with smart dependency graphing, caching, and tooling support.
-
-The reference repository has since been modernized to Nx 23.2, NestJS 11.2, Node.js 22.12, pnpm 9.15, TypeScript 5.9, and Next.js 15.5. The architecture described below remains the same, while the tooling, security defaults, tests, builds, and delivery workflow now reflect the current implementation.
 
 ## Use Cases & Ideal Scenarios
 

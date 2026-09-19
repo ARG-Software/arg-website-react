@@ -12,7 +12,12 @@ test('renders complete blog content inside the React root', () => {
     `Intro with [ARG](https://arg.software).\n\n## Architecture\n\n- Safe by default\n- Production ready\n\n\`\`\`js\nconst safe = true;\n\`\`\``
   );
   const content = buildBlogPostStaticContent(
-    { title: 'Engineering article', slug: 'engineering-article', author: 'ARG' },
+    {
+      title: 'Engineering article',
+      slug: 'engineering-article',
+      author: 'ARG',
+      reviewedOn: 'September 17, 2026',
+    },
     blocks
   );
   const html = injectStaticContent('<body><div id="root"></div></body>', content);
@@ -22,6 +27,7 @@ test('renders complete blog content inside the React root', () => {
   assert.match(html, /Safe by default/);
   assert.match(html, /const safe = true;/);
   assert.match(html, /href="https:\/\/arg\.software"/);
+  assert.match(html, /Reviewed on September 17, 2026/);
   assert.doesNotMatch(html, /aria-hidden="true"/);
 });
 
