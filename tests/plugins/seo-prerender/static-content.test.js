@@ -16,6 +16,7 @@ test('renders complete blog content inside the React root', () => {
       title: 'Engineering article',
       slug: 'engineering-article',
       author: 'ARG',
+      authorUrl: 'https://www.linkedin.com/company/arg-software',
       reviewedOn: 'September 17, 2026',
     },
     blocks
@@ -31,13 +32,20 @@ test('renders complete blog content inside the React root', () => {
     html,
     /<a href="https:\/\/arg\.software"[^>]*><code class="inline-markdown-code">ARG<\/code><\/a>/
   );
-  assert.match(html, /<strong>strong <code class="inline-markdown-code">defaults<\/code><\/strong>/);
+  assert.match(
+    html,
+    /<strong>strong <code class="inline-markdown-code">defaults<\/code><\/strong>/
+  );
   assert.match(
     html,
     /<span class="bp-list-label">Use <code class="inline-markdown-code">Result<\/code>\.<\/span>/
   );
   assert.match(html, /<code class="inline-markdown-code">inline code<\/code>/);
   assert.match(html, /Reviewed on September 17, 2026/);
+  assert.match(
+    html,
+    /<a href="https:\/\/www\.linkedin\.com\/company\/arg-software" rel="author noopener noreferrer">ARG<\/a>/
+  );
   assert.doesNotMatch(html, /aria-hidden="true"/);
 });
 

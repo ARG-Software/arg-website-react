@@ -1,6 +1,10 @@
 ---
 seoTitle: AI Architectural Changes Nobody Wants
 slug: ai-architectural-changes-nobody-wants
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture
 title: Everyone Wants AI. Nobody Wants the Architectural Changes It Requires.

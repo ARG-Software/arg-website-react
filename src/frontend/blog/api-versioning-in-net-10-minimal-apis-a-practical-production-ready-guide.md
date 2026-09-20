@@ -1,6 +1,10 @@
 ---
 seoTitle: API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide
 slug: api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide

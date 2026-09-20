@@ -1,6 +1,10 @@
 ---
 seoTitle: Behavior-Driven Domain Models in TypeScript
 slug: from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: From Anemic Models to Behaviour-rich Aggregates: Behavior-Driven Design in TypeScript

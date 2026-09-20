@@ -1,6 +1,10 @@
 ---
 seoTitle: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps
 slug: stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Refactoring
 tags: Refactoring, Backend
 title: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps

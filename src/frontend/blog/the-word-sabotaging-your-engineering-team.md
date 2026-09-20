@@ -1,6 +1,10 @@
 ---
 seoTitle: The Word Sabotaging Your Engineering Team
 slug: the-word-sabotaging-your-engineering-team
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Engineering Culture
 tags: Engineering Culture
 title: The Four-Letter Word That's Sabotaging Your Engineering Team

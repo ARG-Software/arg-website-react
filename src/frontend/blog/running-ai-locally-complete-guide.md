@@ -1,6 +1,10 @@
 ---
 seoTitle: Running AI Locally: A Complete Guide
 slug: running-ai-locally-complete-guide
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: AI
 tags: AI, DevOps
 title: Break Free from ChatGPT: Your Complete Guide to Running AI on Your Own Computer

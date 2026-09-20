@@ -1,6 +1,10 @@
 ---
 seoTitle: Angular 5 to 19 Migration Guide
 slug: angular-5-to-19-migration
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Frontend
 tags: Frontend, Refactoring
 title: Upgrading Angular Legacy Project Version 5 to 19

@@ -1,6 +1,10 @@
 ---
 seoTitle: TypeScript 7 Native Go Port: What to Do
 slug: typescript-7-rewritten-in-go
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Backend
 tags: Backend, Architecture
 title: TypeScript 7.0 Was Ported to Go. Here's Why You Should Care (and What to Do Today)

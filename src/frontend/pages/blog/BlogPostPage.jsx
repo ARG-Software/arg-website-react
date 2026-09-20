@@ -15,7 +15,7 @@ import AppLink from '@components/navigation/AppLink';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { TransitionContext } from '../../providers/TransitionProvider';
-import { trackBlogPostShare, trackCTA, trackEvent } from '@services/analytics';
+import { trackBlogPostShare, trackCTA, trackEvent, trackOutbound } from '@services/analytics';
 import {
   getCodeLanguageLabel,
   getCodeLineNumbers,
@@ -385,7 +385,21 @@ export default function BlogPostPage() {
               <span className="bp-header-meta__sep" aria-hidden="true" />
               <span>{BLOG_POST.readTime}</span>
               <span className="bp-header-meta__sep" aria-hidden="true" />
-              <span>{BLOG_POST.author || 'ARG Software'}</span>
+              {BLOG_POST.authorUrl ? (
+                <a
+                  className="bp-header-meta__author"
+                  href={BLOG_POST.authorUrl}
+                  target="_blank"
+                  rel="author noopener noreferrer"
+                  onClick={() =>
+                    trackOutbound(BLOG_POST.authorUrl, BLOG_POST.author, 'blog_post_author')
+                  }
+                >
+                  {BLOG_POST.author}
+                </a>
+              ) : (
+                <span>{BLOG_POST.author || 'ARG Software'}</span>
+              )}
             </div>
           </PageHeader>
 

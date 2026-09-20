@@ -334,6 +334,20 @@
   width: 0.25rem;
 }
 
+.bp-header-meta__author {
+  color: inherit;
+  text-decoration-color: rgba(255, 255, 255, 0.38);
+  text-decoration-thickness: 0.0625rem;
+  text-underline-offset: 0.2em;
+  transition: color 180ms ease, text-decoration-color 180ms ease;
+}
+
+.bp-header-meta__author:hover,
+.bp-header-meta__author:focus-visible {
+  color: #fff;
+  text-decoration-color: currentColor;
+}
+
 .bp-body {
   background: #fff;
 }

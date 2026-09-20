@@ -1,6 +1,10 @@
 ---
 seoTitle: Nx + NestJS Monorepo Boilerplate
 slug: nx-nestjs-monorepo-boilerplate
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: Scaling with Confidence: A Practical Nx + NestJS Monorepo Boilerplate

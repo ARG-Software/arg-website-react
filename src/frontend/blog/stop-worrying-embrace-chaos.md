@@ -1,6 +1,10 @@
 ---
 seoTitle: Stop Worrying, Embrace the Chaos
 slug: stop-worrying-embrace-chaos
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Engineering Culture
 tags: Engineering Culture
 title: How I Learned to Stop Worrying and Embrace the Chaos (Spoiler: I Didn't)

@@ -1,6 +1,10 @@
 ---
 seoTitle: Run Docker Engine in WSL 2 Without Docker Desktop
 slug: goodbye-docker-desktop-wsl2
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: DevOps
 tags: DevOps
 title: Goodbye Docker Desktop: Run Docker Engine in WSL 2 on Windows

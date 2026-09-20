@@ -1,5 +1,9 @@
 ---
 slug: stop-hitting-claude-usage-limits
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: AI
 tags: AI
 title: Stop Hitting Claude's Usage Limits: Practical Ways to Stretch Your Plan

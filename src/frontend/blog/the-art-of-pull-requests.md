@@ -1,6 +1,10 @@
 ---
 seoTitle: The Art of Pull Requests
 slug: the-art-of-pull-requests
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Engineering Culture
 tags: Engineering Culture
 title: The Art of Pull Requests: How to Ship Faster Without Sacrificing Quality

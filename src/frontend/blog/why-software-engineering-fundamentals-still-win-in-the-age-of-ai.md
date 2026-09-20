@@ -1,6 +1,10 @@
 ---
 seoTitle: Software Fundamentals Matter More in the AI Era
 slug: why-software-engineering-fundamentals-still-win-in-the-age-of-ai
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: AI
 tags: AI, Engineering Culture
 title: Why Software Engineering Fundamentals Still Win in the Age of AI

@@ -1,6 +1,10 @@
 ---
 seoTitle: Local Kubernetes with NestJS & PostgreSQL
 slug: local-kubernetes-nestjs-postgresql
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: DevOps
 tags: DevOps, Backend
 title: From Zero to Hero: Mastering Local Kubernetes with NestJS and PostgreSQL in Minutes!

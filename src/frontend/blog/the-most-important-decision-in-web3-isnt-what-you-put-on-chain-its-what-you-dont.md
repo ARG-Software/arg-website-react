@@ -1,6 +1,10 @@
 ---
 seoTitle: The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t
 slug: the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Web3
 tags: Web3, Architecture, Security
 title: The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t

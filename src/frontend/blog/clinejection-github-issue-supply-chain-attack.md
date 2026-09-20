@@ -1,6 +1,10 @@
 ---
 seoTitle: Clinejection: GitHub Release Pipeline Attack
 slug: clinejection-github-issue-supply-chain-attack
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Security
 tags: Security, AI, Engineering Culture
 title: "Clinejection: How a GitHub Issue Exposed Cline’s Release Pipeline"

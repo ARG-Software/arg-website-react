@@ -1,6 +1,10 @@
 ---
 seoTitle: Build a Chrome Extension with React & Vite
 slug: chrome-extension-react-vite
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Browser Extensions
 tags: Frontend
 title: Building a Chrome Extension with React and Vite: A Modern Developer's Guide

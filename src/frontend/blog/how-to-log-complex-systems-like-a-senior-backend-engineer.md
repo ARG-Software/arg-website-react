@@ -1,6 +1,10 @@
 ---
 seoTitle: How to Debug Production Errors in Node.js
 slug: how-to-log-complex-systems-like-a-senior-backend-engineer
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Observability
 tags: Observability, Backend, Architecture
 title: How to Log Complex Systems Like a Senior Backend Engineer

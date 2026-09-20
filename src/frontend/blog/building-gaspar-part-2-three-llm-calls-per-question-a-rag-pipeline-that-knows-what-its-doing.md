@@ -1,6 +1,10 @@
 ---
 seoTitle: RAG Pipeline Design: 3 LLM Calls Per Question Explained
 slug: building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture
 title: Part 2: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing

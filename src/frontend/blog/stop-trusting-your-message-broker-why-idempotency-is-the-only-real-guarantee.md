@@ -1,6 +1,10 @@
 ---
 seoTitle: Message Broker Guarantees and Idempotency
 slug: stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Reliability
 tags: Reliability, Architecture, Backend
 title: Stop Trusting Your Message Broker: Why Idempotency Is a Core Safety Net

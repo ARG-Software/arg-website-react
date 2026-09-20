@@ -1,6 +1,10 @@
 ---
 seoTitle: Pure TypeScript DDD: Practical Persistence Ignorance with MikroORM
 slug: pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: Pure TypeScript DDD: Practical Persistence Ignorance with MikroORM

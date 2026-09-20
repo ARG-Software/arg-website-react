@@ -17,18 +17,21 @@ export function buildBlogPostStaticContent(meta, blocks) {
     meta.date,
     meta.reviewedOn ? `Reviewed on ${meta.reviewedOn}` : '',
     meta.readTime,
-    meta.author || 'ARG Software',
   ]
     .filter(Boolean)
     .map(escapeHtml)
     .join(' · ');
+  const author = escapeHtml(meta.author || 'ARG Software');
+  const authorLink = meta.authorUrl
+    ? `<a href="${escapeHtml(meta.authorUrl)}" rel="author noopener noreferrer">${author}</a>`
+    : author;
 
   return `<div class="page-wrapper" data-prerendered-content>
   <main class="main-wrapper">
     <header class="bp-article-page-header">
       <h1>${escapeHtml(meta.title || meta.slug)}</h1>
       ${meta.subtitle ? `<p>${escapeHtml(meta.subtitle)}</p>` : ''}
-      <p>${headerMeta}</p>
+      <p>${headerMeta}${headerMeta ? ' · ' : ''}${authorLink}</p>
     </header>
     <section class="bp-body background-color-white padding-section-large border-radius-all">
       <div class="bp-body-inner container container--section padding-global">

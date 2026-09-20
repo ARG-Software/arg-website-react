@@ -1,6 +1,10 @@
 ---
 seoTitle: AI Does Not Replace Talent, It Exposes It
 slug: ai-doesnt-replace-talent-it-exposes-it
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: AI
 tags: AI, Engineering Culture
 title: The Great Professional Reckoning: AI Doesn't Replace Talent - It Exposes It

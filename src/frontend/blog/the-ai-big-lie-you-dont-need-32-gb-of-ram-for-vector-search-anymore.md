@@ -1,6 +1,10 @@
 ---
 seoTitle: TurboQuant, TurboVec, and the Real RAM Math for Local Vector Search
 slug: the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: AI
 tags: AI, Architecture
 title: TurboQuant, TurboVec, and the Real RAM Math for Local Vector Search

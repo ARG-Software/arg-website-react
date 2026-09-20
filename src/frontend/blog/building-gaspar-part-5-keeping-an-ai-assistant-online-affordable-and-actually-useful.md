@@ -1,6 +1,10 @@
 ---
 seoTitle: How We Protected and Operate Our AI Chatbot at Low Cost
 slug: building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Reliability, Security
 title: Part 5: Keeping an AI Assistant Online, Affordable, and Actually Useful

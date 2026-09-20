@@ -1,5 +1,9 @@
 ---
 slug: testcontainers-best-practices-nestjs
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Testing
 tags: Testing, Backend
 title: Testcontainers Best Practices for NestJS Integration Testing

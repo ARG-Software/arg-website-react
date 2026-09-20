@@ -1,6 +1,10 @@
 ---
 seoTitle: Securing an AI Chatbot with Layered Guardrails
 slug: building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Security, Architecture
 title: Part 4: Guardrails as Architecture: How We Stopped Our Chatbot from Lying About Us

@@ -1,6 +1,10 @@
 ---
 seoTitle: Why .NET Still Matters for Modern Software
 slug: the-stack-nobody-hypes-but-serious-ctos-keep-choosing
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: The Stack Nobody Hypes, but Serious CTOs Keep Choosing

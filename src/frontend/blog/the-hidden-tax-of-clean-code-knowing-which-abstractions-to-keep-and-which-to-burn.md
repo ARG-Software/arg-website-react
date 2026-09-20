@@ -1,6 +1,10 @@
 ---
 seoTitle: The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (and Which to Burn)
 slug: the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Refactoring
 title: The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (and Which to Burn)

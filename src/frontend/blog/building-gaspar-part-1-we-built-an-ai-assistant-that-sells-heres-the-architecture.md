@@ -1,6 +1,10 @@
 ---
 seoTitle: How We Built Gaspar, Our AI Sales Assistant
 slug: building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture
 title: Part 1: We Built an AI Assistant That Sells. Here’s the Architecture.

@@ -1,6 +1,10 @@
 ---
 seoTitle: RAG Knowledge Design for Business Chatbots
 slug: building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture
 title: Part 3: The knowledge design behind a business AI assistant that doesn’t guess

@@ -1,6 +1,10 @@
 ---
 seoTitle: Adding Vector Search to TypeScript Clean Architecture with a TurboVec Sidecar
 slug: adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture, Backend
 title: Adding Vector Search to TypeScript Clean Architecture with a TurboVec Sidecar

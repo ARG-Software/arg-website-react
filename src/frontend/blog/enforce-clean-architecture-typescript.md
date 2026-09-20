@@ -1,6 +1,10 @@
 ---
 seoTitle: Enforce Clean Architecture in TypeScript
 slug: enforce-clean-architecture-typescript
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend, Testing
 title: How to Actually Enforce Clean Architecture in TypeScript

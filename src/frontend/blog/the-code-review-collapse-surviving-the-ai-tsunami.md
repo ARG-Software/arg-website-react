@@ -1,6 +1,10 @@
 ---
 seoTitle: The AI Code Review Crisis & How to Survive
 slug: the-code-review-collapse-surviving-the-ai-tsunami
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Engineering Culture
 tags: Engineering Culture, AI
 title: The Code Review Collapse: Surviving the AI Tsunami

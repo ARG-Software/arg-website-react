@@ -1,6 +1,10 @@
 ---
 seoTitle: TypeScript DI Without a Framework
 slug: typescript-dependency-injection-without-framework
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Architecture
 tags: Architecture, Backend
 title: TypeScript Dependency Injection Without the Framework (And Why You Might Prefer It)

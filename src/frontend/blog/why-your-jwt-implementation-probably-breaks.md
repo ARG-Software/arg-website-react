@@ -1,6 +1,10 @@
 ---
 seoTitle: The JWT Logout Problem: Why Stateless Auth Breaks
 slug: why-your-jwt-implementation-probably-breaks
+author: Rui Rocha
+authorUrl: https://www.linkedin.com/in/ruirochawork/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Security
 tags: Security, Backend
 title: Why Your JWT Implementation Probably Breaks
