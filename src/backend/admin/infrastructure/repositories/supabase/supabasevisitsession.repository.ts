@@ -11,8 +11,10 @@ import type {
   VisitSessionFindManyResult,
 } from '../../../application/ports/repositories/ivisitsession.repository.js';
 import type {
+  VisitOriginType,
   VisitSessionListItem,
   VisitSessionSortField,
+  VisitTrafficType,
 } from '../../../domain/types/visitsession.types.js';
 
 type VisitSessionRow = {
@@ -29,6 +31,10 @@ type VisitSessionRow = {
   term: string | null;
   content: string | null;
   click_id: string | null;
+  traffic_type: VisitTrafficType;
+  traffic_reason: string;
+  origin_name: string;
+  origin_type: VisitOriginType;
   page_count: number;
   event_count: number;
   duration_ms: number;
@@ -78,7 +84,7 @@ export class SupabaseVisitSessionRepository
         let query = this.client
           .from('visit_sessions')
           .select(
-            'session_hash, country_code, region, city, timezone, entry_path, referrer, source, medium, campaign, term, content, click_id, page_count, event_count, duration_ms, started_at, last_seen_at',
+            'session_hash, country_code, region, city, timezone, entry_path, referrer, source, medium, campaign, term, content, click_id, traffic_type, traffic_reason, origin_name, origin_type, page_count, event_count, duration_ms, started_at, last_seen_at',
             { count: 'exact' }
           );
 
@@ -210,6 +216,10 @@ function toSessionRecord(row: VisitSessionRow): VisitSessionListItem {
     term: row.term,
     content: row.content,
     clickId: row.click_id,
+    trafficType: row.traffic_type,
+    trafficReason: row.traffic_reason,
+    originName: row.origin_name,
+    originType: row.origin_type,
     pageCount: row.page_count,
     eventCount: row.event_count,
     durationMs: row.duration_ms,

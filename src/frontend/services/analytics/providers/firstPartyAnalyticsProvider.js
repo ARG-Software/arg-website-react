@@ -130,6 +130,7 @@ export class FirstPartyAnalyticsProvider {
     const body = JSON.stringify({
       sessionId: session?.sessionId,
       language: navigator.language,
+      browser: getBrowserContext(),
       referrer: attribution.referrer,
       attribution,
       events: this.events.splice(0, this.events.length),
@@ -196,6 +197,30 @@ export class FirstPartyAnalyticsProvider {
       // Analytics must never block navigation or rendering.
     }
   }
+}
+
+function getBrowserContext() {
+  const userAgentData = navigator.userAgentData;
+  const languages = navigator.languages?.length
+    ? Array.from(navigator.languages)
+    : [navigator.language].filter(Boolean);
+
+  return {
+    userAgent: navigator.userAgent || '',
+    webdriver: navigator.webdriver === true,
+    languages: languages.slice(0, 10),
+    pluginCount: Number.isFinite(navigator.plugins?.length) ? navigator.plugins.length : null,
+    screenWidth: Number(window.screen?.width) || null,
+    screenHeight: Number(window.screen?.height) || null,
+    maxTouchPoints: Number(navigator.maxTouchPoints) || 0,
+    userAgentData: userAgentData
+      ? {
+          brands: Array.isArray(userAgentData.brands) ? userAgentData.brands.slice(0, 10) : [],
+          platform: userAgentData.platform || '',
+          mobile: userAgentData.mobile === true,
+        }
+      : null,
+  };
 }
 
 function getEventPath(params) {

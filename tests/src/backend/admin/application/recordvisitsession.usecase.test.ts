@@ -33,6 +33,12 @@ test('recordVisitSessionUseCase records geolocation provided by the HTTP boundar
         durationMs: 5000,
       },
     ],
+    traffic: {
+      trafficType: 'suspected_bot',
+      trafficReason: 'webdriver',
+      originName: 'Chrome',
+      originType: 'desktop_browser',
+    },
   });
 
   assert.ok(savedRecord);
@@ -40,6 +46,10 @@ test('recordVisitSessionUseCase records geolocation provided by the HTTP boundar
   assert.equal(savedRecord.region, 'Madeira');
   assert.equal(savedRecord.city, 'Canico');
   assert.equal(savedRecord.timezone, 'Atlantic/Madeira');
+  assert.equal(savedRecord.trafficType, 'suspected_bot');
+  assert.equal(savedRecord.trafficReason, 'webdriver');
+  assert.equal(savedRecord.originName, 'Chrome');
+  assert.equal(savedRecord.originType, 'desktop_browser');
 });
 
 test('recordVisitSessionUseCase records empty geolocation when none is provided', async () => {
@@ -72,6 +82,10 @@ test('recordVisitSessionUseCase records empty geolocation when none is provided'
   assert.equal(savedRecord.region, '');
   assert.equal(savedRecord.city, '');
   assert.equal(savedRecord.timezone, '');
+  assert.equal(savedRecord.trafficType, 'N/A');
+  assert.equal(savedRecord.trafficReason, 'N/A');
+  assert.equal(savedRecord.originName, 'N/A');
+  assert.equal(savedRecord.originType, 'N/A');
 });
 
 test('recordVisitSessionUseCase records visit attribution fields', async () => {

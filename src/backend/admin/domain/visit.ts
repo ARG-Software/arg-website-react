@@ -5,7 +5,11 @@ import type {
   VisitPageView,
   VisitPageViewInput,
 } from './types/visitevents.types.js';
-import type { VisitSessionConstructorParams } from './types/visitsession.types.js';
+import type {
+  VisitOriginType,
+  VisitSessionConstructorParams,
+  VisitTrafficType,
+} from './types/visitsession.types.js';
 
 export class VisitSession {
   readonly sessionHash: string;
@@ -21,6 +25,10 @@ export class VisitSession {
   readonly term: string | null;
   readonly content: string | null;
   readonly clickId: string | null;
+  readonly trafficType: VisitTrafficType;
+  readonly trafficReason: string;
+  readonly originName: string;
+  readonly originType: VisitOriginType;
   readonly entryPath: string;
   readonly events: VisitEvent[];
   readonly pageViews: VisitPageView[];
@@ -54,6 +62,10 @@ export class VisitSession {
     this.term = params.attribution?.term || null;
     this.content = params.attribution?.content || null;
     this.clickId = params.attribution?.clickId || null;
+    this.trafficType = params.traffic?.trafficType || 'N/A';
+    this.trafficReason = params.traffic?.trafficReason || 'N/A';
+    this.originName = params.traffic?.originName || 'N/A';
+    this.originType = params.traffic?.originType || 'N/A';
     this.entryPath =
       firstPageView?.path || events[0]?.path || String(events[0]?.params.page_path || '') || '/';
     this.events = events;

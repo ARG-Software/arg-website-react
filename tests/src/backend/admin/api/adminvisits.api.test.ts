@@ -80,12 +80,12 @@ test('skips known bot visit logs before reading the body', async () => {
   assert.equal(recordCalled, false);
 });
 
-test('skips low-engagement visit logs with one short page view and no events', async () => {
-  let recordCalled = false;
+test('records low-engagement visit logs as suspected bots', async () => {
+  let recordedTraffic: any = null;
   const controller = new TestVisitsController({
     recordVisitSessionUseCase: {
-      async execute() {
-        recordCalled = true;
+      async execute(input) {
+        recordedTraffic = input.traffic;
       },
     },
     visitLogRateLimiter: { check: async () => ({ allowed: true }) },
@@ -98,15 +98,16 @@ test('skips low-engagement visit logs with one short page view and no events', a
   );
 
   assert.equal(response.status, 204);
-  assert.equal(recordCalled, false);
+  assert.equal(recordedTraffic.trafficType, 'suspected_bot');
+  assert.equal(recordedTraffic.trafficReason, 'low_engagement');
 });
 
-test('skips low-engagement visit logs with only the automatic page view event', async () => {
-  let recordCalled = false;
+test('records automatic short page views as suspected bots', async () => {
+  let recordedTraffic: any = null;
   const controller = new TestVisitsController({
     recordVisitSessionUseCase: {
-      async execute() {
-        recordCalled = true;
+      async execute(input) {
+        recordedTraffic = input.traffic;
       },
     },
     visitLogRateLimiter: { check: async () => ({ allowed: true }) },
@@ -119,15 +120,18 @@ test('skips low-engagement visit logs with only the automatic page view event', 
   );
 
   assert.equal(response.status, 204);
-  assert.equal(recordCalled, false);
+  assert.equal(recordedTraffic.trafficType, 'suspected_bot');
+  assert.equal(recordedTraffic.trafficReason, 'low_engagement');
 });
 
 test('records short visit logs with attribution', async () => {
   let recordedSessionId = '';
+  let recordedTraffic: any = null;
   const controller = new TestVisitsController({
     recordVisitSessionUseCase: {
       async execute(input) {
         recordedSessionId = input.sessionId;
+        recordedTraffic = input.traffic;
       },
     },
     visitLogRateLimiter: { check: async () => ({ allowed: true }) },
@@ -142,6 +146,7 @@ test('records short visit logs with attribution', async () => {
 
   assert.equal(response.status, 204);
   assert.equal(recordedSessionId, 'visitor-session');
+  assert.equal(recordedTraffic.trafficType, 'human');
 });
 
 test('records short visit logs with meaningful events', async () => {
@@ -165,12 +170,34 @@ test('records short visit logs with meaningful events', async () => {
   assert.equal(recordedSessionId, 'visitor-session');
 });
 
-test('records longer visit logs without events', async () => {
-  let recordedSessionId = '';
+test('ignores malformed events when classifying low engagement', async () => {
+  let recordedTraffic: any = null;
   const controller = new TestVisitsController({
     recordVisitSessionUseCase: {
       async execute(input) {
-        recordedSessionId = input.sessionId;
+        recordedTraffic = input.traffic;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    createVisitLogRequest({
+      events: [{ name: 'cta_click' }],
+      pageViews: [createVisitPageView(1000)],
+    })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordedTraffic.trafficType, 'suspected_bot');
+  assert.equal(recordedTraffic.trafficReason, 'low_engagement');
+});
+
+test('records longer visit logs without events', async () => {
+  let recordedTraffic: any = null;
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute(input) {
+        recordedTraffic = input.traffic;
       },
     },
     visitLogRateLimiter: { check: async () => ({ allowed: true }) },
@@ -178,12 +205,111 @@ test('records longer visit logs without events', async () => {
   const response = await controller.log(
     createVisitLogRequest({
       events: [],
-      pageViews: [createVisitPageView(5000)],
+      pageViews: [createVisitPageView(15_000)],
     })
   );
 
   assert.equal(response.status, 204);
-  assert.equal(recordedSessionId, 'visitor-session');
+  assert.equal(recordedTraffic.trafficType, 'human');
+  assert.equal(recordedTraffic.originName, 'Chrome');
+  assert.equal(recordedTraffic.originType, 'desktop_browser');
+});
+
+test('records headless browsers as suspected bots', async () => {
+  let recordedTraffic: any = null;
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute(input) {
+        recordedTraffic = input.traffic;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    createVisitLogRequest(
+      { pageViews: [createVisitPageView(15_000)] },
+      'Mozilla/5.0 HeadlessChrome/128.0.0.0 Safari/537.36'
+    )
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordedTraffic.trafficType, 'suspected_bot');
+  assert.equal(recordedTraffic.trafficReason, 'headless_user_agent');
+  assert.equal(recordedTraffic.originName, 'Headless Chrome');
+  assert.equal(recordedTraffic.originType, 'headless_browser');
+});
+
+test('records webdriver browsers as suspected bots', async () => {
+  let recordedTraffic: any = null;
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute(input) {
+        recordedTraffic = input.traffic;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    createVisitLogRequest({
+      browser: createBrowserContext({ webdriver: true }),
+      pageViews: [createVisitPageView(15_000)],
+    })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordedTraffic.trafficType, 'suspected_bot');
+  assert.equal(recordedTraffic.trafficReason, 'webdriver');
+});
+
+test('records suspicious desktop browser fingerprints as suspected bots', async () => {
+  let recordedTraffic: any = null;
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute(input) {
+        recordedTraffic = input.traffic;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    createVisitLogRequest({
+      browser: createBrowserContext({ languages: [], pluginCount: 0 }),
+      pageViews: [createVisitPageView(15_000)],
+    })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordedTraffic.trafficType, 'suspected_bot');
+  assert.equal(
+    recordedTraffic.trafficReason,
+    'missing_browser_language,desktop_browser_without_plugins'
+  );
+});
+
+test('records mobile browsers with their origin', async () => {
+  let recordedTraffic: any = null;
+  const controller = new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute(input) {
+        recordedTraffic = input.traffic;
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+  const response = await controller.log(
+    createVisitLogRequest(
+      {
+        browser: createBrowserContext({ pluginCount: 0, maxTouchPoints: 5 }),
+        pageViews: [createVisitPageView(15_000)],
+      },
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1'
+    )
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordedTraffic.trafficType, 'human');
+  assert.equal(recordedTraffic.originName, 'Safari');
+  assert.equal(recordedTraffic.originType, 'mobile_browser');
 });
 
 test('deletes visit sessions through the authenticated admin endpoint', async () => {
@@ -518,11 +644,15 @@ function createMetricSession(sessionHash: string, countryCode: string) {
   };
 }
 
-function createVisitLogRequest(payload = {}) {
+const DESKTOP_CHROME_USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128.0.0.0 Safari/537.36';
+
+function createVisitLogRequest(payload = {}, userAgent = DESKTOP_CHROME_USER_AGENT) {
   return new Request('https://arg.software/api/visit-log', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'user-agent': userAgent,
       'x-nf-client-connection-ip': '203.0.113.10',
     },
     body: JSON.stringify({
@@ -533,6 +663,16 @@ function createVisitLogRequest(payload = {}) {
       ...payload,
     }),
   });
+}
+
+function createBrowserContext(overrides = {}) {
+  return {
+    webdriver: false,
+    languages: ['en-US', 'en'],
+    pluginCount: 5,
+    maxTouchPoints: 0,
+    ...overrides,
+  };
 }
 
 function createVisitPageView(durationMs: number) {

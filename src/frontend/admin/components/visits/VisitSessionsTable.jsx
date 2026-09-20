@@ -66,6 +66,16 @@ function getVisitSessionColumns() {
       label: 'Source',
       render: formatSource,
     },
+    {
+      key: 'trafficType',
+      label: 'Traffic',
+      render: formatTraffic,
+    },
+    {
+      key: 'originName',
+      label: 'Origin',
+      render: formatOrigin,
+    },
     { key: 'pageCount', label: 'Pages', sortable: true },
     { key: 'eventCount', label: 'Events', sortable: true },
     {
@@ -97,4 +107,41 @@ function formatSource(record) {
   const medium = record.medium ? ` / ${record.medium}` : '';
 
   return source ? `${source}${medium}` : '-';
+}
+
+function formatTraffic(record) {
+  if (!record.trafficType || record.trafficType === 'N/A') return 'N/A';
+
+  const suspected = record.trafficType === 'suspected_bot';
+  const reason =
+    record.trafficReason && record.trafficReason !== 'N/A'
+      ? formatClassification(record.trafficReason)
+      : '';
+
+  return (
+    <span
+      className={`admin-visit-traffic admin-visit-traffic--${suspected ? 'suspected' : 'human'}`}
+      title={reason || undefined}
+    >
+      <strong>{suspected ? 'Suspected bot' : 'Human'}</strong>
+      {reason && <small>{reason}</small>}
+    </span>
+  );
+}
+
+function formatOrigin(record) {
+  if (!record.originName || record.originName === 'N/A') return 'N/A';
+
+  const originType =
+    record.originType && record.originType !== 'N/A' ? formatClassification(record.originType) : '';
+
+  return originType ? `${record.originName} · ${originType}` : record.originName;
+}
+
+function formatClassification(value) {
+  return String(value)
+    .split(',')
+    .map(item => item.trim().replaceAll('_', ' '))
+    .filter(Boolean)
+    .join(', ');
 }

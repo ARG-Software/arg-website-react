@@ -7,6 +7,7 @@ import { VisitDomainError } from '../../../domain/errors/visitdomain.error.js';
 import type {
   VisitAttributionInput,
   VisitGeolocationInput,
+  VisitTrafficInput,
 } from '../../../domain/types/visitsession.types.js';
 
 export interface RecordVisitSessionInput {
@@ -17,6 +18,7 @@ export interface RecordVisitSessionInput {
   language?: string;
   referrer?: string;
   attribution?: VisitAttributionInput;
+  traffic?: VisitTrafficInput;
 }
 
 export class RecordVisitSessionUseCase {
@@ -40,6 +42,7 @@ export class RecordVisitSessionUseCase {
       language: input.language,
       referrer: input.referrer,
       attribution: input.attribution,
+      traffic: input.traffic,
     });
 
     this.logger?.info('Visit session record started', {

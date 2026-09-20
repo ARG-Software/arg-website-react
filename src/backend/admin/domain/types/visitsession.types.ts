@@ -22,6 +22,24 @@ export type VisitAttributionInput = {
   clickId?: string | null;
 };
 
+export type VisitTrafficType = 'human' | 'suspected_bot' | 'N/A';
+
+export type VisitOriginType =
+  | 'desktop_browser'
+  | 'mobile_browser'
+  | 'tablet_browser'
+  | 'headless_browser'
+  | 'automation'
+  | 'unknown'
+  | 'N/A';
+
+export type VisitTrafficInput = {
+  trafficType: VisitTrafficType;
+  trafficReason: string;
+  originName: string;
+  originType: VisitOriginType;
+};
+
 export type VisitSessionConstructorParams = {
   sessionHash: string;
   events?: VisitEventInput[];
@@ -30,6 +48,7 @@ export type VisitSessionConstructorParams = {
   language?: string;
   referrer?: string;
   attribution?: VisitAttributionInput;
+  traffic?: VisitTrafficInput;
 };
 
 export type VisitSessionRecord = {
@@ -46,6 +65,10 @@ export type VisitSessionRecord = {
   term: string | null;
   content: string | null;
   clickId: string | null;
+  trafficType: VisitTrafficType;
+  trafficReason: string;
+  originName: string;
+  originType: VisitOriginType;
   entryPath: string;
   events: VisitEvent[];
   pageViews: VisitPageView[];
@@ -68,6 +91,10 @@ export type VisitSessionListItem = {
   term: string | null;
   content: string | null;
   clickId: string | null;
+  trafficType: VisitTrafficType;
+  trafficReason: string;
+  originName: string;
+  originType: VisitOriginType;
   pageCount: number;
   eventCount: number;
   durationMs: number;
