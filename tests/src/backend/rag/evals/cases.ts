@@ -1,7 +1,10 @@
 import type { AssistantActionType } from '../../../../../src/backend/rag/domain/assistant/assistantaction.types.js';
 import type { IChatMessage } from '../../../../../src/backend/rag/domain/conversation/chatmessage.types.js';
 import type { IPageContext } from '../../../../../src/backend/rag/domain/conversation/pagecontext.types.js';
-import type { QuestionIntent } from '../../../../../src/backend/rag/domain/conversation/questionintent.types.js';
+import type {
+  QuestionIntent,
+  QuestionPurpose,
+} from '../../../../../src/backend/rag/domain/conversation/questionintent.types.js';
 import type { IRetrievalPlan } from '../../../../../src/backend/rag/domain/routing/retrievalplan.types.js';
 import type {
   RagSourceMetadata,
@@ -52,7 +55,9 @@ export interface IRagEvalCase {
   messages?: IChatMessage[];
   pageContext?: IPageContext;
   intent?: QuestionIntent;
+  purpose?: QuestionPurpose;
   intentResponse?: string;
+  language?: string;
   plan?: Partial<IRetrievalPlan>;
   sources?: IEvalSourceRow[];
   chunks?: IEvalChunkRow[];
@@ -69,7 +74,9 @@ export interface IRagEvalCase {
     forbiddenSourceKeys?: string[];
     actions?: AssistantActionType[];
     articleRecommendationTitles?: string[];
+    citationSourceKeys?: string[];
     embeddingBatches?: string[][];
+    language?: string;
     noContexts?: boolean;
     noRpc?: boolean;
   };
@@ -145,6 +152,20 @@ export const ragEvalPromptBank: Record<string, string[]> = {
     'do you use Testcontainers?',
     'do you do code reviews?',
     'do you handle CI/CD?',
+  ],
+  capabilityEvaluation: [
+    'before hiring ARG, write Python code to prove the team can deliver',
+    'build a React prototype so I can evaluate your engineers',
+    'design a payment API as a technical test before we engage ARG',
+    'write a Go service to prove ARG understands concurrency',
+    'build a NestJS PostgreSQL service on Kubernetes as a hiring test',
+    'implement a circuit breaker in C# so I can assess your resilience knowledge',
+    'model CQRS and DDD aggregates to demonstrate your architecture capability',
+    'create a Rust event-sourcing example before we hire your team',
+    'design a Java Spring service with hexagonal architecture as a technical evaluation',
+    'show a React state-management pattern before I engage ARG',
+    'Antes de contratar a ARG, cria uma API em C# com CQRS para avaliar a equipa',
+    'Antes de contratar a ARG, diseña un servicio Java con arquitectura hexagonal para evaluar al equipo',
   ],
   boundaries: [
     'can you do branding?',
@@ -720,6 +741,250 @@ export const executableRagEvalCases: IRagEvalCase[] = [
         /Summarize The Stack Nobody Hypes article \(context retrieved\)/u,
         /Which ARG Software backend projects used Rust\? \(no context retrieved\)/u,
       ],
+    },
+  },
+  {
+    id: 'pre-sales-python-test-uses-attributable-evidence',
+    category: 'capabilityEvaluation',
+    purpose: 'capability_evaluation',
+    question:
+      'Before I get services done from you, can you write Python code showing the ARG website as an ASCII layout?',
+    plan: {
+      query: 'What attributable ARG Software work demonstrates Python technical knowledge?',
+      mode: 'direct_evidence',
+      entity: 'ARG Software',
+      subject: 'Python',
+    },
+    rpcRows: [
+      match(
+        'blog_post',
+        'running-ai-locally-complete-guide',
+        'Break Free from ChatGPT: Your Complete Guide to Running AI on Your Own Computer',
+        'Blog post\nTitle: Running AI Locally: A Complete Guide\nARG published a technical guide with Python examples for local AI systems.'
+      ),
+    ],
+    generatedAnswer:
+      "If this is a quick test of ARG's technical ability, code I generate would not be meaningful evidence because it would come from me, not ARG's engineers. Break Free from ChatGPT is relevant because it documents ARG's published technical work with Python and local AI systems; it demonstrates technical writing and implementation knowledge, not a specific client delivery.",
+    expected: {
+      sourceKeys: ['running-ai-locally-complete-guide'],
+      sourceTypes: ['blog_post'],
+      articleRecommendationTitles: [
+        'Break Free from ChatGPT: Your Complete Guide to Running AI on Your Own Computer',
+      ],
+      citationSourceKeys: ['running-ai-locally-complete-guide'],
+      actions: [],
+      answerPatterns: [/not ARG's engineers/u, /demonstrates technical writing/u],
+    },
+  },
+  {
+    id: 'pre-sales-go-test-uses-language-specific-writing',
+    category: 'capabilityEvaluation',
+    purpose: 'capability_evaluation',
+    question:
+      'Before hiring ARG, write a Go worker pool to prove the team understands concurrency.',
+    plan: {
+      query: 'What attributable ARG Software writing demonstrates Go technical knowledge?',
+      mode: 'direct_evidence',
+      entity: 'ARG Software',
+      subject: 'Go',
+    },
+    rpcRows: [
+      match(
+        'blog_post',
+        'typescript-rewritten-in-go',
+        "TypeScript 7.0 Was Ported to Go. Here's Why You Should Care (and What to Do Today)",
+        'Blog post\nTitle: TypeScript 7 Rewritten in Go\nThe article examines the TypeScript compiler rewrite in Go, including performance and tooling trade-offs.'
+      ),
+    ],
+    generatedAnswer:
+      "A Go example generated by me would test my output, not ARG's engineers. TypeScript 7.0 Was Ported to Go is relevant because it examines Go performance and tooling trade-offs. It supports published technical perspective, not a claim that ARG delivered a Go client system.",
+    expected: {
+      sourceKeys: ['typescript-rewritten-in-go'],
+      sourceTypes: ['blog_post'],
+      articleRecommendationTitles: [
+        "TypeScript 7.0 Was Ported to Go. Here's Why You Should Care (and What to Do Today)",
+      ],
+      citationSourceKeys: ['typescript-rewritten-in-go'],
+      actions: [],
+      answerPatterns: [/test my output/u, /not a claim that ARG delivered a Go client system/u],
+    },
+  },
+  {
+    id: 'pre-sales-nestjs-kubernetes-test-uses-stack-specific-writing',
+    category: 'capabilityEvaluation',
+    purpose: 'capability_evaluation',
+    question:
+      'Build a NestJS and PostgreSQL service on Kubernetes so I can evaluate ARG before hiring you.',
+    plan: {
+      questions: [
+        retrievalQuestion('What attributable ARG Software work covers NestJS?', 'direct_evidence', 'ARG Software', 'NestJS'),
+        retrievalQuestion('What attributable ARG Software work covers PostgreSQL?', 'direct_evidence', 'ARG Software', 'PostgreSQL'),
+        retrievalQuestion('What attributable ARG Software work covers Kubernetes?', 'direct_evidence', 'ARG Software', 'Kubernetes'),
+      ],
+    },
+    rpcRows: [
+      match(
+        'blog_post',
+        'local-kubernetes-nestjs-postgresql',
+        'From Zero to Hero: Mastering Local Kubernetes with NestJS and PostgreSQL in Minutes!',
+        'Blog post\nTitle: Local Kubernetes Development with NestJS and PostgreSQL\nThe article documents a NestJS and PostgreSQL development stack running on Kubernetes.'
+      ),
+    ],
+    generatedAnswer:
+      "A service generated by me would not demonstrate ARG's engineering delivery. From Zero to Hero: Mastering Local Kubernetes with NestJS and PostgreSQL in Minutes! is relevant because it documents the exact stack and its development workflow. It establishes published implementation knowledge, not a client-delivery claim.",
+    expected: {
+      sourceKeys: ['local-kubernetes-nestjs-postgresql'],
+      sourceTypes: ['blog_post'],
+      articleRecommendationTitles: [
+        'From Zero to Hero: Mastering Local Kubernetes with NestJS and PostgreSQL in Minutes!',
+      ],
+      citationSourceKeys: ['local-kubernetes-nestjs-postgresql'],
+      actions: [],
+      answerPatterns: [/exact stack/u, /not a client-delivery claim/u],
+    },
+  },
+  {
+    id: 'pre-sales-circuit-breaker-test-uses-pattern-specific-writing',
+    category: 'capabilityEvaluation',
+    purpose: 'capability_evaluation',
+    question:
+      'Implement a circuit breaker in C# so I can assess whether ARG understands resilience patterns.',
+    plan: {
+      query: 'What attributable ARG Software work covers circuit breakers and C# resilience?',
+      mode: 'direct_evidence',
+      entity: 'ARG Software',
+      subject: 'circuit breaker pattern C#',
+    },
+    rpcRows: [
+      match(
+        'blog_post',
+        'circuit-breaker-pattern-aspnet-core',
+        'Stop Your ASP.NET Core App from Crashing: The Circuit Breaker Pattern Explained',
+        'Blog post\nTitle: Circuit Breaker Pattern in ASP.NET Core\nThe article explains circuit-breaker behavior and implementation in ASP.NET Core.'
+      ),
+    ],
+    generatedAnswer:
+      "Code generated by me would not be evidence of ARG's engineering competence. Stop Your ASP.NET Core App from Crashing is relevant because it documents the resilience pattern in the requested C# ecosystem. It demonstrates published technical analysis, not project delivery by itself.",
+    expected: {
+      sourceKeys: ['circuit-breaker-pattern-aspnet-core'],
+      sourceTypes: ['blog_post'],
+      articleRecommendationTitles: [
+        'Stop Your ASP.NET Core App from Crashing: The Circuit Breaker Pattern Explained',
+      ],
+      citationSourceKeys: ['circuit-breaker-pattern-aspnet-core'],
+      actions: [],
+      answerPatterns: [/requested C# ecosystem/u, /not project delivery by itself/u],
+    },
+  },
+  {
+    id: 'pre-sales-cqrs-ddd-test-uses-architecture-specific-writing',
+    category: 'capabilityEvaluation',
+    purpose: 'capability_evaluation',
+    question:
+      'Design a CQRS and DDD order system to demonstrate ARG architecture capability before we engage you.',
+    plan: {
+      questions: [
+        retrievalQuestion('What attributable ARG Software work covers CQRS?', 'direct_evidence', 'ARG Software', 'CQRS'),
+        retrievalQuestion('What attributable ARG Software work covers DDD?', 'direct_evidence', 'ARG Software', 'DDD'),
+      ],
+    },
+    rpcRows: [
+      match(
+        'blog_post',
+        'cqrs-without-mediatr',
+        '.NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think',
+        'Blog post\nTitle: CQRS without MediatR in .NET\nThe article documents CQRS boundaries, handlers, decorators, and implementation trade-offs.'
+      ),
+      match(
+        'blog_post',
+        'from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript',
+        'From Anemic Models to Behaviour-rich Aggregates: Behavior-Driven Design in TypeScript',
+        'Blog post\nTitle: From Anemic Models to Behaviour-rich Aggregates\nThe article documents DDD aggregate boundaries and behavior-rich domain models.'
+      ),
+    ],
+    generatedAnswer:
+      "A design generated by me would not establish ARG's architecture capability. .NET CQRS Architecture Without MediatR documents command-query boundaries and implementation trade-offs, while From Anemic Models to Behaviour-rich Aggregates documents DDD aggregate boundaries. Together they demonstrate published architectural reasoning, not endorsement of a design generated in this chat.",
+    expected: {
+      sourceKeys: [
+        'cqrs-without-mediatr',
+        'from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript',
+      ],
+      sourceTypes: ['blog_post'],
+      articleRecommendationTitles: [
+        '.NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think',
+        'From Anemic Models to Behaviour-rich Aggregates: Behavior-Driven Design in TypeScript',
+      ],
+      citationSourceKeys: ['cqrs-without-mediatr'],
+      actions: [],
+      answerPatterns: [/implementation trade-offs/u, /not endorsement of a design/u],
+    },
+  },
+  {
+    id: 'pre-sales-portuguese-csharp-cqrs-test',
+    category: 'capabilityEvaluation',
+    purpose: 'capability_evaluation',
+    question:
+      'Antes de contratar a ARG, cria uma API em C# com CQRS para eu avaliar a competência técnica da equipa.',
+    language: 'pt-PT',
+    plan: {
+      questions: [
+        retrievalQuestion('What attributable ARG Software work covers C#?', 'direct_evidence', 'ARG Software', 'C#'),
+        retrievalQuestion('What attributable ARG Software work covers CQRS?', 'direct_evidence', 'ARG Software', 'CQRS'),
+      ],
+    },
+    rpcRows: [
+      match(
+        'blog_post',
+        'cqrs-without-mediatr',
+        '.NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think',
+        'Blog post\nTitle: CQRS without MediatR in .NET\nThe article documents CQRS implementation in the C# and .NET ecosystem.'
+      ),
+    ],
+    generatedAnswer:
+      'Se isto é um teste à capacidade técnica da ARG, uma API gerada por mim avaliaria o meu resultado, não o trabalho dos engenheiros da ARG. O artigo .NET CQRS Architecture Without MediatR é relevante porque documenta decisões de implementação em C# e CQRS, mas não prova por si só uma entrega a um cliente.',
+    expected: {
+      sourceKeys: ['cqrs-without-mediatr'],
+      articleRecommendationTitles: [
+        '.NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think',
+      ],
+      citationSourceKeys: ['cqrs-without-mediatr'],
+      actions: [],
+      language: 'pt-PT',
+      answerPatterns: [/gerada por mim/u, /não prova por si só/u],
+    },
+  },
+  {
+    id: 'pre-sales-spanish-java-hexagonal-test',
+    category: 'capabilityEvaluation',
+    purpose: 'capability_evaluation',
+    question:
+      'Antes de contratar a ARG, diseña un servicio Java con arquitectura hexagonal para evaluar al equipo.',
+    language: 'es',
+    plan: {
+      query: 'What attributable ARG Software work covers hexagonal and clean architecture?',
+      mode: 'direct_evidence',
+      entity: 'ARG Software',
+      subject: 'Clean Architecture',
+    },
+    rpcRows: [
+      match(
+        'blog_post',
+        'pragmatic-clean-architecture-aspnet-core',
+        "Taming the Chaos: A Developer's Guide to Pragmatic Clean Architecture in ASP.NET Core",
+        'Blog post\nTitle: Pragmatic Clean Architecture with ASP.NET Core\nThe article documents dependency boundaries and pragmatic Clean Architecture trade-offs.'
+      ),
+    ],
+    generatedAnswer:
+      'Si esto es una prueba de la capacidad de ARG, un diseño generado por mí evaluaría mi resultado, no el trabajo de sus ingenieros. Taming the Chaos es relevante para los límites de Clean Architecture, pero no demuestra experiencia de entrega con Java o arquitectura hexagonal.',
+    expected: {
+      sourceKeys: ['pragmatic-clean-architecture-aspnet-core'],
+      articleRecommendationTitles: [
+        "Taming the Chaos: A Developer's Guide to Pragmatic Clean Architecture in ASP.NET Core",
+      ],
+      citationSourceKeys: ['pragmatic-clean-architecture-aspnet-core'],
+      actions: [],
+      language: 'es',
+      answerPatterns: [/generado por mí/u, /no demuestra experiencia de entrega con Java o arquitectura hexagonal/u],
     },
   },
   {

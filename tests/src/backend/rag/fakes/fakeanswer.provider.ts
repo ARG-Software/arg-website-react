@@ -5,6 +5,7 @@ import type {
 } from '../../../../../src/backend/rag/domain/conversation/conversationtransform.types.js';
 import type {
   QuestionIntent,
+  QuestionPurpose,
 } from '../../../../../src/backend/rag/domain/conversation/questionintent.types.js';
 import type {
   IRetrievalPlan,
@@ -12,6 +13,7 @@ import type {
 
 export interface IFakeAnswerProviderBehavior {
   intent?: QuestionIntent;
+  purpose?: QuestionPurpose;
   intentResponse?: string;
   language?: string;
   plan?: Partial<IRetrievalPlan>;
@@ -39,6 +41,7 @@ export function createFakeAnswerProvider(
 ): ILlmProvider {
   const {
     intent = 'rag_question',
+    purpose = 'general',
     intentResponse = '',
     language = 'en',
     plan,
@@ -67,7 +70,13 @@ export function createFakeAnswerProvider(
   return {
     async classifyQuestionIntent(question, _messages, pageContext) {
       onClassifyIntent?.(question, pageContext);
-      return { intent, response: intentResponse, language, ...(transformTask ? { task: transformTask } : {}) };
+      return {
+        intent,
+        purpose,
+        response: intentResponse,
+        language,
+        ...(transformTask ? { task: transformTask } : {}),
+      };
     },
     async planRetrieval() {
       return retrievalPlan;

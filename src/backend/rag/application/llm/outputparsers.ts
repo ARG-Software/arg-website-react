@@ -3,6 +3,7 @@ import type {
 } from '../../domain/conversation/conversationtransform.types.js';
 import type {
   IQuestionIntentResult,
+  QuestionPurpose,
 } from '../../domain/conversation/questionintent.types.js';
 import type {
   RetrievalMode,
@@ -13,6 +14,12 @@ import type {
 const RAG_INTENT = 'rag_question';
 const RETRIEVAL_MODES: RetrievalMode[] = ['direct_evidence', 'editorial', 'article_discovery'];
 const QUESTION_INTENTS = ['small_talk', RAG_INTENT, 'unsupported', 'conversation_transform'];
+const QUESTION_PURPOSES: QuestionPurpose[] = [
+  'general',
+  'capability_evaluation',
+  'explicit_contact_request',
+  'declined_offer',
+];
 const CONVERSATION_TRANSFORM_TASKS: ConversationTransformTask[] = [
   'shorten_previous_answer',
   'simplify_previous_answer',
@@ -23,20 +30,21 @@ const CONVERSATION_TRANSFORM_TASKS: ConversationTransformTask[] = [
 
 export function parseIntentResponse(content: string | undefined): IQuestionIntentResult {
   if (!content) {
-    return { intent: RAG_INTENT, response: '', language: '' };
+    return { intent: RAG_INTENT, purpose: 'general', response: '', language: '' };
   }
 
   try {
     const parsed = JSON.parse(content);
 
     if (!QUESTION_INTENTS.includes(parsed.intent)) {
-      return { intent: RAG_INTENT, response: '', language: '' };
+      return { intent: RAG_INTENT, purpose: 'general', response: '', language: '' };
     }
 
     const task = parseConversationTransformTask(parsed.task);
 
     return {
       intent: parsed.intent,
+      purpose: QUESTION_PURPOSES.includes(parsed.purpose) ? parsed.purpose : 'general',
       response: typeof parsed.response === 'string' ? parsed.response.trim() : '',
       language:
         typeof parsed.language === 'string' && parsed.language.length <= 20
@@ -47,7 +55,7 @@ export function parseIntentResponse(content: string | undefined): IQuestionInten
         : {}),
     };
   } catch {
-    return { intent: RAG_INTENT, response: '', language: '' };
+    return { intent: RAG_INTENT, purpose: 'general', response: '', language: '' };
   }
 }
 

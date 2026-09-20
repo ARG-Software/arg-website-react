@@ -103,7 +103,7 @@ export class AskAssistantQuestionUseCase {
         ...languagePreference,
         citations: [],
         articleRecommendations: [],
-        actions: createAssistantActions(question),
+        actions: createAssistantActions(question, intent.purpose),
         contexts: [],
       };
     }
@@ -158,7 +158,7 @@ export class AskAssistantQuestionUseCase {
           ...languagePreference,
           citations: [],
           articleRecommendations: [],
-          actions: createInsufficientContextActions(question),
+          actions: createInsufficientContextActions(question, intent.purpose),
           contexts: [],
         };
       }
@@ -175,7 +175,7 @@ export class AskAssistantQuestionUseCase {
         ...languagePreference,
         citations: [],
         articleRecommendations: [],
-        actions: createInsufficientContextActions(question),
+        actions: createInsufficientContextActions(question, intent.purpose),
         contexts: [],
       };
     }
@@ -196,6 +196,7 @@ export class AskAssistantQuestionUseCase {
       retrievalResults,
       siteUrl: this.config.siteUrl,
       pageContext,
+      purpose: intent.purpose,
     });
   }
 

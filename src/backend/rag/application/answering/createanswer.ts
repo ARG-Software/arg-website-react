@@ -1,6 +1,7 @@
 import type { IRetrievedContext } from '../../domain/sources/retrievedcontext.types.js';
 import type { IAskQuestionResult } from '../../domain/answers/assistantanswer.types.js';
 import type { IPageContext } from '../../domain/conversation/pagecontext.types.js';
+import type { QuestionPurpose } from '../../domain/conversation/questionintent.types.js';
 import type { IRetrievalItemResult } from '../../domain/routing/retrievalitems.js';
 import { createAssistantActions } from '../../domain/assistant/actions.js';
 import { normalizeAssistantAnswer } from '../../domain/answers/answerpolicy.js';
@@ -19,6 +20,7 @@ export function createAnswerResult({
   retrievalResults,
   siteUrl,
   pageContext,
+  purpose,
 }: {
   answer: string;
   language: string;
@@ -28,6 +30,7 @@ export function createAnswerResult({
   retrievalResults: IRetrievalItemResult[];
   siteUrl: string;
   pageContext?: IPageContext | null;
+  purpose: QuestionPurpose;
 }): IAskQuestionResult {
   return {
     answer: normalizeAssistantAnswer(answer),
@@ -39,7 +42,7 @@ export function createAnswerResult({
         createArticleRecommendations(result.contexts, result.route, siteUrl)
       )
     ),
-    actions: createAssistantActions(question),
+    actions: createAssistantActions(question, purpose),
     contexts,
   };
 }

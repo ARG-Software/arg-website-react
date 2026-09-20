@@ -62,10 +62,15 @@ for (const ragCase of executableRagEvalCases) {
     const sourceKeys = result.contexts.map(context => context.sourceKey);
     const sourceTypes = new Set(result.contexts.map(context => context.sourceType));
     const articleTitles = result.articleRecommendations.map(article => article.title);
+    const citationSourceKeys = result.citations.map(citation => citation.sourceKey);
     const actionTypes = result.actions.map(action => action.type);
 
     if (expected.answer) {
       assert.equal(result.answer, expected.answer);
+    }
+
+    if (expected.language) {
+      assert.equal(result.language, expected.language);
     }
 
     for (const pattern of expected.answerPatterns ?? []) {
@@ -102,6 +107,10 @@ for (const ragCase of executableRagEvalCases) {
       assert.ok(articleTitles.includes(title), `${ragCase.id} did not recommend ${title}`);
     }
 
+    for (const sourceKey of expected.citationSourceKeys ?? []) {
+      assert.ok(citationSourceKeys.includes(sourceKey), `${ragCase.id} did not cite ${sourceKey}`);
+    }
+
     if (expected.actions) {
       assert.deepEqual(actionTypes, expected.actions);
     }
@@ -123,7 +132,9 @@ for (const ragCase of executableRagEvalCases) {
 function createAnswerProviderForCase(ragCase: IRagEvalCase, generatedQuestions: string[]) {
   return createFakeAnswerProvider(ragCase.question, {
     intent: ragCase.intent ?? 'rag_question',
+    purpose: ragCase.purpose ?? 'general',
     intentResponse: ragCase.intentResponse ?? '',
+    language: ragCase.language ?? 'en',
     plan: ragCase.plan,
     generatedAnswer: ragCase.generatedAnswer ?? 'Grounded answer.',
     insufficientContextAnswer: ragCase.generatedAnswer ?? 'Please send us a message so we can help.',

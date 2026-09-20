@@ -15,10 +15,25 @@ test('intent parser accepts conversation transform tasks', () => {
 
   assert.deepEqual(result, {
     intent: 'conversation_transform',
+    purpose: 'general',
     task: 'shorten_previous_answer',
     response: '',
     language: 'en',
   });
+});
+
+test('intent parser accepts canonical purpose independent of visitor language', () => {
+  const result = parseIntentResponse(
+    JSON.stringify({
+      intent: 'rag_question',
+      purpose: 'capability_evaluation',
+      response: '',
+      language: 'zh-CN',
+    })
+  );
+
+  assert.equal(result.purpose, 'capability_evaluation');
+  assert.equal(result.language, 'zh-CN');
 });
 
 test('intent parser defaults malformed transform tasks to simplification', () => {

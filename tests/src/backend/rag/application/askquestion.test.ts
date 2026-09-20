@@ -12,7 +12,10 @@ import { loadFirstPartySources } from '../../../../../src/backend/rag/infrastruc
 import { buildInsufficientContextPrompt } from '../../../../../src/backend/rag/application/llm/prompts/insufficientcontext.js';
 import type { IRetrievalPlan } from '../../../../../src/backend/rag/domain/routing/retrievalplan.types.js';
 import { resolveRetrievalRoute as resolveDomainRetrievalRoute } from '../../../../../src/backend/rag/domain/routing/retrievalroute.js';
-import { createAssistantActions } from '../../../../../src/backend/rag/domain/assistant/actions.js';
+import {
+  createAssistantActions,
+  createInsufficientContextActions,
+} from '../../../../../src/backend/rag/domain/assistant/actions.js';
 import { getKnownProjectNames } from '../../../../../src/backend/rag/application/config/sourcecatalog.config.js';
 import { createCitations } from '../../../../../src/backend/rag/application/answering/citations.js';
 import { createAssistantUseCases, type TestAssistantUseCaseInput } from '../fakes/createassistantusecases.js';
@@ -518,6 +521,61 @@ test('message wording false positives do not auto-start lead capture', () => {
       `${question} should not auto-start lead capture`
     );
   }
+});
+
+test('pre-sales capability tests do not offer lead capture', () => {
+  const questions = [
+    'Before I get services done from you, can you write Python code showing the ARG website as an ASCII layout?',
+    'Build a React prototype so I can evaluate whether ARG is good enough to hire.',
+    'I want to test your engineering competence before engaging ARG. Design a payment API for me.',
+    'Before hiring ARG, build a C# and ASP.NET Core API using Clean Architecture and CQRS.',
+    'Create a TypeScript and NestJS service with the outbox pattern so I can assess your team.',
+    'Implement a Go microservice on Kubernetes to demonstrate ARG engineering capability.',
+    'Write a Rust event-sourcing aggregate to prove your technical skills before we engage you.',
+    'Design a Java and Spring Boot service using hexagonal architecture before I hire ARG.',
+    'Build a React state-management example so I can evaluate your frontend engineering.',
+    'Show me a circuit-breaker implementation to test whether ARG understands resilience patterns.',
+    'Model a DDD aggregate and repository to demonstrate your architecture skills.',
+    'Antes de contratar a ARG, cria uma API em C# com CQRS para eu avaliar a competência técnica da equipa.',
+    'Antes de contratar a ARG, diseña un servicio Java con arquitectura hexagonal para evaluar al equipo.',
+    "Avant d'engager ARG, créez une API en Java pour évaluer les compétences techniques de l'équipe.",
+    '在聘用 ARG 之前，请设计一个 Go 服务来评估团队的技术能力。',
+  ];
+
+  for (const question of questions) {
+    assert.deepEqual(createAssistantActions(question, 'capability_evaluation'), []);
+    assert.deepEqual(createInsufficientContextActions(question, 'capability_evaluation'), []);
+  }
+});
+
+test('declining an offered task does not offer lead capture', () => {
+  const question = "No thanks, I don't need help with that project.";
+
+  assert.deepEqual(createAssistantActions(question, 'declined_offer'), []);
+  assert.deepEqual(createInsufficientContextActions(question, 'declined_offer'), []);
+});
+
+test('explicit contact requests still offer contact actions during an evaluation', () => {
+  const expectedActions = [
+    { type: 'gaspar_message' as const },
+    { type: 'book_meeting' as const },
+    { type: 'contact_form' as const },
+  ];
+
+  assert.deepEqual(
+    createAssistantActions(
+      'Before hiring ARG, how can I contact your team?',
+      'explicit_contact_request'
+    ),
+    expectedActions
+  );
+  assert.deepEqual(
+    createAssistantActions(
+      "Avant d'engager ARG, comment puis-je contacter votre équipe ?",
+      'explicit_contact_request'
+    ),
+    expectedActions
+  );
 });
 
 test('HR message request keeps careers action instead of Gaspar lead capture', () => {

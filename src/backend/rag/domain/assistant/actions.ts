@@ -1,4 +1,5 @@
 import type { IAssistantAction } from './assistantaction.types.js';
+import type { QuestionPurpose } from '../conversation/questionintent.types.js';
 
 const PROJECT_CONTACT_QUESTION_PATTERN =
   /\b(?:book|meeting|call|contact|email|reach|talk|speak|discuss|project|service|services|brief|scope|proposal|quote|estimate|budget|pricing|cost|collaborat(?:e|ion)|get started)\b/i;
@@ -9,7 +10,7 @@ const LOCATION_CONTACT_QUESTION_PATTERN =
 const GASPAR_MESSAGE_REQUEST_PATTERN =
   /\b(?:can|could|may|do)\s+i\s+(?:send|submit|leave)\s+(?:a\s+)?message\s+(?:through|via|to)\s+(?:you|gaspar|here)\b|\bi\s+(?:want|would like|need)\s+to\s+(?:send|submit|leave)\s+(?:you|gaspar)\s+(?:a\s+)?message\b|\b(?:send|submit|leave)\s+(?:you|gaspar)\s+(?:a\s+)?message\b|\b(?:can|could|do)\s+i\s+(?:do|send|submit|leave)\s+it\s+(?:through|via)\s+(?:you|gaspar)\b|\b(?:can|could)\s+you\s+(?:pass|forward|send)\s+(?:a\s+)?message\s+to\s+(?:arg|arg software|your team|the team|arg team|the arg team)\b/i;
 const HIRE_ARG_QUESTION_PATTERN =
-  /\b(?:hire|engage|work with)\b.{0,40}\b(?:arg|you|you guys|your team|your studio)\b|\b(?:arg|you|you guys|your team|your studio)\b.{0,40}\b(?:for hire|hire|engage)\b/i;
+  /\b(?:hire|hiring|engage|engaging|work with)\b.{0,40}\b(?:arg|you|you guys|your team|your studio)\b|\b(?:arg|you|you guys|your team|your studio)\b.{0,40}\b(?:for hire|hire|hiring|engage|engaging)\b/i;
 const CAREERS_QUESTION_PATTERN = /\b(?:career|careers|job|jobs|hiring|hire|apply|application|role|position|hr)\b/i;
 const PROJECT_CONTACT_ACTIONS: IAssistantAction[] = [{ type: 'gaspar_message' }];
 const CONTACT_OPTIONS_ACTIONS: IAssistantAction[] = [
@@ -20,9 +21,22 @@ const CONTACT_OPTIONS_ACTIONS: IAssistantAction[] = [
 const GASPAR_MESSAGE_ACTIONS: IAssistantAction[] = [{ type: 'gaspar_message', autoStart: true }];
 const CONTACT_ACTIONS: IAssistantAction[] = [{ type: 'gaspar_message' }];
 
-export function createAssistantActions(question: string): IAssistantAction[] {
+export function createAssistantActions(
+  question: string,
+  purpose: QuestionPurpose = 'general'
+): IAssistantAction[] {
   if (GASPAR_MESSAGE_REQUEST_PATTERN.test(question)) {
     return GASPAR_MESSAGE_ACTIONS;
+  }
+
+  if (purpose === 'explicit_contact_request') {
+    return CAREERS_QUESTION_PATTERN.test(question) && !HIRE_ARG_QUESTION_PATTERN.test(question)
+      ? [{ type: 'email_hr' }]
+      : CONTACT_OPTIONS_ACTIONS;
+  }
+
+  if (purpose === 'capability_evaluation' || purpose === 'declined_offer') {
+    return [];
   }
 
   if (HIRE_ARG_QUESTION_PATTERN.test(question)) {
@@ -44,8 +58,13 @@ export function createAssistantActions(question: string): IAssistantAction[] {
   return [];
 }
 
-export function createInsufficientContextActions(question: string): IAssistantAction[] {
-  const actions = createAssistantActions(question);
+export function createInsufficientContextActions(
+  question: string,
+  purpose: QuestionPurpose = 'general'
+): IAssistantAction[] {
+  const actions = createAssistantActions(question, purpose);
 
-  return actions.length > 0 ? actions : CONTACT_ACTIONS;
+  if (actions.length > 0) return actions;
+
+  return purpose === 'capability_evaluation' || purpose === 'declined_offer' ? [] : CONTACT_ACTIONS;
 }
