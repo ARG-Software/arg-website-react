@@ -4,377 +4,376 @@ slug: why-your-jwt-implementation-probably-breaks
 tag: Security
 tags: Security, Backend
 title: Why Your JWT Implementation Probably Breaks
-subtitle: Why stateless auth is a myth in production. How real engineers actually handle logout.
-intro: Why stateless auth is a myth in production. How real engineers actually handle logout.
+subtitle: JWT logout is a revocation design problem. Here is how to handle access tokens, refresh tokens, rotation, and compromised sessions safely.
+intro: JWT logout is a revocation design problem. Here is how to handle access tokens, refresh tokens, rotation, and compromised sessions safely.
 date: July 6, 2026
-readTime: 8 min read
+dateModified: September 20, 2026
+reviewedOn: September 20, 2026
+readTime: 11 min read
 mediumUrl: https://medium.com/@arg-software/why-your-jwt-implementation-probably-breaks-0e3defac3f6e
 ---
-## The Logout Problem Nobody Talks - Why Your JWT Implementation Probably Breaks 🔓
+
+## The Logout Problem: Why Your JWT Implementation Probably Breaks
 
 ![Why Your JWT Implementation Probably Breaks](/images/blog/why-your-jwt-implementation-probably-breaks/why-your-jwt-implementation-probably-breaks-header.webp)
 
-You’re in an interview. The question drops: “If JWTs are stateless, how do you actually logout a user?”
+The interview question sounds simple: "If JWTs are stateless, how do you log a user out?"
 
-Your interviewer leans back. They’re not looking for textbook answers. They want to know if you’ve shipped JWTs in production, or just used them in a tutorial.
+The production answer starts with a distinction. JWT is a token format. It does not require stateless validation, and not every access token is a JWT. OAuth access tokens may be self-contained or opaque. Logout behavior depends on the token type, validation path, threat model, and acceptable revocation delay.
 
-This question separates the two camps instantly.
+## The Constraint Behind the Problem
 
-## The Honest Truth
-
-You can’t logout with JWTs. Not really.
-
-At least, not the way you can with traditional sessions.
-
-Traditional sessions? Simple. Delete the row from the database:
-
-```sql
-DELETE FROM sessions WHERE id = ?
-```
-
-Next request with that session ID? Unauthorized.
-
-But JWTs are different. A JWT is a signed blob the server handed to your client:
+A signed JWT is usually three base64url-encoded parts:
 
 ```text
-eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMiLCJleHAiOjE3MTIzNDU2Nzh9.s1gNaTUr3_bvM...
-     ↑ header              ↑ payload (who you are + expiry)    ↑ signature
+eyJhbGciOiJSUzI1NiIsInR5cCI6ImF0K2p3dCJ9
+.
+eyJpc3MiOiJodHRwczovL2lkLmV4YW1wbGUuY29tIiwiYXVkIjoiYXBpIiwiZXhwIjoxNzkxMjQ0ODAwfQ
+.
+signature
 ```
 
-The server never needs to look up that token. It just checks: Is it signed correctly? Has it expired?
+Signing protects integrity and authenticity. It does not normally encrypt the claims; clients and anyone holding the token can read them.
 
-That’s the whole selling point of JWTs: No database lookup. No session store. Scales horizontally. Works across services.
+A resource server can validate a self-contained access token locally by checking its signature and claims. Secure validation includes, at minimum:
 
-But here’s the catch: If we don’t track the token, how do we invalidate it?
+- An allowlisted algorithm, not whichever algorithm the token requests
+- A trusted signing key bound to the expected issuer
+- Exact issuer validation
+- Audience validation for the current API
+- Expiration and, where applicable, not-before validation with limited clock skew
+- Token-type and application-specific authorization checks
 
-You can’t invalidate what you don’t track.
+If that is the entire validation path, the server has no per-token state to change. Deleting a browser copy does not invalidate another copy already held by an attacker. A valid token remains valid until it expires, its signing key is withdrawn, or the resource server consults revocation state.
 
-## Why the Obvious Answers Fail
+That is the real limitation: **offline validation cannot also provide immediate, individual revocation without another signal.**
 
-Let’s talk about the fixes nobody admits don’t actually work:
+## What the Obvious Answers Actually Do
 
-“Just Delete It Client-Side”
+### Delete the Token Client-Side
 
-We tell the frontend to forget the token. And we are logged out.
+Clearing local credentials is a necessary part of logout. It stops that client from sending them again. It does not revoke stolen copies or credentials on another device.
 
-Except… an attacker who stole your token doesn’t care what our JavaScript does. It’s like hiding a tab, instead of actually closing it.
+### Use Short-Lived Access Tokens
 
-## “Use Short Expiries”
+Short lifetimes bound the replay window. They do not eliminate it. Five minutes may be acceptable for reading a low-risk profile and unacceptable for approving a payment. Set the lifetime from a risk assessment, not a universal number.
 
-Better. Make the token live for 5 minutes instead of an hour.
+### Rotate the Signing Key
 
-But “short” is relative. If someone steals your token at 9:59 AM and logs out at 10:00 AM, the attacker still has 5 minutes of access. For most apps, that’s a lifetime.
+Emergency key withdrawal can invalidate every token signed only by the compromised key, provided all validators stop trusting it. That is an incident-response control, not normal per-user logout.
 
-## “Rotate Your Signing Key”
+Planned key rotation is different: issuers generally publish old and new verification keys during an overlap so existing tokens continue to validate. Rotating a key does not inherently log everyone out.
 
-Just no. That logs out every user of your app who isn’t asking for it.
+## The Common Two-Token Design
 
-## What Production Actually Does (90% of the Time) ⚡
+Many systems separate credentials by purpose:
 
-Every serious auth provider uses the same pattern. Auth0. Okta. AWS Cognito. Clerk. Supabase. They all do this.
+**Access token**
 
-They stopped pretending JWTs are fully stateless and added one database table.
+- Short-lived
+- Presented to resource servers
+- Narrow in audience and privilege
+- Often validated locally when it is a JWT
 
-### The Two-Token Dance 🕺
+**Refresh token**
 
-Instead of one token, you get two:
+- Longer-lived
+- Presented only to the authorization server's token endpoint
+- Stored and revocable as server-side grant or session state
+- Used to obtain a new access token
 
-Access Tokens 🎫
+The OAuth 2.0 Security Best Current Practice requires refresh tokens issued to public clients to be sender-constrained or rotated. Confidential clients must also protect and bind refresh tokens to the client to which they were issued.
 
-- Short-lived (5–15 minutes)
+For a browser application, prefer a mature authorization/session framework or a backend-for-frontend over inventing token storage. If a refresh token is held in a cookie, use HTTPS and appropriate `Secure`, `HttpOnly`, `SameSite`, `Path`, and lifetime settings. `HttpOnly` prevents JavaScript from reading the cookie; it does not stop an XSS payload from making authenticated requests through the browser. Cookie-based endpoints also need a CSRF strategy.
 
-- Sent with every API request
+Never put authentication tokens in `localStorage` or `sessionStorage` when an `HttpOnly` cookie or BFF design can meet the requirement. Any script running in the origin can read Web Storage.
 
-- Validated instantly (no database hit)
+## Logout by Revoking the Refresh Session
 
-- Can expire naturally; we don’t care much
-
-Refresh Tokens 🔑
-
-- Long-lived (days/weeks)
-
-- Stored in your database (hashed)
-
-- Sent only to the auth endpoint
-
-- This is what actually matters
-
-How logout works:
+On ordinary logout, revoke the current refresh grant and clear the client-side credentials. Revoking only the presented row is not enough: a concurrent rotation could already have created a successor token. Store only a hash of each high-entropy refresh token so a database read does not immediately expose usable credentials.
 
 ```csharp
-public async Task Logout(string refreshToken, int userId)
+public async Task LogoutAsync(
+    string presentedRefreshToken,
+    CancellationToken cancellationToken)
 {
-    var tokenHash = ComputeSha256(refreshToken);
-    
-    await _dbContext.Database.ExecuteSqlAsync(
-        "DELETE FROM refresh_tokens WHERE token_hash = {0} AND user_id = {1}",
-        tokenHash, userId
-    );
-    
-    // The access token? Still valid for 15 minutes.
-    // That's the tradeoff. Live with it.
-}
-```
+    var tokenHash = ComputeSha256(presentedRefreshToken);
 
-User tries to refresh? Server says “nope, that refresh token is gone.” They have to log back in.
+    await using var transaction =
+        await db.Database.BeginTransactionAsync(cancellationToken);
 
-The worst case: They have 15 minutes of access after hitting logout. Most of the time, that’s acceptable, but still too long.
+    var session = await db.RefreshTokens.SingleOrDefaultAsync(
+        token => token.TokenHash == tokenHash,
+        cancellationToken);
 
-## When 15 Minutes Is Too Long: The Denylist 🚨
-
-Some scenarios can’t tolerate any post-logout window:
-
-- Password changes
-
-- Account compromise detected
-
-- Admin says “kick this person out NOW”
-
-For these, you need immediate revocation. Which means… checking a database on every request.
-
-```
-public ClaimsPrincipal ValidateAccessToken(string token)
-{
-    var handler = new JwtSecurityTokenHandler();
-    var principal = handler.ValidateToken(token, _tokenValidationParameters, 
-        out SecurityToken validatedToken);
-    
-    var jti = principal.FindFirst("jti")?.Value;
-    
-    // Denylist check — we gave up being stateless here
-    if (_redisClient.Exists($"revoked:{jti}"))
+    if (session is null)
     {
-        throw new InvalidOperationException("Token revoked");
+        return; // Keep logout idempotent and do not reveal token validity.
     }
-    
-    return principal;
+
+    var now = timeProvider.GetUtcNow();
+
+    await db.RefreshGrants
+        .Where(grant => grant.Id == session.GrantId && grant.RevokedAt == null)
+        .ExecuteUpdateAsync(
+            updates => updates.SetProperty(grant => grant.RevokedAt, now),
+            cancellationToken);
+
+    await db.RefreshTokens
+        .Where(token => token.GrantId == session.GrantId && token.RevokedAt == null)
+        .ExecuteUpdateAsync(
+            updates => updates.SetProperty(token => token.RevokedAt, now),
+            cancellationToken);
+
+    await transaction.CommitAsync(cancellationToken);
 }
 ```
 
-On logout, you add the token to Redis:
+SHA-256 is suitable here only because the refresh token is generated with enough cryptographic randomness to resist guessing. Passwords require a slow password-hashing function; random bearer credentials generally need a deterministic hash for indexed lookup. Compare hashes in constant time where the application performs the comparison itself.
 
-```
-public void RevokeToken(string token)
+The transaction above is only a sketch. Logout and rotation must serialize on the same grant row, or use an equivalent database-specific lock or compare-and-swap rule. Rotation must verify that the grant remains active before inserting a successor. Otherwise a concurrent refresh can survive logout.
+
+Do not accept a user ID from the caller and assume it identifies the token owner. Resolve and revoke the presented token within its authenticated client/session context. Rate-limit the endpoint, avoid logging raw tokens, and expire or delete old rows.
+
+After logout, that refresh token can no longer mint access tokens. A previously issued self-contained access token may still work until its expiry unless the resource server performs an online revocation check. This is a designed window, not something to hide from stakeholders.
+
+OAuth deployments can expose the standardized revocation endpoint defined by RFC 7009. The authorization server must support refresh-token revocation and should support access-token revocation. Its policy may also revoke related tokens and the underlying grant.
+
+## Immediate Access-Token Revocation
+
+When the acceptable delay is effectively zero, the resource server needs current state. Common options include:
+
+- Opaque access tokens validated through authorization-server introspection
+- A denylist keyed by a unique token identifier such as `jti`
+- A session or grant version checked on each request
+- Sender-constrained tokens to make replay by a different sender harder
+
+Each option trades local independence for stronger control.
+
+### Denylist a Validated Token
+
+Validate the token first. Do not parse an untrusted JWT and use attacker-controlled claims as authoritative revocation keys.
+
+The snippets below assume ASP.NET Core bearer authentication is configured with `MapInboundClaims = false`, so registered JWT claim names such as `sub`, `jti`, and `exp` remain unchanged.
+
+```csharp
+public async Task EnsureNotRevokedAsync(
+    ClaimsPrincipal principal,
+    CancellationToken cancellationToken)
 {
-    var handler = new JwtSecurityTokenHandler();
-    var jwtToken = handler.ReadJwtToken(token);
-    
-    var jti = jwtToken.Claims.FirstOrDefault(c => c.Type == "jti")?.Value;
-    var ttl = jwtToken.ValidTo - DateTime.UtcNow;
-    
-    _redisClient.StringSet($"revoked:{jti}", "1", ttl);
+    var tokenId = principal.FindFirstValue(JwtRegisteredClaimNames.Jti)
+        ?? throw new SecurityTokenException("Missing jti claim");
+
+    if (await cache.KeyExistsAsync($"revoked:{tokenId}"))
+    {
+        throw new SecurityTokenException("Token has been revoked");
+    }
+}
+
+public async Task RevokeValidatedTokenAsync(
+    ClaimsPrincipal principal,
+    CancellationToken cancellationToken)
+{
+    var tokenId = principal.FindFirstValue(JwtRegisteredClaimNames.Jti)
+        ?? throw new SecurityTokenException("Missing jti claim");
+    var expiresAt = long.Parse(
+        principal.FindFirstValue(JwtRegisteredClaimNames.Exp)
+            ?? throw new SecurityTokenException("Missing exp claim"),
+        CultureInfo.InvariantCulture);
+    var remainingLifetime =
+        DateTimeOffset.FromUnixTimeSeconds(expiresAt) - timeProvider.GetUtcNow();
+
+    if (remainingLifetime > TimeSpan.Zero)
+    {
+        await cache.StringSetAsync(
+            $"revoked:{tokenId}",
+            "1",
+            remainingLifetime);
+    }
 }
 ```
 
-The cost: One Redis hit per request (~0.5ms). Not stateless anymore, but it works.
+This assumes the `ClaimsPrincipal` came from full signature, issuer, audience, lifetime, algorithm, and token-type validation. The denylist entry only needs to live until the access token expires.
 
-The benefit: Immediate revocation. Zero second exposure window. ✅
+The cost is not a universal latency number. It depends on topology, cache health, replication, and load. Define whether authentication fails closed or degrades when the revocation store is unavailable; that is a security and availability decision. A replicated cache can also have a small propagation window, so "immediate" still needs a measured service-level objective.
 
-## The “Sign Out Everywhere” Nuclear Option 💣
+### Session or Grant Versioning
 
-User changes password. Or gets hacked. Or clicks “logout from all devices.”
+A version claim can invalidate all access tokens associated with a user or grant:
 
-You need to revoke every token they ever issued, across all devices, all tabs, all stale sessions.
+```csharp
+var claims = new[]
+{
+    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
+    new Claim("session_version", user.SessionVersion.ToString()),
+};
+```
 
-Trying to denylist every outstanding token? That’s expensive and gets out of hand quickly.
+Every resource server must compare the claim with authoritative state before authorizing the request:
 
-Better way? A version number added to token,on the user record:
+```csharp
+var subject = principal.FindFirstValue(JwtRegisteredClaimNames.Sub)
+    ?? throw new SecurityTokenException("Missing sub claim");
+var presentedVersion = int.Parse(
+    principal.FindFirstValue("session_version")
+        ?? throw new SecurityTokenException("Missing session version"),
+    CultureInfo.InvariantCulture);
+
+var currentVersion = await sessions.GetVersionAsync(subject, cancellationToken);
+
+if (presentedVersion != currentVersion)
+{
+    throw new SecurityTokenException("Session has been superseded");
+}
+```
+
+"Sign out everywhere" then revokes refresh sessions and increments the version in one transaction:
+
+```csharp
+public async Task LogoutEverywhereAsync(
+    long userId,
+    CancellationToken cancellationToken)
+{
+    var now = timeProvider.GetUtcNow();
+    await using var transaction =
+        await db.Database.BeginTransactionAsync(cancellationToken);
+
+    await db.RefreshTokens
+        .Where(token => token.UserId == userId && token.RevokedAt == null)
+        .ExecuteUpdateAsync(
+            updates => updates.SetProperty(
+                token => token.RevokedAt,
+                now),
+            cancellationToken);
+
+    await db.Users
+        .Where(user => user.Id == userId)
+        .ExecuteUpdateAsync(
+            updates => updates.SetProperty(
+                user => user.SessionVersion,
+                user => user.SessionVersion + 1),
+            cancellationToken);
+
+    await transaction.CommitAsync(cancellationToken);
+}
+```
+
+The access tokens are rejected on the next version check, not magically at the instant of the update. If version values are cached for 30 seconds, revocation can be delayed by about 30 seconds. Use invalidation or a sufficiently strict cache policy for the threat model, and be explicit about the resulting window.
+
+Versioning all of a user's sessions is coarse-grained. A per-device grant or session version preserves unaffected devices and is often a better model.
+
+## Refresh-Token Rotation and Reuse Detection
+
+With rotation, every successful refresh returns a new refresh token and invalidates the one just presented. If an invalidated token is presented again, the authorization server treats the token family as potentially compromised.
+
+The consume-and-replace operation must be atomic. A read followed by an unrelated update allows two concurrent requests to use the same token successfully.
+
+At the persistence boundary, the transaction is conceptually:
 
 ```sql
-ALTER TABLE users ADD COLUMN token_version INT NOT NULL DEFAULT 0;
+BEGIN;
+
+SELECT grant_id, revoked_at
+FROM refresh_grants
+WHERE id = (
+    SELECT grant_id
+    FROM refresh_tokens
+    WHERE token_hash = :presented_hash
+)
+FOR UPDATE;
+
+-- Reject an unknown or revoked grant.
+
+SELECT id, family_id, user_id, expires_at, used_at, revoked_at
+FROM refresh_tokens
+WHERE token_hash = :presented_hash;
+
+-- Reject unknown, expired, or revoked tokens.
+-- If used_at is already set, revoke the active family and require re-authentication.
+
+UPDATE refresh_tokens
+SET used_at = CURRENT_TIMESTAMP
+WHERE id = :current_id AND used_at IS NULL AND revoked_at IS NULL;
+
+INSERT INTO refresh_tokens (
+    token_hash,
+    family_id,
+    user_id,
+    expires_at
+) VALUES (
+    :new_token_hash,
+    :family_id,
+    :user_id,
+    :expires_at
+);
+
+COMMIT;
 ```
 
-Every JWT includes this version:
-
-```
-public string IssueAccessToken(User user)
-{
-    var tokenHandler = new JwtSecurityTokenHandler();
-    
-    var tokenDescriptor = new SecurityTokenDescriptor
-    {
-        Subject = new ClaimsIdentity(new[]
-        {
-            new Claim("sub", user.Id.ToString()),
-            new Claim("tv", user.TokenVersion.ToString()),  // ← Include version
-            new Claim("jti", Guid.NewGuid().ToString()),
-        }),
-        Expires = DateTime.UtcNow.AddMinutes(15),
-        SigningCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey)),
-            SecurityAlgorithms.HmacSha256Signature)
-    };
-    
-    var token = tokenHandler.CreateToken(tokenDescriptor);
-    return tokenHandler.WriteToken(token);
-}
-```
-
-Validation checks it matches:
-
-```
-public ClaimsPrincipal ValidateAccessToken(string token)
-{
-    var handler = new JwtSecurityTokenHandler();
-    var principal = handler.ValidateToken(token, _tokenValidationParameters, 
-        out SecurityToken validatedToken);
-    
-    var userId = int.Parse(principal.FindFirst("sub")?.Value);
-    var tokenVersion = int.Parse(principal.FindFirst("tv")?.Value);
-    
-    var user = _cache.GetOrFetch($"user:{userId}", 
-        () => _dbContext.Users.FindAsync(userId));
-    
-    if (tokenVersion != user.TokenVersion)
-    {
-        throw new InvalidOperationException("Token superseded");
-    }
-    
-    return principal;
-}
-```
-
-Now to logout everywhere? One database call:
+Generate the replacement with a cryptographically secure random number generator, return the raw value only once, and persist only its hash:
 
 ```csharp
-public async Task LogoutEverywhereAsync(int userId)
-{
-    await _dbContext.Users
-        .Where(u => u.Id == userId)
-        .ExecuteUpdateAsync(u => u.SetProperty(
-            x => x.TokenVersion, 
-            x => x.TokenVersion + 1));
-}
+var rawToken = WebEncoders.Base64UrlEncode(
+    RandomNumberGenerator.GetBytes(32));
+var tokenHash = ComputeSha256(rawToken);
 ```
 
-Every token ever issued to this user? Dead on the next request. 💀
+The exact locking or compare-and-swap implementation is database-specific. Enforce uniqueness on token hashes, handle transaction serialization failures, and test two simultaneous refreshes. Some providers allow a short overlap or idempotency window to tolerate legitimate network retries; that reduces false compromise signals but increases replay tolerance, so document the tradeoff.
 
-The cost: A user lookup per request. Cache it aggressively (30s TTL is safe).
+Token families also need an absolute lifetime. Rotating a token should not extend one stolen grant forever. Revoke the family after reuse, password reset, account recovery, explicit all-device logout, or other high-risk events according to policy.
 
-The benefit: Nuclear-grade revocation with zero effort.
-
-## The Refresh Token Secret Nobody Discusses 🤫
-
-Your refresh token is your most valuable credential. It mints new access tokens for weeks.
-
-Here’s the nuance though: Refresh tokens aren’t easy to steal under normal circumstances. When stored properly in HTTP-only cookies, they’re inaccessible to XSS attacks and network sniffing. The access token is what everyday attackers grab. But, if your database gets breached, or if a developer makes the mistake of storing refresh tokens in localStorage or over unencrypted channels, they become just as vulnerable as access tokens. And if an attacker does get one? They own the account for weeks, even after logout.
-
-Solution: Rotate the refresh token on every use.
-
-The clever part: Reuse detection.
-
-```csharp
-public async Task RefreshAsync(string oldRefreshToken)
-{
-    var tokenHash = ComputeSha256(oldRefreshToken);
-    
-    var row = await _dbContext.RefreshTokens
-        .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash);
-    
-    if (row == null)
-        throw new InvalidOperationException("Unknown token");
-    
-    if (row.UsedAt.HasValue)
-    {
-        // Someone used this token TWICE. That's suspicious.
-        await RevokeTokenFamily(row.FamilyId);
-        throw new InvalidOperationException(
-            "Reuse detected — all sessions revoked");
-    }
-    
-    var newRefreshToken = GenerateSecureToken(32);
-    
-    using (var transaction = _dbContext.Database.BeginTransaction())
-    {
-        row.UsedAt = DateTime.UtcNow;
-        _dbContext.RefreshTokens.Update(row);
-        
-        _dbContext.RefreshTokens.Add(new RefreshToken
-        {
-            TokenHash = ComputeSha256(newRefreshToken),
-            FamilyId = row.FamilyId,
-            UserId = row.UserId,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
-        });
-        
-        await _dbContext.SaveChangesAsync();
-        await transaction.CommitAsync();
-    }
-    
-    return new TokenResponse
-    {
-        AccessToken = IssueAccessToken(row.UserId),
-        RefreshToken = newRefreshToken,
-    };
-}
-```
-
-Imagine an attacker steals your refresh token and uses it before you do. They get a new one; yours is marked “used.” When you try to refresh, the server sees a “used” token being used again.
-
-The server doesn’t know who’s legitimate, so it revokes the entire family of refresh tokens and forces re-auth. 🛡
-
-This is OAuth 2.0 compliance.
+Refresh-token rotation is not generically "OAuth compliance." RFC 9700 requires public-client refresh tokens to be either sender-constrained or rotated. Rotation is one standards-backed replay-detection option.
 
 ![JWT implementation validation and security failure example](/images/blog/why-your-jwt-implementation-probably-breaks/why-your-jwt-implementation-probably-breaks-2.webp)
 
-## The Production Recipe (All Together) 👨🍳
+## What a Production Policy Looks Like
 
-You don’t pick one approach. You layer them:
+Use mechanisms according to risk rather than layering every control onto every request:
 
-Day-to-Day Logout → Delete the refresh token. Access token dies in 15 minutes. This handles 99% of logouts.
+**Ordinary logout:** revoke the current refresh session, clear client credentials, and accept the documented remaining access-token lifetime.
 
-Password Changed → Bump the token_version. Every access token dies on next request, across all devices.
+**Sign out one device:** revoke that device's grant or session. Avoid invalidating unrelated sessions unless that is the product contract.
 
-Account Compromised / Admin Action → Add to denylist (immediate) + bump token_version (next request).
+**Sign out everywhere or password reset:** revoke all relevant refresh grants and advance user/session state checked by resource servers.
 
-Each mechanism costs something different. Together, they give you what sessions give you for free.
+**Suspected compromise or admin lockout:** revoke refresh grants and use online access-token revocation, introspection, or a denylist where immediate denial is required.
 
-## Should You Even Use JWTs? 🤔
+**Signing-key compromise:** withdraw the key, reject affected tokens, rotate credentials, and run the incident-response plan. This is broader than logout.
 
-Here’s the controversial take: Sometimes, no.
+For every path, record security events without recording raw tokens, make revocation idempotent, and test behavior during cache, database, and authorization-server failures.
 
-Use JWTs when you specifically need:
+## Should You Use JWT Access Tokens?
 
-- 🌐 Cross-service authentication (microservice mesh)
+Use self-contained JWT access tokens when independent validation provides a concrete benefit, such as several resource servers operating across a boundary where an introspection call on every request would be undesirable.
 
-- 🔑 Third-party API tokens (OAuth)
+Even then, follow the JWT and OAuth profiles:
 
-- ⚡ Stateless edge validation (CDN workers)
+- Prefer asymmetric signatures so resource servers do not hold a signing secret
+- Validate algorithm, signature, issuer, audience, expiration, and token type
+- Restrict audience, scope, and privileges
+- Do not put secrets or unnecessary personal data in readable claims
+- Treat access tokens as opaque at the client; their format may change
+- Consider DPoP or mutual TLS where sender-constrained tokens are practical
 
-But if you’re building a monolithic web app where every request hits the same backend?
+For a conventional same-origin web application, a mature server-side session cookie is often simpler. Logout and per-session revocation are direct because authorization state is already online. "Redis-backed" is one implementation option, not a requirement; use the framework and persistence model that meet availability and security needs.
 
-Use Redis-backed session cookies.
+## The Principles to Remember
 
-Logout? Trivial. Revocation? Instant. Security? Simple.
+1. A JWT is a format, not a session architecture.
+2. Offline validation and immediate individual revocation are competing properties.
+3. Client-side deletion ends that client's use; server-side revocation handles replay elsewhere.
+4. Short-lived access tokens bound exposure, while refresh grants carry the longer-lived session risk.
+5. Refresh-token rotation needs atomic replacement and family-level reuse handling.
+6. Every cache introduces a measurable revocation delay unless it is synchronously invalidated.
+7. The right design follows the threat model, not a claim that one pattern handles "99%" of systems.
 
-You avoid this entire complexity.
+JWTs are useful, but they do not remove state from authentication as a whole. They move decisions about state, consistency, and revocation to architecture boundaries. Make those decisions explicit before production makes them for you.
 
-## The Three Principles You Need to Remember 🎓
+## References
 
-- Access tokens are claims. Refresh tokens are credentials.
-
-- Treat them differently: short vs. long, stateless vs. stateful, many vs. few.
-
-2. Logout kills the refresh token, not the access token.
-
-- The access token just dies on its own. You’re trading time for simplicity.
-
-3. Every revocation mechanism has a cost.
-
-- Redis denylist? Fast but not stateless.
-
-- Token versioning? Requires a user lookup per request.
-
-- Pick the one that matches your tolerance.
-
-4. Bonus: Rotate refresh tokens and detect reuse.
-
-- The difference between a short-lived compromise and a year-long hidden backdoor.
-
-## The Uncomfortable Truth (Revisited) 🎬
-
-JWTs aren’t bad. They’re not magic, either. They’re specific tools with specific tradeoffs.
-
-Logout is where those tradeoffs come due.
-
-The engineers who ship solid auth systems aren’t the ones pretending JWTs are stateless. They’re the ones honest about the compromises, architect accordingly, and sleep better at night.
+- [RFC 8725: JSON Web Token Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725)
+- [RFC 9068: JWT Profile for OAuth 2.0 Access Tokens](https://www.rfc-editor.org/rfc/rfc9068)
+- [RFC 9700: Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700)
+- [RFC 7009: OAuth 2.0 Token Revocation](https://www.rfc-editor.org/rfc/rfc7009)
+- [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)

@@ -1,14 +1,15 @@
 ---
-seoTitle: How We Secured and Scaled Our AI Chatbot With Minimum Cost
+seoTitle: How We Protected and Operate Our AI Chatbot at Low Cost
 slug: building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful
 tag: AI
 tags: AI, Reliability, Security
 title: Part 5: Keeping an AI Assistant Online, Affordable, and Actually Useful
-subtitle: How proof-of-work, layered rate limits, and hard budgets keep a public AI chatbot secure, affordable, and conversion-focused
-intro: How proof-of-work, layered rate limits, and hard budgets keep a public AI chatbot secure, affordable, and conversion-focused
+subtitle: How proof-of-work, layered request limits, and controlled fallbacks keep a public AI chatbot affordable and useful
+intro: How proof-of-work, layered request limits, and controlled fallbacks keep a public AI chatbot affordable and useful
 date: August 19, 2026
-dateModified: August 19, 2026
-readTime: 7 min read
+dateModified: September 20, 2026
+reviewedOn: September 20, 2026
+readTime: 9 min read
 mediumUrl: https://medium.com/p/53e8ef15ae81
 collection: building-gaspar
 collectionTitle: Building Gaspar - Anatomy of a Business AI Assistant
@@ -16,172 +17,164 @@ collectionPart: 5
 ---
 Part 5 of “Building Gaspar - Anatomy of a Business AI Assistant”
 
+Previous: [Part 4 - “Guardrails as Architecture: How We Stopped Our Chatbot from Lying About Us”](https://arg.software/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/)
+
 ![Part 5: Keeping an AI Assistant Online, Affordable, and Actually Useful](/images/blog/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful-header.webp)
 
-Building an AI assistant is one challenge. Keeping it running smoothly, cheap to operate, and genuinely helpful once it’s live? That’s a different game.
+Building an AI assistant is one challenge. Keeping it running smoothly, cheap to operate, and genuinely helpful once it is live? That is a different game.
 
 When we launched Gaspar, three big questions arose:
 
-- How do we stop bots and abuse without annoying real visitors?
+- How do we slow bots and abuse without annoying real visitors?
+- How do we keep costs bounded when anyone on the internet can hit our endpoint?
+- How do we know whether this thing is helping the business?
 
-- How do we keep costs predictable and low when anyone on the internet can hit our endpoint?
+There was no silver bullet. We built small layers that cover different failure modes. Let’s break them down. 👇
 
-- How do we actually know if this thing is helping the business?
+## 🧩 Proof-of-Work: Friction Most Visitors Never Feel
 
-At the end, there was no silver-bullet feature. Instead, we built a bunch of small, smart layers that work together. Let’s break them down. 👇
+Every question Gaspar answers must include a valid proof-of-work challenge.
 
-## 🧩 Proof-of-Work: Security You Never Feel
+The idea is simple: before our server runs retrieval or asks the answer model to generate a response, the visitor's browser has to solve a small cryptographic puzzle. It proves that some client-side computation happened; it does not prove the visitor is human.
 
-Every single question Gaspar answers is protected by something called proof-of-work.
+- A typical visitor's browser solves it in the background, usually before they submit a question;
+- A bot making requests at scale must do the same work repeatedly, increasing the cost of abuse.
 
-Sounds intimidating, but the idea is actually simple: before our server spends a cent generating an answer, the visitor’s browser has to solve a tiny cryptographic puzzle first. Think of it as a quick “prove you’re a real device” handshake.
+We use ALTCHA with PBKDF2/SHA-256 challenges signed by the server. The useful part is the timing: the browser starts preparing a proof when the widget opens, using Web Workers so the main UI remains responsive.
 
-- A real visitor’s browser solves it instantly, in the background. They never notice.
+Here is the flow:
 
-- A bot trying to spam thousands of fake requests has to solve that puzzle thousands of times, which gets expensive and slow for them, fast.
+- The chat widget opens;
+- The browser fetches and solves a challenge in the background;
+- The solved proof sits in memory while it remains valid;
+- When the visitor submits a question, the proof is normally ready. No popup and no “select all the traffic lights” test. 🚦❌
 
-We use a tool called ALTCHA, which generates a signed cryptographic challenge. The clever part is the timing: we solve the puzzle before the visitor even hits “send.”
-
-Here’s the flow:
-
-- The chat widget opens
-
-- The browser quietly fetches and solves a challenge in the background (using Web Workers, so it doesn’t freeze the page)
-
-- That solved proof just sits ready in memory
-
-- When the visitor types a question and submits, the proof is already there. No delay, no popup, no annoying “select all the traffic lights” test. 🚦❌
+The server verifies the signature, solution, and five-minute expiry. One important limitation: the current server does not maintain a replay store, so a valid proof is not guaranteed to be single-use. Rate limits remain necessary because proof-of-work raises the cost of abuse; it does not establish identity or stop replay by itself.
 
 ## 🛡 Three Layers of Abuse Protection
 
 ![AI assistant rate limits and proof of work security architecture](/images/blog/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful/part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful-2.webp)
 
-We don’t rely on one single wall; we built three, stacked on top of each other:
+We do not rely on one wall. We use three controls with different responsibilities:
 
-🥇 Layer 1 - Rate limits at the server level: Our hosting platform (Netlify) caps how many requests can come from the same IP or domain per minute. Go over that, and you get an instant 429 "slow down" response, before we even spend any AI budget on it.
+🥇 Layer 1 - Platform rate limit: The Netlify function configuration allows 30 requests per 60-second window, aggregated by IP and domain, across the assistant routes handled by that function. A platform rejection returns before our application pipeline runs.
 
-🥈 Layer 2 - The proof-of-work check (ALTCHA): Every question sent to Gaspar must come with a valid, freshly-solved puzzle. Each solution can only be used once and expires quickly. No valid proof = the request is rejected immediately, before we even search for an answer.
+🥈 Layer 2 - Application rate limits: Before parsing the question or verifying its ALTCHA proof, our API checks Supabase-backed counters. Defaults are six requests per minute and 30 per day for a hashed IP, plus 500 assistant questions per day globally. Deployments can override those values. IPs are salted, SHA-256 hashed, and truncated before being used in bucket keys.
 
-🥉 Layer 3 - Our own internal budgets: Inside the actual assistant logic, we track usage in our database (Supabase): per-minute limits, per-day limits, and a hard daily ceiling across everyone. For privacy, IP addresses are scrambled (salted and hashed) before we ever store them. And if our database has a hiccup? This layer just steps aside gracefully; the other two layers still hold the fort. 💪
+🥉 Layer 3 - ALTCHA verification: Every answer request must carry a valid, unexpired proof. No valid proof means no retrieval, embedding, or answer-generation call.
 
-Why layers matter: things break. Services go down. Configs get messed up. That’s just life with software. But when protection is split across multiple independent layers, one failure doesn’t bring the whole system crashing down.
+The application limiter currently fails open if its Supabase RPC errors, by design, so a database hiccup does not make the public assistant unavailable. In that case the platform limit and ALTCHA still apply. That is an availability tradeoff, not a perfect security guarantee. 💪
 
-Bonus: this same ALTCHA setup also protects our contact form, one security pattern, reused everywhere we accept public input.♻
+The same server-side ALTCHA verification also protects the project-brief form on our contact page. The in-chat lead form is a separate Web3Forms flow and does not currently reuse that ALTCHA proof. ♻
 
 ## 💰 Keeping AI Costs Predictable
 
-Running an AI assistant that anyone on the internet can use is a bit scary from a budgeting standpoint. So, we built in guardrails before the expensive part even happens:
+Running an AI assistant that anyone can use is uncomfortable from a budgeting standpoint. We therefore reject or shorten work before the most expensive path where practical:
 
-- Intent classification: filters out small talk and off-topic questions early, before they reach the costly parts of the pipeline;
+- Intent classification uses a model call to keep unsupported or conversational requests out of retrieval, embedding, and full grounded-answer generation;
+- Conversation transforms reuse the previous answer for requests such as “make that shorter,” avoiding a new retrieval plan and vector search, although the rewrite still requires a model call;
+- Retrieval planning and query embeddings run only for routes that need them;
+- Exact technology, commercial, link, latest-blog, and forced-source routes can avoid query embeddings;
+- If the primary Gemini embedding model reports quota exhaustion, retrieval switches to a separately indexed fallback Gemini embedding model.
 
-- Conversation transforms: let us reuse a previous answer and rewrite it, instead of running a brand-new (and pricier) search every time;
+The global daily request ceiling bounds how many questions reach the pipeline. It is not a dollar-denominated provider spending cap: classification, planning, translation, ingestion, and failed calls have different costs. Provider billing alerts and quotas remain separate operational controls.
 
-- Smart retrieval planning: only kicks in for genuine, answerable questions;
+The takeaway: a public-facing AI feature needs measurable consumption limits. A request ceiling is useful, but teams should not describe one as a precise spending cap unless it is tied to metered cost.
 
-- Backup embedding models: if our primary AI provider hits a quota limit, we automatically fall back to a secondary one, so the assistant doesn’t just go dark.
+## 🔁 Availability, Fallbacks, and Caching
 
-On top of all that, there’s a hard daily spending cap. If we hit it, visitors simply get a polite “please try again later” message instead of us quietly racking up a surprise bill.
+Gaspar is not “highly available” just because it has one fallback. The answer, intent, planning, rewrite, and translation calls currently depend on DeepSeek. Embeddings use Gemini, with fallback only for a recognized primary-model quota error. Supabase is required for retrieval, while Netlify runs the API adapter. A failure in any required path can still produce a temporary-unavailable response.
 
-The takeaway: a public-facing AI feature without a spending cap isn’t really a product decision: it’s an open-ended risk. A blank check, basically.
+Caching is deliberately narrow:
 
-## 🚀 The Assistant Isn’t Just a Q&A Bot: It’s a Growth Tool
+- English UI copy ships with the frontend;
+- Translated UI copy is cached in the running server instance and in the visitor's browser, keyed by language and copy version;
+- Answer responses and semantic retrieval results are not cached because they depend on the question, conversation, page context, and current knowledge;
+- Stored primary and fallback chunk embeddings avoid re-embedding the knowledge base on every question, but each semantic query still needs a query embedding.
 
-An assistant that gives accurate answers is nice. An assistant that also guides people toward the right next step is genuinely valuable for a business.
+This keeps translated interface copy cheap without pretending that a previous answer is always safe to reuse in a new context.
 
-Gaspar doesn’t just reply with text, it can suggest actions too:
+The frontend also sets a 25-second request timeout and shows controlled messages for network, verification, configuration, embedding-quota, and rate-limit failures. For per-user and global daily limits, it can move directly into lead capture so a visitor still has a route to the team. That is graceful degradation, not uninterrupted availability.
 
-- 📅 book_meeting-when someone shows real buying intent;
+## 🚀 The Assistant Is Not Just a Q&A Bot
 
-- 💬 gaspar_message-kicks off an in-chat conversation to capture a lead;
+An assistant that gives accurate answers is useful. An assistant that guides people toward an appropriate next step can support the business too.
 
-- 📝 contact_form-for people who want to share a fuller project brief;
+Gaspar can return action types with its answer:
 
-- 📧 email_hr-for job-seekers asking about careers.
+- 📅 `book_meeting` for explicit contact-option requests;
+- 💬 `gaspar_message` for project, pricing, hiring-ARG, contact, and insufficient-context handoffs;
+- 📝 `contact_form` as one of the explicit contact options;
+- 📧 `email_hr` for careers questions.
 
-Here’s the architectural trick: the backend only decides what type of action makes sense, it doesn’t write the button text. The frontend decides how to present it, in whatever language and style best fit the current page. Business logic and presentation stay cleanly separated.
+The backend returns the action types and, in one case, an `autoStart` flag. The frontend maps those types to localized labels and behavior. Business rules and presentation stay separated.
 
-So for example:
+For example:
 
-- Ask about our fintech experience? Gaspar shares real project examples and offers to book a meeting;
+- Ask how to contact us? Gaspar can offer an in-chat message, meeting link, and contact form;
+- Ask about careers? It offers the careers email action;
+- Ask about a technology we cannot confirm? It avoids claiming experience, explains that it is outside our usual stack, and offers a handoff rather than inventing an answer.
 
-- Ask about hiring? It points you toward careers;
-
-- Ask about a technology we don’t specialize in? Instead of a flat “I don’t know,” it says something like “that’s not our usual stack, but we’re happy to take a look at your project.”
-
-That’s the real difference: “I don’t know” vs. “here’s how we move forward.”
+That is the difference between “I don’t know” and “I cannot confirm that, but here is a safe next step.”
 
 ## 🙋 Proactive, Not Pushy
 
-Gaspar doesn’t always wait to be asked, it can also start the conversation.
+Gaspar does not always wait to be opened. Once the site's loading sequence has completed, ten seconds without scroll, wheel, or touch movement can open a lead-capture offer on any non-contact page. On mobile it opens fullscreen; on desktop it opens as a panel.
 
-After the homepage intro plays out, an idle timer can pop the assistant open on non-contact pages with a friendly nudge like: “Want to send us a quick email?” On mobile, it opens fullscreen; on desktop, it slides in as a normal side panel.
+Visitors get low-pressure choices:
 
-Visitors always get simple, low-pressure choices:
-
-- ✉ Send a quick email through the guided flow;
-
-- 💬 Chat with Gaspar instead;
-
+- ✉ Send an email through the guided flow;
+- 💬 Talk to Gaspar instead;
 - ❌ Dismiss it.
 
-And we respect that choice:
+We respect that choice:
 
-- A normal close just quiets it down for that session;
+- A normal close suppresses the proactive offer for the browser session;
+- “Don’t show me again” suppresses it for two days;
+- A successful lead stores a local completion flag and suppresses later offers in that browser.
 
-- “Don’t show me again” mutes it for two days;
+“Permanently” would be too strong: visitors can clear browser storage or use another browser. The goal is not to nag people into converting. It is to make the next step easy when someone may be ready for it. 🎯
 
-- A successful lead mutes it permanently.
+## 📊 Measuring the Funnel Without Putting Messages in GA4
 
-The goal was never to nag people into converting. It’s about making the next step easy right when someone might actually be ready for it. 🎯
-
-## 📊 Measuring the Whole Funnel
-
-Every meaningful interaction gets tracked through Google Analytics, but here’s the important part: we never send actual message content to analytics. Only structural, anonymous metadata. Privacy first. 🔒
+Meaningful funnel interactions are tracked through our analytics service, which uses GA4 by default and can be configured for first-party, dual, or no-op providers. We do not include question, answer, email, or lead-message content in those events; predefined starter questions are represented by stable prompt identifiers rather than their text. The metadata is content-free, but “anonymous” would be too strong a promise for web analytics generally. 🔒
 
 ![Affordable AI chatbot operations with budget controls](/images/blog/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful/part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful-3.webp)
 
-Here’s what we track:
+The main events include:
 
-- assistant_open - the widget was opened;
+- `assistant_open` - the widget was opened;
+- `assistant_submit` - a question was sent;
+- `assistant_answer` - an answer arrived, with citation and action counts;
+- `assistant_action_click` - a suggested action was clicked;
+- `assistant_citation_click` - a cited source was opened;
+- `assistant_article_recommendation_click` - a recommended article was opened;
+- `assistant_quick_prompt` - a starter question was clicked;
+- `assistant_error` - a request failed;
+- `assistant_lead_capture` - tracks actions such as `offer_shown`, `flow_started`, `submitted`, `succeeded`, `dismissed`, and `failed`.
 
-- assistant_submit-a question was sent;
+Together, those events describe a funnel:
 
-- assistant_answer - an answer came back (including how many citations/actions it included);
-
-- assistant_action_click-someone clicked a suggested action (like "book a meeting");
-
-- assistant_citation_click - someone clicked a source/citation;
-
-- assistant_article_recommendation_click-someone opened a recommended article;
-
-- assistant_quick_prompt - someone clicked one of the suggested starter questions;
-
-- assistant_error-something went wrong;
-
-- lead_capture-tracks impression, submit, success, dismiss, or error states.
-
-Put together, this gives us a clean funnel to analyze:
-
-assistant_open → assistant_submit → assistant_answer → assistant_action_click → lead_capture: success
+`assistant_open` → `assistant_submit` → `assistant_answer` → `assistant_action_click` → `assistant_lead_capture: succeeded`
 
 Each step tells us something different:
 
-- 🤔 People opening the widget but not asking anything? Maybe the welcome message needs work;
+- 🤔 People open the widget but ask nothing? The welcome state may need work;
+- 🤷 People receive answers but never click actions? The actions may not be relevant;
+- 😩 Leads start but do not finish? The guided flow may have too much friction.
 
-- 🤷 People getting answers but never clicking the action buttons? Maybe the CTAs aren’t relevant enough;
+Analytics is not the only logging path. Gaspar periodically saves loggable conversations after eight seconds of inactivity and also attempts a keepalive save when the widget closes, the page becomes hidden, or the page unloads. Those transcripts can include normal chat and lead-capture messages.
 
-- 😩 Leads starting but not finishing? Maybe the flow has too much friction.
-
-This turns the assistant into something measurable without being invasive.
+They are encrypted before Supabase persistence, the public save endpoint has both platform and application rate limits, and a Discord notification with a short preview is sent only when a visitor conversation is first created. This operational logging is governed by our privacy and retention policy; it should not be confused with content-free analytics.
 
 ## 💵 What Did All This Actually Cost?
 
-Surprisingly, the infrastructure itself is pretty affordable: Netlify for hosting functions, Supabase for storage and vector search, DeepSeek for generating answers and classifying questions, Gemini for embeddings, Web3Forms for delivering leads, and GA4 for analytics. We can say that, practically, we spend less than $ 2 to 3$ per month.
+The repository can verify which services and cost controls Gaspar uses; it cannot verify an invoice. Our reported low-traffic operating estimate has been roughly $2-$3 per month across Netlify functions, Supabase storage and vector search, DeepSeek model calls, Gemini embeddings, Web3Forms lead delivery, and analytics. Treat that as a point-in-time estimate, not an architectural guarantee. It depends on traffic, model pricing, free tiers, quotas, currency, and which shared service costs are allocated to Gaspar.
 
-The real cost wasn’t the cloud bill; it was the engineering time: building the retrieval pipeline, designing reliable sources, setting up guardrails, handling multiple languages, localizing the UI, implementing rate limits, writing tests, and designing the entire lead-capture flow.
+The larger cost was engineering time: building the retrieval pipeline, curating sources, setting up guardrails, handling multiple languages, localizing the interface, implementing rate limits, writing tests, encrypting conversation logs, and designing lead capture.
 
-Anyone can slap a chat box onto a website in an afternoon. It takes real care to build one that’s accurate, safe, measurable, and actually tied to business results.
+Anyone can put a chat box on a website in an afternoon. It takes care to build one that is grounded, bounded, measurable, transparent about its limits, and tied to useful business outcomes.
 
-Gaspar doesn’t just talk to visitors. It helps them take the next step. ✅
+Gaspar does not just talk to visitors. It helps them take the next step. ✅
 
-This wraps up the “Building Gaspar” series! 🎉 Want to see the assistant in action? Head over to[arg.software](https://arg.software/)and ask it anything.
+This wraps up the “Building Gaspar” series! 🎉 Want to see the assistant in action? Head over to [arg.software](https://arg.software/) and ask it anything.

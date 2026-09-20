@@ -4,10 +4,11 @@ slug: why-software-engineering-fundamentals-still-win-in-the-age-of-ai
 tag: AI
 tags: AI, Engineering Culture
 title: Why Software Engineering Fundamentals Still Win in the Age of AI
-subtitle: AI agents can make code that works. They still can’t make code that lasts, and that gap is where real engineers earn their keep.
-intro: AI agents can make code that works. They still can’t make code that lasts, and that gap is where real engineers earn their keep.
+subtitle: AI agents can draft code that works. They still can’t guarantee code that lasts, and that gap is where engineering judgment earns its keep.
+intro: AI agents can draft code that works. They still can’t guarantee code that lasts, and that gap is where engineering judgment earns its keep.
 date: August 31, 2026
-dateModified: September 1, 2026
+dateModified: September 20, 2026
+reviewedOn: September 20, 2026
 readTime: 5 min read
 mediumUrl: https://medium.com/p/2ad62078fa52
 ---
@@ -21,37 +22,37 @@ Here’s the short answer: they matter more than ever. 💪
 
 ## The real challenge isn’t just getting something to work; it’s making sure it lasts.
 
-AI coding agents have reached a new level. If you ask one to create a script, a prototype, or even a solid first draft of a feature, it can usually do it quickly. So, the question of “Can this be built?” is mostly settled.
+AI coding agents have reached a new level. For many well-scoped tasks, they can create a script, prototype, or useful first draft quickly. That makes “Can we produce an implementation?” cheaper to answer, but it does not settle whether the implementation is correct or appropriate.
 
-But there’s something you won’t see in demo videos: getting code to run is only about 20% of the job. The other 80% is making sure it can be debugged at 2 am, maintained six months later, and work well with all the other systems it needs to connect with. That’s a different skill set.
+But there’s something you won’t see in demo videos: getting code to run is only one part of the job. The rest includes making sure it can be debugged at 2 am, maintained six months later, secured, observed, and integrated with all the systems around it. There is no honest universal 20/80 split, but there is a real difference in responsibility.
 
 Think of it like buying a high-end camera. You can learn how to point, shoot, and capture an image in an afternoon. But understanding lighting, composition, and how to tell a story through a photo takes years. The tools have become incredibly easy to use, but the craft itself hasn’t.
 
-## Why does AI halt out on the hard part 🧠
+## Why does AI stumble on the hard part 🧠
 
-Here’s something important to really understand: large language models don’t think as people do. They predict the next likely bit of text by drawing from a considerable collection of human writing. When it seems like a model is “reasoning” through a coding problem, it’s actually repeating reasoning patterns it learned from people who wrote them down.
+Here’s something important to understand: large language models do not reason exactly as people do. At their core, they generate tokens from patterns learned during training, while modern systems may also use tools, retrieval, planning loops, and additional inference-time computation. Calling that “mere repetition” understates their capabilities; treating it as human understanding overstates them.
 
-That’s still powerful, since much of the good engineering advice is written down. But it also means these models are good at following patterns and instructions exactly as given and not as strong at making judgment calls, such as realizing that an abstraction could cause issues months down the line.
+That is still powerful, since much good engineering practice is represented in code and writing. But model output remains sensitive to context, instructions, available tools, and evaluation. It can propose a sound abstraction or a costly one with the same confidence. Judgment still belongs to the people accountable for the system.
 
-That gap appears in a specific area: the seams. These are the APIs, interfaces, and boundaries between different parts of a system. Handling these seams is part science and part intuition, shaped by experience, past mistakes, and a sense of where a system should be strict or flexible. You can’t fully hand that over to a machine. At least, not yet.
+That gap often appears at the seams: the APIs, interfaces, data contracts, and trust boundaries between parts of a system. Handling them is part analysis and part judgment, shaped by constraints, experience, and a sense of where a system should be strict or flexible. An agent can help explore those choices. It cannot accept accountability for them.
 
 ## The instruction-following problem is also a safety problem ⚠
 
-There’s a flip side to how good these agents are at following instructions: they’re not great at telling good instructions from bad ones. Feed a coding agent the right sequence of untrusted inputs. A malicious file, a poisoned webpage, a booby-trapped dependency, and it may follow those instructions just as diligently as it follows yours. Security researchers have a name for the especially dangerous combination of private data access, untrusted content, and the ability to take action: it’s become a well-known pattern to watch for.
+There’s a flip side to instruction following: current LLM systems do not provide a reliable security boundary between trusted instructions and untrusted content. A malicious repository file, issue, webpage, or tool result may attempt indirect prompt injection. The risk becomes severe when the same agent can read secrets and take privileged actions. The UK National Cyber Security Centre recommends [deterministic safeguards, least privilege, monitoring, and impact reduction](https://www.ncsc.gov.uk/blog-post/prompt-injection-is-not-sql-injection), rather than assuming prompt injection can be completely filtered away.
 
-Alignment work, sandboxing, and safety measures all help. But when something always does what it’s told without really thinking about whether it should, it’s smart to be a bit cautious. Being skeptical isn’t being anti-technology; it’s just good engineering practice.
+Model training, sandboxing, allowlisted tools, approval gates, and data controls all help. None makes unrestricted agency safe by default. Being skeptical is not anti-technology; it is ordinary threat modeling.
 
 ## So what should you actually be doing? 🎯
 
-If you’re using an AI coding agent day to day, a few things seem to consistently separate the useful sessions from the messy ones:
+If you’re using an AI coding agent day to day, a few practices often separate useful sessions from messy ones:
 
-- Feed it small, sharp context: not your whole codebase, but the relevant slice of it. 📎
+- Feed it the minimum sufficient context: the relevant slice of the codebase, its constraints, and no secrets it does not need. Too little context causes guesses; too much increases noise and exposure. 📎
 
-- Give it a way to check its own work: tests, linters, type checkers, anything deterministic that can hand back feedback in plain language. 🧪
+- Give it deterministic feedback: tests, linters, type checkers, and build output can expose errors, even though passing checks do not prove the implementation is correct. 🧪
 
-- Push for tests before implementation: Red, green, and refactor still work, even when an agent is holding the pen. 🚦
+- Ask for tests around behavior and failure modes: Red, green, and refactor still work when test-first development fits the task, but tests generated from the same misunderstanding are not independent evidence. 🚦
 
-- Review the seams yourself: Let the agent draft the guts of a function; keep your hands on the interfaces. 🔍
+- Review the seams and security boundaries yourself: Let the agent draft local implementation; keep accountable humans on contracts, data handling, dependencies, migrations, and privileged operations. 🔍
 
 - Treat “it works” as a first draft, not a finish line. ✍
 
@@ -59,8 +60,8 @@ If you’re using an AI coding agent day to day, a few things seem to consistent
 
 There’s no single, perfect answer here, because one doesn’t exist. Good engineering has always been about making trade-offs, choosing abstractions carefully, managing how much complexity someone can handle at once, and knowing when a system should be strict or flexible.
 
-That’s the craft. It was true before coding agents existed, and it’s still true now, maybe even more so. Since it’s now much cheaper to build anything, the real value comes from building the right thing.
+That’s the craft. It was true before coding agents existed, and it’s still true now, maybe even more so. As many implementations become cheaper to produce, more of the value moves to choosing and validating the right thing.
 
-The engineers who’ll matter most over the following years won’t be the ones who can prompt an agent to spit out a working feature. They’ll be the ones who know, with hard-won judgment, what “working” actually needs to mean. 🧭
+The engineers who’ll matter most over the following years won’t merely be the ones who can prompt an agent to produce a working feature. They’ll be the ones who know, with hard-won judgment, what “working” needs to mean and how to produce evidence for it. The 2025 Stack Overflow survey found that respondents [distrusted AI-tool accuracy more often than they trusted it](https://survey.stackoverflow.co/2025/ai#developer-tools-ai-acc-ai-acc), a useful reminder that adoption is not assurance. 🧭
 
 If you’re an engineer right now and you feel a bit of imposter syndrome about what your job means these days, that feeling doesn’t mean you’re falling behind. It might just mean you’re paying attention.

@@ -6,6 +6,7 @@ import {
   SITE_NAME,
   SITE_URL,
 } from '../constants/seo.js';
+import { toContentDateIso } from './contentDate.js';
 
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
@@ -206,12 +207,8 @@ export function buildFAQPageSchema(faqItems) {
 }
 
 export function buildArticleSchema(post) {
-  const timestamp = Date.parse(post.date || '');
-  const datePublished = Number.isNaN(timestamp) ? undefined : new Date(timestamp).toISOString();
-  const modifiedTimestamp = Date.parse(post.dateModified || post.updated || '');
-  const dateModified = Number.isNaN(modifiedTimestamp)
-    ? datePublished
-    : new Date(modifiedTimestamp).toISOString();
+  const datePublished = toContentDateIso(post.date) || undefined;
+  const dateModified = toContentDateIso(post.dateModified || post.updated) || datePublished;
 
   return {
     '@context': 'https://schema.org',

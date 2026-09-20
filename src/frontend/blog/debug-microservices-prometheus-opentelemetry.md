@@ -4,9 +4,11 @@ slug: debug-microservices-prometheus-opentelemetry
 tag: Observability
 tags: Observability, DevOps, Backend
 title: How We Debug Slow Microservices in Minutes (Not Hours): A Prometheus + OpenTelemetry Guide
-subtitle: From “checkout is broken” to root cause in minutes using metrics, traces, and logs. The exact Prometheus+OpenTelemetry setup we use in…
-intro: From “checkout is broken” to root cause in minutes using metrics, traces, and logs. The exact Prometheus+OpenTelemetry setup we use in…
+subtitle: From “checkout is broken” to a testable root-cause hypothesis using metrics, traces, and correlated logs.
+intro: From “checkout is broken” to a testable root-cause hypothesis using metrics, traces, and correlated logs.
 date: February 2, 2026
+dateModified: September 20, 2026
+reviewedOn: September 20, 2026
 readTime: 14 min read
 mediumUrl: https://arg-software.medium.com/how-we-debug-slow-microservices-in-18-minutes-not-4-hours-a-prometheus-opentelemetry-guide-0d7b551d1722
 ---
@@ -23,7 +25,7 @@ Here's the uncomfortable truth: monitoring tells you something broke. Observabil
 
 ## The Problem with "Green Dashboards"
 
-Most teams monitor their systems like they're still running monoliths. But modern software is distributed, asynchronous, and constantly failing in small ways. Microservices call other microservices. Background jobs process events from queues. Third-party APIs timeout randomly.
+Most teams monitor their systems like they're still running monoliths. But modern software is distributed, asynchronous, and constantly failing in small ways. Microservices call other microservices. Background jobs process events from queues. Third-party APIs time out unpredictably.
 
 Your dashboard shows HTTP 200? Great. But consider this response:
 
@@ -49,31 +51,36 @@ Before we dive into code, let's understand the tools we're using and what you ne
 
 ### Prometheus (Metrics)
 
-Prometheus is a time-series database that scrapes metrics from your services every few seconds. It's the industry standard for cloud-native monitoring with a pull-based architecture, powerful query language (PromQL), and native alerting.
+Prometheus is a monitoring and alerting system with a time-series database. It commonly scrapes metrics from services on a configured interval and queries them with PromQL. Alert rules are evaluated by Prometheus; notification routing and grouping are normally handled by Alertmanager.
 
-What you need to run it: Prometheus server (Docker, Kubernetes, or bare metal), the prom-client npm package in your Node.js app, a /metrics endpoint exposed on each service, and ~512MB RAM minimum for small deployments.
+For this Node.js example you need a Prometheus server, `prom-client`, and a protected `/metrics` endpoint reachable by Prometheus. Resource needs depend on active series, scrape frequency, retention, and query load; there is no meaningful universal RAM minimum.
 
 ```bash
 # Quick start with Docker
-docker run -p 9090:9090 prom/prometheus
+docker run --rm -p 9090:9090 prom/prometheus:v3.14.0
 ```
 
 ### OpenTelemetry (Traces)
 
-OpenTelemetry is a vendor-neutral standard for collecting traces, metrics, and logs. Think of it as the "USB-C of observability" - one standard that works everywhere. It replaced OpenTracing and OpenCensus as the CNCF standard. Your instrumentation works with any backend (Jaeger, Zipkin, Datadog, etc.).
+OpenTelemetry provides vendor-neutral APIs, SDKs, semantic conventions, and protocols for traces, metrics, and logs. Think of it as the "USB-C of observability": one instrumentation model with multiple compatible exporters and backends. Portability is strong, not automatic; backend features, sampling, supported signals, and semantic-convention versions still differ.
 
 ```bash
 # Install OpenTelemetry for Node.js
 npm install @opentelemetry/api @opentelemetry/sdk-node @opentelemetry/auto-instrumentations-node
+npm install @opentelemetry/exporter-trace-otlp-proto
 ```
+
+Initialize the SDK before loading instrumented application modules, configure an exporter, and shut the SDK down gracefully so buffered spans can flush. Installing the packages alone does not send telemetry.
 
 ### Jaeger or Grafana Tempo (Trace Backend)
 
-A backend that stores traces and lets you visualize them as waterfall diagrams. Jaeger is great for getting started and easy to run locally. Grafana Tempo is better for production and integrates with Grafana dashboards.
+A backend stores and queries traces. Jaeger is straightforward for local development; Tempo integrates tightly with Grafana. Production suitability depends on scale, storage, operations, tenancy, and query requirements rather than one backend being universally “better.”
 
 ```bash
-# All-in-one Jaeger for development
-docker run -p 16686:16686 -p 6831:6831/udp jaegertracing/all-in-one
+# Jaeger 2 all-in-one for development, with OTLP gRPC and HTTP receivers
+docker run --rm --name jaeger \
+  -p 16686:16686 -p 4317:4317 -p 4318:4318 \
+  cr.jaegertracing.io/jaegertracing/jaeger:2.21.0
 ```
 
 Then open http://localhost:16686 to see your traces.
@@ -83,10 +90,10 @@ Then open http://localhost:16686 to see your traces.
 The dashboard layer that brings everything together - metrics from Prometheus, traces from Jaeger/Tempo, and logs from Loki. One place to see all three signals. Click from a spike in a metric to the slow traces to the error logs.
 
 ```bash
-docker run -p 3000:3000 grafana/grafana
+docker run --rm -p 3000:3000 grafana/grafana:13.2.2
 ```
 
-Default login: admin / admin.
+The official local image initially uses `admin` / `admin`; change credentials and configure authentication before exposing Grafana.
 
 ### Minimum Viable Stack
 
@@ -104,25 +111,24 @@ scrape_configs:
 ```
 
 ```yaml
-# docker-compose.yml
-version: '3'
+# compose.yaml
 services:
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v3.14.0
     ports: ["9090:9090"]
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
   jaeger:
-    image: jaegertracing/all-in-one
-    ports: ["16686:16686", "6831:6831/udp"]
+    image: cr.jaegertracing.io/jaegertracing/jaeger:2.21.0
+    ports: ["16686:16686", "4317:4317", "4318:4318"]
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:13.2.2
     ports: ["3000:3000"]
 ```
 
-Total resources: ~1.5GB RAM, runs on any laptop. For real workloads, you'll want to add Loki for logs, persistent storage for Prometheus, and possibly the OpenTelemetry Collector as a central pipeline.
+The pinned versions make the example reproducible as reviewed; update them deliberately. This stack uses ephemeral storage and is for local development. For real workloads, size from measured cardinality and retention, add durable storage and authentication, and consider an OpenTelemetry Collector as a retrying, batching telemetry pipeline. A collector is not durable message storage unless you configure an appropriate queue and persistence.
 
-Before instrumenting your code, make sure you have: Prometheus running and scraping your services, OpenTelemetry SDK initialized in your app, a trace backend (Jaeger or Tempo) receiving spans, Grafana connected to all data sources, and your services exposing a /metrics endpoint.
+Before instrumenting your code, verify the path end to end: Prometheus can scrape each service, the OpenTelemetry SDK exports through OTLP, the trace backend receives spans, Grafana has the intended data sources, and metric endpoints are not publicly exposed without controls.
 
 ## Let's Build Something Real
 
@@ -134,11 +140,12 @@ Here's our scenario: User clicks "Buy" → Checkout Service → Kafka → Paymen
 
 ### Don't Measure Averages. Measure Pain.
 
-Average latency is a vanity metric. If your average is 200ms but 5% of users wait 8 seconds, you have a problem - you just can't see it. Use histograms. Track percentiles.
+An average can hide tail pain. If your average is 200 ms but 5% of requests wait 8 seconds, you have a problem it cannot describe. Use a histogram with buckets chosen around meaningful SLO thresholds. Prometheus quantiles from classic histograms are estimates whose error depends on those buckets.
 
 ```javascript
 // metrics.js
 const prometheus = require('prom-client');
+const allowedRegions = new Set(['eu', 'us', 'apac']);
 
 // Create a histogram for HTTP request latency
 const httpLatency = new prometheus.Histogram({
@@ -157,7 +164,9 @@ app.use((req, res, next) => {
       route: req.route?.path || 'unknown',
       method: req.method,
       status_code: res.statusCode,
-      region: req.headers['x-region'] || 'unknown'
+      region: allowedRegions.has(req.headers['x-region'])
+        ? req.headers['x-region']
+        : 'unknown'
     });
   });
   
@@ -169,11 +178,15 @@ Now in Prometheus, you can query:
 
 ```promql
 histogram_quantile(0.95, 
-  rate(checkout_http_duration_seconds_bucket[5m])
-) by (region)
+  sum by (le, region) (
+    rate(checkout_http_duration_seconds_bucket[5m])
+  )
+)
 ```
 
-This tells you: "95% of requests in the EU complete in under X seconds." When X jumps from 0.2 to 4.0, you'll know exactly who's hurting.
+This estimates the 95th-percentile latency per region across service instances. The original buckets must retain their `le` label during aggregation. When the estimate jumps from 0.2 to 4.0 seconds, you know which bounded region segment is hurting.
+
+Keep metric labels low-cardinality and controlled. Never put request IDs, order IDs, raw URLs, email addresses, or arbitrary header values in labels. A user-controlled `x-region` header must be mapped to a small allowlist, as above. Use normalized route templates rather than concrete paths.
 
 ### Track Business Outcomes, Not Just HTTP Codes
 
@@ -184,19 +197,35 @@ Here's the metric that changed how we think about reliability:
 const checkoutAttempts = new prometheus.Counter({
   name: 'checkout_attempts_total',
   help: 'Total checkout attempts',
-  labelNames: ['region', 'feature_flag', 'payment_provider']
+  labelNames: ['region', 'feature_flag']
 });
 
 const checkoutSuccess = new prometheus.Counter({
   name: 'checkout_success_total', 
   help: 'Successful checkouts (payment authorized)',
-  labelNames: ['region', 'feature_flag', 'payment_provider']
+  labelNames: ['region', 'feature_flag']
+});
+
+const checkoutDuration = new prometheus.Histogram({
+  name: 'checkout_duration_seconds',
+  help: 'End-to-end checkout duration',
+  labelNames: ['region', 'feature_flag', 'outcome'],
+  buckets: [0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30]
 });
 
 // In your checkout handler
 app.post('/checkout', async (req, res) => {
-  const region = req.headers['x-region'];
-  const featureFlag = getFeatureFlag('checkout_v2', req.user);
+  const region = allowedRegions.has(req.headers['x-region'])
+    ? req.headers['x-region']
+    : 'unknown';
+  const featureFlag = getFeatureFlag('checkout_v2', req.user)
+    ? 'enabled'
+    : 'disabled';
+  const endCheckout = checkoutDuration.startTimer({
+    region,
+    feature_flag: featureFlag
+  });
+  let outcome = 'failed';
   
   checkoutAttempts.inc({ region, feature_flag: featureFlag });
   
@@ -206,11 +235,16 @@ app.post('/checkout', async (req, res) => {
     // Don't just check HTTP status - check business outcome
     if (result.payment.authorized && result.order.created) {
       checkoutSuccess.inc({ region, feature_flag: featureFlag });
+      outcome = 'succeeded';
+    } else {
+      outcome = 'rejected';
     }
     
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: 'Checkout failed' });
+  } finally {
+    endCheckout({ outcome });
   }
 });
 ```
@@ -223,49 +257,63 @@ sum(rate(checkout_success_total[5m]))
 sum(rate(checkout_attempts_total[5m]))
 ```
 
-If that number drops below 99.9%, you're burning your error budget.
+If your agreed SLO is 99.9%, values below 99.9% represent a burn rate above 1 for that window. That does not by itself mean you should page: use multiple windows, account for low traffic, and alert on actionable budget consumption.
 
 ## Step 2: Traces That Survive Async Boundaries
 
-Metrics tell you that something is wrong. Traces tell you where. But here's the trap: traces die at async boundaries unless you explicitly pass context.
+Metrics tell you that something is wrong. Traces show where time and failures occurred. In-process async context is usually handled by the OpenTelemetry SDK; process and transport boundaries require context propagation. Supported instrumentation often injects it automatically, so prefer that before writing manual spans.
 
 ### The Kafka Problem
 
-When your checkout service publishes to Kafka, and your payment service consumes it, the trace ID doesn't magically follow. You have to inject it.
+When your Kafka client is not supported by active instrumentation, inject W3C trace context into message headers and extract it in the consumer. Do not duplicate manual spans if client instrumentation already creates them.
 
 Producer (Checkout Service):
 
 ```javascript
-const { trace, context, propagation, SpanKind } = require('@opentelemetry/api');
+const {
+  trace,
+  context,
+  propagation,
+  SpanKind,
+  SpanStatusCode
+} = require('@opentelemetry/api');
 const tracer = trace.getTracer('checkout-service');
 
 async function publishPaymentRequest(order) {
-  return tracer.startActiveSpan('kafka.publish.payment_requested', 
-    { kind: SpanKind.PRODUCER },
+  return tracer.startActiveSpan('publish payment.requested',
+    {
+      kind: SpanKind.PRODUCER,
+      attributes: {
+        'messaging.system': 'kafka',
+        'messaging.destination.name': 'payment.requested',
+        'messaging.operation.name': 'publish',
+        'messaging.operation.type': 'send'
+      }
+    },
     async (span) => {
-      // Inject trace context into Kafka headers
       const headers = {};
       propagation.inject(context.active(), headers);
-      
-      await producer.send({
-        topic: 'payment.requested',
-        messages: [{
-          headers,  // This is the magic
-          value: JSON.stringify({
-            orderId: order.id,
-            amount: order.total,
-            currency: order.currency
-          })
-        }]
-      });
-      
-      span.setAttributes({
-        'messaging.system': 'kafka',
-        'messaging.destination': 'payment.requested',
-        'order.id': order.id
-      });
-      
-      span.end();
+
+      try {
+        await producer.send({
+          topic: 'payment.requested',
+          messages: [{
+            key: order.id,
+            headers,
+            value: JSON.stringify({
+              orderId: order.id,
+              amount: order.total,
+              currency: order.currency
+            })
+          }]
+        });
+      } catch (error) {
+        span.recordException(error);
+        span.setStatus({ code: SpanStatusCode.ERROR });
+        throw error;
+      } finally {
+        span.end();
+      }
     }
   );
 }
@@ -276,22 +324,37 @@ Consumer (Payment Service):
 ```javascript
 consumer.run({
   eachMessage: async ({ message }) => {
-    // Extract trace context from Kafka headers
-    const parentContext = propagation.extract(
-      context.active(), 
-      message.headers
+    const carrier = Object.fromEntries(
+      Object.entries(message.headers ?? {}).map(([key, value]) => [
+        key,
+        value?.toString()
+      ])
     );
-    
-    // Continue the trace
+
+    const parentContext = propagation.extract(
+      context.active(),
+      carrier
+    );
+
     await context.with(parentContext, async () => {
-      await tracer.startActiveSpan('kafka.consume.payment_requested',
-        { kind: SpanKind.CONSUMER },
+      await tracer.startActiveSpan('process payment.requested',
+        {
+          kind: SpanKind.CONSUMER,
+          attributes: {
+            'messaging.system': 'kafka',
+            'messaging.destination.name': 'payment.requested',
+            'messaging.operation.name': 'process',
+            'messaging.operation.type': 'process'
+          }
+        },
         async (span) => {
-          const payload = JSON.parse(message.value.toString());
-          
           try {
+            if (!message.value) {
+              throw new Error('payment.requested message has no value');
+            }
+
+            const payload = JSON.parse(message.value.toString());
             await processPayment(payload);
-            span.setStatus({ code: SpanStatusCode.OK });
           } catch (err) {
             span.recordException(err);
             span.setStatus({ code: SpanStatusCode.ERROR });
@@ -306,20 +369,24 @@ consumer.run({
 });
 ```
 
+This is a single-message example. Current OpenTelemetry messaging conventions generally use span links to the message creation context because batches, fan-out, and ambient transport spans cannot always be represented by one parent. A single-message consumer may use the creation context as parent, but check the instrumentation you deploy. Messaging semantic conventions remain under development as of this review, so pin compatible package versions and dashboards rather than assuming attribute names will never change.
+
 Now, when you click on a trace in Jaeger or Grafana Tempo, you see the entire journey:
 
 ```
 checkout.request (4,180ms)
-└─ kafka.publish.payment_requested (5ms)
-    └─ kafka.consume.payment_requested (4,165ms)
-        └─ stripe.charge (4,150ms) ← HERE'S YOUR PROBLEM
+└─ publish payment.requested (5ms)
+    └─ process payment.requested (4,165ms)
+        └─ stripe.payment_intent (4,150ms) ← HERE'S YOUR PROBLEM
 ```
 
-Without context propagation, you'd see two disconnected traces and no idea they're related.
+Without context propagation, you get disconnected telemetry and must correlate it through weaker clues. Propagation creates correlation; whether a backend renders producer and consumer work as one parent-child waterfall or linked traces depends on the messaging instrumentation model.
 
 ## Step 3: Logs That Help (Not Hurt)
 
-During an incident, you don't need more logs. You need the right logs. Always include trace_id so you can correlate with traces. Always use JSON so you can query in your log aggregator. Never log PII — user IDs are fine, emails are not. Context over verbosity — "what" and "why", not "entering function X".
+During an incident, you don't need more logs. You need the right logs. Emit structured records your pipeline can parse, and correlate them with trace and span IDs where available. OpenTelemetry's log data model has dedicated `TraceId` and `SpanId` fields; some logger integrations add them automatically.
+
+Do not assume user IDs are harmless. Stable identifiers, order IDs, amounts, error messages, and trace IDs can all carry privacy, security, or retention implications. Log only fields with an operational purpose, redact centrally as defense in depth, restrict access, and serialize errors explicitly.
 
 ```javascript
 const logger = require('pino')();
@@ -329,17 +396,36 @@ async function processPayment(order) {
   const traceId = span?.spanContext().traceId;
   
   try {
-    const result = await stripe.charges.create({
-      amount: order.amount,
-      currency: order.currency
-    });
+    const result = await stripe.paymentIntents.create(
+      {
+        amount: order.amount,
+        currency: order.currency,
+        payment_method: order.paymentMethodId,
+        confirm: true
+      },
+      {
+        idempotencyKey: `checkout:${order.id}`
+      }
+    );
+
+    if (result.status !== 'succeeded') {
+      logger.warn({
+        event: 'payment_requires_follow_up',
+        trace_id: traceId,
+        order_id: order.id,
+        provider: 'stripe',
+        payment_status: result.status
+      });
+
+      return result;
+    }
     
     logger.info({
       event: 'payment_succeeded',
       trace_id: traceId,
       order_id: order.id,
       provider: 'stripe',
-      amount: order.amount
+      currency: order.currency
     });
     
     return result;
@@ -350,8 +436,8 @@ async function processPayment(order) {
       trace_id: traceId,
       order_id: order.id,
       provider: 'stripe',
-      error_code: err.code,
-      error_message: err.message
+      error_type: err.name,
+      error_code: err.code
     });
     
     throw err;
@@ -359,11 +445,13 @@ async function processPayment(order) {
 }
 ```
 
-When things break, you search for trace_id: "abc123" and see everything that happened - across all services - in one view.
+The idempotency key must identify one logical payment attempt and remain stable across safe retries. A real integration must also handle statuses such as `requires_action` and `processing` instead of treating creation of a Payment Intent as completed payment.
+
+When things break, you search for a trace ID and retrieve correlated records retained by your telemetry pipeline. Sampling can mean a trace was not exported even when correlated logs exist, so logs must remain useful on their own.
 
 ## The Incident That Proved All This
 
-Let me tell you about a real Tuesday afternoon.
+Here is a representative incident timeline. The timings are illustrative, but the diagnostic sequence is the one that matters.
 
 14:32 UTC - Alert fires:
 
@@ -377,8 +465,10 @@ Service: checkout
 
 ```promql
 histogram_quantile(0.99, 
-  rate(checkout_http_duration_seconds_bucket[5m])
-) by (region, feature_flag)
+  sum by (le, region, feature_flag) (
+    rate(checkout_duration_seconds_bucket[5m])
+  )
+)
 ```
 
 ![How we debug slow Microservices Results](/images/blog/how-we-debug-slow-microservices/how-we-debug-slow-microservices-results.webp)
@@ -388,13 +478,13 @@ Isolated: EU users on the new checkout flow.
 **Step 2: Traces Reveal the Bottleneck (5 minutes).** Click into a slow EU trace:
 
 ```
-checkout.request (4,180ms)
+checkout.request (9,180ms)
 └─ kafka.publish (5ms)
-    └─ kafka.consume (4,165ms)
-        └─ stripe.charge (4,150ms)
+    └─ kafka.consume (9,165ms)
+        └─ stripe.payment_intent (9,150ms)
             ├─ attempt 1: timeout (3,000ms)
             ├─ attempt 2: timeout (3,000ms)  
-            └─ attempt 3: failed
+            └─ attempt 3: timeout (3,000ms)
 ```
 
 Smoking gun: Stripe is timing out. Three retries at 3 seconds each = 9+ second checkout.
@@ -412,9 +502,9 @@ Smoking gun: Stripe is timing out. Three retries at 3 seconds each = 9+ second c
 }
 ```
 
-Check Stripe's EU docs: "Requests may take up to 5 seconds." We configured a 3-second timeout. Every EU request times out, retries twice, and fails.
+The trace and logs show that the dependency regularly exceeds the configured 3-second attempt timeout in this region. Before changing it, verify the provider's current timeout/retry guidance and your own end-to-end deadline: three longer serial attempts can make user latency worse and amplify load.
 
-**The Fix (8 minutes).** Immediate (2 min): Disable checkout_v2 for EU via feature flag. Short-term (30 min): Update timeout to 5.5 seconds. Long-term (1 day): Add stripe_retry_total metric to catch retry storms early.
+**The Fix (8 minutes).** Immediate (2 min): Disable `checkout_v2` for EU via feature flag. Short-term: align per-attempt timeout and retry count with the end-to-end checkout deadline, using bounded backoff and only retrying safe failures. Long-term: add a retry counter and dependency-latency SLO to catch retry storms early.
 
 Total time: 18 minutes from alert to resolution. Without observability? We'd still be grepping logs, restarting services, and arguing about whether it's a "backend problem" or "Stripe's fault."
 
@@ -423,6 +513,7 @@ Total time: 18 minutes from alert to resolution. Without observability? We'd sti
 ```javascript
 // metrics.js - Your complete metrics setup
 const prometheus = require('prom-client');
+const allowedRegions = new Set(['eu', 'us', 'apac']);
 
 // Collect default Node.js metrics (memory, CPU, etc.)
 prometheus.collectDefaultMetrics();
@@ -431,14 +522,22 @@ prometheus.collectDefaultMetrics();
 const checkoutAttempts = new prometheus.Counter({
   name: 'checkout_attempts_total',
   help: 'Total checkout attempts',
-  labelNames: ['region', 'feature_flag', 'payment_provider']
+  labelNames: ['region', 'feature_flag']
 });
 
 const checkoutSuccess = new prometheus.Counter({
   name: 'checkout_success_total',
   help: 'Successful checkouts',
-  labelNames: ['region', 'feature_flag', 'payment_provider']
+  labelNames: ['region', 'feature_flag']
 });
+
+// Export zero-valued series before the first success or attempt.
+for (const region of [...allowedRegions, 'unknown']) {
+  for (const featureFlag of ['enabled', 'disabled']) {
+    checkoutAttempts.labels(region, featureFlag).inc(0);
+    checkoutSuccess.labels(region, featureFlag).inc(0);
+  }
+}
 
 // Latency histogram
 const checkoutDuration = new prometheus.Histogram({
@@ -477,6 +576,8 @@ module.exports = {
 };
 ```
 
+Put `/metrics` on an internal listener or protect it at the network layer. Metrics often reveal service names, routes, runtime details, and business volumes.
+
 ```yaml
 # prometheus.yml
 global:
@@ -498,34 +599,49 @@ scrape_configs:
 groups:
   - name: checkout-slo
     rules:
-      # Fast burn - will exhaust 30-day budget in 2 days
+      # Page only while both long and short windows show active budget burn.
       - alert: CheckoutErrorBudgetFastBurn
         expr: |
           (
-            1 - (sum(rate(checkout_success_total[1h])) / sum(rate(checkout_attempts_total[1h])))
-          ) > (14.4 * 0.001)
-        for: 2m
+            (
+              1 - sum(rate(checkout_success_total[1h]))
+                / sum(rate(checkout_attempts_total[1h]))
+            ) > (14.4 * 0.001)
+            and
+            (
+              1 - sum(rate(checkout_success_total[5m]))
+                / sum(rate(checkout_attempts_total[5m]))
+            ) > (14.4 * 0.001)
+          )
         labels:
           severity: critical
         annotations:
           summary: "Checkout error budget burning fast"
-          description: "At current rate, 30-day error budget exhausts in 2 days"
+          description: "At least 2% of the 30-day budget burned in 1 hour and the burn is still active"
           runbook: "https://wiki.internal/runbooks/checkout-slo"
-          
-      # Slow burn - will exhaust budget in 10 days  
+
+      # A sustained 6x burn consumes 5% of the budget in 6 hours.
       - alert: CheckoutErrorBudgetSlowBurn
         expr: |
           (
-            1 - (sum(rate(checkout_success_total[6h])) / sum(rate(checkout_attempts_total[6h])))
-          ) > (6 * 0.001)
-        for: 30m
+            (
+              1 - sum(rate(checkout_success_total[6h]))
+                / sum(rate(checkout_attempts_total[6h]))
+            ) > (6 * 0.001)
+            and
+            (
+              1 - sum(rate(checkout_success_total[30m]))
+                / sum(rate(checkout_attempts_total[30m]))
+            ) > (6 * 0.001)
+          )
         labels:
-          severity: warning
+          severity: critical
         annotations:
-          summary: "Checkout error budget burning"
+          summary: "Checkout error budget burning persistently"
+          description: "At least 5% of the 30-day budget burned in 6 hours and the burn is still active"
 ```
 
-The magic number: 14.4x burn rate means you'll exhaust a 30-day budget in 2 days. That's worth waking someone up for. A 6x burn rate means 5 days - worth a warning, not a page.
+For a 99.9% SLO, the allowed error ratio is `0.001`. A continuous 14.4x burn would exhaust a 30-day budget in about 2.1 days; over the one-hour alert window it consumes 2% of that budget. A continuous 6x burn would exhaust it in 5 days; over six hours it consumes 5%. Google SRE's recommended starting point pages on both conditions, paired with 5-minute and 30-minute windows so recovered incidents reset sooner. Tune notification policy to your service, and add explicit handling for low or absent traffic before using these rules in production.
 
 ![How we debug slow Microservices where to start](/images/blog/how-we-debug-slow-microservices/how-we-debug-slow-microservices-start.webp)
 
@@ -540,3 +656,15 @@ When your checkout breaks at 2 PM on a Tuesday, you shouldn't need tribal knowle
 You should need 18 minutes and the right queries.
 
 That's not tooling. That's an engineering discipline.
+
+## Sources
+
+- [Prometheus: Histograms and summaries](https://prometheus.io/docs/practices/histograms/)
+- [Prometheus: Instrumentation and label-cardinality guidance](https://prometheus.io/docs/practices/instrumentation/)
+- [Google SRE Workbook: Alerting on SLOs](https://sre.google/workbook/alerting-on-slos/)
+- [OpenTelemetry JavaScript: Context propagation](https://opentelemetry.io/docs/languages/js/propagation/)
+- [OpenTelemetry: Semantic conventions for messaging spans](https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/)
+- [OpenTelemetry: Logs data model](https://opentelemetry.io/docs/specs/otel/logs/data-model/)
+- [Jaeger 2: Getting started](https://www.jaegertracing.io/docs/latest/getting-started/)
+- [Prometheus: Current releases](https://prometheus.io/download/)
+- [Grafana: Current release downloads](https://grafana.com/grafana/download)

@@ -65,7 +65,10 @@ module.exports = [
   },
   ...tseslint.configs.recommended.map(config => ({
     ...config,
-    files: ['src/backend/{admin,maintenance,mcp,rag,shared}/**/*.ts'],
+    files: [
+      'src/backend/{admin,maintenance,mcp,rag,shared}/**/*.ts',
+      'tests/src/backend/{admin,maintenance,mcp,rag,shared}/**/*.ts',
+    ],
     ignores: ['node_modules/**', 'dist/**'],
     rules: {
       ...config.rules,

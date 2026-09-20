@@ -22,6 +22,7 @@ import { buildPageSchemas, stringifyJsonLd } from '../../utils/structuredData';
  * @param {boolean} [props.noSuffix]      – If true, don't append " | ARG Software" to the title
  * @param {boolean} [props.noIndex]       – If true, adds robots meta tag with "noindex, follow"
  * @param {string}  [props.publishedTime] – ISO 8601 date for blog posts
+ * @param {string}  [props.modifiedTime]  – ISO 8601 modified date for blog posts
  * @param {string}  [props.author]        – Author name for blog posts
  * @param {string}  [props.authorUrl]     – Canonical author profile/about URL
  * @param {string}  [props.section]       – Article section/category
@@ -39,6 +40,7 @@ export function SEO({
   noSuffix = false,
   noIndex = false,
   publishedTime,
+  modifiedTime,
   author,
   authorUrl,
   section,
@@ -108,6 +110,9 @@ export function SEO({
       {/* Article-specific (only rendered when type=article) */}
       {type === 'article' && publishedTime && (
         <meta property="article:published_time" content={publishedTime} />
+      )}
+      {type === 'article' && modifiedTime && (
+        <meta property="article:modified_time" content={modifiedTime} />
       )}
       {type === 'article' && <meta property="article:author" content={pageAuthor} />}
       {type === 'article' && <meta property="article:publisher" content={SITE_NAME} />}

@@ -504,7 +504,10 @@ export function useAssistantWidgetController({
 
       if (rateLimitBlocksChat) return;
 
-      trackAssistantEvent('quick_prompt', { prompt_text: prompt });
+      const quickPromptIndex = assistantCopy.quickPrompts.indexOf(prompt);
+      trackAssistantEvent('quick_prompt', {
+        prompt_id: quickPromptIndex >= 0 ? `starter_${quickPromptIndex + 1}` : 'custom',
+      });
       trackAssistantEvent('submit', { has_history: false, question_length: prompt.length });
       setInputValue('');
       submitChatMessage(prompt);

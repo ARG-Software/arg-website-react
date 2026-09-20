@@ -1,373 +1,406 @@
 ---
-seoTitle: Adding Vector Search to TypeScript Clean Architecture (Without a Cloud Bill or a RAM Crisis)
+seoTitle: Adding Vector Search to TypeScript Clean Architecture with a TurboVec Sidecar
 slug: adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis
 tag: AI
 tags: AI, Architecture, Backend
-title: Adding Vector Search to TypeScript Clean Architecture (Without a Cloud Bill or a RAM Crisis)
-subtitle: Build low-cost RAG with TypeScript Clean Architecture, TurboVec, and a Python sidecar to add vector search without cloud fees or RAM bloat.
-intro: Build low-cost RAG with TypeScript Clean Architecture, TurboVec, and a Python sidecar to add vector search without cloud fees or RAM bloat.
+title: Adding Vector Search to TypeScript Clean Architecture with a TurboVec Sidecar
+subtitle: Use a Python sidecar and an application port to test TurboVec from a TypeScript backend without coupling business logic to vector-search infrastructure.
+intro: Use a Python sidecar and an application port to test TurboVec from a TypeScript backend without coupling business logic to vector-search infrastructure.
 date: June 23, 2026
-readTime: 12 min read
+dateModified: September 19, 2026
+reviewedOn: September 19, 2026
+readTime: 13 min read
 mediumUrl: https://ai.plainenglish.io/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis-1e9104ab278b
 ---
-![Adding Vector Search to TypeScript Clean Architecture (Without a Cloud Bill or a RAM Crisis)](/images/blog/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis-header.webp)
+![Adding vector search to TypeScript Clean Architecture with a TurboVec sidecar](/images/blog/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis-header.webp)
 
-At some point, your product manager asks for a feature that sounds deceptively simple:
+At some point, a product team asks for the deceptively simple feature:
 
-> “Can we make our app answer questions based on our own documents?”
+> "Can our app answer questions from our own documents?"
 
-This is called Retrieval-Augmented Generation (RAG) - a technique where, instead of relying on an AI’s pre-trained knowledge alone, you first search your database for relevant content, then hand that content to the AI as context. The result is an AI that can answer questions about your data, not just the public internet.
+That usually means retrieval-augmented generation. Before the model answers, your system searches internal content, retrieves relevant chunks, and sends those chunks as context. The retrieval step is where vector search enters the architecture.
 
-To build this, you need a vector database, a special kind of database that stores documents not as plain text but as mathematical representations called embeddings. When a user asks a question, you convert that question into an embedding too and then find the documents whose embeddings are mathematically closest to it. Closest in this space means most semantically similar. It is a powerful idea, but it comes with a painful infrastructure cost.
+The previous article, [TurboQuant, TurboVec, and the Real RAM Math for Local Vector Search](/blog/the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore/), covered the important correction: TurboVec can reduce raw vector payloads dramatically, but the result depends on dimensions, bit width, metadata, and benchmarked recall. It is not a blanket guarantee that every production RAG system suddenly fits on a laptop.
 
-## The Two Bad Options Everyone Knows
+This article shows a pragmatic TypeScript architecture for testing it anyway.
 
-- The Cloud Tax: You use a managed vector database like Pinecone or Weaviate. It works well, but now your application is making external HTTP calls to a third-party service, without proper abstraction, your application can become coupled to a vendor SDK, and you are paying per query on top of your existing infrastructure budget.
-- The Local RAM Hog: You run something like Qdrant or Milvus locally in Docker. Serious tools, but a 10-million-document vector index stored in standard float32 format can consume over 30 GB of RAM just to sit idle. For most teams, that blows up the deployment budget before the feature ships.
+## Why a Sidecar Is the Honest Boundary
 
-## What Changed Recently
-
-As we covered in a previous article, researchers including Google Research scientist Vahab Mirrokni introduced TurboQuant at ICLR 2026, a vector quantization technique designed to compress high-dimensional embeddings while preserving nearest-neighbor search quality. An open-source implementation, TurboVec, makes these ideas practical for production vector search systems.
-
-The headline benchmark is compelling: a 10-million-vector dataset that occupies roughly 31 GB in standard float32 form can be compressed to around 4 GB, while published recall metrics remain close to uncompressed baselines. For teams building Retrieval-Augmented Generation (RAG) systems, that kind of reduction can dramatically lower infrastructure requirements without sacrificing search quality.
-
-There is one catch for TypeScript and .NET developers: TurboVec ships with Python bindings, not Node.js bindings. No turbovec-node npm package exists today.
-
-This article is about how to get the benefits of TurboVec in a TypeScript backend anyway, and why the solution, a small Python sidecar service, arguably produces a cleaner architecture than a native package would.
-
-## The Architecture: A Sidecar, Not a Dependency
-
-The approach is straightforward. Instead of calling TurboVec directly from TypeScript, we wrap it in a tiny Python service, about 30 lines of FastAPI code, that exposes a simple HTTP API. Our TypeScript application then talks to that service through a clean domain interface.
+[TurboVec](https://github.com/RyanCodrai/turbovec) ships Rust and Python APIs. It does not ship a Node.js package today. That does not make it unusable from a TypeScript backend. It means the clean boundary is a small internal service:
 
 ```text
-┌─────────────────────────────────────────┐
-│         TypeScript Application          │
-│                                         │
-│  Controller → Handler → IVectorRepo     │
-│                              │          │
-└──────────────────────────────│──────────┘
-│ HTTP (internal)
-┌──────────────────────────────│──────────┐
-│         Python Sidecar       │          │
-│                              ▼          │
-│         FastAPI  →  TurboVec Index      │
-└─────────────────────────────────────────┘
+TypeScript API
+  Controller -> Use case -> Vector search port
+                         |
+                         | HTTP on the private network
+                         v
+Python sidecar
+  FastAPI -> TurboVec IdMapIndex
 ```
 
-This might sound like more work than a single npm package, but consider what you get:
+The sidecar should not leak into business logic. Your application code should depend on a port that says "search indexed knowledge," not on Python, Rust, bit packing, or TurboQuant internals.
 
-- The sidecar is 10–30 lines of Python. It is not a complex service to maintain.
-- Your TypeScript domain has zero knowledge of Python, TurboVec, or vector math. It just calls an interface.
-- When (not if) Node.js bindings eventually exist for TurboVec, or you want to try a different vector engine entirely, you change one file in your infrastructure layer, nothing else.
-- The separation is honest about what is actually happening. Vector search is a separate concern. Treating it as one makes the system easier to reason about.
+This is also the right place to be honest about risk. PyPI currently publishes `turbovec` as version `1.0.0`, but it still carries the classifier `Development Status :: 3 - Alpha`. Use this pattern as a measurable integration path, not as a promise that the library is mature enough for every critical workload.
 
-Let us build it step by step.
+## What the Sidecar Should Own
 
-## Step 1: The Sidecar, The TurboVec Python Service 🐍
+The sidecar owns vector-index mechanics:
 
-The entire vector search capability lives here. This service has two jobs: store embeddings, and search them. For simplicity the example keeps indexes in memory. Production deployments should persist indexes to disk or object storage and reload them during startup:
+- Creating and loading TurboVec indexes.
+- Converting incoming embeddings to `float32` arrays.
+- Mapping stable document IDs to numeric IDs when using `IdMapIndex`.
+- Applying allowlist filters for tenant, document type, or ACL candidates.
+- Persisting index files safely.
+- Exposing health and readiness endpoints.
 
-```typescript
+It should not become the system of record for your documents. Keep source text, access rules, document metadata, and ingestion state in your primary database or object store. The vector index is a retrieval accelerator, not your canonical data model.
+
+## Step 1: A Minimal Python Sidecar
+
+The verified TurboVec Python API uses `IdMapIndex` for stable external IDs. The example below is intentionally small, but it includes the important corrections missing from the old version: real class names, `float32` conversion, a health endpoint, per-tenant locks, filtering, and explicit persistence hooks.
+
+```python
 # vector_service/main.py
+from pathlib import Path
+from threading import Lock
+
+import numpy as np
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import turbovec
-import uvicorn
+from pydantic import BaseModel, Field
+from turbovec import IdMapIndex
+
+DIMENSIONS = 1536
+BIT_WIDTH = 4
+INDEX_DIR = Path("/data/vector-indexes")
 
 app = FastAPI()
-# A separate in-memory index per tenant keeps data isolated.
-# In production you would persist these to disk.
-indexes: dict[str, turbovec.Index] = {}
-def get_or_create_index(tenant_id: str) -> turbovec.Index:
-if tenant_id not in indexes:
-# 4-bit quantization: strong compression, minimal recall loss
-# at the embedding dimensions used by modern models (1536+)
-indexes[tenant_id] = turbovec.Index(dims=1536, bits=4)
-return indexes[tenant_id]
+indexes: dict[str, IdMapIndex] = {}
+metadata: dict[str, dict[int, dict[str, str]]] = {}
+locks: dict[str, Lock] = {}
+
+
 class InsertRequest(BaseModel):
-id: str
-tenant_id: str
-embedding: list[float]
-content: str          # The original text chunk, stored as metadata
-document_type: str
+    tenant_id: str
+    vector_id: int
+    document_id: str
+    document_type: str
+    embedding: list[float]
+
+
 class SearchRequest(BaseModel):
-tenant_id: str
-embedding: list[float]
-limit: int = 5
+    tenant_id: str
+    embedding: list[float]
+    limit: int = Field(default=5, ge=1, le=50)
+    document_type: str | None = None
+
+
+def tenant_path(tenant_id: str) -> Path:
+    return INDEX_DIR / f"{tenant_id}.tvim"
+
+
+def get_lock(tenant_id: str) -> Lock:
+    if tenant_id not in locks:
+        locks[tenant_id] = Lock()
+    return locks[tenant_id]
+
+
+def get_index(tenant_id: str) -> IdMapIndex:
+    if tenant_id in indexes:
+        return indexes[tenant_id]
+
+    path = tenant_path(tenant_id)
+    if path.exists():
+        indexes[tenant_id] = IdMapIndex.load(str(path))
+    else:
+        indexes[tenant_id] = IdMapIndex(dim=DIMENSIONS, bit_width=BIT_WIDTH)
+    metadata.setdefault(tenant_id, {})
+    return indexes[tenant_id]
+
+
+def as_vector(values: list[float]) -> np.ndarray:
+    vector = np.asarray(values, dtype=np.float32)
+    if vector.shape != (DIMENSIONS,):
+        raise HTTPException(status_code=400, detail="Embedding has the wrong dimension")
+    return vector.reshape(1, DIMENSIONS)
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.post("/insert")
 def insert(req: InsertRequest):
-index = get_or_create_index(req.tenant_id)
-index.add(req.id, req.embedding, {"content": req.content, "type": req.document_type})
-return {"status": "ok"}
+    with get_lock(req.tenant_id):
+        index = get_index(req.tenant_id)
+        vector = as_vector(req.embedding)
+        ids = np.asarray([req.vector_id], dtype=np.uint64)
+        index.add_with_ids(vector, ids)
+        metadata[req.tenant_id][req.vector_id] = {
+            "document_id": req.document_id,
+            "document_type": req.document_type,
+        }
+        INDEX_DIR.mkdir(parents=True, exist_ok=True)
+        index.sync(str(tenant_path(req.tenant_id)))
+    return {"status": "ok"}
+
+
 @app.post("/search")
 def search(req: SearchRequest):
-if req.tenant_id not in indexes:
-return {"results": []}
-index = indexes[req.tenant_id]
-raw = index.search(req.embedding, req.limit)
-return {
-"results": [
-{
-"id": r.id,
-"content": r.metadata["content"],
-"similarity_score": r.score
-}
-for r in raw
-]
-}
-if __name__ == "__main__":
-uvicorn.run(app, host="0.0.0.0", port=8001)
+    if req.tenant_id not in indexes and not tenant_path(req.tenant_id).exists():
+        return {"results": []}
+
+    index = get_index(req.tenant_id)
+    query = as_vector(req.embedding)
+    allowed = None
+
+    if req.document_type:
+        allowed_ids = [
+            vector_id
+            for vector_id, item in metadata.get(req.tenant_id, {}).items()
+            if item.get("document_type") == req.document_type
+        ]
+        allowed = np.asarray(allowed_ids, dtype=np.uint64)
+
+    scores, ids = index.search(query, k=req.limit, allowlist=allowed)
+    results = []
+    for score, vector_id in zip(scores[0], ids[0]):
+        item = metadata.get(req.tenant_id, {}).get(int(vector_id))
+        if item:
+            results.append({
+                "document_id": item["document_id"],
+                "score": float(score),
+            })
+    return {"results": results}
 ```
 
-A few things worth noting here:
+This is still a starting point. A production service should reload metadata from the primary database, guard against duplicate IDs, define compaction or deletion behavior, expose readiness only after indexes are loaded, and run recovery tests around `sync`, filesystem mounts, and deployment restarts.
 
-Why separate indexes per tenant? In a SaaS application, different customers must never see each other’s data. Keeping a dedicated index per tenant_id enforces that isolation at the data structure level, not just at query time. It is the simplest and most reliable approach.
+## Step 2: Keep TypeScript on an Application Port
 
-What is an “embedding dimension”? When you use an embedding model (like OpenAI’s text-embedding-3-small), it converts a piece of text into a list of numbers - the embedding. The length of that list is the dimension. OpenAI's models produce 1536-dimensional embeddings. The index needs to know this upfront because TurboVec's compression math is tied to the dimensionality.
-
-Why 4-bit? TurboVec supports both 2-bit and 4-bit quantization. At the embedding sizes used by modern models (1536+ dimensions), 4-bit gives an excellent balance: strong compression with recall quality essentially indistinguishable from full float32 for most real-world use cases. At lower dimensions (like 200), there is more noticeable recall degradation and you may want to test both settings against your specific data.
-
-## Step 2: The Domain Contract, The TypeScript Interface 🛡
-
-Back in TypeScript, we define what vector search means to our application, using the language of our business domain. No mention of Python, HTTP, embeddings, or quantization.
+Do not put embeddings or vector infrastructure inside your domain model. In a Clean Architecture TypeScript codebase, the dependency should sit at the application boundary:
 
 ```typescript
-// domain/interfaces/IVectorRepository.ts
-export interface SearchFilter {
-tenantId: string;
-documentType?: 'pdf' | 'wiki' | 'email';
+// application/ports/VectorSearchPort.ts
+export interface VectorSearchFilter {
+  tenantId: string;
+  documentType?: 'pdf' | 'wiki' | 'email';
 }
-export interface DocumentSnippet {
-id: string;
-content: string;
-similarityScore: number;
+
+export interface VectorSearchResult {
+  documentId: string;
+  score: number;
 }
-export interface IVectorRepository {
-insert(id: string, embedding: number[], metadata: {
-tenantId: string;
-content: string;
-documentType: string;
-}): Promise<void>;
-search(
-embedding: number[],
-limit: number,
-filters: SearchFilter
-): Promise<DocumentSnippet[]>;
+
+export interface VectorSearchPort {
+  indexDocument(input: {
+    tenantId: string;
+    vectorId: number;
+    documentId: string;
+    documentType: string;
+    embedding: number[];
+  }): Promise<void>;
+
+  search(
+    embedding: number[],
+    limit: number,
+    filter: VectorSearchFilter
+  ): Promise<VectorSearchResult[]>;
 }
 ```
 
-This interface is the protective boundary of your architecture. It describes what you want the capability to do in plain domain terms. Anything that satisfies this contract - a real sidecar, an in-memory mock, a future native binding - can be plugged in without touching a single line of business logic.
+This port still knows about embeddings because the use case performs semantic search. What it hides is the infrastructure choice: TurboVec, a managed vector database, exact search, or an in-memory fake for tests.
 
-This is also what makes unit testing clean. In your CI pipeline, you inject a simple mock that returns hardcoded results. No sidecar, no Docker, no network. Your business logic tests run in milliseconds.
+## Step 3: Implement the HTTP Adapter
 
-## Step 3: The Infrastructure Layer, Calling the Sidecar 🏗
-
-Now we implement the interface. This is the only place in the codebase that knows a Python service exists.
+The adapter is the only TypeScript class that knows the sidecar exists. Give it a timeout, read the URL from configuration, and validate the response shape before handing data back to the use case.
 
 ```typescript
-// infrastructure/repositories/TurboVecRepository.ts
-import { IVectorRepository, SearchFilter, DocumentSnippet } from '../../domain/interfaces/IVectorRepository';
+// infrastructure/vector/TurboVecHttpVectorSearch.ts
+import {
+  VectorSearchFilter,
+  VectorSearchPort,
+  VectorSearchResult,
+} from '../../application/ports/VectorSearchPort';
 
-export class TurboVecRepository implements IVectorRepository {
-private readonly baseUrl: string;
-constructor(baseUrl: string = 'http://vector-service:8001') {
-this.baseUrl = baseUrl;
-}
-async insert(
-id: string,
-embedding: number[],
-metadata: { tenantId: string; content: string; documentType: string }
-): Promise<void> {
-const response = await fetch(`${this.baseUrl}/insert`, {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({
-id,
-tenant_id: metadata.tenantId,
-embedding,
-content: metadata.content,
-document_type: metadata.documentType,
-}),
-});
-if (!response.ok) {
-throw new Error(`Vector insert failed: ${response.statusText}`);
-}
-}
-async search(
-embedding: number[],
-limit: number,
-filters: SearchFilter
-): Promise<DocumentSnippet[]> {
-const response = await fetch(`${this.baseUrl}/search`, {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({
-tenant_id: filters.tenantId,
-embedding,
-limit,
-}),
-});
-if (!response.ok) {
-throw new Error(`Vector search failed: ${response.statusText}`);
-}
-const data = await response.json();
-return data.results;
-}
+export class TurboVecHttpVectorSearch implements VectorSearchPort {
+  constructor(
+    private readonly baseUrl: string,
+    private readonly timeoutMs = 5_000
+  ) {}
+
+  async indexDocument(input: {
+    tenantId: string;
+    vectorId: number;
+    documentId: string;
+    documentType: string;
+    embedding: number[];
+  }): Promise<void> {
+    const response = await this.post('/insert', {
+      tenant_id: input.tenantId,
+      vector_id: input.vectorId,
+      document_id: input.documentId,
+      document_type: input.documentType,
+      embedding: input.embedding,
+    });
+
+    if (!response.ok) throw new Error(`Vector insert failed with ${response.status}`);
+  }
+
+  async search(
+    embedding: number[],
+    limit: number,
+    filter: VectorSearchFilter
+  ): Promise<VectorSearchResult[]> {
+    const response = await this.post('/search', {
+      tenant_id: filter.tenantId,
+      document_type: filter.documentType,
+      embedding,
+      limit,
+    });
+
+    if (!response.ok) throw new Error(`Vector search failed with ${response.status}`);
+
+    const body = await response.json();
+    if (!Array.isArray(body.results)) throw new Error('Invalid vector search response');
+
+    return body.results.map((item: unknown) => {
+      if (!item || typeof item !== 'object') throw new Error('Invalid vector search result');
+      const result = item as Record<string, unknown>;
+      if (typeof result.document_id !== 'string' || typeof result.score !== 'number') {
+        throw new Error('Invalid vector search result');
+      }
+      return {
+        documentId: result.document_id,
+        score: result.score,
+      };
+    });
+  }
+
+  private async post(path: string, body: unknown): Promise<Response> {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+    try {
+      return await fetch(`${this.baseUrl}${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
 }
 ```
 
-Notice what is not here: no TurboVec-specific types, no quantization configuration, no Python concepts. This class speaks only in the terms defined by your domain interface. If you swapped the sidecar for a cloud-hosted Pinecone instance tomorrow, you would rewrite this one file and nothing else in your application would need to change.
+Add retries only where they are safe. Retrying search is usually fine. Retrying insert can create duplicate work unless the sidecar enforces idempotent IDs or replace semantics.
 
-## Step 4: The Application Layer, The Query Handler ⚙
+## Step 4: Use the Port from a Use Case
 
-With the boundary in place, the application logic that handles a user’s search request is clean and focused entirely on business rules.
+The use case should still read like application logic:
 
 ```typescript
-// application/queries/SearchKnowledgeBaseHandler.ts
-import { IVectorRepository, DocumentSnippet } from '../../domain/interfaces/IVectorRepository';
-import { IEmbeddingProvider } from '../../domain/interfaces/IEmbeddingProvider';
+// application/usecases/SearchKnowledgeBase.ts
+import { VectorSearchPort, VectorSearchResult } from '../ports/VectorSearchPort';
+import { EmbeddingProvider } from '../ports/EmbeddingProvider';
 
-export class SearchKnowledgeBaseHandler {
-constructor(
-private readonly vectorRepo: IVectorRepository,
-private readonly embeddingProvider: IEmbeddingProvider
-) {}
-async handle(query: string, tenantId: string): Promise<DocumentSnippet[]> {
-if (!query?.trim()) {
-throw new Error('Search query cannot be empty');
-}
-// Step 1: Convert the user's text question into a vector embedding.
-// This is what makes the search "semantic" - it finds meaning, not just keywords.
-const queryEmbedding = await this.embeddingProvider.generateEmbedding(query);
-// Step 2: Find the most relevant document chunks in our vector index.
-// The handler has no idea this involves a Python sidecar - and it shouldn't.
-const topResults = await this.vectorRepo.search(queryEmbedding, 5, { tenantId });
-return topResults;
-}
-}
-```
+export class SearchKnowledgeBase {
+  constructor(
+    private readonly embeddings: EmbeddingProvider,
+    private readonly vectorSearch: VectorSearchPort
+  ) {}
 
-IEmbeddingProvider follows the same pattern as IVectorRepository,it is another domain interface that hides the details of which embedding model you are using (OpenAI, a local ONNX model, Cohere, etc.). Your handler stays portable across infrastructure choices.
+  async execute(input: {
+    tenantId: string;
+    query: string;
+    documentType?: 'pdf' | 'wiki' | 'email';
+  }): Promise<VectorSearchResult[]> {
+    const query = input.query.trim();
+    if (!query) throw new Error('Search query cannot be empty');
 
-## Step 5: The API Boundary 🌐
-
-The controller handles the HTTP request and delegates everything else.
-
-```typescript
-// api/controllers/SearchController.ts
-import { Request, Response } from 'express';
-import { SearchKnowledgeBaseHandler } from '../../application/queries/SearchKnowledgeBaseHandler';
-export class SearchController {
-constructor(private readonly searchHandler: SearchKnowledgeBaseHandler) {}
-async searchDocuments(req: Request, res: Response) {
-const { query } = req.body;
-const tenantId = req.user.tenantId; // Extracted by auth middleware
-const results = await this.searchHandler.handle(query, tenantId);
-return res.status(200).json({ data: results });
-}
+    const embedding = await this.embeddings.embed(query);
+    return this.vectorSearch.search(embedding, 5, {
+      tenantId: input.tenantId,
+      documentType: input.documentType,
+    });
+  }
 }
 ```
 
-Three layers, each with one responsibility. The controller knows about HTTP. The handler knows about the business rules. The repository knows about the infrastructure. None of them leak into each other.
+The controller extracts HTTP concerns. The use case asks for an embedding and retrieves candidates. The adapter decides how to talk to TurboVec.
 
-## Step 6: Wiring It All Together with Docker Compose 🐳
+## Step 5: Wire It with Docker Compose
 
-Here is where the sidecar pattern becomes concrete. Your deployment is two containers, coordinated by a single compose file.
+Keep the sidecar private and mount durable storage for indexes:
 
-```bash
-# docker-compose.yml
+```yaml
 services:
-api:
-build: ./api
-ports:
-- "3000:3000"
-environment:
-VECTOR_SERVICE_URL: http://vector-service:8001
-depends_on:
-- vector-service
-vector-service:
-build: ./vector_service
-# No external ports exposed - internal traffic only.
-# Your TypeScript API talks to it, nothing else.
-expose:
-- "8001"
-environment:
-- PYTHONUNBUFFERED=1
+  api:
+    build: ./api
+    ports:
+      - "3000:3000"
+    environment:
+      VECTOR_SERVICE_URL: http://vector-service:8001
+    depends_on:
+      vector-service:
+        condition: service_healthy
+
+  vector-service:
+    build: ./vector_service
+    expose:
+      - "8001"
+    volumes:
+      - vector-indexes:/data/vector-indexes
+    environment:
+      PYTHONUNBUFFERED: "1"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  vector-indexes:
 ```
 
-The vector service is deliberately not exposed on a public port. It is internal infrastructure. Your TypeScript API is the only thing that talks to it, and it does so over Docker’s internal network, not the public internet.
+`depends_on` with a health condition helps startup order, but it is not a full resilience strategy. The TypeScript adapter should still handle timeouts, failed requests, and sidecar restarts because containers can become unhealthy after startup.
 
-The Python image with TurboVec installed is small, a few hundred megabytes. The TurboVec index itself, thanks to the quantization, is a fraction of what a traditional vector store would require. Both containers together will use less RAM than a single Qdrant container at idle.
+## What This Pattern Does Not Solve
 
-## The Full Picture
+This article covers the vector-search boundary only. A complete RAG system still needs:
 
-Here is how a user search flows through the entire system:
+- Chunking and ingestion rules.
+- Stable numeric IDs for vector storage.
+- Source document metadata and access control.
+- Embedding model versioning and re-index plans.
+- Evaluation for recall and answer quality.
+- Citation handling and prompt construction.
+- Observability for latency, result count, and failed retrievals.
 
-```text
-User types: "How do I reset my password?"
-│
-▼
-SearchController (HTTP layer)
-│  extracts query + tenantId
-▼
-SearchKnowledgeBaseHandler (business logic)
-│  validates input
-▼
-IEmbeddingProvider.generateEmbedding()
-│  converts text → [0.12, -0.83, 0.44, ...] (1536 numbers)
-▼
-IVectorRepository.search()
-│
-▼ (HTTP, internal network)
-TurboVec Python Sidecar
-│  applies random rotation to query vector
-│  scores against 4-bit compressed document embeddings
-│  returns top 5 most similar chunks
-▼
-Handler returns DocumentSnippet[]
-│
-▼
-Controller sends JSON response
-```
+It also does not remove the need to benchmark. TurboVec's public benchmarks are promising, especially at high dimensions, but you still need your own acceptance threshold for recall, latency, memory, persistence, and restore time.
 
-Everything inside the TypeScript box is pure domain logic. Everything inside the Python box is pure infrastructure. The HTTP boundary between them is explicit, testable, and replaceable.
+## When I Would Use It
 
-## A Note on Recall Quality
+This pattern is a good fit when:
 
-Because this article is aimed at all developers, not just ML engineers, it is worth being honest about what “compression” means for search quality.
+- You want local or private-network vector search.
+- You already have a TypeScript application and do not want vector infrastructure leaking into business logic.
+- Your team can maintain a small Python service.
+- Your corpus size and recall requirements fit the measured TurboVec profile.
+- You are comfortable validating an alpha-classified dependency before production use.
 
-When TurboVec compresses a vector from float32 down to 4 bits per dimension, it is making an approximation. The compressed version is not perfectly identical to the original. This means search results are approximate, you might occasionally miss a highly relevant document, or rank one slightly above another when their true similarity is very close.
+It is a poor fit when:
 
-In practice, for the dimensions modern embedding models use (1536 and above), this approximation is very close to the information-theoretic limit of what is mathematically possible at that compression ratio. Published benchmarks show recall remaining very close to uncompressed baselines at these dimensions, making the impact on retrieval quality negligible for many real-world workloads.
-
-At lower embedding dimensions (200 or below, such as older GloVe embeddings), the approximation is more noticeable. If you are using an older or lighter embedding model, test your specific recall requirements before going to production. You can always drop to a smaller index or use exact search for a fallback on critical queries.
-
-The short version: for any modern embedding model, you are unlikely to notice a difference. But it is worth knowing the trade-off exists.
-
-## When to Use This Pattern
-
-This architecture makes sense when:
-
-- You are building a RAG feature into an existing TypeScript or .NET application.
-- You want to keep infrastructure costs low without sacrificing search quality.
-- You need multi-tenant data isolation.
-- You want to be able to swap the vector backend in the future without rewriting your application.
-
-It is not the right choice if:
-
-- You need to search hundreds of millions of vectors (at that scale, a managed service with dedicated infrastructure is worth the cost).
-- Your team has zero Python experience and no appetite for maintaining even a small Python service.
-- You need sub-millisecond latency on searches (the internal HTTP hop adds a small but real overhead).
+- You need managed operations, replication, or mature administrative tooling immediately.
+- Your team cannot own sidecar deployment and persistence.
+- You need hybrid search, filtering, and access control that a mature vector database already solves better.
+- You have not measured recall loss at your embedding dimension and bit width.
 
 ## Summary
 
-TurboVec brings genuinely impressive compression to vector search, but it only ships with Python bindings today. Rather than waiting for a Node.js package, or pretending one exists, we used a small Python sidecar as the honest infrastructure it is, and wrapped it behind a domain interface so our TypeScript application stays completely unaware of the implementation details.
+The clean architecture move is not "use TurboVec everywhere." The clean architecture move is to keep vector search behind an application port, put TurboVec in infrastructure, and make the boundary explicit enough that you can replace it.
 
-The result is an architecture where:
+A Python sidecar is not architectural impurity. In this case, it is the honest boundary: TypeScript owns the product workflow; the sidecar owns compressed vector indexing; the primary database owns documents and permissions.
 
-- Your domain is clean. The TypeScript application core uses interfaces and knows nothing about Python, TurboVec, or quantization math.
-- Your infrastructure is replaceable. One file changes if the vector backend changes.
-- Your deployment is lightweight. Two small containers, no bloated services, no cloud fees.
-- Your tests are fast. Mock the IVectorRepository interface in CI and your business logic tests run without any external dependencies.
-
-Clean Architecture does not mean your vector database has to run in the same process as your application. Sometimes the cleanest thing is an honest boundary.
+That gives you a safe path to test TurboVec without betting the whole application on one young library.

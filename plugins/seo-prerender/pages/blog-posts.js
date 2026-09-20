@@ -6,6 +6,7 @@ import { buildBlogPostStaticContent, injectStaticContent } from '../static-conte
 import { DEFAULT_AUTHOR } from '../../../src/frontend/constants/seo.js';
 import { parseBlocks } from '../../../src/frontend/utils/blog/articleContent.js';
 import { buildArticleSchema } from '../../../src/frontend/utils/structuredData.js';
+import { toContentDateIso } from '../../../src/frontend/utils/contentDate.js';
 
 export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) {
   let count = generated;
@@ -25,21 +26,13 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
     const authorUrl = meta.authorUrl || DEFAULT_AUTHOR.url;
 
     let extra = '';
-    if (meta.date) {
-      try {
-        const iso = new Date(meta.date).toISOString();
-        extra += `<meta property="article:published_time" content="${iso}">\n  `;
-      } catch {
-        /* invalid date — skip published_time */
-      }
+    const publishedIso = toContentDateIso(meta.date);
+    if (publishedIso) {
+      extra += `<meta property="article:published_time" content="${publishedIso}">\n  `;
     }
-    if (meta.dateModified || meta.updated || meta.date) {
-      try {
-        const iso = new Date(meta.dateModified || meta.updated || meta.date).toISOString();
-        extra += `<meta property="article:modified_time" content="${iso}">\n  `;
-      } catch {
-        /* invalid date — skip modified_time */
-      }
+    const modifiedIso = toContentDateIso(meta.dateModified || meta.updated || meta.date);
+    if (modifiedIso) {
+      extra += `<meta property="article:modified_time" content="${modifiedIso}">\n  `;
     }
     extra += `<meta property="article:author" content="${escapeHtml(author)}">`;
     extra += `\n  <meta property="article:publisher" content="ARG Software">`;

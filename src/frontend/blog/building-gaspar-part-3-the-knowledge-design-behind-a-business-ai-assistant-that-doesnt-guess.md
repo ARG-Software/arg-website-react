@@ -7,20 +7,21 @@ title: Part 3: The knowledge design behind a business AI assistant that doesn’
 subtitle: Why embeddings alone aren’t enough and what it actually takes to make an AI assistant trustworthy
 intro: Why embeddings alone aren’t enough and what it actually takes to make an AI assistant trustworthy
 date: August 16, 2026
-dateModified: August 16, 2026
-readTime: 7 min read
+dateModified: September 20, 2026
+reviewedOn: September 20, 2026
+readTime: 8 min read
 mediumUrl: https://medium.com/p/10e7e6206c8e
 collection: building-gaspar
 collectionTitle: Building Gaspar - Anatomy of a Business AI Assistant
 collectionPart: 3
 ---
-Part 3 of “Building Gaspar - Anatomy of a Business AI Assistant”
+Part 3 of “Building Gaspar - Anatomy of a Business AI Assistant.” Read [part two](https://arg.software/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/) for the request pipeline that consumes this corpus.
 
 ![Part 3: The knowledge design behind a business AI assistant that doesn’t guess](/images/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess-header.webp)
 
 An AI assistant is only as useful as the information it can trust.
 
-Give it a flat dump of your website, and it’ll answer vaguely. Give it nothing, and it’ll fill the gaps with guesses. Give it private documents without rules, and it might leak things you never meant to expose.
+A flat dump of a website tends to produce vague retrieval. No evidence invites guesses unless the answer path is constrained. Private documents without selection, redaction, and citation rules create an avoidable disclosure risk.
 
 > When we built Gaspar, the hardest part wasn’t choosing a model. It was deciding what Gaspar should know, how that knowledge should be stored, and which pieces should be allowed to answer which questions.
 
@@ -30,25 +31,25 @@ The corpus is the body of information Gaspar can search. Ours isn’t one giant 
 
 ![Business AI assistant knowledge design for reliable RAG answers](/images/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess-2.webp)
 
-Gaspar indexes public website content: homepage sections, project pages, partner information, FAQs, the About page, careers, and Working With Us content. It also indexes our blog posts, because many visitor questions are technical, and a blog article is often the best handoff.
+Gaspar indexes selected public website content: scoped homepage sections, project and partner data, FAQs, About and team profiles, careers, Working With Us, legal pages, links, open-source project data, and blog posts. Blogs matter because many visitor questions are technical, and an article is often the best editorial handoff.
 
 Some sources are structured data rather than page text:
 
-- 🗂 Projects have slugs, metrics, stacks, and ranking metadata;
+- 🗂 Projects have slugs, metrics, stacks, and explicit reference-ranking metadata;
 
 - 🔗 Site links have explicit contact, booking, social, and form URLs;
 
-- 🐾 Gaspar’s own profile lives in assistant.json, so questions like "who are you?" or "where were you born?" are answered from data, not the model's imagination;
+- 🐾 Gaspar’s own profile lives in `assistant.json`, so questions like “who are you?” or “where were you born?” are answered from retrieved profile data rather than the model’s imagination;
 
-We also have private or semi-private sources:
+We also have private or controlled source material:
 
-- 📄 Redacted CVs help answer named-person experience questions;
+- 📄 Two locally stored CV PDFs are manually approved for ingestion, redacted, and used only for person-scoped professional evidence;
 
-- 📁 A portfolio PDF contributes with specific evidence;
+- 🌐 One allowlisted DesignRush HTML snapshot is reduced to approved commercial facts for named projects and general rate context;
 
-- 🌐 Trusted external profiles help with commercial context (though we suppress citations when that data is used).
+- 🧭 An assistant response-policy source adds explicit capability and handoff constraints.
 
-And that last point matters: not every source is equal. Official website copy, FAQ answers, blog posts, private documents, and external references all carry different trust levels. Treating them the same would be lazy RAG.
+And that distinction matters: not every source is equal. The answer policy prefers official website data and FAQs, then approved trusted-external facts, person-specific redacted CV evidence, and finally blog articles as technical writing. Blog discussion can demonstrate published knowledge without proving project delivery or one person’s skill. Trusted-external and assistant-policy context also suppress visitor-facing citations.
 
 ## 🏷 Why metadata matters
 
@@ -64,15 +65,15 @@ But embeddings alone don’t cover everything we need.
 
 - If they ask for top projects → rank metadata beats a model’s vague sense of relevance;
 
-So every chunk stores metadata: source type, source key, title, date, person key, project rank, evidence scope, and URL information. Retrieval strategies lean on that metadata before falling back to vector search.
+The implementation separates source metadata from chunk metadata. `rag_sources` stores source type, source key, title, URL, path, origin, public visibility, content hash, and source-specific metadata such as publication date, `person_key`, `reference_rank`, or `evidence_scope`. `rag_chunks` stores the source ID, chunk index, content, primary and fallback vector columns, and chunk metadata such as character count. Vector-search functions join the two so retrieval receives both levels.
 
-This gives us more predictable answers, and keeps the assistant from making common attribution mistakes, like treating a company-level stack statement as proof that one specific person has one specific skill.
+Retrieval strategies use those fields for source-key selection, publication sorting, person scoping, project ranking, evidence filtering, and citation policy before or alongside semantic search. That helps prevent common attribution mistakes, such as treating a company-level stack statement as proof that one specific person has a skill.
 
 ## ✂ Chunking: small enough to search, large enough to mean something
 
 Before text enters the vector database, it gets split into chunks: pieces of text that can be embedded and retrieved independently.
 
-Gaspar’s default chunk size is 1,200 characters with 180 characters of overlap. The numbers are configurable, but the goal is simple: each chunk should contain a complete thought.
+Gaspar’s default chunk size is 1,200 characters with 180 characters of overlap. Both values are configurable. The chunker normalizes text, groups paragraphs until the next paragraph would exceed the target, and carries a tail into the next chunk. A single paragraph longer than the target is sliced with the same overlap.
 
 - Too small → the model retrieves fragments that don’t explain enough;
 
@@ -80,55 +81,55 @@ Gaspar’s default chunk size is 1,200 characters with 180 characters of overlap
 
 - Overlap → prevents important details from getting lost at the edges;
 
-We also prepend a short header to each chunk before it’s embedded, usually the source title, date, and topic, added just before the actual body text. So a blog chunk doesn’t just contain a paragraph of body text; it starts with something like “Angular 5 to 19 migration - [date] - [topic]” and then the paragraph.
+The current implementation does not prepend a title header to every chunk. Instead, each loader shapes the source text before chunking. A blog source begins with `Title`, `Subtitle`, `Published`, and `Topic` lines followed by stripped article text; JSON loaders flatten data with contextual labels; curated team and link sources generate explicit evidence lines.
 
-Why bother? Because visitors often remember the headline, not the details inside the article. If someone asks “do you have that Angular migration post?”, the chunk needs to match on the title itself, not just on whatever technical content happens to be in that particular slice of the article. Baking the title into every chunk makes sure it’s always searchable, even in chunks pulled from deep in the middle of the post.
+That source-level preamble gives the first blog chunk strong title and date context, while semantic search can still retrieve later body chunks by topic. For deterministic cases, Gaspar deliberately reads first chunks: latest-post requests, site-link requests, known project references, and current-page source-key lookups do not need to pretend that similarity is the only retrieval tool.
 
 ## 🔁 Dual embedding indexes
 
 ![RAG knowledge sources for a trustworthy business AI assistant](/images/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess-3.webp)
 
-Gaspar stores two embeddings for each chunk: a primary and a fallback. Both come from configured Gemini embedding models, and both live in Supabase pgvector.
+The RAG schema has two 768-dimensional pgvector columns per chunk: `embedding` and `fallback_embedding`. Both providers use configured Gemini embedding models, and query-time code keeps track of which index produced the query vector.
 
 Why two? 🤔
 
 Quota resilience.
 
-Embedding APIs can hit rate limits. If the primary model returns a quota error, Gaspar quietly switches to the fallback model and searches the fallback index instead. The user never has to know, the answer just comes back. 🔄
+Embedding APIs can hit quota limits. At query time, a recognized primary quota-exhaustion error triggers the fallback model and the fallback search function. This improves resilience when fallback vectors are present; it is not a guarantee that every provider failure becomes invisible. Non-quota failures still surface, and a chunk without a fallback vector cannot participate in a fallback search. 🔄
 
-One hard rule: the indexes never mix. A query embedded with the primary model searches the primary column. A query embedded with the fallback model searches the fallback column. Mixing vectors from different models would make similarity scores unreliable.
+One hard rule: the indexes never mix. A query embedded with the primary model calls `match_rag_chunks`; a query embedded with the fallback model calls `match_rag_chunks_fallback`. Mixing vectors from different models would make similarity scores unreliable.
 
-At our scale, the extra storage is a non-issue. The reliability payoff is worth it.
+Ingestion tries the primary model first and then attempts the fallback model. If fallback quota is exhausted after primary succeeds, it stores primary vectors with a null fallback column; if primary quota is exhausted, it can ingest fallback-only vectors. A maintenance script can later rebuild fallback vectors. The database requires at least one of the two columns to be present, not both.
 
 ## 🛠 Ingestion is an admin workflow, not a public endpoint
 
 Gaspar doesn’t read website files directly at request time, it reads from Supabase.
 
-That means content has to be ingested first. Local scripts collect site content, Markdown posts, JSON data, private documents, and external snapshots. They split the text into chunks, calculate content hashes, generate embeddings, and write everything to the database.
+That means content has to be ingested first. Explicit CLI scripts collect selected JSON data, Markdown posts, generated policy/profile sources, PDF documents, and allowlisted external snapshots. They normalize and chunk the text, calculate a SHA-256 source hash, generate embeddings, and upsert `rag_sources` and `rag_chunks` through a service-role Supabase client. There is no public ingestion route.
 
-The content hash is what makes this efficient. Every source has a stable identifier: a slug, a file path, something that doesn’t change even when the content does. Alongside it, Gaspar stores a hash: a short fingerprint of that source’s text, where any change to the content, even a single character, produces an entirely different fingerprint. 🔑
+The content hash is what makes routine ingestion efficient. Every source has a stable `(source_type, source_key)` identity. Its SHA-256 hash covers a versioned, normalized envelope: identity, title, URL, origin, visibility, stable metadata, chunk metadata, and normalized content. Local source-file paths are deliberately ignored. This means meaningful source or metadata changes are detected, while some whitespace-only changes normalize away. 🔑
 
-When you update a document and re-ingest it, Gaspar looks it up by that identifier, computes a fresh hash of the new content, and compares it to the one stored last time.
+When you re-ingest a source, Gaspar looks it up by that stable identity, computes a fresh hash, and compares it with the stored value.
 
 - Hashes match → nothing actually changed → skip it, no re-chunking, no re-embedding.
 
-- Hashes differ → the content changed → re-chunk and re-embed just that source, and store the new hash.
+- Hashes differ → the source envelope changed → re-chunk, re-embed, and replace that source’s chunks, then store the new hash.
 
-The identifier is what tells Gaspar which source it’s looking at. The hash is what tells Gaspar whether it changed. Together, they mean a 200-page corpus with one updated blog post only reprocesses that one post, not the other 199. Routine updates stay cheap and fast. 💸
+The identifier tells Gaspar which source it is looking at. The hash tells Gaspar whether that source changed. The CLI also requires an explicit selection such as `--all`, `--source`, `--file`, or `--url`, so a one-post update can target that file rather than reprocessing the entire corpus. 💸
 
-This is also where sensitive data gets handled. Private CVs are redacted before indexing. Emails, phone numbers, addresses, URLs, social handles, and known sensitive literals are stripped out. If redaction verification finds something that shouldn’t survive, ingestion fails, the document simply never enters the database.
+This is also where sensitive source data is handled. CVs must live outside `public/` and declare a manually reviewed CV redaction policy. The redactor removes configured literals plus patterns for email addresses, phone numbers, labeled addresses and personal details, URLs, profile lines, and social handles. It then scans the normalized result again; if a configured literal or prohibited pattern survives, loading fails before that document is ingested.
 
-During development, that strictness can be frustrating, a false alarm means re-running ingestion for no real reason. But for private material, that’s precisely the trade-off you want: a rejected document is a minor inconvenience, a leaked address is not.
+During development, that strictness can be frustrating: a false alarm means reviewing the source and running ingestion again. But for private material, that is precisely the trade-off we want. A rejected document is an inconvenience; an exposed address is worse.
 
 ## 🎭 Persona as data
 
 One of our favorite design decisions: treating Gaspar’s persona as data, not prose.
 
-The assistant has a name, origin, nationality, preferences, and a short personal profile, all stored in assistant.json and indexed like any other source.
+The assistant has a name, origin, nationality, preferences, and a short personal profile in `assistant.json`. The manifest ingests it as the `assistant-profile` source.
 
-When someone asks, "Are you a real cat?" or "What languages can you speak?" Gaspar retrieves profile and policy context before answering.
+When someone asks, “Are you a real cat?” or “What languages can you speak?”, routing selects that source key and reads its first chunk directly. The answer model still follows the shared response policy, but the personal facts come from the profile source.
 
-This beats hiding everything in a prompt. Prompts are easy to forget and difficult to audit. Data can be versioned, tested, and updated without touching the answer pipeline.
+This beats hiding every personal fact in a prompt. The profile can be versioned, tested, and updated independently, then re-ingested without changing the answer use case.
 
 ## 💡 What we learned
 
@@ -140,6 +141,8 @@ The quality of a business assistant depends less on the model and more on the kn
 
 - You need private-source handling, not blind ingestion;
 
-- You need citations and source priority rules, not “whatever matched first”.
+- You need conservative citation and source-priority rules, not “whatever matched first.”
 
-The model writes the answer. The corpus decides what the model is allowed to know.
+The model writes the prose. The corpus, retrieval routes, evidence filters, and answer policy jointly define the evidence it receives and the claims the system permits.
+
+Next: [Part 4 - “Guardrails as Architecture: How We Stopped Our Chatbot from Lying About Us”](https://arg.software/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/)

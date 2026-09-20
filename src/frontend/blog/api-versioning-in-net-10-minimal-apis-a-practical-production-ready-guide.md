@@ -4,144 +4,60 @@ slug: api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide
 tag: Architecture
 tags: Architecture, Backend
 title: API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide
-subtitle: A guide for production-ready .NET Minimal APIs versioning, with practical examples following the best practices.
-intro: A guide for production-ready .NET Minimal APIs versioning, with practical examples following the best practices.
+subtitle: Version .NET 10 Minimal APIs with explicit URL contracts, per-version OpenAPI documents, and standards-based deprecation policies.
+intro: Version .NET 10 Minimal APIs with explicit URL contracts, per-version OpenAPI documents, and standards-based deprecation policies.
 date: April 27, 2026
-readTime: 11 min read
+dateModified: September 20, 2026
+reviewedOn: September 20, 2026
+readTime: 13 min read
 ---
-### Learn how to implement API versioning in .NET 10 Minimal APIs using URL-based versioning, Swagger integration, and production-ready deprecation strategies.
+
+### Implement API versioning in .NET 10 Minimal APIs without hiding contract decisions behind framework defaults.
 
 ![API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide](/images/blog/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide-header.webp)
 
-API versioning allows systems to evolve from v1 to v2 without breaking existing consumers.
+A field rename, changed status code, or stricter validation rule can break mobile apps, dashboards, and partner integrations even when the server deployment itself succeeds.
 
-At some point, every API reaches a breaking point.
+Versioning gives clients a controlled migration path. It does not make every change safe, and it does not replace contract tests, communication, or a retirement policy.
 
-A seemingly simple change - renaming a field, restructuring a response, or removing a deprecated property - can quietly break mobile apps, dashboards, or third-party integrations in production.
+This guide uses .NET 10, which is an active LTS release as of this review, and the `Asp.Versioning` libraries. It focuses on explicit URL-segment versions because they are visible in requests and operational tooling. Header and media-type strategies remain valid when the contract requires them.
 
-And when that happens, the feedback is always the same: “We should have versioned the API.”
+## What Should a Version Cover?
 
-API versioning is how you evolve your contract without breaking existing consumers. It allows multiple API versions to coexist, so clients can migrate on their own timeline rather than being forced into immediate upgrades.
+An API version identifies a contract, including:
 
-In this guide, we’ll look at how to implement API versioning in .NET 10 Minimal APIs using a practical, production-ready approach - covering routing strategies, Swagger configuration, deprecation handling, and real-world lifecycle management.
-
-## What Is API Versioning?
-
-API versioning is a strategy for managing change without breaking existing clients.
-
-At its core, a version represents a contract between your system and its consumers. That contract defines exactly how data is structured, how endpoints behave, and what responses clients can expect.
-
-When that contract changes in a way that breaks compatibility - such as renaming a field, changing a data type, or altering a response shape - you can’t simply overwrite the old behavior. Someone, somewhere, is still relying on it.
-
-That’s where versioning comes in.
-
-> Instead of forcing all consumers to adapt at once, you introduce a new version of the API (for example, v2) while keeping the existing one (v1) running. Both versions coexist, each serving a different contract, until clients are ready to migrate.
-
-A version typically governs:
-
-- Endpoint structure and routing
+- Routes and supported HTTP methods
 - Request and response schemas
-- Query parameters and behavior
-- Status codes and error formats
-- Authentication or authorization rules
+- Validation and domain semantics
+- Status codes and error representations
+- Authentication and authorization requirements
 
-If any of these changes in a way that breaks existing clients, you are no longer evolving an API - you are replacing it. And replacement without coordination is what causes production failures.
+Not every change requires a new version. A new endpoint or an optional response field is often backward compatible, but compatibility depends on real clients. Some generated clients reject unknown fields; a "bug fix" can break consumers that relied on the previous behavior; and adding a required request field is breaking even if it has a server-side default elsewhere.
 
-Versioning is what turns breaking change into controlled change.
+Use consumer contract tests and an OpenAPI diff as evidence. Do not rely only on a generic checklist.
 
-## Why Versioning Matters
+## A Versioning Policy
 
-Here’s the practical reality:
+A useful baseline is:
 
-- Backward compatibility Older clients (such as a mobile app released months ago) continue to work.
-- Safer deployments You can ship v2 without forcing immediate updates.
-- Parallel development Frontend and backend teams can move at different speeds.
-- Clear lifecycle management You can deprecate, sunset, and remove versions cleanly.
-- Trust with external consumers Partners need stability - they can’t afford surprise breakages.
+- Introduce a new major API version for intentional breaking changes
+- Prefer additive changes within a version
+- Document what compatibility means for your clients and serializers
+- Give every supported version security fixes
+- Publish deprecation and sunset dates before retirement
+- Measure usage before removal
 
-If your API is used by anything beyond a single frontend you fully control, versioning isn’t optional — it’s foundational.
+Do not version "just in case." Every live version multiplies documentation, tests, monitoring, security work, and support effort.
 
-## Versioning Policy (Keep It Consistent)
+## Why URL Segments Here?
 
-Before diving into breaking vs non-breaking changes, define a simple policy your team follows consistently.
+This guide uses routes such as `/api/v1/products` because they are explicit in logs, browser tools, gateways, and cache keys.
 
-A practical baseline:
+There is one important consequence: a URL segment cannot be omitted and then inferred from `DefaultApiVersion`. The current ASP.NET API Versioning documentation explicitly notes that URL-path versions must be declared in the URL. `AssumeDefaultVersionWhenUnspecified` is intended primarily for compatibility with an existing unversioned service, not as a convenience for a new URL-segment API.
 
-- Only introduce a new version for breaking changes
-- Use major versions only (v1, v2, v3)
-- Avoid “just in case” version bumps
-- Require review/approval for any breaking change
+## Packages
 
-Why this matters:
-
-> Without a shared policy, versioning becomes inconsistent. Different developers make different calls, and your API quickly becomes unpredictable.
-
-> A clear rule set keeps your API stable and your team aligned.
-
-## Breaking vs Non-Breaking Changes
-
-The most critical judgment call: does this change require a new version?
-
-### Breaking changes (require a new version)
-
-- Removing or renaming fields
-- Changing data types (e.g., string → int)
-- Changing semantics (e.g., cents → dollars)
-- Making optional fields required
-- Altering status codes for existing flows
-- Removing or renaming endpoints
-- Changing authentication rules
-
-### Non-breaking changes (same version)
-
-- Adding optional fields
-- Adding new endpoints
-- Adding optional query parameters
-- Performance improvements
-- Bug fixes that don’t alter behavior
-
-Rule of thumb: If a client who worked yesterday fails today, you introduced a breaking change.
-
-## Reducing the Need for New Versions
-
-Versioning is essential - but overusing it creates its own problems.
-
-Before introducing a new version, consider whether the change can be made backward compatible:
-
-- Add new fields instead of changing existing ones
-- Keep old fields temporarily while introducing new ones
-- Use sensible defaults for new data
-- Prefer extending responses over reshaping them
-
-A common pattern is to expand and contract:
-
-- Add the new field or behavior
-- Let clients migrate
-- Remove the old behavior in a later version
-
-The goal is simple: evolve your API without forcing unnecessary upgrades.
-
-Versioning is a tool — not the first move.
-
-## Versioning Strategies
-
-There are multiple ways to version an API, but here’s the recommendation for modern systems:
-
-👉 Use URL segment versioning with major versions only (v1, v2).
-
-Why?
-
-- Easy to see in logs and debugging tools
-- Works cleanly with Swagger/OpenAPI
-- Simple to test with curl or Postman
-- Plays nicely with caching/CDNs
-- Instantly understandable for new developers
-
-We’ll focus on this approach first, then briefly cover header-based versioning later.
-
-## Project Setup
-
-Install the required packages:
+For the Swashbuckle-based example, install:
 
 ```bash
 dotnet add package Asp.Versioning.Http
@@ -149,401 +65,328 @@ dotnet add package Asp.Versioning.Mvc.ApiExplorer
 dotnet add package Swashbuckle.AspNetCore
 ```
 
-- Asp.Versioning.Http: core versioning support
-- Asp.Versioning.Mvc.ApiExplorer: enables Swagger integration
-- Swashbuckle.AspNetCore: generates OpenAPI docs
+Pin versions through your normal dependency-management process rather than copying an article's latest version number. The sample uses the current Swashbuckle 10 namespace layout. .NET 10 also has first-party OpenAPI generation through `Microsoft.AspNetCore.OpenApi`; `Asp.Versioning.OpenApi` can integrate version descriptions and policies with that stack. Swashbuckle remains a valid choice when your project already uses it.
 
-## Minimal API Versioning: Full Setup
+## A Complete Minimal API Setup
 
-### Step 1: Configure Services
+The following setup defines two versions, maps a different response contract for each, reports supported/deprecated versions, and creates one Swagger document per version.
 
 ```csharp
 using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddApiVersioning(options =>
-{
-options.DefaultApiVersion = new ApiVersion(1, 0);
-options.AssumeDefaultVersionWhenUnspecified = true;
-options.ReportApiVersions = true;
-options.ApiVersionReader = new UrlSegmentApiVersionReader();
-})
-.AddApiExplorer(options =>
-{
-options.GroupNameFormat = "'v'VVV";
-options.SubstituteApiVersionInUrl = true;
-});
+
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.ApiVersionReader = new UrlSegmentApiVersionReader();
+        options.ReportApiVersions = true;
+
+        options.Policies
+            .Deprecate(1.0)
+            .Effective(2026, 9, 20);
+
+        options.Policies
+            .Sunset(1.0)
+            .Effective(2027, 11, 1);
+    })
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+
 var app = builder.Build();
-```
 
-### What these options do
+var versionSet = app.NewApiVersionSet()
+    .HasDeprecatedApiVersion(1.0)
+    .HasApiVersion(2.0)
+    .ReportApiVersions()
+    .Build();
 
-- DefaultApiVersion → fallback version (v1)
-- AssumeDefaultVersionWhenUnspecified → allows missing version
-- ReportApiVersions → adds version headers automatically
-- UrlSegmentApiVersionReader → reads version from /api/v1/...
-- GroupNameFormat → formats Swagger groups (v1, v2)
-- SubstituteApiVersionInUrl → injects version into routes
+var productsV1 = app
+    .MapGroup("/api/v{version:apiVersion}/products")
+    .WithApiVersionSet(versionSet)
+    .MapToApiVersion(1.0);
 
-### Step 2: Define a Version Set
+productsV1.MapGet("/", () =>
+    TypedResults.Ok(new[]
+    {
+        new ProductResponseV1(1, "Mechanical keyboard", 129.00m),
+    }));
 
-```csharp
-var apiVersionSet = app.NewApiVersionSet()
-.HasApiVersion(new ApiVersion(1, 0))
-.HasApiVersion(new ApiVersion(2, 0))
-.ReportApiVersions()
-.Build();
-```
+var productsV2 = app
+    .MapGroup("/api/v{version:apiVersion}/products")
+    .WithApiVersionSet(versionSet)
+    .MapToApiVersion(2.0);
 
-This declares supported versions and enables reporting via headers.
+productsV2.MapGet("/", () =>
+    TypedResults.Ok(new[]
+    {
+        new ProductResponseV2(
+            1,
+            "Mechanical keyboard",
+            new MoneyResponse(129.00m, "EUR"),
+            "Peripherals",
+            true),
+    }));
 
-### Step 3: Create v1 Endpoints
-
-```csharp
-var productsV1 = app.MapGroup("/api/v{version:apiVersion}/products")
-.WithApiVersionSet(apiVersionSet)
-.MapToApiVersion(1, 0);
-
-productsV1.MapGet("", async (AppDbContext db) =>
+if (app.Environment.IsDevelopment())
 {
-var products = await db.Products
-.Select(p => new ProductResponseV1(p.Id, p.Name, p.Price))
-.ToListAsync();
-return Results.Ok(products);
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        foreach (var description in app.DescribeApiVersions())
+        {
+            options.SwaggerEndpoint(
+                $"/swagger/{description.GroupName}/swagger.json",
+                description.GroupName);
+        }
+    });
+}
 
-public record ProductResponseV1(int Id, string Name, decimal Price);
-```
-
-### Step 4: Create v2 with a New Contract
-
-```csharp
-var productsV2 = app.MapGroup("/api/v{version:apiVersion}/products")
-.WithApiVersionSet(apiVersionSet)
-.MapToApiVersion(2, 0);
-
-public record ProductResponseV2(
-int Id,
-string Name,
-decimal Price,
-string Currency,
-string Category,
-bool IsAvailable);
-```
-
-Same route. Different response shape. Both versions coexist.
-
-### Step 5: Run the App
-
-```csharp
-app.UseSwagger();
-app.UseSwaggerUI();
 app.Run();
+
+public sealed record ProductResponseV1(int Id, string Name, decimal Price);
+
+public sealed record MoneyResponse(decimal Amount, string Currency);
+
+public sealed record ProductResponseV2(
+    int Id,
+    string Name,
+    MoneyResponse Price,
+    string Category,
+    bool IsAvailable);
+
+public sealed class ConfigureSwaggerOptions(
+    IApiVersionDescriptionProvider provider)
+    : IConfigureOptions<SwaggerGenOptions>
+{
+    public void Configure(SwaggerGenOptions options)
+    {
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerDoc(
+                description.GroupName,
+                new OpenApiInfo
+                {
+                    Title = "Products API",
+                    Version = description.ApiVersion.ToString(),
+                    Description = description.IsDeprecated
+                        ? "Deprecated. Migrate to the current version."
+                        : "Current version",
+                });
+        }
+    }
+}
 ```
 
-Now:
+The two contracts are deliberately separate records. Returning an entity directly, or reusing one mutable DTO across versions, makes accidental breaking changes much easier.
 
-- /api/v1/products → v1 response
-- /api/v2/products → v2 response
+Requests now resolve explicitly:
 
-Headers include:
+```http
+GET /api/v1/products HTTP/1.1
+Host: api.example.com
+```
+
+```http
+GET /api/v2/products HTTP/1.1
+Host: api.example.com
+```
+
+With version reporting enabled, responses can include:
 
 ```text
-api-supported-versions: 1.0, 2.0
-```
-
-## Handling Unsupported or Invalid Versions
-
-Not every request will use a valid or supported version — and how you handle that matters.
-
-Common scenarios:
-
-- A client requests a version that doesn’t exist (e.g., /api/v3/...)
-- The version format is invalid (e.g., /api/vabc/...)
-- The version is missing, and no default applies
-
-Recommended approach:
-
-- Return 400 Bad Request for invalid version formats
-- Return 400 or 404 for unsupported versions (be consistent across your API)
-- Include a clear error message with supported versions
-
-For example:
-
-```json
-{
-"error": "Unsupported API version",
-"supportedVersions": ["1.0", "2.0"]
-}
-```
-
-Clear, predictable errors reduce confusion and make integrations easier to debug.
-
-Silent failures or inconsistent responses will cost you time later.
-
-## Scaling the Structure
-
-As your API grows, avoid cluttering Program.cs.
-
-Use extension methods:
-
-```csharp
-public static class ProductEndpoints
-{
-public static void MapProductEndpointsV1(this IEndpointRouteBuilder app, ApiVersionSet set)
-{
-var group = app.MapGroup("/api/v{version:apiVersion}/products")
-.WithApiVersionSet(set)
-.MapToApiVersion(1, 0);
-
-group.MapGet("", GetAllV1);
-}
-
-public static void MapProductEndpointsV2(this IEndpointRouteBuilder app, ApiVersionSet set)
-{
-var group = app.MapGroup("/api/v{version:apiVersion}/products")
-.WithApiVersionSet(set)
-.MapToApiVersion(2, 0);
-group.MapGet("", GetAllV2);
-}
-}
-```
-
-Then:
-
-```csharp
-app.MapProductEndpointsV1(apiVersionSet);
-app.MapProductEndpointsV2(apiVersionSet);
-```
-
-Clean, modular, and easy to remove old versions later.
-
-## Deprecating a Version
-
-```csharp
-var apiVersionSet = app.NewApiVersionSet()
-.HasDeprecatedApiVersion(new ApiVersion(1, 0))
-.HasApiVersion(new ApiVersion(2, 0))
-.Build();
-```
-
-Now responses include:
-
-```text
+api-supported-versions: 2.0
 api-deprecated-versions: 1.0
 ```
 
-## Security Across Versions
+These `api-*` fields are library conventions, not general HTTP standards. The policy configuration additionally supports the standardized `Deprecation` and `Sunset` response fields.
 
-Versioning doesn’t remove your responsibility to keep older versions secure.
+## Unsupported and Malformed Versions
 
-Even if v1 is deprecated, it’s still running in production - and still exposed.
+Do not promise a custom JSON error unless you have implemented and tested one.
 
-Keep in mind:
+For URL-segment versioning, a route such as `/api/v3/products` does not match a supported endpoint and the library documents the result as `404 Not Found`. The same applies when the value does not satisfy the `apiVersion` route constraint. For query-string or header versioning, the default unsupported-version response is generally `400 Bad Request`, and it can be configured with `UnsupportedApiVersionStatusCode`.
 
-- Apply critical security fixes to all supported versions
-- Avoid leaving known vulnerabilities in older endpoints
-- Be careful not to expose sensitive data differently across versions
-- If a version becomes unsafe to maintain, accelerate its retirement
+Whichever strategy you choose, test the actual runtime behavior and document it for clients.
 
-In some cases, deprecation isn’t enough. Security issues may require forcing clients to upgrade sooner than planned.
+## Deprecation Is Not Retirement
 
-Versioning protects clients from breaking changes —but it shouldn’t protect insecure behavior.
-
-## Adding a Sunset Policy
+Marking a version deprecated tells consumers to migrate; it should not silently change that version's behavior.
 
 ```csharp
-app.Use(async (context, next) =>
-{
-await next();
-
-var version = context.GetRequestedApiVersion();
-
-if (version?.MajorVersion == 1)
-{
-context.Response.Headers["Sunset"] = "Sat, 01 Nov 2026 00:00:00 GMT";
-context.Response.Headers["Deprecation"] = "true";
-}
-});
+var versionSet = app.NewApiVersionSet()
+    .HasDeprecatedApiVersion(1.0)
+    .HasApiVersion(2.0)
+    .ReportApiVersions()
+    .Build();
 ```
 
-This gives clients a clear, machine-readable deadline.
+The ASP.NET API Versioning policy API can publish two standards-based fields:
 
-## Swagger per Version
+- [`Deprecation`](https://www.rfc-editor.org/rfc/rfc9745): a Structured Field date written as an epoch value prefixed by `@`
+- [`Sunset`](https://www.rfc-editor.org/rfc/rfc8594): an HTTP date indicating when the resource is expected to become unavailable
 
-```csharp
-builder.Services.AddSwaggerGen(options =>
-{
-options.SwaggerDoc("v1", new OpenApiInfo
-{
-Title = "Products API",
-Version = "v1",
-Description = "Deprecated - migrate to v2"
-});
+For example:
 
-options.SwaggerDoc("v2", new OpenApiInfo
-{
-Title = "Products API",
-Version = "v2",
-Description = "Current version"
-});
-});
-
-app.UseSwaggerUI(options =>
-{
-options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1 (Deprecated)");
-options.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
-});
+```text
+Deprecation: @1789862400
+Sunset: Mon, 01 Nov 2027 00:00:00 GMT
 ```
 
-This avoids confusion and makes version selection explicit.
+`Deprecation: true` is not valid RFC 9745 syntax. A deprecation date must not be later than the sunset date. A `Link` with `rel="deprecation"` or `rel="sunset"` can point clients to a migration policy.
 
-## Header Versioning (Alternative)
+If you add headers manually, do it before the response starts and only for endpoints in the affected version. Framework policy support is preferable because it keeps version metadata and response reporting together.
+
+## Header Versioning as an Alternative
+
+To read a custom request header:
 
 ```csharp
 options.ApiVersionReader = new HeaderApiVersionReader("X-Api-Version");
 ```
 
-Example request:
+The route no longer contains a version segment:
 
 ```http
-GET /api/products
+GET /api/products HTTP/1.1
+Host: api.example.com
 X-Api-Version: 2.0
 ```
 
-### When to use it
+Header versioning keeps the resource URI stable, but versions are less visible during manual testing and every relevant cache must distinguish responses by the version header. Configure cache keys or `Vary` behavior correctly. Custom request headers also trigger CORS preflight in cross-origin browser scenarios unless the request is otherwise simple.
 
-- URL must remain stable
-- CDN/proxy constraints
-- Contract requires header-based versioning
+Media-type versioning can be appropriate when the version describes a representation rather than the resource as a whole. Query-string versioning is easy to adopt for an existing API. There is no universally correct strategy; consistency is more valuable than mixing strategies without a contract reason.
 
-### When to avoid it
+## Keep Versioned Endpoints Modular
 
-- Browser-based clients
-- Manual testing via URL
-- Discoverability matters
-
-## Testing Versioned APIs
-
-Versioning only works if each version remains stable over time - testing is what guarantees that.
-
-Basic coverage:
-
-- Test each version independently (/api/v1/..., /api/v2/...)
-- Validate status codes and response shapes
-- Verify default version behavior when unspecified
-- Assert deprecation and sunset headers where applicable
-
-Go a step further:
-
-- Treat responses as contracts - they should not change unintentionally
-- Use snapshot or contract tests to detect breaking changes
-- Ensure v1 tests keep passing even as v2 evolves
-- Test unsupported or invalid version requests
-
-Example:
+As the API grows, move mappings out of `Program.cs` without hiding version declarations:
 
 ```csharp
-[Fact]
-public async Task GetProducts_V1_Works()
+public static class ProductEndpoints
 {
-var response = await _client.GetAsync("/api/v1/products");
-response.StatusCode.Should().Be(HttpStatusCode.OK);
+    public static IEndpointRouteBuilder MapProductEndpoints(
+        this IEndpointRouteBuilder app,
+        ApiVersionSet versions)
+    {
+        app.MapGroup("/api/v{version:apiVersion}/products")
+            .WithApiVersionSet(versions)
+            .MapToApiVersion(1.0)
+            .MapGet("/", GetV1);
+
+        app.MapGroup("/api/v{version:apiVersion}/products")
+            .WithApiVersionSet(versions)
+            .MapToApiVersion(2.0)
+            .MapGet("/", GetV2);
+
+        return app;
+    }
+
+    private static IResult GetV1() => Results.Ok(Array.Empty<ProductResponseV1>());
+
+    private static IResult GetV2() => Results.Ok(Array.Empty<ProductResponseV2>());
 }
 ```
 
-### Key strategies
+Keep business logic behind shared application services where behavior is genuinely shared. Keep transport contracts version-specific.
 
-- Test each version independently
-- Validate response contracts
-- Assert deprecation headers
-- Test unsupported versions
-- Verify default version fallback
+## Security Across Versions
 
-## Migration Playbook (v1 → v2)
+A deprecated endpoint remains an attack surface until it is removed.
 
-### Phase 1: Build & Release
+- Patch critical vulnerabilities in every supported version
+- Apply current authentication, authorization, rate limiting, and input limits consistently
+- Verify that older response contracts do not expose data removed from newer versions
+- Inventory dependencies that exist only for old versions
+- Accelerate retirement when a version cannot be maintained safely
 
-Introduce v2 without disrupting existing clients.
+Versioning protects consumers from uncoordinated contract changes. It is not permission to preserve insecure behavior indefinitely.
 
-- Ship v2 alongside v1 (never replace in-place)
-- Keep routes consistent where possible to reduce confusion
-- Clearly document what changed and why
-- Update Swagger/OpenAPI with separate versions
-- Validate both versions independently (tests, contracts)
+## Test the Contract, Not Just the Status Code
 
-Goal: make v2 available and trustworthy without forcing adoption.
+This test proves only that the route returns `200`:
 
-### Phase 2: Deprecate
+```csharp
+[Fact]
+public async Task GetProductsV1ReturnsSuccess()
+{
+    using var response = await client.GetAsync("/api/v1/products");
 
-Start signaling that v1 is on its way out.
+    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+}
+```
 
-- Mark v1 as deprecated in code and Swagger
-- Add Deprecation and Sunset headers to responses
-- Communicate proactively (release notes, email, partner channels)
-- Stop adding new features to v1 (bug fixes only)
+A production suite should also verify:
 
-Goal: give consumers time and clarity to migrate.
+- Serialized property names, types, nullability, and required fields
+- Error representations and status codes
+- Authentication and authorization per version
+- Supported, deprecated, `Deprecation`, and `Sunset` fields
+- `404` behavior for unknown URL versions
+- Separate OpenAPI documents and operation inclusion
+- No unintended breaking diff against the published contract
 
-### Phase 3: Monitor
+Snapshot tests can help, but review snapshots as contracts rather than approving every update mechanically.
 
-Track real usage and support the transition.
+## Migration Playbook
 
-- Log the requested API version for every request
-- Track traffic per version (v1 vs v2)
-- Identify clients still using v1
-- Provide migration support where needed
-- Freeze v1 completely (no changes beyond critical fixes)
+### 1. Release
 
-This helps you answer:
+- Ship the new version alongside the old one
+- Publish a change log and a concrete migration guide
+- Generate and validate a separate OpenAPI document
+- Test both versions independently
 
-- Who hasn’t migrated yet?
-- Are there blockers preventing adoption?
-- When is it safe to remove v1?
+### 2. Deprecate
 
-If you want a deeper dive into setting up logs, metrics, and tracing in .NET, we’ve covered that in a separate observability guide.
+- Mark the old version deprecated in code and documentation
+- Announce a deprecation date and a later sunset date
+- Contact known consumers through channels they actually monitor
+- Stop adding features while continuing security and correctness fixes
 
-Goal: make data-driven decisions about deprecation.
+### 3. Observe
 
-### Phase 4: Retire
+- Record the requested version without logging credentials or sensitive payloads
+- Track traffic, errors, latency, and known client adoption by version
+- Identify migration blockers and test fixes against both contracts
+- Do not treat a quiet period alone as proof that every client has migrated
 
-Remove the old version cleanly and intentionally.
+### 4. Retire
 
-- Remove v1 endpoints from the codebase
-- Return 410 Gone for a limited time (grace period)
-- Monitor for unexpected traffic or failures
-- Fully clean up related code, tests, and documentation
-
-Goal: simplify your system and eliminate maintenance overhead.
-
-⚠️ Common mistake: never removing old versions. Set a deadline — and enforce it.
+- Remove routing and code for the old version on the announced date
+- Use `410 Gone` only when the server knows the resource was intentionally and likely permanently removed; otherwise `404` may be more accurate
+- Continue monitoring old-version traffic
+- Remove obsolete tests, dependencies, documentation, and dashboards
 
 ![.NET 10 Minimal API versioning endpoint examples](/images/blog/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide/image-2.webp)
 
-API versioning follows a controlled lifecycle: release new versions, deprecate old ones, monitor adoption, and retire safely.
-
-> API versioning allows systems to evolve from v1 to v2 without breaking existing consumers.
+API versioning works as a lifecycle: release, deprecate, observe, and retire.
 
 ## Final Thoughts
 
-API versioning is one of those things teams skip - until it breaks production.
+Start with a compatibility policy, not a package. Add versioning when independent clients need a stable contract, choose one discovery strategy, and make every version explicit in code, documentation, tests, and telemetry.
 
-Once a small change takes down a mobile app or partner integration, the need becomes obvious.
+For a new URL-segment API, require the version in the path rather than silently selecting a default. Publish machine-readable deprecation and sunset information, but back it with human communication and measured adoption.
 
-The upside: with Minimal APIs and Asp.Versioning.Http in .NET 10, setting this up is straightforward and low-cost.
+The framework makes version routing straightforward. The production work is maintaining each contract responsibly and eventually deleting it.
 
-Recommendation:
+## References
 
-- Start versioning from day one
-- Use URL segment versioning
-- Stick to major versions
-- Communicate deprecations clearly
-- Enforce sunset timelines
-
-Adding versioning early is cheap. Adding it later - after clients depend on your API - is not.
-
-There’s more you can build on top of this - like automated OpenAPI diffing in CI pipelines, client SDK versioning, deeper database evolution strategies, or aligning with standards such as RFC 8594 - but those are optimizations, not prerequisites.
-
-Get the fundamentals right first. That’s what keeps your API stable as it evolves.
+- [Microsoft .NET support policy](https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core)
+- [ASP.NET API Versioning: URL path versioning](https://dotnet.github.io/aspnet-api-versioning/aspnet-core/how-to/version-by-url.html)
+- [ASP.NET API Versioning options](https://dotnet.github.io/aspnet-api-versioning/aspnet-core/config/options.html)
+- [ASP.NET API Versioning: version policies](https://dotnet.github.io/aspnet-api-versioning/aspnet-core/version-policies.html)
+- [ASP.NET API Versioning: Swashbuckle integration](https://dotnet.github.io/aspnet-api-versioning/aspnet-core/docs/swashbuckle.html)
+- [Microsoft: OpenAPI support in ASP.NET Core](https://learn.microsoft.com/aspnet/core/fundamentals/openapi/overview?view=aspnetcore-10.0)
+- [RFC 9745: The Deprecation HTTP Response Header Field](https://www.rfc-editor.org/rfc/rfc9745)
+- [RFC 8594: The Sunset HTTP Header Field](https://www.rfc-editor.org/rfc/rfc8594)

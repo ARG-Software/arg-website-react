@@ -32,6 +32,20 @@ const PROHIBITED_PATTERNS = [
     replacement: 'the qualified canonical metric wording',
   },
 ];
+const MONTHS = {
+  january: 0,
+  february: 1,
+  march: 2,
+  april: 3,
+  may: 4,
+  june: 5,
+  july: 6,
+  august: 7,
+  september: 8,
+  october: 9,
+  november: 10,
+  december: 11,
+};
 
 function listFiles(targetPath) {
   const absolutePath = path.join(ROOT_DIR, targetPath);
@@ -55,8 +69,114 @@ function isAllowedException(filePath, line) {
   );
 }
 
+function findBlogProseDoubleHyphens() {
+  const blogDir = path.join(ROOT_DIR, 'src/frontend/blog');
+  const violations = [];
+
+  for (const file of fs.readdirSync(blogDir).filter(name => name.endsWith('.md'))) {
+    const absolutePath = path.join(blogDir, file);
+    const lines = fs.readFileSync(absolutePath, 'utf8').split(/\r?\n/);
+    let inFrontmatter = lines[0]?.trim() === '---';
+    let inCodeFence = false;
+
+    lines.forEach((line, index) => {
+      if (inFrontmatter) {
+        if (index > 0 && line.trim() === '---') inFrontmatter = false;
+        return;
+      }
+      if (line.trimStart().startsWith('```')) {
+        inCodeFence = !inCodeFence;
+        return;
+      }
+      if (inCodeFence || /^[\s|:-]+$/.test(line)) return;
+
+      const prose = line
+        .replace(/<!--.*?-->/g, '')
+        .replace(/`[^`]*`/g, '')
+        .replace(/\]\([^\s)]+\)/g, ']')
+        .replace(/\b(?:https?:\/\/|mailto:|tel:)\S+/gi, '');
+      if (prose.includes('--')) {
+        violations.push(
+          `src/frontend/blog/${file}:${index + 1} contains a double hyphen in prose`
+        );
+      }
+    });
+  }
+
+  return violations;
+}
+
+function parseContentDate(value) {
+  if (!value) return null;
+
+  const trimmed = String(value).trim();
+  const isoDate = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmed);
+  if (isoDate) {
+    const [, year, month, day] = isoDate;
+    return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  }
+
+  const writtenDate = /^(\w+)\s+(\d{1,2}),\s*(\d{4})$/.exec(trimmed);
+  if (writtenDate) {
+    const [, monthName, day, year] = writtenDate;
+    const month = MONTHS[monthName.toLowerCase()];
+    if (month !== undefined) return new Date(Date.UTC(Number(year), month, Number(day)));
+  }
+
+  const timestamp = Date.parse(trimmed);
+  return Number.isNaN(timestamp) ? null : new Date(timestamp);
+}
+
+function parseBlogFrontmatter(lines) {
+  if (lines[0]?.trim() !== '---') return {};
+
+  const frontmatter = {};
+  for (let index = 1; index < lines.length; index++) {
+    const line = lines[index];
+    if (line.trim() === '---') return frontmatter;
+
+    const separatorIndex = line.indexOf(':');
+    if (separatorIndex === -1) continue;
+
+    const key = line.slice(0, separatorIndex).trim();
+    const value = line.slice(separatorIndex + 1).trim().replace(/^['"]|['"]$/g, '');
+    frontmatter[key] = value;
+  }
+
+  return frontmatter;
+}
+
+function findBlogFrontmatterDateIssues() {
+  const blogDir = path.join(ROOT_DIR, 'src/frontend/blog');
+  const violations = [];
+
+  for (const file of fs.readdirSync(blogDir).filter(name => name.endsWith('.md'))) {
+    const lines = fs.readFileSync(path.join(blogDir, file), 'utf8').split(/\r?\n/);
+    const frontmatter = parseBlogFrontmatter(lines);
+    const publishedDate = parseContentDate(frontmatter.date);
+    const modifiedDate = parseContentDate(frontmatter.dateModified || frontmatter.updated);
+    const reviewedDate = parseContentDate(frontmatter.reviewedOn);
+
+    if (!publishedDate) violations.push(`src/frontend/blog/${file} has an invalid date`);
+    if ((frontmatter.dateModified || frontmatter.updated) && !modifiedDate) {
+      violations.push(`src/frontend/blog/${file} has an invalid dateModified`);
+    }
+    if (frontmatter.reviewedOn && !reviewedDate) {
+      violations.push(`src/frontend/blog/${file} has an invalid reviewedOn`);
+    }
+    if (frontmatter.reviewedOn && !modifiedDate) {
+      violations.push(`src/frontend/blog/${file} has reviewedOn without dateModified`);
+    }
+    if (publishedDate && modifiedDate && modifiedDate < publishedDate) {
+      violations.push(`src/frontend/blog/${file} has dateModified before date`);
+    }
+  }
+
+  return violations;
+}
+
 const files = [...new Set(CONTENT_PATHS.flatMap(listFiles))];
-const violations = [];
+const violations = [...findBlogProseDoubleHyphens(), ...findBlogFrontmatterDateIssues()];
 
 for (const absolutePath of files) {
   const filePath = path.relative(ROOT_DIR, absolutePath).replace(/\\/g, '/');

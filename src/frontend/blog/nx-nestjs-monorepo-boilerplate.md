@@ -284,4 +284,4 @@ The combination of Domain-Driven Design principles, CQRS pattern implementation,
 
 By adopting this architecture, you're not just getting a starting point - you're embracing a battle-tested approach to modern backend development that will serve your project well as it grows from prototype to production scale.
 
-You can check the code here: https://github.com/ARG-Software/Nx-Monorepo-Boilerplate
+You can check the code in the [ARG Software Nx Monorepo Boilerplate repository](https://github.com/ARG-Software/Nx-Monorepo-Boilerplate).

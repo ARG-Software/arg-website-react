@@ -8,7 +8,7 @@ subtitle: Build maintainable code without overengineering. Practical examples fo
 intro: Build maintainable code without overengineering. Practical examples for developers seeking cleaner, testable and maintainable solution.
 date: May 3, 2025
 dateModified: September 19, 2026
-reviewedOn: September 19, 2026
+reviewedOn: September 20, 2026
 readTime: 15 min read
 mediumUrl: https://arg-software.medium.com/taming-the-chaos-a-developers-guide-to-pragmatic-clean-architecture-in-net-%EF%B8%8F-c0b05de359a7
 ---
@@ -577,4 +577,4 @@ This approach is efficient for systems with complex business rules, extensive in
 
 Most importantly, PCA aligns architecture with business value - helping teams build systems that can adapt to changing requirements while keeping technical debt at bay.
 
-Want to see Pragmatic Clean Architecture in action? Check out the complete example on GitHub.
+Want to see Pragmatic Clean Architecture in action? Check out the [complete example on GitHub](https://github.com/ARG-Software/Clean-Architecture).

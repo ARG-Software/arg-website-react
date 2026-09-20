@@ -4,14 +4,15 @@ slug: how-to-log-complex-systems-like-a-senior-backend-engineer
 tag: Observability
 tags: Observability, Backend, Architecture
 title: How to Log Complex Systems Like a Senior Backend Engineer
-subtitle: Trace every bug back to the request that caused it, without transforming your code into a mess.
-intro: Trace every bug back to the request that caused it, without transforming your code into a mess.
+subtitle: Correlate production errors with the work that caused them, without transforming your code into a mess.
+intro: Correlate production errors with the work that caused them, without transforming your code into a mess.
 date: August 23, 2026
-dateModified: September 1, 2026
+dateModified: September 20, 2026
+reviewedOn: September 20, 2026
 readTime: 10 min read
 mediumUrl: https://medium.com/p/69d43f3adc36
 ---
-### Request IDs, AsyncLocalStorage, and honest try/catch — no magic, no hidden wrappers (Express.js + TypeScript)
+### Request IDs, trace context, AsyncLocalStorage, and honest error handling (Express.js + TypeScript)
 
 ![How to Log Complex Systems Like a Senior Backend Engineer](/images/blog/how-to-log-complex-systems-like-a-senior-backend-engineer/how-to-log-complex-systems-like-a-senior-backend-engineer-header.webp)
 
@@ -31,12 +32,12 @@ That thread is called request context, and this article shows how to build it wi
 
 ## 😵💫 The Problem With Generic Logs
 
-```
+```typescript
 app.post('/orders', async (req, res) => {
-console.log('Creating order');
-const order = await orderService.createOrder(req.body);
-console.log('Order created');
-res.json(order);
+  console.log('Creating order');
+  const order = await orderService.createOrder(req.body);
+  console.log('Order created');
+  res.json(order);
 });
 ```
 
@@ -53,54 +54,61 @@ Request failed
 
 Which request failed? Whose payment? Before or after the DB write? You can’t tell. The logs are individually true and collectively useless. This is what happens when logging doesn’t survive concurrency.
 
-## 🧵 The Fix: a requestId on Every Line
+## 🧵 The First Fix: a requestId on Every Line
 
 Give every incoming request a unique ID, then stamp it on every log line produced while handling it:
 
-```
+```json
 {
-"level": "error",
-"message": "Payment provider charge failed",
-"requestId": "req_01JZ8Q3V5Z4V3ZPHK6",
-"method": "POST",
-"path": "/orders",
-"userId": "user_42",
-"tenantId": "tenant_acme",
-"operation": "payment.charge",
-"durationMs": 842,
-"provider": "stripe",
-"statusCode": 402
+  "level": "error",
+  "message": "Payment provider request failed",
+  "requestId": "7d9f3a61-bc52-4f40-a595-00e77217db8c",
+  "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+  "spanId": "00f067aa0ba902b7",
+  "method": "POST",
+  "route": "/orders",
+  "actorId": "user_42",
+  "tenantId": "tenant_acme",
+  "operation": "payment.charge",
+  "durationMs": 842,
+  "provider": "stripe",
+  "errorType": "TimeoutError"
 }
 ```
 
-Now you can filter by requestId, userId, tenantId, operation, provider, statusCode. Your logs stop being a pile of events and become a timeline.
+Now you can filter by request ID, trace ID, tenant, operation, provider, or error type. Your logs stop being a pile of events and become a timeline.
+
+A request ID is useful inside one HTTP request. A W3C trace ID is the interoperable correlation key across HTTP calls, queues, and services. If OpenTelemetry already injects trace context and your logging pipeline supports log correlation, use that rather than inventing a second distributed tracing protocol.
 
 ## 🙅 Don’t Pass requestId Through Every Function
 
 You could thread it manually through every controller, service, and repository call. Don’t. That leaks an HTTP concern into code that shouldn’t know HTTP exists.
 
-Instead, capture the context once at the boundary and let anything downstream read it automatically. Node’s tool for this is AsyncLocalStorage. Request-scoped storage that any async code spawned inside that request can read without it being passed by hand.
+Instead, capture the context once at the boundary and let downstream code read it. Node’s stable tool for this is `AsyncLocalStorage`: request-scoped storage available to asynchronous work created inside its `run()` callback. Most native promises and callbacks preserve it. Some custom thenables, callback libraries, worker pools, and event-emitter integrations need `AsyncResource`, `bind()`, or `snapshot()` to avoid context loss.
 
-```
+```typescript
 // logging/log-context.ts
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 export type RequestLogContext = {
-requestId: string;
-method: string;
-path: string;
-userId?: string;
-tenantId?: string;
+  requestId: string;
+  method: string;
+  path: string;
+  actorId?: string;
+  tenantId?: string;
 };
-const storage = new AsyncLocalStorage();
-export function runWithRequestContext(
-context: RequestLogContext,
-callback: () => T
+
+const storage = new AsyncLocalStorage<RequestLogContext>();
+
+export function runWithRequestContext<T>(
+  requestContext: RequestLogContext,
+  callback: () => T
 ): T {
-return storage.run(context, callback);
+  return storage.run(requestContext, callback);
 }
-export function getRequestContext(): Partial {
-return storage.getStore() ?? {};
+
+export function getRequestContext(): Readonly<RequestLogContext> | undefined {
+  return storage.getStore();
 }
 ```
 
@@ -108,8 +116,8 @@ This is the only file that knows how request context is stored. Everything else 
 
 ## 📐 Define ILogger. Small and Boring
 
-```
-export type LogContext = Record;
+```typescript
+export type LogContext = Record<string, unknown>;
 
 export interface ILogger {
 debug(message: string, context?: LogContext): void;
@@ -119,166 +127,204 @@ error(message: string, context?: LogContext): void;
 }
 ```
 
-That’s it. ILogger's only job is writing lines. It doesn't run your code or manage control flow. A class that depends on ILogger is telling the truth about what it needs: something to call .info()/.error() on, nothing more. That's what keeps it trivial to tests.
+That’s it. `ILogger` writes records; it does not run business code or own control flow. A class that depends on `ILogger` is telling the truth about what it needs. Keep the interface compatible with the structured logger you actually deploy rather than building a second logging framework.
 
 Domain interfaces stay just as clean. No Express Request/Response, no raw DB client, no SDK:
 
-```
+```typescript
 export interface IUserRepository {
-findById(id: string): Promise;
+  findById(id: string): Promise<User | null>;
 }
 
 export interface IPaymentProvider {
-charge(input: ChargeInput): Promise;
+  charge(input: ChargeInput): Promise<ChargeResult>;
 }
 ```
 
 ## 🤖 A Context-Aware Logger Implementation
 
-```
+```typescript
 // logging/console-logger.ts
+import { trace } from '@opentelemetry/api';
 import { getRequestContext } from './log-context';
 import type { ILogger, LogContext } from './logger';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+
 export class ConsoleLogger implements ILogger {
-debug(message: string, context: LogContext = {}) {
-this.write('debug', message, context);
-}
-info(message: string, context: LogContext = {}) {
-this.write('info', message, context);
-}
-warn(message: string, context: LogContext = {}) {
-this.write('warn', message, context);
-}
-error(message: string, context: LogContext = {}) {
-this.write('error', message, context);
-}
-private write(level: LogLevel, message: string, context: LogContext) {
-const entry = redact({
-timestamp: new Date().toISOString(),
-level,
-message,
-...getRequestContext(),
-...context,
-});
-console.log(JSON.stringify(entry));
-}
+  debug(message: string, context: LogContext = {}) {
+    this.write('debug', message, context);
+  }
+
+  info(message: string, context: LogContext = {}) {
+    this.write('info', message, context);
+  }
+
+  warn(message: string, context: LogContext = {}) {
+    this.write('warn', message, context);
+  }
+
+  error(message: string, context: LogContext = {}) {
+    this.write('error', message, context);
+  }
+
+  private write(level: LogLevel, message: string, fields: LogContext) {
+    const span = trace.getActiveSpan()?.spanContext();
+    const entry = redact({
+      timestamp: new Date().toISOString(),
+      level,
+      message,
+      ...(getRequestContext() ?? {}),
+      traceId: span?.traceId,
+      spanId: span?.spanId,
+      ...fields,
+    });
+
+    console.log(JSON.stringify(entry));
+  }
 }
 ```
 
-Any class holding a ILogger now produces contextual logs automatically. No requestId argument, no discipline required.
+Any class holding an `ILogger` now gets request and active span correlation automatically. There is still discipline required: field names need a schema, explicit fields can overwrite context fields in this small example, and production code needs buffering, backpressure, serializers, and failure behavior from a maintained structured-logging library.
 
 ## 🔐 Redaction Is Not Optional
 
-Never log passwords, cookies, tokens, Authorization headers, API keys, card data, full request/email bodies, or raw LLM prompts. Redact centrally, once:
+Do not log passwords, cookies, tokens, authorization headers, API keys, card data, full request/email bodies, or raw LLM prompts. Prefer allowlisting fields at each event. Central redaction is defense in depth, not proof that arbitrary objects are safe to log:
 
-```
+```typescript
 const REDACTED = '[redacted]';
-const SENSITIVE_KEY_PATTERN = /password|token|authorization|cookie|secret|apiKey|card|emailBody|messages|prompt/i;
+const SENSITIVE_KEY_PATTERN =
+  /password|token|authorization|cookie|secret|api[_-]?key|card(number)?|emailBody|messages|prompt/i;
 
-function redact(value: unknown): unknown {
-if (Array.isArray(value)) return value.map(redact);
-if (!value || typeof value !== 'object') return value;
-return Object.fromEntries(
-Object.entries(value).map(([key, item]) => [
-key,
-SENSITIVE_KEY_PATTERN.test(key) ? REDACTED : redact(item),
-])
-);
+function redact(value: unknown, ancestors = new WeakSet<object>()): unknown {
+  if (!value || typeof value !== 'object') return value;
+  if (ancestors.has(value)) return '[circular]';
+  ancestors.add(value);
+
+  if (value instanceof Error) {
+    const result = {
+      errorType: value.name,
+    };
+    ancestors.delete(value);
+    return result;
+  }
+
+  if (Array.isArray(value)) {
+    const result = value.map(item => redact(item, ancestors));
+    ancestors.delete(value);
+    return result;
+  }
+
+  const result = Object.fromEntries(
+    Object.entries(value).map(([key, item]) => [
+      key,
+      SENSITIVE_KEY_PATTERN.test(key) ? REDACTED : redact(item, ancestors),
+    ])
+  );
+  ancestors.delete(value);
+  return result;
 }
 ```
 
-The goal isn’t logging everything. It’s logging enough to reconstruct what happened safely.
+This example serializes only the error type. `Error.message`, `stack`, and nested causes can contain URLs, query values, credentials, payload fragments, or personal data, so do not copy them blindly into a general-purpose log. If stack traces are operationally necessary, sanitize them and send them to a more restricted diagnostic sink with an appropriate retention policy. A key-name pattern cannot detect a token hidden under `value` or decide whether an identifier is personal data. Use your logger's tested redaction and error serializers, classify the log schema, cap field sizes, and test representative nested payloads.
+
+User, tenant, order, and IP identifiers may be personal or sensitive data. Log them only when the purpose, access controls, retention, and applicable law permit it; pseudonymize them when direct identity is unnecessary.
 
 ## 🚦 Express Middleware: Create Context Once
 
-```
+```typescript
 // http/request-context.middleware.ts
 import type { NextFunction, Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { runWithRequestContext } from '../logging/log-context';
 
+const SAFE_REQUEST_ID = /^[A-Za-z0-9._:-]{1,128}$/;
+
 export function requestContextMiddleware(
-req: Request,
-res: Response,
-next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
-const requestId = req.header('x-request-id') ?? randomUUID();
-res.setHeader('X-Request-ID', requestId);
-runWithRequestContext(
-{
-requestId,
-method: req.method,
-path: req.path,
-userId: req.user?.id,
-tenantId: req.header('x-tenant-id'),
-},
-next
-);
+  const suppliedId = req.header('x-request-id');
+  const requestId = suppliedId && SAFE_REQUEST_ID.test(suppliedId)
+    ? suppliedId
+    : randomUUID();
+
+  res.setHeader('X-Request-ID', requestId);
+
+  runWithRequestContext(
+    {
+      requestId,
+      method: req.method,
+      path: req.path,
+    },
+    next
+  );
 }
 ```
 
-That header matters: when a user reports a bug, grab the X-Request-ID from their browser's network tab and jump straight to the matching logs.
+That response header matters: when a user reports a bug, the request ID from their browser's network tab can jump straight to matching logs. Treat incoming IDs as untrusted. Validate length and characters, and generate a replacement when they fail; otherwise a caller can create oversized fields or log-injection problems.
+
+Do not accept `userId` or `tenantId` from an arbitrary header as authoritative context. Add identity after authentication from trusted claims, and use names such as `actorId` and `targetUserId` so the caller and affected resource cannot silently overwrite one another.
 
 ## ⏳ Logging I/O Boundaries: Plain try/catch, No Magic
 
 Most production bugs live in operations that cross a process boundary: DB queries, external API calls, queue publishes, and file I/O.
 
-For each one, you want to know when it started, how long it took, and why it failed. The clearest way to get that is to just write it:
+For important boundaries, you usually want the outcome, duration, dependency, operation, and failure classification. Traces are often the better signal for every start and end; logging every successful low-level call can be expensive and noisy. Log the boundary events that answer an operational question, and assign one layer ownership of each exception log so the same stack is not emitted four times.
 
-```
+```typescript
 export class PostgresUserRepository implements IUserRepository {
-constructor(
-private readonly db: DatabaseClient,
-private readonly logger: ILogger)
-{
+  constructor(
+    private readonly db: DatabaseClient,
+    private readonly logger: ILogger
+  ) {}
 
-async findById(id: string): Promise {
-const startedAt = Date.now();
+  async findById(id: string): Promise<User | null> {
+    const startedAt = performance.now();
 
-// targetUserId, not userId - `id` is the user being looked up, which may
-// not be the same person as the authenticated caller already in context
+    // The target may differ from the authenticated actor in request context.
+    const fields = {
+      operation: 'users.findById',
+      targetUserId: id,
+    };
 
-this.logger.info('User lookup started', { operation: 'users.findById',
-targetUserId: id });
+    try {
+      const row = await this.db.oneOrNone(
+        'select id, email, name from users where id = $1',
+        [id]
+      );
+      const user = row ? mapUser(row) : null;
 
-try {
-const row = await this.db.oneOrNone(
-'select id, email, name from users where id = $1',
-[id]
-);
-const user = row ? mapUser(row) : null;
-this.logger.info('User lookup completed', {
-operation: 'users.findById',
-targetUserId: id,
-found: Boolean(user),
-durationMs: Date.now() - startedAt,
-});
-return user;
-} catch (error) {
-this.logger.error('User lookup failed', {
-operation: 'users.findById',
-targetUserId: id,
-durationMs: Date.now() - startedAt,
-error, // error.stack is already in there - a plain try/catch loses nothing
-});
-throw error;
-}
-}
-}
+      this.logger.info('User lookup completed', {
+        ...fields,
+        found: Boolean(user),
+        durationMs: Math.round(performance.now() - startedAt),
+      });
+
+      return user;
+    } catch (error) {
+      this.logger.error('User lookup failed', {
+        ...fields,
+        durationMs: Math.round(performance.now() - startedAt),
+        error,
+      });
+
+      throw error;
+    }
+  }
 }
 ```
 
-The constructor’s two dependencies (db, ILogger) are the whole story, and reading the method top to bottom tells you exactly what runs and what gets logged when.
+The constructor’s two dependencies (`db`, `ILogger`) are the whole story, and reading the method top to bottom tells you what runs and what is logged. `performance.now()` is monotonic, so wall-clock corrections do not corrupt the duration.
 
-The same pattern applies to any external call. A payment charge, a queue publish, or an HTTP request to a third-party API: log started, do the work in try, log completed or failed, and always re-throw.
+The same pattern applies to a payment charge, queue publish, or third-party HTTP request when a log is justified. Re-throw when this layer cannot handle the failure; otherwise translate it into an explicit result or domain error. “Always re-throw” is not a useful rule at a boundary designed to recover, retry, or degrade gracefully.
 
-One naming trap to watch for: the middleware puts the authenticated caller’s userId into the request context automatically. If a method also logs a userId that means something else - like the id above, the user being looked up, not the one making the request. Object spread means whichever one is merged in last silently wins, and you lose the other. That's why the field above is targetUserId, not userId: it keeps both values visible in the same log line instead of one overwriting the other.
+One naming trap to watch for: if authenticated context contains `actorId` and a method logs another `actorId`, object spread silently keeps the last value. That is why the field above is `targetUserId`: the schema keeps the caller and affected resource distinct. Reserve correlation field names and reject or rename collisions in a production logger.
 
 ## 🧩 Wire It Up Once, Inject Everywhere
 
-```
+```typescript
 // composition-root.ts
 const logger: ILogger = new ConsoleLogger();
 const userRepository: IUserRepository = new PostgresUserRepository(db, logger);
@@ -287,150 +333,161 @@ const orderService: IOrderService = new OrderService(userRepository, paymentProv
 const orderController = new OrderController(orderService, logger);
 ```
 
-ILogger is injected everywhere as an interface consistently. If for some reason you need to switch to a new logger provider, you just reimplement the ILoggerinterface and replace it ConsoleLoggerwith the new one.
+`ILogger` is injected consistently. To switch providers, implement the interface with the new structured logger and replace `ConsoleLogger` at the composition root.
 
 ## 🌿 Where Business Decisions Get Logged
 
 Repositories and providers log infrastructure. Services log why a request was accepted or rejected:
 
-```
+```typescript
 export class OrderService implements IOrderService {
-constructor(
-private readonly users: IUserRepository,
-private readonly payments: IPaymentProvider,
-private readonly logger: ILogger
-) {
+  constructor(
+    private readonly users: IUserRepository,
+    private readonly payments: IPaymentProvider,
+    private readonly logger: ILogger
+  ) {}
 
-async createOrder(input: CreateOrderInput): Promise {
-const user = await this.users.findById(input.userId);
-if (!user) {
-this.logger.warn('Order creation rejected', { reason: 'user_not_found', userId: input.userId });
-throw new Error('User not found');
-}
+  async createOrder(input: CreateOrderInput): Promise<Order> {
+    const user = await this.users.findById(input.userId);
+    if (!user) {
+      this.logger.warn('Order creation rejected', {
+        reason: 'user_not_found',
+        targetUserId: input.userId,
+      });
+      throw new UserNotFoundError(input.userId);
+    }
 
-const payment = await this.payments.charge({
-userId: user.id,
-amountCents: calculateTotal(input.items),
-});
+    const payment = await this.payments.charge({
+      userId: user.id,
+      amountCents: calculateTotal(input.items),
+    });
 
-if (!payment.approved) {
-this.logger.warn('Order creation rejected', { reason: 'payment_declined', userId: user.id });
-throw new Error('Payment declined');
-}
+    if (!payment.approved) {
+      this.logger.info('Order creation rejected', {
+        reason: 'payment_declined',
+        targetUserId: user.id,
+      });
+      throw new PaymentDeclinedError();
+    }
 
-this.logger.info('Order creation completed', { userId: user.id, paymentId: payment.id });
-return createOrderEntity(user, input.items, payment);
-}
-}
+    this.logger.info('Order creation completed', {
+      targetUserId: user.id,
+      paymentId: payment.id,
+    });
+
+    return createOrderEntity(user, input.items, payment);
+  }
 }
 ```
 
-This is the difference between logging errors and logging decisions. When a request fails, you know exactly why the system rejected it. Not just that something was thrown.
+This is the difference between logging errors and logging decisions. A provider timeout is an error; a valid card decline is normally an expected business outcome and can be `info`, not an operational warning. Severity should describe what operators need to do, not whether the HTTP response is successful.
 
 ## 📊 What the Logs Look Like, Filtered by One Request
 
-```
+```json
 {"level":"info","message":"HTTP request started","requestId":"req_123","method":"POST","path":"/orders","userId":"user_42"}
 {"level":"info","message":"Order creation started","requestId":"req_123","itemCount":3}
 {"level":"info","message":"User lookup completed","requestId":"req_123","operation":"users.findById","found":true,"durationMs":18}
-{"level":"error","message":"Payment provider charge failed","requestId":"req_123","provider":"stripe","operation":"payment.charge","durationMs":842,"error":{"message":"Request timeout"}}
-{"level":"warn","message":"Order creation rejected","requestId":"req_123","reason":"payment_declined"}
-{"level":"warn","message":"HTTP request completed","requestId":"req_123","status":400,"durationMs":911}
+{"level":"info","message":"Payment provider request completed","requestId":"req_123","provider":"stripe","operation":"payment.charge","approved":false,"durationMs":842}
+{"level":"info","message":"Order creation rejected","requestId":"req_123","reason":"payment_declined"}
+{"level":"info","message":"HTTP request completed","requestId":"req_123","statusCode":402,"durationMs":911}
 ```
 
 Filter by req_123 and the whole story reconstructs itself.
 
 ## ⚠ Log the Rejected Branches, Not Just Exceptions
 
-Don’t wait for a stack trace to tell you something’s wrong. Log the branch your code intentionally took:
+Don’t wait for a stack trace to explain an important branch. Log rejected decisions that matter for support, security, audit, or product operations, without turning every routine validation failure into an alert:
 
-```
+```typescript
 if (!input.items.length) {
 logger.warn('Order creation rejected', { reason: 'empty_cart' });
 throw new Error('Cart is empty');
 }
 ```
 
-Covers: validation failures, auth failures, rate limits, idempotency conflicts, not-found, provider declines, constraint violations, timeouts, retries exhausted, and circuit breakers.
+Candidates include authentication and authorization failures, rate limits, idempotency conflicts, provider declines, retries exhausted, and circuit breakers. Whether not-found and validation events belong in logs depends on volume and operational value; metrics are often better for aggregate rates.
 
 ## 🙈 What Not to Log
 
 This helps you debug:
 
-```
+```json
 { "message": "Payment charge failed", "provider": "stripe", "amountCents": 4200, "durationMs": 842, "statusCode": 500 }
 ```
 
 This creates a security incident:
 
-```
+```json
 { "cardNumber": "4242424242424242", "authorization": "Bearer secret", "requestBody": { "everything": "..." } }
 ```
+
+Even the first record needs review: transaction amounts and stable customer/order identifiers may be sensitive under your threat model or regulatory obligations. “Structured” does not mean “safe.”
 
 ## 🔁 Optional: Add One Method to ILogger Later
 
 Everything above is the recommended default. Explicit try/catch, nothing hidden. If your codebase grows to dozens of repositories and providers all repeating that same 12-line start/complete/fail shape, you can fold it into ILogger itself as one more method:
 
-```
+```typescript
 export interface ILogger {
-debug(message: string, context?: LogContext): void;
-info(message: string, context?: LogContext): void;
-warn(message: string, context?: LogContext): void;
-error(message: string, context?: LogContext): void;
+  debug(message: string, context?: LogContext): void;
+  info(message: string, context?: LogContext): void;
+  warn(message: string, context?: LogContext): void;
+  error(message: string, context?: LogContext): void;
 
-operation(
-name: string,
-context: LogContext,
-fn: () => Promise,
-getResultContext?: (result: T) => LogContext
-): Promise;
+  operation<T>(
+    name: string,
+    context: LogContext,
+    fn: () => Promise<T>,
+    getResultContext?: (result: T) => LogContext
+  ): Promise<T>;
 }
 ```
 
-```
-async findById(id: string): Promise {
-return this.logger.operation(
-'User lookup',
-{ operation: 'users.findById', targetUserId: id },
-async () => {
-const row = await this.db.oneOrNone(/* ... */);
-return row ? mapUser(row) : null;
-},
-user => ({ found: Boolean(user) })
-);
+```typescript
+async findById(id: string): Promise<User | null> {
+  return this.logger.operation(
+    'User lookup',
+    { operation: 'users.findById', targetUserId: id },
+    async () => {
+      const row = await this.db.oneOrNone(/* ... */);
+      return row ? mapUser(row) : null;
+    },
+    user => ({ found: Boolean(user) })
+  );
 }
 ```
 
 Be honest with yourself about the trade before reaching for this. It removes the copy-paste, but the call site no longer shows you where the try/catch sits or what gets logged when. You have to go read ConsoleLogger.operation() to know.
 
-It adds an extra frame to every stack trace, and it makes the method less self-explanatory to whoever opens the file next. That's a real debugging cost, not a hypothetical one, so treat this as something to reach for once repetition has actually become painful, not as the default you start with.
+It can add abstraction frames and makes the method less self-explanatory to whoever opens the file next. Treat this as something to reach for once repetition has become painful, not as the default. In a traced system, a span helper may already solve timing and failure correlation without duplicating every operation in logs.
 
 ## ✅ Checklist
 
-- Generate/accept requestId at the HTTP boundary, return it in X-Request-ID ;
-
-- Store request context with AsyncLocalStorage ;
-
-- Logger merges context into every log automatically;
-
-- JSON logs, not free-text strings;
-
-- Inject ILogger as an interface through DI;
-
-- Log start/completion/failure with duration around I/O boundaries, with plain try/catch ;
-
-- Log rejected business branches with a reason ;
-
-- Redact secrets centrally, not per call site;
-
-- Watch for field-name collisions with request;
-
-- Never log passwords, cookies, tokens, prompts, or full bodies;
+- Generate or accept a validated request ID at the HTTP boundary and return it in `X-Request-ID`.
+- Store request context with `AsyncLocalStorage` and test any unusual async integrations.
+- Merge request and trace context into structured records automatically.
+- Inject `ILogger` through dependency injection.
+- Log meaningful I/O outcomes and failures with monotonic durations; use traces for exhaustive start/end timing.
+- Give one layer ownership of each exception log.
+- Log important rejected business decisions with stable reason codes and appropriate severity.
+- Prefer allowlisted fields, with central redaction as defense in depth.
+- Reserve correlation field names and detect collisions.
+- Do not log passwords, cookies, tokens, prompts, or full bodies.
+- Correlate logs with W3C/OpenTelemetry trace and span IDs where available.
+- Apply retention, access controls, size limits, and logging-failure tests.
 
 ## 🌙 Final Thought
 
 Logging isn’t about printing more text. It’s about making production behavior reconstructible by someone who wasn’t watching when it broke.
 
-Add the context. Inject the logger. Log the rejected and non-rejected branches. Redact aggressively. Keep the code honest about what it does before you reach for anything clever.
+Add the context. Inject the logger. Log meaningful outcomes and decisions. Minimize sensitive data and redact defensively. Keep the code honest about what it does before you reach for anything clever.
 
 Future you, staring at logs at 2am, will actually thank you. 🙏
+
+## Sources
+
+- [Node.js: AsyncLocalStorage](https://nodejs.org/api/async_context.html#class-asynclocalstorage)
+- [OpenTelemetry: Logs data model](https://opentelemetry.io/docs/specs/otel/logs/data-model/)
+- [W3C: Trace Context](https://www.w3.org/TR/trace-context/)
+- [OWASP: Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html)

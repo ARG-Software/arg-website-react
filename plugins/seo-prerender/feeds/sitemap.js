@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { SITE_URL } from '../constants.js';
 import { escapeHtml } from '../html-utils.js';
+import { toContentDateOnly } from '../../../src/frontend/utils/contentDate.js';
 
 export function generateSitemap({ distDir, blogPostMetas }) {
   const sitemapUrls = [];
@@ -30,13 +31,7 @@ export function generateSitemap({ distDir, blogPostMetas }) {
       priority: '0.7',
       changefreq: 'yearly',
     };
-    if (meta.date) {
-      try {
-        entry.lastmod = new Date(meta.date).toISOString().split('T')[0];
-      } catch {
-        /* invalid date — skip lastmod */
-      }
-    }
+    entry.lastmod = toContentDateOnly(meta.dateModified || meta.updated || meta.date);
     sitemapUrls.push(entry);
   }
 

@@ -42,7 +42,7 @@ and comprehensive Google Analytics 4 instrumentation.
     │   ├── admin/          # Admin API, domain, application, and infrastructure
     │   ├── maintenance/    # Scheduled maintenance API, application, and infrastructure
     │   ├── mcp/            # Public discovery MCP API
-    │   ├── rag/            # Gaspar assistant: apps (api + di), domain, application, infrastructure, tests
+    │   ├── rag/            # Gaspar assistant: apps (api + di), domain, application, infrastructure
     │   └── shared/         # Shared backend HTTP utilities
     ├── frontend/
     │   ├── main.jsx        # React entry — providers shell, route table, lazy imports
@@ -60,6 +60,7 @@ and comprehensive Google Analytics 4 instrumentation.
     │   └── workers/        # Frontend web workers
     └── packages/
         └── ui/             # Shared UI package and Storybook stories
+└── tests/                  # Tests mirroring src/, plugins/, and netlify/ paths
 ```
 
 ---
@@ -491,7 +492,7 @@ export default function MyPage() {
 | `src/backend/shared/security/ratelimit.ts` | Shared rate-limit contracts and `RateLimiter` implementation |
 | `src/backend/shared/infrastructure/repositories/supabase/supabaseratelimit.repository.ts` | Production Supabase-backed rate-limit repository |
 | `src/backend/shared/api/controllerbase.ts` | Shared API helpers, including controller-level rate-limit checks |
-| `src/backend/rag/tests/fakes/inmemoryratelimit.repository.ts` | Test-only in-memory rate-limit repository fake |
+| `tests/src/backend/rag/fakes/inmemoryratelimit.repository.ts` | Test-only in-memory rate-limit repository fake |
 | `src/backend/rag/apps/di/createrag.container.ts` | RAG composition root — wires Supabase adapters and providers into use cases |
 | `src/backend/rag/application/retrieval/createroutedcontextretriever.ts` | Single source of truth for the ordered retrieval strategy chain |
 | `src/backend/rag/application/usecases/ingestion/ingestsource.usecase.ts` | `IngestSourceUseCase` — normalize, chunk, embed, and upsert pipeline |

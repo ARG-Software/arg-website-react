@@ -85,11 +85,6 @@ export function parseBlocks(body) {
       continue;
     }
 
-    if (/^\d+\.\s+\S.+/.test(trimmed) && !trimmed.includes('\n')) {
-      blocks.push({ type: 'subheading', text: trimmed.trim() });
-      continue;
-    }
-
     if (trimmed.split('\n').every(line => /^\s*\d+\.\s+/.test(line))) {
       const items = trimmed
         .split('\n')

@@ -192,7 +192,7 @@ The RAG code is organized by dependency direction rather than by provider:
 | **Ingestion Loaders** | `src/backend/rag/infrastructure/ingestion/loaders/` | Per-source-family loaders that create `RagSource` objects: `loadfirstpartysources.ts` entry, family loaders, `loadtrustedexternalsources.ts`, and shared `loaderfiles.ts` mechanics |
 | **Ingestion Extractors** | `src/backend/rag/infrastructure/ingestion/extractors/` | PDF, HTML, Markdown, and JSON text extraction helpers |
 | **Ingestion Manifests** | `src/backend/rag/infrastructure/ingestion/` | Source manifest config and types (`sourcemanifest.config.ts`, `sourcemanifest.types.ts`) plus site data shapes (`sitedata.types.ts`) |
-| **Tests** | `src/backend/rag/tests/` | Unit tests, route/eval coverage, ingestion tests, security tests, and fakes |
+| **Tests** | `tests/src/backend/rag/` | Unit tests, route/eval coverage, ingestion tests, security tests, and fakes |
 
 The domain and application layers do not import concrete provider or repository adapters. Provider-specific behavior is isolated under `src/backend/rag/infrastructure/`, and `src/backend/rag/apps/di/` wires those adapters into application use cases.
 
@@ -280,7 +280,7 @@ Netlify Functions also serve assistant/security endpoints and scheduled maintena
 - `GET /api/assistant/ui-copy`: localized assistant widget copy
 - `POST /api/admin/assistant-conversation-log`: public assistant conversation save endpoint with origin guard and rate limiting
 - `GET /api/security/challenge` and `POST /api/security/verify`: ALTCHA flow for protected form submissions
-- Scheduled `maintenance-retention`: quarterly cleanup for visit and assistant conversation data older than 90 days
+- Scheduled `maintenance-retention`: daily cleanup for visit data older than 90 days and assistant conversations older than 60 days
 - Scheduled `maintenance-keep-database-alive`: daily Supabase keep-alive for the RAG and admin outreach databases
 
 Future database consolidation: the project currently uses separate Supabase projects for Admin and RAG/AI data. A future migration should consolidate them into one Supabase project using dedicated PostgreSQL schemas, likely `admin` and `ai`. This is not urgent; test the migration locally before applying it to any shared environment.

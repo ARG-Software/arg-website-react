@@ -1,0 +1,17 @@
+<h1>TurboQuant, TurboVec, and the Real RAM Math for Local Vector Search</h1>
+<p>TurboQuant and TurboVec can make local vector search dramatically smaller, but the exact RAM savings depend on dimensions, bit width, metadata, and index overhead.</p>
+<p>Local RAG and semantic search have a boring but expensive problem: embeddings are large.</p>
+<p>A single float32 embedding costs four bytes per dimension. That sounds harmless until the corpus grows:</p>
+<ul>
+  <li>10 million vectors at 768 dimensions: about 30.72 GB for raw float32 values.</li>
+  <li>10 million vectors at 1,536 dimensions: about 61.44 GB for raw float32 values.</li>
+  <li>10 million vectors at 3,072 dimensions: about 122.88 GB for raw float32 values.</li>
+</ul>
+<p><a href="https://arxiv.org/abs/2504.19874">TurboQuant: Online Vector Quantization with Near-optimal Distortion Rate</a> is a 2025 paper by Amir Zandieh, Majid Daliri, Majid Hadian, and Vahab Mirrokni. The paper proposes a data-oblivious vector quantization method: instead of training a codebook on your corpus, it uses random rotation and scalar quantizers derived from the expected coordinate distribution of high-dimensional vectors.</p>
+<p><a href="https://github.com/RyanCodrai/turbovec">TurboVec</a> is an open-source Rust vector index with Python bindings that implements TurboQuant-style compression for vector search. Its <a href="https://pypi.org/project/turbovec/">PyPI package</a> is currently published as <code>turbovec</code> <code>1.0.0</code>, but the package still carries the classifier <code>Development Status :: 3 - Alpha</code>.</p>
+<ul>
+  <li>Treat the public API as real enough to prototype against.</li>
+  <li>Treat production use as something that requires your own benchmark, recovery test, and upgrade plan.</li>
+  <li>Do not assume that a <code>1.0.0</code> package version cancels the explicit alpha classifier.</li>
+</ul>
+<p>For a 1,536-dimensional vector, float32 costs 6,144 bytes per vector, 4-bit quantization costs 768 bytes before side data, and 2-bit quantization costs 384 bytes before side data. A 4-bit representation is an 8x reduction of the raw float32 coordinate payload. A 2-bit representation is a 16x reduction of that same payload.</p>

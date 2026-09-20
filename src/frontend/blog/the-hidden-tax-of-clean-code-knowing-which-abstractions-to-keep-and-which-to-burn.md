@@ -7,6 +7,8 @@ title: The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (a
 subtitle: Stop over-engineering your .NET apps. Learn which Clean Architecture abstractions protect your domain and which just slow you down.
 intro: Stop over-engineering your .NET apps. Learn which Clean Architecture abstractions protect your domain and which just slow you down.
 date: June 6, 2026
+dateModified: September 20, 2026
+reviewedOn: September 20, 2026
 readTime: 8 min read
 ---
 ![The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (and Which to Burn)](/images/blog/the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn/the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn-header.webp)
@@ -23,66 +25,73 @@ Every abstraction you write is a loan. You pay interest on it every time you rea
 
 ## The “Good Tax”: Defending the Data Access Boundary 🛡️
 
-The loudest voices in the anti-abstraction crowd are telling you to stop hiding Entity Framework (EF) Core behind a repository or an interface. They argue, “DbContext is already a Unit of Work, and DbSet is already a Repository!”
+The loudest voices in the anti-abstraction crowd are telling you to stop hiding Entity Framework (EF) Core behind a repository or an interface. They argue, “`DbContext` is already a Unit of Work, and `DbSet` already provides repository-like access!” Microsoft itself describes a [`DbContext` as designed for a single unit of work](https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/), so this is not a frivolous objection.
 
-They are missing the point of Domain-Driven Design.
+But it is not the whole design decision.
 
-Your database is infrastructure. It is a volatile, slow, external dependency. If you leak EF Core specific syntax, Include() statements, and relational foreign-key logic all over your application, your domain becomes a slave to your database schema.
+Your database is infrastructure: an external dependency with failure modes and a schema that will evolve. If you leak EF Core-specific syntax, `Include()` statements, and relational foreign-key logic through business code, your application can become tightly coupled to both EF Core and the database schema.
 
-Abstracting your Data Access Layer (DAL) is a tax you want to pay. Why?
+For a domain-rich application, a focused Data Access Layer (DAL) can be a tax worth paying. For straightforward CRUD, injecting `DbContext` into a thin endpoint or application handler can also be a defensible choice. The boundary earns its keep when it does at least one of these jobs:
 
-- The Swap Factor: If you decide to move a heavy read-query to Dapper, or you partition your data into a NoSQL store, you only change the code in one place.
-- True Persistence Ignorance: Your domain entities remain pure C# classes. They don’t need to know about database indices or column mapping.
-- Testability: You can mock the interface to write lightning-fast unit tests for your complex business logic, without fighting with DbContextOptions or every so often the limited InMemory database provider.
+- The Swap Factor: If you move a heavy read query to Dapper or partition some data into another store, callers can remain unchanged when the contract was designed around their needs. The implementation change will not always be confined to one file because different stores have different semantics.
+- Persistence Ignorance: Your domain entities can remain plain C# classes. Database indexes and column mappings stay outside the domain.
+- Testability: You can stub the contract for focused unit tests of business logic. You still need integration tests against the real database for query translation, constraints, transactions, and provider behavior. Microsoft’s [EF Core testing guidance](https://learn.microsoft.com/en-us/ef/core/testing/choosing-a-testing-strategy) specifically discourages the InMemory provider as a relational database fake and notes both the value and maintenance cost of repositories.
 
 Here is what a valuable abstraction looks like in .NET. Notice how the contract speaks the language of the Domain, not the database:
 
 ```csharp
-// 1. The Contract (Lives in the Core/Domain Layer)
+// 1. The Contract (Lives at the Core/Application Boundary)
 public interface IUserRepository
 {
-Task GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-Task SaveAsync(User user, CancellationToken cancellationToken = default);
+    Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task AddOrUpdateAsync(User user, CancellationToken cancellationToken = default);
 }
 
 // 2. The Implementation (Lives in the Infrastructure Layer)
 public class UserRepository : IUserRepository
 {
-private readonly ApplicationDbContext _dbContext;
-public UserRepository(ApplicationDbContext dbContext)
-{
-_dbContext = dbContext;
-}
-public async Task GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-{
-// Infrastructure details like EF Core remain hidden here
-return await _dbContext.Users
-.AsNoTracking()
-.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
-}
-public async Task SaveAsync(User user, CancellationToken cancellationToken = default)
-{
-var existingUser = await _dbContext.Users.FindAsync(new object[] { user.Id }, cancellationToken);
+    private readonly ApplicationDbContext _dbContext;
 
-if (existingUser == null)
-{
-_dbContext.Users.Add(user);
-}
-else
-{
-_dbContext.Entry(existingUser).CurrentValues.SetValues(user);
-}
+    public UserRepository(ApplicationDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
 
-await _dbContext.SaveChangesAsync(cancellationToken);
-}
+    public Task<User?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        // Infrastructure details like EF Core remain hidden here.
+        return _dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+    }
+
+    public async Task AddOrUpdateAsync(
+        User user,
+        CancellationToken cancellationToken = default)
+    {
+        var existingUser = await _dbContext.Users.FindAsync(
+            new object[] { user.Id },
+            cancellationToken);
+
+        if (existingUser is null)
+        {
+            _dbContext.Users.Add(user);
+        }
+        else
+        {
+            _dbContext.Entry(existingUser).CurrentValues.SetValues(user);
+        }
+    }
 }
 ```
 
-This abstraction pays for itself. It creates a wall between your pure business rules and the messy reality of SQL transactions.
+In a domain-rich application, this abstraction can pay for itself. It creates a boundary between business rules and EF Core details. The repository stages the aggregate change; the application-level unit of work or transaction commits once after all related aggregate and outbox changes have been staged. Calling `SaveChangesAsync` inside every repository method would make multi-repository operations harder to keep atomic.
 
 ## The “Bad Tax”: The Pass-Through Service Anti-Pattern 💸
 
-If abstracting the database is good, where does .NET Clean Architecture go wrong? It fails when developers start abstracting things out of habit rather than necessity.
+If a data-access abstraction can be valuable, where does .NET Clean Architecture go wrong? It fails when developers start abstracting things out of habit rather than necessity.
 
 One of the most notorious is the Pass-Through Service.
 
@@ -96,25 +105,27 @@ Take a look at this example:
 // 1. The useless interface
 public interface IUserService
 {
-Task GetUserProfileAsync(Guid id);
+    Task<UserDto> GetUserProfileAsync(Guid id);
 }
 
 // 2. The useless service implementation
 public class UserService : IUserService
 {
-private readonly IUserRepository _userRepository;
-public UserService(IUserRepository userRepository)
-{
-_userRepository = userRepository;
-}
-public async Task GetUserProfileAsync(Guid id)
-{
-// This service does literally nothing but call the repository
-var user = await _userRepository.GetByIdAsync(id);
-if (user == null) throw new NotFoundException("User not found");
+    private readonly IUserRepository _userRepository;
 
-return new UserDto(user.Id, user.Email);
-}
+    public UserService(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+    public async Task<UserDto> GetUserProfileAsync(Guid id)
+    {
+        // This service does nothing but call the repository and map the result.
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user is null) throw new NotFoundException("User not found");
+
+        return new UserDto(user.Id, user.Email);
+    }
 }
 
 // 3. The Controller
@@ -122,23 +133,25 @@ return new UserDto(user.Id, user.Email);
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-private readonly IUserService _userService;
-public UserController(IUserService userService)
-{
-_userService = userService;
-}
-[HttpGet("{id}")]
-public async Task Get(Guid id)
-{
-var user = await _userService.GetUserProfileAsync(id);
-return Ok(user);
-}
+    private readonly IUserService _userService;
+
+    public UserController(IUserService userService)
+    {
+        _userService = userService;
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<UserDto>> Get(Guid id)
+    {
+        var user = await _userService.GetUserProfileAsync(id);
+        return Ok(user);
+    }
 }
 ```
 
 ## Why is this bad?
 
-This architecture provides zero value. The IUserService interface will never have a second implementation. You are never going to build a MockUserService because you can just mock the IUserRepository instead.
+In this example, the extra service boundary provides little independent value. It has no policy of its own, and tests can exercise the application behavior by stubbing `IUserRepository`. A second implementation is not the only reason to use an interface, but “every class gets one” is not a reason either.
 
 This is the code equivalent of a middle manager who takes an email from their boss and immediately forwards it to their team without adding any instructions. It is pure overhead, and it pollutes modern ASP.NET Core codebases.
 
@@ -156,24 +169,26 @@ Let’s refactor that pass-through service into a streamlined, pragmatic handler
 // 1. The Concrete Handler (No IGetUserProfileQuery interface needed!)
 public class GetUserProfileHandler
 {
-// We inject the abstracted DAL, but keep the handler concrete
-private readonly IUserRepository _userRepository;
-public GetUserProfileHandler(IUserRepository userRepository)
-{
-_userRepository = userRepository;
-}
-public async Task HandleAsync(Guid id, CancellationToken ct)
-{
-var user = await _userRepository.GetByIdAsync(id, ct);
-if (user == null) throw new NotFoundException("User not found");
+    // We inject the abstracted DAL, but keep the handler concrete.
+    private readonly IUserRepository _userRepository;
 
-return new UserDto(user.Id, user.Email);
-}
+    public GetUserProfileHandler(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+    public async Task<UserDto> HandleAsync(Guid id, CancellationToken ct)
+    {
+        var user = await _userRepository.GetByIdAsync(id, ct);
+        if (user is null) throw new NotFoundException("User not found");
+
+        return new UserDto(user.Id, user.Email);
+    }
 }
 
 // 2. Program.cs Registration
 // The DI container handles concrete classes perfectly
-builder.Services.AddScoped();
+builder.Services.AddScoped<GetUserProfileHandler>();
 
 // 3. The Minimal API Endpoint
 app.MapGet("/api/users/{id}", async (
@@ -181,8 +196,8 @@ Guid id,
 GetUserProfileHandler handler,
 CancellationToken ct) =>
 {
-var dto = await handler.HandleAsync(id, ct);
-return Results.Ok(dto);
+    var dto = await handler.HandleAsync(id, ct);
+    return Results.Ok(dto);
 });
 ```
 
@@ -192,28 +207,28 @@ Notice what happened here:
 - We deleted the IUserService and the Pass-Through Service.
 - We used a concrete class (GetUserProfileHandler) for our application logic.
 
-If we ever need to add complex business rules later (like checking if the user’s account is locked), we simply add that logic directly into the GetUserProfileHandler. We didn't sacrifice any maintainability, but we drastically reduced the cognitive load.
+If we later need application policy, such as deciding whether a locked account may be shown, we can add it to the handler or move a reusable domain rule to the domain. We have not removed a boundary the example currently needs, and we have reduced its cognitive load.
 
 ## A Litmus Test for Abstractions 🧪
 
-Before you type public interface IWhatever or add a new layer to your application, put it through this simple three-question test. If it fails, delete it.
+Before you type `public interface IWhatever` or add a new layer to your application, put it through this three-question test. If it cannot justify its cost, do not add it yet.
 
-- Does this touch I/O or an external boundary?
+1. Does this boundary isolate meaningful volatility or policy?
 
-If the code speaks to EF Core, the file system, a third-party API (like Stripe or Azure Blob Storage), or a message broker (like RabbitMQ), abstract it. These things are highly volatile, slow, and challenging to test. Put them behind an interface.
+Code that speaks to a third-party API, file system, clock, message broker, or complex persistence model often benefits from a narrow contract. Direct EF Core use in a simple application is not automatically wrong; add the interface when it expresses application needs, protects domain code, enables a necessary test double, or contains queries you deliberately want to centralize.
 
-2. Will this genuinely have more than one implementation in production?
+2. Is there a genuine reason for callers to depend on a contract?
 
-If you are building an e-commerce system and you support both CreditCardPaymentStrategy and PayPalPaymentStrategy, you absolutely need an IPaymentProcessor interface. If you are building a CalculateTaxService and it only calculates taxes one way, use a concrete class. Stop planning for a future that may never come.
+Multiple production implementations are one strong reason, but stable boundaries, test substitutes, and dependency direction can matter too. If an e-commerce system supports credit cards and PayPal behind the same application policy, an `IPaymentProcessor` contract may clarify that variation. If `CalculateTaxService` has one stable implementation and no useful boundary to protect, use a concrete class. Stop planning for a future that may never come.
 
 3. Am I just mapping objects for the sake of it?
 
-If your controller receives a DTO, maps it to a Domain Model, passes it to a service, maps it to an entity, and passes it to a repository - without executing a single if statement or business rule - you have failed. For simple CRUD operations, route your endpoint directly to your repository via a concrete query handler. Save the complex mapping for areas of the app that actually contain complex domain logic.
+If your controller receives a DTO, maps it to a domain model, passes it to a service, maps it to an entity, and passes it to a repository without enforcing a business rule or protecting a boundary, inspect every hop. For simple CRUD operations, a concrete query handler using `DbContext` directly, or a focused repository where one already pays for itself, may be enough. Keep separate transport models when they prevent over-posting or stabilize an external API; do not map objects merely to satisfy a diagram.
 
 ## The Bottom Line
 
-Clean Architecture was never supposed to be a prison. It was designed to isolate the things that matter (your core domain rules) from the things that change (your frameworks and databases).
+Clean Architecture was never supposed to be a prison. Its dependency rule is meant to isolate core policy from implementation details, not to prescribe the same number of layers for every application.
 
-Defend your Data Access Layer with your life. Abstract your third-party APIs. But be ruthless with everything else. Delete the pass-through services. Drop the redundant interfaces. Stop paying the abstraction tax on code that doesn’t deserve it.
+Defend boundaries that protect real domain rules. Wrap third-party APIs where your application needs a stable contract. But be ruthless with everything else. Delete pass-through services. Drop redundant interfaces. Stop paying the abstraction tax on code that does not deserve it.
 
 Architecture is not lost when noise is eliminated. You've finally found it.

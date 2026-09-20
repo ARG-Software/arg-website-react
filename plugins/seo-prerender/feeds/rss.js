@@ -3,12 +3,13 @@ import path from 'node:path';
 import { SITE_URL } from '../constants.js';
 import { escapeHtml } from '../html-utils.js';
 import { DEFAULT_AUTHOR } from '../../../src/frontend/constants/seo.js';
+import { parseContentDate, toContentDateIso } from '../../../src/frontend/utils/contentDate.js';
 
 export function generateRss({ distDir, blogPostMetas }) {
   const rssItems = blogPostMetas
     .map(meta => {
       const itemUrl = `${SITE_URL}/blog/${meta.slug}/`;
-      const pubDate = meta.date ? new Date(meta.date).toUTCString() : new Date().toUTCString();
+      const pubDate = (parseContentDate(meta.date) || new Date()).toUTCString();
       const desc = escapeHtml(meta.subtitle || '');
       const title = escapeHtml(meta.seoTitle || meta.title || meta.slug);
       const author = escapeHtml(meta.author || DEFAULT_AUTHOR.name);
@@ -43,7 +44,7 @@ export function generateAtom({ distDir, blogPostMetas }) {
   const atomEntries = blogPostMetas
     .map(meta => {
       const itemUrl = `${SITE_URL}/blog/${meta.slug}/`;
-      const updated = meta.date ? new Date(meta.date).toISOString() : new Date().toISOString();
+      const updated = toContentDateIso(meta.dateModified || meta.updated || meta.date) || new Date().toISOString();
       const summary = escapeHtml(meta.subtitle || '');
       const title = escapeHtml(meta.seoTitle || meta.title || meta.slug);
       const author = escapeHtml(meta.author || DEFAULT_AUTHOR.name);

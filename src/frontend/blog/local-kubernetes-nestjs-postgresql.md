@@ -7,8 +7,8 @@ title: From Zero to Hero: Mastering Local Kubernetes with NestJS and PostgreSQL 
 subtitle: A step-by-step guide to running containerized applications locally with the speed and simplicity developers need.
 intro: A step-by-step guide to running containerized applications locally with the speed and simplicity developers need.
 date: May 14, 2025
-dateModified: September 19, 2026
-reviewedOn: September 19, 2026
+dateModified: September 20, 2026
+reviewedOn: September 20, 2026
 readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/from-zero-to-hero-mastering-local-kubernetes-with-nestjs-and-postgresql-in-minutes-4f3718c09004
 ---
@@ -269,7 +269,7 @@ How it works: The PersistentVolume advertises 5 GiB of node-local storage, and `
 
 The ConfigMap stores non-sensitive application and database settings. The Secret stores the database password and connection URL. This keeps credentials out of the ConfigMap, although a Kubernetes Secret still requires careful access control and storage handling.
 
-Create local `api/configmap.yaml` and `api/secret.yaml` files before deploying. Do not commit the Secret file. If you start from the companion repository, replace its API Deployment, migration Job, database Deployment, Services, and persistent-volume manifests with the complete versions shown here. The original PoC predates the Secret split and readiness-gated deployment sequence.
+The companion repository includes `api/configmap.yaml` and a safe `api/secret.yaml.example` template. Copy the template to `api/secret.yaml`, replace both password placeholders with the same local-only value, and do not commit the resulting Secret file. Its manifests now include the Secret split, readiness probes, persistent storage, and the readiness-gated deployment sequence shown here.
 
 ```yaml
 # api/configmap.yaml
@@ -470,4 +470,4 @@ This proof of concept demonstrates how to create a functional local Kubernetes e
 
 Running Kubernetes locally speeds up your feedback cycles and ensures that your development environment closely mirrors production, reducing "it works on my machine" problems.
 
-Ready to try it yourself? The original companion proof-of-concept repository is available on GitHub: https://github.com/ARG-Software/Kubernetes-Poc
+Ready to try it yourself? The original companion proof-of-concept repository is available as the [ARG Software Kubernetes PoC](https://github.com/ARG-Software/Kubernetes-Poc).

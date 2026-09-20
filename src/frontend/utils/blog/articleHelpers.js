@@ -1,13 +1,12 @@
 import { sortBlogPostsNewestFirst } from './articleSorting.js';
+import { parseContentDate, toContentDateIso } from '../contentDate.js';
 
 export function parseBlogDate(date) {
-  const timestamp = Date.parse(date || '');
-  return Number.isNaN(timestamp) ? 0 : timestamp;
+  return parseContentDate(date)?.getTime() || 0;
 }
 
 export function parseDateToIso(date) {
-  const timestamp = parseBlogDate(date);
-  return timestamp ? new Date(timestamp).toISOString() : '';
+  return toContentDateIso(date);
 }
 
 export function getBlogTags(posts) {
