@@ -113,6 +113,10 @@ export function getAiResearchLink(providerKey, prompt) {
   return url.toString();
 }
 
+export function getBufferPublishLink() {
+  return getRequiredValue(siteLinks.buffer.publish, 'buffer.publish');
+}
+
 export function getLinkedInShareLink(url) {
   const shareUrl = new URL(getRequiredValue(siteLinks.share.linkedin, 'share.linkedin'));
   shareUrl.searchParams.set('url', url);

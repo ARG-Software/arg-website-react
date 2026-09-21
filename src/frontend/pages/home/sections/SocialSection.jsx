@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { SimpleCarousel } from '@components/navigation/SimpleCarousel';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
 import { LinkedInIcon } from '@ui/icons/LinkedInIcon.jsx';
-import { getCompanySocialLink, getLinkedInShareLink } from '@services/linksService';
+import { ShareArrowIcon } from '@ui/icons/ShareArrowIcon.jsx';
+import { getCompanySocialLink } from '@services/linksService';
 import { trackOutbound } from '@services/analytics';
 import { fetchSocialPosts } from '@services/socialPostsService';
 import HOMEPAGE from '../../../data/homePage.json';
@@ -90,20 +91,14 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
 }
 
 function SocialPostCard({ post }) {
-  const href = post.externalUrl || getCompanySocialLink('linkedin');
-  const shareHref = post.externalUrl ? getLinkedInShareLink(post.externalUrl) : '';
+  const linkedInHref = getCompanySocialLink('linkedin');
+  const postHref = post.externalUrl || '';
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = Boolean(post.coverImageUrl) && !imageFailed;
 
   return (
     <article className="social-feed-card">
-      <a
-        href={href}
-        className="social-feed-card__link"
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => trackOutbound(href, post.excerpt, 'homepage_social')}
-      >
+      <div className="social-feed-card__body">
         <div className="social-feed-card__media">
           {showImage ? (
             <img
@@ -119,25 +114,38 @@ function SocialPostCard({ post }) {
           )}
         </div>
         <p className="social-feed-card__excerpt">{post.excerpt}</p>
-      </a>
+      </div>
       <div className="social-feed-card__meta">
         <time dateTime={post.publishedAt}>{formatPostDate(post.publishedAt)}</time>
         <span>{formatLikeCount(post.likeCount)}</span>
-        {shareHref ? (
+        <div className="social-feed-card__actions">
           <a
-            href={shareHref}
-            className="social-feed-card__share"
+            href={linkedInHref}
+            className="social-feed-card__action"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Share on LinkedIn"
-            onClick={event => {
-              event.stopPropagation();
-              trackOutbound(shareHref, 'Share on LinkedIn', 'homepage_social_share');
-            }}
+            aria-label="ARG Software on LinkedIn"
+            onClick={() =>
+              trackOutbound(linkedInHref, 'ARG Software on LinkedIn', 'homepage_social')
+            }
           >
             <LinkedInIcon />
           </a>
-        ) : null}
+          {postHref ? (
+            <a
+              href={postHref}
+              className="social-feed-card__action"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open on LinkedIn to repost"
+              onClick={() =>
+                trackOutbound(postHref, 'Open on LinkedIn to repost', 'homepage_social_share')
+              }
+            >
+              <ShareArrowIcon />
+            </a>
+          ) : null}
+        </div>
       </div>
     </article>
   );

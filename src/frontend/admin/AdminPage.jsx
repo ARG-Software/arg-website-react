@@ -11,6 +11,7 @@ import { Logo } from '@components/icons/Logo.jsx';
 import { AdminNav } from '@ui/admin/AdminNav.jsx';
 import { AdminProfileMenu } from '@ui/admin/AdminProfileMenu.jsx';
 import { UiSpinner } from '@ui/primitives/UiSpinner.jsx';
+import { getBufferPublishLink } from '@services/linksService';
 import { adminQueryClient } from './queryClient.js';
 import { AuthProvider, useAuth } from './hooks/auth/useAuth.jsx';
 import LoginPage from './pages/LoginPage.jsx';
@@ -20,7 +21,6 @@ import AssistantConversationsPage from './pages/AssistantConversationsPage.jsx';
 import VisitsDashboardPage from './pages/visits/VisitsDashboardPage.jsx';
 import VisitsListPage from './pages/visits/VisitsListPage.jsx';
 import SocialPostsPage from './pages/social/SocialPostsPage.jsx';
-import BufferWireframePage from './pages/social/BufferWireframePage.jsx';
 import HelpPage from './pages/HelpPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import { AssistantConversationOverlay } from './components/overlays/AssistantConversationOverlay.jsx';
@@ -78,7 +78,6 @@ function AdminWorkspace() {
   const pageLoading = queryFetching > 0 || queryMutating > 0;
   const view = getAdminView(location.pathname);
   const visitsView = getVisitsView(location.pathname);
-  const socialView = getSocialView(location.pathname);
   const importStatus = getImportStatus(importMutation);
   const socialSyncStatus = getSocialSyncStatus(socialSyncMutation);
   const deepLinkedConversationId =
@@ -234,24 +233,27 @@ function AdminWorkspace() {
           <AdminNav items={getVisitNavItems(location.pathname)} onNavigate={navigate} />
         ) : view === 'social' ? (
           <AdminNav
-            items={getSocialNavItems(location.pathname)}
-            onNavigate={navigate}
+            items={[]}
             trailing={
-              socialView === 'posts' ? (
-                <div className="admin-nav-actions">
-                  <button
-                    type="button"
-                    className="admin-nav__control"
-                    onClick={() => socialSyncMutation.mutate()}
-                    disabled={pageLoading || socialSyncMutation.isPending}
-                  >
-                    {socialSyncMutation.isPending ? 'Syncing...' : 'Sync from Buffer'}
-                  </button>
-                  {socialSyncStatus && (
-                    <span className="admin-save-status">{socialSyncStatus}</span>
-                  )}
-                </div>
-              ) : null
+              <div className="admin-nav-actions">
+                <button
+                  type="button"
+                  className="admin-nav__control"
+                  onClick={() => socialSyncMutation.mutate()}
+                  disabled={pageLoading || socialSyncMutation.isPending}
+                >
+                  {socialSyncMutation.isPending ? 'Syncing...' : 'Sync from Buffer'}
+                </button>
+                <a
+                  className="admin-nav__control"
+                  href={getBufferPublishLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open Buffer
+                </a>
+                {socialSyncStatus && <span className="admin-save-status">{socialSyncStatus}</span>}
+              </div>
             }
           />
         ) : null
@@ -268,7 +270,6 @@ function AdminWorkspace() {
         onSelectVisitSession: setSelectedVisitSession,
         onSelectSocialPost: setSelectedSocialPost,
         visitsView,
-        socialView,
       })}
       <OutreachEditor
         key={selectedRecordForEditor?.id || 'closed'}
@@ -339,10 +340,6 @@ function renderAdminFragment(view, handlers) {
   }
 
   if (view === 'social') {
-    if (handlers.socialView === 'buffer') {
-      return <BufferWireframePage />;
-    }
-
     return <SocialPostsPage onSelectSocialPost={handlers.onSelectSocialPost} />;
   }
 
@@ -411,11 +408,6 @@ function getVisitsView(pathname) {
   return 'dashboard';
 }
 
-function getSocialView(pathname) {
-  if (pathname.startsWith('/admin/social/buffer')) return 'buffer';
-  return 'posts';
-}
-
 function isOutreachView(view) {
   return ['dashboard', 'all', 'sent', 'notSent'].includes(view);
 }
@@ -462,23 +454,6 @@ function getVisitNavItems(pathname) {
       isActive: view === 'dashboard',
     },
     { href: ADMIN_ROUTES.visitsAll, label: 'All', isActive: view === 'all' },
-  ];
-}
-
-function getSocialNavItems(pathname) {
-  const view = getSocialView(pathname);
-
-  return [
-    {
-      href: ADMIN_ROUTES.social,
-      label: 'Posts',
-      isActive: view === 'posts',
-    },
-    {
-      href: ADMIN_ROUTES.socialBuffer,
-      label: 'Buffer',
-      isActive: view === 'buffer',
-    },
   ];
 }
 

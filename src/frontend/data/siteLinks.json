@@ -49,5 +49,8 @@
   },
   "assets": {
     "portfolio": "/files/portfolio.pdf"
+  },
+  "buffer": {
+    "publish": "https://publish.buffer.com"
   }
 }
