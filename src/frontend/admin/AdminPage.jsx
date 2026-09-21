@@ -19,6 +19,8 @@ import OutreachRecordsPage from './pages/outreach/OutreachRecordsPage.jsx';
 import AssistantConversationsPage from './pages/AssistantConversationsPage.jsx';
 import VisitsDashboardPage from './pages/visits/VisitsDashboardPage.jsx';
 import VisitsListPage from './pages/visits/VisitsListPage.jsx';
+import SocialPostsPage from './pages/social/SocialPostsPage.jsx';
+import BufferWireframePage from './pages/social/BufferWireframePage.jsx';
 import HelpPage from './pages/HelpPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import { AssistantConversationOverlay } from './components/overlays/AssistantConversationOverlay.jsx';
@@ -30,6 +32,7 @@ import {
   useOutreachRecord,
 } from './queries/outreach/useOutreachQueries.js';
 import { useAssistantConversation } from './queries/assistant/useAssistantQueries.js';
+import { useSyncAdminSocialPosts } from './queries/social/useSocialQueries.js';
 import { ADMIN_ROUTES } from './shared/constants.js';
 import '@ui/styles.css';
 import './admin.css';
@@ -64,6 +67,7 @@ function AdminWorkspace() {
   const [selectedVisitSession, setSelectedVisitSession] = useState(null);
   const exportMutation = useExportOutreachCsv();
   const importMutation = useImportOutreachCsv();
+  const socialSyncMutation = useSyncAdminSocialPosts();
   const selectedRecordQuery = useOutreachRecord(selectedRecordId, {
     enabled: isAuthenticated && Boolean(selectedRecordId),
   });
@@ -72,7 +76,9 @@ function AdminWorkspace() {
   const pageLoading = queryFetching > 0 || queryMutating > 0;
   const view = getAdminView(location.pathname);
   const visitsView = getVisitsView(location.pathname);
+  const socialView = getSocialView(location.pathname);
   const importStatus = getImportStatus(importMutation);
+  const socialSyncStatus = getSocialSyncStatus(socialSyncMutation);
   const deepLinkedConversationId =
     view === 'aiBot' ? new URLSearchParams(location.search).get('conversationId') : '';
   const deepLinkedConversationQuery = useAssistantConversation(deepLinkedConversationId, {
@@ -223,6 +229,28 @@ function AdminWorkspace() {
           />
         ) : view === 'visits' ? (
           <AdminNav items={getVisitNavItems(location.pathname)} onNavigate={navigate} />
+        ) : view === 'social' ? (
+          <AdminNav
+            items={getSocialNavItems(location.pathname)}
+            onNavigate={navigate}
+            trailing={
+              socialView === 'posts' ? (
+                <div className="admin-nav-actions">
+                  <button
+                    type="button"
+                    className="admin-nav__control"
+                    onClick={() => socialSyncMutation.mutate()}
+                    disabled={pageLoading || socialSyncMutation.isPending}
+                  >
+                    {socialSyncMutation.isPending ? 'Syncing...' : 'Sync from Buffer'}
+                  </button>
+                  {socialSyncStatus && (
+                    <span className="admin-save-status">{socialSyncStatus}</span>
+                  )}
+                </div>
+              ) : null
+            }
+          />
         ) : null
       }
       loading={pageLoading}
@@ -236,6 +264,7 @@ function AdminWorkspace() {
         onSelectConversation: handleSelectConversation,
         onSelectVisitSession: setSelectedVisitSession,
         visitsView,
+        socialView,
       })}
       <OutreachEditor
         key={selectedRecordForEditor?.id || 'closed'}
@@ -304,6 +333,14 @@ function renderAdminFragment(view, handlers) {
     return <VisitsDashboardPage onSelectVisitSession={handlers.onSelectVisitSession} />;
   }
 
+  if (view === 'social') {
+    if (handlers.socialView === 'buffer') {
+      return <BufferWireframePage />;
+    }
+
+    return <SocialPostsPage />;
+  }
+
   if (view === 'settings') {
     return <SettingsPage userEmail={handlers.userEmail} />;
   }
@@ -358,6 +395,7 @@ function getAdminView(pathname) {
   if (pathname.startsWith('/admin/not-sent')) return 'notSent';
   if (pathname.startsWith('/admin/ai-bot')) return 'aiBot';
   if (pathname.startsWith('/admin/visits')) return 'visits';
+  if (pathname.startsWith('/admin/social')) return 'social';
   if (pathname.startsWith('/admin/help')) return 'help';
   if (pathname.startsWith('/admin/settings')) return 'settings';
   return 'dashboard';
@@ -366,6 +404,11 @@ function getAdminView(pathname) {
 function getVisitsView(pathname) {
   if (pathname.startsWith('/admin/visits/all')) return 'all';
   return 'dashboard';
+}
+
+function getSocialView(pathname) {
+  if (pathname.startsWith('/admin/social/buffer')) return 'buffer';
+  return 'posts';
 }
 
 function isOutreachView(view) {
@@ -383,6 +426,7 @@ function getAdminTopNavItems(pathname) {
     },
     { href: ADMIN_ROUTES.aiBot, label: 'AI Bot', isActive: view === 'aiBot' },
     { href: ADMIN_ROUTES.visits, label: 'Visits', isActive: view === 'visits' },
+    { href: ADMIN_ROUTES.social, label: 'Social', isActive: view === 'social' },
   ];
 }
 
@@ -414,4 +458,29 @@ function getVisitNavItems(pathname) {
     },
     { href: ADMIN_ROUTES.visitsAll, label: 'All', isActive: view === 'all' },
   ];
+}
+
+function getSocialNavItems(pathname) {
+  const view = getSocialView(pathname);
+
+  return [
+    {
+      href: ADMIN_ROUTES.social,
+      label: 'Posts',
+      isActive: view === 'posts',
+    },
+    {
+      href: ADMIN_ROUTES.socialBuffer,
+      label: 'Buffer',
+      isActive: view === 'buffer',
+    },
+  ];
+}
+
+function getSocialSyncStatus(syncMutation) {
+  if (syncMutation.isPending) return 'Syncing...';
+  if (syncMutation.isError) return syncMutation.error.message;
+  if (syncMutation.data?.upserted !== undefined)
+    return `Synced ${syncMutation.data.upserted} posts.`;
+  return '';
 }

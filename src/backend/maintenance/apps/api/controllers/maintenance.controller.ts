@@ -29,6 +29,12 @@ export class MaintenanceController {
     });
   }
 
+  async syncSocialPosts(): Promise<void> {
+    await this.runTask('social_posts_sync', async () => {
+      return this.maintenance.syncSocialPostsUseCase.execute();
+    });
+  }
+
   private async runTask(task: string, execute: () => Promise<LogContext>): Promise<void> {
     const startedAt = Date.now();
     this.logger.info('Maintenance task started', { task });

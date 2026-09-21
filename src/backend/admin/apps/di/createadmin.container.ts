@@ -17,6 +17,7 @@ import { ImportOutreachCsvUseCase } from '../../application/usecases/outreach/im
 import { ListAssistantConversationsUseCase } from '../../application/usecases/assistantConversations/listassistantconversations.usecase.js';
 import { ListAllVisitSessionsUseCase } from '../../application/usecases/visits/listallvisitsessions.usecase.js';
 import { ListOutreachRecordsUseCase } from '../../application/usecases/outreach/listoutreachrecords.usecase.js';
+import { ListSocialPostsUseCase } from '../../application/usecases/socialPosts/listsocialposts.usecase.js';
 import { ListVisitCountryBreakdownUseCase } from '../../application/usecases/visits/listvisitcountrybreakdown.usecase.js';
 import { ListVisitJourneyUseCase } from '../../application/usecases/visits/listvisitjourney.usecase.js';
 import { ListVisitMetricsUseCase } from '../../application/usecases/visits/listvisitmetrics.usecase.js';
@@ -26,14 +27,17 @@ import { LoginUserUseCase } from '../../application/usecases/sessions/loginuser.
 import { RecordVisitSessionUseCase } from '../../application/usecases/visits/recordvisitsession.usecase.js';
 import { RefreshUserSessionUseCase } from '../../application/usecases/sessions/refreshusersession.usecase.js';
 import { SignOutUserUseCase } from '../../application/usecases/sessions/signoutuser.usecase.js';
+import { SyncSocialPostsUseCase } from '../../application/usecases/socialPosts/syncsocialposts.usecase.js';
 import { UpdateOutreachRecordUseCase } from '../../application/usecases/outreach/updateoutreachrecord.usecase.js';
 import { UpdateUserUseCase } from '../../application/usecases/users/updateuser.usecase.js';
 import { createUserAccessPolicy } from '../../application/policies/useraccess.policy.js';
+import { BufferProvider } from '../../infrastructure/buffer/buffer.provider.js';
 import { OutreachCsvParser } from '../../infrastructure/csv/outreachcsv.parser.js';
 import { SupabaseAdminUserRepository } from '../../infrastructure/repositories/supabase/supabaseadminuser.repository.js';
 import { SupabaseAssistantConversationRepository } from '../../infrastructure/repositories/supabase/supabaseassistantconversation.repository.js';
 import { SupabaseOutreachAuditRepository } from '../../infrastructure/repositories/supabase/supabaseoutreachaudit.repository.js';
 import { SupabaseOutreachRepository } from '../../infrastructure/repositories/supabase/supabaseoutreach.repository.js';
+import { SupabaseSocialPostRepository } from '../../infrastructure/repositories/supabase/supabasesocialpost.repository.js';
 import { SupabaseUserIdentityProvider } from '../../infrastructure/repositories/supabase/supabaseuseridentity.provider.js';
 import { SupabaseVisitEventRepository } from '../../infrastructure/repositories/supabase/supabasevisitevent.repository.js';
 import { SupabaseVisitPageViewRepository } from '../../infrastructure/repositories/supabase/supabasevisitpageview.repository.js';
@@ -64,6 +68,8 @@ export function createAdminContainer() {
   const visitPageViewRepository = new SupabaseVisitPageViewRepository(serviceClient, logger);
   const visitEventRepository = new SupabaseVisitEventRepository(serviceClient, logger);
   const visitSessionRecorderRepository = new SupabaseVisitSessionRecorderRepository(serviceClient, logger);
+  const socialPostRepository = new SupabaseSocialPostRepository(serviceClient, logger);
+  const bufferProvider = new BufferProvider(config.getBufferApiKey(), logger);
   const adminRateLimitRepository = new SupabaseRateLimitRepository(
     serviceClient,
     'hit_admin_rate_limit',
@@ -164,6 +170,10 @@ export function createAdminContainer() {
         adminRateLimitRepository,
         config.getAssistantConversationLogRateLimitConfig()
       ),
+    },
+    socialPosts: {
+      listSocialPostsUseCase: new ListSocialPostsUseCase(socialPostRepository, logger),
+      syncSocialPostsUseCase: new SyncSocialPostsUseCase(bufferProvider, socialPostRepository, logger),
     },
     loginRateLimitNotifier: notificationWebhook,
     logger,

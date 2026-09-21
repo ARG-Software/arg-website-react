@@ -45,6 +45,7 @@
     "outreach:import": "tsx scripts/import-outreach.ts \"external/arg-outreach (1).xlsx\"",
     "outreach:import:dry-run": "tsx scripts/import-outreach.ts \"external/arg-outreach (1).xlsx\" --dry-run",
     "admin:bootstrap": "node scripts/bootstrap-admin-users.js",
+    "social:sync": "tsx src/backend/admin/apps/scripts/syncsocialposts.ts",
     "sync:blog": "npm run blog:check-images && npm run rag:ingest:local -- --all",
     "rag:ingest:local": "tsx src/backend/rag/apps/scripts/ingestlocal.ts",
     "rag:ingest:external": "tsx src/backend/rag/apps/scripts/ingestexternal.ts",

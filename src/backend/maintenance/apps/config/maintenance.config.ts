@@ -6,6 +6,7 @@ export interface IMaintenanceConfigValues {
   adminDatabaseServiceRoleKey: string;
   ragDatabaseUrl: string;
   ragDatabaseServiceRoleKey: string;
+  bufferApiKey: string;
 }
 
 export class MaintenanceConfig implements IMaintenanceConfiguration {
@@ -58,6 +59,10 @@ export class MaintenanceConfig implements IMaintenanceConfiguration {
   getRagDatabaseServiceRoleKey(): string {
     return this.values.ragDatabaseServiceRoleKey;
   }
+
+  getBufferApiKey(): string {
+    return this.values.bufferApiKey;
+  }
 }
 
 export function readMaintenanceConfigValues(env: NodeJS.ProcessEnv): IMaintenanceConfigValues {
@@ -66,6 +71,7 @@ export function readMaintenanceConfigValues(env: NodeJS.ProcessEnv): IMaintenanc
     adminDatabaseServiceRoleKey: requiredEnv(env, 'ADMIN_DATABASE_SERVICE_ROLE_KEY'),
     ragDatabaseUrl: requiredEnv(env, 'RAG_DATABASE_URL'),
     ragDatabaseServiceRoleKey: requiredEnv(env, 'RAG_DATABASE_SERVICE_ROLE_KEY'),
+    bufferApiKey: env.BUFFER_API_KEY || '',
   };
 }
 

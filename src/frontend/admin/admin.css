@@ -318,7 +318,8 @@
 .admin-detail-card,
 .admin-login-card,
 .admin-settings-card,
-.admin-help-card {
+.admin-help-card,
+.admin-buffer-card {
   padding: clamp(1rem, 3vw, 1.5rem);
 }
 
@@ -917,5 +918,61 @@
 
   .admin-country-ranking-card__button {
     width: 100%;
+  }
+}
+
+.admin-social-thumb {
+  background: rgba(12, 0, 46, 0.06);
+  border-radius: 0.4rem;
+  display: block;
+  height: 3rem;
+  object-fit: cover;
+  width: 3rem;
+}
+
+.admin-social-thumb--empty {
+  align-items: center;
+  color: rgba(12, 0, 46, 0.45);
+  display: flex;
+  font-size: 0.7rem;
+  font-weight: 700;
+  justify-content: center;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-buffer-wireframe {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-buffer-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-buffer-card h2,
+.admin-buffer-card p {
+  margin: 0;
+}
+
+.admin-buffer-card h2 {
+  color: #0c002e;
+  font-size: 1.2rem;
+}
+
+.admin-buffer-card p {
+  color: rgba(12, 0, 46, 0.68);
+  line-height: 1.6;
+}
+
+.admin-buffer-card--wide {
+  grid-column: 1 / -1;
+}
+
+@media screen and (max-width: 1024px) {
+  .admin-buffer-wireframe {
+    grid-template-columns: 1fr;
   }
 }

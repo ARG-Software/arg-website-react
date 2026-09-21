@@ -8,6 +8,9 @@ import { KeepDatabasesAliveUseCase } from '../../application/usecases/keepdataba
 import { SupabaseVisitSessionRepository } from '../../../admin/infrastructure/repositories/supabase/supabasevisitsession.repository.js';
 import { SupabaseAssistantConversationRetentionRepository } from '../../infrastructure/repositories/supabase/supabaseassistantconversationretention.repository.js';
 import { SupabaseTableKeepAliveProbe } from '../../infrastructure/repositories/supabase/supabasetablekeepaliveprobe.js';
+import { BufferProvider } from '../../../admin/infrastructure/buffer/buffer.provider.js';
+import { SupabaseSocialPostRepository } from '../../../admin/infrastructure/repositories/supabase/supabasesocialpost.repository.js';
+import { SyncSocialPostsUseCase } from '../../../admin/application/usecases/socialPosts/syncsocialposts.usecase.js';
 
 export function createMaintenanceContainer() {
   const logger = new ConsoleLogger();
@@ -33,6 +36,11 @@ export function createMaintenanceContainer() {
       new SupabaseTableKeepAliveProbe(ragClient, 'rag_sources', logger),
       new SupabaseTableKeepAliveProbe(adminClient, 'outreach_records', logger),
     ]),
+    syncSocialPostsUseCase: new SyncSocialPostsUseCase(
+      new BufferProvider(config.getBufferApiKey(), logger),
+      new SupabaseSocialPostRepository(adminClient, logger),
+      logger
+    ),
     logger,
   };
 }

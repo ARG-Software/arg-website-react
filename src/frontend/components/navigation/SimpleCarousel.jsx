@@ -38,6 +38,8 @@ export function SimpleCarousel({
   prevAriaLabel = DEFAULT_PREV_ARIA_LABEL,
   nextAriaLabel = DEFAULT_NEXT_ARIA_LABEL,
   showIndicator = true,
+  hasMore = false,
+  onNeedMore,
   onChange,
 }) {
   const [activeIndex, setActiveIndex] = useState(() => Math.max(0, initialIndex));
@@ -94,14 +96,29 @@ export function SimpleCarousel({
   const pageStart = safePageIndex * safePerPage;
   const pageItems = items.slice(pageStart, pageStart + safePerPage);
   const canGoPrevious = safePageIndex > 0;
-  const canGoNext = safePageIndex < pageCount - 1;
+  const canGoNext = safePageIndex < pageCount - 1 || hasMore;
 
   const navigate = direction => {
     if (isTransitioning) return;
 
     const nextIndex = Math.min(pageCount - 1, Math.max(0, safePageIndex + direction));
 
-    if (nextIndex === safePageIndex) return;
+    if (nextIndex === safePageIndex) {
+      if (direction > 0 && hasMore && typeof onNeedMore === 'function') {
+        setIsTransitioning(true);
+        Promise.resolve(onNeedMore())
+          .then(loaded => {
+            startTransition(() => {
+              if (loaded) setActiveIndex(current => current + 1);
+              setIsTransitioning(false);
+            });
+          })
+          .catch(() => {
+            setIsTransitioning(false);
+          });
+      }
+      return;
+    }
 
     setIsTransitioning(true);
     if (transitionTimer.current) clearTimeout(transitionTimer.current);
@@ -118,7 +135,7 @@ export function SimpleCarousel({
   };
 
   const wrapperClassName = ['simple-carousel', className].filter(Boolean).join(' ');
-  const showControls = pageCount > 1;
+  const showControls = pageCount > 1 || hasMore;
   const trackKey = pageItems.map((item, i) =>
     typeof getItemKey === 'function' ? getItemKey(item, pageStart + i) : pageStart + i
   );

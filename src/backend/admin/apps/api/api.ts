@@ -4,6 +4,7 @@ import { dispatchControllerRoutes } from './controllerroute.handler.js';
 import { getAssistantConversationRoutes } from './controllers/assistantconversations.controller.js';
 import { getAuthRoutes } from './controllers/auth.controller.js';
 import { getOutreachRoutes } from './controllers/outreach.controller.js';
+import { getSocialPostRoutes } from './controllers/socialposts.controller.js';
 import { getUserRoutes } from './controllers/user.controller.js';
 import { getVisitRoutes } from './controllers/visits.controller.js';
 
@@ -14,12 +15,14 @@ const ROUTE_MAP = {
     ...getOutreachRoutes(),
     ...getVisitRoutes(),
     ...getAssistantConversationRoutes(),
+    ...getSocialPostRoutes(),
   ],
   auth: getAuthRoutes,
   user: getUserRoutes,
   outreach: getOutreachRoutes,
   visit: getVisitRoutes,
   assistantConversation: getAssistantConversationRoutes,
+  socialPost: getSocialPostRoutes,
 };
 
 export function routeAdminRequest(request: Request): Promise<Response> {
@@ -44,6 +47,10 @@ export function routeVisitRequest(request: Request): Promise<Response> {
 
 export function routeAssistantConversationRequest(request: Request): Promise<Response> {
   return routeRequest('assistantConversation', request);
+}
+
+export function routeSocialPostRequest(request: Request): Promise<Response> {
+  return routeRequest('socialPost', request);
 }
 
 function routeRequest(type: keyof typeof ROUTE_MAP, request: Request): Promise<Response> {

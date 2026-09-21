@@ -13,6 +13,10 @@ export function runKeepDatabaseAlive(): Promise<void> {
   return runWithMaintenanceLogContext('database_keepalive', () => getController().keepDatabaseAlive());
 }
 
+export function runSocialPostsSync(): Promise<void> {
+  return runWithMaintenanceLogContext('social_posts_sync', () => getController().syncSocialPosts());
+}
+
 function runWithMaintenanceLogContext(task: string, callback: () => Promise<void>): Promise<void> {
   return runWithLogContext(
     {

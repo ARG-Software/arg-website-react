@@ -40,6 +40,7 @@ export interface IAdminConfigValues {
   outreachBlindIndexKey: string;
   assistantConversationEncryptionKeyActiveVersion: number;
   assistantConversationEncryptionKeys: Record<number, string>;
+  bufferApiKey: string;
 }
 
 export class AdminConfig implements IAdminConfiguration {
@@ -169,6 +170,10 @@ export class AdminConfig implements IAdminConfiguration {
     };
   }
 
+  getBufferApiKey(): string {
+    return this.values.bufferApiKey;
+  }
+
 }
 
 export function readAdminConfigValues(env: NodeJS.ProcessEnv): IAdminConfigValues {
@@ -237,6 +242,7 @@ export function readAdminConfigValues(env: NodeJS.ProcessEnv): IAdminConfigValue
       env,
       'ASSISTANT_CONVERSATION_ENCRYPTION_KEY'
     ),
+    bufferApiKey: env.BUFFER_API_KEY || '',
   };
 }
 

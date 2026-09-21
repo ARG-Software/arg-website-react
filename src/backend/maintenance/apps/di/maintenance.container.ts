@@ -21,4 +21,7 @@ export const maintenanceContainer = {
   get keepDatabasesAliveUseCase() {
     return getMaintenanceContainer().keepDatabasesAliveUseCase;
   },
+  get syncSocialPostsUseCase() {
+    return getMaintenanceContainer().syncSocialPostsUseCase;
+  },
 };

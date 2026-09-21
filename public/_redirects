@@ -40,6 +40,9 @@
 /api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200
 /api/admin/assistant-conversations    /.netlify/functions/admin  200
 /api/admin/assistant-conversation     /.netlify/functions/admin  200
+/api/social-posts        /.netlify/functions/social-posts        200
+/api/admin/social-posts  /.netlify/functions/admin               200
+/api/admin/social-posts/sync /.netlify/functions/admin           200
 /mcp                     /.netlify/functions/mcp                 200
 
 # Trailing-slash canonicalization — fixes Ahrefs "3XX in sitemap" errors

@@ -3,4 +3,5 @@ export interface IMaintenanceConfiguration {
   getAdminDatabaseServiceRoleKey(): string;
   getRagDatabaseUrl(): string;
   getRagDatabaseServiceRoleKey(): string;
+  getBufferApiKey(): string;
 }

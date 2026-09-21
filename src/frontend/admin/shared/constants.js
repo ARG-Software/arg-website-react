@@ -6,6 +6,8 @@ export const ADMIN_ROUTES = {
   aiBot: '/admin/ai-bot/',
   visits: '/admin/visits/',
   visitsAll: '/admin/visits/all/',
+  social: '/admin/social/',
+  socialBuffer: '/admin/social/buffer/',
   help: '/admin/help/',
   settings: '/admin/settings/',
 };

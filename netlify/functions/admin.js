@@ -19,6 +19,8 @@ export const config = {
     '/api/admin/visit-journey',
     '/api/admin/assistant-conversations',
     '/api/admin/assistant-conversation',
+    '/api/admin/social-posts',
+    '/api/admin/social-posts/sync',
   ],
   method: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
 };

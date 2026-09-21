@@ -73,6 +73,11 @@ test('function files use backend API entrypoints', () => {
     /maintenance\/apps\/api\/api\.ts/
   );
   assert.match(readNetlifyFile('functions/mcp.js'), /mcp\/apps\/api\/api\.ts/);
+  assert.match(readNetlifyFile('functions/social-posts.js'), /apps\/api\/api\.ts/);
+  assert.match(
+    readNetlifyFile('functions/maintenance-sync-social-posts.js'),
+    /maintenance\/apps\/api\/api\.ts/
+  );
 });
 
 test('TypeScript-backed public MCP function bundles', async () => {
@@ -89,6 +94,14 @@ test('TypeScript-backed maintenance retention function bundles', async () => {
 
 test('TypeScript-backed visit log function bundles', async () => {
   await buildFunction('functions/visit-log.js');
+});
+
+test('TypeScript-backed social posts function bundles', async () => {
+  await buildFunction('functions/social-posts.js');
+});
+
+test('TypeScript-backed social posts sync function bundles', async () => {
+  await buildFunction('functions/maintenance-sync-social-posts.js');
 });
 
 test('visit log adapter forwards Netlify context geolocation through headers', () => {
@@ -145,6 +158,9 @@ test('public redirects expose function endpoints before the 404 fallback', () =>
     '/api/admin/assistant-conversation-log /.netlify/functions/assistant-conversation-log 200',
     '/api/admin/assistant-conversations    /.netlify/functions/admin  200',
     '/api/admin/assistant-conversation     /.netlify/functions/admin  200',
+    '/api/social-posts        /.netlify/functions/social-posts        200',
+    '/api/admin/social-posts  /.netlify/functions/admin               200',
+    '/api/admin/social-posts/sync /.netlify/functions/admin           200',
     '/mcp                     /.netlify/functions/mcp                 200',
   ]) {
     const redirectIndex = redirects.indexOf(redirect);
@@ -176,6 +192,8 @@ test('netlify functions do not reference removed implementation folders or old c
     'functions/rag.js',
     'functions/mcp.js',
     'functions/maintenance-keep-database-alive.js',
+    'functions/social-posts.js',
+    'functions/maintenance-sync-social-posts.js',
   ];
 
   for (const file of files) {

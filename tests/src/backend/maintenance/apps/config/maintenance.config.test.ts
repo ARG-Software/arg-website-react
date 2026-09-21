@@ -19,6 +19,7 @@ test('loads maintenance configuration from environment', () => {
   assert.equal(config.getAdminDatabaseServiceRoleKey(), ENV.ADMIN_DATABASE_SERVICE_ROLE_KEY);
   assert.equal(config.getRagDatabaseUrl(), ENV.RAG_DATABASE_URL);
   assert.equal(config.getRagDatabaseServiceRoleKey(), ENV.RAG_DATABASE_SERVICE_ROLE_KEY);
+  assert.equal(config.getBufferApiKey(), '');
 });
 
 test('throws configuration errors for missing maintenance environment', () => {

@@ -48,8 +48,6 @@ module.exports = {
               /^menu--/,
               /^lenis/,
               /^swiper/,
-              /^eapps/,
-              /^elfsight/,
               /^pt-/,
               /^ui-card--/,
               /^ui-stat--/,
