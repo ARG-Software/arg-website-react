@@ -17,6 +17,7 @@ type SocialPostRow = {
   cover_image_url: string | null;
   external_url: string | null;
   published_at: string;
+  like_count: number;
 };
 
 export class SupabaseSocialPostRepository extends SupabaseRepositoryBase implements ISocialPostRepository {
@@ -36,9 +37,10 @@ export class SupabaseSocialPostRepository extends SupabaseRepositoryBase impleme
         const { from, to } = this.getPageRange(page, pageSize);
         const { data, error, count } = await this.client
           .from('social_posts')
-          .select('id, buffer_post_id, text, cover_image_url, external_url, published_at', {
-            count: 'exact',
-          })
+          .select(
+            'id, buffer_post_id, text, cover_image_url, external_url, published_at, like_count',
+            { count: 'exact' }
+          )
           .order('published_at', { ascending: false })
           .range(from, to);
 
@@ -66,6 +68,7 @@ export class SupabaseSocialPostRepository extends SupabaseRepositoryBase impleme
             cover_image_url: post.coverImageUrl,
             external_url: post.externalUrl,
             published_at: post.publishedAt,
+            like_count: post.likeCount,
           })),
           { onConflict: 'buffer_post_id' }
         );
@@ -86,5 +89,6 @@ function toSocialPost(row: SocialPostRow): SocialPost {
     coverImageUrl: row.cover_image_url,
     externalUrl: row.external_url,
     publishedAt: row.published_at,
+    likeCount: Number(row.like_count || 0),
   };
 }

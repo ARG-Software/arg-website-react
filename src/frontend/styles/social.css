@@ -21,7 +21,6 @@
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
-  text-decoration: none;
   transition:
     border-color 0.2s ease,
     transform 0.2s ease;
@@ -30,6 +29,15 @@
 .social-feed-card:hover {
   border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-0.2rem);
+}
+
+.social-feed-card__link {
+  color: inherit;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  text-decoration: none;
 }
 
 .social-feed-card__media {
@@ -61,6 +69,7 @@
 .social-feed-card__excerpt {
   color: rgba(255, 255, 255, 0.82);
   display: -webkit-box;
+  flex: 1;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body-small);
   -webkit-line-clamp: 5;
@@ -68,7 +77,36 @@
   line-height: 1.5;
   margin: 0;
   overflow: hidden;
-  padding: 1.25rem 1.25rem 1.5rem;
+  padding: 1.25rem 1.25rem 0.75rem;
+}
+
+.social-feed-card__meta {
+  align-items: center;
+  color: rgba(255, 255, 255, 0.55);
+  display: flex;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-meta);
+  gap: 0.75rem;
+  padding: 0 1.25rem 1.25rem;
+}
+
+.social-feed-card__share {
+  align-items: center;
+  color: inherit;
+  display: inline-flex;
+  height: 1.25rem;
+  margin-left: auto;
+  width: 1.25rem;
+}
+
+.social-feed-card__share svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.social-feed-card__share:hover {
+  color: #fff;
 }
 
 @media screen and (max-width: 991px) {

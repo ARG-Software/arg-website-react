@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { SimpleCarousel } from '@components/navigation/SimpleCarousel';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
-import { getCompanySocialLink } from '@services/linksService';
+import { LinkedInIcon } from '@ui/icons/LinkedInIcon.jsx';
+import { getCompanySocialLink, getLinkedInShareLink } from '@services/linksService';
 import { trackOutbound } from '@services/analytics';
 import { fetchSocialPosts } from '@services/socialPostsService';
 import HOMEPAGE from '../../../data/homePage.json';
@@ -90,27 +91,68 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
 
 function SocialPostCard({ post }) {
   const href = post.externalUrl || getCompanySocialLink('linkedin');
+  const shareHref = post.externalUrl ? getLinkedInShareLink(post.externalUrl) : '';
 
   return (
-    <a
-      href={href}
-      className="social-feed-card"
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => trackOutbound(href, post.excerpt, 'homepage_social')}
-    >
-      <div className="social-feed-card__media">
-        {post.coverImageUrl ? (
-          <img src={post.coverImageUrl} alt="" />
-        ) : (
-          <div className="social-feed-card__placeholder">
-            <ArgMarkIcon />
-          </div>
-        )}
+    <article className="social-feed-card">
+      <a
+        href={href}
+        className="social-feed-card__link"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => trackOutbound(href, post.excerpt, 'homepage_social')}
+      >
+        <div className="social-feed-card__media">
+          {post.coverImageUrl ? (
+            <img src={post.coverImageUrl} alt="" />
+          ) : (
+            <div className="social-feed-card__placeholder">
+              <ArgMarkIcon />
+            </div>
+          )}
+        </div>
+        <p className="social-feed-card__excerpt">{post.excerpt}</p>
+      </a>
+      <div className="social-feed-card__meta">
+        <time dateTime={post.publishedAt}>{formatPostDate(post.publishedAt)}</time>
+        <span>{formatLikeCount(post.likeCount)}</span>
+        {shareHref ? (
+          <a
+            href={shareHref}
+            className="social-feed-card__share"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on LinkedIn"
+            onClick={event => {
+              event.stopPropagation();
+              trackOutbound(shareHref, 'Share on LinkedIn', 'homepage_social_share');
+            }}
+          >
+            <LinkedInIcon />
+          </a>
+        ) : null}
       </div>
-      <p className="social-feed-card__excerpt">{post.excerpt}</p>
-    </a>
+    </article>
   );
+}
+
+function formatPostDate(value) {
+  if (!value) return '';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+
+  return date.toLocaleDateString(undefined, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function formatLikeCount(value) {
+  const likes = Number(value || 0);
+
+  return likes === 1 ? '1 like' : `${likes} likes`;
 }
 
 function hasNextPage(pagination) {

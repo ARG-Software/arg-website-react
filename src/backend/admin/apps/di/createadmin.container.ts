@@ -32,6 +32,7 @@ import { UpdateOutreachRecordUseCase } from '../../application/usecases/outreach
 import { UpdateUserUseCase } from '../../application/usecases/users/updateuser.usecase.js';
 import { createUserAccessPolicy } from '../../application/policies/useraccess.policy.js';
 import { BufferProvider } from '../../infrastructure/buffer/buffer.provider.js';
+import { OpenGraphImageProvider } from '../../infrastructure/opengraph/opengraphimage.provider.js';
 import { OutreachCsvParser } from '../../infrastructure/csv/outreachcsv.parser.js';
 import { SupabaseAdminUserRepository } from '../../infrastructure/repositories/supabase/supabaseadminuser.repository.js';
 import { SupabaseAssistantConversationRepository } from '../../infrastructure/repositories/supabase/supabaseassistantconversation.repository.js';
@@ -70,6 +71,7 @@ export function createAdminContainer() {
   const visitSessionRecorderRepository = new SupabaseVisitSessionRecorderRepository(serviceClient, logger);
   const socialPostRepository = new SupabaseSocialPostRepository(serviceClient, logger);
   const bufferProvider = new BufferProvider(config.getBufferApiKey(), logger);
+  const openGraphImageProvider = new OpenGraphImageProvider();
   const adminRateLimitRepository = new SupabaseRateLimitRepository(
     serviceClient,
     'hit_admin_rate_limit',
@@ -173,7 +175,12 @@ export function createAdminContainer() {
     },
     socialPosts: {
       listSocialPostsUseCase: new ListSocialPostsUseCase(socialPostRepository, logger),
-      syncSocialPostsUseCase: new SyncSocialPostsUseCase(bufferProvider, socialPostRepository, logger),
+      syncSocialPostsUseCase: new SyncSocialPostsUseCase(
+        bufferProvider,
+        socialPostRepository,
+        openGraphImageProvider,
+        logger
+      ),
     },
     loginRateLimitNotifier: notificationWebhook,
     logger,

@@ -25,6 +25,7 @@ import HelpPage from './pages/HelpPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import { AssistantConversationOverlay } from './components/overlays/AssistantConversationOverlay.jsx';
 import { OutreachEditor } from './components/overlays/OutreachEditor.jsx';
+import { SocialPostOverlay } from './components/overlays/SocialPostOverlay.jsx';
 import { VisitJourneyOverlay } from './components/overlays/VisitJourneyOverlay.jsx';
 import {
   useExportOutreachCsv,
@@ -65,6 +66,7 @@ function AdminWorkspace() {
   const [selectedRecordId, setSelectedRecordId] = useState('');
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [selectedVisitSession, setSelectedVisitSession] = useState(null);
+  const [selectedSocialPost, setSelectedSocialPost] = useState(null);
   const exportMutation = useExportOutreachCsv();
   const importMutation = useImportOutreachCsv();
   const socialSyncMutation = useSyncAdminSocialPosts();
@@ -99,6 +101,7 @@ function AdminWorkspace() {
     setSelectedRecordId('');
     setSelectedConversation(null);
     setSelectedVisitSession(null);
+    setSelectedSocialPost(null);
   }
 
   function handleRefresh() {
@@ -263,6 +266,7 @@ function AdminWorkspace() {
         },
         onSelectConversation: handleSelectConversation,
         onSelectVisitSession: setSelectedVisitSession,
+        onSelectSocialPost: setSelectedSocialPost,
         visitsView,
         socialView,
       })}
@@ -280,6 +284,7 @@ function AdminWorkspace() {
         session={selectedVisitSession}
         onClose={() => setSelectedVisitSession(null)}
       />
+      <SocialPostOverlay post={selectedSocialPost} onClose={() => setSelectedSocialPost(null)} />
     </AdminShell>
   );
 }
@@ -338,7 +343,7 @@ function renderAdminFragment(view, handlers) {
       return <BufferWireframePage />;
     }
 
-    return <SocialPostsPage />;
+    return <SocialPostsPage onSelectSocialPost={handlers.onSelectSocialPost} />;
   }
 
   if (view === 'settings') {

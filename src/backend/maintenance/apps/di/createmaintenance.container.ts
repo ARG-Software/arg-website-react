@@ -9,6 +9,7 @@ import { SupabaseVisitSessionRepository } from '../../../admin/infrastructure/re
 import { SupabaseAssistantConversationRetentionRepository } from '../../infrastructure/repositories/supabase/supabaseassistantconversationretention.repository.js';
 import { SupabaseTableKeepAliveProbe } from '../../infrastructure/repositories/supabase/supabasetablekeepaliveprobe.js';
 import { BufferProvider } from '../../../admin/infrastructure/buffer/buffer.provider.js';
+import { OpenGraphImageProvider } from '../../../admin/infrastructure/opengraph/opengraphimage.provider.js';
 import { SupabaseSocialPostRepository } from '../../../admin/infrastructure/repositories/supabase/supabasesocialpost.repository.js';
 import { SyncSocialPostsUseCase } from '../../../admin/application/usecases/socialPosts/syncsocialposts.usecase.js';
 
@@ -39,6 +40,7 @@ export function createMaintenanceContainer() {
     syncSocialPostsUseCase: new SyncSocialPostsUseCase(
       new BufferProvider(config.getBufferApiKey(), logger),
       new SupabaseSocialPostRepository(adminClient, logger),
+      new OpenGraphImageProvider(),
       logger
     ),
     logger,

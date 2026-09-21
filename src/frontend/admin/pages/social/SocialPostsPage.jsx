@@ -5,7 +5,7 @@ import { PAGE_SIZE, createEmptyTableData } from '../../shared/constants.js';
 import { ErrorCard } from '../../shared/ErrorCard.jsx';
 import { formatDateTime } from '../../shared/formatters.js';
 
-export default function SocialPostsPage() {
+export default function SocialPostsPage({ onSelectSocialPost }) {
   const [page, setPage] = useState(1);
   const postsQuery = useAdminSocialPosts({ page, pageSize: PAGE_SIZE }, { keepPrevious: true });
 
@@ -24,6 +24,7 @@ export default function SocialPostsPage() {
             onPageChange: setPage,
           }}
           emptyMessage="No social posts found. Sync from Buffer to populate the homepage feed."
+          onRowClick={onSelectSocialPost}
           tone="light"
         />
       )}
@@ -53,16 +54,9 @@ function getSocialPostColumns() {
       render: record => formatDateTime(record.publishedAt),
     },
     {
-      key: 'externalUrl',
-      label: 'LinkedIn',
-      render: record =>
-        record.externalUrl ? (
-          <a href={record.externalUrl} target="_blank" rel="noopener noreferrer">
-            Open post
-          </a>
-        ) : (
-          '-'
-        ),
+      key: 'likeCount',
+      label: 'Likes',
+      render: record => record.likeCount || 0,
     },
   ];
 }

@@ -94,6 +94,7 @@ function createTestApi() {
             coverImageUrl: null,
             externalUrl: 'https://www.linkedin.com/feed/update/urn:li:activity:1',
             publishedAt: '2026-09-01T09:00:00.000Z',
+            likeCount: 3,
           },
         ],
         totalRecords: 1,
@@ -115,11 +116,17 @@ function createTestApi() {
               coverImageUrl: null,
               externalUrl: 'https://www.linkedin.com/feed/update/urn:li:activity:1',
               publishedAt: '2026-09-01T09:00:00.000Z',
+              likeCount: 3,
             },
           ];
         },
       },
-      repository
+      repository,
+      {
+        async fetchCoverFromText() {
+          return null;
+        },
+      }
     ),
   });
 

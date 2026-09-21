@@ -36,9 +36,11 @@ function createSocialPostListItem(post: SocialPost): SocialPostListItem {
   return {
     id: post.id || post.bufferPostId,
     excerpt: createExcerpt(post.text),
+    text: post.text,
     coverImageUrl: post.coverImageUrl,
     externalUrl: post.externalUrl,
     publishedAt: post.publishedAt,
+    likeCount: post.likeCount || 0,
   };
 }
 

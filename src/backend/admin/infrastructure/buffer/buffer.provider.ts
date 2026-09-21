@@ -21,6 +21,11 @@ type BufferAsset = {
   image?: { altText?: string | null } | null;
 };
 
+type BufferPostMetric = {
+  type?: string | null;
+  value?: number | null;
+};
+
 type BufferPostNode = {
   id?: string;
   text?: string;
@@ -29,6 +34,7 @@ type BufferPostNode = {
   createdAt?: string | null;
   externalLink?: string | null;
   assets?: BufferAsset[] | null;
+  metrics?: BufferPostMetric[] | null;
 };
 
 export class BufferProvider implements IBufferProvider {
@@ -139,6 +145,10 @@ export class BufferProvider implements IBufferProvider {
               dueAt
               createdAt
               externalLink
+              metrics {
+                type
+                value
+              }
               assets {
                 thumbnail
                 mimeType
@@ -183,7 +193,7 @@ export class BufferProvider implements IBufferProvider {
     });
     const payload = (await response.json().catch(() => ({}))) as GraphQlResponse<T>;
 
-    if (!response.ok || payload.errors?.length) {
+    if (!response.ok || !payload.data) {
       throw createAdminError(
         502,
         'buffer_request_failed',
@@ -191,8 +201,10 @@ export class BufferProvider implements IBufferProvider {
       );
     }
 
-    if (!payload.data) {
-      throw createAdminError(502, 'buffer_request_failed', 'Unable to fetch posts from Buffer');
+    if (payload.errors?.length) {
+      this.logger?.warn('Buffer GraphQL returned errors', {
+        graphQlError: payload.errors[0]?.message,
+      });
     }
 
     return payload.data;
@@ -210,6 +222,7 @@ function toSentPost(node: BufferPostNode): BufferSentPost | null {
     coverImageUrl: getCoverImageUrl(node.assets),
     externalUrl: node.externalLink || null,
     publishedAt,
+    likeCount: getLikeCount(node.metrics),
   };
 }
 
@@ -223,4 +236,11 @@ function getCoverImageUrl(assets: BufferAsset[] | null | undefined): string | nu
   const chosen = image || assets[0];
 
   return chosen.source || chosen.thumbnail || null;
+}
+
+function getLikeCount(metrics: BufferPostMetric[] | null | undefined): number {
+  const metric = (metrics || []).find(item => String(item.type || '').toLowerCase() === 'likes');
+  const value = Number(metric?.value || 0);
+
+  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }

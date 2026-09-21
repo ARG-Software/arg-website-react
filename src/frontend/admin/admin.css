@@ -318,8 +318,7 @@
 .admin-detail-card,
 .admin-login-card,
 .admin-settings-card,
-.admin-help-card,
-.admin-buffer-card {
+.admin-help-card {
   padding: clamp(1rem, 3vw, 1.5rem);
 }
 
@@ -941,38 +940,32 @@
   text-transform: uppercase;
 }
 
-.admin-buffer-wireframe {
-  display: grid;
-  gap: 1.25rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.admin-social-detail-cover {
+  border-radius: 0.75rem;
+  display: block;
+  margin-bottom: 1rem;
+  max-height: 20rem;
+  object-fit: cover;
+  width: 100%;
 }
 
-.admin-buffer-card {
-  display: grid;
-  gap: 1rem;
-}
-
-.admin-buffer-card h2,
-.admin-buffer-card p {
-  margin: 0;
-}
-
-.admin-buffer-card h2 {
-  color: #0c002e;
-  font-size: 1.2rem;
-}
-
-.admin-buffer-card p {
-  color: rgba(12, 0, 46, 0.68);
+.admin-social-detail-text {
+  color: rgba(12, 0, 46, 0.82);
   line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
 }
 
-.admin-buffer-card--wide {
-  grid-column: 1 / -1;
+.admin-buffer-frame {
+  display: grid;
+  gap: 0.75rem;
+  min-height: calc(100vh - 14rem);
 }
 
-@media screen and (max-width: 1024px) {
-  .admin-buffer-wireframe {
-    grid-template-columns: 1fr;
-  }
+.admin-buffer-frame iframe {
+  background: #fff;
+  border: 0;
+  border-radius: 0.75rem;
+  min-height: calc(100vh - 16rem);
+  width: 100%;
 }
