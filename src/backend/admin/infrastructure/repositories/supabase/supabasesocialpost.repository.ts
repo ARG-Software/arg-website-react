@@ -79,6 +79,27 @@ export class SupabaseSocialPostRepository extends SupabaseRepositoryBase impleme
       }
     );
   }
+
+  async deleteMissing(keepBufferPostIds: string[]): Promise<number> {
+    if (!keepBufferPostIds.length) return 0;
+
+    return logOperation(
+      this.logger,
+      'Supabase social posts prune',
+      { table: 'social_posts', recordCount: keepBufferPostIds.length },
+      async () => {
+        const { count, error } = await this.client
+          .from('social_posts')
+          .delete({ count: 'exact' })
+          .not('buffer_post_id', 'in', `(${keepBufferPostIds.join(',')})`);
+
+        if (error) throw error;
+
+        return count || 0;
+      },
+      result => ({ recordCount: result })
+    );
+  }
 }
 
 function toSocialPost(row: SocialPostRow): SocialPost {

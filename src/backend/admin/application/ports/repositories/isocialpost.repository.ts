@@ -13,4 +13,5 @@ export type SocialPostListResult = {
 export interface ISocialPostRepository {
   list(query: SocialPostListQuery): Promise<SocialPostListResult>;
   upsertMany(posts: SocialPost[]): Promise<number>;
+  deleteMissing(keepBufferPostIds: string[]): Promise<number>;
 }

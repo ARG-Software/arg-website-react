@@ -33,6 +33,7 @@ export class SyncSocialPostsUseCase {
     }
 
     const upserted = await this.socialPostRepository.upsertMany(resolved);
+    await this.socialPostRepository.deleteMissing(resolved.map(post => post.bufferPostId));
     this.logger?.info('Social posts sync use case completed', { upserted });
 
     return { upserted };

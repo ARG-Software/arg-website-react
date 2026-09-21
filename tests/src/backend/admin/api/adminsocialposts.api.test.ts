@@ -103,6 +103,9 @@ function createTestApi() {
     async upsertMany(records) {
       return records.length;
     },
+    async deleteMissing() {
+      return 0;
+    },
   };
   const controller = new TestSocialPostsController({
     listSocialPostsUseCase: new ListSocialPostsUseCase(repository),

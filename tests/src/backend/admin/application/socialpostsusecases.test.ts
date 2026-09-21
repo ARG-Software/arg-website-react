@@ -26,6 +26,9 @@ test('lists social posts with excerpts and pagination', async () => {
     async upsertMany() {
       throw new Error('should not upsert');
     },
+    async deleteMissing() {
+      throw new Error('should not prune');
+    },
   });
 
   const result = await useCase.execute({ page: 1, pageSize: 3 });
@@ -70,6 +73,10 @@ test('syncs sent Buffer posts into the repository', async () => {
       async upsertMany(records) {
         upserted = records;
         return records.length;
+      },
+      async deleteMissing(ids) {
+        assert.deepEqual(ids, ['buffer-1']);
+        return 0;
       },
     },
     {
@@ -119,6 +126,9 @@ test('keeps Buffer cover images without fetching Open Graph', async () => {
         upserted = records;
         return records.length;
       },
+      async deleteMissing() {
+        return 0;
+      },
     },
     {
       async fetchCoverFromText() {
@@ -150,6 +160,9 @@ test('syncs nothing when Buffer returns no posts', async () => {
         upsertCalled = true;
         return 0;
       },
+      async deleteMissing() {
+        throw new Error('should not prune');
+      },
     },
     {
       async fetchCoverFromText() {
@@ -162,4 +175,45 @@ test('syncs nothing when Buffer returns no posts', async () => {
 
   assert.equal(result.upserted, 0);
   assert.equal(upsertCalled, false);
+});
+
+test('prunes social posts that were not returned by Buffer', async () => {
+  let pruned = [];
+  const useCase = new SyncSocialPostsUseCase(
+    {
+      async listSentLinkedInPosts() {
+        return [
+          {
+            bufferPostId: 'buffer-1',
+            text: 'Published post',
+            coverImageUrl: 'https://cdn.buffer.com/cover.webp',
+            externalUrl: 'https://www.linkedin.com/feed/update/urn:li:activity:1',
+            publishedAt: '2026-09-01T09:00:00.000Z',
+            likeCount: 3,
+          },
+        ];
+      },
+    },
+    {
+      async list() {
+        throw new Error('should not list');
+      },
+      async upsertMany(records) {
+        return records.length;
+      },
+      async deleteMissing(ids) {
+        pruned = ids;
+        return 2;
+      },
+    },
+    {
+      async fetchCoverFromText() {
+        throw new Error('should not fetch cover');
+      },
+    }
+  );
+
+  await useCase.execute();
+
+  assert.deepEqual(pruned, ['buffer-1']);
 });

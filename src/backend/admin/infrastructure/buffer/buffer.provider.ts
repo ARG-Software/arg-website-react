@@ -26,6 +26,11 @@ type BufferPostMetric = {
   value?: number | null;
 };
 
+type BufferLinkAttachment = {
+  thumbnail?: string | null;
+  url?: string | null;
+};
+
 type BufferPostNode = {
   id?: string;
   text?: string;
@@ -35,6 +40,7 @@ type BufferPostNode = {
   externalLink?: string | null;
   assets?: BufferAsset[] | null;
   metrics?: BufferPostMetric[] | null;
+  metadata?: { linkAttachment?: BufferLinkAttachment | null } | null;
 };
 
 export class BufferProvider implements IBufferProvider {
@@ -149,6 +155,14 @@ export class BufferProvider implements IBufferProvider {
                 type
                 value
               }
+              metadata {
+                ... on LinkedInPostMetadata {
+                  linkAttachment {
+                    thumbnail
+                    url
+                  }
+                }
+              }
               assets {
                 thumbnail
                 mimeType
@@ -213,34 +227,40 @@ export class BufferProvider implements IBufferProvider {
 
 function toSentPost(node: BufferPostNode): BufferSentPost | null {
   const text = String(node.text || '').trim();
-  const publishedAt = node.sentAt || node.dueAt || node.createdAt || '';
+  const publishedAt = node.sentAt || '';
   if (!node.id || !text || !publishedAt) return null;
 
   return {
     bufferPostId: node.id,
     text,
-    coverImageUrl: getCoverImageUrl(node.assets),
+    coverImageUrl: getCoverImageUrl(node),
     externalUrl: node.externalLink || null,
     publishedAt,
     likeCount: getLikeCount(node.metrics),
   };
 }
 
-function getCoverImageUrl(assets: BufferAsset[] | null | undefined): string | null {
-  if (!assets?.length) return null;
-
+function getCoverImageUrl(node: BufferPostNode): string | null {
+  const assets = node.assets || [];
   const image = assets.find(asset => {
     const mimeType = String(asset.mimeType || '');
     return Boolean(asset.image) || mimeType.startsWith('image/');
   });
   const chosen = image || assets[0];
+  const fromAsset = chosen?.source || chosen?.thumbnail || null;
+  if (fromAsset) return fromAsset;
 
-  return chosen.source || chosen.thumbnail || null;
+  return node.metadata?.linkAttachment?.thumbnail || null;
 }
 
 function getLikeCount(metrics: BufferPostMetric[] | null | undefined): number {
-  const metric = (metrics || []).find(item => String(item.type || '').toLowerCase() === 'likes');
-  const value = Number(metric?.value || 0);
+  return metricValue(metrics, 'reactions') ?? metricValue(metrics, 'likes') ?? 0;
+}
 
+function metricValue(metrics: BufferPostMetric[] | null | undefined, type: string): number | null {
+  const metric = (metrics || []).find(item => String(item.type || '').toLowerCase() === type);
+  if (!metric) return null;
+
+  const value = Number(metric.value || 0);
   return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }

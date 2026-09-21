@@ -12,7 +12,11 @@ export class OpenGraphImageProvider implements IOpenGraphImageProvider {
 
     try {
       const response = await fetch(pageUrl, {
-        headers: { Accept: 'text/html', 'User-Agent': 'arg.software/social-sync' },
+        headers: {
+          Accept: 'text/html',
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        },
         redirect: 'follow',
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       });
