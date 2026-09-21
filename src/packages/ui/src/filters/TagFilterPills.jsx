@@ -9,6 +9,7 @@ export function TagFilterPills({
   onClear,
   label,
   allLabel = 'All',
+  showAll = true,
   layout = 'pills',
   className = '',
   animate = false,
@@ -37,15 +38,17 @@ export function TagFilterPills({
 
       {isList ? (
         <div className="tag-filter__list">
-          <button
-            type="button"
-            className={`tag-filter__item${isAllSelected ? ' is-active' : ''}`}
-            onClick={() => onClear?.()}
-            aria-pressed={isAllSelected}
-          >
-            <span className="tag-filter__name">{allLabel}</span>
-            <span className="tag-filter__count">{totalCount}</span>
-          </button>
+          {showAll ? (
+            <button
+              type="button"
+              className={`tag-filter__item${isAllSelected ? ' is-active' : ''}`}
+              onClick={() => onClear?.()}
+              aria-pressed={isAllSelected}
+            >
+              <span className="tag-filter__name">{allLabel}</span>
+              <span className="tag-filter__count">{totalCount}</span>
+            </button>
+          ) : null}
 
           {tags.map(tag => {
             const isSelected = selectedTags.includes(tag);
@@ -65,16 +68,18 @@ export function TagFilterPills({
         </div>
       ) : (
         <div className="tag-filter__pills">
-          <PillButton
-            className="tag-filter__pill"
-            variant="dark"
-            size="sm"
-            active={isAllSelected}
-            onClick={() => onClear?.()}
-            aria-pressed={isAllSelected}
-          >
-            {allLabel} <span className="tag-filter__count">{totalCount}</span>
-          </PillButton>
+          {showAll ? (
+            <PillButton
+              className="tag-filter__pill"
+              variant="dark"
+              size="sm"
+              active={isAllSelected}
+              onClick={() => onClear?.()}
+              aria-pressed={isAllSelected}
+            >
+              {allLabel} <span className="tag-filter__count">{totalCount}</span>
+            </PillButton>
+          ) : null}
 
           {tags.map(tag => {
             const isSelected = selectedTags.includes(tag);

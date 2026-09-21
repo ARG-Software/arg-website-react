@@ -96,12 +96,6 @@ export default function BlogPage() {
     });
   }
 
-  function clearCollections() {
-    if (selectedCollections.length === 0) return;
-    setSelectedCollections([]);
-    trackEvent('blog_collection_filter_clear', { previous: selectedCollections });
-  }
-
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
@@ -189,10 +183,9 @@ export default function BlogPage() {
                       label="Collection"
                       tags={blogCollections}
                       tagCounts={collectionCounts}
-                      totalCount={blogPosts.length}
                       selectedTags={selectedCollections}
                       onToggle={toggleCollection}
-                      onClear={clearCollections}
+                      showAll={false}
                       animate={true}
                       animationOrder={2}
                     />
@@ -231,6 +224,12 @@ export default function BlogPage() {
                             <div className="blp-row-body">
                               <h2 className="blp-row-title">{article.title}</h2>
                               <p className="blp-row-excerpt">{article.subtitle}</p>
+                              {article.collectionTitle ? (
+                                <span className="blp-row-collection">
+                                  <span className="blp-row-collection-label">Collection</span>
+                                  {article.collectionTitle}
+                                </span>
+                              ) : null}
                               <div className="blp-row-tags">
                                 {(article.tags || [article.tag]).filter(Boolean).map(tag => (
                                   <Pill key={tag} variant="outline" size="xs">
@@ -247,12 +246,6 @@ export default function BlogPage() {
                                 {article.author || 'ARG Software'}
                               </span>
                               <span className="blp-row-readtime">{article.readTime}</span>
-                              {article.collectionTitle ? (
-                                <span className="blp-row-collection">
-                                  <span className="blp-row-collection-label">Collection</span>
-                                  {article.collectionTitle}
-                                </span>
-                              ) : null}
                             </div>
                           </AppLink>
                         ))}
