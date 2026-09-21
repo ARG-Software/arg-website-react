@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { AdminRecordOverlay } from '@ui/admin/AdminRecordOverlay.jsx';
 import { formatDateTime } from '../../shared/formatters.js';
 
 export function SocialPostOverlay({ post, onClose }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
   if (!post) return null;
 
   return (
@@ -28,8 +31,14 @@ export function SocialPostOverlay({ post, onClose }) {
         <span>Published: {formatDateTime(post.publishedAt)}</span>
         <span>Likes: {post.likeCount || 0}</span>
       </div>
-      {post.coverImageUrl ? (
-        <img className="admin-social-detail-cover" src={post.coverImageUrl} alt="" />
+      {post.coverImageUrl && !imageFailed ? (
+        <img
+          className="admin-social-detail-cover"
+          src={post.coverImageUrl}
+          alt=""
+          referrerPolicy="no-referrer"
+          onError={() => setImageFailed(true)}
+        />
       ) : null}
       <p className="admin-social-detail-text">{post.text || post.excerpt}</p>
     </AdminRecordOverlay>

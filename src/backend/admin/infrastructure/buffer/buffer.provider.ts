@@ -241,14 +241,12 @@ function toSentPost(node: BufferPostNode): BufferSentPost | null {
 }
 
 function getCoverImageUrl(node: BufferPostNode): string | null {
-  const assets = node.assets || [];
-  const image = assets.find(asset => {
+  const image = (node.assets || []).find(asset => {
     const mimeType = String(asset.mimeType || '');
     return Boolean(asset.image) || mimeType.startsWith('image/');
   });
-  const chosen = image || assets[0];
-  const fromAsset = chosen?.source || chosen?.thumbnail || null;
-  if (fromAsset) return fromAsset;
+  const fromImage = image?.source || image?.thumbnail || null;
+  if (fromImage) return fromImage;
 
   return node.metadata?.linkAttachment?.thumbnail || null;
 }

@@ -92,6 +92,8 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
 function SocialPostCard({ post }) {
   const href = post.externalUrl || getCompanySocialLink('linkedin');
   const shareHref = post.externalUrl ? getLinkedInShareLink(post.externalUrl) : '';
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(post.coverImageUrl) && !imageFailed;
 
   return (
     <article className="social-feed-card">
@@ -103,8 +105,13 @@ function SocialPostCard({ post }) {
         onClick={() => trackOutbound(href, post.excerpt, 'homepage_social')}
       >
         <div className="social-feed-card__media">
-          {post.coverImageUrl ? (
-            <img src={post.coverImageUrl} alt="" />
+          {showImage ? (
+            <img
+              src={post.coverImageUrl}
+              alt=""
+              referrerPolicy="no-referrer"
+              onError={() => setImageFailed(true)}
+            />
           ) : (
             <div className="social-feed-card__placeholder">
               <ArgMarkIcon />

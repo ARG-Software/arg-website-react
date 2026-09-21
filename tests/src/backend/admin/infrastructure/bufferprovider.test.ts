@@ -30,7 +30,7 @@ test('maps LinkedIn reactions, link thumbnails, and skips unsent posts', async (
               metadata: {
                 linkAttachment: { thumbnail: 'https://cdn.buffer.com/article.webp' },
               },
-              assets: [],
+              assets: [{ mimeType: 'video/mp4', source: 'https://cdn.buffer.com/clip.mp4' }],
               externalLink: 'https://www.linkedin.com/feed/update/urn:li:activity:1',
             },
           },

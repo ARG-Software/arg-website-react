@@ -32,17 +32,29 @@ export default function SocialPostsPage({ onSelectSocialPost }) {
   );
 }
 
+function SocialCoverThumb({ url }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  if (!url || imageFailed) {
+    return <span className="admin-social-thumb admin-social-thumb--empty">Logo</span>;
+  }
+
+  return (
+    <img
+      className="admin-social-thumb"
+      src={url}
+      alt=""
+      referrerPolicy="no-referrer"
+      onError={() => setImageFailed(true)}
+    />
+  );
+}
+
 function getSocialPostColumns() {
   return [
     {
       key: 'coverImageUrl',
       label: 'Cover',
-      render: record =>
-        record.coverImageUrl ? (
-          <img className="admin-social-thumb" src={record.coverImageUrl} alt="" />
-        ) : (
-          <span className="admin-social-thumb admin-social-thumb--empty">Logo</span>
-        ),
+      render: record => <SocialCoverThumb url={record.coverImageUrl} />,
     },
     {
       key: 'excerpt',
