@@ -3,7 +3,6 @@ import { BlueskyIcon } from './BlueskyIcon.jsx';
 import { CopyIcon } from './CopyIcon.jsx';
 import { LinkedInIcon } from './LinkedInIcon.jsx';
 import { RssIcon } from './RssIcon.jsx';
-import { ShareArrowIcon } from './ShareArrowIcon.jsx';
 import { XIcon } from './XIcon.jsx';
 
 const ICONS = [
@@ -12,7 +11,6 @@ const ICONS = [
   ['CopyIcon', CopyIcon],
   ['LinkedInIcon', LinkedInIcon],
   ['RssIcon', RssIcon],
-  ['ShareArrowIcon', ShareArrowIcon],
   ['XIcon', XIcon],
 ];
 

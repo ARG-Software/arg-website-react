@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { SimpleCarousel } from '@components/navigation/SimpleCarousel';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
 import { LinkedInIcon } from '@ui/icons/LinkedInIcon.jsx';
-import { ShareArrowIcon } from '@ui/icons/ShareArrowIcon.jsx';
+import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { getCompanySocialLink } from '@services/linksService';
 import { trackOutbound } from '@services/analytics';
 import { fetchSocialPosts } from '@services/socialPostsService';
@@ -142,7 +142,9 @@ function SocialPostCard({ post }) {
                 trackOutbound(postHref, 'Open on LinkedIn to repost', 'homepage_social_share')
               }
             >
-              <ShareArrowIcon />
+              <span className="arrow_icon-embed" aria-hidden="true">
+                {arrowSvg}
+              </span>
             </a>
           ) : null}
         </div>
