@@ -45,15 +45,19 @@ export default defineConfig(({ mode }) => {
       apply: 'build',
       transformIndexHtml: {
         order: 'post',
-        handler(html, ctx) {
+        handler(_html, ctx) {
           if (!ctx.bundle) return;
-          return Object.keys(ctx.bundle)
-            .filter(k => k.endsWith('.css'))
-            .map(file => ({
-              tag: 'link',
-              attrs: { rel: 'preload', href: `/${file}`, as: 'style' },
-              injectTo: 'head-prepend',
-            }));
+          const css = new Set();
+          for (const output of Object.values(ctx.bundle)) {
+            if (output.type === 'chunk' && output.isEntry) {
+              for (const file of output.viteMetadata?.importedCss ?? []) css.add(file);
+            }
+          }
+          return [...css].map(file => ({
+            tag: 'link',
+            attrs: { rel: 'preload', href: `/${file}`, as: 'style', crossorigin: '' },
+            injectTo: 'head-prepend',
+          }));
         },
       },
     },

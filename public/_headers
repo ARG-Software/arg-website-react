@@ -4,7 +4,7 @@
   Cross-Origin-Opener-Policy: same-origin
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), browsing-topics=()
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://*.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://arg.software https://*.supabase.co; font-src 'self' data:; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://api.web3forms.com https://*.supabase.co https://arg.software; media-src 'self' blob:; worker-src 'self' blob:; frame-src https://arg.software; frame-ancestors 'self'; base-uri 'self'; form-action 'self'
 
 # HTML pages — revalidate on each request but allow bfcache
