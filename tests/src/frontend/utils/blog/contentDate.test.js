@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   toContentDateIso,
   toContentDateOnly,
+  toShortContentDate,
 } from '../../../../../src/frontend/utils/contentDate.js';
 
 test('parses written blog dates as UTC date-only values', () => {
@@ -13,4 +14,10 @@ test('parses written blog dates as UTC date-only values', () => {
 test('rejects invalid content dates', () => {
   assert.equal(toContentDateIso('not a date'), '');
   assert.equal(toContentDateOnly('not a date'), '');
+});
+
+test('formats written blog dates as abbreviated display values', () => {
+  assert.equal(toShortContentDate('September 11, 2026'), 'Sep 11, 2026');
+  assert.equal(toShortContentDate('August 22, 2026'), 'Aug 22, 2026');
+  assert.equal(toShortContentDate('not a date'), 'not a date');
 });

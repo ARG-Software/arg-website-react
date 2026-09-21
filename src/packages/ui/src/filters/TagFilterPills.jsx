@@ -9,6 +9,7 @@ export function TagFilterPills({
   onClear,
   label,
   allLabel = 'All',
+  layout = 'pills',
   className = '',
   animate = false,
   animationPreset = 'fade-up',
@@ -16,6 +17,8 @@ export function TagFilterPills({
 }) {
   if (!tags.length) return null;
 
+  const isList = layout === 'list';
+  const isAllSelected = selectedTags.length === 0;
   const animationAttrs = animate
     ? {
         'data-animate': animationPreset,
@@ -25,41 +28,72 @@ export function TagFilterPills({
 
   return (
     <div
-      className={`tag-filter tag-filter--pills ${className}`.trim()}
+      className={`tag-filter tag-filter--${isList ? 'list' : 'pills'} ${className}`.trim()}
       role="group"
       aria-label={label || 'Filter by topic'}
       {...animationAttrs}
     >
-      <div className="tag-filter__pills">
-        <PillButton
-          className="tag-filter__pill"
-          variant="dark"
-          size="sm"
-          active={selectedTags.length === 0}
-          onClick={() => onClear?.()}
-          aria-pressed={selectedTags.length === 0}
-        >
-          {allLabel} <span className="tag-filter__count">{totalCount}</span>
-        </PillButton>
+      {isList && label ? <span className="tag-filter__label">{label}</span> : null}
 
-        {tags.map(tag => {
-          const isSelected = selectedTags.includes(tag);
-          const count = tagCounts[tag] ?? 0;
-          return (
-            <PillButton
-              key={tag}
-              className="tag-filter__pill"
-              variant={isSelected ? 'dark' : 'outline'}
-              size="sm"
-              active={isSelected}
-              onClick={() => onToggle?.(tag)}
-              aria-pressed={isSelected}
-            >
-              {tag} <span className="tag-filter__count">{count}</span>
-            </PillButton>
-          );
-        })}
-      </div>
+      {isList ? (
+        <div className="tag-filter__list">
+          <button
+            type="button"
+            className={`tag-filter__item${isAllSelected ? ' is-active' : ''}`}
+            onClick={() => onClear?.()}
+            aria-pressed={isAllSelected}
+          >
+            <span className="tag-filter__name">{allLabel}</span>
+            <span className="tag-filter__count">{totalCount}</span>
+          </button>
+
+          {tags.map(tag => {
+            const isSelected = selectedTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                className={`tag-filter__item${isSelected ? ' is-active' : ''}`}
+                onClick={() => onToggle?.(tag)}
+                aria-pressed={isSelected}
+              >
+                <span className="tag-filter__name">{tag}</span>
+                <span className="tag-filter__count">{tagCounts[tag] ?? 0}</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="tag-filter__pills">
+          <PillButton
+            className="tag-filter__pill"
+            variant="dark"
+            size="sm"
+            active={isAllSelected}
+            onClick={() => onClear?.()}
+            aria-pressed={isAllSelected}
+          >
+            {allLabel} <span className="tag-filter__count">{totalCount}</span>
+          </PillButton>
+
+          {tags.map(tag => {
+            const isSelected = selectedTags.includes(tag);
+            return (
+              <PillButton
+                key={tag}
+                className="tag-filter__pill"
+                variant={isSelected ? 'dark' : 'outline'}
+                size="sm"
+                active={isSelected}
+                onClick={() => onToggle?.(tag)}
+                aria-pressed={isSelected}
+              >
+                {tag} <span className="tag-filter__count">{tagCounts[tag] ?? 0}</span>
+              </PillButton>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

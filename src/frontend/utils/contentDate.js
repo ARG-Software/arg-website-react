@@ -41,3 +41,24 @@ export function toContentDateIso(value) {
 export function toContentDateOnly(value) {
   return toContentDateIso(value).slice(0, 10);
 }
+
+const SHORT_MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+export function toShortContentDate(value) {
+  const date = parseContentDate(value);
+  if (!date) return value || '';
+  return `${SHORT_MONTHS[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
+}

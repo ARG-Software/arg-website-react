@@ -2158,6 +2158,60 @@
   opacity: 0.8;
 }
 
+.tag-filter--list {
+  margin-top: 0;
+}
+
+.tag-filter--list .tag-filter__label {
+  color: #c8c8d0;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.85rem;
+}
+
+.tag-filter__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.tag-filter__item {
+  align-items: baseline;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: #8a8a96;
+  cursor: pointer;
+  display: flex;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  text-align: left;
+  width: 100%;
+}
+
+.tag-filter__item:hover,
+.tag-filter__item:focus-visible {
+  color: #0c002e;
+}
+
+.tag-filter__item.is-active {
+  color: #0c002e;
+  font-weight: 700;
+}
+
+.tag-filter--list .tag-filter__count {
+  color: #c8c8d0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  margin-left: 0.75rem;
+  opacity: 1;
+}
+
+.tag-filter__item.is-active .tag-filter__count {
+  color: #b4b4be;
+}
+
 @media screen and (max-width: 767px) {
   .tag-filter__pills {
     flex-wrap: nowrap;

@@ -9,12 +9,14 @@ import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { Pagination } from '@ui/navigation/Pagination.jsx';
 import { TagFilterPills } from '@ui/filters/TagFilterPills.jsx';
+import { Pill } from '@ui/pills/Pill.jsx';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useBlogSearch } from '@hooks/useBlogSearch';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackBlogPostClick, trackCTA, trackEvent } from '@services/analytics';
 
 import { getBlogTags, loadBlogPostsMetadata } from '@utils/blog';
+import { toShortContentDate } from '@utils/contentDate';
 import { BLOG_POSTS_PER_PAGE } from '@constants/config';
 import '../../styles/blog.css';
 
@@ -33,8 +35,6 @@ const searchSvg = (
     <path d="m21 21-4.3-4.3" />
   </svg>
 );
-
-// ─── Component ───────────────────────────────────────────────────────────────
 
 export default function BlogPage() {
   const [blogPosts] = useState(() => loadBlogPostsMetadata());
@@ -74,7 +74,6 @@ export default function BlogPage() {
     trackEvent('blog_tag_filter_clear', { previous: selectedTags });
   }
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
@@ -93,7 +92,7 @@ export default function BlogPage() {
   }
 
   useTimeOnPage('/blog/');
-  useScrollAnimations(); // Scroll animations including footer
+  useScrollAnimations();
 
   return (
     <>
@@ -128,96 +127,111 @@ export default function BlogPage() {
               className="blp-section background-color-white padding-section-large border-radius-all"
             >
               <div className="blp-inner container padding-global">
-                <div className="blp-filter-bar">
-                  <div className="blp-search" data-animate-order="0">
-                    <span className="blp-search-icon">{searchSvg}</span>
-                    <input
-                      type="text"
-                      className="blp-search-input"
-                      placeholder="Search by title or topic"
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      aria-label="Search blog posts"
-                    />
-                  </div>
-
-                  <TagFilterPills
-                    className="blp-topic-filter"
-                    label="Filter by topic"
-                    tags={blogTags}
-                    tagCounts={tagCounts}
-                    totalCount={blogPosts.length}
-                    selectedTags={selectedTags}
-                    onToggle={toggleTag}
-                    onClear={clearTags}
-                    animate={true}
-                    animationOrder={1}
-                  />
-                </div>
-
-                {filteredPosts.length === 0 ? (
-                  <p className="blp-empty">
-                    {blogPosts.length === 0
-                      ? 'No blog posts yet — check back soon.'
-                      : 'No articles found for those filters.'}
-                  </p>
-                ) : (
-                  <>
-                    {paginatedPosts.map((article, i) => (
-                      <AppLink
-                        key={article.slug}
-                        to={`/blog/${article.slug}/`}
-                        className="blp-article-row"
-                        data-animate-order={i + 3}
-                        style={{ transitionDelay: `${i * 0.07}s` }}
-                        onClick={() => trackBlogPostClick(article.slug, article.title, 'blog_list')}
-                      >
-                        <div className="blp-row-meta">
-                          {article.image && (
-                            <img
-                              src={article.image}
-                              alt={article.seoTitle || article.title}
-                              className="blp-row-image"
-                              loading={i === 0 ? 'eager' : 'lazy'}
-                            />
-                          )}
-                          <span className="blp-row-tag">
-                            {(article.tags || [article.tag])
-                              .filter(Boolean)
-                              .slice(0, 3)
-                              .join(' · ')}
-                          </span>
-                          {article.collectionTitle && (
-                            <span className="blp-row-collection">
-                              <span className="blp-row-collection-label">Collection</span>
-                              {article.collectionTitle}
-                            </span>
-                          )}
-                          <span className="blp-row-date">{article.date}</span>
-                        </div>
-                        <div className="blp-row-body">
-                          <h2 className="blp-row-title">{article.title}</h2>
-                          <p className="blp-row-excerpt">{article.subtitle}</p>
-                        </div>
-                        <div className="blp-row-action">
-                          <span className="blp-row-readtime">{article.readTime}</span>
-                          <div className="arrow_icon-embed">{arrowSvg}</div>
-                        </div>
-                      </AppLink>
-                    ))}
-
-                    {totalPages > 1 && (
-                      <Pagination
-                        page={page}
-                        totalPages={totalPages}
-                        onPageChange={goToPage}
-                        arrowIcon={arrowSvg}
-                        ariaLabel="Blog pagination"
-                        animateOrder={paginatedPosts.length + 3}
+                <div className="blp-layout">
+                  <aside className="blp-sidebar">
+                    <div className="blp-search" data-animate-order="0">
+                      <span className="blp-search-icon">{searchSvg}</span>
+                      <input
+                        type="text"
+                        className="blp-search-input"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        aria-label="Search blog posts"
                       />
+                    </div>
+
+                    <TagFilterPills
+                      className="blp-topic-filter"
+                      layout="list"
+                      label="Topics"
+                      tags={blogTags}
+                      tagCounts={tagCounts}
+                      totalCount={blogPosts.length}
+                      selectedTags={selectedTags}
+                      onToggle={toggleTag}
+                      onClear={clearTags}
+                      animate={true}
+                      animationOrder={1}
+                    />
+                  </aside>
+
+                  <div className="blp-feed">
+                    {filteredPosts.length === 0 ? (
+                      <p className="blp-empty">
+                        {blogPosts.length === 0
+                          ? 'No blog posts yet — check back soon.'
+                          : 'No articles found for those filters.'}
+                      </p>
+                    ) : (
+                      <>
+                        {paginatedPosts.map((article, i) => (
+                          <AppLink
+                            key={article.slug}
+                            to={`/blog/${article.slug}/`}
+                            className="blp-article-row"
+                            data-animate-order={i + 3}
+                            style={{ transitionDelay: `${i * 0.07}s` }}
+                            onClick={() =>
+                              trackBlogPostClick(article.slug, article.title, 'blog_list')
+                            }
+                          >
+                            <span className="blp-row-index">
+                              {String(startIdx + i + 1).padStart(3, '0')}
+                            </span>
+                            {article.image ? (
+                              <img
+                                src={article.image}
+                                alt=""
+                                className="blp-row-image"
+                                loading={i === 0 ? 'eager' : 'lazy'}
+                              />
+                            ) : (
+                              <span className="blp-row-image" aria-hidden="true" />
+                            )}
+                            <div className="blp-row-body">
+                              <h2 className="blp-row-title">{article.title}</h2>
+                              <p className="blp-row-excerpt">{article.subtitle}</p>
+                              <div className="blp-row-tags">
+                                {(article.tags || [article.tag]).filter(Boolean).map(tag => (
+                                  <Pill key={tag} variant="outline" size="xs">
+                                    {tag}
+                                  </Pill>
+                                ))}
+                              </div>
+                              {article.collectionTitle && (
+                                <span className="blp-row-collection">
+                                  <span className="blp-row-collection-label">Collection</span>
+                                  {article.collectionTitle}
+                                </span>
+                              )}
+                            </div>
+                            <div className="blp-row-meta">
+                              <span className="blp-row-date">
+                                {toShortContentDate(article.date)}
+                              </span>
+                              <span className="blp-row-author">
+                                {article.author || 'ARG Software'}
+                              </span>
+                              <span className="blp-row-readtime">{article.readTime}</span>
+                            </div>
+                          </AppLink>
+                        ))}
+
+                        {totalPages > 1 && (
+                          <Pagination
+                            page={page}
+                            totalPages={totalPages}
+                            onPageChange={goToPage}
+                            arrowIcon={arrowSvg}
+                            ariaLabel="Blog pagination"
+                            animateOrder={paginatedPosts.length + 3}
+                          />
+                        )}
+                      </>
                     )}
-                  </>
-                )}
+                  </div>
+                </div>
               </div>
             </section>
           </div>
