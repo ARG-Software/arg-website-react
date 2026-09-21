@@ -15,6 +15,10 @@ export function getBlogTags(posts) {
   ).sort();
 }
 
+export function getBlogCollections(posts) {
+  return Array.from(new Set(posts.map(article => article.collectionTitle).filter(Boolean))).sort();
+}
+
 export function getRelatedPosts(posts, sourcePost, limit = 3) {
   const seenSlugs = new Set([sourcePost.slug]);
   const addUniquePosts = candidates =>

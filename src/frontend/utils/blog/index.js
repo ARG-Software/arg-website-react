@@ -11,6 +11,7 @@ export {
 } from './articleMarkdown.js';
 
 export {
+  getBlogCollections,
   getBlogTags,
   getHeadingId,
   getRelatedPosts,

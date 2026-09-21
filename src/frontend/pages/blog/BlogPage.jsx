@@ -15,7 +15,7 @@ import { useBlogSearch } from '@hooks/useBlogSearch';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackBlogPostClick, trackCTA, trackEvent } from '@services/analytics';
 
-import { getBlogTags, loadBlogPostsMetadata } from '@utils/blog';
+import { getBlogCollections, getBlogTags, loadBlogPostsMetadata } from '@utils/blog';
 import { toShortContentDate } from '@utils/contentDate';
 import { BLOG_POSTS_PER_PAGE } from '@constants/config';
 import '../../styles/blog.css';
@@ -39,9 +39,10 @@ const searchSvg = (
 export default function BlogPage() {
   const [blogPosts] = useState(() => loadBlogPostsMetadata());
   const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedCollections, setSelectedCollections] = useState([]);
   const { searchQuery, setSearchQuery, filteredPosts, debouncedQuery, resultCount } = useBlogSearch(
     blogPosts,
-    { selectedTags }
+    { selectedTags, selectedCollections }
   );
   const [page, setPage] = useState(1);
 
@@ -49,11 +50,19 @@ export default function BlogPage() {
   const startIdx = (page - 1) * BLOG_POSTS_PER_PAGE;
   const paginatedPosts = filteredPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
   const blogTags = getBlogTags(blogPosts);
+  const blogCollections = getBlogCollections(blogPosts);
 
   const tagCounts = blogPosts.reduce((acc, post) => {
     (post.tags || [post.tag]).filter(Boolean).forEach(tag => {
       acc[tag] = (acc[tag] || 0) + 1;
     });
+    return acc;
+  }, {});
+
+  const collectionCounts = blogPosts.reduce((acc, post) => {
+    if (post.collectionTitle) {
+      acc[post.collectionTitle] = (acc[post.collectionTitle] || 0) + 1;
+    }
     return acc;
   }, {});
 
@@ -74,13 +83,32 @@ export default function BlogPage() {
     trackEvent('blog_tag_filter_clear', { previous: selectedTags });
   }
 
+  function toggleCollection(collection) {
+    const isSelected = selectedCollections.includes(collection);
+
+    setSelectedCollections(currentCollections =>
+      currentCollections.includes(collection)
+        ? currentCollections.filter(currentCollection => currentCollection !== collection)
+        : [...currentCollections, collection]
+    );
+    trackEvent(isSelected ? 'blog_collection_filter_remove' : 'blog_collection_filter_add', {
+      collection,
+    });
+  }
+
+  function clearCollections() {
+    if (selectedCollections.length === 0) return;
+    setSelectedCollections([]);
+    trackEvent('blog_collection_filter_clear', { previous: selectedCollections });
+  }
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
     if (debouncedQuery) {
       trackEvent('blog_search', { query: debouncedQuery, result_count: resultCount });
     }
-  }, [debouncedQuery, resultCount, selectedTags]);
+  }, [debouncedQuery, resultCount, selectedTags, selectedCollections]);
 
   function goToPage(p) {
     setPage(p);
@@ -154,6 +182,20 @@ export default function BlogPage() {
                       animate={true}
                       animationOrder={1}
                     />
+
+                    <TagFilterPills
+                      className="blp-collection-filter"
+                      layout="list"
+                      label="Collection"
+                      tags={blogCollections}
+                      tagCounts={collectionCounts}
+                      totalCount={blogPosts.length}
+                      selectedTags={selectedCollections}
+                      onToggle={toggleCollection}
+                      onClear={clearCollections}
+                      animate={true}
+                      animationOrder={2}
+                    />
                   </aside>
 
                   <div className="blp-feed">
@@ -176,9 +218,6 @@ export default function BlogPage() {
                               trackBlogPostClick(article.slug, article.title, 'blog_list')
                             }
                           >
-                            <span className="blp-row-index">
-                              {String(startIdx + i + 1).padStart(3, '0')}
-                            </span>
                             {article.image ? (
                               <img
                                 src={article.image}
@@ -199,12 +238,6 @@ export default function BlogPage() {
                                   </Pill>
                                 ))}
                               </div>
-                              {article.collectionTitle && (
-                                <span className="blp-row-collection">
-                                  <span className="blp-row-collection-label">Collection</span>
-                                  {article.collectionTitle}
-                                </span>
-                              )}
                             </div>
                             <div className="blp-row-meta">
                               <span className="blp-row-date">
@@ -214,6 +247,12 @@ export default function BlogPage() {
                                 {article.author || 'ARG Software'}
                               </span>
                               <span className="blp-row-readtime">{article.readTime}</span>
+                              {article.collectionTitle ? (
+                                <span className="blp-row-collection">
+                                  <span className="blp-row-collection-label">Collection</span>
+                                  {article.collectionTitle}
+                                </span>
+                              ) : null}
                             </div>
                           </AppLink>
                         ))}
