@@ -11,7 +11,7 @@ import { SupabaseTableKeepAliveProbe } from '../../infrastructure/repositories/s
 import { BufferProvider } from '../../../admin/infrastructure/buffer/buffer.provider.js';
 import { OpenGraphImageProvider } from '../../../admin/infrastructure/opengraph/opengraphimage.provider.js';
 import { SupabaseSocialPostRepository } from '../../../admin/infrastructure/repositories/supabase/supabasesocialpost.repository.js';
-import { SupabaseSocialCoverStorage } from '../../../admin/infrastructure/storage/supabasesocialcover.storage.js';
+import { SupabaseSocialCoverProvider } from '../../../admin/infrastructure/storage/supabasesocialcover.provider.js';
 import { SyncSocialPostsUseCase } from '../../../admin/application/usecases/socialPosts/syncsocialposts.usecase.js';
 
 export function createMaintenanceContainer() {
@@ -42,7 +42,7 @@ export function createMaintenanceContainer() {
       new BufferProvider(config.getBufferApiKey(), logger),
       new SupabaseSocialPostRepository(adminClient, logger),
       new OpenGraphImageProvider(),
-      new SupabaseSocialCoverStorage(adminClient, logger),
+      new SupabaseSocialCoverProvider(adminClient, logger),
       logger
     ),
     logger,

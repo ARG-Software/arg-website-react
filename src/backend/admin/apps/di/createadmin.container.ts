@@ -33,7 +33,7 @@ import { UpdateUserUseCase } from '../../application/usecases/users/updateuser.u
 import { createUserAccessPolicy } from '../../application/policies/useraccess.policy.js';
 import { BufferProvider } from '../../infrastructure/buffer/buffer.provider.js';
 import { OpenGraphImageProvider } from '../../infrastructure/opengraph/opengraphimage.provider.js';
-import { SupabaseSocialCoverStorage } from '../../infrastructure/storage/supabasesocialcover.storage.js';
+import { SupabaseSocialCoverProvider } from '../../infrastructure/storage/supabasesocialcover.provider.js';
 import { OutreachCsvParser } from '../../infrastructure/csv/outreachcsv.parser.js';
 import { SupabaseAdminUserRepository } from '../../infrastructure/repositories/supabase/supabaseadminuser.repository.js';
 import { SupabaseAssistantConversationRepository } from '../../infrastructure/repositories/supabase/supabaseassistantconversation.repository.js';
@@ -73,7 +73,7 @@ export function createAdminContainer() {
   const socialPostRepository = new SupabaseSocialPostRepository(serviceClient, logger);
   const bufferProvider = new BufferProvider(config.getBufferApiKey(), logger);
   const openGraphImageProvider = new OpenGraphImageProvider();
-  const socialCoverStorage = new SupabaseSocialCoverStorage(serviceClient, logger);
+  const socialCoverStorage = new SupabaseSocialCoverProvider(serviceClient, logger);
   const adminRateLimitRepository = new SupabaseRateLimitRepository(
     serviceClient,
     'hit_admin_rate_limit',

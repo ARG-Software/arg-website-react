@@ -1,7 +1,7 @@
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import type { IBufferProvider } from '../../ports/ibuffer.provider.js';
 import type { IOpenGraphImageProvider } from '../../ports/iopengraphimage.provider.js';
-import type { ISocialCoverStorage } from '../../ports/isocialcover.storage.js';
+import type { ISocialCoverProvider } from '../../ports/isocialcover.provider.js';
 import type { ISocialPostRepository } from '../../ports/repositories/isocialpost.repository.js';
 
 export const SOCIAL_POST_LIMIT = 30;
@@ -11,7 +11,7 @@ export class SyncSocialPostsUseCase {
     private readonly bufferProvider: IBufferProvider,
     private readonly socialPostRepository: ISocialPostRepository,
     private readonly openGraphImageProvider: IOpenGraphImageProvider,
-    private readonly socialCoverStorage: ISocialCoverStorage,
+    private readonly socialCoverStorage: ISocialCoverProvider,
     private readonly logger?: ILogger
   ) {}
 

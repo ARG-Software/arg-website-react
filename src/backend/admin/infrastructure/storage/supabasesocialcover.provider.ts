@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import sharp from 'sharp';
 
-import type { ISocialCoverStorage } from '../../application/ports/isocialcover.storage.js';
+import type { ISocialCoverProvider } from '../../application/ports/isocialcover.provider.js';
 import type { ILogger } from '../../../shared/logger/ilogger.js';
 import { logOperation } from '../../../shared/logger/logoperation.js';
 
@@ -13,7 +13,7 @@ const WEBP_QUALITY = 80;
 const BROWSER_UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-export class SupabaseSocialCoverStorage implements ISocialCoverStorage {
+export class SupabaseSocialCoverProvider implements ISocialCoverProvider {
   constructor(
     private readonly client: SupabaseClient,
     private readonly logger?: ILogger
