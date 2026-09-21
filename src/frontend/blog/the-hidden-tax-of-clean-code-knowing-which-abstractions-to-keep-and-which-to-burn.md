@@ -27,7 +27,7 @@ Clean Architecture isn’t dead, and abstractions aren’t inherently bad. The p
 
 Every abstraction you write is a loan. You pay interest on it every time you read the code, navigate the Solution Explorer, or onboard a new developer. Today, we are going to audit your ASP.NET Core architecture, identify the Good Tax you should happily pay, and cut the Bad Tax that is slowing your team down.
 
-## The “Good Tax”: Defending the Data Access Boundary 🛡️
+## The “Good Tax”: Defending the Data Access Boundary
 
 The loudest voices in the anti-abstraction crowd are telling you to stop hiding Entity Framework (EF) Core behind a repository or an interface. They argue, “`DbContext` is already a Unit of Work, and `DbSet` already provides repository-like access!” Microsoft itself describes a [`DbContext` as designed for a single unit of work](https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/), so this is not a frivolous objection.
 
@@ -93,7 +93,7 @@ public class UserRepository : IUserRepository
 
 In a domain-rich application, this abstraction can pay for itself. It creates a boundary between business rules and EF Core details. The repository stages the aggregate change; the application-level unit of work or transaction commits once after all related aggregate and outbox changes have been staged. Calling `SaveChangesAsync` inside every repository method would make multi-repository operations harder to keep atomic.
 
-## The “Bad Tax”: The Pass-Through Service Anti-Pattern 💸
+## The “Bad Tax”: The Pass-Through Service Anti-Pattern
 
 If a data-access abstraction can be valuable, where does .NET Clean Architecture go wrong? It fails when developers start abstracting things out of habit rather than necessity.
 
@@ -159,7 +159,7 @@ In this example, the extra service boundary provides little independent value. I
 
 This is the code equivalent of a middle manager who takes an email from their boss and immediately forwards it to their team without adding any instructions. It is pure overhead, and it pollutes modern ASP.NET Core codebases.
 
-## The Pragmatic Fix: Vertical Slices and Concrete Classes 🛠️
+## The Pragmatic Fix: Vertical Slices and Concrete Classes
 
 To fix this, we need to stop treating Clean Architecture like a rigid set of concentric circles that every request must sequentially pass through. If a request is just a simple data fetch, it doesn’t need a domain service. It just requires a handler.
 
@@ -213,7 +213,7 @@ Notice what happened here:
 
 If we later need application policy, such as deciding whether a locked account may be shown, we can add it to the handler or move a reusable domain rule to the domain. We have not removed a boundary the example currently needs, and we have reduced its cognitive load.
 
-## A Litmus Test for Abstractions 🧪
+## A Litmus Test for Abstractions
 
 Before you type `public interface IWhatever` or add a new layer to your application, put it through this three-question test. If it cannot justify its cost, do not add it yet.
 

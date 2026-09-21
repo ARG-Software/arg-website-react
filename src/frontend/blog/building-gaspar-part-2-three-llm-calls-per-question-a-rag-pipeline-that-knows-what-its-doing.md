@@ -8,8 +8,8 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture
 title: Part 2: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing
-subtitle: Inside Gaspar’s normal three-call RAG path: classify, plan, retrieve evidence, and answer without asking one prompt to do every job. 🧠
-intro: Inside Gaspar’s normal three-call RAG path: classify, plan, retrieve evidence, and answer without asking one prompt to do every job. 🧠
+subtitle: Inside Gaspar’s normal three-call RAG path: classify, plan, retrieve evidence, and answer without asking one prompt to do every job.
+intro: Inside Gaspar’s normal three-call RAG path: classify, plan, retrieve evidence, and answer without asking one prompt to do every job.
 date: August 4, 2026
 dateModified: September 20, 2026
 reviewedOn: September 20, 2026
@@ -49,19 +49,19 @@ For a normal RAG question about ARG, that means three separate DeepSeek chat cal
 
 ![RAG pipeline planning with three LLM calls per question](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-2.webp)
 
-## 🧩 Call 1: Figure out what the visitor actually wants
+## Call 1: Figure out what the visitor actually wants
 
 Before Gaspar searches anything, it classifies the message. This call runs at temperature 0 because we want constrained output: a routing decision, an optional transform task, a short response for terminal intents, and a language tag.
 
 A message can become one of four things:
 
-- 💬 Small talk: a greeting, a thank-you, or someone sharing their name. The classifier includes the reply, so there is normally no corpus retrieval and no second generation call;
+- Small talk: a greeting, a thank-you, or someone sharing their name. The classifier includes the reply, so there is normally no corpus retrieval and no second generation call;
 
-- 🚫 Unsupported: a request unrelated to ARG, our published technical material, or a possible project. The classifier normally returns the redirect itself;
+- Unsupported: a request unrelated to ARG, our published technical material, or a possible project. The classifier normally returns the redirect itself;
 
-- 🔁 Conversation transform: the visitor says “shorten that,” “I didn’t understand,” or “translate that to Portuguese.” Gaspar makes a second call to transform the latest assistant answer instead of retrieving new evidence;
+- Conversation transform: the visitor says “shorten that,” “I didn’t understand,” or “translate that to Portuguese.” Gaspar makes a second call to transform the latest assistant answer instead of retrieving new evidence;
 
-- ❓ RAG question: a real question about ARG: services, projects, team, tech stack, pricing, hiring, articles, contact info, or possible work. These go through the full pipeline.
+- RAG question: a real question about ARG: services, projects, team, tech stack, pricing, hiring, articles, contact info, or possible work. These go through the full pipeline.
 
 (Quick definition: RAG stands for retrieval-augmented generation. Before the model answers, we fetch relevant company information and hand it over as evidence.)
 
@@ -75,7 +75,7 @@ Gaspar does not rely on that field alone. A lightweight local detector can ident
 
 And if the classifier returns empty, malformed, or unsupported JSON? The parser treats the message as a RAG question. That can cost extra planning and retrieval, but it avoids rejecting a potentially valid question solely because routing output was malformed.
 
-## 🗺 Call 2: Plan what to search for
+## Call 2: Plan what to search for
 
 Many questions are actually several questions stitched together. For example:
 
@@ -96,9 +96,9 @@ So Gaspar asks the model to break the message into as many as six smaller, stand
 
 Each item has one of three planner modes: direct evidence, editorial, or article discovery. The entity and subject fields give deterministic routing code enough structure to recognize project names, people, technologies, blog requests, commercial questions, and contact links without letting the planner answer the question itself.
 
-If the planner output is missing or malformed, the parser falls back to one direct-evidence item. The original visitor question becomes its retrieval query. It is less precise, but the route still has something usable to work with. 👍
+If the planner output is missing or malformed, the parser falls back to one direct-evidence item. The original visitor question becomes its retrieval query. It is less precise, but the route still has something usable to work with.
 
-## 🔍 Retrieval: Pick the right search strategy
+## Retrieval: Pick the right search strategy
 
 ![AI assistant retrieval flow for RAG answer quality](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-3.webp)
 
@@ -108,23 +108,23 @@ Vector search is useful, but it’s not magic. It’s good at finding text with 
 
 Gaspar resolves each planned question to a route, then runs the first matching strategy in an ordered retrieval chain:
 
-- 📁 Project references: known project names resolve to project sources, while “top projects” uses explicit `reference_rank` metadata rather than similarity alone;
+- Project references: known project names resolve to project sources, while “top projects” uses explicit `reference_rank` metadata rather than similarity alone;
 
-- 👤 People: exact or unambiguous first-name matching selects public person profiles, and professional-history searches can include person-scoped redacted CV evidence;
+- People: exact or unambiguous first-name matching selects public person profiles, and professional-history searches can include person-scoped redacted CV evidence;
 
-- 📝 Blog questions: “latest” selects the three newest dated posts and reads their first chunks, while topic and editorial questions use semantic search;
+- Blog questions: “latest” selects the three newest dated posts and reads their first chunks, while topic and editorial questions use semantic search;
 
-- 💰 Pricing and delivery: known general pricing and timeline phrases use lexical FAQ lookup; named project budgets or build durations use approved commercial facts from a trusted external snapshot; engagement duration comes from first-party project or partner sources;
+- Pricing and delivery: known general pricing and timeline phrases use lexical FAQ lookup; named project budgets or build durations use approved commercial facts from a trusted external snapshot; engagement duration comes from first-party project or partner sources;
 
-- ⚙ Technology questions: exact lexical evidence is preferred for recognizable technology names, with strict word-boundary and evidence-scope filtering before semantic fallback;
+- Technology questions: exact lexical evidence is preferred for recognizable technology names, with strict word-boundary and evidence-scope filtering before semantic fallback;
 
-- 🔗 Links and contact questions: these skip vector search and read the first chunk of the curated `site-links` source;
+- Links and contact questions: these skip vector search and read the first chunk of the curated `site-links` source;
 
-- 📍 Current-page questions: page metadata can resolve a known project name or, for scoped homepage, static-page, and blog references, select known source keys and force first-chunk retrieval.
+- Current-page questions: page metadata can resolve a known project name or, for scoped homepage, static-page, and blog references, select known source keys and force first-chunk retrieval.
 
 Each route returns context records. Gaspar merges the sub-question results by chunk ID and keeps the strongest duplicate. The final prompt labels each block with an evidence scope, title, and, for blog posts, publication date.
 
-## ✍ Call 3: Write the answer
+## Call 3: Write the answer
 
 Now, finally, the model writes something.
 
@@ -144,7 +144,7 @@ After the model responds, Gaspar strips common Markdown formatting and normalize
 
 If retrieval returns no context, there may be no third call: Gaspar can return a deterministic unconfirmed-technology response immediately. Otherwise, the third call asks the model for an insufficient-context handoff. If every planned item is an ambiguous person reference, the third call asks for clarification instead.
 
-## 🤔 Why not just use one big prompt?
+## Why not just use one big prompt?
 
 A single-call chatbot runs into a few predictable problems:
 
@@ -166,8 +166,8 @@ Splitting the work into steps makes each of these decisions explicit and separat
 
 - Generation writes from retrieved evidence, or follows a specific no-context path when evidence is absent.
 
-The model is still the core piece, but it’s no longer doing everything by itself. It’s one component in a system that can actually be tested, constrained, and improved over time. 🛠
+The model is still the core piece, but it’s no longer doing everything by itself. It’s one component in a system that can actually be tested, constrained, and improved over time.
 
 That’s the difference between a chat bubble and a business assistant.
 
-Next up: [Part 3 - “The Knowledge Design Behind a Business AI Assistant That Doesn’t Guess”](https://arg.software/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/) 📚
+Next up: [Part 3 - “The Knowledge Design Behind a Business AI Assistant That Doesn’t Guess”](https://arg.software/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/)

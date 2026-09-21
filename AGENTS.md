@@ -400,6 +400,7 @@ Build output: `dist/` directory ready for deployment.
    ```
 2. Rebuild — sitemap, RSS, and Atom are auto-generated
 3. Or use `npm run blog:import:medium` to import from Medium feed
+4. Cover art: see `docs/blog-covers.md` (2560×1440 WebP on the site, PNG for Medium)
 
 ### Making a Link with Analytics
 ```jsx

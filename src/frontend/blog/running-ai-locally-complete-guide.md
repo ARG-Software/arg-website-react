@@ -17,7 +17,7 @@ readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/break-free-from-chatgpt-your-complete-guide-to-running-ai-on-your-own-computer-b7f1b20da0bf
 ---
 
-![Break Free from ChatGPT](/images/blog/break-free-from-chatgpt/break-free-from-chatgpt-header.webp)
+![Complete guide to running AI locally instead of ChatGPT](/images/blog/break-free-from-chatgpt/break-free-from-chatgpt-header.webp)
 
 In an era where ChatGPT and Claude dominate the AI landscape, there's a powerful alternative that many people don't know about: running large language models (LLMs) directly on your own computer. With the right tools and suitable hardware, you can run a locally hosted AI assistant without sending each inference request to a model provider.
 

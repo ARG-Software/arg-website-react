@@ -24,7 +24,7 @@ Integration tests with Testcontainers are powerful - but they can quickly become
 
 Before diving in, let's get the definitions straight. These two types of tests serve very different purposes, and confusing them leads to test suites that give you false confidence.
 
-🔬 Unit Tests
+ Unit Tests
 
 A unit test verifies a single piece of logic in complete isolation. Dependencies - databases, HTTP clients, external services - are replaced with mocks or stubs.
 
@@ -40,11 +40,11 @@ describe('OrderService', () => {
 });
 ```
 
-✅ Pros: Extremely fast. No infrastructure needed. Easy to write and run anywhere.
+ Pros: Extremely fast. No infrastructure needed. Easy to write and run anywhere.
 
-❌ Cons: You're testing against a fake world. Your mock might not behave like real Postgres. Edge cases in SQL queries, transactions, or Redis TTLs will go completely undetected.
+ Cons: You're testing against a fake world. Your mock might not behave like real Postgres. Edge cases in SQL queries, transactions, or Redis TTLs will go completely undetected.
 
-🔗 Integration Tests
+ Integration Tests
 
 An integration test verifies that multiple parts of your system work correctly together - your service, your database, your cache, your HTTP layer. No mocks for infrastructure. Real connections, real queries, real behavior.
 
@@ -61,9 +61,9 @@ describe('POST /orders', () => {
 });
 ```
 
-✅ Pros: Tests what actually runs in production. Catches bugs that unit tests miss - constraint violations, migration issues, cache invalidation bugs.
+ Pros: Tests what actually runs in production. Catches bugs that unit tests miss - constraint violations, migration issues, cache invalidation bugs.
 
-❌ Cons: Slower to run. Requires infrastructure (Docker). More complex setup.
+ Cons: Slower to run. Requires infrastructure (Docker). More complex setup.
 
 ![NestJS Testcontainers unit versus integration testing comparison](/images/blog/testcontainers-best-practices-nestjs/testcontainers-best-practices-nestjs-unit-vs-integration.webp)
 
@@ -73,7 +73,7 @@ This is the real question. And the honest answer: it depends on what you're chan
 
 Unit tests are fast feedback loops for logic. Integration tests are your safety net when the real system changes. You need both - but if you're asking which one saves you from production incidents, integration tests win by a wide margin.
 
-> 💡 A passing unit test suite gives you confidence your logic is correct. A passing integration test suite gives you confidence your system actually works.
+> A passing unit test suite gives you confidence your logic is correct. A passing integration test suite gives you confidence your system actually works.
 
 The classic failure mode: a developer refactors a repository method, all unit tests pass (because they mock the repo), and then production breaks because the new SQL has a subtle bug. An integration test would have caught it immediately.
 
@@ -94,7 +94,7 @@ npm install --save-dev @testcontainers/postgresql @testcontainers/redis
 npm install --save-dev @nestjs/testing supertest
 ```
 
-🐳 Make sure Docker is running locally. Testcontainers uses it under the hood.
+ Make sure Docker is running locally. Testcontainers uses it under the hood.
 
 ## Creating Test Containers
 
@@ -148,7 +148,7 @@ export async function startTestDependencies() {
 
 Awaiting the helper ensures the containers have passed their configured readiness checks before the test file compiles its NestJS application. Each file can run safely in a separate Jest worker because it receives its own containers and dynamic ports.
 
-> ⚠️ Tip: Pin the complete image version and distribution, such as postgres:17.11-bookworm and redis:7.4.11-bookworm. Major-only tags such as postgres:17 and redis:7 move when new releases are published. Use an image digest when you need a bit-for-bit immutable image.
+> Tip: Pin the complete image version and distribution, such as postgres:17.11-bookworm and redis:7.4.11-bookworm. Major-only tags such as postgres:17 and redis:7 move when new releases are published. Use an image digest when you need a bit-for-bit immutable image.
 
 ## Pass Configuration to Your NestJS App Dynamically
 
@@ -294,10 +294,10 @@ export default async () => {
 };
 ```
 
-⚖️ When to isolate per test file vs share globally:
+ When to isolate per test file vs share globally:
 
-- 🌍 Global containers - when startup is expensive and tests run sequentially, or when every worker has an isolated database, schema, and Redis namespace.
-- 📁 Per-file containers - when you want stronger isolation and parallel test-file execution. Startup is slower, but cleanup cannot interfere with another file.
+- Global containers - when startup is expensive and tests run sequentially, or when every worker has an isolated database, schema, and Redis namespace.
+- Per-file containers - when you want stronger isolation and parallel test-file execution. Startup is slower, but cleanup cannot interfere with another file.
 
 Cleaning shared tables after each test does not make parallel files safe: one file can still truncate data while another is using it. If you remove maxWorkers: 1, isolate state per worker instead of relying only on cleanup.
 

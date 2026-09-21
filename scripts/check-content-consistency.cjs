@@ -2,6 +2,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { findMarkdownEmoji } = require('./lib/strip-emojis.cjs');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const CONTENT_PATHS = [
@@ -106,6 +107,19 @@ function findBlogProseDoubleHyphens() {
   return violations;
 }
 
+function findBlogProseEmojis() {
+  const blogDir = path.join(ROOT_DIR, 'src/frontend/blog');
+  return fs
+    .readdirSync(blogDir)
+    .filter(name => name.endsWith('.md'))
+    .flatMap(file =>
+      findMarkdownEmoji(
+        fs.readFileSync(path.join(blogDir, file), 'utf8'),
+        `src/frontend/blog/${file}`
+      )
+    );
+}
+
 function parseContentDate(value) {
   if (!value) return null;
 
@@ -176,7 +190,11 @@ function findBlogFrontmatterDateIssues() {
 }
 
 const files = [...new Set(CONTENT_PATHS.flatMap(listFiles))];
-const violations = [...findBlogProseDoubleHyphens(), ...findBlogFrontmatterDateIssues()];
+const violations = [
+  ...findBlogProseDoubleHyphens(),
+  ...findBlogFrontmatterDateIssues(),
+  ...findBlogProseEmojis(),
+];
 
 for (const absolutePath of files) {
   const filePath = path.relative(ROOT_DIR, absolutePath).replace(/\\/g, '/');

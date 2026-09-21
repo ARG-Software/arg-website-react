@@ -17,7 +17,7 @@ readTime: 6 min read
 mediumUrl: https://arg-software.medium.com/the-great-professional-reckoning-ai-doesnt-replace-talent-it-exposes-it-dea456f86660
 ---
 
-![The Great Professional Reckoning](/images/blog/the-great-professional-reckoning/the-great-professional-reckoning-header.webp)
+![AI does not replace talent, it exposes it](/images/blog/the-great-professional-reckoning/the-great-professional-reckoning-header.webp)
 
 The workplace shift isn't coming. It's here. And it is revealing uncomfortable truths about where expertise, process, and accountability actually create value.
 

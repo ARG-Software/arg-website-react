@@ -49,6 +49,21 @@ test('renders complete blog content inside the React root', () => {
   assert.doesNotMatch(html, /aria-hidden="true"/);
 });
 
+test('renders a blank-separated ordered list as one ol', () => {
+  const blocks = parseBlocks('1. First\n\n1. Second\n\n1. Third');
+  const content = buildBlogPostStaticContent(
+    {
+      title: 'Engineering article',
+      slug: 'engineering-article',
+      author: 'ARG',
+    },
+    blocks
+  );
+
+  assert.equal((content.match(/<ol class="bp-list bp-list--ordered">/g) || []).length, 1);
+  assert.equal((content.match(/<li class="bp-list-item">/g) || []).length, 3);
+});
+
 test('renders complete project evidence inside semantic sections', () => {
   const content = buildProjectStaticContent({
     title: 'Payment Platform',

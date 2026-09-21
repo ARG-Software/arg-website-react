@@ -17,7 +17,7 @@ readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/scaling-with-confidence-a-practical-nx-nestjs-monorepo-boilerplate-b30b9266f6ba
 ---
 
-![Scaling with Confidence](/images/blog/nestjs-monorepo/nestjs-monorepo-header.webp)
+![Nx NestJS monorepo boilerplate](/images/blog/nestjs-monorepo/nestjs-monorepo-header.webp)
 
 When building out backends for modern applications - especially in microservice-driven or modular environments - managing multiple repositories quickly becomes a headache. Enter monorepos, and more specifically, Nx: a powerful toolkit for managing monorepos with smart dependency graphing, caching, and tooling support.
 

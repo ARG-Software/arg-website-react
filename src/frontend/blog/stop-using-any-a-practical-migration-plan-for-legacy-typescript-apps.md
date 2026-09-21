@@ -30,7 +30,7 @@ The concern is when any spreads across API contracts, business logic, database m
 
 This article is not about type purity. It is about removing any from a legacy TypeScript application without rewriting everything from scratch.
 
-## 🧨 Why any Is Dangerous?
+## Why any Is Dangerous?
 
 any disables TypeScript exactly where you use it.
 
@@ -67,7 +67,7 @@ It knows subscription may be missing, knows the allowed values for plan, and for
 
 That is the whole point.
 
-## 🧠 The Real Problem Is Not One any
+## The Real Problem Is Not One any
 
 One or two isolated any incidents are not always a disaster.
 
@@ -92,7 +92,7 @@ So do not migrate randomly.
 
 Migrate by risk.
 
-## ✅ Step 1: Measure Before You Fix
+## Step 1: Measure Before You Fix
 
 Before removing any, measure it.
 
@@ -131,7 +131,7 @@ Sprint 3 target: 150
 
 Now the migration is measurable. And measurable work is easier to defend and to target.
 
-## 🩹 Step 2: Stop New any From Spreading
+## Step 2: Stop New any From Spreading
 
 Before fixing old code, prevent new any from entering the codebase. Legacy code can have debt, but new code should not increase the interest rate.
 
@@ -163,7 +163,7 @@ This is realistic. You are not pretending the legacy codebase is perfect. You ar
 
 > From now on, we stop making the problem worse.
 
-## 🔐 Step 3: Replace any with unknown at Boundaries
+## Step 3: Replace any with unknown at Boundaries
 
 Data from the outside world should not be trusted. That includes HTTP requests, webhooks, queues, third-party APIs, CSV imports, JSON files, and environment variables.
 
@@ -236,7 +236,7 @@ if (typeof value === "string") {
 
 As you can see, TypeScript forces you to check the value first.
 
-## 🧪 Step 4: Validate External Data at Runtime
+## Step 4: Validate External Data at Runtime
 
 TypeScript checks your code. It does not validate JSON coming from an API, webhook, queue, database, or browser storage.
 
@@ -274,7 +274,7 @@ const payload = rawPayload as WebhookPayload;
 
 Because a type assertion does not validate anything. It only tells TypeScript to stop complaining.
 
-## 🎯 Step 5: Fix High-Risk any First
+## Step 5: Fix High-Risk any First
 
 Not all any usages deserve the same priority.
 
@@ -303,7 +303,7 @@ These priority items can break important flows. Define their types and boundarie
 
 A good migration is not random. It is risk-based.
 
-## ⚙️ Step 6: Tighten TypeScript Gradually
+## Step 6: Tighten TypeScript Gradually
 
 Do not enable every strict TypeScript option at once in a large legacy codebase. That usually creates hundreds or thousands of errors overnight.
 
@@ -345,7 +345,7 @@ If you'd like, you can also create a new tsconfig, applying strict rules only to
 
 This lets new code follow better rules while legacy code is improved over time.
 
-## 🧭 The Migration Plan
+## The Migration Plan
 
 Here is the practical order we would follow:
 
@@ -366,7 +366,7 @@ This works because it avoids the biggest migration mistake: trying to make every
 
 > Make the system safer every week instead.
 
-## 🚫 What Not to Do
+## What Not to Do
 
 - Do not replace every any with unknown blindly.
 - Do not replace any with massive interfaces nobody understands.
@@ -383,7 +383,7 @@ If data is untrusted, validate it. Otherwise, you have only replaced one unsafe 
 
 The goal is not to shame people for old code. The goal is to make the codebase safer.
 
-## ✅ Final Thoughts
+## Final Thoughts
 
 You do not need to remove every any this week. But you do need a migration strategy.
 

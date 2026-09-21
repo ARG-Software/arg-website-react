@@ -17,7 +17,7 @@ readTime: 11 min read
 mediumUrl: https://arg-software.medium.com/everyone-wants-ai-nobody-wants-the-architectural-changes-it-requires-%EF%B8%8F-2e049dd91dbf
 ---
 
-![Everyone wants AI](/images/blog/everyone-wants-ai/everyone-wants-ai-header.webp)
+![Everyone wants AI, nobody wants the architectural changes it requires](/images/blog/everyone-wants-ai/everyone-wants-ai-header.webp)
 
 Everyone seems to want AI in their product. Automated decisions. Smarter workflows. Predictive insights. Competitive advantage.
 

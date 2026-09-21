@@ -55,3 +55,44 @@ test('keeps a single numbered line as an ordered list', () => {
     },
   ]);
 });
+
+test('treats unlabeled fences as plaintext', () => {
+  assert.deepEqual(parseBlocks('```\nselect 1\n```'), [
+    { type: 'code', lang: 'plaintext', text: 'select 1' },
+  ]);
+});
+
+test('keeps explicit fence languages', () => {
+  assert.deepEqual(parseBlocks('```json\n{"ok":true}\n```\n\n```sql\nSELECT 1;\n```'), [
+    { type: 'code', lang: 'json', text: '{"ok":true}' },
+    { type: 'code', lang: 'sql', text: 'SELECT 1;' },
+  ]);
+});
+
+test('coalesces blank-separated ordered list items', () => {
+  assert.deepEqual(
+    parseBlocks('1. First\n\n1. Second\n\n1. Third'),
+    [
+      {
+        type: 'ordered-list',
+        items: [
+          { label: '', text: 'First' },
+          { label: '', text: 'Second' },
+          { label: '', text: 'Third' },
+        ],
+      },
+    ]
+  );
+});
+
+test('coalesces blank-separated unordered list items', () => {
+  assert.deepEqual(parseBlocks('- First\n\n- Second'), [
+    {
+      type: 'list',
+      items: [
+        { label: '', text: 'First' },
+        { label: '', text: 'Second' },
+      ],
+    },
+  ]);
+});

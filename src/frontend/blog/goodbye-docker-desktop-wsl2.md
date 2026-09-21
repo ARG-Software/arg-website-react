@@ -17,7 +17,7 @@ readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/goodbye-docker-desktop-run-linux-docker-natively-on-windows-with-wsl2-178ebb1deb51
 ---
 
-![Goodbye-WSL](/images/blog/goodbye-wsl/goodbye-wsl-header.webp)
+![Goodbye Docker Desktop: run Docker Engine natively on Windows with WSL2](/images/blog/goodbye-wsl/goodbye-wsl-header.webp)
 
 At ARG, our development team works across different operating systems - some prefer macOS, others Linux, and many use Windows. This diverse setup created a challenge: how to maintain a consistent development environment across all platforms?
 

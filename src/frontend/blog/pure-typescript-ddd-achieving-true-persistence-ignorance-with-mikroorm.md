@@ -46,16 +46,16 @@ Persistence Ignorance is a useful DDD goal: the domain model should avoid depend
 
 Let’s look at a complete, top-to-bottom example of how to implement a “User Registration” feature using pure TypeScript DDD, external MikroORM `EntitySchema` metadata, and explicit error handling. Current MikroORM documentation foregrounds [`defineEntity` and decorated classes](https://mikro-orm.io/docs/defining-entities); `EntitySchema` remains useful when keeping mapping metadata outside an existing domain class is the deliberate tradeoff.
 
-## 🏛️ The Architecture Breakdown
+## The Architecture Breakdown
 
 To keep our codebase scalable, we will organize our code into four distinct layers:
 
-- 💎 Domain: Business logic without ORM dependencies.
-- ⚙️ Application: Orchestrates use cases. Talks to the domain and interfaces.
-- 🏗️ Infrastructure: Implementations of interfaces (MikroORM, external APIs).
-- 🚦 Presentation: The entry point (Express/Fastify controllers).
+- Domain: Business logic without ORM dependencies.
+- Application: Orchestrates use cases. Talks to the domain and interfaces.
+- Infrastructure: Implementations of interfaces (MikroORM, external APIs).
+- Presentation: The entry point (Express/Fastify controllers).
 
-## 1. The Domain Layer (The Pure Core) 💎
+## 1. The Domain Layer (The Pure Core)
 
 First, let’s strip away the ORM dependency. Our Domain Entity is a plain TypeScript class. It protects its invariants (business rules) by hiding its constructor and mutating state only through intentional methods.
 
@@ -130,7 +130,7 @@ export interface IUserRepository {
 }
 ```
 
-## 2. The Application Layer (The Orchestrator) ⚙️
+## 2. The Application Layer (The Orchestrator)
 
 The Application layer contains our Use Cases. It doesn’t know about HTTP requests or SQL queries. It simply coordinates the pure User entity and the IUserRepository contract.
 
@@ -165,7 +165,7 @@ export class RegisterUserUseCase {
 }
 ```
 
-## 3. The Infrastructure Layer (The Secret Sauce) 🏗️
+## 3. The Infrastructure Layer (The Secret Sauce)
 
 One common misconception in the Node.js ecosystem is that using an ORM always requires decorators in the model.
 
@@ -227,7 +227,7 @@ export class MikroOrmUserRepository implements IUserRepository {
 }
 ```
 
-## 4. The Presentation Layer & Error Handling 🚦
+## 4. The Presentation Layer & Error Handling
 
 In a robust DDD architecture, we must draw a hard line between Expected Domain Errors (business rule violations we catch gracefully) and Unexpected System Exceptions (database crashes). Generalizing all errors is a massive anti-pattern.
 
@@ -269,7 +269,7 @@ export class UserController {
 }
 ```
 
-### The Global Safety Net 🛟
+### The Global Safety Net
 
 Instead of handling database errors directly in the controller, we pass them to a global middleware. This ensures that infrastructure details (like SQL syntax errors) are never accidentally leaked to the client.
 
@@ -292,17 +292,17 @@ export function globalErrorHandler(
 }
 ```
 
-## 📈 The ROI of Persistence Ignorance
+## The ROI of Persistence Ignorance
 
 Taking the time to structure your codebase this way provides massive dividends as your application scales:
 
-- ⚡️ Fast Unit Tests: You can test your RegisterUserUseCase and User entity in seconds. Swap the IUserRepository with an in-memory mock, and you don't even need a database container.
-- 🔓 Less Framework Lock-in: If you move from MikroORM to Drizzle, TypeORM, or raw SQL next year, the domain model is insulated from much of that change. Repository contracts or application queries may still need to evolve when persistence capabilities differ.
-- 🧠 A Clearer Mental Model: When you open a file in the domain folder, you are looking at business rules rather than ORM mapping. When you open a file in the infrastructure folder, you are looking at plumbing.
+- Fast Unit Tests: You can test your RegisterUserUseCase and User entity in seconds. Swap the IUserRepository with an in-memory mock, and you don't even need a database container.
+- Less Framework Lock-in: If you move from MikroORM to Drizzle, TypeORM, or raw SQL next year, the domain model is insulated from much of that change. Repository contracts or application queries may still need to evolve when persistence capabilities differ.
+- A Clearer Mental Model: When you open a file in the domain folder, you are looking at business rules rather than ORM mapping. When you open a file in the infrastructure folder, you are looking at plumbing.
 
 Stop letting your database dictate your architecture. Clean up your domain, drop the decorators, and let vanilla TypeScript do what it does best.
 
-## 🐘 The “We Will Never Swap Our Database” Myth
+## The “We Will Never Swap Our Database” Myth
 
 Whenever someone advocates for Persistence Ignorance, the immediate counter-argument is always the same: “How often do you actually swap out your database? Almost never. Why over-engineer for an impossible scenario?”
 
@@ -312,9 +312,9 @@ Yes, migrating an enterprise application from PostgreSQL to MongoDB happens once
 
 You don’t decouple your core logic from your ORM just so you can swap databases in five years. You decouple it to survive what happens this year:
 
-- 💥 An ORM Major Version Upgrade: You might not swap TypeORM for Prisma, but what happens when your ORM releases a major version with breaking changes to its metadata or base classes? If ORM APIs reach across 80 domain entities, a library upgrade can interrupt product work. With external mapping, most ORM-specific changes stay at the infrastructure boundary.
-- 🧪 You “Swap” Your Database 100 Times a Day: Every time you run your unit test suite, you can replace the repository with an in-memory fake. If business behavior calls ORM APIs directly, you may need a database just to test an `if` statement. An ORM-independent domain enables fast unit tests, while integration tests still exercise the real mapping and database.
-- 🔪 The Microservice Extraction: As your monolith grows, you might need to extract a specific bounded context (like Billing or Notifications) into its own service. If your business logic is tangled in a massive, interconnected ORM graph, extracting it is a nightmare. A pure domain can be lifted and shifted more easily.
-- ⚡️ Performance Overrides: Eventually, a specific read-query using your ORM will become too slow. You will need to bypass the ORM and write highly optimized, raw SQL for that one specific use case. If your application layer expects an ORM object, you are stuck. If it relies on a pure Repository Interface, you can quietly swap the underlying implementation for that specific query without breaking a sweat.
+- An ORM Major Version Upgrade: You might not swap TypeORM for Prisma, but what happens when your ORM releases a major version with breaking changes to its metadata or base classes? If ORM APIs reach across 80 domain entities, a library upgrade can interrupt product work. With external mapping, most ORM-specific changes stay at the infrastructure boundary.
+- You “Swap” Your Database 100 Times a Day: Every time you run your unit test suite, you can replace the repository with an in-memory fake. If business behavior calls ORM APIs directly, you may need a database just to test an `if` statement. An ORM-independent domain enables fast unit tests, while integration tests still exercise the real mapping and database.
+- The Microservice Extraction: As your monolith grows, you might need to extract a specific bounded context (like Billing or Notifications) into its own service. If your business logic is tangled in a massive, interconnected ORM graph, extracting it is a nightmare. A pure domain can be lifted and shifted more easily.
+- Performance Overrides: Eventually, a specific read-query using your ORM will become too slow. You will need to bypass the ORM and write highly optimized, raw SQL for that one specific use case. If your application layer expects an ORM object, you are stuck. If it relies on a pure Repository Interface, you can quietly swap the underlying implementation for that specific query without breaking a sweat.
 
 Decoupling your database isn’t about predicting the future. It is about protecting the present. It helps keep your most valuable asset, your core business rules, testable, readable, and under your control.

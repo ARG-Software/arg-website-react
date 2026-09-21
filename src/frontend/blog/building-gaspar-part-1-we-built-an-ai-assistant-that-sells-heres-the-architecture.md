@@ -31,7 +31,7 @@ So we built Gaspar, not a chat widget with our logo on it, but a member of the t
 
 ![Gaspar architecture overview](/images/blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/gaspar-architecture-overview-2.webp)
 
-## The shape of the problem 🏗
+## The shape of the problem
 
 A useful business chatbot has to do three things well:
 
@@ -43,7 +43,7 @@ A useful business chatbot has to do three things well:
 
 These aren’t nice-to-haves. They shaped everything: how the model is configured, how Gaspar finds information, what it does when evidence is missing, and what happens the second someone says “I want to hire you.”
 
-## One widget, two modes 🔄
+## One widget, two modes
 
 Gaspar sits in the bottom-right corner of every page, with a small animated icon. Click it, and a panel opens (full-screen on mobile).
 
@@ -57,19 +57,19 @@ If they choose to message through Gaspar, the flow becomes guided: email, option
 
 Gaspar can also start the conversation itself. Once the site loading sequence is done, an inactivity timer waits ten seconds and resets on scrolling, wheel, or touch movement. The offer can appear on any page except the contact page. Closing or declining it suppresses the offer for the browser session; choosing “Don’t show me again” suppresses it for two days.
 
-## The pipeline in thirty seconds ⏱
+## The pipeline in thirty seconds
 
 Here’s what happens between “user types a question” and “answer appears”:
 
-- Fetch and solve a proof-of-work challenge. 🔐 When the widget opens, it starts preparing an ALTCHA PBKDF2/SHA-256 challenge in background Web Workers. A valid proof is reused while it remains fresh; if it is not ready or has expired, submission waits for a new one.
+- Fetch and solve a proof-of-work challenge. When the widget opens, it starts preparing an ALTCHA PBKDF2/SHA-256 challenge in background Web Workers. A valid proof is reused while it remains fresh; if it is not ready or has expired, submission waits for a new one.
 
-- Classify intent. 🔍 Our DeepSeek provider asks the configured chat model whether this is small talk, an unsupported topic, a request to transform the previous answer, or a real question about ARG. Only RAG questions continue into retrieval.
+- Classify intent. Our DeepSeek provider asks the configured chat model whether this is small talk, an unsupported topic, a request to transform the previous answer, or a real question about ARG. Only RAG questions continue into retrieval.
 
-- Plan retrieval. 🗺 “What’s your experience with fintech, and who’s your Go expert?” is really two questions. The planner can split a message into as many as six standalone retrieval questions and assigns each a mode, entity, and subject.
+- Plan retrieval. “What’s your experience with fintech, and who’s your Go expert?” is really two questions. The planner can split a message into as many as six standalone retrieval questions and assigns each a mode, entity, and subject.
 
-- Retrieve context. 🏗 Each sub-question resolves to a route such as portfolio work, commercial delivery, open source, link actions, people, careers, blog, technology quality, or company services. Some routes use Gemini embeddings and Supabase pgvector. Others use lexical technology matches, source keys, first chunks, publication dates, project ranking, or named entities.
+- Retrieve context. Each sub-question resolves to a route such as portfolio work, commercial delivery, open source, link actions, people, careers, blog, technology quality, or company services. Some routes use Gemini embeddings and Supabase pgvector. Others use lexical technology matches, source keys, first chunks, publication dates, project ranking, or named entities.
 
-- Generate the answer. ✍ The configured DeepSeek chat model reads the recent chat history plus numbered evidence blocks, follows a code-defined response policy, and produces a plain-text answer.
+- Generate the answer. The configured DeepSeek chat model reads the recent chat history plus numbered evidence blocks, follows a code-defined response policy, and produces a plain-text answer.
 
 - Decide what to offer next. Deterministic question patterns, not another model call, attach actions such as sending a message, booking a meeting, opening the contact form, or emailing the careers team.
 
@@ -77,7 +77,7 @@ Here’s what happens between “user types a question” and “answer appears�
 
 Small talk and unsupported messages normally stop after classification because that response is included in the classifier output. A conversation transform can add one rewrite call. A no-context RAG path may stop after two chat calls with a deterministic unconfirmed-technology response, or use a third call for an insufficient-context handoff. Ambiguous person references use the third call to ask for clarification.
 
-## What makes this different from a chat bubble 🫧
+## What makes this different from a chat bubble
 
 The architecture decisions that matter most aren’t the ones you’d find in a tutorial:
 

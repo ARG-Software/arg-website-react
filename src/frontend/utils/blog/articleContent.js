@@ -4,7 +4,7 @@ function normalizeHeadingText(text) {
 
 function normalizeCodeLanguage(language) {
   const normalized = (language || '').trim().toLowerCase();
-  if (!normalized) return '';
+  if (!normalized) return 'plaintext';
   if (normalized === 'text' || normalized === 'txt') return 'plaintext';
   return normalized;
 }
@@ -14,6 +14,15 @@ function parseListItem(row) {
   return match
     ? { label: match[1].replace(/\.$/, '') + '.', text: match[2].trim() }
     : { label: '', text: row };
+}
+
+function appendListItems(blocks, type, items) {
+  const previous = blocks.at(-1);
+  if (previous?.type === type) {
+    previous.items.push(...items);
+    return;
+  }
+  blocks.push({ type, items });
 }
 
 function splitIntoChunks(body) {
@@ -91,7 +100,7 @@ export function parseBlocks(body) {
         .map(line => line.replace(/^\s*\d+\.\s+/, '').trim())
         .filter(Boolean)
         .map(parseListItem);
-      blocks.push({ type: 'ordered-list', items });
+      appendListItems(blocks, 'ordered-list', items);
       continue;
     }
 
@@ -101,7 +110,7 @@ export function parseBlocks(body) {
         .map(line => line.replace(/^\s*-\s/, '').trim())
         .filter(Boolean)
         .map(parseListItem);
-      blocks.push({ type: 'list', items });
+      appendListItems(blocks, 'list', items);
       continue;
     }
 

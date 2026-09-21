@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { stripEmojis } = require('./lib/strip-emojis.cjs');
 
 const BLOG_DIR = path.resolve('src/frontend/blog');
 const IMAGE_ROOT = path.resolve('public/images/blog');
@@ -100,21 +101,21 @@ const stripCode = value =>
     .replace(/^\n+|\n+$/g, '');
 
 const sanitizeText = value =>
-  stripTags(value)
-    .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  stripEmojis(
+    stripTags(value)
+      .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+  );
 
 const sanitizeMarkdownText = value =>
-  stripTags(value)
-    .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
-    .replace(/\s+/g, ' ');
+  stripEmojis(
+    stripTags(value)
+      .replace(/[\u200B-\u200D\uFE0F\uFEFF]/g, '')
+      .replace(/\s+/g, ' ')
+  );
 
-const sanitizeTitle = value =>
-  sanitizeText(value)
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+const sanitizeTitle = value => stripEmojis(sanitizeText(value)).replace(/\s+/g, ' ').trim();
 
 const normalizeTitle = value =>
   sanitizeTitle(value)
@@ -219,6 +220,7 @@ const inferLang = hint => {
     shell: 'bash',
     txt: 'text',
   };
+  if (!normalized) return 'text';
   return aliases[normalized] || normalized;
 };
 

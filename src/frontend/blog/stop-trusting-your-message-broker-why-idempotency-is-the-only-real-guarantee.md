@@ -21,11 +21,11 @@ readTime: 8 min read
 
 If you have ever debugged why a customer got charged twice, or why an order shipped before payment was captured, the lesson is familiar: a broker guarantee is narrower than an end-to-end business guarantee. Ordering is one property teams chase. Idempotency is a core safety net, but it is not a substitute for durability, atomic publication, concurrency control, or workflow invariants.
 
-## 🧩 The Ordering Fallacy
+## The Ordering Fallacy
 
 You publish events for an aggregate, expecting a logical, linear sequence:
 
-OrderPlaced ➡️ PaymentCaptured ➡️ OrderShipped
+OrderPlaced PaymentCaptured OrderShipped
 
 Some brokers can preserve order within a defined scope: a Kafka partition, an SQS FIFO message group, or an Azure Service Bus session. That is not global order, and delivery order is not automatically completion order when handlers run concurrently.
 
@@ -37,7 +37,7 @@ The events can be published in order and still complete out of order. Techniques
 
 > Ordering constrains sequence. Idempotency constrains duplicate effects. You often need both.
 
-## 🔁 Idempotency as the Foundation
+## Idempotency as the Foundation
 
 Idempotency means that applying the same logical operation more than once has the same intended durable effect as applying it once, within a defined scope and retention period.
 
@@ -47,9 +47,9 @@ Broker-specific “exactly once” features are useful but scoped. Kafka can ato
 
 > Idempotency controls duplicates. It does not recover a message that was never durably published, repair a stale event, or undo a partially completed external side effect.
 
-## 🛠️ What to check when creating idempotent consumers
+## What to check when creating idempotent consumers
 
-### 1. Natural idempotency 💡
+### 1. Natural idempotency
 
 Natural idempotency means designing an operation so repetition does not change its intended effect.
 
@@ -113,7 +113,7 @@ Why this works:
 
 Zero affected rows does not automatically mean “duplicate.” It can also mean the aggregate is missing or a later version arrived first. Read the current version and distinguish stale/duplicate events from gaps that need retry, parking, or reconciliation.
 
-### 2. The inbox pattern 📥
+### 2. The inbox pattern
 
 The general-purpose consumer approach is to claim a message ID in an inbox inside the same local database transaction as the domain write. Scope the unique key by consumer when multiple handlers legitimately process the same message.
 
@@ -153,7 +153,7 @@ This guarantee stops at the transaction boundary. Do not perform a non-transacti
 
 Define inbox retention from the maximum broker redelivery/replay horizon. Deleting deduplication records too early makes an old replay new again; retaining them forever has storage and privacy costs.
 
-### 3. Version-based idempotency 🔢
+### 3. Version-based idempotency
 
 Each event carries the aggregate version it was produced from. The handler only applies the event if the stored version matches the expected predecessor. One mechanism handles both duplicates and out-of-order delivery.
 
@@ -191,7 +191,7 @@ public async Task Handle(OrderUpdated msg)
 
 Versions solve more than duplicate detection, but not everything. A missing predecessor can retry forever, so define a bounded retry, parking/dead-letter, and reconciliation path. Concurrent handlers still need the conditional update or equivalent serialization; reading a version and updating later without a condition reintroduces a race.
 
-### 4. The transactional outbox protects publication 📤
+### 4. The transactional outbox protects publication
 
 The inbox protects a consumer's local write. It does not solve the producer's dual write: committing business data and publishing an event are two separate operations.
 
@@ -213,7 +213,7 @@ await tx.CommitAsync();
 
 The outbox prevents “database committed, event never published” and “event published, database rolled back.” The relay can still publish twice if it crashes after broker acceptance but before marking the row sent. That is why an outbox normally pairs with idempotent consumers or an inbox. Preserve per-aggregate sequence metadata if publication order matters, and monitor stuck/poisoned outbox rows.
 
-### 5. Idempotency keys for external calls 🌍
+### 5. Idempotency keys for external calls
 
 When you make an external call (like to Stripe, Twilio, or FedEx), you are essentially blindfolded:
 
@@ -270,7 +270,7 @@ Idempotency is necessary in many systems, but “idempotent” is not the same a
 - It does not decide what to do with poison messages, permanent failures, or version gaps. Bound retries and provide dead-letter/parking and operator-visible reconciliation.
 - It is rarely infinite. Inbox records, broker deduplication windows, and API idempotency keys all have scopes and retention limits.
 
-## Closing Thought 💭
+## Closing Thought
 
 At the end of the day, retries, ambiguous acknowledgements, crashes, and replays are ordinary distributed-system behavior. Treat every message as a potential duplicate, but also design for messages that are late, missing, stale, or permanently unprocessable.
 

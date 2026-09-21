@@ -20,13 +20,13 @@ mediumUrl: https://medium.com/@arg-software/from-anemic-models-to-behaviour-rich
 
 There’s a class of bug that doesn’t really look like a bug. No stack trace. No obvious failure. Just an OrderService file with 300 lines of logic that was supposed to be somewhere else.
 
-Sound familiar? 😅
+Sound familiar?
 
 This is the anemic domain model in action, and it’s one of the sneakiest design problems in long-lived codebases. Your domain objects are just bags of data. All the real decisions happen in services. The model has no opinions. No self-awareness. No behavior.
 
 Let’s talk about how to change that, in TypeScript.
 
-## 💀 The “God Service” Problem
+## The “God Service” Problem
 
 Here’s a scenario you’ve almost certainly encountered. You open a service file and it’s doing… everything:
 
@@ -67,21 +67,21 @@ async function placeOrder(
 
 Looks reasonable at first glance. But let’s count what this function actually knows about:
 
-- 🛒 Pricing rules
+- Pricing rules
 
-- 📦 Inventory availability
+- Inventory availability
 
-- 🏷 VIP discount logic
+- VIP discount logic
 
-- 💳 Credit limit enforcement
+- Credit limit enforcement
 
-- 💾 Database persistence
+- Database persistence
 
 That’s five concerns crammed into one function. Every time a new business rule lands, a developer will open this file and add another if. Tests get harder to write. Bugs get easier to hide.
 
 The database and external service calls belong in orchestration. The discount, line total, and order state rules do not. Mixing them is the anemic model trap.
 
-## 🤔 Why Does This Happen?
+## Why Does This Happen?
 
 It’s not laziness; it’s gravity. Services are where things happen, so that’s where logic ends up. Domain objects, meanwhile, are often plain interfaces or simple classes with no behavior:
 
@@ -96,11 +96,11 @@ interface Order {
 
 When your domain objects are empty vessels, of course all the logic flows elsewhere. The fix isn’t just structural; it’s philosophical. Domain objects should protect the rules and invariants inside their own consistency boundary. They should not absorb every rule or integration involved in the wider workflow.
 
-## 🛠 Refactoring Toward a Behavior-Rich Aggregate
+## Refactoring Toward a Behavior-Rich Aggregate
 
 Let’s pull the logic back where it belongs, step by step, without a big-bang rewrite.
 
-### Step 1 - Make the Aggregate Build Itself 🏗
+### Step 1 - Make the Aggregate Build Itself
 
 Instead of the service constructing an order from scratch, give the Order class a synchronous factory method. The application service supplies a customer snapshot and a valid pricing quote; the aggregate decides whether those inputs can form a valid order.
 
@@ -253,13 +253,13 @@ export class Order {
 }
 ```
 
-Now creation fails fast when an order invariant is violated. Pricing remains owned by the pricing boundary, while the order records the quote and applies its own VIP rule. 🎯
+Now creation fails fast when an order invariant is violated. Pricing remains owned by the pricing boundary, while the order records the quote and applies its own VIP rule.
 
-### Step 2 - Guard the Internal State 🔒
+### Step 2 - Guard the Internal State
 
 The aggregate now owns what goes inside it. No one outside can shove items in directly. Its methods validate a complete state change before mutating the order.
 
-Notice what happened: 👇
+Notice what happened:
 
 - orderItems is private, so nobody outside can push to it
 
@@ -271,7 +271,7 @@ Notice what happened: 👇
 
 This is encapsulation doing real work, not just hiding fields.
 
-### Step 3 - Let the Service Be Boring 😴
+### Step 3 - Let the Service Be Boring
 
 Once the aggregate handles its own invariants, the application service can focus on orchestration. Asynchronous pricing and persistence dependencies stay here rather than moving into the aggregate:
 
@@ -346,17 +346,17 @@ export class PlaceOrderService {
 }
 ```
 
-The service still has an important job. It coordinates repositories and external capabilities, while decisions about valid order state remain in the aggregate. Saving the pending order and its outbox request in one local transaction also avoids losing the request after the order is saved. That separation is more useful than chasing a service with zero lines of logic. ✨
+The service still has an important job. It coordinates repositories and external capabilities, while decisions about valid order state remain in the aggregate. Saving the pending order and its outbox request in one local transaction also avoids losing the request after the order is saved. That separation is more useful than chasing a service with zero lines of logic.
 
 A durable process manager consumes that request. It asks the inventory boundary to reserve stock atomically, asks the credit boundary to authorize the total, and then sends the result back to an application service. That service loads the order and calls either `order.place(...)` or `order.reject(...)`. Each boundary commits its own transaction. If a later step fails, the process releases earlier reservations. This is a [saga](https://learn.microsoft.com/en-us/azure/architecture/patterns/saga), so retries must be idempotent and the process state must be persisted.
 
-## 📊 Before vs. After
+## Before vs. After
 
 ![TypeScript behavior-driven design aggregate model example](/images/blog/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript-2.webp)
 
-## ✅ What You Actually Gained
+## What You Actually Gained
 
-### 🧪 Tests that don’t need a database
+### Tests that don’t need a database
 
 Before, testing the VIP discount meant wiring up a fake DB, a fake inventory service, and a fake pricing service. Now the domain test is synchronous:
 
@@ -378,7 +378,7 @@ it("applies a 5% discount for VIP customers", () => {
 });
 ```
 
-Fast. Focused. No infrastructure needed. 🚀
+Fast. Focused. No infrastructure needed.
 
 ### Rules live at the boundary that owns them
 
@@ -386,19 +386,19 @@ The order protects quantities, discount calculation, totals, and valid state tra
 
 That boundary matters for consistency. Checking `getStock()` and later saving an order leaves a race in which another request can consume the same units. An atomic reservation is stronger. Likewise, a price fetched once is only a snapshot; if the business promises to honour it, use an identifiable quote with an expiry and persist that quote reference on the order.
 
-### 🔍 The domain becomes readable
+### The domain becomes readable
 
 Six months from now, a new engineer will open Order.ts and find the rules that belong to an order in one place. No hunting through service files or guessing where the VIP logic ended up.
 
-## 🧩 A Note on Pragmatism
+## A Note on Pragmatism
 
 Not every noun deserves an aggregate, and not every rule that affects checkout belongs inside Order. In DDD, an aggregate [protects invariants across changes](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/domain-model-layer-validations) to the objects inside its boundary. [Application services](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/microservice-application-layer-implementation-web-api) load data, invoke domain behaviour, coordinate other boundaries, and persist the result.
 
 That leaves a deliberate choice for stock and credit. Separate aggregates should normally change in separate transactions and coordinate through events or a process manager. If the business truly requires one immediate atomic decision, reconsider the aggregate boundaries rather than hiding several boundaries inside one transaction. Across remote services, immediate atomic consistency is unavailable, so model the workflow explicitly, make retries idempotent, and decide how reservations expire or are compensated. A pending order is valid only when the business accepts that temporary state and eventual consistency.
 
-Start with the smallest boundary that protects the invariants you truly need. Reach for events and process managers when the consistency boundary genuinely crosses systems. 💡
+Start with the smallest boundary that protects the invariants you truly need. Reach for events and process managers when the consistency boundary genuinely crosses systems.
 
-## 🏁 Where to Go From Here
+## Where to Go From Here
 
 You don’t need a rewrite. You don’t need to DDD-ify everything.
 

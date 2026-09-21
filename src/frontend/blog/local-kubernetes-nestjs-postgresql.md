@@ -17,7 +17,7 @@ readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/from-zero-to-hero-mastering-local-kubernetes-with-nestjs-and-postgresql-in-minutes-4f3718c09004
 ---
 
-![From Zero to Hero](/images/blog/from-zero-to-hero/from-zero-to-hero-header.webp)
+![Local Kubernetes with NestJS and PostgreSQL](/images/blog/from-zero-to-hero/from-zero-to-hero-header.webp)
 
 As Kubernetes becomes the industry standard for deploying modern cloud-native applications, mastering its local development workflows is essential for developers. In this article, we'll walk you through a practical proof of concept for deploying a NestJS-based logging API with a PostgreSQL database inside a lightweight Kubernetes cluster using k3d.
 

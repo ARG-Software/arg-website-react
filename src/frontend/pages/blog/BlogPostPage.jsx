@@ -353,6 +353,9 @@ export default function BlogPostPage() {
         authorUrl={BLOG_POST.authorUrl}
         section={BLOG_POST.tag}
         image={BLOG_POST.image}
+        imageAlt={heroImage?.alt || BLOG_POST.title}
+        imageWidth="2560"
+        imageHeight="1440"
         rss
         atom
         jsonLd={buildArticleSchema(BLOG_POST)}

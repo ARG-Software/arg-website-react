@@ -17,7 +17,7 @@ readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/the-four-letter-word-thats-sabotaging-your-engineering-team-adc398aed5ef
 ---
 
-![The four letter word sabotage](/images/blog/the-four-letter-word/the-four-letter-word-header.webp)
+![The word just sabotaging your engineering team](/images/blog/the-four-letter-word/the-four-letter-word-header.webp)
 
 In today's world of rapid development and AI-powered tools, it's easy to believe that anything can be done quickly - sometimes with a single prompt. But there's one small word that's quietly sneaking into engineering conversations and distorting that perception: "just."
 

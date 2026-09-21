@@ -32,7 +32,7 @@ Not because .NET wins every comparison.
 
 Because it offers a strong combination of performance, type safety, tooling, and platform consistency. It is also an [open-source, cross-platform stack whose repositories generally use MIT or Apache 2.0 licenses](https://dotnet.microsoft.com/en-us/platform/open-source). The current production baseline, [.NET 10, is a Long Term Support release supported by Microsoft through November 14, 2028](https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core).
 
-Here is the trade-off, stack by stack. No language wars. Just constraints. ⚙
+Here is the trade-off, stack by stack. No language wars. Just constraints.
 
 ## Round 1: .NET vs Node.js - the “how fast can we ship?” fight
 
@@ -164,4 +164,4 @@ Node.js may help a web-focused team reach the market faster. Python may provide 
 
 It is keeping the entire platform understandable, maintainable, and operational five years later.
 
-Match the tool to the challenge, not the hype cycle. 🎯
+Match the tool to the challenge, not the hype cycle.

@@ -18,6 +18,9 @@ import { buildPageSchemas, stringifyJsonLd } from '../../utils/structuredData';
  * @param {string}  [props.description]   – Page meta description
  * @param {string}  [props.path]          – Path portion of the URL, e.g. "/blog"
  * @param {string}  [props.image]         – Absolute or relative URL for the OG image
+ * @param {string}  [props.imageAlt]      – Alt text for og:image / twitter:image
+ * @param {string}  [props.imageWidth]    – og:image:width (default 1200)
+ * @param {string}  [props.imageHeight]   – og:image:height (default 630)
  * @param {string}  [props.type]          – OG type (default "website", use "article" for blog posts)
  * @param {boolean} [props.noSuffix]      – If true, don't append " | ARG Software" to the title
  * @param {boolean} [props.noIndex]       – If true, adds robots meta tag with "noindex, follow"
@@ -36,6 +39,9 @@ export function SEO({
   description,
   path = '',
   image,
+  imageAlt,
+  imageWidth = '1200',
+  imageHeight = '630',
   type = 'website',
   noSuffix = false,
   noIndex = false,
@@ -96,9 +102,9 @@ export function SEO({
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:image:secure_url" content={ogImage} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content={title || DEFAULT_TITLE} />
+      <meta property="og:image:width" content={imageWidth} />
+      <meta property="og:image:height" content={imageHeight} />
+      <meta property="og:image:alt" content={imageAlt || title || DEFAULT_TITLE} />
 
       {/* Twitter / X */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -106,6 +112,7 @@ export function SEO({
       <meta name="twitter:title" content={title || DEFAULT_TITLE} />
       <meta name="twitter:description" content={pageDescription} />
       <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content={imageAlt || title || DEFAULT_TITLE} />
 
       {/* Article-specific (only rendered when type=article) */}
       {type === 'article' && publishedTime && (

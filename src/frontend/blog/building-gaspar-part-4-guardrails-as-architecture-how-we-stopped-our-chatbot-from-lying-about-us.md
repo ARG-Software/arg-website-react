@@ -31,13 +31,13 @@ During testing, we asked our AI assistant, Gaspar, a simple question:
 
 Gaspar’s answer included Go.
 
-Except… we don’t actually use Go as one of our production languages. 🤔
+Except… we don’t actually use Go as one of our production languages.
 
 So what happened? The model had found a real trigger, then made an unsupported inference from it. Our website copy said our “go-to production languages” are TypeScript, JavaScript, and C#.
 
 Humans instantly read “go-to” as an idiom, like “my go-to coffee order.”
 
-But a language model does not interpret every idiom as reliably as a person. The retrieval and generation pipeline saw “go” next to “production languages” and treated it as evidence that we use the Go programming language. Classic false positive. 🚨
+But a language model does not interpret every idiom as reliably as a person. The retrieval and generation pipeline saw “go” next to “production languages” and treated it as evidence that we use the Go programming language. Classic false positive.
 
 That one small bug taught us something big:
 
@@ -47,7 +47,7 @@ That one small bug taught us something big:
 
 ![AI chatbot guardrails architecture for safer business answers](/images/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us-2.webp)
 
-## 🧱 Layer 1: Policy as Data
+## Layer 1: Policy as Data
 
 Gaspar has a provider-agnostic assistant policy in the domain layer.
 
@@ -55,11 +55,11 @@ Think of it as Gaspar's internal rulebook, embedded in the application's core lo
 
 This rulebook holds plain business rules, like:
 
-- 🔤 “Go-to” is an idiom, not proof that ARG uses the Go language;
-- 🐍 Python can be mentioned when it fits AI, automation, data, scripting, or integration work, but it is not our main language;
-- 📝 Blog articles can show that we understand a technology, but they are not proof that we shipped a project with it or that a named person uses it;
-- 📊 Approved commercial reference data can shape an answer, but its external source must not be disclosed;
-- 🙅 If we cannot confirm that ARG uses a technology, Gaspar should not bluff. It should say that it is outside our usual stack and that we can assess it if it is the right fit.
+- “Go-to” is an idiom, not proof that ARG uses the Go language;
+- Python can be mentioned when it fits AI, automation, data, scripting, or integration work, but it is not our main language;
+- Blog articles can show that we understand a technology, but they are not proof that we shipped a project with it or that a named person uses it;
+- Approved commercial reference data can shape an answer, but its external source must not be disclosed;
+- If we cannot confirm that ARG uses a technology, Gaspar should not bluff. It should say that it is outside our usual stack and that we can assess it if it is the right fit.
 
 Here is the useful part: the same policy has two jobs.
 
@@ -68,9 +68,9 @@ Here is the useful part: the same policy has two jobs.
 
 This is deliberately redundant. The standing instruction establishes the boundary, while retrieval can place the specific policy fact beside ambiguous evidence at the moment it matters.
 
-The difference is not just wording. It is placement and enforcement at more than one layer. 🎯
+The difference is not just wording. It is placement and enforcement at more than one layer.
 
-## 📋 Layer 2: Prompt Rules
+## Layer 2: Prompt Rules
 
 On top of the policy source, the prompt that generates Gaspar’s answers reinforces important rules:
 
@@ -83,7 +83,7 @@ On top of the policy source, the prompt that generates Gaspar’s answers reinfo
 
 We are not trying to make Gaspar sound clever or creative here. We are trying to make each answer safe, useful, and consistent. Prompts are still probabilistic controls, however, so the harder boundaries sit outside them.
 
-## 🔍 Layer 3: Retrieval and Evidence Filters
+## Layer 3: Retrieval and Evidence Filters
 
 This layer runs before the model writes the final response.
 
@@ -99,7 +99,7 @@ The same principle applies to people, not just technologies:
 
 If someone asks “Does [founder’s name] know Python?”, Gaspar needs person-specific profile or redacted-CV evidence, not company-wide evidence. Retrieval metadata marks individual scopes, routing asks for clarification when the person is ambiguous, and the answer prompt forbids company-to-person attribution. We call that combination an evidence firewall.
 
-## 🔒 The PII Firewall
+## The PII Firewall
 
 Forget Go for a second. This next boundary is about something more sensitive: personal data.
 
@@ -109,7 +109,7 @@ An early lead-capture approach asked the model to parse contact details from nor
 
 > “My email is john@example.com and I need help with fintech.”
 
-The model would try to extract the email and message. It mostly worked, but “mostly” is not good enough for contact data. ⚠
+The model would try to extract the email and message. It mostly worked, but “mostly” is not good enough for contact data.
 
 So we removed the answer model from that process.
 
@@ -121,10 +121,10 @@ offer → email → optional message → confirmation → submitting → success
 
 In practice:
 
-- 🖱 Confirmation and submission choices are explicit application actions rather than model decisions;
-- ✉ Email and optional-message input is parsed with deterministic rules: one email is required, multiple email addresses are rejected, and empty input is blocked where appropriate;
-- 🚫 Lead-capture messages are tagged separately and excluded from the chat history sent to the answer model;
-- 📈 Analytics receive structural events such as `assistant_lead_capture` with an action like `succeeded`, and `assistant_action_click`, not the email or message text.
+- Confirmation and submission choices are explicit application actions rather than model decisions;
+- Email and optional-message input is parsed with deterministic rules: one email is required, multiple email addresses are rejected, and empty input is blocked where appropriate;
+- Lead-capture messages are tagged separately and excluded from the chat history sent to the answer model;
+- Analytics receive structural events such as `assistant_lead_capture` with an action like `succeeded`, and `assistant_action_click`, not the email or message text.
 
 The contact details go directly to our form-delivery provider. They can also appear in Gaspar's encrypted operational conversation log, which is retained under our privacy policy, but they are not sent to the answer model or GA4. That distinction matters: isolation from a model is not the same thing as saying data is never stored anywhere.
 
@@ -132,7 +132,7 @@ This is the kind of guardrail we trust more than a prompt:
 
 > “The answer model does not receive the lead-capture data.” That is a real, testable boundary.
 
-## 🌍 Language Guardrails
+## Language Guardrails
 
 Gaspar also has rules around human languages, as opposed to programming languages. Yes, the distinction matters more than you might expect.
 
@@ -144,30 +144,30 @@ An intent-classification call returns a language estimate, with deterministic En
 
 We also taught Gaspar to distinguish two meanings of “language”:
 
-- 🗣 “Can you speak French?” is about Gaspar's human-language capability and profile;
-- 💻 “What programming languages do you use?” is about ARG's technology stack.
+- “Can you speak French?” is about Gaspar's human-language capability and profile;
+- “What programming languages do you use?” is about ARG's technology stack.
 
 Keeping those routes separate prevents human-language questions from becoming unsupported technology claims.
 
-## ✅ Tests as Living Documentation
+## Tests as Living Documentation
 
 When we find a repeatable failure mode, we try to turn it into a test. The current suite includes:
 
-- 🎭 Persona consistency;
-- 🔤 The Go idiom bug;
-- 🌍 Language routing and preferences;
-- ☠ “Poisoned” history and prompt injection, where earlier messages try to establish unsupported facts or override retrieval rules;
-- ❓ Unsupported and insufficient-context questions;
-- 💰 Pricing and project-duration questions;
-- 👤 Individual skill attribution;
-- 📚 Blog discovery and recommendations;
-- 🧭 Retrieval routing, source priority, and evidence isolation.
+- Persona consistency;
+- The Go idiom bug;
+- Language routing and preferences;
+- “Poisoned” history and prompt injection, where earlier messages try to establish unsupported facts or override retrieval rules;
+- Unsupported and insufficient-context questions;
+- Pricing and project-duration questions;
+- Individual skill attribution;
+- Blog discovery and recommendations;
+- Retrieval routing, source priority, and evidence isolation.
 
 The evaluation prompt bank contains more than 100 non-duplicated prompts, backed by executable routing and use-case cases. Unit and API tests also cover policy, persona, language, security, fallback, and controller behavior.
 
 These tests are not proof that a model can never fail. They are executable documentation of the failures we know how to name. Prompts drift, models change, providers update, and source data evolves. Tests make those changes visible.
 
-## 🎯 What Guardrails Really Are
+## What Guardrails Really Are
 
 At the end of the day, guardrails are boundaries:
 
@@ -179,7 +179,7 @@ At the end of the day, guardrails are boundaries:
 
 Some boundaries are reinforced by prompts, but none relies on a prompt alone.
 
-That is the real lesson: 👉 if something actually matters, do not only write it in a prompt. Represent it in routing, retrieval, data flow, tests, and the architecture around the model.
+That is the real lesson: if something actually matters, do not only write it in a prompt. Represent it in routing, retrieval, data flow, tests, and the architecture around the model.
 
 Previous: [Part 3 - “The Knowledge Design Behind a Business AI Assistant That Doesn’t Guess”](https://arg.software/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/)
 

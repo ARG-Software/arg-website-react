@@ -17,7 +17,7 @@ readTime: 15 min read
 mediumUrl: https://arg-software.medium.com/taming-the-chaos-a-developers-guide-to-pragmatic-clean-architecture-in-net-%EF%B8%8F-c0b05de359a7
 ---
 
-![Taming the Chaos](/images/blog/taming-the-chaos/taming-the-chaos-header.webp)
+![Pragmatic clean architecture in ASP.NET Core](/images/blog/taming-the-chaos/taming-the-chaos-header.webp)
 
 As applications grow, so does their complexity. Over time, logic gets duplicated, domain rules leak into controllers, and infrastructure dependencies become tightly coupled with core logic. This tangled codebase becomes harder to test, maintain, and extend - especially when teams scale or features rapidly evolve.
 

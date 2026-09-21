@@ -34,7 +34,7 @@ You’re not missing logs. You’re missing the thread connecting them: which re
 
 That thread is called request context, and this article shows how to build it without hiding what your code actually does.
 
-## 😵💫 The Problem With Generic Logs
+## The Problem With Generic Logs
 
 ```typescript
 app.post('/orders', async (req, res) => {
@@ -58,7 +58,7 @@ Request failed
 
 Which request failed? Whose payment? Before or after the DB write? You can’t tell. The logs are individually true and collectively useless. This is what happens when logging doesn’t survive concurrency.
 
-## 🧵 The First Fix: a requestId on Every Line
+## The First Fix: a requestId on Every Line
 
 Give every incoming request a unique ID, then stamp it on every log line produced while handling it:
 
@@ -84,7 +84,7 @@ Now you can filter by request ID, trace ID, tenant, operation, provider, or erro
 
 A request ID is useful inside one HTTP request. A W3C trace ID is the interoperable correlation key across HTTP calls, queues, and services. If OpenTelemetry already injects trace context and your logging pipeline supports log correlation, use that rather than inventing a second distributed tracing protocol.
 
-## 🙅 Don’t Pass requestId Through Every Function
+## Don’t Pass requestId Through Every Function
 
 You could thread it manually through every controller, service, and repository call. Don’t. That leaks an HTTP concern into code that shouldn’t know HTTP exists.
 
@@ -118,7 +118,7 @@ export function getRequestContext(): Readonly<RequestLogContext> | undefined {
 
 This is the only file that knows how request context is stored. Everything else just asks for it.
 
-## 📐 Define ILogger. Small and Boring
+## Define ILogger. Small and Boring
 
 ```typescript
 export type LogContext = Record<string, unknown>;
@@ -145,7 +145,7 @@ export interface IPaymentProvider {
 }
 ```
 
-## 🤖 A Context-Aware Logger Implementation
+## A Context-Aware Logger Implementation
 
 ```typescript
 // logging/console-logger.ts
@@ -191,7 +191,7 @@ export class ConsoleLogger implements ILogger {
 
 Any class holding an `ILogger` now gets request and active span correlation automatically. There is still discipline required: field names need a schema, explicit fields can overwrite context fields in this small example, and production code needs buffering, backpressure, serializers, and failure behavior from a maintained structured-logging library.
 
-## 🔐 Redaction Is Not Optional
+## Redaction Is Not Optional
 
 Do not log passwords, cookies, tokens, authorization headers, API keys, card data, full request/email bodies, or raw LLM prompts. Prefer allowlisting fields at each event. Central redaction is defense in depth, not proof that arbitrary objects are safe to log:
 
@@ -234,7 +234,7 @@ This example serializes only the error type. `Error.message`, `stack`, and neste
 
 User, tenant, order, and IP identifiers may be personal or sensitive data. Log them only when the purpose, access controls, retention, and applicable law permit it; pseudonymize them when direct identity is unnecessary.
 
-## 🚦 Express Middleware: Create Context Once
+## Express Middleware: Create Context Once
 
 ```typescript
 // http/request-context.middleware.ts
@@ -271,7 +271,7 @@ That response header matters: when a user reports a bug, the request ID from the
 
 Do not accept `userId` or `tenantId` from an arbitrary header as authoritative context. Add identity after authentication from trusted claims, and use names such as `actorId` and `targetUserId` so the caller and affected resource cannot silently overwrite one another.
 
-## ⏳ Logging I/O Boundaries: Plain try/catch, No Magic
+## Logging I/O Boundaries: Plain try/catch, No Magic
 
 Most production bugs live in operations that cross a process boundary: DB queries, external API calls, queue publishes, and file I/O.
 
@@ -326,7 +326,7 @@ The same pattern applies to a payment charge, queue publish, or third-party HTTP
 
 One naming trap to watch for: if authenticated context contains `actorId` and a method logs another `actorId`, object spread silently keeps the last value. That is why the field above is `targetUserId`: the schema keeps the caller and affected resource distinct. Reserve correlation field names and reject or rename collisions in a production logger.
 
-## 🧩 Wire It Up Once, Inject Everywhere
+## Wire It Up Once, Inject Everywhere
 
 ```typescript
 // composition-root.ts
@@ -339,7 +339,7 @@ const orderController = new OrderController(orderService, logger);
 
 `ILogger` is injected consistently. To switch providers, implement the interface with the new structured logger and replace `ConsoleLogger` at the composition root.
 
-## 🌿 Where Business Decisions Get Logged
+## Where Business Decisions Get Logged
 
 Repositories and providers log infrastructure. Services log why a request was accepted or rejected:
 
@@ -386,7 +386,7 @@ export class OrderService implements IOrderService {
 
 This is the difference between logging errors and logging decisions. A provider timeout is an error; a valid card decline is normally an expected business outcome and can be `info`, not an operational warning. Severity should describe what operators need to do, not whether the HTTP response is successful.
 
-## 📊 What the Logs Look Like, Filtered by One Request
+## What the Logs Look Like, Filtered by One Request
 
 ```json
 {"level":"info","message":"HTTP request started","requestId":"req_123","method":"POST","path":"/orders","userId":"user_42"}
@@ -399,7 +399,7 @@ This is the difference between logging errors and logging decisions. A provider 
 
 Filter by req_123 and the whole story reconstructs itself.
 
-## ⚠ Log the Rejected Branches, Not Just Exceptions
+## Log the Rejected Branches, Not Just Exceptions
 
 Don’t wait for a stack trace to explain an important branch. Log rejected decisions that matter for support, security, audit, or product operations, without turning every routine validation failure into an alert:
 
@@ -412,7 +412,7 @@ throw new Error('Cart is empty');
 
 Candidates include authentication and authorization failures, rate limits, idempotency conflicts, provider declines, retries exhausted, and circuit breakers. Whether not-found and validation events belong in logs depends on volume and operational value; metrics are often better for aggregate rates.
 
-## 🙈 What Not to Log
+## What Not to Log
 
 This helps you debug:
 
@@ -428,7 +428,7 @@ This creates a security incident:
 
 Even the first record needs review: transaction amounts and stable customer/order identifiers may be sensitive under your threat model or regulatory obligations. “Structured” does not mean “safe.”
 
-## 🔁 Optional: Add One Method to ILogger Later
+## Optional: Add One Method to ILogger Later
 
 Everything above is the recommended default. Explicit try/catch, nothing hidden. If your codebase grows to dozens of repositories and providers all repeating that same 12-line start/complete/fail shape, you can fold it into ILogger itself as one more method:
 
@@ -466,7 +466,7 @@ Be honest with yourself about the trade before reaching for this. It removes the
 
 It can add abstraction frames and makes the method less self-explanatory to whoever opens the file next. Treat this as something to reach for once repetition has become painful, not as the default. In a traced system, a span helper may already solve timing and failure correlation without duplicating every operation in logs.
 
-## ✅ Checklist
+## Checklist
 
 - Generate or accept a validated request ID at the HTTP boundary and return it in `X-Request-ID`.
 - Store request context with `AsyncLocalStorage` and test any unusual async integrations.
@@ -481,13 +481,13 @@ It can add abstraction frames and makes the method less self-explanatory to whoe
 - Correlate logs with W3C/OpenTelemetry trace and span IDs where available.
 - Apply retention, access controls, size limits, and logging-failure tests.
 
-## 🌙 Final Thought
+## Final Thought
 
 Logging isn’t about printing more text. It’s about making production behavior reconstructible by someone who wasn’t watching when it broke.
 
 Add the context. Inject the logger. Log meaningful outcomes and decisions. Minimize sensitive data and redact defensively. Keep the code honest about what it does before you reach for anything clever.
 
-Future you, staring at logs at 2am, will actually thank you. 🙏
+Future you, staring at logs at 2am, will actually thank you.
 
 ## Sources
 
