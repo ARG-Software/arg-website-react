@@ -56,6 +56,13 @@ export class LogAssistantConversationUseCase {
         url: createConversationUrl(this.adminSiteUrl, conversation.id),
         fields: [
           { name: 'Page', value: conversation.pagePath || '-' },
+          {
+            name: 'Location',
+            value:
+              [conversation.city, conversation.region, conversation.countryCode]
+                .filter(Boolean)
+                .join(', ') || '-',
+          },
           { name: 'Language', value: conversation.language || '-' },
           { name: 'Messages', value: String(conversation.messageCount) },
           { name: 'Last activity', value: conversation.lastMessageAt || conversation.savedAt },

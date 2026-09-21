@@ -1,6 +1,6 @@
 import { AdminDataTable } from '@ui/admin/AdminDataTable.jsx';
 import { createEmptyTableData } from '../../shared/constants.js';
-import { formatCountry, formatDateTime, formatDuration } from '../../shared/formatters.js';
+import { formatDateTime, formatDuration, formatLocation } from '../../shared/formatters.js';
 
 export function VisitSessionsTable({
   title,
@@ -53,7 +53,7 @@ function getVisitSessionColumns() {
     {
       key: 'city',
       label: 'Location',
-      render: record => formatLocation(record),
+      render: formatLocation,
     },
     { key: 'entryPath', label: 'Entry page', sortable: true },
     {
@@ -91,15 +91,6 @@ function getVisitSessionColumns() {
       render: record => formatDateTime(record.lastSeenAt),
     },
   ];
-}
-
-function formatLocation(record) {
-  return (
-    [record.city, record.region, formatCountry(record.countryCode)]
-      .filter(Boolean)
-      .filter(value => value !== 'Unknown')
-      .join(', ') || 'Unknown'
-  );
 }
 
 function formatSource(record) {

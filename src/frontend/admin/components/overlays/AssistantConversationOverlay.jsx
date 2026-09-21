@@ -3,7 +3,7 @@ import { AdminRecordOverlay } from '@ui/admin/AdminRecordOverlay.jsx';
 import { UiSpinner } from '@ui/primitives/UiSpinner.jsx';
 import { useAssistantConversation } from '../../queries/assistant/useAssistantQueries.js';
 import { ErrorCard } from '../../shared/ErrorCard.jsx';
-import { formatDateTime } from '../../shared/formatters.js';
+import { formatDateTime, formatLocation } from '../../shared/formatters.js';
 
 export function AssistantConversationOverlay({ conversation, onClose }) {
   const detailQuery = useAssistantConversation(conversation?.id);
@@ -22,6 +22,7 @@ export function AssistantConversationOverlay({ conversation, onClose }) {
     >
       <div className="admin-conversation-meta">
         <span>Page: {record.pagePath || '-'}</span>
+        <span>Location: {formatLocation(record)}</span>
         <span>Language: {record.language || '-'}</span>
         <span>Messages: {record.messageCount || 0}</span>
       </div>

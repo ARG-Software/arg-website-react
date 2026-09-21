@@ -23,6 +23,15 @@ export function formatCountry(countryCode) {
   }
 }
 
+export function formatLocation(record) {
+  return (
+    [record.city, record.region, formatCountry(record.countryCode)]
+      .filter(Boolean)
+      .filter(value => value !== 'Unknown')
+      .join(', ') || 'Unknown'
+  );
+}
+
 export function formatCountryBreakdown(items) {
   return items
     .map(item => ({

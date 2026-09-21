@@ -29,6 +29,10 @@ test('logs assistant conversations through the public write-only endpoint', asyn
   assert.equal(savedRecord.publicConversationId, 'conversation-test-1');
   assert.equal(savedRecord.messageCount, 2);
   assert.equal(savedRecord.pagePath, '/');
+  assert.equal(savedRecord.countryCode, 'PT');
+  assert.equal(savedRecord.city, 'Lisbon');
+  assert.equal(savedRecord.region, 'Lisbon');
+  assert.equal(savedRecord.timezone, 'Europe/Lisbon');
 });
 
 test('ignores assistant-only conversation logs through the public write-only endpoint', async () => {
@@ -78,6 +82,10 @@ test('lists assistant conversations through the authenticated admin endpoint', a
   assert.equal(response.status, 200);
   assert.equal(body.records.length, 1);
   assert.equal(body.records[0].preview, 'What do you do?');
+  assert.equal(body.records[0].countryCode, 'PT');
+  assert.equal(body.records[0].city, 'Lisbon');
+  assert.equal(body.records[0].region, 'Lisbon');
+  assert.equal(body.records[0].timezone, 'Europe/Lisbon');
   assert.deepEqual(body.pagination, {
     page: 1,
     pageSize: 10,
@@ -94,6 +102,8 @@ test('gets assistant conversation detail through the authenticated admin endpoin
   assert.equal(response.status, 200);
   assert.equal(body.id, 'conversation-id');
   assert.equal(body.messages.length, 2);
+  assert.equal(body.countryCode, 'PT');
+  assert.equal(body.city, 'Lisbon');
 });
 
 test('deletes assistant conversations through the authenticated admin endpoint', async () => {
@@ -168,6 +178,10 @@ function createConversationLogRequest() {
     headers: {
       'Content-Type': 'application/json',
       Origin: 'https://arg.software',
+      'x-country': 'pt',
+      'x-region': 'Lisbon',
+      'x-city': 'Lisbon',
+      'x-timezone': 'Europe/Lisbon',
     },
     body: JSON.stringify({
       conversationId: 'conversation-test-1',
@@ -223,6 +237,12 @@ function createConversationRecord() {
     ],
     pageContext: { pathname: '/', title: 'ARG' },
     language: 'en',
+    geo: {
+      countryCode: 'PT',
+      region: 'Lisbon',
+      city: 'Lisbon',
+      timezone: 'Europe/Lisbon',
+    },
     savedAt: '2026-08-21T10:00:01.000Z',
     createdAt: '2026-08-21T10:00:00.000Z',
     updatedAt: '2026-08-21T10:00:01.000Z',

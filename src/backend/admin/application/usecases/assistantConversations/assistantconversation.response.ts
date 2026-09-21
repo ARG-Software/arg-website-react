@@ -11,6 +11,10 @@ export function createAssistantConversationListItem(record: AssistantConversatio
     pagePath: record.pagePath || record.pageContext.pathname || '',
     pageTitle: record.pageContext.title || '',
     language: record.language,
+    countryCode: record.countryCode,
+    region: record.region,
+    city: record.city,
+    timezone: record.timezone,
     preview: record.preview,
   };
 }

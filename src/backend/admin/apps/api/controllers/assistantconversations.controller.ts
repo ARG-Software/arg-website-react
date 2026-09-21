@@ -1,6 +1,7 @@
 import { errorResponse, getControllerRoutes, route } from '../../../../shared/api/decorators/index.js';
 import type { ILogger } from '../../../../shared/logger/ilogger.js';
 import { adminContainer, type AdminContainer } from '../../di/admin.container.js';
+import { getHeaderGeolocation } from '../../http/requestinfo.js';
 import { ControllerBase } from './controllerbase.js';
 
 export class AssistantConversationsController extends ControllerBase {
@@ -56,6 +57,7 @@ export class AssistantConversationsController extends ControllerBase {
       pageContext: payload.pageContext,
       language: payload.language,
       savedAt: payload.savedAt,
+      geo: getHeaderGeolocation(request),
     });
 
     return this.json(204, '');

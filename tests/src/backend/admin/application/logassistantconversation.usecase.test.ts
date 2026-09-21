@@ -21,10 +21,15 @@ test('logAssistantConversationUseCase sends a webhook after saving a visitor con
   assert.equal(webhookMessage.url, 'https://arg.software/admin/ai-bot/?conversationId=conversation-id');
   assert.deepEqual(webhookMessage.fields.map(field => field.name), [
     'Page',
+    'Location',
     'Language',
     'Messages',
     'Last activity',
   ]);
+  assert.equal(
+    webhookMessage.fields.find(field => field.name === 'Location').value,
+    'Lisbon, Lisbon, PT'
+  );
 });
 
 test('logAssistantConversationUseCase does not send a webhook for assistant-only logs', async () => {
@@ -100,6 +105,12 @@ function createUseCase({ repository = {}, webhookProvider = {} } = {}) {
           conversation: new AssistantConversation({
             ...record,
             id: 'conversation-id',
+            geo: {
+              countryCode: record.countryCode,
+              region: record.region,
+              city: record.city,
+              timezone: record.timezone,
+            },
           }),
           created: true,
         }),
@@ -130,6 +141,12 @@ function createInput() {
     ],
     pageContext: { pathname: '/working-with-us/', title: 'Working with Us' },
     language: 'en',
+    geo: {
+      countryCode: 'PT',
+      region: 'Lisbon',
+      city: 'Lisbon',
+      timezone: 'Europe/Lisbon',
+    },
     savedAt: '2026-08-28T10:00:01.000Z',
   };
 }

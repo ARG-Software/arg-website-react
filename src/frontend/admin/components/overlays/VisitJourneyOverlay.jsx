@@ -3,7 +3,7 @@ import { AdminVisitJourney } from '@ui/admin/AdminVisitJourney.jsx';
 import { UiSpinner } from '@ui/primitives/UiSpinner.jsx';
 import { useVisitJourney } from '../../queries/visits/useVisitQueries.js';
 import { ErrorCard } from '../../shared/ErrorCard.jsx';
-import { formatCountry, formatDateTime, formatDuration } from '../../shared/formatters.js';
+import { formatDateTime, formatDuration, formatLocation } from '../../shared/formatters.js';
 
 export function VisitJourneyOverlay({ session, onClose }) {
   const journeyQuery = useVisitJourney(session?.sessionHash);
@@ -44,13 +44,4 @@ function formatSource(session) {
   const medium = session.medium ? ` / ${session.medium}` : '';
 
   return source ? `${source}${medium}` : '-';
-}
-
-function formatLocation(session) {
-  return (
-    [session.city, session.region, formatCountry(session.countryCode)]
-      .filter(Boolean)
-      .filter(value => value !== 'Unknown')
-      .join(', ') || 'Unknown'
-  );
 }

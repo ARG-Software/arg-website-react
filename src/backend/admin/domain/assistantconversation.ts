@@ -16,6 +16,10 @@ export class AssistantConversation {
   readonly pageContext: AssistantConversationPageContext;
   readonly language: string;
   readonly savedAt: string;
+  readonly countryCode: string | null;
+  readonly region: string;
+  readonly city: string;
+  readonly timezone: string;
   readonly messageCount: number;
   readonly pagePath: string | null;
   readonly lastMessageAt: string;
@@ -36,6 +40,10 @@ export class AssistantConversation {
     }
     this.language = params.language || '';
     this.savedAt = params.savedAt || new Date().toISOString();
+    this.countryCode = params.geo?.countryCode || null;
+    this.region = params.geo?.region || '';
+    this.city = params.geo?.city || '';
+    this.timezone = params.geo?.timezone || '';
     this.messageCount = this.messages.length;
     this.pagePath = this.pageContext.pathname || null;
     this.lastMessageAt = this.getLastMessageAt();

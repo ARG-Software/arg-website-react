@@ -58,6 +58,12 @@ export type AssistantConversationConstructorParams = {
   pageContext?: AssistantConversationPageContextInput;
   language?: string;
   savedAt?: string;
+  geo?: {
+    countryCode?: string | null;
+    region?: string | null;
+    city?: string | null;
+    timezone?: string | null;
+  };
   id?: string;
   createdAt?: string;
   updatedAt?: string;

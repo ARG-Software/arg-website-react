@@ -7,7 +7,7 @@ import {
 } from '../queries/assistant/useAssistantQueries.js';
 import { PAGE_SIZE, createEmptyTableData } from '../shared/constants.js';
 import { ErrorCard } from '../shared/ErrorCard.jsx';
-import { formatDateTime } from '../shared/formatters.js';
+import { formatDateTime, formatLocation } from '../shared/formatters.js';
 
 export default function AssistantConversationsPage({ onSelectConversation }) {
   const [page, setPage] = useState(1);
@@ -77,6 +77,11 @@ function getConversationColumns() {
       key: 'lastMessageAt',
       label: 'Last activity',
       render: record => formatDateTime(record.lastMessageAt || record.updatedAt),
+    },
+    {
+      key: 'city',
+      label: 'Location',
+      render: record => formatLocation(record),
     },
     {
       key: 'preview',

@@ -29,6 +29,10 @@ type AssistantConversationRow = SupabaseRow & {
   payload_nonce: string;
   payload_ciphertext: string;
   payload_auth_tag: string;
+  country_code?: string | null;
+  region?: string | null;
+  city?: string | null;
+  timezone?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -81,6 +85,10 @@ export class SupabaseAssistantConversationRepository
               page_path: conversation.pagePath,
               language: conversation.language || null,
               last_message_at: conversation.lastMessageAt,
+              country_code: conversation.countryCode,
+              region: conversation.region || null,
+              city: conversation.city || null,
+              timezone: conversation.timezone || null,
             },
             { onConflict: 'public_conversation_id' }
           )
@@ -200,6 +208,12 @@ function toConversationRecord(
     pageContext: payload.pageContext,
     language: payload.language,
     savedAt: payload.savedAt,
+    geo: {
+      countryCode: row.country_code,
+      region: row.region,
+      city: row.city,
+      timezone: row.timezone,
+    },
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   });
