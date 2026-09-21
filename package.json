@@ -18,6 +18,7 @@
     "react-helmet-async": "^3.0.0",
     "react-router-dom": "^7.17.0",
     "recharts": "^3.10.1",
+    "sharp": "^0.34.5",
     "three": "^0.183.2"
   },
   "scripts": {
@@ -74,7 +75,6 @@
     "playwright-core": "^1.61.1",
     "postcss-pxtorem": "^6.1.0",
     "prettier": "^3.8.1",
-    "sharp": "^0.34.5",
     "storybook": "^10.5.7",
     "svgo": "^4.0.1",
     "tsx": "^4.23.1",

@@ -129,6 +129,12 @@ function createTestApi() {
         async fetchCoverFromText() {
           return null;
         },
+      },
+      {
+        async store() {
+          return null;
+        },
+        async removeMissing() {},
       }
     ),
   });

@@ -59,16 +59,20 @@ test('syncs sent Buffer posts into the repository', async () => {
     },
   ];
   let upserted = [];
-  let coverText = '';
+  let stored = [];
+  let bufferInput;
+  const storedPost = { ...posts[0], id: 'post-1', coverImageUrl: 'https://storage.example/buffer-1.webp' };
   const useCase = new SyncSocialPostsUseCase(
     {
-      async listSentLinkedInPosts() {
+      async listSentLinkedInPosts(input) {
+        bufferInput = input;
         return posts;
       },
     },
     {
-      async list() {
-        throw new Error('should not list');
+      async list(query) {
+        if (query.pageSize === 1) return { records: [], totalRecords: 0 };
+        return { records: [storedPost], totalRecords: 1 };
       },
       async upsertMany(records) {
         upserted = records;
@@ -81,53 +85,75 @@ test('syncs sent Buffer posts into the repository', async () => {
     },
     {
       async fetchCoverFromText(text) {
-        coverText = text;
+        assert.equal(text, posts[0].text);
         return 'https://arg.software/images/og.webp';
       },
+    },
+    {
+      async store(bufferPostId, sourceUrl) {
+        stored.push({ bufferPostId, sourceUrl });
+        return `https://storage.example/${bufferPostId}.webp`;
+      },
+      async removeMissing() {},
     }
   );
 
   const result = await useCase.execute();
 
+  assert.deepEqual(bufferInput, { publishedAfter: undefined, limit: 30 });
   assert.equal(result.upserted, 1);
-  assert.equal(coverText, posts[0].text);
+  assert.deepEqual(stored, [
+    { bufferPostId: 'buffer-1', sourceUrl: 'https://arg.software/images/og.webp' },
+  ]);
   assert.deepEqual(upserted, [
     {
       ...posts[0],
-      coverImageUrl: 'https://arg.software/images/og.webp',
+      coverImageUrl: 'https://storage.example/buffer-1.webp',
     },
   ]);
 });
 
-test('keeps Buffer cover images without fetching Open Graph', async () => {
+test('stores Buffer cover images without fetching Open Graph', async () => {
   const posts = [
     {
-      bufferPostId: 'buffer-1',
+      bufferPostId: 'buffer-2',
       text: 'Shipped a new system. https://arg.software/blog/example/',
       coverImageUrl: 'https://cdn.buffer.com/cover.webp',
       externalUrl: 'https://www.linkedin.com/feed/update/urn:li:activity:1',
-      publishedAt: '2026-09-01T09:00:00.000Z',
+      publishedAt: '2026-09-02T09:00:00.000Z',
       likeCount: 0,
     },
   ];
+  const latest = {
+    id: 'post-1',
+    bufferPostId: 'buffer-1',
+    text: 'Older post',
+    coverImageUrl: 'https://storage.example/buffer-1.webp',
+    externalUrl: 'https://www.linkedin.com/feed/update/urn:li:activity:0',
+    publishedAt: '2026-09-01T09:00:00.000Z',
+    likeCount: 1,
+  };
   let upserted = [];
   let fetchedCover = false;
+  let bufferInput;
   const useCase = new SyncSocialPostsUseCase(
     {
-      async listSentLinkedInPosts() {
+      async listSentLinkedInPosts(input) {
+        bufferInput = input;
         return posts;
       },
     },
     {
-      async list() {
-        throw new Error('should not list');
+      async list(query) {
+        if (query.pageSize === 1) return { records: [latest], totalRecords: 30 };
+        return { records: [{ ...posts[0], id: 'post-2' }, latest], totalRecords: 30 };
       },
       async upsertMany(records) {
         upserted = records;
         return records.length;
       },
       async deleteMissing() {
-        return 0;
+        return 1;
       },
     },
     {
@@ -135,17 +161,40 @@ test('keeps Buffer cover images without fetching Open Graph', async () => {
         fetchedCover = true;
         return 'https://arg.software/images/og.webp';
       },
+    },
+    {
+      async store(bufferPostId, sourceUrl) {
+        assert.equal(sourceUrl, 'https://cdn.buffer.com/cover.webp');
+        return `https://storage.example/${bufferPostId}.webp`;
+      },
+      async removeMissing() {},
     }
   );
 
   await useCase.execute();
 
+  assert.deepEqual(bufferInput, {
+    publishedAfter: '2026-09-01T09:00:00.000Z',
+    limit: undefined,
+  });
   assert.equal(fetchedCover, false);
-  assert.deepEqual(upserted, posts);
+  assert.equal(upserted[0].coverImageUrl, 'https://storage.example/buffer-2.webp');
 });
 
-test('syncs nothing when Buffer returns no posts', async () => {
+test('prunes to the newest posts when Buffer has nothing new', async () => {
   let upsertCalled = false;
+  let pruned = [];
+  const kept = [
+    {
+      id: 'post-1',
+      bufferPostId: 'buffer-1',
+      text: 'Newest',
+      coverImageUrl: 'https://storage.example/buffer-1.webp',
+      externalUrl: null,
+      publishedAt: '2026-09-01T09:00:00.000Z',
+      likeCount: 0,
+    },
+  ];
   const useCase = new SyncSocialPostsUseCase(
     {
       async listSentLinkedInPosts() {
@@ -153,20 +202,30 @@ test('syncs nothing when Buffer returns no posts', async () => {
       },
     },
     {
-      async list() {
-        throw new Error('should not list');
+      async list(query) {
+        if (query.pageSize === 1) return { records: [kept[0]], totalRecords: 168 };
+        return { records: kept, totalRecords: 30 };
       },
       async upsertMany() {
         upsertCalled = true;
         return 0;
       },
-      async deleteMissing() {
-        throw new Error('should not prune');
+      async deleteMissing(ids) {
+        pruned = ids;
+        return 138;
       },
     },
     {
       async fetchCoverFromText() {
         throw new Error('should not fetch cover');
+      },
+    },
+    {
+      async store() {
+        throw new Error('should not store');
+      },
+      async removeMissing(ids) {
+        assert.deepEqual(ids, ['buffer-1']);
       },
     }
   );
@@ -175,45 +234,5 @@ test('syncs nothing when Buffer returns no posts', async () => {
 
   assert.equal(result.upserted, 0);
   assert.equal(upsertCalled, false);
-});
-
-test('prunes social posts that were not returned by Buffer', async () => {
-  let pruned = [];
-  const useCase = new SyncSocialPostsUseCase(
-    {
-      async listSentLinkedInPosts() {
-        return [
-          {
-            bufferPostId: 'buffer-1',
-            text: 'Published post',
-            coverImageUrl: 'https://cdn.buffer.com/cover.webp',
-            externalUrl: 'https://www.linkedin.com/feed/update/urn:li:activity:1',
-            publishedAt: '2026-09-01T09:00:00.000Z',
-            likeCount: 3,
-          },
-        ];
-      },
-    },
-    {
-      async list() {
-        throw new Error('should not list');
-      },
-      async upsertMany(records) {
-        return records.length;
-      },
-      async deleteMissing(ids) {
-        pruned = ids;
-        return 2;
-      },
-    },
-    {
-      async fetchCoverFromText() {
-        throw new Error('should not fetch cover');
-      },
-    }
-  );
-
-  await useCase.execute();
-
   assert.deepEqual(pruned, ['buffer-1']);
 });

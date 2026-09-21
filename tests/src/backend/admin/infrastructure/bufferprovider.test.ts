@@ -83,6 +83,19 @@ test('maps LinkedIn reactions, link thumbnails, and skips unsent posts', async (
         likeCount: 2,
       },
     ]);
+    const newerOnly = await new BufferProvider('buffer-key').listSentLinkedInPosts({
+      publishedAfter: '2026-08-15T00:00:00.000Z',
+    });
+    assert.deepEqual(
+      newerOnly.map(post => post.bufferPostId),
+      ['sent-1']
+    );
+
+    const limited = await new BufferProvider('buffer-key').listSentLinkedInPosts({ limit: 1 });
+    assert.deepEqual(
+      limited.map(post => post.bufferPostId),
+      ['sent-1']
+    );
   } finally {
     globalThis.fetch = originalFetch;
   }

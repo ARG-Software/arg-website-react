@@ -4,6 +4,7 @@ import { createAdminError } from '../../application/errors.js';
 import type {
   BufferSentPost,
   IBufferProvider,
+  ListSentLinkedInPostsInput,
 } from '../../application/ports/ibuffer.provider.js';
 
 const BUFFER_API_URL = 'https://api.buffer.com';
@@ -49,7 +50,7 @@ export class BufferProvider implements IBufferProvider {
     private readonly logger?: ILogger
   ) {}
 
-  async listSentLinkedInPosts(): Promise<BufferSentPost[]> {
+  async listSentLinkedInPosts(input: ListSentLinkedInPostsInput = {}): Promise<BufferSentPost[]> {
     return logOperation(this.logger, 'Buffer sent LinkedIn posts query', {}, async () => {
       if (!this.apiKey) {
         throw createAdminError(
@@ -66,11 +67,21 @@ export class BufferProvider implements IBufferProvider {
 
       do {
         const page = await this.getSentPostsPage(organizationId, channelId, cursor);
+        cursor = page.endCursor;
         for (const post of page.posts) {
           const mapped = toSentPost(post);
-          if (mapped) posts.push(mapped);
+          if (!mapped) continue;
+          if (input.publishedAfter && mapped.publishedAt <= input.publishedAfter) {
+            cursor = null;
+            break;
+          }
+
+          posts.push(mapped);
+          if (input.limit && posts.length >= input.limit) {
+            cursor = null;
+            break;
+          }
         }
-        cursor = page.endCursor;
       } while (cursor);
 
       return posts;
