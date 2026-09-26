@@ -59,7 +59,7 @@ test('syncs sent Buffer posts into the repository', async () => {
     },
   ];
   let upserted = [];
-  let stored = [];
+  const stored = [];
   let bufferInput;
   const storedPost = { ...posts[0], id: 'post-1', coverImageUrl: 'https://storage.example/buffer-1.webp' };
   const useCase = new SyncSocialPostsUseCase(

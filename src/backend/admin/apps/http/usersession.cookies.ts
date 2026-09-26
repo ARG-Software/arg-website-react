@@ -3,10 +3,13 @@ export const REFRESH_COOKIE_NAME = 'arg_admin_refresh';
 
 const ONE_HOUR = 60 * 60;
 const SEVEN_DAYS = ONE_HOUR * 24 * 7;
+const ACCESS_COOKIE_PATH = '/api/admin';
+const REFRESH_COOKIE_PATH = '/api/admin/session';
 
 type CookieOptions = {
   maxAge?: number;
   secure?: boolean;
+  path: string;
 };
 
 export function setUserSessionCookies(
@@ -19,6 +22,7 @@ export function setUserSessionCookies(
     createCookie(ACCESS_COOKIE_NAME, accessToken, {
       maxAge: ONE_HOUR,
       secure: secureCookies,
+      path: ACCESS_COOKIE_PATH,
     })
   );
 
@@ -27,13 +31,45 @@ export function setUserSessionCookies(
     createCookie(REFRESH_COOKIE_NAME, refreshToken, {
       maxAge: SEVEN_DAYS,
       secure: secureCookies,
+      path: REFRESH_COOKIE_PATH,
+    })
+  );
+
+  response.headers.append(
+    'Set-Cookie',
+    createCookie(REFRESH_COOKIE_NAME, '', {
+      maxAge: 0,
+      secure: secureCookies,
+      path: ACCESS_COOKIE_PATH,
     })
   );
 }
 
-export function clearUserSessionCookies(response: Response): void {
-  response.headers.append('Set-Cookie', createCookie(ACCESS_COOKIE_NAME, '', { maxAge: 0 }));
-  response.headers.append('Set-Cookie', createCookie(REFRESH_COOKIE_NAME, '', { maxAge: 0 }));
+export function clearUserSessionCookies(response: Response, secureCookies: boolean): void {
+  response.headers.append(
+    'Set-Cookie',
+    createCookie(ACCESS_COOKIE_NAME, '', {
+      maxAge: 0,
+      secure: secureCookies,
+      path: ACCESS_COOKIE_PATH,
+    })
+  );
+  response.headers.append(
+    'Set-Cookie',
+    createCookie(REFRESH_COOKIE_NAME, '', {
+      maxAge: 0,
+      secure: secureCookies,
+      path: REFRESH_COOKIE_PATH,
+    })
+  );
+  response.headers.append(
+    'Set-Cookie',
+    createCookie(REFRESH_COOKIE_NAME, '', {
+      maxAge: 0,
+      secure: secureCookies,
+      path: ACCESS_COOKIE_PATH,
+    })
+  );
 }
 
 export function getAccessToken(request: Request): string {
@@ -64,16 +100,16 @@ function getTokenFromCookie(request: Request, cookieName: string): string {
   return '';
 }
 
-function createCookie(name: string, value: string, options: CookieOptions = {}): string {
+function createCookie(name: string, value: string, options: CookieOptions): string {
   const parts = [`${name}=${value}`];
 
   if (options.maxAge !== undefined) {
     parts.push(`Max-Age=${options.maxAge}`);
   }
 
-  parts.push('Path=/api/admin');
+  parts.push(`Path=${options.path}`);
   parts.push('HttpOnly');
-  parts.push('SameSite=Lax');
+  parts.push('SameSite=Strict');
 
   if (options.secure) {
     parts.push('Secure');

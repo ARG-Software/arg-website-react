@@ -24,7 +24,7 @@ test('logs in admins through the backend endpoint and sets cookies', async () =>
   assert.ok(cookies.some(c => c.startsWith(`${ACCESS_COOKIE_NAME}=access-token`)));
   assert.ok(cookies.some(c => c.startsWith(`${REFRESH_COOKIE_NAME}=refresh-token`)));
   assert.ok(cookies.some(c => c.includes('HttpOnly')));
-  assert.ok(cookies.some(c => c.includes('SameSite=Lax')));
+  assert.ok(cookies.some(c => c.includes('SameSite=Strict')));
 
   // Ensure tokens are not in the JSON body
   assert.equal(body.session, undefined);

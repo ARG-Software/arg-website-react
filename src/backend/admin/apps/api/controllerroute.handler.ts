@@ -5,6 +5,11 @@ import type { ILogger } from '../../../shared/logger/ilogger.js';
 import { getLogContextValue, runWithLogContext } from '../../../shared/logger/logcontext.js';
 
 const DEFAULT_ALLOWED_ORIGINS = ['https://arg.software', 'https://www.arg.software'];
+const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+const PUBLIC_ADMIN_WRITE_PATHS = new Set([
+  '/api/admin/login',
+  '/api/admin/assistant-conversation-log',
+]);
 
 export async function dispatchControllerRoutes(
   request: Request,
@@ -31,6 +36,9 @@ async function dispatchWithLogContext(
 
   const allowedMethods = [...new Set(['OPTIONS', ...pathRoutes.map(r => r.method)])].join(', ');
   const http = createApiHttp({ allowedMethods, defaultAllowedOrigins: DEFAULT_ALLOWED_ORIGINS });
+
+  const mutationGuard = createAdminMutationGuardResponse(request, pathname, http);
+  if (mutationGuard) return logResponse(logger, startedAt, mutationGuard);
 
   const originGuard = http.createOriginGuardResponse(request);
   if (originGuard) return logResponse(logger, startedAt, originGuard);
@@ -81,15 +89,37 @@ async function dispatchWithLogContext(
   return logResponse(logger, startedAt, response);
 }
 
-function logResponse(
-  logger: ILogger | undefined,
-  startedAt: number,
-  response: Response
-): Response {
+function createAdminMutationGuardResponse(
+  request: Request,
+  pathname: string,
+  http: ReturnType<typeof createApiHttp>
+): Response | null {
+  const requiresSameOrigin =
+    pathname.startsWith('/api/admin/') &&
+    !PUBLIC_ADMIN_WRITE_PATHS.has(pathname) &&
+    UNSAFE_METHODS.has(request.method);
+
+  if (!requiresSameOrigin) return null;
+
+  const origin = request.headers.get('origin');
+  const fetchSite = request.headers.get('sec-fetch-site');
+
+  if (origin && fetchSite !== 'cross-site' && http.isAllowedOrigin(origin)) return null;
+
+  return http.createJsonResponse(
+    request,
+    403,
+    createErrorBody('origin_not_allowed', 'Origin not allowed')
+  );
+}
+
+function logResponse(logger: ILogger | undefined, startedAt: number, response: Response): Response {
   const level = response.status >= 400 ? 'warn' : 'info';
   const requestId = getLogContextValue('requestId');
 
   if (requestId) response.headers.set('X-Request-ID', String(requestId));
+  response.headers.set('Cache-Control', 'no-store');
+  response.headers.set('Pragma', 'no-cache');
 
   logger?.[level]('Admin API request completed', {
     status: response.status,

@@ -12,17 +12,19 @@ const EXCLUDED_PATH_PREFIXES = [
 ];
 
 const MARKDOWN_CONTENT_TYPE = 'text/markdown; charset=utf-8';
+const STRICT_TRANSPORT_SECURITY = 'max-age=63072000; includeSubDomains; preload';
 
 export default async function markdownNegotiation(request, context) {
+  const response = await context.next();
+
   if (!shouldReturnMarkdown(request)) {
-    return context.next();
+    return withSecurityHeaders(response);
   }
 
-  const response = await context.next();
   const contentType = response.headers.get('content-type') || '';
 
   if (!contentType.toLowerCase().includes('text/html')) {
-    return response;
+    return withSecurityHeaders(response);
   }
 
   const html = await response.text();
@@ -34,7 +36,20 @@ export default async function markdownNegotiation(request, context) {
   headers.set('x-markdown-tokens', String(countApproximateTokens(markdown)));
   headers.delete('content-length');
 
-  return new Response(markdown, {
+  return withSecurityHeaders(
+    new Response(markdown, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    })
+  );
+}
+
+function withSecurityHeaders(response) {
+  const headers = new Headers(response.headers);
+  headers.set('strict-transport-security', STRICT_TRANSPORT_SECURITY);
+
+  return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
     headers,

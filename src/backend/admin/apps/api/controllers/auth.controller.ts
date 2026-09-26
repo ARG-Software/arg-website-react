@@ -130,7 +130,7 @@ export class AuthController extends ControllerBase {
     const cookieResponse = new Response(null);
 
     await this.auth.signOutUserUseCase.execute(getAccessToken(request));
-    clearUserSessionCookies(cookieResponse);
+    clearUserSessionCookies(cookieResponse, this.auth.secureCookies);
 
     const response = this.json(204, '');
     copyResponseHeaders(cookieResponse, response);

@@ -224,7 +224,7 @@ export function readAdminConfigValues(env: NodeJS.ProcessEnv): IAdminConfigValue
     altchaCost: getPositiveNumberEnv(env, 'ALTCHA_COST', 2_000),
     altchaCounterMin: getPositiveNumberEnv(env, 'ALTCHA_COUNTER_MIN', 1_000),
     altchaCounterMax: getPositiveNumberEnv(env, 'ALTCHA_COUNTER_MAX', 3_000),
-    secureCookies: env.NODE_ENV === 'production' || env.CONTEXT === 'production',
+    secureCookies: env.NODE_ENV === 'production' || (Boolean(env.CONTEXT) && env.CONTEXT !== 'dev'),
     visitHashKey: env.VISIT_BLIND_INDEX_KEY || loginRateLimitSalt || DEFAULT_VISIT_HASH_KEY,
     outreachEncryptionKeyActiveVersion: getPositiveIntegerEnv(
       env,

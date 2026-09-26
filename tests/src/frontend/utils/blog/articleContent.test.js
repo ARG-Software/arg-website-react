@@ -70,19 +70,16 @@ test('keeps explicit fence languages', () => {
 });
 
 test('coalesces blank-separated ordered list items', () => {
-  assert.deepEqual(
-    parseBlocks('1. First\n\n1. Second\n\n1. Third'),
-    [
-      {
-        type: 'ordered-list',
-        items: [
-          { label: '', text: 'First' },
-          { label: '', text: 'Second' },
-          { label: '', text: 'Third' },
-        ],
-      },
-    ]
-  );
+  assert.deepEqual(parseBlocks('1. First\n\n1. Second\n\n1. Third'), [
+    {
+      type: 'ordered-list',
+      items: [
+        { label: '', text: 'First' },
+        { label: '', text: 'Second' },
+        { label: '', text: 'Third' },
+      ],
+    },
+  ]);
 });
 
 test('coalesces blank-separated unordered list items', () => {
