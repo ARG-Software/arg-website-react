@@ -44,6 +44,7 @@
     "blog:import:medium": "node scripts/import-medium-articles.cjs --published",
     "blog:import:medium:overwrite": "node scripts/import-medium-articles.cjs --published --overwrite",
     "blog:import:medium:drafts": "node scripts/import-medium-articles.cjs --drafts",
+    "blog:generate:html": "node scripts/generate-articles-html.cjs",
     "outreach:import": "tsx scripts/import-outreach.ts \"external/arg-outreach (1).xlsx\"",
     "outreach:import:dry-run": "tsx scripts/import-outreach.ts \"external/arg-outreach (1).xlsx\" --dry-run",
     "admin:bootstrap": "node scripts/bootstrap-admin-users.js",
