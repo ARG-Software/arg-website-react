@@ -2,7 +2,7 @@
 
 ## Overview
 
-ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide.
+ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide. Founders stay close to architecture and production; a trusted network of collaborators is assembled around each problem.
 
 ARG Software is intentionally senior-led. Clients work directly with engineers responsible for architecture, code, delivery, and production decisions rather than layers of account management. The team emphasizes architecture-first planning, clean technical ownership, explicit tradeoffs, production reliability, and long-term maintainability.
 
@@ -215,9 +215,11 @@ Topics include:
 ## Important URLs
 
 - Home: https://arg.software/
+- About Us: https://arg.software/about-us/
 - Working with ARG Software: https://arg.software/working-with-us/
 - Partners: https://arg.software/partners/
 - Blog: https://arg.software/blog/
+- Contact: https://arg.software/contact/
 - Careers: https://arg.software/careers/
 - Privacy: https://arg.software/privacy/
 - Terms: https://arg.software/terms/
@@ -228,4 +230,4 @@ Topics include:
 
 ## Preferred Description
 
-ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide.
+ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide. Founders stay close to architecture and production; a trusted network of collaborators is assembled around each problem.
