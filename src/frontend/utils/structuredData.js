@@ -26,13 +26,31 @@ function splitSameAs(value) {
     .filter(Boolean);
 }
 
+const JOSE_ID = `${SITE_URL}/#person-jose-antunes`;
+const RUI_ID = `${SITE_URL}/#person-rui-rocha`;
+
+const FOUNDER_IDS = {
+  'José Antunes': JOSE_ID,
+  'Rui Rocha': RUI_ID,
+};
+
+const ORGANIZATION_OFFERS = [
+  'Dedicated Product Teams',
+  'Senior Team Extension',
+  'Technical Consulting',
+  'MVP + Product Delivery',
+  'AI Integration',
+  'Cloud + Platform Engineering',
+];
+
 function buildAuthorSchema({ name, url, type, sameAs } = {}) {
   const authorName = name || DEFAULT_AUTHOR.name;
   const isDefaultAuthor = authorName === DEFAULT_AUTHOR.name;
+  const founderId = FOUNDER_IDS[authorName];
 
   return {
     '@type': type || (isDefaultAuthor ? DEFAULT_AUTHOR.type : 'Person'),
-    '@id': isDefaultAuthor ? ORGANIZATION_ID : undefined,
+    '@id': isDefaultAuthor ? ORGANIZATION_ID : founderId,
     name: authorName,
     url: absoluteUrl(url || (isDefaultAuthor ? DEFAULT_AUTHOR.url : undefined)),
     sameAs: splitSameAs(sameAs) || (isDefaultAuthor ? DEFAULT_AUTHOR.sameAs : undefined),
@@ -93,6 +111,12 @@ export function buildOrganizationSchema() {
     ],
     email: 'hello@arg.software',
     foundingDate: '2020',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'sales',
+      email: 'hello@arg.software',
+      url: `${SITE_URL}/contact/`,
+    },
     sameAs: [
       'https://www.linkedin.com/company/arg-software',
       'https://github.com/ARG-Software',
@@ -101,17 +125,27 @@ export function buildOrganizationSchema() {
     founder: [
       {
         '@type': 'Person',
+        '@id': JOSE_ID,
         name: 'José Antunes',
         jobTitle: 'Co-founder and Software Engineer',
         sameAs: 'https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/',
       },
       {
         '@type': 'Person',
+        '@id': RUI_ID,
         name: 'Rui Rocha',
         jobTitle: 'Co-founder and Software Engineer',
         sameAs: 'https://www.linkedin.com/in/ruirochawork/',
       },
     ],
+    makesOffer: ORGANIZATION_OFFERS.map(name => ({
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Service',
+        name,
+        provider: { '@id': ORGANIZATION_ID },
+      },
+    })),
     knowsAbout: [
       'Software Architecture',
       'Backend Engineering',
@@ -140,6 +174,7 @@ export function buildWebsiteSchema() {
     '@id': WEBSITE_ID,
     url: `${SITE_URL}/`,
     name: SITE_NAME,
+    inLanguage: 'en',
     author: buildAuthorSchema(),
     publisher: {
       '@id': ORGANIZATION_ID,
@@ -155,16 +190,17 @@ export function buildWebsiteSchema() {
   };
 }
 
-export function buildWebPageSchema({ title, description, path = '/', image } = {}) {
+export function buildWebPageSchema({ title, description, path = '/', image, type } = {}) {
   const pageUrl = `${SITE_URL}${path || '/'}`;
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'WebPage',
+    '@type': type || 'WebPage',
     '@id': `${pageUrl}#webpage`,
     url: pageUrl,
     name: title || DEFAULT_TITLE,
     description: description || DEFAULT_DESCRIPTION,
+    inLanguage: 'en',
     isPartOf: {
       '@id': WEBSITE_ID,
     },
@@ -178,6 +214,24 @@ export function buildWebPageSchema({ title, description, path = '/', image } = {
           url: absoluteUrl(image),
         }
       : undefined,
+  };
+}
+
+export function buildBreadcrumbListSchema(breadcrumbs) {
+  if (!Array.isArray(breadcrumbs) || breadcrumbs.length === 0) return null;
+
+  const items = breadcrumbs.filter(item => (item.name || item.label) && (item.path || item.href));
+  if (items.length === 0) return null;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name || item.label,
+      item: absoluteUrl(item.path || item.href),
+    })),
   };
 }
 
@@ -264,10 +318,11 @@ export function buildProjectSchema(project) {
   };
 }
 
-export function buildPageSchemas(jsonLd, { includeGlobal = true, page } = {}) {
+export function buildPageSchemas(jsonLd, { includeGlobal = true, page, breadcrumbs } = {}) {
   return [
     ...(includeGlobal ? buildGlobalSchemas() : []),
     page ? buildWebPageSchema(page) : null,
+    buildBreadcrumbListSchema(breadcrumbs),
     ...normalizeJsonLd(jsonLd),
   ].filter(Boolean);
 }

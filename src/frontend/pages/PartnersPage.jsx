@@ -50,6 +50,7 @@ export default function PartnersPage() {
         title={PARTNERS_PAGE.seo.title}
         description={PARTNERS_PAGE.seo.description}
         path="/partners/"
+        breadcrumbs={PARTNERS_PAGE.hero.breadcrumbs}
       />
       <div className="page-wrapper pp-page">
         <Navbar position="absolute" isHomePage={true} />

@@ -98,6 +98,11 @@ export default function ContactPage() {
         title="Contact"
         description="Contact ARG Software with a clear project brief. Tell us what you are building, what feels risky, and where senior engineering help is needed."
         path="/contact/"
+        pageType="ContactPage"
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Contact', path: '/contact/' },
+        ]}
       />
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />

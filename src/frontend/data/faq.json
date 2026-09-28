@@ -3,7 +3,7 @@
     {
       "id": "pricing",
       "q": "How much does custom software development cost?",
-      "schemaAnswer": "Project budgets usually start around EUR 10,000. The final estimate depends on scope, architecture, integrations, technical risk, and delivery model. Before estimating, we define the core workflows, technical risks, architecture direction, and a realistic delivery range. For evolving work, hourly or monthly collaboration may be the right model. Defined scopes can use milestone-based delivery.",
+      "schemaAnswer": "Project budgets usually start around EUR 10,000. The final estimate depends on scope, architecture, integrations, technical risk, and delivery model. Before estimating, we define the core workflows, the technical risks, the architecture direction, and a realistic delivery range. For evolving work, hourly or monthly collaboration may be the right model. Defined scopes can use milestone-based delivery. Any change affecting scope, timeline or technical direction is reviewed before work continues.",
       "answer": [
         { "type": "paragraph", "text": "Project budgets usually start around EUR 10,000. The final estimate depends on scope, architecture, integrations, technical risk and delivery model." },
         { "type": "paragraph", "text": "Before estimating, we define:" },
@@ -44,7 +44,7 @@
     {
       "id": "technology",
       "q": "What technologies do you use?",
-      "schemaAnswer": "We choose technology based on system requirements, team fit, and long-term operability. Common choices include React, Next.js, Angular, React Native, TypeScript, Node.js, NestJS, .NET, Java, PostgreSQL, MongoDB, Kafka, RabbitMQ, Docker, Kubernetes, AWS, Azure, GCP, Scaleway, and serverless platforms.",
+      "schemaAnswer": "We choose technology based on system requirements, team fit, and long-term operability. The stack is a tool, not the strategy. Common choices include React, Next.js, Angular, React Native, TypeScript, Node.js, NestJS, .NET, Java, PostgreSQL, MongoDB, Kafka, RabbitMQ, Docker, Kubernetes, AWS, Azure, GCP, Scaleway, and serverless platforms. The goal is a system your team can understand, operate and evolve after launch.",
       "answer": [
         { "type": "paragraph", "text": "We choose technology based on system requirements, team fit and long-term operability. The stack is a tool, not the strategy." },
         { "type": "list", "items": ["Frontend and mobile: React, Next.js, Angular and React Native", "Backend: TypeScript, Node.js, NestJS, .NET and Java", "Data and messaging: PostgreSQL, MongoDB, Kafka and RabbitMQ", "Infrastructure: Docker, Kubernetes, AWS, Azure, GCP, Scaleway and serverless platforms"] },
@@ -54,7 +54,7 @@
     {
       "id": "quality",
       "q": "How do you ensure scalability and code quality?",
-      "schemaAnswer": "Quality starts before implementation. We make architecture boundaries, testing strategy, code reviews, CI/CD, observability, recovery paths, security, and data constraints explicit so the software can evolve instead of being rewritten after year one. Testing tools vary by stack, but common choices include Jest, Cypress, Playwright, Testcontainers, xUnit, and NUnit.",
+      "schemaAnswer": "Quality starts before implementation. We make architecture boundaries, testing strategy, code reviews, CI/CD and release flow, observability and recovery paths, and security and data constraints explicit. Testing tools vary by stack, but common choices include Jest, Cypress, Playwright, Testcontainers, xUnit, and NUnit across unit, integration, end-to-end, and backend test suites. We build software meant to evolve, not be rewritten after year one.",
       "answer": [
         { "type": "paragraph", "text": "Quality starts before implementation. We make the important decisions explicit:" },
         { "type": "list", "items": ["Architecture boundaries", "Testing strategy", "Code reviews", "CI/CD and release flow", "Observability and recovery paths", "Security and data constraints"] },
@@ -95,7 +95,7 @@
     {
       "id": "getting-started",
       "q": "How do we get started?",
-      "schemaAnswer": "Send us the context first: your product goals, technical constraints, current risks, and timeline expectations. If there is a fit, the first conversation is technical. If there is not, we will say that clearly.",
+      "schemaAnswer": "Send us the context first. We look for the shape of the problem: your product goals, technical constraints, current risks, and timeline expectations. If there is a fit, the first conversation is technical. If there is not, we will say that clearly.",
       "answer": [
         { "type": "paragraph", "text": "Send us the context first. We look for the shape of the problem:" },
         { "type": "list", "items": ["Your product goals", "Technical constraints", "Current risks", "Timeline expectations"] },

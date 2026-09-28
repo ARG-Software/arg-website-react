@@ -9,9 +9,12 @@ export function writeStaticPages({ distDir, baseHtml, blogPostLinks, generated }
   for (const page of STATIC_PAGES) {
     let html = replaceMetaTags(baseHtml, {
       title: page.title,
+      socialTitle: page.socialTitle,
       description: page.description,
       url: `${SITE_URL}${page.path}`,
       type: 'website',
+      pageType: page.pageType,
+      breadcrumbs: page.breadcrumbs,
     });
     const extraLinks = page.path === '/blog/' ? blogPostLinks : [];
     html = injectCrawlableBlock(

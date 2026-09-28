@@ -27,6 +27,7 @@ export default function WorkingWithUsPage() {
         title={WORKING_WITH_US.seo.title}
         description={WORKING_WITH_US.seo.description}
         path="/working-with-us/"
+        breadcrumbs={WORKING_WITH_US.hero.breadcrumbs}
       />
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />

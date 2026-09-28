@@ -208,7 +208,12 @@ export default function CareersPage() {
 
   return (
     <>
-      <SEO title={CAREERS_PAGE.seo.title} description={seoDescription} path="/careers/" />
+      <SEO
+        title={CAREERS_PAGE.seo.title}
+        description={seoDescription}
+        path="/careers/"
+        breadcrumbs={CAREERS_PAGE.hero.breadcrumbs}
+      />
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 

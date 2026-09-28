@@ -38,6 +38,11 @@ export default function AboutUsPage() {
         title={ABOUT_DATA.seo.title}
         description={ABOUT_DATA.seo.description}
         path="/about-us/"
+        pageType="AboutPage"
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'About Us', path: '/about-us/' },
+        ]}
       />
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />

@@ -113,7 +113,7 @@ Before estimating, the team usually defines the core workflows, technical risks,
 
 ## Founders
 
-ARG Software is led by senior software engineers who stay close to architecture, code, and production reality.
+ARG Software is led by senior software engineers who stay close to architecture, code, and production reality. Delivery also draws on a trusted network of collaborators assembled around each problem. Individual collaborator names are not listed publicly.
 
 - José Antunes, Co-founder and Software Engineer: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 - Rui Rocha, Co-founder and Software Engineer: https://www.linkedin.com/in/ruirochawork/

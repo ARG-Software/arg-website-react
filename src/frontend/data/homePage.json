@@ -122,7 +122,7 @@
     "eyebrow": "Working With Us",
     "title": "Senior Ownership",
     "paragraphs": [
-      "ARG works best when the problem is complex, the stakes are real, and the system has to last. We keep the team small, senior, and close to the work: understand the risk, design the path, ship the code, and stay accountable when it reaches production.",
+      "ARG works best when the problem is complex, the stakes are real, and the system has to last. We stay senior and close to the work, and we bring in a trusted network of collaborators when the problem needs it: understand the risk, design the path, ship the code, and stay accountable when it reaches production.",
       "No vendor theatre, no endless status loops. You get direct technical conversations, clear trade-offs, fast answers, and the discipline to say no when a shortcut will cost you later."
     ],
     "cta": {
@@ -153,9 +153,9 @@
     ]
   },
   "team": {
-    "eyebrow": "Meet Our Team",
+    "eyebrow": "Meet the Founders",
     "title": "Built by Engineers",
-    "intro": "Small by design. Senior by default. ARG is led by engineers who stay close to the architecture, code and production reality. You work directly with the people responsible for the technical decisions.",
+    "intro": "ARG is led by engineers who stay close to the architecture, code and production reality. You work directly with the people responsible for the technical decisions.",
     "members": [
       {
         "name": "José Antunes",

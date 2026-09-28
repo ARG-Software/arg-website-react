@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { SITE_URL } from '../constants.js';
+import { SITE_URL, STATIC_PAGES } from '../constants.js';
 import { escapeHtml } from '../html-utils.js';
 import { toContentDateOnly } from '../../../src/frontend/utils/contentDate.js';
 
@@ -8,22 +8,13 @@ export function generateSitemap({ distDir, blogPostMetas }) {
   const sitemapUrls = [];
 
   sitemapUrls.push({ loc: `${SITE_URL}/`, priority: '1.0', changefreq: 'weekly' });
-  sitemapUrls.push({ loc: `${SITE_URL}/partners/`, priority: '0.8', changefreq: 'monthly' });
-  sitemapUrls.push({ loc: `${SITE_URL}/careers/`, priority: '0.9', changefreq: 'weekly' });
-  sitemapUrls.push({
-    loc: `${SITE_URL}/about-us/`,
-    priority: '0.8',
-    changefreq: 'monthly',
-  });
-  sitemapUrls.push({
-    loc: `${SITE_URL}/working-with-us/`,
-    priority: '0.8',
-    changefreq: 'monthly',
-  });
-  sitemapUrls.push({ loc: `${SITE_URL}/blog/`, priority: '0.9', changefreq: 'weekly' });
-  sitemapUrls.push({ loc: `${SITE_URL}/privacy/`, priority: '0.3', changefreq: 'yearly' });
-  sitemapUrls.push({ loc: `${SITE_URL}/terms/`, priority: '0.3', changefreq: 'yearly' });
-  sitemapUrls.push({ loc: `${SITE_URL}/contact/`, priority: '0.8', changefreq: 'monthly' });
+  for (const page of STATIC_PAGES) {
+    sitemapUrls.push({
+      loc: `${SITE_URL}${page.path}`,
+      priority: page.priority,
+      changefreq: page.changefreq,
+    });
+  }
 
   for (const meta of blogPostMetas) {
     const entry = {

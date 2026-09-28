@@ -152,6 +152,35 @@ Also auto-generated at build time:
 - **rss.xml**: RSS 2.0 feed of all 34 blog posts
 - **atom.xml**: Atom 1.0 feed of all 34 blog posts
 
+SEO is build-time. Gaspar is ingest-time. After company-information changes, follow **Content Updates** below.
+
+---
+
+## Content Updates
+
+Whenever public site information changes (company story, team, services, projects, FAQ, pricing, pages, blog facts), update every surface that repeats those facts. Do not ship website copy alone.
+
+1. **Page copy** — `src/frontend/data/*.json`, page components, and blog Markdown.
+2. **SEO** — page `seo` fields, `plugins/seo-prerender/constants.js` crawlable paragraphs, `src/frontend/constants/seo.js`, `index.html` defaults, `src/frontend/utils/structuredData.js` JSON-LD. Keep SPA descriptions in lockstep with prerender. Do not invent `employee` or `numberOfEmployees` in schema.
+3. **LLM / agent files** — `public/llms.txt`, `public/llms-full.txt`, `src/backend/mcp/apps/api/mcpcontent.ts`, `public/site.webmanifest`, and `.well-known` catalogs when URLs or APIs change.
+4. **Re-ingest RAG** — Gaspar reads Supabase, not live files:
+
+```bash
+npm run rag:ingest:local -- --all
+```
+
+One source: `npm run rag:ingest:local -- --source about` or `--file src/frontend/data/about.json`. One post: `--file src/frontend/blog/{slug}.md`.
+
+5. **Curate Gaspar** — `src/frontend/data/assistant.json`, `src/backend/rag/domain/assistant/assistantpolicy.ts`, `src/backend/rag/infrastructure/ingestion/loaders/loadteamprofilesources.ts`, and answering prompts under `src/backend/rag/application/llm/prompts/`. Then:
+
+```bash
+npm run typecheck:backend
+npm run rag:test
+npm run lint:backend
+```
+
+A website deploy without ingest leaves Gaspar on old chunks.
+
 ---
 
 ## Analytics
@@ -225,7 +254,7 @@ Gaspar reads from the configured RAG repository, not directly from website files
 
 First-party ingestion covers public site content, blog posts, project data, static pages, curated assistant profile content, and private source material under `src/backend/rag/.rag_private/`. Private content is processed through redaction rules before indexing where appropriate.
 
-Useful ingestion commands:
+See **Content Updates** for the full SEO + ingest + Gaspar loop. Useful ingestion commands:
 
 ```bash
 npm run sync:blog

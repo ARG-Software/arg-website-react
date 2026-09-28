@@ -5,7 +5,7 @@
   },
   "hero": {
     "title": ["Trusted by the teams", "building what matters."],
-    "breadcrumbs": [{ "label": "Home", "path": "/" }, { "label": "Partners" }],
+    "breadcrumbs": [{ "label": "Home", "path": "/" }, { "label": "Partners", "path": "/partners/" }],
     "sideItems": [
       { "label": "Partners", "href": "#partners" },
       { "label": "Partnership timeline", "href": "#timeline" },

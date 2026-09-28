@@ -5,8 +5,8 @@
   },
   "hero": {
     "title": ["Work With", "ARG Software"],
-    "subtitle": "Work with a small architecture-first team that designs the system before writing it, then stays close when it reaches production.",
-    "breadcrumbs": [{ "label": "Home", "path": "/" }, { "label": "Working with Us" }],
+    "subtitle": "Work with an architecture-first team that designs the system before writing it, then stays close when it reaches production.",
+    "breadcrumbs": [{ "label": "Home", "path": "/" }, { "label": "Working with Us", "path": "/working-with-us/" }],
     "sideItems": [
       { "label": "Why ARG", "href": "#why-us" },
       { "label": "How we work", "href": "#values" },
@@ -22,7 +22,7 @@
       "highlight": "before we write it."
     },
     "aside": {
-      "text": "ARG is a small, opinionated engineering team. We take on hard problems on purpose: systems where architecture, reliability, and ownership matter from day one.",
+      "text": "ARG is an opinionated engineering studio. Founders stay close to the work, and a trusted network of collaborators is assembled around each problem. We take on hard problems on purpose: systems where architecture, reliability, and ownership matter from day one.",
       "label": "ARG Team"
     },
     "pillars": [
@@ -85,13 +85,13 @@
       { "title": "Architecture first", "description": "The system is designed before it's written. If we can't explain it clearly, we don't build it yet.", "antiValue": "ship fast, fix later" },
       { "title": "No patchwork", "description": "If a fix needs a workaround, we refactor the abstraction. Band-aids compound; we'd rather pay the cost now.", "antiValue": "good enough for now" },
       { "title": "Production on a Tuesday", "description": "We deploy when we can stay close. We own what we ship: bugs, performance, and the unexpected page.", "antiValue": "merge Friday, ghost the weekend" },
-      { "title": "Direct, kind, no politics", "description": "Honest in code review, honest in retro. Small team means every personality compounds.", "antiValue": "let's circle back offline" }
+      { "title": "Direct, kind, no politics", "description": "Honest in code review, honest in retro. Direct working relationships mean every personality compounds.", "antiValue": "let's circle back offline" }
     ]
   },
   "fitCheck": {
     "title": "Not every project needs ARG.",
     "titleHighlight": "The hard ones usually do.",
-    "intro": "Before we talk scope, we look for the shape of the problem: where the risk is, what needs to stay reliable, and whether a small senior team can make a real difference.",
+    "intro": "Before we talk scope, we look for the shape of the problem: where the risk is, what needs to stay reliable, and whether a senior team can make a real difference.",
     "fitTicker": "Where ARG fits",
     "processTicker": "How it starts",
     "processAriaLabel": "How it starts",

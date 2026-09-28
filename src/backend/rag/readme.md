@@ -1,6 +1,6 @@
 # RAG Administration
 
-Gaspar reads sources from Supabase, not directly from the website files.
+Gaspar reads sources from Supabase, not directly from the website files. After any public company-information change, follow the **Content Updates** checklist in the root `README.md` (SEO surfaces, re-ingest, Gaspar curation).
 
 After importing Medium posts, run:
 

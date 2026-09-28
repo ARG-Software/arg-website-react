@@ -26,10 +26,15 @@ export function writeProjectPages({ distDir, baseHtml, generated }) {
 
     let html = replaceMetaTags(baseHtml, {
       title,
+      socialTitle: `${project.title} - Use Case`,
       description,
       url: projectUrl,
       image: project.imgSrc || '',
       type: 'website',
+      breadcrumbs: [
+        { name: 'Home', path: '/' },
+        { name: project.title, path: `/projects/${project.slug}/` },
+      ],
       jsonLd: buildProjectSchema(project),
     });
 

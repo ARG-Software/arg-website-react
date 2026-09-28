@@ -9,7 +9,7 @@
     "noRolesTitle": ["Careers at ARG", "No Open Roles Today"],
     "openRolesSubtitle": "Every role is scoped for meaningful ownership on production systems. No hiring theatre, no filler seats.",
     "noRolesSubtitle": "We are not hiring for a specific role today, but we still want to hear from engineers who think like us. The next opening is often shaped around someone we already know.",
-    "breadcrumbs": [{ "label": "Home", "path": "/" }, { "label": "Careers" }],
+    "breadcrumbs": [{ "label": "Home", "path": "/" }, { "label": "Careers", "path": "/careers/" }],
     "openRolesSideItems": [
       { "label": "Open Roles", "href": "#roles" },
       { "label": "How to Apply", "href": "#apply" },
@@ -55,10 +55,10 @@
   "who": {
     "title": "Not hiring today. But here's",
     "titleHighlight": "who we look for.",
-    "subtitle": "We stay intentionally small and selective. If this sounds like the kind of team where you would do your best work, reach out early - the right conversations are worth having before a role exists."
+    "subtitle": "We stay selective. If this sounds like the kind of team where you would do your best work, reach out early - the right conversations are worth having before a role exists."
   },
   "founders": {
-    "title": "We're small.",
+    "title": "No recruiter wall.",
     "titleHighlight": "Talk to a founder directly.",
     "intro": "No recruiter wall, no ATS black hole. If you think you'd fit at ARG, the fastest way in is a short note to one of us.",
     "cards": [

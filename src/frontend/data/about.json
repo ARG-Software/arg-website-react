@@ -1,11 +1,11 @@
 {
   "seo": {
     "title": "About Our Architecture-First Studio",
-    "description": "Meet ARG Software, a small architecture-first engineering studio based in Portugal, Europe, built on senior ownership, technical trust and maintainable systems."
+    "description": "Meet ARG Software, an architecture-first engineering studio based in Portugal, Europe, built on senior ownership, technical trust and maintainable systems."
   },
   "hero": {
     "title": ["A way of working,", "before a company."],
-    "subtitle": "ARG is a small, architecture-first software engineering studio founded by José Antunes and Rui Rocha after years of working together across architecture, product engineering and production systems."
+    "subtitle": "ARG is an architecture-first software engineering studio founded by José Antunes and Rui Rocha after years of working together across architecture, product engineering and production systems."
   },
   "origin": {
     "title": "ARG was built on technical trust and shared standards.",
@@ -124,7 +124,7 @@
           "Early ARG work included Dokutar, a cloud-based documentation and compliance-oriented product for German companies.",
           "The stack already reflected the studio's range: Node.js, TypeScript, React, Angular, .NET, PostgreSQL, MySQL, MongoDB, Docker, AWS, CI/CD, and testing."
         ],
-        "whyItMattered": "This is where ARG's positioning became concrete: small senior teams, architecture-first delivery, and software built to keep evolving after the first release.",
+        "whyItMattered": "This is where ARG's positioning became concrete: senior teams assembled around the work, architecture-first delivery, and software built to keep evolving after the first release.",
         "details": [
           {
             "label": "ARG",
@@ -158,7 +158,7 @@
         "period": "Now",
         "kicker": "Selective growth",
         "headline": "Growth through trust, not headcount.",
-        "summary": "ARG today is a small software studio built around senior ownership and carefully selected collaborators. The company does not scale by adding people for optics; it scales by assembling trusted capability around the problem.",
+        "summary": "ARG today is a software studio built around senior ownership and carefully selected collaborators. The company does not scale by adding people for optics; it scales by assembling trusted capability around the problem.",
         "highlights": [
           "Current and past ARG clients include Angry Ventures, Cyberbones, Hopupon, Hostelier, mb-netzwerk, Mojaloop Foundation, North Music Group, SEFA, SkyTracks, and others.",
           "The work spans payment infrastructure, music technology, travel, hospitality, documentation, SaaS products, backend systems, frontend applications, cloud infrastructure and AI integration.",
@@ -241,7 +241,7 @@
   "collaborators": {
     "title": "A trusted network, assembled around the work.",
     "paragraphs": [
-      "ARG extends beyond its two founders through a trusted network of engineers and specialists we have worked with directly and bring in when their expertise fits the problem.",
+      "ARG extends beyond its founders through a trusted network of engineers and specialists we have worked with directly and bring in when their expertise fits the problem.",
       "Together, they cover backend and frontend engineering, mobile development, cloud infrastructure, software architecture, product engineering, AI integration and technical leadership. More importantly, they already know how to work together."
     ],
     "disciplines": [

@@ -19,6 +19,7 @@ export function replaceMetaTags(
   html,
   {
     title,
+    socialTitle,
     description,
     url,
     image,
@@ -27,6 +28,8 @@ export function replaceMetaTags(
     jsonLd,
     includeGlobalJsonLd = true,
     includePageJsonLd = true,
+    pageType,
+    breadcrumbs,
     author = DEFAULT_AUTHOR.name,
     authorUrl = DEFAULT_AUTHOR.url,
   }
@@ -38,6 +41,7 @@ export function replaceMetaTags(
     : `${SITE_URL}/images/og.jpg`;
 
   const safeTitle = escapeHtml(title);
+  const safeSocialTitle = escapeHtml(socialTitle || title);
   const safeDesc = escapeHtml(description);
   const safeAuthor = escapeHtml(author);
   const safeAuthorUrl = escapeHtml(
@@ -77,7 +81,7 @@ export function replaceMetaTags(
   );
   result = result.replace(
     /<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/,
-    `<meta property="og:title" content="${safeTitle}" />`
+    `<meta property="og:title" content="${safeSocialTitle}" />`
   );
   result = result.replace(
     /<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/,
@@ -98,7 +102,7 @@ export function replaceMetaTags(
 
   result = result.replace(
     /<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/,
-    `<meta name="twitter:title" content="${safeTitle}" />`
+    `<meta name="twitter:title" content="${safeSocialTitle}" />`
   );
   result = result.replace(
     /<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/?>/,
@@ -115,12 +119,14 @@ export function replaceMetaTags(
 
   result = injectStructuredData(result, jsonLd, {
     includeGlobal: includeGlobalJsonLd,
+    breadcrumbs,
     page: includePageJsonLd
       ? {
           title,
           description,
           path: new URL(url).pathname,
           image,
+          type: pageType,
         }
       : undefined,
   });

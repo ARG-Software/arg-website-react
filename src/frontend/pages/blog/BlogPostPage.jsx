@@ -358,6 +358,11 @@ export default function BlogPostPage() {
         imageHeight="1440"
         rss
         atom
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Blog', path: '/blog/' },
+          { label: BLOG_POST.title, path: `/blog/${BLOG_POST.slug}/` },
+        ]}
         jsonLd={buildArticleSchema(BLOG_POST)}
       />
 

@@ -20,7 +20,15 @@ export default function TermsPage() {
 
   return (
     <>
-      <SEO title={PAGE.title} description={PAGE.description} path={PAGE.path} />
+      <SEO
+        title={PAGE.title}
+        description={PAGE.description}
+        path={PAGE.path}
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: PAGE.breadcrumbLabel, path: PAGE.path },
+        ]}
+      />
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
         <main className="main-wrapper">

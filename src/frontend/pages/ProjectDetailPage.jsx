@@ -120,6 +120,10 @@ export default function ProjectDetailPage() {
         description={seoDescription}
         path={`/projects/${slug}/`}
         image={project.imgSrc}
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: project.title, path: `/projects/${slug}/` },
+        ]}
         jsonLd={buildProjectSchema(project)}
       />
       <div className="prp-page">

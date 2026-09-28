@@ -29,7 +29,7 @@ export async function loadTeamProfileSources(rootDir: string): Promise<IRagSourc
       content: [
         'ARG Team',
         homepage.team.intro,
-        'The only individually named public team members are the two co-founders:',
+        'Public pages name the co-founders José Antunes and Rui Rocha. ARG is not a two-person company: founders lead delivery and assemble a trusted network of collaborators around each problem.',
         ...about.founders.people.map(person => `${person.name}: ${person.role}. ${person.focus}.`),
         'ARG also works with a trusted network of collaborators whose individual names are not publicly listed.',
         ...about.collaborators.paragraphs,

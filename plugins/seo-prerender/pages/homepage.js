@@ -15,6 +15,7 @@ export function writeHomepage({ distDir, baseHtml }) {
     description: DEFAULT_DESCRIPTION,
     paragraphs: [
       'ARG Software is an architecture-first software engineering company based in Portugal, Europe. Its senior-led team builds production-ready systems for fintech, SaaS and high-growth technology companies worldwide.',
+      'Founders stay close to architecture, code and production. When the work needs more capacity, ARG assembles a trusted network of collaborators around the problem.',
       'ARG provides dedicated product teams, senior team extension, technical consulting, MVP and product delivery, AI integration, and cloud and platform engineering. Technology is selected for system requirements, team fit and long-term operability.',
       'ARG Software has worked on systems reaching more than 6 countries, Mojaloop load testing that verified more than 2,000 transactions per second, and more than 1,000 production deployments. Public work includes Interledger Foundation, Mojaloop, SkyTracks, North Music Group, Dokutar and TV Cine.',
       'ARG works with startups, scale-ups and established companies when the problem is complex, the stakes are real and the system has to last. Focused MVPs typically take 8 to 14 weeks and are designed to evolve beyond the first release.',

@@ -380,9 +380,10 @@ Build output: `dist/` directory ready for deployment.
 1. Create the page component in `src/frontend/pages/`
 2. Add route in `src/frontend/main.jsx` (with and without trailing slash)
 3. Lazy-load with `lazyWithRetry()` if not homepage
-4. Add entry to `STATIC_PAGES` in `plugins/seo-prerender/constants.js` for prerendering + sitemap
+4. Add entry to `STATIC_PAGES` in `plugins/seo-prerender/constants.js` for prerendering + sitemap (include `priority`, `changefreq`, breadcrumbs, and `pageType` when it is not `WebPage`)
 5. Add trailing-slash redirect in `public/_redirects`
 6. Add SEO metadata (title, description) in the page component
+7. Follow README **Content Updates**: keep prerender/JSON-LD/`llms*.txt` in sync, add a RAG source if Gaspar should know the page, then `npm run rag:ingest:local -- --all`
 
 ### Adding a New Blog Post
 1. Create `src/frontend/blog/{slug}.md` with YAML frontmatter:
@@ -401,6 +402,7 @@ Build output: `dist/` directory ready for deployment.
 2. Rebuild — sitemap, RSS, and Atom are auto-generated
 3. Or use `npm run blog:import:medium` to import from Medium feed
 4. Cover art: see `docs/blog-covers.md` (2560×1440 WebP on the site, PNG for Medium)
+5. Follow README **Content Updates**: ingest the post (`npm run rag:ingest:local -- --file src/frontend/blog/{slug}.md` or `--all`) so Gaspar has the new article
 
 ### Making a Link with Analytics
 ```jsx

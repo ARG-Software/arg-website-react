@@ -31,7 +31,7 @@
       ]
     },
     {
-      "anchor": "https://arg.software/api/contact/challenge",
+      "anchor": "https://arg.software/api/security/challenge",
       "service-desc": [
         {
           "href": "https://arg.software/.well-known/openapi.json",
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "anchor": "https://arg.software/api/contact/verify",
+      "anchor": "https://arg.software/api/security/verify",
       "service-desc": [
         {
           "href": "https://arg.software/.well-known/openapi.json",

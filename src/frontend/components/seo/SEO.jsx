@@ -33,6 +33,8 @@ import { buildPageSchemas, stringifyJsonLd } from '../../utils/structuredData';
  * @param {boolean} [props.atom]          – If true, injects <link rel="alternate" type="application/atom+xml">
  * @param {object|object[]} [props.jsonLd] – Page-specific JSON-LD structured data
  * @param {boolean} [props.globalJsonLd]  – If false, skips global Organization/WebSite schema
+ * @param {string}  [props.pageType]      – schema.org WebPage subtype (AboutPage, ContactPage, CollectionPage)
+ * @param {object[]} [props.breadcrumbs]  – Breadcrumb items with label/name and path
  */
 export function SEO({
   title,
@@ -54,6 +56,8 @@ export function SEO({
   atom = false,
   jsonLd,
   globalJsonLd = true,
+  pageType,
+  breadcrumbs,
 }) {
   const pageTitle = title ? (noSuffix ? title : `${title} | ${SITE_NAME}`) : DEFAULT_TITLE;
 
@@ -66,6 +70,7 @@ export function SEO({
     : `${SITE_URL}${pageAuthorUrl.startsWith('/') ? '' : '/'}${pageAuthorUrl}`;
   const schemas = buildPageSchemas(jsonLd, {
     includeGlobal: globalJsonLd && !noIndex,
+    breadcrumbs: noIndex ? undefined : breadcrumbs,
     page: noIndex
       ? undefined
       : {
@@ -73,6 +78,7 @@ export function SEO({
           description: pageDescription,
           path: path || '/',
           image,
+          type: pageType,
         },
   });
 

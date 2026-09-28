@@ -42,6 +42,7 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
 
     let html = replaceMetaTags(baseHtml, {
       title,
+      socialTitle: meta.seoTitle || meta.title || meta.slug,
       description,
       url: articleUrl,
       image,
@@ -49,6 +50,11 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
       extra,
       author,
       authorUrl,
+      breadcrumbs: [
+        { name: 'Home', path: '/' },
+        { name: 'Blog', path: '/blog/' },
+        { name: meta.title || meta.slug, path: `/blog/${meta.slug}/` },
+      ],
       jsonLd: buildArticleSchema({ ...meta, author, authorUrl, image }),
     });
 

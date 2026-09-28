@@ -122,6 +122,11 @@ export default function BlogPage() {
         title="Blog & Insights"
         description="Technical articles from the ARG Software team on architecture, TypeScript, .NET, DevOps, AI tooling, and the engineering decisions behind reliable software."
         path="/blog/"
+        pageType="CollectionPage"
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Blog', path: '/blog/' },
+        ]}
         rss
         atom
       />
