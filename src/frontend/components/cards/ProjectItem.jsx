@@ -83,7 +83,6 @@ export function ProjectItem({
 
   return (
     <div
-      id="project-item-wrapper-grid"
       role="listitem"
       className="projects_item_wrap"
       style={
