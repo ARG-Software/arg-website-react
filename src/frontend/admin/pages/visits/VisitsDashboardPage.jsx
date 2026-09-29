@@ -52,7 +52,7 @@ export default function VisitsDashboardPage({ onSelectVisitSession }) {
   const [pagesPage, setPagesPage] = useState(1);
   const [pagesSort, setPagesSort] = useState({ sortBy: 'pageViews', sortDirection: 'desc' });
   const [sessionPage, setSessionPage] = useState(1);
-  const [sessionSort, setSessionSort] = useState({ sortBy: 'lastSeenAt', sortDirection: 'desc' });
+  const [sessionSort, setSessionSort] = useState({ sortBy: 'startedAt', sortDirection: 'desc' });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const pageViewsStatQuery = useVisitStat('page_views', overviewRange);
   const visitsStatQuery = useVisitStat('visits', overviewRange);

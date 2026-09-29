@@ -7,7 +7,7 @@ import type {
 import type { IVisitSessionRepository } from '../../ports/repositories/ivisitsession.repository.js';
 import { createPagination, getPagination } from '../pagination.js';
 
-const SORT_FIELDS = new Set(['entryPath', 'pageCount', 'eventCount', 'durationMs', 'lastSeenAt']);
+const SORT_FIELDS = new Set(['entryPath', 'pageCount', 'eventCount', 'durationMs', 'startedAt', 'lastSeenAt']);
 
 export interface ListVisitSessionsInput {
   page?: string | number;
@@ -46,7 +46,7 @@ function getRecentVisitsCutoff(): string {
 function getVisitSessionQuery(input: ListVisitSessionsInput): VisitSessionListQuery {
   return {
     ...getPagination(input),
-    sortBy: (SORT_FIELDS.has(input.sortBy || '') ? input.sortBy : 'lastSeenAt') as VisitSessionSortField,
+    sortBy: (SORT_FIELDS.has(input.sortBy || '') ? input.sortBy : 'startedAt') as VisitSessionSortField,
     sortDirection: String(input.sortDirection || '').toLowerCase() === 'asc' ? 'asc' : 'desc',
   };
 }

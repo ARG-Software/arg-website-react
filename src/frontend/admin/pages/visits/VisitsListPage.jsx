@@ -10,7 +10,7 @@ import { ErrorCard } from '../../shared/ErrorCard.jsx';
 
 export default function VisitsListPage({ onSelectVisitSession }) {
   const [sessionPage, setSessionPage] = useState(1);
-  const [sessionSort, setSessionSort] = useState({ sortBy: 'lastSeenAt', sortDirection: 'desc' });
+  const [sessionSort, setSessionSort] = useState({ sortBy: 'startedAt', sortDirection: 'desc' });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const sessionsQuery = useAllVisitSessions(
     { ...sessionSort, page: sessionPage, pageSize: PAGE_SIZE },
@@ -38,7 +38,7 @@ export default function VisitsListPage({ onSelectVisitSession }) {
       ) : (
         <VisitSessionsTable
           title="All visits"
-          description="Every recorded visit, ordered by latest activity. Open a row to view the ordered page journey."
+          description="Every recorded visit, ordered by start time. Open a row to view the ordered page journey."
           query={sessionsQuery}
           onPageChange={setSessionPage}
           sort={sessionSort}

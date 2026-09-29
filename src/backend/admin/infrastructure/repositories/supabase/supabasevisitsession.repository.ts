@@ -70,7 +70,7 @@ export class SupabaseVisitSessionRepository
   async findMany({
     page = 1,
     pageSize = 10,
-    sortBy = 'lastSeenAt',
+    sortBy = 'startedAt',
     sortDirection = 'desc',
     recentSince = null,
   }: VisitSessionFindManyQuery = {}): Promise<VisitSessionFindManyResult> {
@@ -196,6 +196,7 @@ function getVisitSessionSortColumn(sortBy: VisitSessionSortField): string {
   if (sortBy === 'pageCount') return 'page_count';
   if (sortBy === 'eventCount') return 'event_count';
   if (sortBy === 'durationMs') return 'duration_ms';
+  if (sortBy === 'startedAt') return 'started_at';
 
   return 'last_seen_at';
 }

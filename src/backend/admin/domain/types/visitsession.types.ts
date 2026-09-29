@@ -114,6 +114,7 @@ export type VisitSessionSortField =
   | 'pageCount'
   | 'eventCount'
   | 'durationMs'
+  | 'startedAt'
   | 'lastSeenAt';
 
 export type VisitSessionListQuery = {

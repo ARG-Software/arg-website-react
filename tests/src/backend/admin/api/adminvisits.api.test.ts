@@ -591,7 +591,7 @@ test('passes recent visit session sorting to the repository', async () => {
   assert.equal(receivedSortDirection, 'asc');
 });
 
-test('defaults invalid visit session sorting to latest activity first', async () => {
+test('defaults invalid visit session sorting to start time first', async () => {
   let receivedSortBy = '';
   let receivedSortDirection = '';
   const useCase = new ListAllVisitSessionsUseCase({
@@ -607,7 +607,27 @@ test('defaults invalid visit session sorting to latest activity first', async ()
 
   await useCase.execute({ sortBy: 'unknown', sortDirection: 'sideways' });
 
-  assert.equal(receivedSortBy, 'lastSeenAt');
+  assert.equal(receivedSortBy, 'startedAt');
+  assert.equal(receivedSortDirection, 'desc');
+});
+
+test('passes startedAt visit session sorting to the repository', async () => {
+  let receivedSortBy = '';
+  let receivedSortDirection = '';
+  const useCase = new ListAllVisitSessionsUseCase({
+    async findMany(input) {
+      receivedSortBy = String(input?.sortBy || '');
+      receivedSortDirection = String(input?.sortDirection || '');
+      return {
+        records: [],
+        totalRecords: 0,
+      };
+    },
+  } as any);
+
+  await useCase.execute({ sortBy: 'startedAt', sortDirection: 'desc' });
+
+  assert.equal(receivedSortBy, 'startedAt');
   assert.equal(receivedSortDirection, 'desc');
 });
 

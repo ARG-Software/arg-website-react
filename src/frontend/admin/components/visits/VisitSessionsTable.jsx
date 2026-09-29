@@ -48,6 +48,7 @@ function getVisitSessionColumns() {
     {
       key: 'startedAt',
       label: 'Started',
+      sortable: true,
       render: record => formatDateTime(record.startedAt),
     },
     {
