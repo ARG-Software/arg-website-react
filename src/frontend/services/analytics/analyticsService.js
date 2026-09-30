@@ -67,7 +67,7 @@ export class AnalyticsService {
 }
 
 function shouldTrack(params) {
-  return !isAdminPath(getEventPath(params));
+  return !isLocalHost() && !isAdminPath(getEventPath(params));
 }
 
 function getEventPath(params) {
@@ -78,4 +78,11 @@ function getEventPath(params) {
 
 function isAdminPath(path) {
   return typeof path === 'string' && ADMIN_PATH_PATTERN.test(path);
+}
+
+function isLocalHost() {
+  if (typeof window === 'undefined') return false;
+
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.endsWith('.localhost');
 }
