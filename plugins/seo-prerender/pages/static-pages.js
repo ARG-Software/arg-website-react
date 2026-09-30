@@ -4,6 +4,16 @@ import { SITE_URL, STATIC_PAGES } from '../constants.js';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { replaceMetaTags } from '../html-utils.js';
 
+function getSkillLinks() {
+  const skillsPath = path.resolve('src/frontend/data/skills.json');
+  if (!fs.existsSync(skillsPath)) return [];
+
+  const { skills = [] } = JSON.parse(fs.readFileSync(skillsPath, 'utf-8'));
+  return skills
+    .filter(skill => skill.slug)
+    .map(skill => ({ href: `/skills/${skill.slug}/`, label: skill.title }));
+}
+
 export function writeStaticPages({ distDir, baseHtml, blogPostLinks, generated }) {
   let count = generated;
   for (const page of STATIC_PAGES) {
@@ -16,7 +26,8 @@ export function writeStaticPages({ distDir, baseHtml, blogPostLinks, generated }
       pageType: page.pageType,
       breadcrumbs: page.breadcrumbs,
     });
-    const extraLinks = page.path === '/blog/' ? blogPostLinks : [];
+    const extraLinks =
+      page.path === '/blog/' ? blogPostLinks : page.path === '/skills/' ? getSkillLinks() : [];
     html = injectCrawlableBlock(
       html,
       buildCrawlableBlock(page.h1, {

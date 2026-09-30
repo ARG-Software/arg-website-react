@@ -48,6 +48,7 @@
 # Trailing-slash canonicalization — fixes Ahrefs "3XX in sitemap" errors
 /partners         /partners/             301
 /careers          /careers/              301
+/skills           /skills/               301
 /about-us         /about-us/             301
 /working-with-us  /working-with-us/      301
 /contact          /contact/              301
@@ -62,6 +63,7 @@
 /blog/three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/     /blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/      301!
 /projects/:slug   /projects/:slug/       301
 /blog/:slug       /blog/:slug/           301
+/skills/:slug     /skills/:slug/         301
 
 # Admin SPA route — protected by Supabase Auth + server-side admin API checks
 

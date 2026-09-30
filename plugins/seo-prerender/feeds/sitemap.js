@@ -26,6 +26,20 @@ export function generateSitemap({ distDir, blogPostMetas }) {
     sitemapUrls.push(entry);
   }
 
+  const skillsPath = path.resolve('src/frontend/data/skills.json');
+  if (fs.existsSync(skillsPath)) {
+    const { skills = [] } = JSON.parse(fs.readFileSync(skillsPath, 'utf-8'));
+    for (const skill of skills) {
+      if (skill.slug) {
+        sitemapUrls.push({
+          loc: `${SITE_URL}/skills/${skill.slug}/`,
+          priority: '0.6',
+          changefreq: 'monthly',
+        });
+      }
+    }
+  }
+
   const projectsPath = path.resolve('src/frontend/data/projects.json');
   if (fs.existsSync(projectsPath)) {
     const projects = JSON.parse(fs.readFileSync(projectsPath, 'utf-8'));

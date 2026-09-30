@@ -23,6 +23,8 @@ const PartnersPage = lazyWithRetry(() => import('./pages/PartnersPage.jsx'));
 const ProjectsPage = lazyWithRetry(() => import('./pages/ProjectsPage.jsx'));
 const ProjectDetailPage = lazyWithRetry(() => import('./pages/ProjectDetailPage.jsx'));
 const CareersPage = lazyWithRetry(() => import('./pages/CareersPage.jsx'));
+const SkillsPage = lazyWithRetry(() => import('./pages/SkillsPage.jsx'));
+const SkillDetailPage = lazyWithRetry(() => import('./pages/SkillDetailPage.jsx'));
 const WorkingWithUsPage = lazyWithRetry(() => import('./pages/WorkingWithUsPage.jsx'));
 const AboutUsPage = lazyWithRetry(() => import('./pages/AboutUsPage.jsx'));
 const ContactPage = lazyWithRetry(() => import('./pages/ContactPage.jsx'));
@@ -41,6 +43,11 @@ function BlogPostPageWrapper() {
 function ProjectDetailPageWrapper() {
   const { slug } = useParams();
   return <ProjectDetailPage key={slug} />;
+}
+
+function SkillDetailPageWrapper() {
+  const { slug } = useParams();
+  return <SkillDetailPage key={slug} />;
 }
 
 function GlobalOverlays() {
@@ -83,6 +90,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     <Route path="/projects/:slug/" element={<ProjectDetailPageWrapper />} />
                     <Route path="/careers" element={<CareersPage />} />
                     <Route path="/careers/" element={<CareersPage />} />
+                    <Route path="/skills" element={<SkillsPage />} />
+                    <Route path="/skills/" element={<SkillsPage />} />
+                    <Route path="/skills/:slug" element={<SkillDetailPageWrapper />} />
+                    <Route path="/skills/:slug/" element={<SkillDetailPageWrapper />} />
                     <Route path="/working-with-us" element={<WorkingWithUsPage />} />
                     <Route path="/working-with-us/" element={<WorkingWithUsPage />} />
                     <Route path="/about-us" element={<AboutUsPage />} />

@@ -8,6 +8,7 @@ export const NAV_LINKS = [
   { href: '/partners/', label: 'Partners' },
   { href: '/#cases', label: 'Use Cases' },
   { href: '/careers/', label: 'Careers' },
+  { href: '/skills/', label: 'Skills' },
   { href: '/about-us/', label: 'About Us' },
   { href: '/working-with-us/', label: 'Working with Us' },
   { href: '/contact/', label: 'Contact' },
@@ -55,6 +56,26 @@ export const STATIC_PAGES = [
       'We write practical guides on topics like enforcing clean architecture in TypeScript, CQRS without MediatR in .NET, dependency injection patterns in ASP.NET Core, and functional error handling with the Result pattern.',
       'Our DevOps blog posts cover running Docker natively on Windows with WSL2, local Kubernetes clusters with NestJS and PostgreSQL, and debugging microservices with Prometheus and OpenTelemetry.',
       'We also write about software engineering culture, including the art of pull requests, building scalable monorepos with Nx and NestJS, and the real impact of AI on software development teams.',
+    ],
+  },
+  {
+    path: '/skills/',
+    title: 'Skills | ARG Software',
+    socialTitle: 'Skills',
+    h1: 'Skills',
+    pageType: 'CollectionPage',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Skills', path: '/skills/' },
+    ],
+    priority: '0.8',
+    changefreq: 'monthly',
+    description:
+      'Agent skills ARG Software uses to keep architecture, frontend, and delivery consistent across production systems.',
+    paragraphs: [
+      'ARG Software publishes the agent skills we use to keep architecture, frontend, and delivery consistent.',
+      'Skills cover workflow, frontend, architecture, and delivery practices we load into our tools.',
+      'This catalog will grow into per-skill files. The current page is a layout prototype with dummy copy.',
     ],
   },
   {

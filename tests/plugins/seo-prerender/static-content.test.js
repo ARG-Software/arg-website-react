@@ -4,6 +4,7 @@ import { parseBlocks } from '../../../src/frontend/utils/blog/articleContent.js'
 import {
   buildBlogPostStaticContent,
   buildProjectStaticContent,
+  buildSkillStaticContent,
   injectStaticContent,
 } from '../../../plugins/seo-prerender/static-content.js';
 
@@ -91,4 +92,23 @@ test('renders complete project evidence inside semantic sections', () => {
   assert.match(content, /2000\+/);
   assert.match(content, /770 ms/);
   assert.match(content, /Transactions per second/);
+});
+
+test('renders skill install command and what it does for crawlers', () => {
+  const content = buildSkillStaticContent({
+    title: 'Clean Code',
+    summary: 'Keep changes small.',
+    installCommand: 'npx skills add https://github.com/ARG-Software/skills --skill clean-code',
+    does: ['Prefer the simplest readable implementation.'],
+    usedWhen: 'Refactors and reviews.',
+    body: 'Helpers appear only when reused.',
+  });
+
+  assert.match(content, /<h1>Clean Code<\/h1>/);
+  assert.match(
+    content,
+    /npx skills add https:\/\/github.com\/ARG-Software\/skills --skill clean-code/
+  );
+  assert.match(content, /Prefer the simplest readable implementation\./);
+  assert.match(content, /href="\/skills\/"/);
 });

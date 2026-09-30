@@ -46,6 +46,25 @@ export function buildBlogPostStaticContent(meta, blocks) {
 </div>`;
 }
 
+export function buildSkillStaticContent(skill) {
+  const does = (skill.does || []).map(item => `<li>${escapeHtml(item)}</li>`).join('');
+
+  return `<div class="page-wrapper" data-prerendered-content>
+  <main>
+    <h1>${escapeHtml(skill.title)}</h1>
+    <p>${escapeHtml(skill.summary || '')}</p>
+    <h2>Installation</h2>
+    <pre><code>${escapeHtml(skill.installCommand || '')}</code></pre>
+    <h2>What it does</h2>
+    <ul>${does}</ul>
+    <h2>Used when</h2>
+    <p>${escapeHtml(skill.usedWhen || '')}</p>
+    <p>${escapeHtml(skill.body || '')}</p>
+    ${renderNavigation([{ href: '/skills/', label: 'Skills' }])}
+  </main>
+</div>`;
+}
+
 export function buildProjectStaticContent(project, projectLinks = []) {
   const services = project.services.map(service => `<li>${escapeHtml(service)}</li>`).join('');
   const solution = project.solution.map(item => `<li>${escapeHtml(item)}</li>`).join('');

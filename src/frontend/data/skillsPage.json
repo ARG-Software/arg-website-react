@@ -1,0 +1,70 @@
+{
+  "seo": {
+    "title": "Skills",
+    "description": "Agent skills ARG Software uses to keep architecture, frontend, and delivery consistent across production systems."
+  },
+  "hero": {
+    "title": ["The skills we use", "to ship production work."],
+    "breadcrumbs": [
+      { "label": "Home", "path": "/" },
+      { "label": "Skills", "path": "/skills/" }
+    ],
+    "sideItems": [
+      { "label": "Skills", "href": "#skills" },
+      { "label": "Agents", "href": "#agents" },
+      { "label": "Start a project", "href": "#page-cta" }
+    ]
+  },
+  "catalog": {
+    "intro": "Reusable agent skills we load into our tools. Dummy copy for layout — real skill files come next."
+  },
+  "agents": {
+    "heading": "Available for these agents",
+    "items": [
+      {
+        "id": "claude",
+        "name": "Claude",
+        "logo": "/images/ai/claude.svg",
+        "href": "https://claude.ai"
+      },
+      {
+        "id": "codex",
+        "name": "Codex",
+        "logo": "/images/ai/codex.svg",
+        "href": "https://openai.com/codex"
+      },
+      {
+        "id": "copilot",
+        "name": "Copilot",
+        "logo": "/images/ai/copilot.svg",
+        "href": "https://github.com/features/copilot"
+      },
+      {
+        "id": "cursor",
+        "name": "Cursor",
+        "logo": "/images/ai/cursor.svg",
+        "href": "https://cursor.com"
+      },
+      {
+        "id": "opencode",
+        "name": "OpenCode",
+        "logo": "/images/ai/opencode.svg",
+        "href": "https://opencode.ai"
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to build",
+    "titleHighlight": "something that lasts?",
+    "mobileTitleHighlight": "with us?",
+    "buttonTextNotHover": "Book a Meeting",
+    "buttonTextHover": "Let's meet"
+  },
+  "detail": {
+    "installLabel": "Installation",
+    "copyLabel": "Copy",
+    "copiedLabel": "Copied",
+    "doesLabel": "What it does",
+    "usedWhenLabel": "Used when"
+  }
+}

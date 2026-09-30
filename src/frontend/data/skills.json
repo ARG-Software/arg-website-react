@@ -1,0 +1,125 @@
+{
+  "categories": ["All", "Workflow", "Frontend", "Architecture", "Delivery"],
+  "skills": [
+    {
+      "slug": "clean-code",
+      "title": "Clean Code",
+      "category": "Workflow",
+      "summary": "Keep changes small, named for intent, and free of ceremony that only restates the code.",
+      "tags": ["reviews", "naming", "simplicity"],
+      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill clean-code",
+      "does": [
+        "Prefer the simplest readable implementation over new helpers, types, or wrappers.",
+        "Keep behavior next to the data it belongs to.",
+        "Leave comments out unless the user asks for them."
+      ],
+      "body": "We use this skill when editing production code so helpers, types, and wrappers appear only when they are reused.",
+      "usedWhen": "Refactors, reviews, and any pull request that should stay readable."
+    },
+    {
+      "slug": "vercel-react-best-practices",
+      "title": "React Best Practices",
+      "category": "Frontend",
+      "summary": "Avoid waterfalls, keep bundles lean, and render only what the page needs.",
+      "tags": ["react", "performance", "vite"],
+      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill vercel-react-best-practices",
+      "does": [
+        "Import modules directly instead of barrels.",
+        "Keep list UIs and page data cheap to render.",
+        "Avoid extra client state and layout-fighting animations."
+      ],
+      "body": "Frontend work on arg.software follows the same performance rules we apply for client SPAs: direct imports, no extra client state, and animations that do not fight layout.",
+      "usedWhen": "New pages, list UIs, and anything that ships in the public React bundle."
+    },
+    {
+      "slug": "architecture-first",
+      "title": "Architecture First",
+      "category": "Architecture",
+      "summary": "Domain stays small. HTTP, crypto, and persistence stay outside it.",
+      "tags": ["domain", "ports", "use-cases"],
+      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill architecture-first",
+      "does": [
+        "Keep controllers as HTTP adapters only.",
+        "Put business work in use cases with explicit constructor dependencies.",
+        "Map database rows in repositories, not in domain objects."
+      ],
+      "body": "Backend changes follow the existing admin and RAG layout: controllers orchestrate HTTP, use cases own the work, repositories map rows.",
+      "usedWhen": "Admin APIs, RAG pipelines, and any new backend feature."
+    },
+    {
+      "slug": "domain-modeling",
+      "title": "Domain Modeling",
+      "category": "Architecture",
+      "summary": "Model real invariants, not database columns or request DTOs.",
+      "tags": ["invariants", "types", "boundaries"],
+      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill domain-modeling",
+      "does": [
+        "Keep only real business invariants in domain objects.",
+        "Do not invent mapper layers or Partial inputs for a single call.",
+        "Preserve source data instead of silently normalizing it."
+      ],
+      "body": "New types appear when the business needs them. We do not invent mapper layers or Partial inputs for a single call.",
+      "usedWhen": "Outreach, visits, sessions, and other admin domain objects."
+    },
+    {
+      "slug": "seo-prerender",
+      "title": "SEO Prerender",
+      "category": "Frontend",
+      "summary": "Every public route gets prerendered HTML, sitemap entries, and matching SPA meta.",
+      "tags": ["seo", "sitemap", "json-ld"],
+      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill seo-prerender",
+      "does": [
+        "Add both slash variants of a route.",
+        "Keep SPA SEO, STATIC_PAGES, and redirects in sync.",
+        "Prerender one HTML file per public URL."
+      ],
+      "body": "New pages are wired in routes, STATIC_PAGES, redirects, and page SEO together so crawlers and the SPA stay in sync.",
+      "usedWhen": "Adding a public page or changing copy that appears in search."
+    },
+    {
+      "slug": "security-hardening",
+      "title": "Security Hardening",
+      "category": "Delivery",
+      "summary": "Rate limits, origin checks, and encrypted fields stay at the right layer.",
+      "tags": ["auth", "rate-limit", "encryption"],
+      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill security-hardening",
+      "does": [
+        "Rate-limit public write endpoints at the controller.",
+        "Keep secrets out of analytics, logs, and the repo.",
+        "Encrypt sensitive outreach fields at rest."
+      ],
+      "body": "Public writes are limited at the controller. Secrets never land in analytics or the repo.",
+      "usedWhen": "Login, visit logging, assistant asks, and outreach storage."
+    },
+    {
+      "slug": "rag-assistant",
+      "title": "RAG Assistant",
+      "category": "Delivery",
+      "summary": "Gaspar answers from ingested first-party sources, not guesses.",
+      "tags": ["rag", "ingestion", "gaspar"],
+      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill rag-assistant",
+      "does": [
+        "Ingest new site content so the assistant stays current.",
+        "Keep retrieval strategies in application code.",
+        "Keep loaders and file formats in infrastructure."
+      ],
+      "body": "New site content is ingested so the assistant stays current. Retrieval stays in application strategies; loaders stay in infrastructure.",
+      "usedWhen": "Publishing pages, posts, or JSON the assistant should know."
+    },
+    {
+      "slug": "writing-plans",
+      "title": "Writing Plans",
+      "category": "Workflow",
+      "summary": "Agree the shape of a change before touching files.",
+      "tags": ["planning", "scope", "review"],
+      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill writing-plans",
+      "does": [
+        "Name the files, UX, and out-of-scope work first.",
+        "Keep dummy copy until the layout is agreed.",
+        "Use a branch for work that is not ready for main."
+      ],
+      "body": "Larger work starts with a short plan: files, UX, and what is out of scope. This page itself started that way.",
+      "usedWhen": "New pages, data jobs, and anything that needs a branch first."
+    }
+  ]
+}
