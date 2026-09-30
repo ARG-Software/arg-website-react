@@ -14,7 +14,7 @@ export default function seoPrerender() {
   return {
     name: 'vite-plugin-seo-prerender',
     apply: 'build',
-    closeBundle() {
+    async closeBundle() {
       const distDir = path.resolve('dist');
       const indexPath = path.join(distDir, 'index.html');
 
@@ -42,7 +42,7 @@ export default function seoPrerender() {
       generated = writeStaticPages({ distDir, baseHtml, blogPostLinks, generated });
 
       // Blog post pages
-      generated = writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated });
+      generated = await writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated });
 
       // Project detail pages
       generated = writeProjectPages({ distDir, baseHtml, generated });

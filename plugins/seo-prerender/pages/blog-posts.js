@@ -2,13 +2,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { SITE_URL } from '../constants.js';
 import { replaceMetaTags, escapeHtml } from '../html-utils.js';
+import { OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH, writeSocialJpeg } from '../og-image.js';
 import { buildBlogPostStaticContent, injectStaticContent } from '../static-content.js';
 import { DEFAULT_AUTHOR } from '../../../src/frontend/constants/seo.js';
 import { parseBlocks } from '../../../src/frontend/utils/blog/articleContent.js';
 import { buildArticleSchema } from '../../../src/frontend/utils/structuredData.js';
 import { toContentDateIso } from '../../../src/frontend/utils/contentDate.js';
 
-export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) {
+export async function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) {
   let count = generated;
   for (const meta of blogPostMetas) {
     const body = meta._body;
@@ -40,12 +41,17 @@ export function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) 
       extra += `\n  <meta property="article:section" content="${escapeHtml(meta.tag)}">`;
     }
 
+    const socialImage = (await writeSocialJpeg(image, distDir)) || image;
+
     let html = replaceMetaTags(baseHtml, {
       title,
       socialTitle: meta.seoTitle || meta.title || meta.slug,
       description,
       url: articleUrl,
-      image,
+      image: socialImage,
+      imageWidth: socialImage.endsWith('.jpg') ? String(OG_IMAGE_WIDTH) : undefined,
+      imageHeight: socialImage.endsWith('.jpg') ? String(OG_IMAGE_HEIGHT) : undefined,
+      imageType: socialImage.endsWith('.jpg') ? 'image/jpeg' : undefined,
       type: 'article',
       extra,
       author,

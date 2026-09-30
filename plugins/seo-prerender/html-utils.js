@@ -23,6 +23,9 @@ export function replaceMetaTags(
     description,
     url,
     image,
+    imageWidth = '1200',
+    imageHeight = '630',
+    imageType,
     type = 'website',
     extra = '',
     jsonLd,
@@ -99,6 +102,21 @@ export function replaceMetaTags(
     /<meta\s+property="og:image:secure_url"\s+content="[^"]*"\s*\/?>/,
     `<meta property="og:image:secure_url" content="${escapeHtml(ogImage)}" />`
   );
+  result = result.replace(
+    /<meta\s+property="og:image:width"\s+content="[^"]*"\s*\/?>/,
+    `<meta property="og:image:width" content="${escapeHtml(String(imageWidth))}" />`
+  );
+  result = result.replace(
+    /<meta\s+property="og:image:height"\s+content="[^"]*"\s*\/?>/,
+    `<meta property="og:image:height" content="${escapeHtml(String(imageHeight))}" />`
+  );
+  if (imageType) {
+    result = replaceOrInsertHeadTag(
+      result,
+      /<meta\s+property="og:image:type"\s+content="[^"]*"\s*\/?>/,
+      `<meta property="og:image:type" content="${escapeHtml(imageType)}" />`
+    );
+  }
 
   result = result.replace(
     /<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/,

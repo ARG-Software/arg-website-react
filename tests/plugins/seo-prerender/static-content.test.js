@@ -25,6 +25,8 @@ test('renders complete blog content inside the React root', () => {
   const html = injectStaticContent('<body><div id="root"></div></body>', content);
 
   assert.match(html, /<div id="root"><div class="page-wrapper" data-prerendered-content>/);
+  assert.match(html, /page-header page-header--small page-header--article bp-article-page-header/);
+  assert.match(html, /page-header__heading-line/);
   assert.match(html, /<h2 id="architecture"/);
   assert.match(html, /Safe by default/);
   assert.match(html, /const safe = true;/);

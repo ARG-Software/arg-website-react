@@ -1,6 +1,6 @@
 import { NAV_LINKS } from './constants.js';
 import { escapeHtml } from './html-utils.js';
-import { getHeadingId } from '../../src/frontend/utils/blog/articleHelpers.js';
+import { getHeadingId, splitArticleTitle } from '../../src/frontend/utils/blog/articleHelpers.js';
 import { parseInlineMarkdown } from '../../src/frontend/utils/inlineMarkdown.js';
 
 const EXTERNAL_HREF_PATTERN = /^https?:\/\//i;
@@ -25,13 +25,23 @@ export function buildBlogPostStaticContent(meta, blocks) {
   const authorLink = meta.authorUrl
     ? `<a href="${escapeHtml(meta.authorUrl)}" rel="author noopener noreferrer">${author}</a>`
     : author;
+  const titleLines = splitArticleTitle(meta.title || meta.slug).map(
+    (line, index) =>
+      `<div class="heading_line"><span class="${
+        index === 1 ? 'page-header__heading-line text-color-gradiant' : 'page-header__heading-line'
+      }">${escapeHtml(line)}</span></div>`
+  );
 
   return `<div class="page-wrapper" data-prerendered-content>
   <main class="main-wrapper">
-    <header class="bp-article-page-header">
-      <h1>${escapeHtml(meta.title || meta.slug)}</h1>
-      ${meta.subtitle ? `<p>${escapeHtml(meta.subtitle)}</p>` : ''}
-      <p>${headerMeta}${headerMeta ? ' · ' : ''}${authorLink}</p>
+    <header class="page-header page-header--small page-header--article bp-article-page-header">
+      <div class="page-header__inner page-header__inner--single">
+        <div class="page-header__lead">
+          <h1>${titleLines.join('')}</h1>
+          ${meta.subtitle ? `<p class="page-header__subtitle">${escapeHtml(meta.subtitle)}</p>` : ''}
+          <p class="bp-header-meta">${headerMeta}${headerMeta ? ' · ' : ''}${authorLink}</p>
+        </div>
+      </div>
     </header>
     <section class="bp-body background-color-white padding-section-large border-radius-all">
       <div class="bp-body-inner container container--section padding-global">
