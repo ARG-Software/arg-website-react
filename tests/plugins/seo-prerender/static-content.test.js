@@ -106,7 +106,9 @@ test('renders skill install command and what it does for crawlers', () => {
     body: 'Helpers appear only when reused.',
   });
 
-  assert.match(content, /<h1>Clean Code<\/h1>/);
+  assert.match(content, /page-header page-header--small/);
+  assert.match(content, /page-header__heading-line">Clean Code/);
+  assert.match(content, /text-color-gradiant">for coding agents\./);
   assert.match(
     content,
     /npx skills add https:\/\/github.com\/ARG-Software\/skills --skill clean-code/

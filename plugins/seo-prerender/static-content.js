@@ -1,7 +1,12 @@
+import fs from 'node:fs';
 import { NAV_LINKS } from './constants.js';
 import { escapeHtml } from './html-utils.js';
 import { getHeadingId, splitArticleTitle } from '../../src/frontend/utils/blog/articleHelpers.js';
 import { parseInlineMarkdown } from '../../src/frontend/utils/inlineMarkdown.js';
+
+const SKILLS_PAGE = JSON.parse(
+  fs.readFileSync(new URL('../../src/frontend/data/skillsPage.json', import.meta.url), 'utf8')
+);
 
 const EXTERNAL_HREF_PATTERN = /^https?:\/\//i;
 
@@ -58,18 +63,30 @@ export function buildBlogPostStaticContent(meta, blocks) {
 
 export function buildSkillStaticContent(skill) {
   const does = (skill.does || []).map(item => `<li>${escapeHtml(item)}</li>`).join('');
+  const detailTitleLine = SKILLS_PAGE.hero?.detailTitleLine || 'for coding agents.';
 
   return `<div class="page-wrapper" data-prerendered-content>
-  <main>
-    <h1>${escapeHtml(skill.title)}</h1>
-    <p>${escapeHtml(skill.summary || '')}</p>
-    <h2>Installation</h2>
-    <pre><code>${escapeHtml(skill.installCommand || '')}</code></pre>
-    <h2>What it does</h2>
-    <ul>${does}</ul>
-    <h2>Used when</h2>
-    <p>${escapeHtml(skill.usedWhen || '')}</p>
-    <p>${escapeHtml(skill.body || '')}</p>
+  <main class="main-wrapper">
+    <header class="page-header page-header--small">
+      <div class="page-header__inner page-header__inner--single">
+        <div class="page-header__lead">
+          <h1>
+            <div class="heading_line"><span class="page-header__heading-line">${escapeHtml(skill.title)}</span></div>
+            <div class="heading_line"><span class="page-header__heading-line text-color-gradiant">${escapeHtml(detailTitleLine)}</span></div>
+          </h1>
+        </div>
+      </div>
+    </header>
+    <section class="sk-section padding-section-large background-color-white">
+      <p>${escapeHtml(skill.summary || '')}</p>
+      <h2>Installation</h2>
+      <pre><code>${escapeHtml(skill.installCommand || '')}</code></pre>
+      <h2>What it does</h2>
+      <ul>${does}</ul>
+      <h2>Used when</h2>
+      <p>${escapeHtml(skill.usedWhen || '')}</p>
+      <p>${escapeHtml(skill.body || '')}</p>
+    </section>
     ${renderNavigation([{ href: '/skills/', label: 'AI Skills' }])}
   </main>
 </div>`;
