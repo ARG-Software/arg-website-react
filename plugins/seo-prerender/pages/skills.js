@@ -23,7 +23,7 @@ export function writeSkillPages({ distDir, baseHtml, generated }) {
       type: 'website',
       breadcrumbs: [
         { name: 'Home', path: '/' },
-        { name: 'Skills', path: '/skills/' },
+        { name: 'AI Skills', path: '/skills/' },
         { name: skill.title, path: `/skills/${skill.slug}/` },
       ],
     });

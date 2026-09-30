@@ -125,10 +125,24 @@ export class AskAssistantQuestionUseCase {
       };
     }
 
+    if (routedItems.every(item => item.route.requiresSkillsClarification)) {
+      const answer = await this.answerProvider.generateSkillsClarification(question, responseLanguage);
+
+      return {
+        answer: normalizeAssistantAnswer(answer),
+        language: responseLanguage,
+        ...languagePreference,
+        citations: [],
+        articleRecommendations: [],
+        actions: [{ type: 'gaspar_message' }],
+        contexts: [],
+      };
+    }
+
     const embeddings = await this.semanticEmbeddingPlanner.createEmbeddings(routedItems);
     const retrievalResults = await Promise.all(
       routedItems.map(async (item, index) => {
-        if (item.route.requiresPersonClarification) {
+        if (item.route.requiresPersonClarification || item.route.requiresSkillsClarification) {
           return { ...item, contexts: [] as IRetrievedContext[] };
         }
 

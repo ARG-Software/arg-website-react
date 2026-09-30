@@ -62,6 +62,7 @@ ARG Software has partnered with teams across fintech, open payments, music techn
 - Partners: companies ARG has worked with. https://arg.software/partners/
 - Blog: architecture, TypeScript, .NET, DevOps, and engineering practice. https://arg.software/blog/
 - Contact: project brief for a senior engineer. https://arg.software/contact/
+- AI Skills: playbooks ARG Software gives coding assistants so they work the way we do. For Claude Code, Cursor, Codex, OpenCode, and GitHub Copilot. https://arg.software/skills/
 - Careers: https://arg.software/careers/
 - Privacy: https://arg.software/privacy/
 - Terms: https://arg.software/terms/

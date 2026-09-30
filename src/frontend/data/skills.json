@@ -1,125 +1,133 @@
 {
-  "categories": ["All", "Workflow", "Frontend", "Architecture", "Delivery"],
+  "categories": ["All", "Browser", "Frontend", "Backend", "Mobile", "Quality"],
   "skills": [
     {
-      "slug": "clean-code",
-      "title": "Clean Code",
-      "category": "Workflow",
-      "summary": "Keep changes small, named for intent, and free of ceremony that only restates the code.",
-      "tags": ["reviews", "naming", "simplicity"],
-      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill clean-code",
+      "slug": "arg-browser-extension",
+      "title": "ARG Browser Extension",
+      "category": "Browser",
+      "summary": "A complete engineering playbook for Manifest V3 browser extensions on Chrome, Firefox and Safari. Extensions built with it stay easy to change after hundreds of features, including extensions that run AI models entirely on the device.",
+      "tags": ["Manifest V3", "Cross-browser", "On-device AI"],
+      "installCommand": "npx skills add ARG-Software/arg-agent-skills --skill arg-browser-extension",
       "does": [
-        "Prefer the simplest readable implementation over new helpers, types, or wrappers.",
-        "Keep behavior next to the data it belongs to.",
-        "Leave comments out unless the user asks for them."
+        "Business rules live in their own layers, and browser APIs (tabs, storage, scripting, messaging, network events) stay behind small adapters. Supporting a new browser means writing one thin adapter class, not rewriting the extension.",
+        "Every layer rule is an architecture test that runs in CI. A shortcut such as a UI component calling a browser API directly fails the build before it reaches the main branch.",
+        "Reusable helpers live in one dependency-free library folder, so logic is never copied between files. Configuration, timeouts and limits live in one config module instead of being scattered across the code.",
+        "Work follows the ARG workflow: one branch per feature or fix, a reviewed pull request with a Conventional Commit title, CI before merge, and automatic versioned releases with generated changelogs."
       ],
-      "body": "We use this skill when editing production code so helpers, types, and wrappers appear only when they are reused.",
-      "usedWhen": "Refactors, reviews, and any pull request that should stay readable."
+      "body": "This skill is the playbook behind ARG Architect, our production Manifest V3 extension. ARG Architect audits websites for security, performance and AI readiness, and runs a multilingual AI model entirely in the browser without sending data to a server. The same structure, tests and release process that keep that codebase maintainable are packaged here, so your coding agent applies them from the first commit.",
+      "usedWhen": "The skill applies when starting or scaffolding a new extension, adding a feature or fixing a bug, calling a browser API, adding support for another browser, running AI on the device, reviewing layer boundaries, setting up CI, environment variables and releases, or preparing a branch and pull request."
     },
     {
-      "slug": "vercel-react-best-practices",
-      "title": "React Best Practices",
+      "slug": "arg-angular",
+      "title": "ARG Angular",
       "category": "Frontend",
-      "summary": "Avoid waterfalls, keep bundles lean, and render only what the page needs.",
-      "tags": ["react", "performance", "vite"],
-      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill vercel-react-best-practices",
+      "summary": "The ARG way of building Angular applications with NgRx on standalone components and signals. Apps built with it stay predictable and testable as features and team members are added.",
+      "tags": ["Angular", "NgRx", "Signals"],
+      "installCommand": "npx skills add ARG-Software/arg-agent-skills --skill arg-angular",
       "does": [
-        "Import modules directly instead of barrels.",
-        "Keep list UIs and page data cheap to render.",
-        "Avoid extra client state and layout-fighting animations."
+        "The app is split into domain, application, infrastructure and feature layers. Business rules never depend on Angular or NgRx, so they can be tested in isolation and survive framework upgrades.",
+        "Every HTTP call and every browser storage access sits in the infrastructure layer, behind an interface. Lint rules enforce the boundaries, so a component that reaches for HttpClient directly is flagged automatically.",
+        "State management has clear rules: the global NgRx Store with typed action groups, effects and memoised selectors for shared state, and SignalStore for local feature state. The skill explains when each one fits.",
+        "Server data passes through pure mappers before it reaches the UI, components use OnPush change detection, and runtime configuration is loaded once at startup instead of being hardcoded at build time."
       ],
-      "body": "Frontend work on arg.software follows the same performance rules we apply for client SPAs: direct imports, no extra client state, and animations that do not fight layout.",
-      "usedWhen": "New pages, list UIs, and anything that ships in the public React bundle."
+      "body": "This skill is distilled from ARG's Angular + NgRx reference application, a manufacturing dashboard with feature stores, effects, container components and a shared UI kit. The original targeted an older Angular with NgModules and Karma. The skill modernises it for the current Angular release, standalone APIs, signals, Vitest or Jest for unit tests and Playwright for end-to-end tests.",
+      "usedWhen": "The skill applies when scaffolding or extending an Angular app, adding a feature, route, component, store, effect, API service, interceptor or guard, choosing between the global Store and a SignalStore, writing component, store or end-to-end tests, or setting up CI and releases."
     },
     {
-      "slug": "architecture-first",
-      "title": "Architecture First",
-      "category": "Architecture",
-      "summary": "Domain stays small. HTTP, crypto, and persistence stay outside it.",
-      "tags": ["domain", "ports", "use-cases"],
-      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill architecture-first",
+      "slug": "arg-nx-monorepo",
+      "title": "ARG Nx Monorepo",
+      "category": "Backend",
+      "summary": "The ARG way of running NestJS microservices and a Next.js front end in one Nx and pnpm workspace. The workspace stays organised and each service stays independent as the number of services grows.",
+      "tags": ["Nx", "NestJS", "Microservices"],
+      "installCommand": "npx skills add ARG-Software/arg-agent-skills --skill arg-nx-monorepo",
       "does": [
-        "Keep controllers as HTTP adapters only.",
-        "Put business work in use cases with explicit constructor dependencies.",
-        "Map database rows in repositories, not in domain objects."
+        "Each service covers one business area and owns its own data and database schema. No service reads another service's tables, so services can change and deploy independently.",
+        "Domain, application and infrastructure code live in separate Nx libraries with tags. Nx enforces which library may import which, so architectural boundaries are checked on every build.",
+        "Services communicate through asynchronous messages on Kafka or RabbitMQ with versioned contracts. An outbox guarantees that no message is lost when a write succeeds, and consumers are safe to run twice.",
+        "Commands and queries are separated and return explicit Result types. CI uses nx affected to build and test only what changed, and every deployable app gets its own Docker image and version."
       ],
-      "body": "Backend changes follow the existing admin and RAG layout: controllers orchestrate HTTP, use cases own the work, repositories map rows.",
-      "usedWhen": "Admin APIs, RAG pipelines, and any new backend feature."
+      "body": "This skill is distilled from ARG's Nx monorepo boilerplate. While reviewing that boilerplate we found the problems that usually creep into monorepos: boundaries nobody enforced, application code importing infrastructure, thin tests and CI that rebuilt everything on every change. Each of those is now an explicit rule with a check behind it.",
+      "usedWhen": "The skill applies when scaffolding or extending an Nx workspace, adding an app, library, service, command, query, repository or message consumer, choosing between Kafka and RabbitMQ, naming services, topics and queues, or setting up CI, Docker images and releases."
     },
     {
-      "slug": "domain-modeling",
-      "title": "Domain Modeling",
-      "category": "Architecture",
-      "summary": "Model real invariants, not database columns or request DTOs.",
-      "tags": ["invariants", "types", "boundaries"],
-      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill domain-modeling",
+      "slug": "arg-dotnet",
+      "title": "ARG .NET",
+      "category": "Backend",
+      "summary": "The ARG way of building ASP.NET Core back ends on the current .NET LTS. Business rules live in a rich domain model, every feature is a small self-contained use case, and every write is tested against a real database.",
+      "tags": [".NET", "DDD", "CQRS"],
+      "installCommand": "npx skills add ARG-Software/arg-agent-skills --skill arg-dotnet",
       "does": [
-        "Keep only real business invariants in domain objects.",
-        "Do not invent mapper layers or Partial inputs for a single call.",
-        "Preserve source data instead of silently normalizing it."
+        "The solution is split into Domain, Application, Infrastructure and API projects, and architecture tests (NetArchTest) fail the build when a dependency points the wrong way.",
+        "Entities and value objects hold the business rules and return explicit Result values instead of throwing exceptions. Failures map to consistent HTTP ProblemDetails responses at the API edge.",
+        "Each feature is one command or query with its own handler and validator (vertical slices). Domain events go through a transactional outbox, so an event is never lost and never published for a failed transaction.",
+        "Integration and functional tests run against real databases in containers with Testcontainers, and CI, Docker images, secrets and versioned releases follow the ARG workflow."
       ],
-      "body": "New types appear when the business needs them. We do not invent mapper layers or Partial inputs for a single call.",
-      "usedWhen": "Outreach, visits, sessions, and other admin domain objects."
+      "body": "This skill is distilled from ARG's .NET reference solution, a booking platform built with domain-driven design, CQRS, an outbox, Keycloak authentication and Testcontainers. Three things in the original had aged: it targeted .NET 8, it relied on MediatR, which is now commercially licensed, and it serialized the outbox in an unsafe way. The skill fixes all three, targets the current LTS and asks you which mediator option to use.",
+      "usedWhen": "The skill applies when scaffolding or extending a .NET solution, adding an entity, value object, domain event, command, query, handler, repository or endpoint, configuring EF Core, authentication, caching or health checks, writing unit, architecture or integration tests, or setting up CI and Docker."
     },
     {
-      "slug": "seo-prerender",
-      "title": "SEO Prerender",
-      "category": "Frontend",
-      "summary": "Every public route gets prerendered HTML, sitemap entries, and matching SPA meta.",
-      "tags": ["seo", "sitemap", "json-ld"],
-      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill seo-prerender",
+      "slug": "arg-react-native",
+      "title": "ARG React Native",
+      "category": "Mobile",
+      "summary": "The ARG way of building React Native and Expo apps that stay fast on real devices and easy to change as they grow. Every performance change is backed by a measurement, not a guess.",
+      "tags": ["React Native", "Expo", "Performance"],
+      "installCommand": "npx skills add ARG-Software/arg-agent-skills --skill arg-react-native",
       "does": [
-        "Add both slash variants of a route.",
-        "Keep SPA SEO, STATIC_PAGES, and redirects in sync.",
-        "Prerender one HTML file per public URL."
+        "Business rules are independent of the device, the network and the UI kit. Camera, location, notifications, storage and API calls sit behind small adapters, so features can be tested without a phone.",
+        "Server data is handled by TanStack Query, and local state lives in small stores that components read through selectors, so screens re-render only when their data changes.",
+        "Performance work always starts with a measurement on a release build on a real mid-range device. The skill covers list performance, animations with Reanimated, startup time, bundle and app size, memory leaks and Turbo Modules.",
+        "The path to the stores is covered: unit and component tests, end-to-end flows with Maestro or Detox, CI, EAS or Fastlane builds, over-the-air updates, and versioned releases."
       ],
-      "body": "New pages are wired in routes, STATIC_PAGES, redirects, and page SEO together so crawlers and the SPA stay in sync.",
-      "usedWhen": "Adding a public page or changing copy that appears in search."
+      "body": "This skill combines ARG's own architecture rules with performance guidance inspired by Callstack's open-source React Native best practices (MIT licence), rewritten for this layered structure. The result is an app whose features are easy to change and whose speed is proven with numbers.",
+      "usedWhen": "The skill applies when scaffolding or extending a React Native or Expo app, adding a screen, use case, native module or device API, choosing state management, fixing dropped frames, slow lists, re-renders, slow startup or large bundles, or setting up tests, CI and builds."
     },
     {
-      "slug": "security-hardening",
-      "title": "Security Hardening",
-      "category": "Delivery",
-      "summary": "Rate limits, origin checks, and encrypted fields stay at the right layer.",
-      "tags": ["auth", "rate-limit", "encryption"],
-      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill security-hardening",
+      "slug": "arg-web-audit",
+      "title": "ARG Web Audit",
+      "category": "Quality",
+      "summary": "A method for auditing any website for security, performance, accessibility and AI readiness. It produces a scored report that names every problem, shows the evidence and gives the fix.",
+      "tags": ["Security", "Core Web Vitals", "AI readiness"],
+      "installCommand": "npx skills add ARG-Software/arg-agent-skills --skill arg-web-audit",
       "does": [
-        "Rate-limit public write endpoints at the controller.",
-        "Keep secrets out of analytics, logs, and the repo.",
-        "Encrypt sensitive outreach fields at rest."
+        "The audit covers security headers (CSP, HSTS, cookies, CORS), Core Web Vitals (LCP, CLS, TBT), page weight, caching, compression, third-party dependencies, accessibility basics and AI readiness (robots.txt, sitemap, llms.txt, structured data).",
+        "Only evidence a browser can observe is used. When something cannot be observed, the check is marked unknown instead of failed, and scores reflect how much was actually measured.",
+        "Numeric checks earn graded credit instead of a pass or fail cliff, so a page just past a threshold is not scored the same as a page far beyond it.",
+        "Every problem names the offending files, headers or elements and comes with a concrete recommendation that can be handed straight to a developer."
       ],
-      "body": "Public writes are limited at the controller. Secrets never land in analytics or the repo.",
-      "usedWhen": "Login, visit logging, assistant asks, and outreach storage."
+      "body": "This is the audit method behind ARG Architect, our browser extension that scores any website in one click. It is safe to run on any public site: it only observes what a normal visit shows, and it never sends attack payloads or probes for server-side vulnerabilities. Use it on your own app before a release, or on a competitor's site for a benchmark.",
+      "usedWhen": "The skill applies when auditing, scoring or benchmarking a site or page, checking security headers or Core Web Vitals, reviewing caching, images and fonts, checking robots.txt, llms.txt or structured data, comparing two audits, or writing an audit report with fixes."
     },
     {
-      "slug": "rag-assistant",
-      "title": "RAG Assistant",
-      "category": "Delivery",
-      "summary": "Gaspar answers from ingested first-party sources, not guesses.",
-      "tags": ["rag", "ingestion", "gaspar"],
-      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill rag-assistant",
+      "slug": "arg-code-review",
+      "title": "ARG Code Review",
+      "category": "Quality",
+      "summary": "A structured code review for pull requests, branches and diffs in any stack. It catches the shortcuts that make a codebase hard to change later, and backs every finding with evidence from the code.",
+      "tags": ["Pull requests", "Architecture", "Any stack"],
+      "installCommand": "npx skills add ARG-Software/arg-agent-skills --skill arg-code-review",
       "does": [
-        "Ingest new site content so the assistant stays current.",
-        "Keep retrieval strategies in application code.",
-        "Keep loaders and file formats in infrastructure."
+        "The review detects the stack and applies the matching ARG skill's rules when that skill is installed, and the shared ARG rules otherwise. It works for Angular, .NET, React Native, Nx, browser extensions, MCP servers and more.",
+        "It checks what reviews often miss: layer boundaries, missing architecture tests, copied helpers, magic numbers, missing tests, leaked secrets, outdated documentation and unmarked breaking changes.",
+        "Every finding is verified against the code before it is reported. Findings are ranked by severity, labelled blocking, suggestion or question, and each one gives the file, the line and a concrete fix.",
+        "The review never approves or merges. It posts comments on the pull request only when you ask, and on later rounds it reports which earlier findings were resolved."
       ],
-      "body": "New site content is ingested so the assistant stays current. Retrieval stays in application strategies; loaders stay in infrastructure.",
-      "usedWhen": "Publishing pages, posts, or JSON the assistant should know."
+      "body": "This skill is the reviewer's side of the ARG base. The other ARG skills tell a coding agent how to make a change; this one checks that the change was made that way. It works as a first review before a teammate looks at the pull request, or as a second opinion on a change you are unsure about.",
+      "usedWhen": "The skill applies when reviewing a pull request, branch, diff or commit, checking whether a change is ready to merge, checking the release impact of a change, or preparing review comments."
     },
     {
-      "slug": "writing-plans",
-      "title": "Writing Plans",
-      "category": "Workflow",
-      "summary": "Agree the shape of a change before touching files.",
-      "tags": ["planning", "scope", "review"],
-      "installCommand": "npx skills add https://github.com/ARG-Software/skills --skill writing-plans",
+      "slug": "arg-mcp-server",
+      "title": "ARG MCP Server",
+      "category": "Backend",
+      "summary": "The ARG way of letting AI agents like Claude, Cursor and Copilot use your application through a Model Context Protocol (MCP) server. The server reuses the features your app already has, so no business logic is duplicated.",
+      "tags": ["MCP", "AI agents", "OAuth"],
+      "installCommand": "npx skills add ARG-Software/arg-agent-skills --skill arg-mcp-server",
       "does": [
-        "Name the files, UX, and out-of-scope work first.",
-        "Keep dummy copy until the layout is agreed.",
-        "Use a branch for work that is not ready for main."
+        "The skill starts by mapping what agents need to do onto the use cases your app already has. Each MCP tool calls exactly one use case, with the same permissions and errors as your REST API.",
+        "The MCP server is a thin entry point next to your API, and architecture checks keep business logic and permission checks out of it. Your API and your agent interface grow together instead of drifting apart.",
+        "Remote servers are secured with OAuth, following the MCP authorization spec, and agents receive clear, typed errors instead of stack traces. Local servers run over stdio with no network exposure.",
+        "The server is tested with a real MCP client, and the skill writes setup instructions for Claude Code, Claude Desktop, Cursor, VS Code, Codex and OpenCode."
       ],
-      "body": "Larger work starts with a short plan: files, UX, and what is out of scope. This page itself started that way.",
-      "usedWhen": "New pages, data jobs, and anything that needs a branch first."
+      "body": "This skill is how ARG makes existing applications usable by AI agents. The worked example comes from ARG's NestJS MCP starter, where a REST API, an MCP server and a background worker share one application layer, and the approach applies to any Node.js or TypeScript back end.",
+      "usedWhen": "The skill applies when adding MCP support to an API or back end, making an app usable from AI assistants, exposing use cases to agents, choosing between stdio and HTTP transport, adding OAuth to a remote MCP server, or testing and documenting an MCP server."
     }
   ]
 }

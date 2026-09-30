@@ -32,4 +32,5 @@ export interface IRetrievalRoute {
   blogKind?: BlogRouteKind;
   commercialKind?: CommercialDeliveryKind;
   requiresPersonClarification?: boolean;
+  requiresSkillsClarification?: boolean;
 }

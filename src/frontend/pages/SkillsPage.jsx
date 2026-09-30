@@ -50,9 +50,10 @@ export default function SkillsPage() {
         <main className="main-wrapper">
           <PageHeader
             title={SKILLS_PAGE.hero.title}
+            subtitle={SKILLS_PAGE.hero.subtitle}
             breadcrumbs={SKILLS_PAGE.hero.breadcrumbs}
-            sideItems={SKILLS_PAGE.hero.sideItems.map((item, index) =>
-              index === 0 ? { ...item, meta: String(skills.length) } : item
+            sideItems={SKILLS_PAGE.hero.sideItems.map(item =>
+              item.href === '#skills' ? { ...item, meta: String(skills.length) } : item
             )}
             size="small"
           />
@@ -63,57 +64,66 @@ export default function SkillsPage() {
             data-animate-default-stagger="150"
           >
             <section
-              id="skills"
-              className="sk-section padding-section-large background-color-white border-radius-all"
+              id="agents"
+              className="sk-agents-section padding-section-large border-radius-top background-color-white"
             >
               <div className="container padding-global sk-inner">
-                <div id="agents" className="sk-agents">
-                  <p className="sk-agents-heading" data-animate="fade-up">
-                    {SKILLS_PAGE.agents.heading}
-                  </p>
-                  <ul className="sk-agents-list">
-                    {SKILLS_PAGE.agents.items.map(agent => (
-                      <li key={agent.id}>
-                        <a
-                          className="sk-agent"
-                          href={agent.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() => trackOutbound(agent.href, agent.name, 'skills_agents')}
-                        >
-                          <span
-                            className="sk-agent-logo"
-                            style={{
-                              WebkitMaskImage: `url(${agent.logo})`,
-                              maskImage: `url(${agent.logo})`,
-                            }}
-                            aria-hidden="true"
-                          />
-                          <span className="sk-agent-name">{agent.name}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="sk-header">
-                  <div className="sk-header-main">
-                    <div className="sk-filters">
-                      {categories.map((category, index) => (
-                        <button
-                          key={category}
-                          type="button"
-                          className={`sk-filter-btn${activeCategory === category ? ' is-active' : ''}`}
-                          onClick={() => handleCategoryChange(category)}
-                          data-animate-order={index}
-                        >
-                          {category}
-                        </button>
+                <div className="sk-agents">
+                  <div className="sk-agents-main">
+                    <p className="sk-agents-heading" data-animate="fade-up">
+                      {SKILLS_PAGE.agents.heading}
+                    </p>
+                    <ul className="sk-agents-list">
+                      {SKILLS_PAGE.agents.items.map(agent => (
+                        <li key={agent.id}>
+                          <a
+                            className="sk-agent"
+                            href={agent.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => trackOutbound(agent.href, agent.name, 'skills_agents')}
+                          >
+                            <span
+                              className="sk-agent-logo"
+                              style={{
+                                WebkitMaskImage: `url(${agent.logo})`,
+                                maskImage: `url(${agent.logo})`,
+                              }}
+                              aria-hidden="true"
+                            />
+                            <span className="sk-agent-name">{agent.name}</span>
+                          </a>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
-                  <div className="sk-header-desc" data-animate-order={categories.length}>
-                    <p>{SKILLS_PAGE.catalog.intro}</p>
+                  <div className="sk-agents-brief" data-animate="fade-up">
+                    <p>{SKILLS_PAGE.agents.brief}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="padding-bottom padding-80-40"></div>
+              <SectionDivider variant="default" hideOnMobile={false} />
+            </section>
+
+            <section
+              id="skills"
+              className="sk-section padding-section-large background-color-white"
+            >
+              <div className="container padding-global sk-inner">
+                <div className="sk-header">
+                  <div className="sk-filters">
+                    {categories.map((category, index) => (
+                      <button
+                        key={category}
+                        type="button"
+                        className={`sk-filter-btn${activeCategory === category ? ' is-active' : ''}`}
+                        onClick={() => handleCategoryChange(category)}
+                        data-animate-order={index}
+                      >
+                        {category}
+                      </button>
+                    ))}
                   </div>
                 </div>
 

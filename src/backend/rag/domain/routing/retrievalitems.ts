@@ -42,7 +42,7 @@ export function createRoutedRetrievalItems(
 ): IRoutedRetrievalItem[] {
   return createRetrievalItems(plan, question, pageContext).map(item => {
     const retrievalQuestion = item.query || question;
-    const route = resolveRetrievalRoute(retrievalQuestion, item, knownProjectNames);
+    const route = resolveRetrievalRoute(retrievalQuestion, item, knownProjectNames, pageContext);
 
     return {
       plan: item,

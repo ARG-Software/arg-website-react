@@ -50,7 +50,7 @@ export default function SkillDetailPage() {
 
         <main className="main-wrapper">
           <PageHeader
-            title={skill.title}
+            title={[skill.title, SKILLS_PAGE.hero.detailTitleLine]}
             breadcrumbs={breadcrumbs}
             sideItems={[
               { label: DETAIL.installLabel, href: '#install' },

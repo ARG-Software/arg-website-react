@@ -1,7 +1,9 @@
+import type { IPageContext } from '../conversation/pagecontext.types.js';
 import type { RagSourceType } from '../sources/ragsource.types.js';
 import type { IRetrievalPlan } from './retrievalplan.types.js';
 import type { IRetrievalRoute } from './retrievalroute.types.js';
 import { normalizeName } from '../shared/text.js';
+import { extractTechnologyName } from '../technologies/technologynames.js';
 
 export type { IRetrievalRoute, RetrievalRouteKind } from './retrievalroute.types.js';
 
@@ -50,11 +52,18 @@ const GASPAR_PROFILE_PATTERN =
   /\b(?:gaspar|assistant profile|assistant identity|your name|who are you|ai assistant|artificial intelligence|robot|chatbot|language model|real cat|where were you born|nationality|ascendence|free time|do you like working at arg|likes? working at arg)\b/i;
 const GASPAR_HUMAN_LANGUAGE_PATTERN =
   /\b(?:human\s+languages?|languages?\s+(?:can\s+)?(?:you|gaspar)\s+(?:speak|understand|answer|reply|respond|use)|(?:can|could|do|will)\s+(?:you|gaspar)\s+(?:answer|reply|respond)\s+in\b|(?:can|could|do)\s+(?:you|gaspar)\s+speak\s+(?!to\b|with\b)|(?:que|quais)\s+(?:idiomas?|l[ií]nguas?)\s+(?:falas|fala|entendes|compreendes|usas)|(?:falas|fala)\s+(?!com\b|sobre\b|de\b|da\b|do\b|a\b|ao\b|para\b)|(?:respondes|responder|entendes|compreendes)\s+em\b|(?:parles|parlez)\s+(?!avec\b)|(?:hablas|habla)\s+(?!con\b))\b/i;
+const AGENT_SKILLS_PATTERN =
+  /\b(?:agent skills?|coding agents?|arg[-\s]?agent[-\s]?skills|npx skills|skill\.md|claude code|github copilot|copilot|cursor|codex|opencode|open code|arg-browser-extension|arg-angular|arg-nx-monorepo|arg-dotnet|arg-react-native|arg-web-audit|arg-code-review|arg-mcp-server)\b/i;
+const SKILLS_WORD_PATTERN = /\bskills?\b/i;
+const SKILLS_QUESTION_NOISE_PATTERN =
+  /\b(?:what|which|who|how|do|does|did|can|could|would|will|are|is|your|our|you|we|the|a|an|any|some|have|has|had|list|show|tell|me|about|please)\b/giu;
+const AGENT_SKILLS_SOURCE_KEY = 'agent-skills';
 
 export function resolveRetrievalRoute(
   retrievalQuestion: string,
   plan: Pick<IRetrievalPlan, 'mode' | 'entity' | 'subject'>,
-  knownProjectNames: string[] = []
+  knownProjectNames: string[] = [],
+  pageContext: IPageContext | null = null
 ): IRetrievalRoute {
   const routeText = `${retrievalQuestion} ${plan.entity} ${plan.subject}`;
   const isGasparHumanLanguageQuestion = GASPAR_HUMAN_LANGUAGE_PATTERN.test(routeText);
@@ -143,6 +152,20 @@ export function resolveRetrievalRoute(
 
   if (CAREERS_PATTERN.test(routeText)) {
     return createRoute('careers', CAREERS_SOURCE_TYPES, plan);
+  }
+
+  if (isAgentSkillsQuestion(routeText) || (isUnderspecifiedSkillsQuestion(retrievalQuestion, plan) && isSkillsPage(pageContext))) {
+    return createAgentSkillsRoute(plan);
+  }
+
+  if (isUnderspecifiedSkillsQuestion(retrievalQuestion, plan)) {
+    return {
+      kind: 'company_services',
+      firstPartySourceTypes: DIRECT_EVIDENCE_SOURCE_TYPES,
+      entity: plan.entity,
+      subject: plan.subject,
+      requiresSkillsClarification: true,
+    };
   }
 
   if (projectEntity) {
@@ -235,6 +258,56 @@ function isExternalLinkQuestion(value: string): boolean {
 
 function isCompanyEntityName(value: string): boolean {
   return /\b(?:arg|arg software|company|team|studio|you|your)\b/i.test(value.trim());
+}
+
+function isAgentSkillsQuestion(value: string): boolean {
+  return AGENT_SKILLS_PATTERN.test(value);
+}
+
+function isSkillsPage(pageContext: IPageContext | null): boolean {
+  const pathname = pageContext?.pathname?.replace(/\/+$/, '') || '';
+  return pathname === '/skills' || Boolean(pageContext?.sourceKeys?.includes(AGENT_SKILLS_SOURCE_KEY));
+}
+
+function isUnderspecifiedSkillsQuestion(
+  retrievalQuestion: string,
+  plan: Pick<IRetrievalPlan, 'entity' | 'subject'>
+): boolean {
+  const routeText = `${retrievalQuestion} ${plan.subject}`;
+  if (!SKILLS_WORD_PATTERN.test(routeText) || isAgentSkillsQuestion(routeText)) {
+    return false;
+  }
+
+  if (plan.entity.trim() && !isCompanyEntityName(plan.entity)) {
+    return false;
+  }
+
+  const remainingTopic = `${retrievalQuestion} ${plan.subject}`
+    .replace(/\bskills?\b/giu, ' ')
+    .replace(SKILLS_QUESTION_NOISE_PATTERN, ' ')
+    .replace(/\s+/gu, ' ')
+    .trim();
+
+  if (!remainingTopic) {
+    return true;
+  }
+
+  if (TECHNOLOGY_QUALITY_PATTERN.test(remainingTopic)) {
+    return false;
+  }
+
+  return !extractTechnologyName(remainingTopic);
+}
+
+function createAgentSkillsRoute(plan: Pick<IRetrievalPlan, 'entity' | 'subject'>): IRetrievalRoute {
+  return {
+    kind: 'company_services',
+    firstPartySourceTypes: ['homepage'],
+    entity: plan.entity,
+    subject: plan.subject || 'agent skills',
+    sourceKeys: [AGENT_SKILLS_SOURCE_KEY],
+    forceFirstChunks: true,
+  };
 }
 
 function resolveProjectEntity(routeText: string, entity: string, knownProjectNames: string[]): string {

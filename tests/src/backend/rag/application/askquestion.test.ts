@@ -42,9 +42,10 @@ function retrieveRelevantChunks(input: TestAskQuestionInput) {
 
 function resolveRetrievalRoute(
   retrievalQuestion: string,
-  plan: Pick<IRetrievalPlan, 'mode' | 'entity' | 'subject'>
+  plan: Pick<IRetrievalPlan, 'mode' | 'entity' | 'subject'>,
+  pageContext?: Parameters<typeof resolveDomainRetrievalRoute>[3]
 ) {
-  return resolveDomainRetrievalRoute(retrievalQuestion, plan, getKnownProjectNames());
+  return resolveDomainRetrievalRoute(retrievalQuestion, plan, getKnownProjectNames(), pageContext);
 }
 
 
@@ -2678,6 +2679,55 @@ test('Portuguese colleague questions retrieve the public team source without emb
   assert.deepEqual(supabase.calls.matchChunks, []);
 });
 
+test('underspecified skills questions ask whether the visitor means team capabilities or agent skills', () => {
+  const route = resolveRetrievalRoute('What skills do you have?', {
+    mode: 'direct_evidence',
+    entity: '',
+    subject: 'skills',
+  });
+
+  assert.equal(route.requiresSkillsClarification, true);
+});
+
+test('agent-skill catalog questions retrieve the published skills source', () => {
+  const route = resolveRetrievalRoute('What agent skills can I install for Cursor?', {
+    mode: 'direct_evidence',
+    entity: '',
+    subject: 'agent skills',
+  });
+
+  assert.equal(route.requiresSkillsClarification, undefined);
+  assert.deepEqual(route.sourceKeys, ['agent-skills']);
+  assert.equal(route.forceFirstChunks, true);
+});
+
+test('named-person and named-stack skill questions do not ask for skills clarification', () => {
+  const ruiRoute = resolveRetrievalRoute('Does Rui know Python?', {
+    mode: 'direct_evidence',
+    entity: 'Rui',
+    subject: 'Python',
+  });
+  const angularRoute = resolveRetrievalRoute('Do you have Angular skills?', {
+    mode: 'direct_evidence',
+    entity: '',
+    subject: 'Angular',
+  });
+
+  assert.equal(ruiRoute.requiresSkillsClarification, undefined);
+  assert.equal(angularRoute.requiresSkillsClarification, undefined);
+});
+
+test('skills questions on the skills page use the agent skills source', () => {
+  const route = resolveRetrievalRoute(
+    'What skills do you have?',
+    { mode: 'direct_evidence', entity: '', subject: 'skills' },
+    { pathname: '/skills/', title: 'Skills', pageKind: 'static_page', sourceKeys: ['agent-skills'] }
+  );
+
+  assert.equal(route.requiresSkillsClarification, undefined);
+  assert.deepEqual(route.sourceKeys, ['agent-skills']);
+});
+
 test('an unresolved personal pronoun asks for clarification', async () => {
   const result = await askQuestion({
     question: 'Does he know Python?',
@@ -2747,6 +2797,57 @@ test('person clarification uses detected Portuguese and Spanish languages', asyn
   }
 
   assert.deepEqual(generatedLanguages, ['pt-PT', 'es']);
+});
+
+test('an underspecified skills question asks for clarification without embeddings', async () => {
+  const generatedClarifications: Array<{ question: string; responseLanguage: string }> = [];
+  const result = await askQuestion({
+    question: 'What skills do you have?',
+    config,
+    readRepository: createSupabase({}).repository,
+    answerProvider: createAnswerProvider('What skills do you have?', {
+      plan: { mode: 'direct_evidence', entity: '', subject: 'skills' },
+      onGenerateSkillsClarification(question, responseLanguage) {
+        generatedClarifications.push({ question, responseLanguage });
+      },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => {
+      throw new Error('Embeddings must not be generated for underspecified skills');
+    }),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.match(result.answer, /agent skills/u);
+  assert.equal(result.language, 'en');
+  assert.deepEqual(result.actions, [{ type: 'gaspar_message' }]);
+  assert.deepEqual(generatedClarifications, [
+    { question: 'What skills do you have?', responseLanguage: 'en' },
+  ]);
+});
+
+test('skills questions on the skills page retrieve agent-skills without asking', async () => {
+  const skills = source('skills-id', 'ARG Agent Skills', null, 'homepage', 'agent-skills');
+  const supabase = createSupabase({
+    sources: [skills],
+    chunks: [chunk('skills-id', 'agent-skills', 'Install ARG agent skills with npx skills add.')],
+  });
+
+  const result = await askQuestion({
+    question: 'What skills do you have?',
+    pageContext: { pathname: '/skills/', title: 'Skills' },
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('What skills do you have?', {
+      plan: { mode: 'direct_evidence', entity: '', subject: 'skills' },
+    }),
+    embeddingProvider: createEmbeddingProvider(() => {
+      throw new Error('Embeddings must not be generated for skills page agent skills');
+    }),
+    fallbackEmbeddingProvider: createEmbeddingProvider(() => [[0.1, 0.2]]),
+  });
+
+  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['agent-skills']);
+  assert.equal(supabase.calls.matchChunks.length, 0);
 });
 
 test('runtime retrieval switches to the fallback index after a primary quota error', async () => {

@@ -17,6 +17,7 @@ import {
   buildUserPrompt,
 } from '../../../application/llm/prompts/messageformatting.js';
 import { buildPersonClarificationPrompt } from '../../../application/llm/prompts/personclarification.js';
+import { buildSkillsClarificationPrompt } from '../../../application/llm/prompts/skillclarification.js';
 import { buildRetrievalPlanPrompt } from '../../../application/llm/prompts/retrievalplan.js';
 import { parseIntentResponse, parseRetrievalPlan } from '../../../application/llm/outputparsers.js';
 import type { IPromptMessage } from '../../../application/llm/promptmessage.types.js';
@@ -177,6 +178,21 @@ export class DeepSeekClient implements ILlmProvider {
       'DeepSeek person clarification response request failed',
       [
         { role: 'system', content: buildPersonClarificationPrompt(responseLanguage) },
+        { role: 'user', content: question },
+      ],
+      0.2,
+      { responseLanguage }
+    );
+
+    return content?.trim() ?? '';
+  }
+
+  async generateSkillsClarification(question: string, responseLanguage: string): Promise<string> {
+    const content = await this.chat(
+      'DeepSeek skills clarification request',
+      'DeepSeek skills clarification response request failed',
+      [
+        { role: 'system', content: buildSkillsClarificationPrompt(responseLanguage) },
         { role: 'user', content: question },
       ],
       0.2,

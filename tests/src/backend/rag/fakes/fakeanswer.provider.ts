@@ -21,12 +21,14 @@ export interface IFakeAnswerProviderBehavior {
   insufficientContextAnswer?: string;
   intentFallbackResponse?: string;
   personClarificationAnswer?: string;
+  skillsClarificationAnswer?: string;
   rewrittenAnswer?: string;
   translatedUiCopy?: Partial<IAssistantUiCopy>;
   transformTask?: ConversationTransformTask;
   onClassifyIntent?: (question: string, pageContext: unknown) => void;
   onGenerateAnswer?: (question: string) => void;
   onGeneratePersonClarification?: (question: string, responseLanguage: string) => void;
+  onGenerateSkillsClarification?: (question: string, responseLanguage: string) => void;
   onRewritePreviousAnswer?: (
     instruction: string,
     previousAnswer: string,
@@ -49,12 +51,15 @@ export function createFakeAnswerProvider(
     insufficientContextAnswer = 'Please send us a message so we can help.',
     intentFallbackResponse = 'Please ask about our website.',
     personClarificationAnswer = 'Who do you mean? Please tell me the person name.',
+    skillsClarificationAnswer =
+      'Do you mean ARG team capabilities, or the published agent skills for coding agents?',
     rewrittenAnswer = 'Rewritten answer.',
     translatedUiCopy = {},
     transformTask,
     onClassifyIntent,
     onGenerateAnswer,
     onGeneratePersonClarification,
+    onGenerateSkillsClarification,
     onRewritePreviousAnswer,
     onTranslateAssistantUiCopy,
   } = behavior;
@@ -94,6 +99,10 @@ export function createFakeAnswerProvider(
     async generatePersonClarification(question, responseLanguage) {
       onGeneratePersonClarification?.(question, responseLanguage);
       return personClarificationAnswer;
+    },
+    async generateSkillsClarification(question, responseLanguage) {
+      onGenerateSkillsClarification?.(question, responseLanguage);
+      return skillsClarificationAnswer;
     },
     async rewritePreviousAnswer(instruction, previousAnswer, task) {
       onRewritePreviousAnswer?.(instruction, previousAnswer, task);

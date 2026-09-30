@@ -60,7 +60,7 @@ export function buildSkillStaticContent(skill) {
     <h2>Used when</h2>
     <p>${escapeHtml(skill.usedWhen || '')}</p>
     <p>${escapeHtml(skill.body || '')}</p>
-    ${renderNavigation([{ href: '/skills/', label: 'Skills' }])}
+    ${renderNavigation([{ href: '/skills/', label: 'AI Skills' }])}
   </main>
 </div>`;
 }

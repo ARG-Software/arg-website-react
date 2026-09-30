@@ -492,6 +492,8 @@
   border: 1px solid #1e1e2e;
   border-radius: 0.75rem;
   margin: 1.75rem 0;
+  max-width: 100%;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -533,10 +535,13 @@
 }
 
 .bp-code-scroll {
-  display: flex;
   align-items: stretch;
   background: #1a1a2e;
+  display: flex;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .bp-code-wrap pre {
@@ -699,6 +704,20 @@
 }
 
 @media screen and (max-width: 767px) {
+  .bp-code-gutter {
+    display: none;
+  }
+
+  .bp-code-wrap pre,
+  .bp-code-pre,
+  .bp-code-code {
+    font-size: 0.75rem;
+  }
+
+  .bp-code-wrap pre,
+  .bp-code-pre {
+    padding: 1rem 0.875rem !important;
+  }
 
   .bp-hero-figure {
     border-radius: 0.875rem;

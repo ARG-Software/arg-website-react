@@ -42,6 +42,7 @@ export interface ILlmProvider {
     responseLanguage: string
   ): Promise<string>;
   generatePersonClarification(question: string, responseLanguage: string): Promise<string>;
+  generateSkillsClarification(question: string, responseLanguage: string): Promise<string>;
   rewritePreviousAnswer(
     instruction: string,
     previousAnswer: string,

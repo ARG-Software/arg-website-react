@@ -1,29 +1,29 @@
 {
   "seo": {
-    "title": "Skills",
-    "description": "Agent skills ARG Software uses to keep architecture, frontend, and delivery consistent across production systems."
+    "title": "AI Skills",
+    "description": "Playbooks ARG Software gives coding assistants so they work the way we do. For Claude Code, Cursor, Codex, OpenCode, and GitHub Copilot."
   },
   "hero": {
     "title": ["The skills we use", "to ship production work."],
+    "subtitle": "Playbooks we give coding assistants so they work the way ARG does.",
+    "detailTitleLine": "for coding agents.",
     "breadcrumbs": [
       { "label": "Home", "path": "/" },
-      { "label": "Skills", "path": "/skills/" }
+      { "label": "AI Skills", "path": "/skills/" }
     ],
     "sideItems": [
-      { "label": "Skills", "href": "#skills" },
       { "label": "Agents", "href": "#agents" },
+      { "label": "Skills", "href": "#skills" },
       { "label": "Start a project", "href": "#page-cta" }
     ]
   },
-  "catalog": {
-    "intro": "Reusable agent skills we load into our tools. Dummy copy for layout — real skill files come next."
-  },
   "agents": {
     "heading": "Available for these agents",
+    "brief": "These are ARG's working habits, written down for AI coding tools — how we design, review, and ship — so the assistant follows the same standard we use on client work.",
     "items": [
       {
         "id": "claude",
-        "name": "Claude",
+        "name": "Claude Code",
         "logo": "/images/ai/claude.svg",
         "href": "https://claude.ai"
       },

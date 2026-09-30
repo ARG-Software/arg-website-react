@@ -220,6 +220,7 @@ Topics include:
 - Partners: https://arg.software/partners/
 - Blog: https://arg.software/blog/
 - Contact: https://arg.software/contact/
+- AI Skills: https://arg.software/skills/
 - Careers: https://arg.software/careers/
 - Privacy: https://arg.software/privacy/
 - Terms: https://arg.software/terms/

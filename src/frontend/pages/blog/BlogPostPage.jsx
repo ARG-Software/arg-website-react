@@ -77,7 +77,7 @@ const CodeBlock = ({ code, lang }) => {
           {copyLabel}
         </button>
       </div>
-      <div className="bp-code-scroll">
+      <div className="bp-code-scroll" data-lenis-prevent>
         <pre className="bp-code-gutter" aria-hidden="true">
           {lineNumbers.map(number => (
             <span key={number} className="bp-code-line-num">

@@ -23,6 +23,7 @@ test('SemanticRetrievalEmbeddingPlanner batches only semantic retrieval items', 
     item('React evidence', 'direct_evidence', { subject: 'React' }),
     item('Top client examples', 'portfolio_work', { subject: 'top client projects' }),
     item('Who is Jose?', 'people', { requiresPersonClarification: true }),
+    item('What skills do you have?', 'company_services', { requiresSkillsClarification: true }),
     item('Blog follow-up', 'blog', { blogKind: 'answer' }),
   ];
 
@@ -31,7 +32,7 @@ test('SemanticRetrievalEmbeddingPlanner batches only semantic retrieval items', 
   assert.deepEqual(embeddedTexts, [['Team culture evidence', 'Blog follow-up']]);
   assert.deepEqual([...embeddings.entries()], [
     [1, { embedding: [1], index: 'primary' }],
-    [8, { embedding: [2], index: 'primary' }],
+    [9, { embedding: [2], index: 'primary' }],
   ]);
 });
 
@@ -89,6 +90,9 @@ function item(
       ...(options.blogKind ? { blogKind: options.blogKind } : {}),
       ...(options.requiresPersonClarification
         ? { requiresPersonClarification: options.requiresPersonClarification }
+        : {}),
+      ...(options.requiresSkillsClarification
+        ? { requiresSkillsClarification: options.requiresSkillsClarification }
         : {}),
     },
   };

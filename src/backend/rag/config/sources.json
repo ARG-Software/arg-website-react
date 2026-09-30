@@ -16,6 +16,7 @@
   "staticPageSourceKeys": {
     "/about-us": ["about", "arg-team", "arg-team-capabilities", "jose-antunes", "rui-rocha"],
     "/careers": ["careers-page", "jobs"],
+    "/skills": ["agent-skills"],
     "/contact": ["site-links"],
     "/partners": ["partners-page"],
     "/privacy": ["privacy-policy"],
@@ -43,6 +44,7 @@
     { "kind": "json", "filePath": "src/frontend/data/legalPages.json", "dataKey": "termsOfService", "sourceType": "homepage", "sourceKey": "terms-of-service", "title": "Terms of Service", "url": "/terms/", "label": "terms of service" },
     { "kind": "json", "filePath": "src/frontend/data/siteLinks.json", "sourceType": "homepage", "sourceKey": "site-links", "title": "ARG Links and Contact Options", "url": "/contact/", "label": "ARG links and contact options" },
     { "kind": "json", "filePath": "src/frontend/data/openSourceProjects.json", "sourceType": "homepage", "sourceKey": "open-source-projects", "title": "ARG Software Featured Open Source Projects", "url": "https://github.com/ARG-Software", "label": "ARG Software featured open source projects" },
+    { "kind": "json", "filePath": "src/frontend/data/skills.json", "sourceType": "homepage", "sourceKey": "agent-skills", "title": "ARG Agent Skills", "url": "/skills/", "label": "agent skills" },
     { "kind": "json", "filePath": "src/frontend/data/assistant.json", "sourceType": "homepage", "sourceKey": "assistant-profile", "title": "Gaspar", "url": "/", "label": "Gaspar assistant profile" },
     { "kind": "assistant_policy", "sourceType": "working_with_us", "sourceKey": "assistant-policy", "title": "Assistant Response Policy", "label": "assistant response policy", "virtualPath": "src/backend/rag/config/sources.json#assistant-policy" },
     { "kind": "projects_json", "filePath": "src/frontend/data/projects.json" },

@@ -44,9 +44,10 @@ export class RetrieveRelevantChunksUseCase {
       getKnownProjectNames()
     )[0];
     const query = routedItem?.retrievalQuestion || question;
-    const route = routedItem?.route || resolveRetrievalRoute(query, plan, getKnownProjectNames());
+    const route =
+      routedItem?.route || resolveRetrievalRoute(query, plan, getKnownProjectNames(), pageContext);
 
-    if (route.requiresPersonClarification) {
+    if (route.requiresPersonClarification || route.requiresSkillsClarification) {
       return [];
     }
 

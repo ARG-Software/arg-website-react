@@ -64,7 +64,7 @@
     "label": "Company",
     "items": [
       { "label": "Careers", "to": "/careers/", "openInPage": true },
-      { "label": "Skills", "to": "/skills/", "openInPage": true },
+      { "label": "AI Skills", "to": "/skills/", "openInPage": true },
       { "label": "Contact", "to": "/contact/", "openInPage": true },
       { "label": "Team", "to": "/#team", "openInPage": false },
       { "label": "FAQ", "to": "/#faq", "openInPage": false },

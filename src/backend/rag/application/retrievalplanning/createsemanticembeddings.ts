@@ -32,7 +32,7 @@ export class SemanticRetrievalEmbeddingPlanner {
 }
 
 function requiresSemanticEmbedding(item: IRoutedRetrievalItem): boolean {
-  if (item.route.requiresPersonClarification) {
+  if (item.route.requiresPersonClarification || item.route.requiresSkillsClarification) {
     return false;
   }
 

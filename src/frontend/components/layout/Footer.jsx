@@ -14,7 +14,7 @@ import {
 const NAV_LINKS = [
   { label: 'Blog', path: '/blog/' },
   { label: 'Careers', path: '/careers/' },
-  { label: 'Skills', path: '/skills/' },
+  { label: 'AI Skills', path: '/skills/' },
   { label: 'About Us', path: '/about-us/' },
   { label: 'Working with Us', path: '/working-with-us/' },
   { label: 'Contact', path: '/contact/' },
