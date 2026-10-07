@@ -48,12 +48,27 @@ export default async function markdownNegotiation(request, context) {
 function withSecurityHeaders(response) {
   const headers = new Headers(response.headers);
   headers.set('strict-transport-security', STRICT_TRANSPORT_SECURITY);
+  applySameSiteToCookies(headers);
 
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
     headers,
   });
+}
+
+function applySameSiteToCookies(headers) {
+  const cookies = headers.getSetCookie();
+  if (cookies.length === 0) return;
+
+  headers.delete('set-cookie');
+  for (const cookie of cookies) {
+    headers.append('set-cookie', cookieHasSameSite(cookie) ? cookie : `${cookie}; SameSite=Lax`);
+  }
+}
+
+function cookieHasSameSite(cookie) {
+  return cookie.split(';').some(part => part.trim().toLowerCase().startsWith('samesite='));
 }
 
 function shouldReturnMarkdown(request) {
