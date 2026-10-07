@@ -80,6 +80,60 @@ test('skips known bot visit logs before reading the body', async () => {
   assert.equal(recordCalled, false);
 });
 
+test('skips visit logs referred from localhost on any port', async () => {
+  let recordCalled = false;
+  const controller = createVisitLogController(() => {
+    recordCalled = true;
+  });
+  const response = await controller.log(
+    createVisitLogRequest({ referrer: 'http://localhost:4000/' })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordCalled, false);
+});
+
+test('skips visit logs whose attribution referrer is localhost', async () => {
+  let recordCalled = false;
+  const controller = createVisitLogController(() => {
+    recordCalled = true;
+  });
+  const response = await controller.log(
+    createVisitLogRequest({
+      attribution: { referrer: 'http://127.0.0.1:3000/blog/' },
+    })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordCalled, false);
+});
+
+test('skips visit logs posted to a local API host', async () => {
+  let recordCalled = false;
+  const controller = createVisitLogController(() => {
+    recordCalled = true;
+  });
+  const response = await controller.log(
+    createVisitLogRequest({}, DESKTOP_CHROME_USER_AGENT, 'http://localhost:3000/api/visit-log')
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordCalled, false);
+});
+
+test('records visit logs with a production referrer', async () => {
+  let recordedReferrer = '';
+  const controller = createVisitLogController(input => {
+    recordedReferrer = input.referrer;
+  });
+  const response = await controller.log(
+    createVisitLogRequest({ referrer: 'https://www.linkedin.com/feed/' })
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordedReferrer, 'https://www.linkedin.com/feed/');
+});
+
 test('records low-engagement visit logs as suspected bots', async () => {
   let recordedTraffic: any = null;
   const controller = new TestVisitsController({
@@ -667,8 +721,23 @@ function createMetricSession(sessionHash: string, countryCode: string) {
 const DESKTOP_CHROME_USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128.0.0.0 Safari/537.36';
 
-function createVisitLogRequest(payload = {}, userAgent = DESKTOP_CHROME_USER_AGENT) {
-  return new Request('https://arg.software/api/visit-log', {
+function createVisitLogController(onRecord: (input?: any) => void) {
+  return new TestVisitsController({
+    recordVisitSessionUseCase: {
+      async execute(input) {
+        onRecord(input);
+      },
+    },
+    visitLogRateLimiter: { check: async () => ({ allowed: true }) },
+  } as any);
+}
+
+function createVisitLogRequest(
+  payload = {},
+  userAgent = DESKTOP_CHROME_USER_AGENT,
+  url = 'https://arg.software/api/visit-log'
+) {
+  return new Request(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

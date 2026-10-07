@@ -41,6 +41,10 @@ export function isKnownVisitBotUserAgent(userAgent: string | null): boolean {
   return BOT_USER_AGENT_PARTS.some(part => normalized.includes(part));
 }
 
+export function isLocalVisit(request: Request, payload: unknown): boolean {
+  return isLocalHost(new URL(request.url).hostname) || hasLocalReferrer(payload);
+}
+
 export function classifyVisitTraffic(
   userAgent: string | null,
   payload: unknown
@@ -233,4 +237,29 @@ function hasAttribution(visit: { referrer?: unknown; attribution?: Record<string
 
 function hasText(value: unknown): boolean {
   return typeof value === 'string' && value.trim().length > 0;
+}
+
+function hasLocalReferrer(payload: unknown): boolean {
+  const visit = readVisitPayload(payload);
+  return isLocalUrl(visit.referrer) || isLocalUrl(visit.attribution?.referrer);
+}
+
+function isLocalUrl(value: unknown): boolean {
+  if (!hasText(value)) return false;
+
+  try {
+    return isLocalHost(new URL(String(value)).hostname);
+  } catch {
+    return false;
+  }
+}
+
+function isLocalHost(host: string): boolean {
+  const hostname = host.toLowerCase();
+  return (
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '::1' ||
+    hostname.endsWith('.localhost')
+  );
 }

@@ -9,6 +9,7 @@ import { getHeaderGeolocation } from '../../http/requestinfo.js';
 import {
   classifyVisitTraffic,
   isKnownVisitBotUserAgent,
+  isLocalVisit,
 } from '../../http/visittrafficfilter.js';
 import { ControllerBase } from './controllerbase.js';
 
@@ -33,6 +34,11 @@ export class VisitsController extends ControllerBase {
     }
 
     const payload = await this.body(request);
+    if (isLocalVisit(request, payload)) {
+      this.logger?.info('Visit session skipped', { reason: 'local_visit' });
+      return this.json(204, '');
+    }
+
     const traffic = classifyVisitTraffic(userAgent, payload);
 
     await this.visits.recordVisitSessionUseCase.execute({
