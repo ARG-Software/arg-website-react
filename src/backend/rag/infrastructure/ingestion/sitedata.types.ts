@@ -56,14 +56,55 @@ export interface IHomepageJson {
 
 export interface ICareersFounderCard {
   name: string;
+  role: string;
   focus: string;
+  replyTime: string;
   personKey: string;
 }
 
+interface ICareersSection {
+  title: string;
+  titleHighlight: string;
+  subtitle: string;
+}
+
 export interface ICareersJson {
+  seo: { openRolesDescription: string; noRolesDescription: string };
+  hero: { openRolesSubtitle: string; noRolesSubtitle: string };
+  roles: ICareersSection;
+  hiring: ICareersSection;
+  applicationForm: { title: string; description: string; helperText: string };
+  who: ICareersSection;
   founders: {
+    title: string;
+    titleHighlight: string;
+    intro: string;
     cards: ICareersFounderCard[];
   };
+  cta: {
+    openRolesTitle: string;
+    openRolesTitleHighlight: string;
+    noRolesTitle: string;
+    noRolesTitleHighlight: string;
+  };
+}
+
+interface IJobsTitledBody {
+  title: string;
+  body: string;
+}
+
+export interface IJobsJson {
+  jobs: Array<{
+    title: string;
+    department: string;
+    type: string;
+    location: string;
+    description: string;
+    requirements: string[];
+  }>;
+  careerTraits: IJobsTitledBody[];
+  hiringSteps: IJobsTitledBody[];
 }
 
 export interface ISiteLinksJson {
