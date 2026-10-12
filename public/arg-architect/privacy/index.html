@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Privacy Policy — Arg Architect</title>
+    <link rel="icon" href="/favicon.ico" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --text: #1a1a1a;
+        --muted: #555555;
+        --border: #dddddd;
+        --link: #0b57d0;
+        --code-bg: #f3f3f3;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #111111;
+          --text: #ededed;
+          --muted: #aaaaaa;
+          --border: #333333;
+          --link: #8ab4f8;
+          --code-bg: #222222;
+        }
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 48px 16px 80px;
+      }
+      h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+        margin: 0 0 24px;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin: 40px 0 12px;
+      }
+      p,
+      ul {
+        margin: 0 0 16px;
+      }
+      ul {
+        padding-left: 24px;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+      a {
+        color: var(--link);
+      }
+      code {
+        background: var(--code-bg);
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 0.9em;
+        overflow-wrap: anywhere;
+      }
+      .meta {
+        color: var(--muted);
+        list-style: none;
+        padding: 0;
+      }
+      .meta li {
+        margin-bottom: 2px;
+      }
+      .table-wrap {
+        overflow-x: auto;
+        margin: 0 0 16px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 560px;
+        font-size: 0.95rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--border);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Privacy Policy — Arg Architect</h1>
+
+      <ul class="meta">
+        <li><strong>Extension:</strong> Arg Architect (Chrome and Firefox extension)</li>
+        <li><strong>Developer:</strong> Arg Software</li>
+        <li><strong>Contact:</strong> <a href="mailto:dev@arg.software">dev@arg.software</a></li>
+        <li><strong>Website:</strong> <a href="https://arg.software">https://arg.software</a></li>
+        <li><strong>Effective date:</strong> 28 September 2026</li>
+      </ul>
+
+      <p>
+        Arg Architect is a website-auditing tool for developers. It analyzes the page you are
+        currently viewing or a URL you enter, entirely inside your browser. Audits run in a
+        separate runner window the extension opens; the extension does not read or change the
+        pages you browse normally. This policy describes what data the extension handles and
+        what, if anything, leaves your device.
+      </p>
+
+      <h2>1. Single purpose</h2>
+      <p>
+        Arg Architect produces a technical audit report (performance, security, architecture,
+        payload, accessibility, DOM, and AI readiness findings) for the website the user chooses
+        to audit.
+      </p>
+
+      <h2>2. Data processed locally (never transmitted)</h2>
+      <p>
+        When you run an audit, the extension reads information from the audited page and your
+        browser to compute the report. Its page collectors are registered only for the audited
+        site and only while the audit runs; they are removed when the audit queue finishes. This
+        processing happens <strong>only on your device</strong>:
+      </p>
+      <ul>
+        <li>
+          <strong>Website content evidence:</strong> DOM structure and summaries, meta tags,
+          scripts, style classes, link relations, page text samples, JSON-LD, and response headers
+          of the audited document.
+        </li>
+        <li>
+          <strong>Network evidence:</strong> request URLs, resource timings, sizes, and response
+          headers observed for the audited page load.
+        </li>
+        <li>
+          <strong>Storage evidence:</strong> <code>localStorage</code> /
+          <code>sessionStorage</code> key names, and cookie names and values visible to the page
+          (<code>document.cookie</code>). Cookie values are inspected transiently in memory to
+          detect authentication token patterns (e.g. expired JWTs); they are not included in saved
+          reports.
+        </li>
+        <li>
+          <strong>Cookie security attributes (opt-in):</strong> if you explicitly enable "Deep
+          cookie inspection" and grant the optional browser permission, the extension reads cookie
+          <strong>names and security attributes</strong> (<code>Secure</code>,
+          <code>HttpOnly</code>, <code>SameSite</code>, domain, path) of the audited site via the
+          browser cookie store. Cookie <strong>values are never read</strong> in this flow, and
+          the data is used only to produce the audit report locally.
+        </li>
+        <li>
+          <strong>Audit history:</strong> scores, findings, and evidence lines (e.g. flagged
+          resource URLs, cookie names) are stored in the extension's local storage on your device
+          so you can review past audits. You can delete any or all history at any time.
+        </li>
+      </ul>
+      <p>
+        No page content, cookies, storage data, or audit results are uploaded to any server. No
+        analytics, tracking, or advertising code is present in the extension.
+      </p>
+
+      <h2>3. Data that may leave your device (user-initiated or opt-in only)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Flow</th>
+              <th>What is sent</th>
+              <th>When</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Contact form</td>
+              <td>
+                The name, email address, and message you type in the Contact tab, plus, only if
+                you attach one, a short audit summary (site origin, scores, category verdicts, up
+                to eight check names)
+              </td>
+              <td>
+                Only when you press "Send". Transmitted over HTTPS to
+                <code>api.web3forms.com</code> (form-handling provider).
+              </td>
+            </tr>
+            <tr>
+              <td>External CDN lookup (optional)</td>
+              <td>The hostname of the audited site only</td>
+              <td>
+                Only when you enable "External CDN lookup". Sent over HTTPS to
+                <code>dns.google</code> (DNS-over-HTTPS) and <code>rdap.org</code>.
+              </td>
+            </tr>
+            <tr>
+              <td>AI discovery lookup (optional)</td>
+              <td>The hostname of the audited site only</td>
+              <td>
+                Only when you enable "External AI discovery lookup". Sent over HTTPS to
+                <code>dns.google</code>.
+              </td>
+            </tr>
+            <tr>
+              <td>Audited site's public files</td>
+              <td>
+                Normal HTTPS requests for the audited site's own <code>/robots.txt</code>,
+                <code>/sitemap.xml</code>, <code>/llms.txt</code>, <code>/.well-known/*</code>
+                discovery files, and script files, made to that site only
+              </td>
+              <td>During an audit you started.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Both external lookups are off by default and clearly labeled in Settings. The semantic AI
+        model ships inside the extension and is never downloaded.
+      </p>
+      <p>
+        <strong>Export report:</strong> When you choose Export, the extension writes a PDF, JSON,
+        or Markdown file of the persisted audit report to your computer. That file can include
+        private paths, query strings, cookie names, package versions, and other technical
+        evidence. URL credentials and fragments are stripped. Script bodies and credential values
+        are not included. The extension does not upload the export; sharing the file is a separate
+        action you take outside the extension.
+      </p>
+
+      <h2>4. Limited Use</h2>
+      <p>
+        The use of information received by Arg Architect adheres to the Chrome Web Store User Data
+        Policy, including the Limited Use requirements:
+      </p>
+      <ul>
+        <li>Data is used only to provide or improve the single purpose stated above.</li>
+        <li>
+          Data is never sold or shared, except as necessary to provide the service, comply with
+          law, or enforce our policies.
+        </li>
+        <li>Data is never used for advertising or behavioral targeting.</li>
+        <li>Access to data is limited to what is required for the feature you enable.</li>
+      </ul>
+
+      <h2>5. Security</h2>
+      <p>
+        All transmissions are over HTTPS. The extension stores audit data locally on your device
+        using the browser's extension storage. You can remove all data by clearing the extension's
+        history in the History tab or by removing the extension.
+      </p>
+
+      <h2>6. Retention</h2>
+      <p>
+        Audit reports use a seven-day local retention window, with a maximum of ten reports per
+        exact audited URL. Expired reports are removed during report-storage maintenance, and
+        storage quota failures do not evict existing reports. Reports from an incompatible
+        extension version are not deleted because of that incompatibility; they remain available
+        for explicit deletion until normal maintenance removes them. Settings persist until you
+        clear extension data or uninstall the extension. We operate no server that retains your
+        audit history.
+      </p>
+
+      <h2>7. Children's privacy</h2>
+      <p>Arg Architect is a developer tool and is not directed at children.</p>
+
+      <h2>8. Changes</h2>
+      <p>
+        If this policy changes materially, we will update the effective date and, where practical,
+        notify users via a note in the extension.
+      </p>
+
+      <h2>9. Contact</h2>
+      <p>
+        Questions? Use the in-app Contact form or email
+        <a href="mailto:dev@arg.software">dev@arg.software</a>.
+      </p>
+    </main>
+  </body>
+</html>

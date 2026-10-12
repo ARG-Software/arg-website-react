@@ -137,6 +137,11 @@
   Cache-Control: no-cache
   X-Robots-Tag: noindex, nofollow
 
+# Arg Architect extension policy pages — served for the store listings, not indexed
+/arg-architect/*
+  Cache-Control: no-cache
+  X-Robots-Tag: noindex, nofollow
+
 # Hashed JS/CSS assets — immutable cache
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
