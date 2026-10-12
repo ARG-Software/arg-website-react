@@ -5,6 +5,7 @@ import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
 import { trackEvent, trackCTA } from '@services/analytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
+import { getCoverSrcSet } from '../../utils/blog/coverSrcSet';
 import {
   getBrowserStoreLink,
   getExternalLink,
@@ -126,7 +127,9 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
     const timer = setTimeout(() => {
       try {
         const posts = loadBlogPostsMetadata();
-        if (posts && posts.length > 0) setLatestPost(posts[0]);
+        if (posts && posts.length > 0) {
+          setLatestPost({ ...posts[0], imageSrcSet: getCoverSrcSet(posts[0].image) });
+        }
       } catch (err) {
         console.error('Failed to load latest blog post:', err);
       }

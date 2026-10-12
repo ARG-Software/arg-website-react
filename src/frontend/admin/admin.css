@@ -86,6 +86,7 @@
 .admin-content-grid {
   display: grid;
   gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .admin-stats-grid {
@@ -97,6 +98,7 @@
 .admin-visit-overview-card {
   display: grid;
   gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
   padding: clamp(1rem, 3vw, 1.5rem);
 }
 

@@ -2,7 +2,7 @@
 
 Website covers are **2560×1440 WebP** on each post’s existing `/images/blog/.../*-header.webp` path. Medium featured images are **PNG** in `external/html/medium-updates/batch-3-vector-search/covers/{slug}.png`.
 
-There is no cover pipeline. Convert a new PNG to WebP yourself (e.g. Squoosh, or `npx sharp-cli`), drop the WebP on the post header path, and copy the PNG into the Medium `covers/` folder.
+Convert a new PNG to WebP yourself (e.g. Squoosh, or `npx sharp-cli`), drop the WebP on the post header path, and copy the PNG into the Medium `covers/` folder.
 
 ## ChatGPT prompt
 
@@ -31,6 +31,7 @@ ARG colors: ink `#0c002e`, red `#f0060d`, magenta `#c924d7`, violet `#7904fd`, c
 
 1. Generate `{slug}.png` at 16:9 with the prompt above.
 2. Convert to 2560×1440 WebP and save as the markdown cover path (`![descriptive alt](/images/blog/.../header.webp)`).
-3. Copy the PNG to `external/html/medium-updates/batch-3-vector-search/covers/{slug}.png`.
-4. Use a descriptive cover alt (the topic, not a poetic title).
-5. On Medium, replace the story’s featured image with that PNG.
+3. Run `npm run blog:covers` to generate the smaller cover sizes (480, 960, 1600) and update `src/frontend/data/blogCoverSizes.json`.
+4. Copy the PNG to `external/html/medium-updates/batch-3-vector-search/covers/{slug}.png`.
+5. Use a descriptive cover alt (the topic, not a poetic title).
+6. On Medium, replace the story’s featured image with that PNG.

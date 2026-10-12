@@ -37,6 +37,7 @@ import {
   getNewsletterSubscribeLink,
   getTwitterShareLink,
 } from '@services/linksService';
+import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
 import { buildArticleSchema } from '@utils/structuredData';
 import '../../styles/blog.css';
 
@@ -431,6 +432,8 @@ export default function BlogPostPage() {
                     <figure className="bp-hero-figure" data-animate="fade-up">
                       <img
                         src={heroImage.src}
+                        srcSet={getCoverSrcSet(heroImage.src)}
+                        sizes="(max-width: 991px) 92vw, 56rem"
                         alt={heroImage.alt || BLOG_POST.title}
                         loading="eager"
                       />

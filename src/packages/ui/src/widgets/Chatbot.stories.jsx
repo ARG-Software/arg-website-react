@@ -18,7 +18,7 @@ const COPY = {
 
 const ASSISTANT = {
   name: 'Nova',
-  imageSrc: '/images/ai/gaspar.png',
+  imageSrc: '/images/ai/gaspar.webp',
 };
 
 const MESSAGES = [

@@ -83,11 +83,11 @@ function StoreButton({ store, href, variant, location }) {
 
 export default function AuditPage() {
   const bookingUrl = getArchitectureBookingLink();
-  const [activeFeature, setActiveFeature] = useState(0);
+  const [activeFeature, setActiveFeature] = useState(-1);
   const [verificationState, setVerificationState] = useState('unverified');
   const [verificationKey, setVerificationKey] = useState(0);
   const isVerified = verificationState === 'verified';
-  const feature = PAGE.architect.features[activeFeature];
+  const feature = PAGE.architect.features[activeFeature] ?? PAGE.architect.overview;
 
   useTimeOnPage('/audit/');
   useScrollAnimations();
@@ -156,14 +156,16 @@ export default function AuditPage() {
                       ))}
                     </div>
                     <div className="au-panels">
-                      {PAGE.architect.features.map((item, index) => (
+                      {[PAGE.architect.overview, ...PAGE.architect.features].map(item => (
                         <div
                           key={item.id}
                           id={`au-panel-${item.id}`}
-                          className={index === activeFeature ? 'au-panel is-active' : 'au-panel'}
+                          className={item === feature ? 'au-panel is-active' : 'au-panel'}
                           role="tabpanel"
-                          aria-labelledby={`au-tab-${item.id}`}
-                          aria-hidden={index !== activeFeature}
+                          aria-labelledby={
+                            item === PAGE.architect.overview ? undefined : `au-tab-${item.id}`
+                          }
+                          aria-hidden={item !== feature}
                         >
                           <h3>{item.title}</h3>
                           <p>{item.text}</p>
@@ -212,7 +214,13 @@ export default function AuditPage() {
                   </div>
 
                   <figure className="au-shot" data-animate-order="1">
-                    <img key={feature.id} src={feature.image} alt={feature.alt} />
+                    <img
+                      key={feature.id}
+                      src={feature.image}
+                      alt={feature.alt}
+                      width="598"
+                      height="896"
+                    />
                     <figcaption className="au-kicker">
                       {feature.caption} · {PAGE.architect.captionSuffix}
                     </figcaption>

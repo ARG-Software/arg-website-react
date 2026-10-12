@@ -35,6 +35,15 @@
     "step": "Start free",
     "title": "A full website audit in one click.",
     "text": "A free browser extension. Open any public page, press audit, and get one weighted score across eight categories, with every failing check explained.",
+    "overview": {
+      "id": "overview",
+      "title": "Overall score",
+      "text": "Every audit ends in one score out of 100, with the issues that matter most listed first. Pick a category to see what it checks.",
+      "metrics": [],
+      "image": "/images/audit/screens/architect-overview.webp",
+      "alt": "ARG Architect overall score and priority issues for arg.software",
+      "caption": "Overview"
+    },
     "features": [
       {
         "id": "security",
@@ -55,8 +64,8 @@
           "Cookie security",
           "Client library vulnerabilities"
         ],
-        "image": "/images/audit/screens/report-security.png",
-        "alt": "ARG Architect security report",
+        "image": "/images/audit/screens/architect-security.webp",
+        "alt": "ARG Architect Security report for arg.software",
         "caption": "Security"
       },
       {
@@ -75,8 +84,8 @@
           "Blocking stylesheets",
           "Redirect hops"
         ],
-        "image": "/images/audit/screens/report-performance.png",
-        "alt": "ARG Architect performance report",
+        "image": "/images/audit/screens/architect-performance.webp",
+        "alt": "ARG Architect Performance report for arg.software",
         "caption": "Performance"
       },
       {
@@ -91,8 +100,8 @@
           "Consent behaviour (report-only)",
           "Technology profile"
         ],
-        "image": "/images/audit/screens/report-overview.png",
-        "alt": "ARG Architect overview report",
+        "image": "/images/audit/screens/architect-architecture.webp",
+        "alt": "ARG Architect Architecture report for arg.software",
         "caption": "Overview"
       },
       {
@@ -107,8 +116,8 @@
           "Request count",
           "Early connection setup (report-only)"
         ],
-        "image": "/images/audit/screens/report-overview.png",
-        "alt": "ARG Architect overview report",
+        "image": "/images/audit/screens/architect-efficiency.webp",
+        "alt": "ARG Architect Efficiency report for arg.software",
         "caption": "Overview"
       },
       {
@@ -126,8 +135,8 @@
           "Fonts",
           "CSS"
         ],
-        "image": "/images/audit/screens/report-overview.png",
-        "alt": "ARG Architect overview report",
+        "image": "/images/audit/screens/architect-payload.webp",
+        "alt": "ARG Architect Payload report for arg.software",
         "caption": "Overview"
       },
       {
@@ -147,8 +156,8 @@
           "Duplicate IDs",
           "Iframe titles"
         ],
-        "image": "/images/audit/screens/report-overview.png",
-        "alt": "ARG Architect overview report",
+        "image": "/images/audit/screens/architect-accessibility.webp",
+        "alt": "ARG Architect Accessibility report for arg.software",
         "caption": "Overview"
       },
       {
@@ -164,8 +173,8 @@
           "Content extractability",
           "Citation readiness"
         ],
-        "image": "/images/audit/screens/report-ai-readiness.png",
-        "alt": "ARG Architect ai readiness report",
+        "image": "/images/audit/screens/architect-ai-readiness.webp",
+        "alt": "ARG Architect AI Readiness report for arg.software",
         "caption": "AI readiness"
       },
       {
@@ -179,8 +188,8 @@
           "Authored inline styles",
           "Inline event handlers"
         ],
-        "image": "/images/audit/screens/report-overview.png",
-        "alt": "ARG Architect overview report",
+        "image": "/images/audit/screens/architect-dom.webp",
+        "alt": "ARG Architect DOM report for arg.software",
         "caption": "Overview"
       }
     ],

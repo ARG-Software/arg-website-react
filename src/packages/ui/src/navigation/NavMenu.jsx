@@ -132,7 +132,12 @@ export function NavMenu({
                 <>
                   {latestPost.image && (
                     <span className="nav-menu__latest-thumb">
-                      <img src={latestPost.image} alt="" />
+                      <img
+                        src={latestPost.image}
+                        srcSet={latestPost.imageSrcSet}
+                        sizes="3rem"
+                        alt=""
+                      />
                     </span>
                   )}
                   <div className="nav-menu__latest-content">

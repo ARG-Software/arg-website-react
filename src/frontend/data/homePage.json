@@ -161,16 +161,16 @@
         "name": "José Antunes",
         "role": "Co-founder, Software Engineer",
         "personKey": "JOSE",
-        "imgSrc": "/images/team/Jose.jpg",
-        "imgSrcSet": "/images/team/Jose.jpg 1024w",
+        "imgSrc": "/images/team/jose-antunes-1024.webp",
+        "imgSrcSet": "/images/team/jose-antunes-360.webp 360w, /images/team/jose-antunes-640.webp 640w, /images/team/jose-antunes-1024.webp 1024w",
         "imgAlt": "José Antunes, ARG Software co-founder and software engineer"
       },
       {
         "name": "Rui Rocha",
         "role": "Co-founder, Software Engineer",
         "personKey": "RUI",
-        "imgSrc": "/images/team/Rocha.jpg",
-        "imgSrcSet": "/images/team/Rocha.jpg 1024w",
+        "imgSrc": "/images/team/rui-rocha-1024.webp",
+        "imgSrcSet": "/images/team/rui-rocha-360.webp 360w, /images/team/rui-rocha-640.webp 640w, /images/team/rui-rocha-1024.webp 1024w",
         "imgAlt": "Rui Rocha, ARG Software co-founder and software engineer"
       }
     ]

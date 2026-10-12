@@ -16,6 +16,7 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackBlogPostClick, trackCTA, trackEvent } from '@services/analytics';
 
 import { getBlogCollections, getBlogTags, loadBlogPostsMetadata } from '@utils/blog';
+import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
 import { toShortContentDate } from '@utils/contentDate';
 import { BLOG_POSTS_PER_PAGE } from '@constants/config';
 import '../../styles/blog.css';
@@ -219,6 +220,8 @@ export default function BlogPage() {
                             {article.image ? (
                               <img
                                 src={article.image}
+                                srcSet={getCoverSrcSet(article.image)}
+                                sizes="8.75rem"
                                 alt=""
                                 className="blp-row-image"
                                 loading={i === 0 ? 'eager' : 'lazy'}

@@ -40,6 +40,7 @@
     "check:content": "node scripts/check-content-consistency.cjs",
     "test:blog": "node --test --test-concurrency=1 \"tests/src/frontend/utils/blog/**/*.test.js\"",
     "blog:check-images": "node scripts/check-blog-image-alt.cjs",
+    "blog:covers": "node scripts/generate-blog-cover-sizes.cjs",
     "blog:check-images:strict": "node scripts/check-blog-image-alt.cjs --strict",
     "blog:import:medium": "node scripts/import-medium-articles.cjs --published",
     "blog:import:medium:overwrite": "node scripts/import-medium-articles.cjs --published --overwrite",
