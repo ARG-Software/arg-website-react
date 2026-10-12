@@ -4,6 +4,7 @@ import type { IRagChunkSearchRepository } from '../ports/iragchunksearch.reposit
 import type { IRagSourceReadRepository } from '../ports/iragsource.repository.js';
 import type { SemanticEmbeddingResolver } from './embeddingresolver.js';
 import { RoutedContextRetriever } from './routedcontextretriever.js';
+import { AuditOfferingsRetrievalStrategy } from './strategies/auditofferings.js';
 import { CommercialDeliveryRetrievalStrategy } from './strategies/commercialdelivery.js';
 import { EditorialRetrievalStrategy } from './strategies/editorial.js';
 import { ForcedFirstChunksRetrievalStrategy } from './strategies/forcedfirstchunks.js';
@@ -44,6 +45,13 @@ export function createRoutedContextRetriever({
 
   return new RoutedContextRetriever([
     new ForcedFirstChunksRetrievalStrategy(sourceRepository, chunkRepository, config),
+    new AuditOfferingsRetrievalStrategy(
+      sourceRepository,
+      chunkRepository,
+      chunkSearchRepository,
+      config,
+      embeddingResolver
+    ),
     new LatestBlogRetrievalStrategy(sourceRepository, chunkRepository, config),
     new LinkActionRetrievalStrategy(sourceRepository, chunkRepository, config),
     new CommercialDeliveryRetrievalStrategy(sourceRepository, chunkRepository, chunkSearchRepository, config),

@@ -58,7 +58,7 @@ export interface IExternalSourceManifestEntry {
 }
 
 export interface IFileManifestEntry {
-  kind: 'projects_json' | 'partners_json' | 'markdown_dir';
+  kind: 'projects_json' | 'partners_json' | 'audit_json' | 'markdown_dir';
   filePath: string;
 }
 

@@ -318,6 +318,48 @@ export function buildProjectSchema(project) {
   };
 }
 
+export function buildAuditSchemas(page, stores) {
+  const auditUrl = `${SITE_URL}/audit/`;
+  const browsers = ['Chrome', 'Firefox', ...page.architect.browsers.map(browser => browser.name)];
+
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      '@id': `${auditUrl}#arg-architect`,
+      name: 'ARG Architect',
+      description: page.architect.text,
+      url: auditUrl,
+      applicationCategory: 'BrowserApplication',
+      operatingSystem: browsers.join(', '),
+      installUrl: stores.chrome,
+      sameAs: [stores.chrome, stores.firefox],
+      publisher: { '@id': ORGANIZATION_ID },
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      '@id': `${auditUrl}#architecture-review`,
+      name: 'Architecture Review',
+      serviceType: 'Software architecture review',
+      description: page.review.text,
+      url: auditUrl,
+      provider: { '@id': ORGANIZATION_ID },
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'EUR',
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          minPrice: Number(page.review.price.amount.replace(/\D/g, '')),
+          priceCurrency: 'EUR',
+          unitText: 'week',
+        },
+      },
+    },
+  ];
+}
+
 export function buildPageSchemas(jsonLd, { includeGlobal = true, page, breadcrumbs } = {}) {
   return [
     ...(includeGlobal ? buildGlobalSchemas() : []),

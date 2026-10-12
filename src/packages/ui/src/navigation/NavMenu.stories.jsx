@@ -12,7 +12,7 @@ function MockLogo() {
 
 const MENU_DATA = {
   primary: [
-    { label: 'Products', to: '/products/', openInPage: true },
+    { label: 'Products', to: '/products/' },
     { label: 'Updates', to: '/updates/' },
     { label: 'Docs', to: '/docs/' },
     { label: 'Contact', to: '/contact/' },

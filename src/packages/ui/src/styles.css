@@ -3392,16 +3392,10 @@
   line-height: 1.14;
 }
 
-.nav-menu__primary-arrow,
 .nav-menu__cta-arrow {
   height: 1.0625rem;
   transform: rotate(-50deg);
   width: 1.0625rem;
-}
-
-.nav-menu__primary-arrow {
-  color: rgba(15, 10, 48, 0.32);
-  opacity: 0;
 }
 
 .nav-menu__utilities {

@@ -29,7 +29,7 @@ export const SERVICES: Service[] = [
   {
     name: 'Technical Consulting',
     description:
-      'Architecture reviews, scalability planning, modernization, and technical strategy for systems where the decisions carry long-term consequences. A one-week architecture review of the part of a system that matters most starts from EUR 3,500 at https://arg.software/audit/.',
+      'Architecture reviews, scalability planning, modernization, and technical strategy for systems where the decisions carry long-term consequences. A one-week architecture review of the part of a system that matters most starts from EUR 3,500 at https://arg.software/audit/. ARG Architect is a separate free browser extension that audits any public web page in one click; it is not the paid review and not the Senior Team Extension service.',
   },
   {
     name: 'MVP + Product Delivery',
@@ -117,6 +117,9 @@ export const CONTACT_OPTIONS = {
   contactPage: 'https://arg.software/contact/',
   projectBrief: 'https://arg.software/contact/#brief',
   architectureReview: 'https://arg.software/audit/',
+  architectureCall: 'https://zcal.co/argsoftware/architecture-call',
+  argArchitectChrome: 'https://chromewebstore.google.com/detail/arg-architect/bijelgdokpgmffnddemjblgdocnbogid',
+  argArchitectFirefox: 'https://addons.mozilla.org/addon/arg-architect/',
   portfolio: 'https://arg.software/files/portfolio.pdf',
   linkedin: 'https://www.linkedin.com/company/arg-software',
   github: 'https://github.com/ARG-Software',

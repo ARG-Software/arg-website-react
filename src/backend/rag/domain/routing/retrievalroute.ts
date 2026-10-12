@@ -58,6 +58,13 @@ const SKILLS_WORD_PATTERN = /\bskills?\b/i;
 const SKILLS_QUESTION_NOISE_PATTERN =
   /\b(?:what|which|who|how|do|does|did|can|could|would|will|are|is|your|our|you|we|the|a|an|any|some|have|has|had|list|show|tell|me|about|please)\b/giu;
 const AGENT_SKILLS_SOURCE_KEY = 'agent-skills';
+const AUDIT_OFFERING_PATTERN =
+  /\b(?:arg architect|architecture (?:review|call)|(?:website|site|web|page|free) audits?)\b/i;
+const AUDIT_WORD_PATTERN = /\b(?:audit(?:s|ing|ed)?|extensions?|add-?ons?)\b/i;
+const NOT_AUDIT_OFFERING_PATTERN =
+  /\b(?:team|staff|contract|deadline)\s+extensions?\b|\b(?:extend(?:ing)?|build(?:ing)?|develop(?:ing)?|create|make)\b/i;
+const ARTICLE_REQUEST_PATTERN = /\b(?:articles?|blog|posts?|written|wrote)\b/i;
+const AUDIT_OFFERING_SOURCE_KEYS = ['arg-architect', 'architecture-review', 'pricing-overview'];
 
 export function resolveRetrievalRoute(
   retrievalQuestion: string,
@@ -69,6 +76,16 @@ export function resolveRetrievalRoute(
   const isGasparHumanLanguageQuestion = GASPAR_HUMAN_LANGUAGE_PATTERN.test(routeText);
   const isPrivacyPolicyQuestion = PRIVACY_POLICY_PATTERN.test(routeText);
   const isTermsPolicyQuestion = TERMS_POLICY_PATTERN.test(routeText);
+
+  if (isAuditOfferingQuestion(retrievalQuestion, routeText, plan.mode)) {
+    return {
+      kind: 'audit_offerings',
+      firstPartySourceTypes: ['working_with_us'],
+      entity: plan.entity,
+      subject: plan.subject,
+      sourceKeys: AUDIT_OFFERING_SOURCE_KEYS,
+    };
+  }
 
   if (isPrivacyPolicyQuestion || isTermsPolicyQuestion) {
     return createLegalPolicyRoute({
@@ -254,6 +271,30 @@ function getLegalPolicySubject(includePrivacy: boolean, includeTerms: boolean): 
 
 function isExternalLinkQuestion(value: string): boolean {
   return EXTERNAL_LINK_PATTERN.test(value) && !GENERAL_PRICING_PATTERN.test(value);
+}
+
+function isAuditOfferingQuestion(
+  retrievalQuestion: string,
+  routeText: string,
+  mode: IRetrievalPlan['mode']
+): boolean {
+  if (
+    mode === 'article_discovery' ||
+    ARTICLE_REQUEST_PATTERN.test(retrievalQuestion) ||
+    isAgentSkillsQuestion(routeText)
+  ) {
+    return false;
+  }
+
+  if (AUDIT_OFFERING_PATTERN.test(routeText)) {
+    return true;
+  }
+
+  return (
+    mode !== 'editorial' &&
+    AUDIT_WORD_PATTERN.test(routeText) &&
+    !NOT_AUDIT_OFFERING_PATTERN.test(routeText)
+  );
 }
 
 function isCompanyEntityName(value: string): boolean {

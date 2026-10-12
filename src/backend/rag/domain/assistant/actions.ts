@@ -12,6 +12,12 @@ const GASPAR_MESSAGE_REQUEST_PATTERN =
 const HIRE_ARG_QUESTION_PATTERN =
   /\b(?:hire|hiring|engage|engaging|work with)\b.{0,40}\b(?:arg|you|you guys|your team|your studio)\b|\b(?:arg|you|you guys|your team|your studio)\b.{0,40}\b(?:for hire|hire|hiring|engage|engaging)\b/i;
 const CAREERS_QUESTION_PATTERN = /\b(?:career|careers|job|jobs|hiring|hire|apply|application|role|position|hr)\b/i;
+const ARCHITECTURE_CALL_QUESTION_PATTERN =
+  /\barchitecture call\b|\b(?:book|schedule|start|order|buy|get)\b.{0,40}\barchitecture review\b/i;
+const ARCHITECTURE_CALL_ACTIONS: IAssistantAction[] = [
+  { type: 'book_architecture_call' },
+  { type: 'gaspar_message' },
+];
 const PROJECT_CONTACT_ACTIONS: IAssistantAction[] = [{ type: 'gaspar_message' }];
 const CONTACT_OPTIONS_ACTIONS: IAssistantAction[] = [
   { type: 'gaspar_message' },
@@ -27,6 +33,10 @@ export function createAssistantActions(
 ): IAssistantAction[] {
   if (GASPAR_MESSAGE_REQUEST_PATTERN.test(question)) {
     return GASPAR_MESSAGE_ACTIONS;
+  }
+
+  if (ARCHITECTURE_CALL_QUESTION_PATTERN.test(question)) {
+    return ARCHITECTURE_CALL_ACTIONS;
   }
 
   if (purpose === 'explicit_contact_request') {

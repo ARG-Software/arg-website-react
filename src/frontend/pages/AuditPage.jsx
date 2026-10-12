@@ -14,8 +14,14 @@ import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA, trackEvent, trackOutbound } from '@services/analytics';
 import { getBrowserStoreLink, getArchitectureBookingLink } from '../services/linksService';
+import { buildAuditSchemas } from '../utils/structuredData';
 import PAGE from '../data/auditPage.json';
 import '../styles/audit.css';
+
+const AUDIT_SCHEMAS = buildAuditSchemas(PAGE, {
+  chrome: getBrowserStoreLink('chrome'),
+  firefox: getBrowserStoreLink('firefox'),
+});
 
 const FORM_FIELDS = [
   {
@@ -99,6 +105,7 @@ export default function AuditPage() {
         description={PAGE.seo.description}
         path="/audit/"
         breadcrumbs={PAGE.hero.breadcrumbs}
+        jsonLd={AUDIT_SCHEMAS}
       />
       <div className="page-wrapper au-page">
         <Navbar position="absolute" isHomePage={true} />

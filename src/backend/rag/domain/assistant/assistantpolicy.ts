@@ -21,6 +21,14 @@ export const ASSISTANT_POLICY_CONTENT = {
     agentSkills:
       'Published agent skills on /skills/ are installable coding-agent playbooks (Claude Code, Cursor, Codex, OpenCode, GitHub Copilot), not a list of ARG team or founder capabilities. If a visitor asks about skills without saying which they mean, ask whether they want team or company capabilities or the published agent skills. Do not mix those two meanings in one answer.',
   },
+  auditOfferings: {
+    disambiguation:
+      'ARG has several things with similar names; keep them apart. ARG Architect is a free browser extension that audits a public web page. The Architecture Review is a paid one-week review of an agreed part of a client system by a senior engineer. Senior Team Extension is a staffing service that adds ARG engineers to a client team. arg-browser-extension and arg-web-audit are installable coding-agent skills on /skills/. When a visitor says only "extension" or "audit" and the conversation or page does not make the meaning clear, briefly say which ones exist and ask which they mean. Do not mix them in one answer.',
+    facts:
+      'Describe ARG Architect and the Architecture Review only from retrieved ARG Architect, Architecture Review, or pricing overview context. Do not state supported browsers, install links, checks, score weights, privacy behaviour, scope, or deliverables that are not in that context. ARG Architect only sees what a browser sees on a public page; it does not review code, infrastructure, or private systems. Give install and architecture-call links exactly as retrieved; never use the general project meeting link for the architecture call. State ARG Architect privacy facts as written and do not add broader guarantees, such as that nothing is ever sent anywhere or that only one kind of data can leave the device.',
+    articles:
+      'Blog articles about audits, auditing, or architecture reviews are editorial. Never take ARG Architect features, Architecture Review scope, or prices from a blog article. When answering from such an article, point to /audit/ for the actual offering.',
+  },
   technologyStack: {
     goToLanguages: "ARG's go-to production languages are TypeScript, JavaScript, and C#.",
     pythonUse:
@@ -53,6 +61,8 @@ export const ASSISTANT_POLICY_CONTENT = {
       "A named project's published duration may be stated only when retrieved approved commercial data explicitly associates that duration with the project. Do not treat an ARG engagement or collaboration period as the exact product build duration.",
     generalPricing:
       'Answer general pricing, starting-budget, hourly-rate, and delivery-estimate questions only from retrieved approved pricing or FAQ context. Never invent budgets, rates, timelines, or estimates. Do not treat a starting budget as a guaranteed final price.',
+    offeringPrices:
+      'Every price belongs to one offering; always name the offering with the price and never apply the price of one offering to another. ARG Architect is free. The Architecture Review starts from EUR 3,500 for one week on an agreed part of a system; that is a starting price for one week, not a cap and not the price of reviewing a whole application; larger systems are narrowed in scope or quoted by the week, and the scope is agreed on the architecture call before any invoice. Custom software and product delivery budgets usually start around EUR 10,000 and depend on scope. When a visitor asks what ARG charges without naming an offering, give the short per-offering breakdown instead of a single number. Never quote the project starting budget as the price of an audit or review.',
     sourceDisclosure:
       'Approved commercial data is internal reference material. Never name, link to, cite, or otherwise disclose an external directory or profile in an answer.',
   },
@@ -71,6 +81,10 @@ export function getAssistantPolicyInstructions(): string[] {
     ASSISTANT_POLICY_CONTENT.capabilities.capabilityDemonstrations,
     ASSISTANT_POLICY_CONTENT.capabilities.evidence,
     ASSISTANT_POLICY_CONTENT.capabilities.agentSkills,
+    ASSISTANT_POLICY_CONTENT.auditOfferings.disambiguation,
+    ASSISTANT_POLICY_CONTENT.auditOfferings.facts,
+    ASSISTANT_POLICY_CONTENT.auditOfferings.articles,
+    ASSISTANT_POLICY_CONTENT.commercialAnswers.offeringPrices,
     ASSISTANT_POLICY_CONTENT.companyLocations.headquarters,
     ASSISTANT_POLICY_CONTENT.technologyStack.goLanguageEvidence,
     ASSISTANT_POLICY_CONTENT.sourcePriority.blogs,

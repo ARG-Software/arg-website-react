@@ -12,6 +12,7 @@ import type { IRetrievalStrategy, IRetrievalStrategyInput } from '../retrievalst
 
 const DESIGNRUSH_SOURCE_KEY = 'designrush';
 const FAQ_SOURCE_KEY = 'faq';
+const PRICING_OVERVIEW_SOURCE_KEY = 'pricing-overview';
 const TRUSTED_EXTERNAL_SOURCE_TYPES: RagSourceType[] = ['external_page'];
 
 export class CommercialDeliveryRetrievalStrategy implements IRetrievalStrategy {
@@ -37,8 +38,19 @@ export class CommercialDeliveryRetrievalStrategy implements IRetrievalStrategy {
         return this.findFaqContexts(['Most focused MVPs', '8 to 14 weeks']);
       case 'general_pricing':
       default:
-        return this.findFaqContexts(['Project budgets usually start', 'EUR 10,000']);
+        return [
+          ...(await this.findPricingOverviewContexts()),
+          ...(await this.findFaqContexts(['Project budgets usually start', 'EUR 10,000'])),
+        ];
     }
+  }
+
+  private async findPricingOverviewContexts(): Promise<IRetrievedContext[]> {
+    const source = await this.findFirstPartySourceByKey(PRICING_OVERVIEW_SOURCE_KEY, ['working_with_us']);
+    if (!source) return [];
+
+    const chunks = await this.chunkRepository.findFirstBySourceIds([source.id]);
+    return createContextsFromFirstChunks([source], chunks, this.config.siteUrl);
   }
 
   private async findCommercialFactContexts(route: IRetrievalRoute): Promise<IRetrievedContext[]> {

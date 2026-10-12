@@ -1,3 +1,9 @@
+import fs from 'node:fs';
+import { buildAuditSchemas } from '../../src/frontend/utils/structuredData.js';
+
+const readData = name =>
+  JSON.parse(fs.readFileSync(new URL(`../../src/frontend/data/${name}`, import.meta.url), 'utf8'));
+
 export const SITE_URL = 'https://arg.software';
 
 export const NAV_LINKS = [
@@ -121,10 +127,11 @@ export const STATIC_PAGES = [
   },
   {
     path: '/audit/',
-    title: 'Architecture Review | ARG Software',
-    socialTitle: 'Architecture Review',
+    title: 'Free Website Audit & Architecture Review | ARG Software',
+    socialTitle: 'Free Website Audit & Architecture Review',
     h1: "Know what's holding your product back.",
     pageType: 'WebPage',
+    jsonLd: buildAuditSchemas(readData('auditPage.json'), readData('siteLinks.json').stores),
     breadcrumbs: [
       { name: 'Home', path: '/' },
       { name: 'Audit', path: '/audit/' },
@@ -134,7 +141,7 @@ export const STATIC_PAGES = [
     description:
       'Run a free website audit from your browser with ARG Architect. When you need to go deeper, a one-week architecture review of the part of your system that matters most starts from €3,500.',
     paragraphs: [
-      'ARG Architect is a free browser extension from ARG Software. Open any public page, press audit, and get one weighted score across eight categories: security, performance, architecture, efficiency, payload, accessibility, AI readiness and DOM. Every failing check names exactly what fails and recommends a fix. Audit the current tab or queue up to 10 URLs, compare any two runs side by side, and export any report as PDF, Markdown, or JSON. It is available on the Chrome Web Store and Firefox Add-ons. No account, no analytics, no tracking.',
+      'ARG Architect is a free browser extension from ARG Software. Open any public page, press audit, and get one weighted score across eight categories: security, performance, architecture, efficiency, payload, accessibility, AI readiness and DOM. Every failing check names exactly what fails and recommends a fix. Audit the current tab or queue up to 10 URLs, compare any two runs side by side, and export any report as PDF, Markdown, or JSON. It is available on the Chrome Web Store and Firefox Add-ons; Brave, Edge and Opera install it from the Chrome Web Store. No account, no analytics, no tracking. It only sees what a browser can see; it does not review the system behind the page.',
       'A browser can only read what a site exposes publicly. The architecture review goes deeper: one week of a senior engineer on the part of the system that matters most, covering system design, code quality, scalability, integrations, infrastructure and security inside an agreed scope, with a written call on what to keep, fix, or rebuild.',
       'The review starts from EUR 3,500 for one week, remote, in EU timezone. It is not a review of the whole application. The scope is agreed on the architecture call before any invoice; what usually fits in a week is one product, one critical journey, up to two repos, one environment. For a bigger system the week does not grow; the path becomes Slice, Map, or a multi-week review quoted by the week.',
       'Not included: anything outside the agreed scope, a pentest, a full-platform certification, an AI-citation study, or a ticket-level rewrite plan.',

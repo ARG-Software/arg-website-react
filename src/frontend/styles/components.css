@@ -2388,25 +2388,11 @@
     color 0.18s ease;
 }
 
-.nav-menu__primary-arrow {
-  width: 1.0625rem;
-  height: 1.0625rem;
-  color: rgba(15, 10, 48, 0.32);
-  transform: rotate(-50deg);
-  opacity: 0;
-  transition: opacity 0.18s ease;
-}
-
 .nav-menu__primary-link:hover .nav-menu__primary-name {
   background: linear-gradient(90deg, #ff3855 0%, #c91e8e 60%, #9c27b0 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-}
-
-.nav-menu__primary-link:hover .nav-menu__primary-arrow {
-  opacity: 1;
-  color: #9c27b0;
 }
 
 /* ---------------------------------------------------------------- utilities */
@@ -2701,10 +2687,6 @@
   .nav-menu__primary-name {
     font-size: clamp(2.25rem, 7vw, 2.75rem);
     letter-spacing: -0.03em;
-  }
-
-  .nav-menu__primary-arrow {
-    opacity: 0.5;
   }
 
   .nav-menu__utilities {

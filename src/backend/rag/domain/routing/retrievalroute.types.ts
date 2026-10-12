@@ -1,6 +1,7 @@
 import type { RagSourceType } from '../sources/ragsource.types.js';
 
 export type RetrievalRouteKind =
+  | 'audit_offerings'
   | 'blog'
   | 'careers'
   | 'commercial_delivery'

@@ -25,6 +25,7 @@ export function writeStaticPages({ distDir, baseHtml, blogPostLinks, generated }
       type: 'website',
       pageType: page.pageType,
       breadcrumbs: page.breadcrumbs,
+      jsonLd: page.jsonLd,
     });
     const extraLinks =
       page.path === '/blog/' ? blogPostLinks : page.path === '/skills/' ? getSkillLinks() : [];

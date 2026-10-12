@@ -10,6 +10,7 @@ import {
 } from './loadjsonmanifestsources.js';
 import { loadProjectSources } from './loadprojectsources.js';
 import { loadPartnerSources } from './loadpartnersources.js';
+import { loadAuditSources } from './loadauditsources.js';
 import { loadTeamProfileSources } from './loadteamprofilesources.js';
 import { loadBlogSources } from './loadblogsources.js';
 import { loadLocalDocumentSource } from './loadlocaldocumentsources.js';
@@ -48,6 +49,8 @@ async function loadManifestEntry(
       return loadProjectSources(rootDir, entry.filePath);
     case 'partners_json':
       return loadPartnerSources(rootDir, entry.filePath);
+    case 'audit_json':
+      return loadAuditSources(rootDir, entry.filePath);
     case 'markdown_dir':
       return loadBlogSources(rootDir, entry.filePath, selection);
     case 'local_document':

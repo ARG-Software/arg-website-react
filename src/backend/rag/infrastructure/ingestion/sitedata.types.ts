@@ -69,6 +69,11 @@ export interface ICareersJson {
 export interface ISiteLinksJson {
   calendar?: {
     project?: string;
+    architecture?: string;
+  };
+  stores?: {
+    chrome?: string;
+    firefox?: string;
   };
   forms?: {
     projectBrief?: string;
@@ -87,5 +92,55 @@ export interface ISiteLinksJson {
   };
   assets?: {
     portfolio?: string;
+  };
+}
+
+export interface IFaqJson {
+  items: Array<{ id: string; answer: Array<{ text?: string }> }>;
+}
+
+interface IAuditTitledText {
+  title: string;
+  text: string;
+}
+
+export interface IAuditPageJson {
+  architect: {
+    title: string;
+    text: string;
+    features: Array<IAuditTitledText & { metrics: string[] }>;
+    browsers: Array<{ name: string }>;
+    privacy: string;
+    checks: { title: string; items: IAuditTitledText[] };
+    private: { title: string; items: Array<{ label: string; text: string }> };
+  };
+  bridge: {
+    text: string;
+    layers: Array<{ name: string; tag: string; who: string; items: string[] }>;
+  };
+  review: {
+    title: string;
+    text: string;
+    lists: Array<{ title: string; items: string[] }>;
+    notIncludedLabel: string;
+    notIncluded: string;
+    price: {
+      from: string;
+      amount: string;
+      meta: string;
+      scopeTitle: string;
+      scope: Array<{ label: string; value: string }>;
+      scopeNote: string;
+      cta: string;
+    };
+    sizes: {
+      text: string;
+      items: Array<IAuditTitledText & { name: string; price: string }>;
+    };
+  };
+  start: {
+    title: string;
+    steps: IAuditTitledText[];
+    proof: string;
   };
 }

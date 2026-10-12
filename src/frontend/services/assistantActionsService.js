@@ -1,5 +1,6 @@
 import assistantContent from '@data/assistant.json';
 import {
+  getArchitectureBookingLink,
   getMailtoLink,
   getProjectBookingLink,
   getProjectBriefFormLink,
@@ -7,6 +8,7 @@ import {
 
 const ASSISTANT_ACTION_HREFS = {
   book_meeting: () => getProjectBookingLink(),
+  book_architecture_call: () => getArchitectureBookingLink(),
   contact_form: () => getProjectBriefFormLink(),
   email_hr: () => getMailtoLink('hr', 'Career enquiry'),
 };

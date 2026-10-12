@@ -78,7 +78,6 @@ export function NavMenu({
                 children: (
                   <>
                     <span className="nav-menu__primary-name">{item.label}</span>
-                    {item.openInPage && <ArrowIcon className="nav-menu__primary-arrow" />}
                   </>
                 ),
               })

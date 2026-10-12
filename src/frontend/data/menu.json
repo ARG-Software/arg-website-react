@@ -8,28 +8,23 @@
   "primary": [
     {
       "label": "Blog",
-      "to": "/blog/",
-      "openInPage": true
+      "to": "/blog/"
     },
     {
       "label": "Founders",
-      "to": "/about-us/#founders",
-      "openInPage": true
+      "to": "/about-us/#founders"
     },
     {
       "label": "Partners",
-      "to": "/partners/",
-      "openInPage": true
+      "to": "/partners/"
     },
     {
       "label": "Services",
-      "to": "/#services",
-      "openInPage": false
+      "to": "/#services"
     },
     {
       "label": "Use Cases",
-      "to": "/#cases",
-      "openInPage": false
+      "to": "/#cases"
     }
   ],
   "selectedWork": {

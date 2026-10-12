@@ -52,6 +52,10 @@
       "label": "Book a meeting",
       "external": true
     },
+    "book_architecture_call": {
+      "label": "Book an architecture call",
+      "external": true
+    },
     "gaspar_message": {
       "label": "Want me to contact the team?",
       "external": false
