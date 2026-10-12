@@ -1,0 +1,413 @@
+{
+  "seo": {
+    "title": "Architecture Review",
+    "description": "Run a free website audit from your browser with ARG Architect. When you need to go deeper, a one-week architecture review of the part of your system that matters most starts from €3,500."
+  },
+  "hero": {
+    "title": ["Know what's", "holding your product back."],
+    "subtitle": "Run a free audit from your browser in one click. When you need to go deeper, we review the system behind it.",
+    "breadcrumbs": [
+      {
+        "label": "Home",
+        "path": "/"
+      },
+      {
+        "label": "Audit",
+        "path": "/audit/"
+      }
+    ],
+    "sideItems": [
+      {
+        "label": "Start free",
+        "href": "#architect"
+      },
+      {
+        "label": "Go deeper with us",
+        "href": "#review"
+      },
+      {
+        "label": "Start a review",
+        "href": "#start"
+      }
+    ]
+  },
+  "architect": {
+    "step": "Start free",
+    "title": "A full website audit in one click.",
+    "text": "A free browser extension. Open any public page, press audit, and get one weighted score across eight categories, with every failing check explained.",
+    "features": [
+      {
+        "id": "security",
+        "title": "Security",
+        "text": "Shows how well the page protects its visitors from the attacks a browser can actually observe: injected scripts, clickjacking, downgraded connections and leaked data. It checks the security headers the server sends, how cookies and tokens are handled, and whether API calls or client libraries expose known weaknesses. Findings are grouped by the attack each defence is meant to stop, so you can see what is unprotected and why it matters.",
+        "metrics": [
+          "Content Security Policy",
+          "HSTS",
+          "Frame protection",
+          "X-Content-Type-Options",
+          "CORS policy",
+          "Cross-Origin Opener Policy",
+          "Mixed content",
+          "API request security",
+          "Token expiry",
+          "Sensitive data exposure",
+          "Referrer and permissions policy",
+          "Cookie security",
+          "Client library vulnerabilities"
+        ],
+        "image": "/images/audit/screens/report-security.png",
+        "alt": "ARG Architect security report",
+        "caption": "Security"
+      },
+      {
+        "id": "performance",
+        "title": "Performance",
+        "text": "Shows how fast the page feels to a real visitor, from the first byte the server returns to the moment the page is usable. It measures server response, page readiness and the Core Web Vitals, taking the median of several controlled reloads in a dedicated window so one slow run does not skew the result. It also points to what is holding the page back, such as render-blocking scripts, blocking stylesheets, redirect hops and missing caching.",
+        "metrics": [
+          "TTFB",
+          "DOMContentLoaded",
+          "Largest Contentful Paint",
+          "Cumulative Layout Shift",
+          "First Contentful Paint",
+          "Total Blocking Time",
+          "Cacheability",
+          "Render-blocking scripts",
+          "Blocking stylesheets",
+          "Redirect hops"
+        ],
+        "image": "/images/audit/screens/report-performance.png",
+        "alt": "ARG Architect performance report",
+        "caption": "Performance"
+      },
+      {
+        "id": "architecture",
+        "title": "Architecture",
+        "text": "Shows what the page depends on to work and how those pieces are connected, as far as a browser can see. It maps the third-party services, API origins and redirect chains behind the page and flags where they add risk or weight to the critical path. The technology stack is reported as a neutral profile for context and is never scored.",
+        "metrics": [
+          "Third-party dependency pressure",
+          "Third-party critical CSS",
+          "Runtime API origins",
+          "Dependency redirect hops",
+          "Consent behaviour (report-only)",
+          "Technology profile"
+        ],
+        "image": "/images/audit/screens/report-overview.png",
+        "alt": "ARG Architect overview report",
+        "caption": "Overview"
+      },
+      {
+        "id": "efficiency",
+        "title": "Efficiency",
+        "text": "Shows how much of the page's network work is wasted. It counts the requests the page makes, finds the ones that are repeated, and estimates the bandwidth and time those duplicates cost. It also reports which HTTP versions are in use, since older ones make every request more expensive.",
+        "metrics": [
+          "Duplicate requests",
+          "Wasted bandwidth",
+          "Wasted time",
+          "HTTP version mix",
+          "Request count",
+          "Early connection setup (report-only)"
+        ],
+        "image": "/images/audit/screens/report-overview.png",
+        "alt": "ARG Architect overview report",
+        "caption": "Overview"
+      },
+      {
+        "id": "payload",
+        "title": "Payload",
+        "text": "Shows what the page actually downloads during the audit and where the weight sits. Transfer size is broken down by type, covering JavaScript, images, fonts, CSS and API responses, so the heaviest part is obvious. It also checks whether assets are compressed and whether images are sized and encoded sensibly for how they are displayed.",
+        "metrics": [
+          "Transfer size",
+          "Compression",
+          "JavaScript",
+          "Images",
+          "Image sizing",
+          "Image formats",
+          "API responses",
+          "Fonts",
+          "CSS"
+        ],
+        "image": "/images/audit/screens/report-overview.png",
+        "alt": "ARG Architect overview report",
+        "caption": "Overview"
+      },
+      {
+        "id": "accessibility",
+        "title": "Accessibility",
+        "text": "Shows whether the page's structure lets a screen reader make sense of it and move around it. It checks the building blocks assistive technology relies on: alt text, form labels, accessible names, headings, landmarks, document language and iframe titles. It is a structural audit and does not replace keyboard, contrast or assistive-technology testing.",
+        "metrics": [
+          "Image alt text",
+          "Form labels",
+          "Accessible names",
+          "Page heading",
+          "Heading hierarchy",
+          "Landmarks",
+          "Document language",
+          "Mobile viewport",
+          "Tabindex",
+          "Duplicate IDs",
+          "Iframe titles"
+        ],
+        "image": "/images/audit/screens/report-overview.png",
+        "alt": "ARG Architect overview report",
+        "caption": "Overview"
+      },
+      {
+        "id": "ai",
+        "title": "AI Readiness",
+        "text": "Shows whether AI systems can find, read and cite the page. It checks if AI crawlers are allowed in, whether the site publishes instructions and discovery files for agents such as llms.txt, and whether the content is structured clearly enough to be extracted and quoted accurately. The aim is to see how the page is likely to be represented when someone asks an assistant about it.",
+        "metrics": [
+          "AI discoverability",
+          "Bot access control",
+          "Agent instructions (llms.txt)",
+          "API, auth and MCP discovery",
+          "Structured knowledge",
+          "Content extractability",
+          "Citation readiness"
+        ],
+        "image": "/images/audit/screens/report-ai-readiness.png",
+        "alt": "ARG Architect ai readiness report",
+        "caption": "AI readiness"
+      },
+      {
+        "id": "dom",
+        "title": "DOM",
+        "text": "Shows how heavy the rendered page is for the browser to build and keep responsive. It measures the number and depth of DOM nodes, the count of external scripts, and the use of inline styles and inline event handlers. Size and depth are judged against the main-thread blocking actually measured, so a large page is only flagged when it costs responsiveness.",
+        "metrics": [
+          "DOM nodes",
+          "External scripts",
+          "Max DOM depth",
+          "Authored inline styles",
+          "Inline event handlers"
+        ],
+        "image": "/images/audit/screens/report-overview.png",
+        "alt": "ARG Architect overview report",
+        "caption": "Overview"
+      }
+    ],
+    "captionSuffix": "arg.software",
+    "stores": [
+      {
+        "id": "chrome",
+        "label": "Add to Chrome",
+        "icon": "/images/audit/browsers/chrome.svg"
+      },
+      {
+        "id": "firefox",
+        "label": "Add to Firefox",
+        "icon": "/images/audit/browsers/firefox.svg"
+      }
+    ],
+    "browsersLabel": "Also works on",
+    "browsers": [
+      {
+        "name": "Brave",
+        "icon": "/images/audit/browsers/brave.svg"
+      },
+      {
+        "name": "Edge",
+        "icon": "/images/audit/browsers/edge.svg"
+      },
+      {
+        "name": "Opera",
+        "icon": "/images/audit/browsers/opera.svg"
+      }
+    ],
+    "browsersNote": "(Available through Chrome Store)",
+    "privacy": "Free · No account, no analytics, no tracking",
+    "checks": {
+      "title": "What you can do with it",
+      "items": [
+        {
+          "title": "Findings you can act on",
+          "text": "Every failing check explains the problem, names exactly what fails (the header, the file, the element, the library and its advisories), and recommends a fix. Copy any finding as a ticket draft for your issue tracker."
+        },
+        {
+          "title": "Export the report",
+          "text": "Download any audit report as PDF, Markdown, or JSON, ready to attach to a ticket, share with your team, or feed into your own tooling."
+        },
+        {
+          "title": "Compare runs, track progress",
+          "text": "Saved reports are grouped by day. Compare any two runs side by side, every score, check and measurement, and export the comparison too."
+        },
+        {
+          "title": "Audit one tab or queue ten URLs",
+          "text": "Audits run in their own window, so your browsing is never touched, and you get a notification when the queue finishes. Cookie banners are answered with reject or essential-only, never accept."
+        }
+      ]
+    },
+    "private": {
+      "title": "Private by design",
+      "items": [
+        {
+          "label": "No tracking",
+          "text": "No account, no analytics, no tracking."
+        },
+        {
+          "label": "Runs locally",
+          "text": "The language model and the vulnerability database ship inside the extension."
+        },
+        {
+          "label": "Only when asked",
+          "text": "Nothing runs on the pages you browse normally; the page collectors run only on the site being audited, only during the audit."
+        },
+        {
+          "label": "Off by default",
+          "text": "Optional lookups that send a hostname to a DNS service (CDN detection, AI discovery) are off by default."
+        }
+      ]
+    }
+  },
+  "bridge": {
+    "title": "The app sees the outside.",
+    "titleHighlight": "We see the inside.",
+    "text": "A browser can only read what your site exposes publicly. The causes of most problems live in the code, the infrastructure and the integrations.",
+    "divider": "Public surface · A browser stops here",
+    "layers": [
+      {
+        "kicker": "Outside",
+        "name": "ARG Architect",
+        "tag": "Free",
+        "who": "What any visitor's browser sees",
+        "items": [
+          "Security headers and attack exposure",
+          "Performance and payload",
+          "Architecture and third parties",
+          "Accessibility and DOM",
+          "AI readiness signals"
+        ]
+      },
+      {
+        "kicker": "Inside",
+        "name": "Architecture review",
+        "tag": "One week · from €3,500",
+        "who": "What only access to the system shows",
+        "items": [
+          "System design and code quality",
+          "Scalability and infrastructure",
+          "Integrations and vendor coupling",
+          "A 90-day plan: do now, do later, ignore"
+        ]
+      }
+    ]
+  },
+  "review": {
+    "step": "Go deeper with us",
+    "title": "Architecture review. One week on the part of your system that matters most.",
+    "text": "€3,500 buys one week of a senior engineer, not a review of the whole application. On the architecture call we agree a scope that fits in that week, usually one slice of the product such as checkout or onboarding, and write it down before you pay. If the slice you have in mind is too big for a week, we say so and either narrow it or quote more weeks.",
+    "lists": [
+      {
+        "title": "What we look at, inside the agreed scope",
+        "items": [
+          "System design: how the parts fit together and where the boundaries are",
+          "Code quality: structure, tests and maintainability",
+          "Scalability: where it breaks under load or data growth",
+          "Integrations: the internal and third-party APIs it depends on, and how tied you are to them",
+          "Infrastructure and operations: how it is deployed, monitored and recovered",
+          "Security: auth, tenant boundaries and data writes"
+        ]
+      },
+      {
+        "title": "What you get",
+        "items": [
+          "A written report you can forward",
+          "A map of what was reviewed: stack, data flows and integrations",
+          "Risks ranked by impact",
+          "A 90-day plan: do now, do later, ignore",
+          "A list of what was left out of scope, so nothing is assumed reviewed",
+          "A 60-minute readout with the engineer who wrote it",
+          "Edge findings from ARG Architect, included"
+        ]
+      }
+    ],
+    "notIncludedLabel": "Not included:",
+    "notIncluded": "anything outside the agreed scope, a pentest, a full-platform certification, an AI-citation study, a ticket-level rewrite plan.",
+    "price": {
+      "kicker": "Architecture review · one week",
+      "from": "from",
+      "amount": "€3,500",
+      "meta": "1 week · remote · EU timezone",
+      "scopeTitle": "What usually fits in a week",
+      "scope": [
+        {
+          "label": "Product",
+          "value": "One"
+        },
+        {
+          "label": "Journey",
+          "value": "One critical"
+        },
+        {
+          "label": "Repos",
+          "value": "Up to two"
+        },
+        {
+          "label": "Environment",
+          "value": "One"
+        }
+      ],
+      "scopeNote": "Final scope is agreed on the architecture call, before any invoice.",
+      "cta": "Book an architecture call",
+      "ctaHover": "Let's talk"
+    },
+    "sizes": {
+      "title": "Bigger system? Pick a path.",
+      "text": "The week does not grow. We narrow the scope or quote more weeks, and agree which on the call.",
+      "items": [
+        {
+          "name": "Slice",
+          "title": "One part, in depth",
+          "text": "As much of one journey as fits in a week. The rest is named as unreviewed.",
+          "price": "1 week · from €3,500"
+        },
+        {
+          "name": "Map",
+          "title": "Whole system, high level",
+          "text": "No code-depth review. A system map and a recommended order of slices.",
+          "price": "1 week · from €3,500"
+        },
+        {
+          "name": "Multi-week",
+          "title": "Large or several slices",
+          "text": "Quoted by the week after the architecture call.",
+          "price": "Separate quote"
+        }
+      ]
+    }
+  },
+  "start": {
+    "kicker": "Start a review",
+    "title": "Send the system. Then an architecture call.",
+    "steps": [
+      {
+        "title": "Send context",
+        "text": "A few lines on the product and the part that worries you."
+      },
+      {
+        "title": "Architecture call",
+        "text": "A call with a senior engineer. We agree what fits in a week. If it is not a fit, we say so."
+      },
+      {
+        "title": "Kickoff",
+        "text": "If it is, invoice and a kickoff date."
+      }
+    ],
+    "form": {
+      "title": "Architecture review fit",
+      "description": "Read by a senior engineer. No sales handoff.",
+      "submitLabel": "Send context",
+      "submitHoverLabel": "See you soon",
+      "helperText": "We use this to decide whether an architecture call is worth both sides' time.",
+      "successMessage": "Received. Book the architecture call if you have not already.",
+      "subject": "Architecture review fit"
+    },
+    "proof": "Senior-led delivery on production systems across countries, including payments-scale work above 2,000 transactions per second."
+  },
+  "cta": {
+    "title": "Book the",
+    "titleHighlight": "architecture call",
+    "buttonTextNotHover": "Book an architecture call",
+    "buttonTextHover": "Let's talk",
+    "secondButtonTextNotHover": "Free website audit",
+    "secondButtonTextHover": "ARG Architect"
+  }
+}

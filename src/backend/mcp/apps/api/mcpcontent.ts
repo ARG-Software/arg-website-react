@@ -29,7 +29,7 @@ export const SERVICES: Service[] = [
   {
     name: 'Technical Consulting',
     description:
-      'Architecture reviews, scalability planning, modernization, and technical strategy for systems where the decisions carry long-term consequences.',
+      'Architecture reviews, scalability planning, modernization, and technical strategy for systems where the decisions carry long-term consequences. A one-week architecture review of the part of a system that matters most starts from EUR 3,500 at https://arg.software/audit/.',
   },
   {
     name: 'MVP + Product Delivery',
@@ -116,6 +116,7 @@ export const CONTACT_OPTIONS = {
   email: 'hello@arg.software',
   contactPage: 'https://arg.software/contact/',
   projectBrief: 'https://arg.software/contact/#brief',
+  architectureReview: 'https://arg.software/audit/',
   portfolio: 'https://arg.software/files/portfolio.pdf',
   linkedin: 'https://www.linkedin.com/company/arg-software',
   github: 'https://github.com/ARG-Software',

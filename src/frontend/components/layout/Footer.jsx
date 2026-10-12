@@ -3,6 +3,7 @@ import { trackEvent, trackSocial } from '@services/analytics';
 import { MarkNameWhite } from '../icons/MarkNameWhite';
 import AppLink from '../navigation/AppLink';
 import SITE from '../../data/site.json';
+import MENU from '../../data/menu.json';
 import {
   EMAIL_KEYS,
   getAiResearchLink,
@@ -11,16 +12,11 @@ import {
   getMailtoLink,
 } from '../../services/linksService';
 
-const NAV_LINKS = [
-  { label: 'Blog', path: '/blog/' },
-  { label: 'Careers', path: '/careers/' },
-  { label: 'AI Skills', path: '/skills/' },
-  { label: 'About Us', path: '/about-us/' },
-  { label: 'Working with Us', path: '/working-with-us/' },
-  { label: 'Contact', path: '/contact/' },
-  { label: 'Partners', path: '/partners/' },
-  { label: 'Use Cases', path: '/#cases' },
-];
+// Same grouping as the nav menu: big links first, then its columns
+const NAV_COLUMNS = [{ label: 'Navigate', items: MENU.primary }, ...MENU.groups].map(group => ({
+  title: group.label,
+  items: group.items.map(item => ({ label: item.label, path: item.to })),
+}));
 
 export function Footer({ animate = true, animationPreset = 'fade-up', animationStagger = 80 }) {
   const socialLinks = getCompanySocialLinks();
@@ -52,25 +48,26 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
 
 function buildFooterColumns(socialLinks, contactEmail) {
   return [
-    {
-      title: 'Navigate',
-      items: NAV_LINKS,
-    },
+    ...NAV_COLUMNS,
     {
       title: 'Services',
       items: SITE.footer.services.map(item => ({ label: item })),
     },
     {
-      title: 'Socials',
-      items: socialLinks.map(link => ({ ...link, className: 'footer-socials__link' })),
-    },
-    {
-      title: 'Contact',
-      items: [
-        { label: 'Porto and Funchal, Portugal' },
+      sections: [
         {
-          key: 'info-email',
-          html: <a href={getMailtoLink(EMAIL_KEYS.INFO)}>{contactEmail}</a>,
+          title: 'Socials',
+          items: socialLinks.map(link => ({ ...link, className: 'footer-socials__link' })),
+        },
+        {
+          title: 'Contact',
+          items: [
+            { label: 'Porto and Funchal, Portugal' },
+            {
+              key: 'info-email',
+              html: <a href={getMailtoLink(EMAIL_KEYS.INFO)}>{contactEmail}</a>,
+            },
+          ],
         },
       ],
     },

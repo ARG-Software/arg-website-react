@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import seoPrerender from './plugins/seo-prerender/index.js';
 import { localApiDev } from './plugins/local-api-dev/index.js';
+import { blogMetadata } from './plugins/blog-metadata/index.js';
 
 
 export default defineConfig(({ mode }) => {
@@ -26,6 +27,7 @@ export default defineConfig(({ mode }) => {
     },
   },
   plugins: [
+    blogMetadata(),
     react(),
     ViteImageOptimizer({
       png: { quality: 100 },

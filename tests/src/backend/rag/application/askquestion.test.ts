@@ -1117,6 +1117,7 @@ test('static page context retrieves page-specific sources', async () => {
     source('team-id', 'ARG Team', null, 'about', 'arg-team'),
     source('links-id', 'ARG Links and Contact Options', null, 'homepage', 'site-links'),
     source('partners-id', 'Partners Page', null, 'partner', 'partners-page'),
+    source('audit-id', 'Architecture Review', null, 'working_with_us', 'architecture-review'),
   ];
   const supabase = createSupabase({
     sources,
@@ -1128,6 +1129,7 @@ test('static page context retrieves page-specific sources', async () => {
       chunk('team-id', 'team', 'ARG Team: José Antunes and Rui Rocha.'),
       chunk('links-id', 'links', 'ARG Links and Contact Options: hello email, meeting, and project brief.'),
       chunk('partners-id', 'partners', 'Partners Page: client and partner relationships.'),
+      chunk('audit-id', 'audit', 'Architecture Review: one-week spine review from EUR 3,500.'),
     ],
   });
   const embeddingProvider = createEmbeddingProvider(() => {
@@ -1164,6 +1166,12 @@ test('static page context retrieves page-specific sources', async () => {
       title: 'Partners',
       question: 'What is shown on this page?',
       expected: ['partners-page'],
+    },
+    {
+      path: '/audit/',
+      title: 'Architecture Review',
+      question: 'What does this page say about the architecture review?',
+      expected: ['architecture-review'],
     },
   ];
 

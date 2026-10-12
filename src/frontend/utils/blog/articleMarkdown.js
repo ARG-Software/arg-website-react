@@ -1,6 +1,3 @@
-import { sortBlogPostsNewestFirst } from './articleSorting.js';
-import { parseBlocks } from './articleContent.js';
-
 export { parseBlocks } from './articleContent.js';
 
 const FRONTMATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---/;
@@ -67,68 +64,7 @@ export function extractMetadata(meta, body) {
   };
 }
 
-export function parseBlogPostMarkdown(raw) {
-  const { meta } = parseFrontmatter(raw);
-  const tags = parseTags(meta);
-  return {
-    slug: meta.slug || '',
-    tag: meta.tag || tags[0] || '',
-    tags,
-    title: meta.title || '',
-    subtitle: meta.subtitle || '',
-    intro: meta.intro || '',
-    date: meta.date || '',
-    readTime: meta.readTime || '',
-    mediumUrl: meta.mediumUrl || '',
-    collection: meta.collection || '',
-    collectionTitle: meta.collectionTitle || '',
-    collectionPart: meta.collectionPart || '',
-    author: meta.author || '',
-    authorUrl: meta.authorUrl || '',
-    authorType: meta.authorType || '',
-    authorSameAs: meta.authorSameAs || '',
-    dateModified: meta.dateModified || meta.updated || '',
-    reviewedOn: meta.reviewedOn || '',
-  };
-}
-
 export function parseBlogPostMetadata(raw) {
   const { meta, body } = parseFrontmatter(raw);
   return extractMetadata(meta, body);
-}
-
-export function parseBlogPostWithContent(raw) {
-  const { meta, body } = parseFrontmatter(raw);
-  const metadata = extractMetadata(meta, body);
-  return {
-    ...metadata,
-    content: parseBlocks(body),
-  };
-}
-
-const mdModules = import.meta.glob('../../blog/*.md', {
-  eager: true,
-  query: '?raw',
-  import: 'default',
-});
-
-export function loadBlogPosts() {
-  return Object.values(mdModules)
-    .map(raw => parseBlogPostMarkdown(raw))
-    .filter(article => article.slug)
-    .sort(sortBlogPostsNewestFirst);
-}
-
-export function loadBlogPostsMetadata() {
-  return Object.values(mdModules)
-    .map(raw => parseBlogPostMetadata(raw))
-    .filter(article => article.slug)
-    .sort(sortBlogPostsNewestFirst);
-}
-
-export function loadBlogPostsWithContent() {
-  return Object.values(mdModules)
-    .map(raw => parseBlogPostWithContent(raw))
-    .filter(article => article.slug)
-    .sort(sortBlogPostsNewestFirst);
 }

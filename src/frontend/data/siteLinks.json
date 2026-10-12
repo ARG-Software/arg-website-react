@@ -1,6 +1,7 @@
 {
   "calendar": {
-    "project": "https://zcal.co/argsoftware/project"
+    "project": "https://zcal.co/argsoftware/project",
+    "architecture": "https://zcal.co/argsoftware/architecture-call"
   },
   "newsletter": {
     "subscribe": "https://magic.beehiiv.com/v1/f053b9c3-2011-436a-bd9a-58296f949242"
@@ -52,5 +53,9 @@
   },
   "buffer": {
     "publish": "https://publish.buffer.com"
+  },
+  "stores": {
+    "chrome": "https://chromewebstore.google.com/detail/arg-architect/bijelgdokpgmffnddemjblgdocnbogid",
+    "firefox": "https://addons.mozilla.org/addon/arg-architect/"
   }
 }

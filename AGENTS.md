@@ -46,7 +46,7 @@ and comprehensive Google Analytics 4 instrumentation.
     │   └── shared/         # Shared backend HTTP utilities
     ├── frontend/
     │   ├── main.jsx        # React entry — providers shell, route table, lazy imports
-    │   ├── animations/     # GSAP animation attribute presets
+    │   ├── animations/     # GSAP animation attribute presets; shaders/ holds GLSL used by WebGL hooks
     │   ├── blog/           # Markdown blog posts with YAML frontmatter
     │   ├── components/     # App-specific React components
     │   ├── constants/      # Shared frontend constants

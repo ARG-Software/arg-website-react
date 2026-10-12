@@ -52,7 +52,6 @@ html.ls-active {
   color: #f2eefb;
   border-color: rgba(242, 238, 251, 0.16);
   background: rgba(242, 238, 251, 0.04);
-  font-weight: 500;
 }
 
 .ls-skip {

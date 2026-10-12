@@ -1,52 +1,41 @@
 {
   "latest": {
     "label": "Latest",
-    "aiTitle": "Talk to Gaspar our AI Assistant",
+    "aiTitle": "Talk to Gaspar",
     "aiTag": "Online",
     "aiTagTone": "green"
   },
   "primary": [
     {
+      "label": "Blog",
+      "to": "/blog/",
+      "openInPage": true
+    },
+    {
+      "label": "Founders",
+      "to": "/about-us/#founders",
+      "openInPage": true
+    },
+    {
       "label": "Partners",
       "to": "/partners/",
-      "description": "Partner overview & directory",
       "openInPage": true
     },
     {
       "label": "Services",
       "to": "/#services",
-      "description": "Everything we offer",
       "openInPage": false
     },
     {
       "label": "Use Cases",
       "to": "/#cases",
-      "description": "All projects & case studies",
       "openInPage": false
-    },
-    {
-      "label": "Working with Us",
-      "to": "/working-with-us/",
-      "description": "The full engagement model",
-      "openInPage": true
-    },
-    {
-      "label": "Blog",
-      "to": "/blog/",
-      "description": "Every article",
-      "openInPage": true
-    },
-    {
-      "label": "About",
-      "to": "/about-us/",
-      "description": "The team & story",
-      "openInPage": true
     }
   ],
   "selectedWork": {
-    "label": "Selected work",
-    "viewAllLabel": "All work",
-    "viewAllTo": "/#cases",
+    "label": "Featured work",
+    "viewAllLabel": "Testimonials",
+    "viewAllTo": "/#testimonials",
     "desktopCount": 3,
     "mobileCount": 3,
     "rotationSeed": "daily",
@@ -60,17 +49,53 @@
       "vector": "Trading platform"
     }
   },
-  "company": {
-    "label": "Company",
-    "items": [
-      { "label": "Careers", "to": "/careers/", "openInPage": true },
-      { "label": "AI Skills", "to": "/skills/", "openInPage": true },
-      { "label": "Contact", "to": "/contact/", "openInPage": true },
-      { "label": "Team", "to": "/#team", "openInPage": false },
-      { "label": "FAQ", "to": "/#faq", "openInPage": false },
-      { "label": "Testimonials", "to": "/#testimonials", "openInPage": false },
-      { "label": "Social", "to": "/#social", "openInPage": false }
-    ]
+  "groups": [
+    {
+      "label": "Explore",
+      "items": [
+        {
+          "label": "Audit",
+          "to": "/audit/"
+        },
+        {
+          "label": "AI Skills",
+          "to": "/skills/"
+        },
+        {
+          "label": "FAQ",
+          "to": "/#faq"
+        }
+      ]
+    },
+    {
+      "label": "About",
+      "items": [
+        {
+          "label": "About ARG",
+          "to": "/about-us/"
+        },
+        {
+          "label": "Careers",
+          "to": "/careers/"
+        },
+        {
+          "label": "Working with Us",
+          "to": "/working-with-us/"
+        },
+        {
+          "label": "Contact",
+          "to": "/contact/"
+        }
+      ]
+    }
+  ],
+  "audit": {
+    "labels": {
+      "chrome": "Add Audit to Chrome",
+      "firefox": "Add Audit to Firefox"
+    },
+    "fallbackLabel": "Install the Audit extension",
+    "fallbackTo": "/audit/#architect"
   },
   "cta": {
     "label": "Book a meeting",

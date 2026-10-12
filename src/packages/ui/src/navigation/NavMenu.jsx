@@ -12,7 +12,8 @@ export function NavMenu({
   primary = [],
   featuredProjects = [],
   selectedWork,
-  company,
+  groups = [],
+  auditInstall,
   latestPost,
   latest,
   ctaHref = '#',
@@ -21,9 +22,11 @@ export function NavMenu({
   onClose,
   onContainerClick,
   onCtaClick,
+  onAuditClick,
   onAssistantClick,
   renderLink = defaultRenderLink,
   renderLatestLink = defaultRenderLink,
+  renderAuditLink = defaultRenderLink,
   labels = {},
 }) {
   const handleContainerClick = event => {
@@ -84,50 +87,39 @@ export function NavMenu({
         </div>
 
         <div className="nav-menu__utilities">
-          <div className="nav-menu__utility-row">
-            <span className="nav-menu__utility-label">{labels.featured || 'Featured'}</span>
-            {featuredProjects.map((project, idx) => (
-              <span key={project.slug}>
-                {renderLink({
+          <div className="nav-menu__columns">
+            <div className="nav-menu__column">
+              <span className="nav-menu__utility-label">
+                {selectedWork?.label || labels.featured || 'Featured'}
+              </span>
+              {featuredProjects.map(project =>
+                renderLink({
+                  key: project.slug,
                   to: project.to || project.path || `/${project.slug}/`,
                   className: 'nav-menu__utility-link',
                   children: project.title,
-                })}
-                {idx < featuredProjects.length - 1 && (
-                  <span className="nav-menu__sep">&middot;</span>
-                )}
-              </span>
-            ))}
-            {selectedWork?.viewAllTo && (
-              <>
-                <span className="nav-menu__sep">&middot;</span>
-                {renderLink({
+                })
+              )}
+              {selectedWork?.viewAllTo &&
+                renderLink({
                   to: selectedWork.viewAllTo,
-                  className: 'nav-menu__utility-link nav-menu__utility-link--all-work',
-                  children: (
-                    <>
-                      <span>{selectedWork.viewAllLabel || 'All work'}</span>
-                      <span className="nav-menu__utility-arrow-symbol" aria-hidden="true">
-                        &#8599;
-                      </span>
-                    </>
-                  ),
-                })}
-              </>
-            )}
-          </div>
-
-          <div className="nav-menu__utility-row nav-menu__utility-row--company">
-            <span className="nav-menu__utility-label">{labels.secondary || 'More'}</span>
-            {company?.items?.map((item, idx) => (
-              <span key={item.label}>
-                {renderLink({
-                  to: item.to,
                   className: 'nav-menu__utility-link',
-                  children: item.label,
+                  children: selectedWork.viewAllLabel || 'All work',
                 })}
-                {idx < company.items.length - 1 && <span className="nav-menu__sep">&middot;</span>}
-              </span>
+            </div>
+
+            {groups.map(group => (
+              <div key={group.label} className="nav-menu__column">
+                <span className="nav-menu__utility-label">{group.label}</span>
+                {group.items.map(item =>
+                  renderLink({
+                    key: item.label,
+                    to: item.to,
+                    className: 'nav-menu__utility-link',
+                    children: item.label,
+                  })
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -164,6 +156,19 @@ export function NavMenu({
               </div>
             </div>
           )}
+
+          {auditInstall &&
+            renderAuditLink({
+              to: auditInstall.to,
+              className: 'nav-menu__ai-chip nav-menu__audit-chip',
+              onClick: onAuditClick,
+              children: (
+                <>
+                  <span className="nav-menu__audit-dot" aria-hidden="true" />
+                  {auditInstall.label}
+                </>
+              ),
+            })}
 
           <button className="nav-menu__ai-chip" type="button" onClick={onAssistantClick}>
             <span className="nav-menu__ai-dot"></span>

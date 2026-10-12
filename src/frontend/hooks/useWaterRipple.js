@@ -1,103 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { useRAF } from './useRAF';
-
-// ── Shaders ───────────────────────────────────────────────────────────────────
-
-const VERT = /* glsl */ `
-  varying vec2 v_uv;
-  void main() {
-    v_uv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-
-const SIM_FRAG = /* glsl */ `
-  precision highp float;
-  uniform sampler2D u_prev;
-  uniform vec2      u_res;
-  uniform vec2      u_mouse;
-  uniform float     u_radius;
-  uniform float     u_strength;
-  uniform int       u_addImpulse;
-  varying vec2 v_uv;
-
-  void main() {
-    vec2 texel = 1.0 / u_res;
-    float center = texture2D(u_prev, v_uv).r;
-    float left   = texture2D(u_prev, v_uv + vec2(-texel.x, 0.0)).r;
-    float right  = texture2D(u_prev, v_uv + vec2( texel.x, 0.0)).r;
-    float up     = texture2D(u_prev, v_uv + vec2(0.0,  texel.y)).r;
-    float down   = texture2D(u_prev, v_uv + vec2(0.0, -texel.y)).r;
-    float old    = texture2D(u_prev, v_uv).g;
-
-    float damping = 0.96;
-    float next = ((left + right + up + down) / 2.0 - old) * damping;
-
-    if (u_addImpulse == 1) {
-      float dist = length(v_uv - u_mouse);
-      next += u_strength * smoothstep(u_radius, 0.0, dist);
-    }
-    // r = new height, g = current height (becomes old next frame)
-    gl_FragColor = vec4(next, center, 0.0, 1.0);
-  }
-`;
-
-const DISPLAY_FRAG = /* glsl */ `
-  precision highp float;
-  uniform sampler2D u_heightMap;
-  uniform sampler2D u_video;
-  uniform vec2      u_res;
-  uniform vec3      u_baseColor;
-  uniform float     u_refractionScale;
-  uniform float     u_videoOpacity;
-  uniform vec2      u_coverScale;
-  uniform vec2      u_coverOffset;
-  varying vec2 v_uv;
-
-  void main() {
-    vec2 texel = 1.0 / u_res;
-    float hL = texture2D(u_heightMap, v_uv + vec2(-texel.x, 0.0)).r;
-    float hR = texture2D(u_heightMap, v_uv + vec2( texel.x, 0.0)).r;
-    float hD = texture2D(u_heightMap, v_uv + vec2(0.0, -texel.y)).r;
-    float hU = texture2D(u_heightMap, v_uv + vec2(0.0,  texel.y)).r;
-
-    vec2 normal = vec2(hL - hR, hD - hU);
-    float height = texture2D(u_heightMap, v_uv).r;
-
-    // Apply object-fit:cover transform then displace by water normals
-    vec2 coverUV = v_uv * u_coverScale + u_coverOffset;
-    vec2 distortedUV = clamp(coverUV + normal * u_refractionScale, 0.0, 1.0);
-
-    vec3 videoColor = texture2D(u_video, distortedUV).rgb;
-    vec3 color = mix(u_baseColor, videoColor, u_videoOpacity);
-
-    float spec = pow(max(0.0, dot(normalize(vec3(normal, 0.8)),
-                                  normalize(vec3(0.3, 0.5, 1.0)))), 24.0);
-    color += spec * vec3(0.18, 0.12, 0.35) * 0.25;
-
-    gl_FragColor = vec4(color, 1.0);
-  }
-`;
-
-const NORMAL_FRAG = /* glsl */ `
-  precision highp float;
-  uniform sampler2D u_heightMap;
-  uniform vec2      u_res;
-  varying vec2 v_uv;
-
-  void main() {
-    vec2 texel = 1.0 / u_res;
-    float hL = texture2D(u_heightMap, v_uv + vec2(-texel.x, 0.0)).r;
-    float hR = texture2D(u_heightMap, v_uv + vec2( texel.x, 0.0)).r;
-    float hD = texture2D(u_heightMap, v_uv + vec2(0.0, -texel.y)).r;
-    float hU = texture2D(u_heightMap, v_uv + vec2(0.0,  texel.y)).r;
-    vec2 normal = vec2(hL - hR, hD - hU);
-    // Map normals to 0–1: 0.5 = neutral (no displacement)
-    gl_FragColor = vec4(clamp(normal.x * 1.5 + 0.5, 0.0, 1.0),
-                        clamp(normal.y * 1.5 + 0.5, 0.0, 1.0),
-                        0.5, 1.0);
-  }
-`;
+import { LoadingContext } from '../providers/LoadingProvider';
+import {
+  WATER_DISPLAY_SHADER,
+  WATER_NORMAL_SHADER,
+  WATER_SIMULATION_SHADER,
+  WATER_VERTEX_SHADER,
+} from '../animations/shaders/waterRipple.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -114,8 +23,12 @@ const NM_H = 36;
 const TEXT_FILTER_ACTIVE_MS = 1800;
 const STARTUP_IDLE_TIMEOUT_MS = 2500;
 const STARTUP_FALLBACK_DELAY_MS = 1500;
+const RESIZE_DEBOUNCE_MS = 250;
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
-function scheduleStartupInit(callback) {
+// ── Start-up scheduling ───────────────────────────────────────────────────────
+
+function scheduleIdle(callback) {
   if (typeof window.requestIdleCallback === 'function') {
     const idleId = window.requestIdleCallback(callback, { timeout: STARTUP_IDLE_TIMEOUT_MS });
     return () => window.cancelIdleCallback(idleId);
@@ -125,13 +38,212 @@ function scheduleStartupInit(callback) {
   return () => window.clearTimeout(timeoutId);
 }
 
+// Waits for the page to finish loading, then for an idle period, so the
+// WebGL start-up does not compete with first render.
+function scheduleStartupInit(callback) {
+  let cancelIdle = null;
+  const handleLoad = () => {
+    cancelIdle = scheduleIdle(callback);
+  };
+
+  if (document.readyState === 'complete') {
+    handleLoad();
+  } else {
+    window.addEventListener('load', handleLoad, { once: true });
+  }
+
+  return () => {
+    window.removeEventListener('load', handleLoad);
+    cancelIdle?.();
+  };
+}
+
+// Runs the callback on the next frame once calls have stopped for `delay` ms.
+function debounceToFrame(callback, delay) {
+  let timeoutId = null;
+  let frameId = null;
+
+  const cancel = () => {
+    clearTimeout(timeoutId);
+    cancelAnimationFrame(frameId);
+  };
+  const schedule = () => {
+    cancel();
+    timeoutId = setTimeout(() => {
+      frameId = requestAnimationFrame(callback);
+    }, delay);
+  };
+
+  return { schedule, cancel };
+}
+
+// ── Video and pointer geometry ────────────────────────────────────────────────
+
+// object-fit: cover for the video, as a UV scale and offset.
+// Returns null until both the video and the canvas have a size.
+function getVideoCover(videoEl, canvas) {
+  if (!videoEl.videoWidth || !videoEl.videoHeight) return null;
+
+  let { width, height } = canvas.getBoundingClientRect();
+  if ((width <= 0 || height <= 0) && canvas.parentElement) {
+    ({ width, height } = canvas.parentElement.getBoundingClientRect());
+  }
+  if (width <= 0 || height <= 0) return null;
+
+  const videoAspect = videoEl.videoWidth / videoEl.videoHeight;
+  const canvasAspect = width / height;
+
+  if (canvasAspect > videoAspect) {
+    const scaleY = videoAspect / canvasAspect;
+    return { scaleX: 1, scaleY, offsetX: 0, offsetY: (1 - scaleY) / 2 };
+  }
+  const scaleX = canvasAspect / videoAspect;
+  return { scaleX, scaleY: 1, offsetX: (1 - scaleX) / 2, offsetY: 0 };
+}
+
+// Mouse or touch position inside the hero as UV coordinates (origin bottom-left).
+function getPointerUv(event, heroEl) {
+  const point = event.touches ? event.touches[0] : event;
+  const rect = heroEl.getBoundingClientRect();
+  return [(point.clientX - rect.left) / rect.width, 1.0 - (point.clientY - rect.top) / rect.height];
+}
+
+// ── Text displacement (SVG filter fed by the water's normal map) ──────────────
+
+// Offscreen 2D canvas that turns normal-map pixels into data URLs for the filter.
+function createNormalMapCanvas() {
+  const canvas = document.createElement('canvas');
+  canvas.width = NM_W;
+  canvas.height = NM_H;
+  canvas.style.cssText =
+    'position:absolute;pointer-events:none;visibility:hidden;width:0;height:0;';
+  document.body.appendChild(canvas);
+
+  const context = canvas.getContext('2d');
+  const imageData = new ImageData(NM_W, NM_H);
+  const rowLength = NM_W * 4;
+
+  // WebGL reads rows bottom-up; the 2D canvas expects them top-down
+  const toDataUrl = pixels => {
+    for (let y = 0; y < NM_H; y++) {
+      const sourceRow = (NM_H - 1 - y) * rowLength;
+      imageData.data.set(pixels.subarray(sourceRow, sourceRow + rowLength), y * rowLength);
+    }
+    context.putImageData(imageData, 0, 0);
+    return canvas.toDataURL();
+  };
+
+  // Flat normal map — no displacement when idle
+  const neutralPixels = new Uint8Array(NM_W * NM_H * 4);
+  for (let i = 0; i < neutralPixels.length; i += 4) {
+    neutralPixels.set([128, 128, 128, 255], i);
+  }
+
+  return { toDataUrl, neutralDataUrl: toDataUrl(neutralPixels), remove: () => canvas.remove() };
+}
+
+function createSvgElement(name, attributes = {}) {
+  const element = document.createElementNS(SVG_NS, name);
+  for (const [key, value] of Object.entries(attributes)) {
+    element.setAttribute(key, value);
+  }
+  return element;
+}
+
+// Displacement filter applied to the hero heading so the text bends with the water.
+function createTextFilter(heroEl, neutralDataUrl) {
+  const filterEl = createSvgElement('filter', {
+    id: 'water-text-filter',
+    filterUnits: 'userSpaceOnUse',
+    primitiveUnits: 'userSpaceOnUse',
+    x: '-100',
+    y: '-100',
+    width: '3000',
+    height: '800',
+    'color-interpolation-filters': 'sRGB',
+  });
+  const feImage = createSvgElement('feImage', {
+    result: 'wmap',
+    x: '-100',
+    y: '-100',
+    width: '3000',
+    height: '800',
+    preserveAspectRatio: 'none',
+    href: neutralDataUrl,
+  });
+  const feDisplacement = createSvgElement('feDisplacementMap', {
+    in: 'SourceGraphic',
+    in2: 'wmap',
+    scale: '6',
+    xChannelSelector: 'R',
+    yChannelSelector: 'G',
+  });
+
+  const svgEl = createSvgElement('svg');
+  svgEl.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;';
+  const defs = createSvgElement('defs');
+  filterEl.append(feImage, feDisplacement);
+  defs.append(filterEl);
+  svgEl.append(defs);
+  document.body.appendChild(svgEl);
+
+  const styleEl = document.createElement('style');
+  styleEl.textContent = '.hero_heading { filter: url(#water-text-filter); }';
+  document.head.appendChild(styleEl);
+
+  const headingEl = heroEl.querySelector('.hero_heading');
+
+  // Stretch the map over the whole hero, positioned relative to the heading
+  const updateGeometry = () => {
+    if (!headingEl) return;
+    const heroRect = heroEl.getBoundingClientRect();
+    const headRect = headingEl.getBoundingClientRect();
+    const relX = headRect.left - heroRect.left;
+    const relY = headRect.top - heroRect.top;
+    feImage.setAttribute('x', String(-relX));
+    feImage.setAttribute('y', String(-relY));
+    feImage.setAttribute('width', String(heroRect.width));
+    feImage.setAttribute('height', String(heroRect.height));
+    filterEl.setAttribute('x', String(-relX - 30));
+    filterEl.setAttribute('y', String(-relY - 30));
+    filterEl.setAttribute('width', String(heroRect.width + 60));
+    filterEl.setAttribute('height', String(heroRect.height + 60));
+  };
+  updateGeometry();
+
+  return {
+    setMap: dataUrl => feImage.setAttribute('href', dataUrl),
+    updateGeometry,
+    remove: () => {
+      styleEl.remove();
+      svgEl.remove();
+    },
+  };
+}
+
+// ── Shader compilation ────────────────────────────────────────────────────────
+
+// Compiles each pass against the target it renders to, without blocking the main thread.
+function compilePasses(renderer, camera, passes) {
+  const ready = passes.map(([pass, target]) => {
+    renderer.setRenderTarget(target);
+    return renderer.compileAsync(pass.scene, camera);
+  });
+  renderer.setRenderTarget(null);
+  return Promise.all(ready);
+}
+
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
 export function useWaterRipple(canvasId = 'water-ripple-canvas') {
   const cleanupRef = useRef(null);
   const renderRef = useRef(null);
+  const loadingDone = useContext(LoadingContext);
 
   useEffect(() => {
+    // The intro covers the hero on a first visit; start once it has finished
+    if (!loadingDone) return;
+
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
@@ -166,15 +278,29 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       if (!mounted) return;
 
       const rect = canvas.getBoundingClientRect();
-      const W = Math.floor(rect.width || canvas.offsetWidth || window.innerWidth);
-      const H = Math.floor(rect.height || canvas.offsetHeight || window.innerHeight);
-      if (W <= 0 || H <= 0) return;
+      const width = Math.floor(rect.width || canvas.offsetWidth || window.innerWidth);
+      const height = Math.floor(rect.height || canvas.offsetHeight || window.innerHeight);
+      if (width <= 0 || height <= 0) return;
 
-      const SIM_W = Math.floor(W / 2);
-      const SIM_H = Math.floor(H / 2);
+      const simWidth = Math.floor(width / 2);
+      const simHeight = Math.floor(height / 2);
+
+      // ── Renderer ────────────────────────────────────────────────────────
+      const renderer = new WebGLRenderer({ canvas, antialias: false, alpha: false });
+      renderer.setPixelRatio(1);
+      renderer.setSize(width, height, false);
+      renderer.autoClear = false;
+
+      // Creating the WebGL context is the costliest step; let the browser breathe before the rest.
+      await new Promise(resolve => setTimeout(resolve));
+      if (!mounted) {
+        renderer.dispose();
+        return;
+      }
 
       // ── Video texture ────────────────────────────────────────────────────
       const videoEl = document.getElementById('hero-video');
+      const videoBgWrapper = canvas.parentElement.querySelector('.hero_bg-video');
       let videoTexture = null;
       if (videoEl) {
         videoTexture = new VideoTexture(videoEl);
@@ -184,370 +310,186 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         videoTexture.flipY = false;
       }
 
-      // Hide the original video element — Three.js renders it now
-      const videoBgWrapper = canvas.parentElement.querySelector('.hero_bg-video');
-      if (videoBgWrapper) videoBgWrapper.style.visibility = 'hidden';
-
-      // ── Renderer ────────────────────────────────────────────────────────
-      const renderer = new WebGLRenderer({ canvas, antialias: false, alpha: false });
-      renderer.setPixelRatio(1);
-      renderer.setSize(W, H, false);
-      renderer.autoClear = false;
-
       // ── Render targets ───────────────────────────────────────────────────
-      const rtOptions = {
-        minFilter: LinearFilter,
-        magFilter: LinearFilter,
-        format: RGBAFormat,
-        type: HalfFloatType,
-      };
-      let rtA = new WebGLRenderTarget(SIM_W, SIM_H, rtOptions);
-      let rtB = new WebGLRenderTarget(SIM_W, SIM_H, rtOptions);
-      let readTarget = rtA;
-      let writeTarget = rtB;
-
-      // ── Camera ───────────────────────────────────────────────────────────
-      const orthoCamera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
-
-      // ── Simulation quad ──────────────────────────────────────────────────
-      const quadGeo = new PlaneGeometry(2, 2);
-
-      const simMaterial = new ShaderMaterial({
-        vertexShader: VERT,
-        fragmentShader: SIM_FRAG,
-        uniforms: {
-          u_prev: { value: rtA.texture },
-          u_res: { value: new Vector2(SIM_W, SIM_H) },
-          u_mouse: { value: new Vector2(-1, -1) },
-          u_radius: { value: MOUSE_RADIUS },
-          u_strength: { value: MOUSE_STRENGTH },
-          u_addImpulse: { value: 0 },
-        },
-      });
-
-      const simScene = new Scene();
-      simScene.add(new Mesh(quadGeo, simMaterial));
-
-      // ── Display quad ─────────────────────────────────────────────────────
-      const displayMaterial = new ShaderMaterial({
-        vertexShader: VERT,
-        fragmentShader: DISPLAY_FRAG,
-        uniforms: {
-          u_heightMap: { value: rtB.texture },
-          u_video: { value: videoTexture },
-          u_res: { value: new Vector2(W, H) },
-          u_baseColor: { value: new Vector3(...BASE_COLOR) },
-          u_refractionScale: { value: REFRACTION_SCALE },
-          u_videoOpacity: { value: VIDEO_OPACITY },
-          u_coverScale: { value: new Vector2(1, 1) },
-          u_coverOffset: { value: new Vector2(0, 0) },
-        },
-      });
-
-      const displayScene = new Scene();
-      displayScene.add(new Mesh(quadGeo, displayMaterial));
-
-      // ── Cover UV (simulates object-fit: cover for the video) ─────────────
-      const setVideoCover = () => {
-        if (!videoEl) return;
-
-        if (!videoEl.videoWidth || !videoEl.videoHeight) {
-          setTimeout(setVideoCover, 100);
-          return;
-        }
-
-        const rect = canvas.getBoundingClientRect();
-        let cW = rect.width;
-        let cH = rect.height;
-
-        if (cW <= 0 || cH <= 0) {
-          const parent = canvas.parentElement;
-          if (parent) {
-            const parentRect = parent.getBoundingClientRect();
-            cW = parentRect.width;
-            cH = parentRect.height;
-          }
-
-          if (cW <= 0 || cH <= 0) {
-            setTimeout(setVideoCover, 100);
-            return;
-          }
-        }
-
-        const vAspect = videoEl.videoWidth / videoEl.videoHeight;
-        const cAspect = cW / cH;
-
-        let sx = 1,
-          sy = 1,
-          ox = 0,
-          oy = 0;
-
-        if (cAspect > vAspect) {
-          sy = vAspect / cAspect;
-          oy = (1 - sy) / 2;
-        } else {
-          sx = cAspect / vAspect;
-          ox = (1 - sx) / 2;
-        }
-
-        displayMaterial.uniforms.u_coverScale.value.set(sx, sy);
-        displayMaterial.uniforms.u_coverOffset.value.set(ox, oy);
-        displayMaterial.uniformsNeedUpdate = true;
+      const createSimulationTargets = (targetWidth, targetHeight) => {
+        const options = {
+          minFilter: LinearFilter,
+          magFilter: LinearFilter,
+          format: RGBAFormat,
+          type: HalfFloatType,
+        };
+        return [
+          new WebGLRenderTarget(targetWidth, targetHeight, options),
+          new WebGLRenderTarget(targetWidth, targetHeight, options),
+        ];
       };
 
-      if (videoEl) {
-        if (videoEl.videoWidth) {
-          setVideoCover();
-        } else {
-          videoEl.addEventListener('loadedmetadata', setVideoCover, { once: true });
-        }
-      }
-
-      // ── Normal-map pass (drives text displacement) ────────────────────────
-      const nmRt = new WebGLRenderTarget(NM_W, NM_H, {
+      let [readTarget, writeTarget] = createSimulationTargets(simWidth, simHeight);
+      const normalTarget = new WebGLRenderTarget(NM_W, NM_H, {
         minFilter: LinearFilter,
         magFilter: LinearFilter,
         format: RGBAFormat,
         type: UnsignedByteType,
       });
 
-      const normalMaterial = new ShaderMaterial({
-        vertexShader: VERT,
-        fragmentShader: NORMAL_FRAG,
-        uniforms: {
-          u_heightMap: { value: null },
-          u_res: { value: new Vector2(SIM_W, SIM_H) },
-        },
+      // ── Passes: one full-screen quad per shader ──────────────────────────
+      const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const quad = new PlaneGeometry(2, 2);
+
+      const createPass = (fragmentShader, uniforms) => {
+        const material = new ShaderMaterial({
+          vertexShader: WATER_VERTEX_SHADER,
+          fragmentShader,
+          uniforms,
+        });
+        const scene = new Scene();
+        scene.add(new Mesh(quad, material));
+        return { material, scene };
+      };
+
+      const simulation = createPass(WATER_SIMULATION_SHADER, {
+        u_prev: { value: readTarget.texture },
+        u_res: { value: new Vector2(simWidth, simHeight) },
+        u_mouse: { value: new Vector2(-1, -1) },
+        u_radius: { value: MOUSE_RADIUS },
+        u_strength: { value: MOUSE_STRENGTH },
+        u_addImpulse: { value: 0 },
       });
 
-      const normalScene = new Scene();
-      normalScene.add(new Mesh(quadGeo, normalMaterial));
+      const display = createPass(WATER_DISPLAY_SHADER, {
+        u_heightMap: { value: writeTarget.texture },
+        u_video: { value: videoTexture },
+        u_res: { value: new Vector2(width, height) },
+        u_baseColor: { value: new Vector3(...BASE_COLOR) },
+        u_refractionScale: { value: REFRACTION_SCALE },
+        u_videoOpacity: { value: VIDEO_OPACITY },
+        u_coverScale: { value: new Vector2(1, 1) },
+        u_coverOffset: { value: new Vector2(0, 0) },
+      });
 
-      const nmPixels = new Uint8Array(NM_W * NM_H * 4);
-      const nmImageData = new ImageData(NM_W, NM_H);
+      // Drives the text displacement
+      const normal = createPass(WATER_NORMAL_SHADER, {
+        u_heightMap: { value: null },
+        u_res: { value: new Vector2(simWidth, simHeight) },
+      });
 
-      const dispCanvas = document.createElement('canvas');
-      dispCanvas.width = NM_W;
-      dispCanvas.height = NM_H;
-      dispCanvas.style.cssText =
-        'position:absolute;pointer-events:none;visibility:hidden;width:0;height:0;';
-      document.body.appendChild(dispCanvas);
-      const dispCtx = dispCanvas.getContext('2d');
+      // ── Cover UV (simulates object-fit: cover for the video) ─────────────
+      const setVideoCover = () => {
+        if (!videoEl || !mounted) return;
 
-      // Precompute a neutral (flat) normal-map data URL — no displacement when idle
-      const neutralNm = new ImageData(NM_W, NM_H);
-      for (let i = 0; i < neutralNm.data.length; i += 4) {
-        neutralNm.data[i] = 128;
-        neutralNm.data[i + 1] = 128;
-        neutralNm.data[i + 2] = 128;
-        neutralNm.data[i + 3] = 255;
+        const cover = getVideoCover(videoEl, canvas);
+        if (!cover) {
+          setTimeout(setVideoCover, 100);
+          return;
+        }
+
+        display.material.uniforms.u_coverScale.value.set(cover.scaleX, cover.scaleY);
+        display.material.uniforms.u_coverOffset.value.set(cover.offsetX, cover.offsetY);
+        display.material.uniformsNeedUpdate = true;
+      };
+
+      if (videoEl?.videoWidth) {
+        setVideoCover();
+      } else if (videoEl) {
+        videoEl.addEventListener('loadedmetadata', setVideoCover, { once: true });
       }
-      dispCtx.putImageData(neutralNm, 0, 0);
-      const neutralDataUrl = dispCanvas.toDataURL();
 
+      // ── Text displacement ────────────────────────────────────────────────
+      const heroEl = canvas.closest('.hero_wrap') || canvas.parentElement;
+      const normalPixels = new Uint8Array(NM_W * NM_H * 4);
+      const normalMap = createNormalMapCanvas();
+      const textFilter = createTextFilter(heroEl, normalMap.neutralDataUrl);
       let textFilterActiveUntil = 0;
       let textFilterIsNeutral = true;
 
-      const svgNS = 'http://www.w3.org/2000/svg';
-      const svgEl = document.createElementNS(svgNS, 'svg');
-      svgEl.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;';
-      const defs = document.createElementNS(svgNS, 'defs');
-      const filterEl = document.createElementNS(svgNS, 'filter');
-      filterEl.setAttribute('id', 'water-text-filter');
-      filterEl.setAttribute('filterUnits', 'userSpaceOnUse');
-      filterEl.setAttribute('primitiveUnits', 'userSpaceOnUse');
-      filterEl.setAttribute('x', '-100');
-      filterEl.setAttribute('y', '-100');
-      filterEl.setAttribute('width', '3000');
-      filterEl.setAttribute('height', '800');
-      filterEl.setAttribute('color-interpolation-filters', 'sRGB');
-      const feImage = document.createElementNS(svgNS, 'feImage');
-      feImage.setAttribute('result', 'wmap');
-      feImage.setAttribute('x', '-100');
-      feImage.setAttribute('y', '-100');
-      feImage.setAttribute('width', '3000');
-      feImage.setAttribute('height', '800');
-      feImage.setAttribute('preserveAspectRatio', 'none');
-      feImage.setAttribute('href', neutralDataUrl);
-      const feDisp = document.createElementNS(svgNS, 'feDisplacementMap');
-      feDisp.setAttribute('in', 'SourceGraphic');
-      feDisp.setAttribute('in2', 'wmap');
-      feDisp.setAttribute('scale', '6');
-      feDisp.setAttribute('xChannelSelector', 'R');
-      feDisp.setAttribute('yChannelSelector', 'G');
-      filterEl.appendChild(feImage);
-      filterEl.appendChild(feDisp);
-      defs.appendChild(filterEl);
-      svgEl.appendChild(defs);
-      document.body.appendChild(svgEl);
-
-      const styleEl = document.createElement('style');
-      styleEl.textContent = '.hero_heading { filter: url(#water-text-filter); }';
-      document.head.appendChild(styleEl);
-
-      const heroEl = canvas.closest('.hero_wrap') || canvas.parentElement;
-      const headingEl = heroEl.querySelector('.hero_heading');
-
-      const updateFilterGeometry = () => {
-        if (!headingEl) return;
-        const heroRect = heroEl.getBoundingClientRect();
-        const headRect = headingEl.getBoundingClientRect();
-        const relX = headRect.left - heroRect.left;
-        const relY = headRect.top - heroRect.top;
-        const w = heroRect.width;
-        const h = heroRect.height;
-        feImage.setAttribute('x', String(-relX));
-        feImage.setAttribute('y', String(-relY));
-        feImage.setAttribute('width', String(w));
-        feImage.setAttribute('height', String(h));
-        filterEl.setAttribute('x', String(-relX - 30));
-        filterEl.setAttribute('y', String(-relY - 30));
-        filterEl.setAttribute('width', String(w + 60));
-        filterEl.setAttribute('height', String(h + 60));
-      };
-      updateFilterGeometry();
-
       // ── Render function (called by RAF coordinator) ───────────────────────
-      renderRef.current = () => {
+      const render = () => {
         if (!mounted) return;
 
-        simMaterial.uniforms.u_prev.value = readTarget.texture;
+        simulation.material.uniforms.u_prev.value = readTarget.texture;
         renderer.setRenderTarget(writeTarget);
-        renderer.render(simScene, orthoCamera);
-        simMaterial.uniforms.u_addImpulse.value = 0;
+        renderer.render(simulation.scene, camera);
+        simulation.material.uniforms.u_addImpulse.value = 0;
 
         // Expensive normal-map readback: skip when idle
-        const now = performance.now();
-        const textFilterActive = now < textFilterActiveUntil;
-
-        if (textFilterActive) {
-          normalMaterial.uniforms.u_heightMap.value = writeTarget.texture;
-          renderer.setRenderTarget(nmRt);
-          renderer.render(normalScene, orthoCamera);
-          renderer.readRenderTargetPixels(nmRt, 0, 0, NM_W, NM_H, nmPixels);
-          for (let y = 0; y < NM_H; y++) {
-            const srcRow = (NM_H - 1 - y) * NM_W * 4;
-            nmImageData.data.set(nmPixels.subarray(srcRow, srcRow + NM_W * 4), y * NM_W * 4);
-          }
-          dispCtx.putImageData(nmImageData, 0, 0);
-          feImage.setAttribute('href', dispCanvas.toDataURL());
+        if (performance.now() < textFilterActiveUntil) {
+          normal.material.uniforms.u_heightMap.value = writeTarget.texture;
+          renderer.setRenderTarget(normalTarget);
+          renderer.render(normal.scene, camera);
+          renderer.readRenderTargetPixels(normalTarget, 0, 0, NM_W, NM_H, normalPixels);
+          textFilter.setMap(normalMap.toDataUrl(normalPixels));
           textFilterIsNeutral = false;
         } else if (!textFilterIsNeutral) {
-          feImage.setAttribute('href', neutralDataUrl);
+          textFilter.setMap(normalMap.neutralDataUrl);
           textFilterIsNeutral = true;
         }
 
-        displayMaterial.uniforms.u_heightMap.value = writeTarget.texture;
+        display.material.uniforms.u_heightMap.value = writeTarget.texture;
         renderer.setRenderTarget(null);
-        renderer.render(displayScene, orthoCamera);
+        renderer.render(display.scene, camera);
 
-        const tmp = readTarget;
-        readTarget = writeTarget;
-        writeTarget = tmp;
+        [readTarget, writeTarget] = [writeTarget, readTarget];
       };
 
       // ── Mouse / touch events ─────────────────────────────────────────────
-      const handleMouseMove = e => {
-        const rect = heroEl.getBoundingClientRect();
-        simMaterial.uniforms.u_mouse.value.set(
-          (e.clientX - rect.left) / rect.width,
-          1.0 - (e.clientY - rect.top) / rect.height
-        );
-        simMaterial.uniforms.u_radius.value = MOUSE_RADIUS;
-        simMaterial.uniforms.u_strength.value = MOUSE_STRENGTH;
-        simMaterial.uniforms.u_addImpulse.value = 1;
+      const handlePointerMove = event => {
+        simulation.material.uniforms.u_mouse.value.set(...getPointerUv(event, heroEl));
+        simulation.material.uniforms.u_addImpulse.value = 1;
         textFilterActiveUntil = performance.now() + TEXT_FILTER_ACTIVE_MS;
       };
 
-      const handleTouchMove = e => {
-        const touch = e.touches[0];
-        const rect = heroEl.getBoundingClientRect();
-        simMaterial.uniforms.u_mouse.value.set(
-          (touch.clientX - rect.left) / rect.width,
-          1.0 - (touch.clientY - rect.top) / rect.height
-        );
-        simMaterial.uniforms.u_radius.value = MOUSE_RADIUS;
-        simMaterial.uniforms.u_strength.value = MOUSE_STRENGTH;
-        simMaterial.uniforms.u_addImpulse.value = 1;
-        textFilterActiveUntil = performance.now() + TEXT_FILTER_ACTIVE_MS;
-      };
-
-      heroEl.addEventListener('mousemove', handleMouseMove, { passive: true });
-      heroEl.addEventListener('touchmove', handleTouchMove, { passive: true });
+      heroEl.addEventListener('mousemove', handlePointerMove, { passive: true });
+      heroEl.addEventListener('touchmove', handlePointerMove, { passive: true });
 
       // ── Resize ────────────────────────────────────────────────────────────
-      let resizeTimeout = null;
-      let resizeRafId = null;
-
-      const handleResize = () => {
+      const resize = () => {
         if (!mounted) return;
 
-        if (resizeTimeout) {
-          clearTimeout(resizeTimeout);
-          resizeTimeout = null;
+        const canvasRect = canvas.getBoundingClientRect();
+        const newWidth = Math.floor(canvasRect.width);
+        const newHeight = Math.floor(canvasRect.height);
+        if (newWidth <= 0 || newHeight <= 0) return;
+
+        const current = renderer.getSize(new Vector2());
+        if (Math.abs(newWidth - current.x) <= 1 && Math.abs(newHeight - current.y) <= 1) return;
+
+        const newSimWidth = Math.floor(newWidth / 2);
+        const newSimHeight = Math.floor(newHeight / 2);
+
+        renderer.setSize(newWidth, newHeight, false);
+
+        readTarget.dispose();
+        writeTarget.dispose();
+        [readTarget, writeTarget] = createSimulationTargets(newSimWidth, newSimHeight);
+        for (const target of [readTarget, writeTarget]) {
+          renderer.setRenderTarget(target);
+          renderer.clear();
         }
-        if (resizeRafId) {
-          cancelAnimationFrame(resizeRafId);
-          resizeRafId = null;
-        }
+        renderer.setRenderTarget(null);
 
-        resizeTimeout = setTimeout(() => {
-          resizeRafId = requestAnimationFrame(() => {
-            if (!mounted) return;
+        simulation.material.uniforms.u_res.value.set(newSimWidth, newSimHeight);
+        display.material.uniforms.u_res.value.set(newWidth, newHeight);
+        simulation.material.uniformsNeedUpdate = true;
+        display.material.uniformsNeedUpdate = true;
 
-            const rect = canvas.getBoundingClientRect();
-            const W2 = Math.floor(rect.width);
-            const H2 = Math.floor(rect.height);
-
-            if (W2 <= 0 || H2 <= 0) return;
-
-            const SW = Math.floor(W2 / 2);
-            const SH = Math.floor(H2 / 2);
-
-            const currentWidth = renderer.getSize(new Vector2()).x;
-            const currentHeight = renderer.getSize(new Vector2()).y;
-
-            if (Math.abs(W2 - currentWidth) > 1 || Math.abs(H2 - currentHeight) > 1) {
-              renderer.setSize(W2, H2, false);
-
-              rtA.dispose();
-              rtB.dispose();
-              rtA = new WebGLRenderTarget(SW, SH, rtOptions);
-              rtB = new WebGLRenderTarget(SW, SH, rtOptions);
-              readTarget = rtA;
-              writeTarget = rtB;
-
-              renderer.setRenderTarget(rtA);
-              renderer.clear();
-              renderer.setRenderTarget(rtB);
-              renderer.clear();
-              renderer.setRenderTarget(null);
-
-              simMaterial.uniforms.u_res.value.set(SW, SH);
-              displayMaterial.uniforms.u_res.value.set(W2, H2);
-              setVideoCover();
-              updateFilterGeometry();
-              feImage.setAttribute('href', neutralDataUrl);
-              textFilterIsNeutral = true;
-
-              displayMaterial.uniformsNeedUpdate = true;
-              simMaterial.uniformsNeedUpdate = true;
-            }
-          });
-        }, 250);
+        setVideoCover();
+        textFilter.updateGeometry();
+        textFilter.setMap(normalMap.neutralDataUrl);
+        textFilterIsNeutral = true;
       };
 
-      window.addEventListener('resize', handleResize);
+      const debouncedResize = debounceToFrame(resize, RESIZE_DEBOUNCE_MS);
+      window.addEventListener('resize', debouncedResize.schedule);
 
       let resizeObserver = null;
       if (typeof ResizeObserver !== 'undefined') {
-        resizeObserver = new ResizeObserver(handleResize);
+        resizeObserver = new ResizeObserver(debouncedResize.schedule);
         resizeObserver.observe(canvas);
       }
 
       // ── WebGL context loss/restore ────────────────────────────────────────
-      const handleContextLost = e => {
-        e.preventDefault();
+      const handleContextLost = event => {
+        event.preventDefault();
       };
 
       const handleContextRestored = () => {
@@ -560,38 +502,40 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
 
       // ── Cleanup ───────────────────────────────────────────────────────────
       cleanupRef.current = () => {
-        heroEl.removeEventListener('mousemove', handleMouseMove);
-        heroEl.removeEventListener('touchmove', handleTouchMove);
-        window.removeEventListener('resize', handleResize);
+        heroEl.removeEventListener('mousemove', handlePointerMove);
+        heroEl.removeEventListener('touchmove', handlePointerMove);
+        window.removeEventListener('resize', debouncedResize.schedule);
         canvas.removeEventListener('webglcontextlost', handleContextLost);
         canvas.removeEventListener('webglcontextrestored', handleContextRestored);
+        debouncedResize.cancel();
+        resizeObserver?.disconnect();
 
-        if (resizeTimeout) {
-          clearTimeout(resizeTimeout);
-          resizeTimeout = null;
-        }
-        if (resizeRafId) {
-          cancelAnimationFrame(resizeRafId);
-          resizeRafId = null;
-        }
-        if (resizeObserver) {
-          resizeObserver.disconnect();
-          resizeObserver = null;
-        }
-        styleEl.parentNode?.removeChild(styleEl);
-        if (svgEl.parentNode) svgEl.parentNode.removeChild(svgEl);
-        if (dispCanvas.parentNode) dispCanvas.parentNode.removeChild(dispCanvas);
-        nmRt.dispose();
-        normalMaterial.dispose();
+        textFilter.remove();
+        normalMap.remove();
         if (videoBgWrapper) videoBgWrapper.style.visibility = '';
-        if (videoTexture) videoTexture.dispose();
-        rtA.dispose();
-        rtB.dispose();
-        simMaterial.dispose();
-        displayMaterial.dispose();
-        quadGeo.dispose();
+
+        videoTexture?.dispose();
+        readTarget.dispose();
+        writeTarget.dispose();
+        normalTarget.dispose();
+        simulation.material.dispose();
+        display.material.dispose();
+        normal.material.dispose();
+        quad.dispose();
         renderer.dispose();
       };
+
+      // Only start rendering once all three shaders are ready
+      await compilePasses(renderer, camera, [
+        [simulation, writeTarget],
+        [normal, normalTarget],
+        [display, null],
+      ]);
+      if (!mounted) return;
+
+      // Hide the original video element — Three.js renders it now
+      if (videoBgWrapper) videoBgWrapper.style.visibility = 'hidden';
+      renderRef.current = render;
     };
 
     // Lazy-init via IntersectionObserver (hero is above fold — fires immediately)
@@ -613,7 +557,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
       cancelScheduledInit?.();
       if (cleanupRef.current) cleanupRef.current();
     };
-  }, [canvasId]);
+  }, [canvasId, loadingDone]);
 
   // Subscribe to the RAF coordinator — the render function is called every frame
   useRAF(() => {

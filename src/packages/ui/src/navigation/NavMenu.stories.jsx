@@ -22,14 +22,29 @@ const MENU_DATA = {
     { slug: 'insights', title: 'Insights', to: '/products/insights/' },
     { slug: 'workflow', title: 'Workflow', to: '/products/workflow/' },
   ],
-  selectedWork: { viewAllTo: '/products/', viewAllLabel: 'All products' },
-  company: {
-    items: [
-      { label: 'About', to: '/about/' },
-      { label: 'Customers', to: '/customers/' },
-      { label: 'Support', to: '/support/' },
-    ],
+  selectedWork: {
+    label: 'Featured products',
+    viewAllTo: '/products/',
+    viewAllLabel: 'All products',
   },
+  groups: [
+    {
+      label: 'Resources',
+      items: [
+        { label: 'Customers', to: '/customers/' },
+        { label: 'Templates', to: '/templates/' },
+        { label: 'Support', to: '/support/' },
+      ],
+    },
+    {
+      label: 'Company',
+      items: [
+        { label: 'About', to: '/about/' },
+        { label: 'Careers', to: '/careers/' },
+      ],
+    },
+  ],
+  auditInstall: { label: 'Install the extension', to: '/extension/' },
   latestPost: {
     slug: 'release-notes',
     to: '/updates/release-notes/',
@@ -38,8 +53,6 @@ const MENU_DATA = {
   },
   latest: { aiTitle: 'Open product assistant' },
   labels: {
-    featured: 'Featured products',
-    secondary: 'Resources',
     latest: 'Latest update',
     latestPlaceholder: 'No updates published yet',
     assistant: 'Open product assistant',

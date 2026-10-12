@@ -2,6 +2,7 @@ import siteLinks from '../data/siteLinks.json';
 
 export const EXTERNAL_LINK_KEYS = Object.freeze({
   PROJECT_BOOKING: 'calendar.project',
+  ARCHITECTURE_BOOKING: 'calendar.architecture',
   NEWSLETTER_SUBSCRIBE: 'newsletter.subscribe',
   PROJECT_BRIEF_FORM: 'forms.projectBrief',
   WEB3_FORMS_ENDPOINT: 'forms.web3.endpoint',
@@ -48,6 +49,15 @@ export function getExternalLink(linkKey) {
 
 export function getProjectBookingLink() {
   return getExternalLink(EXTERNAL_LINK_KEYS.PROJECT_BOOKING);
+}
+
+export function getArchitectureBookingLink() {
+  return getExternalLink(EXTERNAL_LINK_KEYS.ARCHITECTURE_BOOKING);
+}
+
+export function getBrowserStoreLink(browser) {
+  const value = siteLinks.stores?.[browser];
+  return typeof value === 'string' ? value : '';
 }
 
 export function getNewsletterSubscribeLink() {

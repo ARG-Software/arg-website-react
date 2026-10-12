@@ -5,7 +5,11 @@ import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
 import { trackEvent, trackCTA } from '@services/analytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
-import { getExternalLink, EXTERNAL_LINK_KEYS } from '../../services/linksService';
+import {
+  getBrowserStoreLink,
+  getExternalLink,
+  EXTERNAL_LINK_KEYS,
+} from '../../services/linksService';
 import projects from '../../data/projects.json';
 import menuConfig from '../../data/menu.json';
 
@@ -41,12 +45,33 @@ function resolveCtaHref(target) {
   return getExternalLink(target) || getExternalLink(EXTERNAL_LINK_KEYS.PROJECT_BOOKING);
 }
 
+// Picks the store the visitor's browser installs extensions from; browsers that
+// cannot install one (Safari, mobile Chrome, iOS) go to the Audit page instead.
+function getAuditInstall(audit) {
+  const userAgent = navigator.userAgent;
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(userAgent);
+
+  let browser = null;
+  if (/Firefox\//.test(userAgent)) {
+    browser = 'firefox';
+  } else if (/Chrome\//.test(userAgent) && !isMobile) {
+    browser = 'chrome';
+  }
+
+  const storeLink = browser ? getBrowserStoreLink(browser) : '';
+  if (!storeLink) {
+    return { browser: 'page', label: audit.fallbackLabel, to: audit.fallbackTo, external: false };
+  }
+  return { browser, label: audit.labels[browser], to: storeLink, external: true };
+}
+
 export function NavMenu({ isOpen, isClosing, onClose }) {
   const [latestPost, setLatestPost] = useState(null);
   const wrapperRef = useRef(null);
   const containerRef = useRef(null);
 
-  const { primary, selectedWork, company, latest, cta } = menuConfig;
+  const { primary, selectedWork, groups, audit, latest, cta } = menuConfig;
+  const auditInstall = useMemo(() => getAuditInstall(audit), [audit]);
 
   const featuredProjects = useMemo(() => {
     const count = selectedWork?.desktopCount ?? 4;
@@ -124,6 +149,11 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
     trackCTA(cta?.eventName || 'book_meeting', cta?.location || 'nav_menu');
   }, [cta?.eventName, cta?.location]);
 
+  const handleAuditClick = useCallback(() => {
+    trackCTA(`install_audit_${auditInstall.browser}`, 'nav_menu');
+    if (!auditInstall.external) handleClose();
+  }, [auditInstall, handleClose]);
+
   const handleAssistantClick = useCallback(
     event => {
       event.stopPropagation();
@@ -148,16 +178,19 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
       primary={primary}
       featuredProjects={featuredProjects}
       selectedWork={selectedWork}
-      company={company}
+      groups={groups}
+      auditInstall={auditInstall}
       latestPost={latestPost}
       latest={latest}
       ctaHref={ctaHref}
       ctaLabel={cta?.label || 'Book a meeting'}
       onClose={handleClose}
       onCtaClick={handleCtaClick}
+      onAuditClick={handleAuditClick}
       onAssistantClick={handleAssistantClick}
       renderLink={renderAppLink(handleLinkClick)}
       renderLatestLink={renderAppLink(handleLinkClick)}
+      renderAuditLink={auditInstall.external ? renderExternalLink : renderAppLink()}
     />
   );
 }
@@ -172,4 +205,12 @@ function renderAppLink(onClick) {
   }
 
   return AppMenuLink;
+}
+
+function renderExternalLink({ to, className, children, ...props }) {
+  return (
+    <a href={to} target="_blank" rel="noopener noreferrer" className={className} {...props}>
+      {children}
+    </a>
+  );
 }

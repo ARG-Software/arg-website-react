@@ -26,6 +26,7 @@ const CareersPage = lazyWithRetry(() => import('./pages/CareersPage.jsx'));
 const SkillsPage = lazyWithRetry(() => import('./pages/SkillsPage.jsx'));
 const SkillDetailPage = lazyWithRetry(() => import('./pages/SkillDetailPage.jsx'));
 const WorkingWithUsPage = lazyWithRetry(() => import('./pages/WorkingWithUsPage.jsx'));
+const AuditPage = lazyWithRetry(() => import('./pages/AuditPage.jsx'));
 const AboutUsPage = lazyWithRetry(() => import('./pages/AboutUsPage.jsx'));
 const ContactPage = lazyWithRetry(() => import('./pages/ContactPage.jsx'));
 const BlogPage = lazyWithRetry(() => import('./pages/blog/BlogPage.jsx'));
@@ -96,6 +97,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     <Route path="/skills/:slug/" element={<SkillDetailPageWrapper />} />
                     <Route path="/working-with-us" element={<WorkingWithUsPage />} />
                     <Route path="/working-with-us/" element={<WorkingWithUsPage />} />
+                    <Route path="/audit" element={<AuditPage />} />
+                    <Route path="/audit/" element={<AuditPage />} />
                     <Route path="/about-us" element={<AboutUsPage />} />
                     <Route path="/about-us/" element={<AboutUsPage />} />
                     <Route path="/contact" element={<ContactPage />} />

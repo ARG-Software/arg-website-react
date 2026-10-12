@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
@@ -17,15 +17,18 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { TransitionContext } from '../../providers/TransitionProvider';
 import { trackBlogPostShare, trackCTA, trackEvent, trackOutbound } from '@services/analytics';
 import {
-  getCodeLanguageLabel,
-  getCodeLineNumbers,
   getHeadingId,
   getRelatedPosts,
-  highlightCode,
-  loadBlogPostsWithContent,
+  loadBlogPostsMetadata,
   parseDateToIso,
+  readBlogPostContent,
   splitArticleTitle,
 } from '@utils/blog';
+import {
+  getCodeLanguageLabel,
+  getCodeLineNumbers,
+  highlightCode,
+} from '@utils/blog/highlightHelper.js';
 import {
   EXTERNAL_LINK_KEYS,
   getBlueskyShareLink,
@@ -37,9 +40,9 @@ import {
 import { buildArticleSchema } from '@utils/structuredData';
 import '../../styles/blog.css';
 
-// ─── Load all blog posts with full content ──────────────────────────────────
+// ─── Post metadata for every post; the body loads per post ──────────────────
 
-const BLOG_POSTS = loadBlogPostsWithContent();
+const BLOG_POSTS = loadBlogPostsMetadata();
 
 // ─── Code block with line numbers + copy button + scoped highlighting ─────────
 
@@ -179,7 +182,12 @@ const renderBlock = (block, i) => {
 export default function BlogPostPage() {
   const { slug } = useParams();
   const { scrollToHash } = useContext(TransitionContext);
-  const BLOG_POST = BLOG_POSTS.find(blogPost => blogPost.slug === slug);
+  const postMetadata = BLOG_POSTS.find(blogPost => blogPost.slug === slug);
+  const content = postMetadata ? readBlogPostContent(slug) : null;
+  const BLOG_POST = useMemo(
+    () => (postMetadata ? { ...postMetadata, content } : undefined),
+    [postMetadata, content]
+  );
   const [activeSection, setActiveSection] = useState('');
   const [isClicking, setIsClicking] = useState(false);
   const [copyLabel, setCopyLabel] = useState('Copy link');

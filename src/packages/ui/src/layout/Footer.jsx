@@ -55,7 +55,7 @@ export function Footer({
               <div className="footer-nav-row" data-animate-order={animate ? '1' : undefined}>
                 {columns.map(column => (
                   <FooterColumn
-                    key={column.title}
+                    key={column.title || column.sections[0].title}
                     column={column}
                     renderLink={renderLink}
                     renderExternalLink={renderExternalLink}
@@ -84,12 +84,19 @@ export function Footer({
 }
 
 function FooterColumn({ column, renderLink, renderExternalLink }) {
+  // A column is one titled list, or several stacked under `sections`
+  const sections = column.sections || [column];
+
   return (
     <div className="footer-nav-col">
-      <div className="footer-col-title">{column.title}</div>
-      <div className="footer-col-list">
-        {column.items.map(item => renderFooterItem(item, renderLink, renderExternalLink))}
-      </div>
+      {sections.map(section => (
+        <div key={section.title} className="footer-col-section">
+          <div className="footer-col-title">{section.title}</div>
+          <div className="footer-col-list">
+            {section.items.map(item => renderFooterItem(item, renderLink, renderExternalLink))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
