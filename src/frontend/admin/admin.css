@@ -693,6 +693,7 @@
 .admin-visit-traffic {
   display: grid;
   gap: 0.18rem;
+  max-width: 11rem;
   min-width: 7rem;
 }
 
@@ -704,6 +705,9 @@
   color: rgba(12, 0, 46, 0.58);
   font-size: 0.72rem;
   line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-visit-traffic--suspected strong {

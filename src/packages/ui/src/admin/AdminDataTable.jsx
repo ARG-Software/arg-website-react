@@ -87,9 +87,22 @@ export function AdminDataTable({
                   }}
                   tabIndex={0}
                 >
-                  {columns.map(column => (
-                    <td key={column.key}>{column.render ? column.render(row) : row[column.key]}</td>
-                  ))}
+                  {columns.map(column => {
+                    const content = column.render ? column.render(row) : row[column.key];
+
+                    return column.truncate ? (
+                      <td key={column.key} className="admin-data-table__truncate-cell">
+                        <span
+                          className="admin-data-table__truncate"
+                          onMouseEnter={showFullTextWhenTruncated}
+                        >
+                          {content}
+                        </span>
+                      </td>
+                    ) : (
+                      <td key={column.key}>{content}</td>
+                    );
+                  })}
                   {rowActions && (
                     <td
                       className="admin-data-table__actions-cell"
@@ -120,6 +133,11 @@ export function AdminDataTable({
       )}
     </UiCard>
   );
+}
+
+function showFullTextWhenTruncated(event) {
+  const cell = event.currentTarget;
+  cell.title = cell.scrollWidth > cell.clientWidth ? cell.textContent : '';
 }
 
 function getSortIndicator(sortDirection) {

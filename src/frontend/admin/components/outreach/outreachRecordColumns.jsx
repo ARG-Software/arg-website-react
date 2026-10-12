@@ -7,16 +7,19 @@ export function getOutreachRecordColumns({ sortableCompany = false } = {}) {
       key: 'companyName',
       label: 'Company',
       sortable: sortableCompany,
+      truncate: true,
       render: record => <CompanyLink record={record} />,
     },
     {
       key: 'website',
       label: 'Site URL',
+      truncate: true,
       render: record => <WebsiteLink website={record.website} />,
     },
     {
       key: 'contactEmail',
       label: 'Contact',
+      truncate: true,
       render: record => record.contactEmail || record.contactInfo || record.website || 'No contact',
     },
     {

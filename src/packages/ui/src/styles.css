@@ -409,6 +409,18 @@
   vertical-align: middle;
 }
 
+/* max-width: 0 lets truncating columns share the leftover width instead of widening the table */
+.admin-data-table__truncate-cell {
+  max-width: 0;
+}
+
+.admin-data-table__truncate {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .admin-data-table tbody tr {
   cursor: pointer;
   transition: background 0.2s ease;

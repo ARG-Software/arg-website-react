@@ -54,17 +54,20 @@ function getVisitSessionColumns() {
     {
       key: 'city',
       label: 'Location',
+      truncate: true,
       render: formatLocation,
     },
-    { key: 'entryPath', label: 'Entry page', sortable: true },
+    { key: 'entryPath', label: 'Entry page', sortable: true, truncate: true },
     {
       key: 'referrer',
       label: 'Referrer',
+      truncate: true,
       render: record => record.referrer || '(direct)',
     },
     {
       key: 'source',
       label: 'Source',
+      truncate: true,
       render: formatSource,
     },
     {
@@ -75,6 +78,7 @@ function getVisitSessionColumns() {
     {
       key: 'originName',
       label: 'Origin',
+      truncate: true,
       render: formatOrigin,
     },
     { key: 'pageCount', label: 'Pages', sortable: true },

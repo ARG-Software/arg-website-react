@@ -81,16 +81,19 @@ function getConversationColumns() {
     {
       key: 'city',
       label: 'Location',
+      truncate: true,
       render: record => formatLocation(record),
     },
     {
       key: 'preview',
       label: 'Conversation',
+      truncate: true,
       render: record => record.preview || `Conversation on ${record.pagePath || 'unknown page'}`,
     },
     {
       key: 'pagePath',
       label: 'Page',
+      truncate: true,
       render: record => record.pagePath || '-',
     },
     {
