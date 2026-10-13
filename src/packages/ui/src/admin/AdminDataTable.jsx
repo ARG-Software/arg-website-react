@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Pagination } from '../navigation/Pagination.jsx';
 import { UiCard } from '../primitives/UiCard.jsx';
 import { UiSpinner } from '../primitives/UiSpinner.jsx';
@@ -97,7 +98,7 @@ export function AdminDataTable({
                           style={{ maxWidth: column.maxWidth }}
                           onMouseEnter={showFullTextWhenTruncated}
                         >
-                          {content}
+                          {typeof content === 'string' ? breakAtSeparators(content) : content}
                         </span>
                       </td>
                     ) : (
@@ -134,6 +135,15 @@ export function AdminDataTable({
       )}
     </UiCard>
   );
+}
+
+function breakAtSeparators(text) {
+  return text.split(/(?<=[,./?&=:;_-])/).map((part, index) => (
+    <Fragment key={index}>
+      {index > 0 && <wbr />}
+      {part}
+    </Fragment>
+  ));
 }
 
 function showFullTextWhenTruncated(event) {
