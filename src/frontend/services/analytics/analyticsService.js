@@ -77,7 +77,7 @@ function getEventPath(params) {
 }
 
 function isAdminPath(path) {
-  return typeof path === 'string' && ADMIN_PATH_PATTERN.test(path);
+  return typeof path === 'string' && ADMIN_PATH_PATTERN.test(path.toLowerCase());
 }
 
 function isLocalHost() {

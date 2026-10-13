@@ -54,7 +54,7 @@ function SkillDetailPageWrapper() {
 function GlobalOverlays() {
   const location = useLocation();
 
-  if (location.pathname.startsWith('/admin')) {
+  if (location.pathname.toLowerCase().startsWith('/admin')) {
     return null;
   }
 

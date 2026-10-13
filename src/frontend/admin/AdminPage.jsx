@@ -51,7 +51,7 @@ export default function AdminPage() {
 function AdminController() {
   const location = useLocation();
 
-  if (location.pathname.startsWith('/admin/login')) {
+  if (location.pathname.toLowerCase().startsWith('/admin/login')) {
     return <LoginPage />;
   }
 
@@ -391,7 +391,8 @@ function getImportStatus(importMutation) {
   return '';
 }
 
-function getAdminView(pathname) {
+function getAdminView(rawPathname) {
+  const pathname = rawPathname.toLowerCase();
   if (pathname.startsWith('/admin/all')) return 'all';
   if (pathname.startsWith('/admin/sent')) return 'sent';
   if (pathname.startsWith('/admin/not-sent')) return 'notSent';
@@ -403,7 +404,8 @@ function getAdminView(pathname) {
   return 'dashboard';
 }
 
-function getVisitsView(pathname) {
+function getVisitsView(rawPathname) {
+  const pathname = rawPathname.toLowerCase();
   if (pathname.startsWith('/admin/visits/all')) return 'all';
   return 'dashboard';
 }

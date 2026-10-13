@@ -32,7 +32,10 @@ function handleAdminAuthError(error) {
 }
 
 function redirectToAdminLogin() {
-  if (typeof window === 'undefined' || window.location.pathname.startsWith('/admin/login')) {
+  if (
+    typeof window === 'undefined' ||
+    window.location.pathname.toLowerCase().startsWith('/admin/login')
+  ) {
     return;
   }
 
