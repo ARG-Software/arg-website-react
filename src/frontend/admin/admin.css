@@ -693,7 +693,7 @@
 .admin-visit-traffic {
   display: grid;
   gap: 0.18rem;
-  max-width: 11rem;
+  max-width: 13rem;
   min-width: 7rem;
 }
 

@@ -88,6 +88,7 @@ function getConversationColumns() {
       key: 'preview',
       label: 'Conversation',
       truncate: true,
+      maxWidth: '32rem',
       render: record => record.preview || `Conversation on ${record.pagePath || 'unknown page'}`,
     },
     {

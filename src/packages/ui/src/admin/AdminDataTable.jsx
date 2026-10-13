@@ -91,9 +91,10 @@ export function AdminDataTable({
                     const content = column.render ? column.render(row) : row[column.key];
 
                     return column.truncate ? (
-                      <td key={column.key} className="admin-data-table__truncate-cell">
+                      <td key={column.key}>
                         <span
                           className="admin-data-table__truncate"
+                          style={{ maxWidth: column.maxWidth }}
                           onMouseEnter={showFullTextWhenTruncated}
                         >
                           {content}
@@ -137,7 +138,7 @@ export function AdminDataTable({
 
 function showFullTextWhenTruncated(event) {
   const cell = event.currentTarget;
-  cell.title = cell.scrollWidth > cell.clientWidth ? cell.textContent : '';
+  cell.title = cell.scrollHeight > cell.clientHeight ? cell.textContent : '';
 }
 
 function getSortIndicator(sortDirection) {

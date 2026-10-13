@@ -370,7 +370,7 @@
 .admin-data-table th,
 .admin-data-table td {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.9rem 0.75rem;
+  padding: 0.9rem 0.6rem;
   text-align: left;
 }
 
@@ -406,19 +406,20 @@
 
 .admin-data-table td {
   color: #fff;
+  font-size: 0.82rem;
   vertical-align: middle;
-}
-
-/* max-width: 0 lets truncating columns share the leftover width instead of widening the table */
-.admin-data-table__truncate-cell {
-  max-width: 0;
-}
-
-.admin-data-table__truncate {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Sizes to its text up to max-width; break-all keeps the column shrinkable so the table never overflows */
+.admin-data-table__truncate {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  display: -webkit-box;
+  max-width: 16rem;
+  overflow: hidden;
+  white-space: normal;
+  word-break: break-all;
 }
 
 .admin-data-table tbody tr {

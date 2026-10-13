@@ -440,7 +440,7 @@ function getCountryChartItems(items) {
 
 function getVisitPageColumns() {
   return [
-    { key: 'path', label: 'Page', sortable: true, truncate: true },
+    { key: 'path', label: 'Page', sortable: true, truncate: true, maxWidth: '28rem' },
     { key: 'pageViews', label: 'Page views', sortable: true },
     { key: 'uniqueVisitors', label: 'Visits', sortable: true },
     {
@@ -459,14 +459,14 @@ function getVisitPageColumns() {
 
 function getVisitReferrerColumns() {
   return [
-    { key: 'label', label: 'Referrer', truncate: true },
+    { key: 'label', label: 'Referrer', truncate: true, maxWidth: '28rem' },
     { key: 'value', label: 'Page views' },
   ];
 }
 
 function getVisitSourceColumns() {
   return [
-    { key: 'label', label: 'Source', truncate: true },
+    { key: 'label', label: 'Source', truncate: true, maxWidth: '28rem' },
     { key: 'value', label: 'Page views' },
   ];
 }

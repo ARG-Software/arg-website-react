@@ -60,6 +60,7 @@ function getSocialPostColumns() {
       key: 'excerpt',
       label: 'Excerpt',
       truncate: true,
+      maxWidth: '40rem',
     },
     {
       key: 'publishedAt',
