@@ -84,13 +84,21 @@ function StoreButton({ store, href, variant, location }) {
 export default function AuditPage() {
   const bookingUrl = getArchitectureBookingLink();
   const [activeFeature, setActiveFeature] = useState(-1);
+  const [videoTracked, setVideoTracked] = useState(false);
   const [verificationState, setVerificationState] = useState('unverified');
   const [verificationKey, setVerificationKey] = useState(0);
   const isVerified = verificationState === 'verified';
   const feature = PAGE.architect.features[activeFeature] ?? PAGE.architect.overview;
+  const video = PAGE.architect.video;
 
   useTimeOnPage('/audit/');
   useScrollAnimations();
+
+  const trackVideoPlay = () => {
+    if (videoTracked) return;
+    setVideoTracked(true);
+    trackEvent('audit_video_play', { video: video.src });
+  };
 
   const selectFeature = index => {
     if (index === activeFeature) return;
@@ -227,10 +235,41 @@ export default function AuditPage() {
                   </figure>
                 </div>
 
+                <div className="au-block au-video-block">
+                  <div data-animate-order="2">
+                    <h3>{video.title}</h3>
+                    <p>{video.text}</p>
+                    <a
+                      href={video.youtubeUrl}
+                      className="au-kicker au-video-link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() =>
+                        trackOutbound(video.youtubeUrl, video.watchLabel, 'audit_video')
+                      }
+                    >
+                      {video.watchLabel}
+                    </a>
+                  </div>
+                  <video
+                    className="au-video"
+                    data-animate-order="3"
+                    src={video.src}
+                    poster={video.cover}
+                    aria-label={video.label}
+                    width="1920"
+                    height="1080"
+                    controls
+                    playsInline
+                    preload="none"
+                    onPlay={trackVideoPlay}
+                  />
+                </div>
+
                 <SectionDivider className="au-divider" variant="light" />
 
                 <div className="au-block">
-                  <div className="au-block-head" data-animate-order="2">
+                  <div className="au-block-head" data-animate-order="4">
                     <h3>{PAGE.architect.checks.title}</h3>
                   </div>
                   <div className="au-cards au-cards--two">
@@ -241,7 +280,7 @@ export default function AuditPage() {
                         variant="light"
                         padding="xl"
                         animate={true}
-                        animationOrder={index + 3}
+                        animationOrder={index + 5}
                       >
                         <span className="au-kicker">{String(index + 1).padStart(2, '0')}</span>
                         <h4>{check.title}</h4>
@@ -257,7 +296,7 @@ export default function AuditPage() {
                   padding="xl"
                   hover="none"
                   animate={true}
-                  animationOrder={9}
+                  animationOrder={11}
                 >
                   <div>
                     <span className="au-private-icon">

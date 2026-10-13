@@ -223,6 +223,15 @@
     ],
     "browsersNote": "(Available through Chrome Store)",
     "privacy": "Free · No account, no analytics, no tracking",
+    "video": {
+      "src": "/videos/arg-architect.mp4",
+      "youtubeUrl": "https://youtu.be/US4nJu6lXvU",
+      "title": "See an audit run",
+      "text": "A short walkthrough: start an audit, read the score, and open a finding.",
+      "cover": "/images/audit/architect-video-cover.webp",
+      "label": "ARG Architect video",
+      "watchLabel": "Watch on YouTube"
+    },
     "checks": {
       "title": "What you can do with it",
       "items": [
