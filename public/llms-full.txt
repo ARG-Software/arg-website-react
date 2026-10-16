@@ -23,6 +23,7 @@ Canonical website: https://arg.software/
 - LinkedIn: https://www.linkedin.com/company/arg-software
 - GitHub: https://github.com/ARG-Software
 - Medium: https://medium.com/@arg-software
+- YouTube: https://www.youtube.com/@ArgSoftwarePT
 
 ## Location And Operating Model
 

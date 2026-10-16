@@ -29,6 +29,7 @@ export const SOCIAL_KEYS = Object.freeze({
   GITHUB: 'github',
   LINKEDIN: 'linkedin',
   MEDIUM: 'medium',
+  YOUTUBE: 'youtube',
 });
 
 function readPath(path) {
@@ -112,6 +113,11 @@ export function getCompanySocialLinks() {
       event: SOCIAL_KEYS.LINKEDIN,
     },
     { label: 'Medium', href: getCompanySocialLink(SOCIAL_KEYS.MEDIUM), event: SOCIAL_KEYS.MEDIUM },
+    {
+      label: 'YouTube',
+      href: getCompanySocialLink(SOCIAL_KEYS.YOUTUBE),
+      event: SOCIAL_KEYS.YOUTUBE,
+    },
   ];
 }
 

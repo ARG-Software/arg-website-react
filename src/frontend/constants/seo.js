@@ -13,5 +13,6 @@ export const DEFAULT_AUTHOR = {
     'https://www.linkedin.com/company/arg-software',
     'https://github.com/ARG-Software',
     'https://medium.com/@arg-software',
+    'https://www.youtube.com/@ArgSoftwarePT',
   ],
 };

@@ -126,6 +126,7 @@ export interface ISiteLinksJson {
     github?: string;
     linkedin?: string;
     medium?: string;
+    youtube?: string;
   };
   feeds?: {
     rss?: string;

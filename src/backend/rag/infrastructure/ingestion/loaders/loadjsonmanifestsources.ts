@@ -78,6 +78,7 @@ function formatSiteLinksSource(siteLinks: ISiteLinksJson, label = 'ARG links and
     `${label}: GitHub: ${siteLinks.socials?.github}.`,
     `${label}: LinkedIn: ${siteLinks.socials?.linkedin}.`,
     `${label}: Medium: ${siteLinks.socials?.medium}.`,
+    `${label}: YouTube: ${siteLinks.socials?.youtube}.`,
     `${label}: Portfolio: ${siteLinks.assets?.portfolio}.`,
     `${label}: RSS feed: ${siteLinks.feeds?.rss}.`,
     `${label}: Atom feed: ${siteLinks.feeds?.atom}.`,

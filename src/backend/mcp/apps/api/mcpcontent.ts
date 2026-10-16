@@ -124,6 +124,7 @@ export const CONTACT_OPTIONS = {
   linkedin: 'https://www.linkedin.com/company/arg-software',
   github: 'https://github.com/ARG-Software',
   medium: 'https://medium.com/@arg-software',
+  youtube: 'https://www.youtube.com/@ArgSoftwarePT',
 };
 
 export const LLM_CONTEXT = {
