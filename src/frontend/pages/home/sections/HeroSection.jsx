@@ -1,14 +1,38 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { trackEvent, trackMailto } from '@services/analytics';
 import { TransitionContext } from '../../../providers/TransitionProvider';
+import { LoadingContext } from '../../../providers/LoadingProvider';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { useWaterRipple } from '../../../hooks/useWaterRipple';
 import { EMAIL_KEYS, getMailtoLink } from '../../../services/linksService';
 
+// The moment in hero-video-opt.mp4 whose blob has the shape the intro video ends on.
+const INTRO_HANDOFF_S = 9;
+
 export function HeroSection({ content }) {
   useWaterRipple('water-ripple-canvas');
   const { scrollToHash } = useContext(TransitionContext);
+  const loadingDone = useContext(LoadingContext);
+  const videoRef = useRef(null);
+  const waitsForIntroRef = useRef(!loadingDone);
+
+  // Behind the intro the hero video waits on the frame the intro ends on, and plays on from
+  // there once the intro is gone, so the blob carries on instead of jumping to another shape.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !waitsForIntroRef.current) return;
+    if (loadingDone) {
+      video.play().catch(() => {});
+      return;
+    }
+    const seek = () => {
+      video.currentTime = INTRO_HANDOFF_S;
+    };
+    if (video.readyState >= 1) seek();
+    else video.addEventListener('loadedmetadata', seek, { once: true });
+    return () => video.removeEventListener('loadedmetadata', seek);
+  }, [loadingDone]);
 
   const handleContactClick = event => {
     event.preventDefault();
@@ -99,7 +123,15 @@ export function HeroSection({ content }) {
       <div className="hero_visual">
         <canvas id="water-ripple-canvas" />
         <div data-autoplay="true" data-loop="true" className="ambient-bg-video">
-          <video id="hero-video" autoPlay loop muted playsInline>
+          <video
+            id="hero-video"
+            ref={videoRef}
+            autoPlay={loadingDone}
+            preload="auto"
+            loop
+            muted
+            playsInline
+          >
             <source src="videos/hero-video-opt.mp4" />
           </video>
         </div>

@@ -40,11 +40,6 @@
   display: none !important;
 }
 
-.ambient-bg-video.ls-bg-video {
-  position: absolute;
-  z-index: 0;
-}
-
 .heading_line {
   overflow: hidden;
 }
