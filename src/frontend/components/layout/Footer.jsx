@@ -21,13 +21,19 @@ const NAV_COLUMNS = [{ label: 'Navigate', items: MENU.primary }, ...MENU.groups]
 export function Footer({ animate = true, animationPreset = 'fade-up', animationStagger = 80 }) {
   const socialLinks = getCompanySocialLinks();
   const contactEmail = getEmailAddress(EMAIL_KEYS.INFO);
-  const columns = buildFooterColumns(socialLinks, contactEmail);
+  const columns = buildFooterColumns(socialLinks);
 
   return (
     <UiFooter
       brand={{
         logo: <MarkNameWhite />,
         tagline: SITE.footer.tagline,
+        contact: (
+          <>
+            Porto and Funchal, Portugal ·{' '}
+            <a href={getMailtoLink(EMAIL_KEYS.INFO)}>{contactEmail}</a>
+          </>
+        ),
         actionsTitle: SITE.footer.askAi.title,
         actions: buildFooterAiActions(),
       }}
@@ -46,7 +52,7 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
   );
 }
 
-function buildFooterColumns(socialLinks, contactEmail) {
+function buildFooterColumns(socialLinks) {
   return [
     ...NAV_COLUMNS,
     {
@@ -54,22 +60,8 @@ function buildFooterColumns(socialLinks, contactEmail) {
       items: SITE.footer.services.map(item => ({ label: item })),
     },
     {
-      sections: [
-        {
-          title: 'Socials',
-          items: socialLinks.map(link => ({ ...link, className: 'footer-socials__link' })),
-        },
-        {
-          title: 'Contact',
-          items: [
-            { label: 'Porto and Funchal, Portugal' },
-            {
-              key: 'info-email',
-              html: <a href={getMailtoLink(EMAIL_KEYS.INFO)}>{contactEmail}</a>,
-            },
-          ],
-        },
-      ],
+      title: 'Socials',
+      items: socialLinks.map(link => ({ ...link, className: 'footer-socials__link' })),
     },
   ];
 }

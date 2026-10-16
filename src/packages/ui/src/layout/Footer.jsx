@@ -32,6 +32,7 @@ export function Footer({
             <div className="footer-left" data-animate-order={animate ? '0' : undefined}>
               {brand?.logo && <div className="footer-left__logo">{brand.logo}</div>}
               {brand?.tagline && <div className="footer-left__tagline">{brand.tagline}</div>}
+              {brand?.contact && <div className="footer-left__contact">{brand.contact}</div>}
               {brand?.actions?.length > 0 && (
                 <div className="footer-left__actions">
                   {brand.actionsTitle && (

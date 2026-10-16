@@ -1670,6 +1670,24 @@
   margin-bottom: 0.5rem;
 }
 
+.footer-left__contact {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-footer-text);
+  line-height: var(--line-footer);
+  margin-bottom: 0.5rem;
+}
+
+.footer-left__contact a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-left__contact a:hover {
+  color: #fff;
+}
+
 .footer-left__actions {
   align-items: center;
   display: flex;
