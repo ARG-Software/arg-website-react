@@ -14,5 +14,6 @@ export const DEFAULT_AUTHOR = {
     'https://github.com/ARG-Software',
     'https://medium.com/@arg-software',
     'https://www.youtube.com/@ArgSoftwarePT',
+    'https://www.wikidata.org/wiki/Q141738370',
   ],
 };

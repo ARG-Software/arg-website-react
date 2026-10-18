@@ -87,3 +87,4 @@ Public company and engineering channels, not a substitute for the site or llms-f
 - GitHub: https://github.com/ARG-Software
 - Medium: https://medium.com/@arg-software
 - YouTube: https://www.youtube.com/@ArgSoftwarePT
+- Wikidata: https://www.wikidata.org/wiki/Q141738370

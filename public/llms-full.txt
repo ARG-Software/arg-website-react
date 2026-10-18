@@ -24,6 +24,7 @@ Canonical website: https://arg.software/
 - GitHub: https://github.com/ARG-Software
 - Medium: https://medium.com/@arg-software
 - YouTube: https://www.youtube.com/@ArgSoftwarePT
+- Wikidata: https://www.wikidata.org/wiki/Q141738370
 
 ## Location And Operating Model
 

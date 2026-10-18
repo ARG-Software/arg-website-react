@@ -117,12 +117,7 @@ export function buildOrganizationSchema() {
       email: 'hello@arg.software',
       url: `${SITE_URL}/contact/`,
     },
-    sameAs: [
-      'https://www.linkedin.com/company/arg-software',
-      'https://github.com/ARG-Software',
-      'https://medium.com/@arg-software',
-      'https://www.youtube.com/@ArgSoftwarePT',
-    ],
+    sameAs: DEFAULT_AUTHOR.sameAs,
     founder: [
       {
         '@type': 'Person',
