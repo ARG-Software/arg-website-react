@@ -1,121 +1,278 @@
 {
   "/images/blog/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
-  "/images/blog/everyone-wants-ai/everyone-wants-ai-header.webp": [480, 960, 1600, 2560],
+  "/images/blog/everyone-wants-ai/everyone-wants-ai-header.webp": [
+    480,
+    960,
+    1600,
+    2560
+  ],
   "/images/blog/the-great-professional-reckoning/the-great-professional-reckoning-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
-  "/images/blog/angular-migration/upgrading-angular-legacy.webp": [480, 960, 1600, 2560],
-  "/images/blog/api-architecture-styles/api-architecture-styles.webp": [480, 960, 1600, 2560],
+  "/images/blog/angular-migration/upgrading-angular-legacy.webp": [
+    480,
+    960,
+    1600,
+    2560
+  ],
+  "/images/blog/api-architecture-styles/api-architecture-styles.webp": [
+    480,
+    960,
+    1600,
+    2560
+  ],
   "/images/blog/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/chrome-extension-react-vite/building-a-chrome-extension-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/stop-your-asp-net-core-app-from-crashing/stop-your-asp-net-core-app-from-crashing-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/clinejection-how-a-simple-github-issue/clinejection-how-a-simple-github-issue-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/net-cqrs-architecture-without-mediatr/net-cqrs-architecture-without-mediatr-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/datetime-mistakes-that-are-silently-breaking-your-csharp-app/datetime-mistakes-that-are-silently-breaking-your-csharp-app-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/how-we-debug-slow-microservices/how-we-debug-slow-microservices-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/dependency-injection-anti-patterns/dependency-injection-anti-patterns-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/the-rules-are-in-the-readme/the-rules-are-in-the-readme-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/functional-error-handling-in-typescript/functional-error-handling-in-typescript-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
-  "/images/blog/goodbye-wsl/goodbye-wsl-header.webp": [480, 960, 1600, 2560],
+  "/images/blog/goodbye-wsl/goodbye-wsl-header.webp": [
+    480,
+    960,
+    1600,
+    2560
+  ],
   "/images/blog/how-to-log-complex-systems-like-a-senior-backend-engineer/how-to-log-complex-systems-like-a-senior-backend-engineer-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/llms-dont-remember-anything/llms-dont-remember-anything-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
-  "/images/blog/from-zero-to-hero/from-zero-to-hero-header.webp": [480, 960, 1600, 2560],
-  "/images/blog/nestjs-monorepo/nestjs-monorepo-header.webp": [480, 960, 1600, 2560],
-  "/images/blog/taming-the-chaos/taming-the-chaos-header.webp": [480, 960, 1600, 2560],
+  "/images/blog/from-zero-to-hero/from-zero-to-hero-header.webp": [
+    480,
+    960,
+    1600,
+    2560
+  ],
+  "/images/blog/nestjs-monorepo/nestjs-monorepo-header.webp": [
+    480,
+    960,
+    1600,
+    2560
+  ],
+  "/images/blog/taming-the-chaos/taming-the-chaos-header.webp": [
+    480,
+    960,
+    1600,
+    2560
+  ],
   "/images/blog/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/break-free-from-chatgpt/break-free-from-chatgpt-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/stop-hitting-claude-usage-limits/stop-hitting-claude-usage-limits-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/how-i-learned-to-stop-worrying/how-i-learned-to-stop-worrying-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/testcontainers-best-practices-nestjs/testcontainers-best-practices-nestjs-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore/the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/the-art-of-pull-requests/the-art-of-pull-requests-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/the-code-review-collapse-surviving-the-ai-tsunami/the-code-review-collapse-surviving-the-ai-tsunami-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn/the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/the-stack-nobody-hypes-but-serious-ctos-keep-choosing/the-stack-nobody-hypes-but-serious-ctos-keep-choosing-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
-  "/images/blog/the-four-letter-word/the-four-letter-word-header.webp": [480, 960, 1600, 2560],
+  "/images/blog/the-four-letter-word/the-four-letter-word-header.webp": [
+    480,
+    960,
+    1600,
+    2560
+  ],
   "/images/blog/typescript-dependency-injection-without-the-framework/typescript-dependency-injection-without-the-framework-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/typescript-7-rewritten-in-go/typescript-7-rewritten-in-go-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
+  ],
+  "/images/blog/website-audit-browser-extension/website-audit-browser-extension-header.webp": [
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/why-software-engineering-fundamentals-still-win-in-the-age-of-ai/why-software-engineering-fundamentals-still-win-in-the-age-of-ai-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ],
   "/images/blog/why-your-jwt-implementation-probably-breaks/why-your-jwt-implementation-probably-breaks-header.webp": [
-    480, 960, 1600, 2560
+    480,
+    960,
+    1600,
+    2560
   ]
 }
