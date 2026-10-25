@@ -712,9 +712,12 @@
 }
 
 .prp-image-gallery__lightbox {
+  --prp-gallery-placeholder-a: #dedcd6;
+  --prp-gallery-placeholder-b: #d4d3ce;
   position: fixed;
   inset: 0;
   z-index: 1000;
+  font-family: Neuemontreal, sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;

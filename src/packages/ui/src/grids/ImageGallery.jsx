@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 function getWrappedIndex(index, length) {
   return ((index % length) + length) % length;
@@ -102,112 +103,114 @@ export function ImageGallery({ images = [], className = '' }) {
         ))}
       </div>
 
-      {isOpen && (
-        <div
-          className="prp-image-gallery__lightbox is-open"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Image viewer"
-          data-lenis-prevent
-          onClick={event => {
-            if (event.target === event.currentTarget) close();
-          }}
-        >
-          <button
-            ref={closeButtonRef}
-            type="button"
-            className="prp-image-gallery__lightbox-button prp-image-gallery__lightbox-close"
-            onClick={close}
-            aria-label="Close image viewer"
+      {isOpen &&
+        createPortal(
+          <div
+            className="prp-image-gallery__lightbox is-open"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Image viewer"
+            data-lenis-prevent
+            onClick={event => {
+              if (event.target === event.currentTarget) close();
+            }}
           >
-            <svg
-              className="prp-image-gallery__lightbox-icon"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              focusable="false"
+            <button
+              ref={closeButtonRef}
+              type="button"
+              className="prp-image-gallery__lightbox-button prp-image-gallery__lightbox-close"
+              onClick={close}
+              aria-label="Close image viewer"
             >
-              <path
-                d="M5 5l14 14M19 5L5 19"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
-
-          {images.length > 1 && (
-            <>
-              <button
-                type="button"
-                className="prp-image-gallery__lightbox-button prp-image-gallery__lightbox-prev"
-                onClick={() => show(open - 1)}
-                aria-label="Previous image"
+              <svg
+                className="prp-image-gallery__lightbox-icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                focusable="false"
               >
-                <svg
-                  className="prp-image-gallery__lightbox-icon"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path
-                    d="M15 5l-7 7 7 7"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                className="prp-image-gallery__lightbox-button prp-image-gallery__lightbox-next"
-                onClick={() => show(open + 1)}
-                aria-label="Next image"
-              >
-                <svg
-                  className="prp-image-gallery__lightbox-icon"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path
-                    d="M9 5l7 7-7 7"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </>
-          )}
+                <path
+                  d="M5 5l14 14M19 5L5 19"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
 
-          <div className="prp-image-gallery__lightbox-stage">
-            {openImage?.src ? (
-              <img
-                className="prp-image-gallery__lightbox-image"
-                src={openImage.src}
-                srcSet={openImage.srcSet}
-                sizes="100vw"
-                alt={openImage.alt ?? openCaption}
-                width={openImage.width}
-                height={openImage.height}
-              />
-            ) : (
-              <div className="prp-image-gallery__lightbox-placeholder">
-                {openCaption || 'Project image'}
-              </div>
+            {images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="prp-image-gallery__lightbox-button prp-image-gallery__lightbox-prev"
+                  onClick={() => show(open - 1)}
+                  aria-label="Previous image"
+                >
+                  <svg
+                    className="prp-image-gallery__lightbox-icon"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M15 5l-7 7 7 7"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  className="prp-image-gallery__lightbox-button prp-image-gallery__lightbox-next"
+                  onClick={() => show(open + 1)}
+                  aria-label="Next image"
+                >
+                  <svg
+                    className="prp-image-gallery__lightbox-icon"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M9 5l7 7-7 7"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </>
             )}
-            <div className="prp-image-gallery__lightbox-caption">{openCaption}</div>
-            <div className="prp-image-gallery__lightbox-count">
-              {open + 1} / {images.length}
+
+            <div className="prp-image-gallery__lightbox-stage">
+              {openImage?.src ? (
+                <img
+                  className="prp-image-gallery__lightbox-image"
+                  src={openImage.src}
+                  srcSet={openImage.srcSet}
+                  sizes="100vw"
+                  alt={openImage.alt ?? openCaption}
+                  width={openImage.width}
+                  height={openImage.height}
+                />
+              ) : (
+                <div className="prp-image-gallery__lightbox-placeholder">
+                  {openCaption || 'Project image'}
+                </div>
+              )}
+              <div className="prp-image-gallery__lightbox-caption">{openCaption}</div>
+              <div className="prp-image-gallery__lightbox-count">
+                {open + 1} / {images.length}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
