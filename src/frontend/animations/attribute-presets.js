@@ -10,6 +10,7 @@ export const ANIMATION_PRESETS = {
   overlayReveal: 'overlay-reveal',
   slideUpRotate: 'slide-up-rotate',
   slideInRight: 'slide-in-right',
+  slideInLeft: 'slide-in-left',
   dividerExpanderShow: 'divider-expander-show',
   titleReveal: 'title-reveal',
   slideFromLeft: 'slide-from-left',
@@ -66,7 +67,17 @@ export const ATTRIBUTE_PRESETS = {
   // Slide in from right
   [ANIMATION_PRESETS.slideInRight]: {
     initialOpacity: '0',
-    initialTransform: 'translate3d(4rem, 0, 0)',
+    initialTransform: 'translate3d(50%, 0, 0)',
+    transition:
+      'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+    threshold: 0.1,
+    rootMargin: '0px 0px -10% 0px',
+  },
+
+  // Slide in from left
+  [ANIMATION_PRESETS.slideInLeft]: {
+    initialOpacity: '0',
+    initialTransform: 'translate3d(-50%, 0, 0)',
     transition:
       'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
     threshold: 0.1,

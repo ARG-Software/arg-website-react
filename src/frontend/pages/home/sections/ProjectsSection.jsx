@@ -4,6 +4,8 @@ import { trackEvent, trackOutbound } from '@services/analytics';
 import HOMEPAGE from '../../../data/homePage.json';
 
 const PROJECT_GRID_PATTERN_ROWS = [1, 2, 2, 3, 4, 4];
+// Which side of the grid each pattern slot sits on, so cards slide in from their own edge.
+const PROJECT_GRID_PATTERN_SIDES = ['left', 'left', 'right', 'right', 'left', 'right'];
 const PROJECT_GRID_ROW_STRIDE = 7;
 
 export function ProjectsSection({ projects, className = '', content = HOMEPAGE.projects }) {
@@ -54,7 +56,11 @@ export function ProjectsSection({ projects, className = '', content = HOMEPAGE.p
                 <ProjectItem
                   key={project.slug}
                   animate={true}
-                  animationPreset={ANIMATION_PRESETS.slideInRight}
+                  animationPreset={
+                    PROJECT_GRID_PATTERN_SIDES[patternIndex] === 'left'
+                      ? ANIMATION_PRESETS.slideInLeft
+                      : ANIMATION_PRESETS.slideInRight
+                  }
                   animationOrder={i + 3}
                   mobileAnimationPreset={ANIMATION_PRESETS.fadeUp}
                   mobileAnimationOrder={i + 3}

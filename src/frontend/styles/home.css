@@ -1102,6 +1102,11 @@
   padding-top: 8rem;
 }
 
+/* Cards wait off to the side before sliding in; never let that add a sideways scroll. */
+.projects_wrap {
+  overflow-x: clip;
+}
+
 .projects_heading-wrapper {
   align-items: flex-start;
   display: flex;
