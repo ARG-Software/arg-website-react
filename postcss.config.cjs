@@ -53,6 +53,12 @@ module.exports = {
               /^ui-stat--/,
               /^ui-button--/,
               /^ui-status-pill--/,
+              // Modifiers built at runtime (tag-filter--${layout}, strand tones from about.json, admin roles/modes)
+              /^tag-filter--/,
+              /^vertical-timeline__strand--/,
+              /^admin-visit-traffic--/,
+              /^admin-metric-chart__plots--/,
+              /^admin-conversation-message--/,
               /^html/,
             ],
             deep: [
