@@ -21,6 +21,8 @@ import { toShortContentDate } from '@utils/contentDate';
 import { BLOG_POSTS_PER_PAGE } from '@constants/config';
 import '../../styles/blog.css';
 
+const HERO_TOPIC_COUNT = 6;
+
 const searchSvg = (
   <svg
     width="18"
@@ -60,6 +62,10 @@ export default function BlogPage() {
     return acc;
   }, {});
 
+  const heroTopics = Object.keys(tagCounts)
+    .sort((a, b) => tagCounts[b] - tagCounts[a])
+    .slice(0, HERO_TOPIC_COUNT);
+
   const collectionCounts = blogPosts.reduce((acc, post) => {
     if (post.collectionTitle) {
       acc[post.collectionTitle] = (acc[post.collectionTitle] || 0) + 1;
@@ -76,6 +82,12 @@ export default function BlogPage() {
         : [...currentTags, tag]
     );
     trackEvent(isSelected ? 'blog_tag_filter_remove' : 'blog_tag_filter_add', { tag });
+  }
+
+  // Hero topic links show only that topic; the link's #blog-list href scrolls to the list.
+  function showTopic(tag) {
+    setSelectedTags([tag]);
+    trackEvent('blog_hero_topic_click', { tag });
   }
 
   function clearTags() {
@@ -140,8 +152,12 @@ export default function BlogPage() {
             title={['The thinking', 'behind the doing.']}
             subtitle="Technical essays, engineering deep dives, and field notes from the systems we build and the tradeoffs we make."
             breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Blog' }]}
-            sideLabel="What we write about"
-            sideText="Pragmatic architecture, TypeScript, .NET, DevOps, AI tooling, team practices, and the engineering decisions behind reliable software."
+            sideLabel="Topics"
+            sideItems={heroTopics.map(tag => ({
+              label: tag,
+              href: '#blog-list',
+              onClick: () => showTopic(tag),
+            }))}
             size="small"
           />
 

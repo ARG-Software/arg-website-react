@@ -19,11 +19,10 @@ const VARIANT_CLASSES = {
  * @param {string|string[]} props.title - Page title (string or array for multi-line titles)
  * @param {string} [props.subtitle] - Optional subtitle
  * @param {Array} [props.breadcrumbs] - Optional breadcrumb items: { label: string, path?: string, isTag?: boolean }
- * @param {Array} [props.sideItems] - Optional right-column links: { label: string, href?: string, to?: string, meta?: string }
- * @param {string} [props.sideLabel] - Right-column label
- * @param {string} [props.sideText] - Optional right-column text block
- * @param {React.ReactNode} [props.children] - Optional children for special content (e.g., stats grid for Clients page)
- * @param {string} [props.size] - Header size: 'default' (50vh), 'large' (56vh), 'small' (42vh)
+ * @param {Array} [props.sideItems] - Optional links row: { label: string, href?: string, to?: string, meta?: string }
+ * @param {string} [props.sideLabel] - Links row label
+ * @param {React.ReactNode} [props.children] - Optional content pinned to the bottom of the header when there are no links (e.g., blog post meta)
+ * @param {string} [props.size] - Header size class hook: 'default', 'large', 'small'
  * @param {string} [props.variant] - Optional visual variant
  */
 export function PageHeader({
@@ -32,7 +31,6 @@ export function PageHeader({
   breadcrumbs,
   sideItems = [],
   sideLabel = 'On this page',
-  sideText,
   children,
   size = 'default',
   variant,
@@ -48,10 +46,6 @@ export function PageHeader({
   ]
     .filter(Boolean)
     .join(' ');
-  const hasSideContent = sideItems.length > 0 || sideText;
-  const innerClass = hasSideContent
-    ? 'page-header__inner'
-    : 'page-header__inner page-header__inner--single';
 
   const scopeAttrs = animate
     ? {
@@ -123,62 +117,56 @@ export function PageHeader({
 
   return (
     <header className={headerClass} {...scopeAttrs}>
-      <div className={innerClass}>
-        <div className="page-header__lead">
-          {breadcrumbs && breadcrumbs.length > 0 && (
-            <Breadcrumb items={breadcrumbs} animate={animate} animationTrigger={animationTrigger} />
-          )}
+      <div className="page-header__inner">
+        {breadcrumbs && breadcrumbs.length > 0 && (
+          <Breadcrumb items={breadcrumbs} animate={animate} animationTrigger={animationTrigger} />
+        )}
 
-          <h1>
-            {titleLines.map((line, index) => (
-              <div key={index} className="heading_line">
-                <span
-                  className={
-                    index === 1
-                      ? 'page-header__heading-line text-color-gradiant'
-                      : 'page-header__heading-line'
-                  }
-                  data-animate={animate ? 'slide-up-rotate' : undefined}
-                  data-animate-trigger={animate ? animationTrigger : undefined}
-                  data-animate-distance={animate ? '150%' : undefined}
-                  data-animate-order={animate ? `${index}` : undefined}
-                  style={{ textAlign: 'left' }}
-                >
-                  {line}
-                </span>
-              </div>
-            ))}
-          </h1>
+        <h1>
+          {titleLines.map((line, index) => (
+            <div key={index} className="heading_line">
+              <span
+                className={
+                  index === 1
+                    ? 'page-header__heading-line text-color-gradiant'
+                    : 'page-header__heading-line'
+                }
+                data-animate={animate ? 'slide-up-rotate' : undefined}
+                data-animate-trigger={animate ? animationTrigger : undefined}
+                data-animate-distance={animate ? '150%' : undefined}
+                data-animate-order={animate ? `${index}` : undefined}
+                style={{ textAlign: 'left' }}
+              >
+                {line}
+              </span>
+            </div>
+          ))}
+        </h1>
 
-          {subtitle && (
-            <p
-              className="page-header__subtitle"
-              data-animate={animate ? 'fade-up' : undefined}
-              data-animate-trigger={animate ? animationTrigger : undefined}
-              data-animate-order={animate ? '2' : undefined}
-            >
-              {subtitle}
-            </p>
-          )}
+        {subtitle && (
+          <p
+            className="page-header__subtitle"
+            data-animate={animate ? 'fade-up' : undefined}
+            data-animate-trigger={animate ? animationTrigger : undefined}
+            data-animate-order={animate ? '2' : undefined}
+          >
+            {subtitle}
+          </p>
+        )}
 
-          {children}
-        </div>
-
-        {hasSideContent && (
-          <aside className="page-header__side hide-mobile-landscape" aria-label={sideLabel}>
+        {sideItems.length > 0 && (
+          <div className="page-header__row page-header__row--links">
             <div className="page-header__side-label" {...itemAnimationAttrs(3)}>
               <span className="page-header__side-dot" aria-hidden="true" />
               {sideLabel}
             </div>
-            {sideItems.length > 0 ? (
-              <nav className="page-header__side-list">{sideItems.map(renderSideItem)}</nav>
-            ) : (
-              <p className="page-header__side-text" {...itemAnimationAttrs(4)}>
-                {sideText}
-              </p>
-            )}
-          </aside>
+            <nav className="page-header__side-list" aria-label={sideLabel}>
+              {sideItems.map(renderSideItem)}
+            </nav>
+          </div>
         )}
+
+        {sideItems.length === 0 && children && <div className="page-header__row">{children}</div>}
       </div>
     </header>
   );
