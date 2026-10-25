@@ -18,6 +18,18 @@
   display: grid;
   grid-template-columns: var(--blp-sidebar-width) minmax(0, 1fr);
   margin-top: 5rem;
+  position: relative;
+}
+
+/* Line between the filters and the list, in the middle of the gap and as tall as the list */
+.blp-layout::before {
+  background: #ececec;
+  bottom: 0;
+  content: '';
+  left: calc(var(--blp-sidebar-width) + var(--blp-column-gap) / 2);
+  position: absolute;
+  top: 0;
+  width: 1px;
 }
 
 /* Sits under the article column, outside the layout */
@@ -257,6 +269,10 @@
     grid-template-columns: minmax(0, 1fr);
     margin-top: 4rem;
     row-gap: 2rem;
+  }
+
+  .blp-layout::before {
+    display: none;
   }
 
   .blp-pagination {
