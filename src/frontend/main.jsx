@@ -2,7 +2,15 @@ import { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { LoadingProvider } from './providers/LoadingProvider.jsx';
 import { RAFProvider } from './providers/RAFProvider.jsx';
-import { BrowserRouter, Routes, Route, useLocation, useParams } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  createRoutesFromChildren,
+  matchRoutes,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import HomePage from './pages/home/HomePage.jsx';
 import { LenisProvider } from './providers/LenisProvider.jsx';
@@ -51,6 +59,45 @@ function SkillDetailPageWrapper() {
   return <SkillDetailPage key={slug} />;
 }
 
+const appRoutes = (
+  <>
+    <Route path="/" element={<HomePage />} />
+    <Route path="/partners" element={<PartnersPage />} />
+    <Route path="/partners/" element={<PartnersPage />} />
+    <Route path="/projects" element={<ProjectsPage />} />
+    <Route path="/projects/" element={<ProjectsPage />} />
+    <Route path="/projects/:slug" element={<ProjectDetailPageWrapper />} />
+    <Route path="/projects/:slug/" element={<ProjectDetailPageWrapper />} />
+    <Route path="/careers" element={<CareersPage />} />
+    <Route path="/careers/" element={<CareersPage />} />
+    <Route path="/skills" element={<SkillsPage />} />
+    <Route path="/skills/" element={<SkillsPage />} />
+    <Route path="/skills/:slug" element={<SkillDetailPageWrapper />} />
+    <Route path="/skills/:slug/" element={<SkillDetailPageWrapper />} />
+    <Route path="/working-with-us" element={<WorkingWithUsPage />} />
+    <Route path="/working-with-us/" element={<WorkingWithUsPage />} />
+    <Route path="/audit" element={<AuditPage />} />
+    <Route path="/audit/" element={<AuditPage />} />
+    <Route path="/about-us" element={<AboutUsPage />} />
+    <Route path="/about-us/" element={<AboutUsPage />} />
+    <Route path="/contact" element={<ContactPage />} />
+    <Route path="/contact/" element={<ContactPage />} />
+    <Route path="/blog" element={<BlogPage />} />
+    <Route path="/blog/" element={<BlogPage />} />
+    <Route path="/blog/:slug" element={<BlogPostPageWrapper />} />
+    <Route path="/blog/:slug/" element={<BlogPostPageWrapper />} />
+    <Route path="/privacy" element={<PrivacyPage />} />
+    <Route path="/privacy/" element={<PrivacyPage />} />
+    <Route path="/terms" element={<TermsPage />} />
+    <Route path="/terms/" element={<TermsPage />} />
+    <Route path="/admin/*" element={<AdminPage />} />
+    <Route path="*" element={<NotFoundPage />} />
+  </>
+);
+
+// The same table as route objects, so overlays can tell when a path falls through to the 404.
+const appRouteObjects = createRoutesFromChildren(appRoutes);
+
 function GlobalOverlays() {
   const location = useLocation();
 
@@ -58,11 +105,14 @@ function GlobalOverlays() {
     return null;
   }
 
+  // The 404 is a full-screen scene; keep the banner and Gaspar off it.
+  const isNotFound = matchRoutes(appRouteObjects, location)?.at(-1)?.route.path === '*';
+
   return (
     <>
-      <AssistantProvider />
+      {!isNotFound && <AssistantProvider />}
       <WebMCPProvider />
-      <CookieConsent />
+      {!isNotFound && <CookieConsent />}
     </>
   );
 }
@@ -81,39 +131,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <TransitionProvider>
               <ErrorBoundary>
                 <Suspense fallback={null}>
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/partners" element={<PartnersPage />} />
-                    <Route path="/partners/" element={<PartnersPage />} />
-                    <Route path="/projects" element={<ProjectsPage />} />
-                    <Route path="/projects/" element={<ProjectsPage />} />
-                    <Route path="/projects/:slug" element={<ProjectDetailPageWrapper />} />
-                    <Route path="/projects/:slug/" element={<ProjectDetailPageWrapper />} />
-                    <Route path="/careers" element={<CareersPage />} />
-                    <Route path="/careers/" element={<CareersPage />} />
-                    <Route path="/skills" element={<SkillsPage />} />
-                    <Route path="/skills/" element={<SkillsPage />} />
-                    <Route path="/skills/:slug" element={<SkillDetailPageWrapper />} />
-                    <Route path="/skills/:slug/" element={<SkillDetailPageWrapper />} />
-                    <Route path="/working-with-us" element={<WorkingWithUsPage />} />
-                    <Route path="/working-with-us/" element={<WorkingWithUsPage />} />
-                    <Route path="/audit" element={<AuditPage />} />
-                    <Route path="/audit/" element={<AuditPage />} />
-                    <Route path="/about-us" element={<AboutUsPage />} />
-                    <Route path="/about-us/" element={<AboutUsPage />} />
-                    <Route path="/contact" element={<ContactPage />} />
-                    <Route path="/contact/" element={<ContactPage />} />
-                    <Route path="/blog" element={<BlogPage />} />
-                    <Route path="/blog/" element={<BlogPage />} />
-                    <Route path="/blog/:slug" element={<BlogPostPageWrapper />} />
-                    <Route path="/blog/:slug/" element={<BlogPostPageWrapper />} />
-                    <Route path="/privacy" element={<PrivacyPage />} />
-                    <Route path="/privacy/" element={<PrivacyPage />} />
-                    <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/terms/" element={<TermsPage />} />
-                    <Route path="/admin/*" element={<AdminPage />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                  </Routes>
+                  <Routes>{appRoutes}</Routes>
                 </Suspense>
               </ErrorBoundary>
             </TransitionProvider>
