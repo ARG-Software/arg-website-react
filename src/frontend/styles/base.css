@@ -2,6 +2,9 @@
 html {
   scrollbar-width: thin;
   scrollbar-color: #ffffff #0c002e;
+  /* Keep the gutter reserved while Lenis is stopped (overflow: clip) so page
+     transitions don't reflow the page when the scrollbar hides and returns. */
+  scrollbar-gutter: stable;
 }
 
 html::-webkit-scrollbar {

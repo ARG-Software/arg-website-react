@@ -100,22 +100,54 @@
   transition: visibility 0ms linear 300ms;
 }
 
+/* Fills the viewport around the growing image so the old page never shows
+   below the hero while the next page mounts. */
+.pt-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: #ededed;
+  animation: pt-project-backdrop-in 760ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
 .pt-project-image {
   position: fixed;
   left: var(--pt-image-left);
   top: var(--pt-image-top);
   width: var(--pt-image-width);
   height: var(--pt-image-height);
-  object-fit: cover;
+  overflow: hidden;
   border-radius: 0.75rem;
-  image-rendering: auto;
   z-index: 2;
   transform: translateZ(0);
   animation: pt-project-image-cover 760ms cubic-bezier(0.76, 0, 0.24, 1) both;
 }
 
-.pt-overlay.revealing .pt-project-image {
+.pt-project-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: auto;
+}
+
+/* The destination hero fades in over the thumbnail while the image grows,
+   so the overlay ends on the exact picture the page renders. */
+.pt-project-image__target {
+  animation: pt-project-image-target-in 380ms ease-out 380ms both;
+}
+
+.pt-overlay.revealing .pt-project-image,
+.pt-overlay.revealing .pt-overlay__backdrop {
   animation: pt-project-image-reveal 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.pt-overlay.revealing .pt-project-image {
+  left: 0;
+  top: 0;
+  width: var(--pt-target-width);
+  height: var(--pt-target-height);
+  border-radius: 0;
 }
 
 @keyframes pt-project-image-cover {
@@ -129,32 +161,57 @@
   to {
     left: 0;
     top: 0;
-    width: 100vw;
-    height: 100vh;
+    width: var(--pt-target-width);
+    height: var(--pt-target-height);
     border-radius: 0;
+  }
+}
+
+@keyframes pt-project-image-target-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pt-project-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
 @keyframes pt-project-image-reveal {
   from {
     opacity: 1;
-    transform: scale(1);
   }
   to {
     opacity: 0;
-    transform: scale(1.015);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pt-overlay,
   .pt-overlay *,
-  .pt-project-image {
+  .pt-project-image,
+  .pt-project-image * {
     animation: none !important;
     transition: none !important;
   }
 
   .pt-overlay.covering .pt-overlay__brand {
     opacity: 1;
+  }
+
+  .pt-project-image {
+    left: 0;
+    top: 0;
+    width: var(--pt-target-width);
+    height: var(--pt-target-height);
+    border-radius: 0;
   }
 }

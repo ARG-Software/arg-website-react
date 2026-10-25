@@ -12,6 +12,7 @@ let previousPath = '';
 let currentPath = '';
 
 const PROJECT_IMAGE_PRELOAD_TIMEOUT_MS = 320;
+const TRANSITION_TARGET_TIMEOUT_MS = 1500;
 const HASH_REVEAL_DELAY_MS = 120;
 
 function preloadTransitionImage(sourceImage) {
@@ -44,6 +45,36 @@ function preloadTransitionImage(sourceImage) {
 
     image.onload = finish;
     image.onerror = finish;
+  });
+}
+
+// Resolves once the destination page has mounted and painted its
+// `[data-transition-target]` image, so the overlay never fades out onto a
+// blank lazy-loaded route or a half-decoded hero.
+function waitForTransitionTarget() {
+  return new Promise(resolve => {
+    const startedAt = performance.now();
+
+    const check = () => {
+      const image = document.querySelector('[data-transition-target]');
+      if (image?.complete) {
+        if (image.decode) {
+          image.decode().then(resolve, resolve);
+        } else {
+          resolve();
+        }
+        return;
+      }
+
+      if (performance.now() - startedAt >= TRANSITION_TARGET_TIMEOUT_MS) {
+        resolve();
+        return;
+      }
+
+      requestAnimationFrame(check);
+    };
+
+    check();
   });
 }
 
@@ -240,7 +271,11 @@ export function TransitionProvider({ children }) {
             ? 'default'
             : 'curtain';
       setOverlayVariant(variant);
-      setImageTransition(transitionOptions?.sourceImage ?? null);
+      setImageTransition(
+        transitionOptions?.sourceImage
+          ? { source: transitionOptions.sourceImage, target: transitionOptions.targetImage }
+          : null
+      );
 
       // stop scroll if you use Lenis
       if (lenis) {
@@ -373,6 +408,11 @@ export function TransitionProvider({ children }) {
         immediate: true,
       });
       window.setTimeout(revealPage, HASH_REVEAL_DELAY_MS);
+      return;
+    }
+
+    if (overlayVariant === 'project-image') {
+      waitForTransitionTarget().then(revealPage);
       return;
     }
 

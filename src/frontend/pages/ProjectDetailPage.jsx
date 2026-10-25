@@ -140,6 +140,9 @@ export default function ProjectDetailPage() {
               className="prp-hero-image"
               width="1920"
               height="1080"
+              fetchPriority="high"
+              decoding="sync"
+              data-transition-target
             />
           </div>
         </section>
