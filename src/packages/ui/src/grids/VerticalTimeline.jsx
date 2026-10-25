@@ -86,7 +86,7 @@ function DesktopVerticalTimeline({ items, activeIndex, onSelect }) {
         })}
       </ol>
 
-      <TimelineCard item={activeItem} />
+      <TimelineCard key={activeItem.id ?? activeItem.period ?? activeIndex} item={activeItem} />
     </div>
   );
 }
