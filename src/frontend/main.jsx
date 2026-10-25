@@ -15,7 +15,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import HomePage from './pages/home/HomePage.jsx';
 import { LenisProvider } from './providers/LenisProvider.jsx';
 import { TransitionProvider } from './providers/TransitionProvider.jsx';
-import { CookieConsent } from '@components/overlays/CookieConsent';
 import { AssistantProvider } from '@providers/AssistantProvider';
 import { WebMCPProvider } from '@providers/WebMCPProvider';
 import { ErrorBoundary } from '@components/layout/ErrorBoundary';
@@ -112,7 +111,7 @@ function GlobalOverlays() {
     <>
       {!isNotFound && <AssistantProvider />}
       <WebMCPProvider />
-      {!isNotFound && <CookieConsent />}
+      {/* Cookie banner hidden during the CSSDA judging; restore <CookieConsent /> from overlays/CookieConsent after review */}
     </>
   );
 }
