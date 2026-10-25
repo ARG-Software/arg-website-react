@@ -4,11 +4,12 @@ import { LenisContext } from '../providers/LenisProvider';
 
 const DEFAULT_HASH_SCROLL_DURATION = 1.8;
 const DEFAULT_HASH_SCROLL_OFFSET = 0;
-const DEFAULT_HASH_SCROLL_DELAY = 650;
+const DEFAULT_HASH_SCROLL_DELAY = 0;
 const DEFAULT_RETRY_DELAY = 80;
 const DEFAULT_MAX_RETRIES = 12;
 
-const easeOutQuart = progress => 1 - Math.pow(1 - progress, 4);
+const easeInOutCubic = progress =>
+  progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
 function getHashId(hash) {
   return hash?.startsWith('#') ? hash.slice(1) : hash;
@@ -26,7 +27,7 @@ export function useHashScroll() {
   const scrollToElement = useCallback((element, options = {}) => {
     const duration = options.duration ?? DEFAULT_HASH_SCROLL_DURATION;
     const offset = options.offset ?? DEFAULT_HASH_SCROLL_OFFSET;
-    const easing = options.easing ?? easeOutQuart;
+    const easing = options.easing ?? easeInOutCubic;
 
     document.activeElement?.blur();
 

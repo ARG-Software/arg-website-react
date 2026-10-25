@@ -182,6 +182,29 @@ export function TransitionProvider({ children }) {
     };
   }, []);
 
+  const unlockScroll = useCallback(() => {
+    if (lenisRef.current) lenisRef.current.start();
+    document.documentElement.classList.remove('lenis-stopped');
+  }, []);
+
+  const revealPage = useCallback(
+    reveal => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setPhase('revealing');
+          window.setTimeout(() => {
+            setPhase('idle');
+            setImageTransition(null);
+            isRunningRef.current = false;
+            pendingToRef.current = null;
+            unlockScroll();
+          }, reveal);
+        });
+      });
+    },
+    [unlockScroll]
+  );
+
   // Initialize currentPath on first load
   useEffect(() => {
     if (currentPath === '') {
@@ -235,7 +258,12 @@ export function TransitionProvider({ children }) {
         normalizePathname(targetLocation.pathname) === normalizePathname(location.pathname) &&
         targetLocation.search === location.search;
 
-      if (targetLocation.hash && isSamePath) {
+      // On the homepage, section links play the page transition and jump while covered;
+      // everywhere else they smooth-scroll.
+      const isHomeSectionLink =
+        targetLocation.hash && isSamePath && normalizePathname(location.pathname) === '/';
+
+      if (targetLocation.hash && isSamePath && !isHomeSectionLink) {
         trackSectionNavigation(targetLocation.hash, currentPath, targetPath);
         scrollToHash(targetLocation.hash, { ...transitionOptions, updateUrl: false });
         return;
@@ -298,8 +326,19 @@ export function TransitionProvider({ children }) {
           requestAnimationFrame(() => {
             setPhase('covering');
 
-            const { cover } = getTransitionTimings(variant);
+            const { cover, reveal } = getTransitionTimings(variant);
             window.setTimeout(() => {
+              // Same route: no route change will fire the reveal effect, so jump and reveal here.
+              if (isHomeSectionLink) {
+                scrollToHash(targetLocation.hash, {
+                  mobileMenuDelay: 0,
+                  immediate: true,
+                  updateUrl: false,
+                });
+                window.setTimeout(() => revealPage(reveal), HASH_REVEAL_DELAY_MS);
+                return;
+              }
+
               navigate(
                 targetLocation.hash ? targetPath : to,
                 getNavigateOptions(transitionOptions)
@@ -328,6 +367,7 @@ export function TransitionProvider({ children }) {
       lenis,
       getTransitionTimings,
       getNavigateOptions,
+      revealPage,
     ]
   );
 
@@ -353,11 +393,6 @@ export function TransitionProvider({ children }) {
     // Update navigation history
     previousPath = currentPath;
     currentPath = location.pathname;
-
-    const unlockScroll = () => {
-      if (lenisRef.current) lenisRef.current.start();
-      document.documentElement.classList.remove('lenis-stopped');
-    };
 
     // Scroll to top while the overlay is covering — user never sees the jump.
     const scrollToTop = () => {
@@ -385,21 +420,6 @@ export function TransitionProvider({ children }) {
 
     const { reveal } = getTransitionTimings(overlayVariant);
 
-    const revealPage = () => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setPhase('revealing');
-          window.setTimeout(() => {
-            setPhase('idle');
-            setImageTransition(null);
-            isRunningRef.current = false;
-            pendingToRef.current = null;
-            unlockScroll();
-          }, reveal);
-        });
-      });
-    };
-
     if (pendingHash) {
       scrollToHashWhenReadyRef.current(pendingHash, {
         updateUrl: false,
@@ -407,16 +427,16 @@ export function TransitionProvider({ children }) {
         mobileMenuDelay: 0,
         immediate: true,
       });
-      window.setTimeout(revealPage, HASH_REVEAL_DELAY_MS);
+      window.setTimeout(() => revealPage(reveal), HASH_REVEAL_DELAY_MS);
       return;
     }
 
     if (overlayVariant === 'project-image') {
-      waitForTransitionTarget().then(revealPage);
+      waitForTransitionTarget().then(() => revealPage(reveal));
       return;
     }
 
-    window.setTimeout(revealPage, 0);
+    window.setTimeout(() => revealPage(reveal), 0);
     // Hash-only navigation is handled by scrollToHash and the POP restoration effect.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname, location.search, navigationType]);
