@@ -1765,9 +1765,34 @@
   flex-shrink: 0;
   gap: 0.875rem;
   height: 4.5rem;
+  position: relative;
   text-decoration: none;
   transition: color 0.2s ease;
   white-space: nowrap;
+}
+
+/* Sits exactly on the row hairline (bottom: -1px) instead of adding a second line. */
+.page-header__side-list a::after {
+  background: var(--arg-gradient-primary);
+  bottom: -1px;
+  content: '';
+  height: 1px;
+  left: 0;
+  position: absolute;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0, 1);
+  width: 100%;
+}
+
+.page-header__side-list a:hover::after,
+.page-header__side-list a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.page-header__side-list a:hover .page-header__side-item-label,
+.page-header__side-list a:focus-visible .page-header__side-item-label {
+  transform: translateX(0.1875rem);
 }
 
 .page-header__side-index,
@@ -1787,6 +1812,18 @@
 .page-header__side-item-label {
   font-size: var(--type-body);
   line-height: var(--line-compact);
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-header__side-list a::after {
+    transition: none;
+  }
+
+  .page-header__side-list a:hover .page-header__side-item-label,
+  .page-header__side-list a:focus-visible .page-header__side-item-label {
+    transform: none;
+  }
 }
 
 @media screen and (max-width: 991px) {
