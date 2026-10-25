@@ -1,5 +1,5 @@
 {
-  "copyVersion": "2026-08-27-1",
+  "copyVersion": "2026-10-25-1",
   "imageSrc": "/images/ai/gaspar.webp",
   "name": "Gaspar",
   "statusText": "online now",
@@ -76,6 +76,8 @@
     "expand": "Expand to fullscreen",
     "minimize": "Minimize to panel",
     "close": "Close assistant",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
     "sendResponse": "Send response",
     "sendQuestion": "Send question",
     "send": "Send",

@@ -13,6 +13,7 @@ export function Chatbot({
   submitDisabled = false,
   clearDisabled = false,
   showFullscreenToggle = true,
+  darkMode = false,
   loading = false,
   error,
   pendingStatus,
@@ -25,6 +26,7 @@ export function Chatbot({
   onClose,
   onClear,
   onToggleFullscreen,
+  onToggleDarkMode,
   onInputChange,
   onSubmit,
   onQuickPrompt,
@@ -43,7 +45,7 @@ export function Chatbot({
       </button>
 
       <div
-        className={`aw-panel${panelState === 'open' ? ' aw-panel--open' : ''}${panelState === 'fullscreen' ? ' aw-panel--open aw-panel--fullscreen' : ''}`}
+        className={`aw-panel${panelState === 'open' ? ' aw-panel--open' : ''}${panelState === 'fullscreen' ? ' aw-panel--open aw-panel--fullscreen' : ''}${darkMode ? ' aw-panel--dark' : ''}`}
         role="dialog"
         aria-label={copy.labels.dialog}
         aria-hidden={!isOpen}
@@ -57,61 +59,101 @@ export function Chatbot({
           panelState={panelState}
           clearDisabled={clearDisabled}
           showFullscreenToggle={showFullscreenToggle}
+          darkMode={darkMode}
           onClear={onClear}
           onClose={onClose}
           onToggleFullscreen={onToggleFullscreen}
+          onToggleDarkMode={onToggleDarkMode}
         />
 
         <div className="aw-messages">
-          <div className="aw-message aw-message--welcome">
-            <p>{copy.messages.welcome}</p>
-            {welcomePrompts.length > 0 && (
-              <PromptList
-                prompts={welcomePrompts}
-                onQuickPrompt={onQuickPrompt}
-                disabled={loading}
-                inline
-              />
-            )}
-          </div>
+          {messages.length === 0 && !loading ? (
+            <div className="aw-empty">
+              <div className="aw-col">
+                <p className="aw-empty__text">{copy.messages.welcome}</p>
+                {welcomePrompts.length > 0 && (
+                  <div className="aw-suggestions">
+                    {welcomePrompts.map(prompt => (
+                      <button
+                        key={prompt.label}
+                        className="aw-suggestion"
+                        onClick={() =>
+                          prompt.onClick ? prompt.onClick() : onQuickPrompt(prompt.label)
+                        }
+                        type="button"
+                        disabled={prompt.disabled}
+                      >
+                        {prompt.label}
+                        <span className="aw-suggestion__arrow" aria-hidden="true">
+                          →
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="aw-thread aw-col">
+              {messages.map((message, index) => (
+                <ChatbotMessage
+                  key={`${message.source || 'chat'}-${index}`}
+                  message={message}
+                  avatarSrc={assistant.imageSrc}
+                />
+              ))}
 
-          {messages.map((message, index) => (
-            <ChatbotMessage key={`${message.source || 'chat'}-${index}`} message={message} />
-          ))}
-
-          {loading && <PendingStatus message={pendingStatus} />}
+              {loading && <PendingStatus message={pendingStatus} />}
+            </div>
+          )}
+          {/* Last child of the scroll area, below the thread padding, so scrolling to it reaches the very bottom */}
           <div ref={messagesEndRef} />
         </div>
 
-        {leadPrompts && <PromptList {...leadPrompts} />}
-        {error && <div className="aw-error">{error}</div>}
+        <div className="aw-footer">
+          <div className="aw-col">
+            {leadPrompts && <PromptList {...leadPrompts} />}
+            {error && <div className="aw-error">{error}</div>}
 
-        <form className="aw-input-area" onSubmit={onSubmit}>
-          <div className="aw-input-wrap">
-            <input
-              ref={inputRef}
-              className="aw-input"
-              type="text"
-              placeholder={inputPlaceholder}
-              value={inputValue}
-              onChange={event => onInputChange(event.target.value)}
-              disabled={inputDisabled}
-            />
-            <button
-              className="aw-send"
-              type="submit"
-              disabled={submitDisabled}
-              aria-label={copy.labels.sendQuestion}
-            >
-              <SendIcon />
-            </button>
+            <form className="aw-composer" onSubmit={onSubmit}>
+              <div className="aw-input-wrap">
+                {/* Enter sends, Shift+Enter adds a line; the data-* attributes keep grammar extensions from badging the box */}
+                <textarea
+                  ref={inputRef}
+                  className="aw-input"
+                  rows={1}
+                  placeholder={inputPlaceholder}
+                  value={inputValue}
+                  onChange={event => onInputChange(event.target.value)}
+                  onKeyDown={event => {
+                    if (event.key !== 'Enter' || event.shiftKey || event.nativeEvent.isComposing) {
+                      return;
+                    }
+                    event.preventDefault();
+                    if (!submitDisabled) event.currentTarget.form.requestSubmit();
+                  }}
+                  disabled={inputDisabled}
+                  data-gramm="false"
+                  data-enable-grammarly="false"
+                  data-lt-active="false"
+                />
+                <button
+                  className="aw-send"
+                  type="submit"
+                  disabled={submitDisabled}
+                  aria-label={copy.labels.sendQuestion}
+                >
+                  <SendIcon />
+                </button>
+              </div>
+            </form>
+
+            <div className="aw-meta">
+              <a href="https://altcha.org" target="_blank" rel="noopener noreferrer">
+                Protected by ALTCHA
+              </a>
+            </div>
           </div>
-        </form>
-
-        <div className="aw-altcha-badge">
-          <a href="https://altcha.org" target="_blank" rel="noopener noreferrer">
-            Protected by ALTCHA
-          </a>
         </div>
       </div>
     </>
@@ -124,39 +166,51 @@ function ChatbotHeader({
   panelState,
   clearDisabled,
   showFullscreenToggle,
+  darkMode,
   onClear,
   onClose,
   onToggleFullscreen,
+  onToggleDarkMode,
 }) {
+  const themeLabel = darkMode ? copy.labels.lightMode : copy.labels.darkMode;
+  const fullscreenLabel = panelState === 'fullscreen' ? copy.labels.minimize : copy.labels.expand;
+
   return (
     <div className="aw-header">
       <div className="aw-header__left">
         <div className="aw-header__avatar">
           <img src={assistant.imageSrc} alt="" />
         </div>
-        <div>
-          <div className="aw-header__title">{assistant.name}</div>
-          <div className="aw-header__status">
-            <span className="aw-header__dot" />
-            {copy.statusText}
-          </div>
-        </div>
+        <div className="aw-header__title">{assistant.name}</div>
       </div>
       <div className="aw-header__controls">
         <button
           className="aw-header__btn"
+          onClick={onToggleDarkMode}
+          aria-label={themeLabel}
+          aria-pressed={darkMode}
+          data-tooltip={themeLabel}
+          type="button"
+        >
+          {darkMode ? <SunIcon /> : <MoonIcon />}
+        </button>
+        <button
+          className="aw-header__btn"
           onClick={onClear}
           aria-label={copy.labels.clear}
+          data-tooltip={copy.labels.clear}
           type="button"
           disabled={clearDisabled}
         >
           <TrashIcon />
         </button>
+        <span className="aw-header__divider" aria-hidden="true" />
         {showFullscreenToggle && (
           <button
             className="aw-header__btn"
             onClick={onToggleFullscreen}
-            aria-label={panelState === 'fullscreen' ? copy.labels.minimize : copy.labels.expand}
+            aria-label={fullscreenLabel}
+            data-tooltip={fullscreenLabel}
             type="button"
           >
             {panelState === 'fullscreen' ? <MinimizeIcon /> : <ExpandIcon />}
@@ -166,6 +220,7 @@ function ChatbotHeader({
           className="aw-header__btn"
           onClick={onClose}
           aria-label={copy.labels.close}
+          data-tooltip={copy.labels.close}
           type="button"
         >
           <CloseIcon />
@@ -175,33 +230,36 @@ function ChatbotHeader({
   );
 }
 
-function ChatbotMessage({ message }) {
-  const className =
-    message.role === 'assistant'
-      ? 'aw-message aw-message--assistant'
-      : 'aw-message aw-message--user';
+function ChatbotMessage({ message, avatarSrc }) {
+  const isAssistant = message.role === 'assistant';
+  const className = isAssistant
+    ? 'aw-message aw-message--assistant'
+    : 'aw-message aw-message--user';
 
   return (
     <div className={className}>
-      <p style={message.preserveWhitespace ? { whiteSpace: 'pre-line' } : undefined}>
-        {message.content}
-      </p>
-      {message.links?.length > 0 && (
-        <div className="aw-source-links" aria-label={message.linksLabel}>
-          {message.links.map(link => link.node)}
-        </div>
-      )}
-      {message.actions?.length > 0 && (
-        <div className="aw-actions">{message.actions.map(action => action.node)}</div>
-      )}
-      {message.pendingMessage && <PendingStatus message={message.pendingMessage} />}
+      {isAssistant && <img className="aw-message__avatar" src={avatarSrc} alt="" />}
+      <div className="aw-message__body">
+        <p style={message.preserveWhitespace ? { whiteSpace: 'pre-line' } : undefined}>
+          {message.content}
+        </p>
+        {message.links?.length > 0 && (
+          <div className="aw-source-links" aria-label={message.linksLabel}>
+            {message.links.map(link => link.node)}
+          </div>
+        )}
+        {message.actions?.length > 0 && (
+          <div className="aw-actions">{message.actions.map(action => action.node)}</div>
+        )}
+        {message.pendingMessage && <PendingStatus message={message.pendingMessage} />}
+      </div>
     </div>
   );
 }
 
-function PromptList({ prompts = [], onQuickPrompt, disabled = false, inline = false }) {
+function PromptList({ prompts = [], onQuickPrompt, disabled = false }) {
   return (
-    <div className={`aw-prompts${inline ? ' aw-prompts--inline' : ''}`}>
+    <div className="aw-prompts">
       {prompts.map(prompt => (
         <button
           key={prompt.label}
@@ -227,6 +285,41 @@ function PendingStatus({ message }) {
       </div>
       {message && <div className="aw-pending__text">{message}</div>}
     </div>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+    </svg>
   );
 }
 
@@ -310,7 +403,7 @@ function SendIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+      <path d="M12 19V5M5 12l7-7 7 7" />
     </svg>
   );
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Chatbot } from '@ui/widgets/Chatbot.jsx';
 import assistantContent from '@data/assistant.json';
 import { ChatbotLink } from '@components/navigation/ChatbotLink';
@@ -10,8 +11,29 @@ import {
   trackAssistantLinkClick,
 } from '@hooks/assistant/utils/assistantLinks';
 
+const THEME_STORAGE_KEY = 'arg_assistant_theme';
+
+function readStoredDarkMode() {
+  try {
+    return localStorage.getItem(THEME_STORAGE_KEY) === 'dark';
+  } catch {
+    return false;
+  }
+}
+
 export function AssistantWidget(props) {
   const controller = useAssistantWidgetController(props);
+  const [darkMode, setDarkMode] = useState(readStoredDarkMode);
+
+  const toggleDarkMode = () => {
+    const next = !darkMode;
+    setDarkMode(next);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light');
+    } catch {
+      // Storage can be blocked; the theme still applies for this visit
+    }
+  };
   const [leadAcceptPrompt, leadChatPrompt] = controller.assistantCopy.leadCaptureQuickPrompts;
 
   return (
@@ -30,6 +52,7 @@ export function AssistantWidget(props) {
       submitDisabled={controller.isSubmitDisabled}
       clearDisabled={controller.isClearDisabled}
       showFullscreenToggle={!controller.mobileViewport}
+      darkMode={darkMode}
       loading={controller.loading}
       error={!controller.isLeadActive ? controller.error : null}
       pendingStatus={controller.pendingStatus}
@@ -42,6 +65,7 @@ export function AssistantWidget(props) {
       onClose={() => controller.close('close_button')}
       onClear={controller.handleClearConversation}
       onToggleFullscreen={controller.toggleFullscreen}
+      onToggleDarkMode={toggleDarkMode}
       onInputChange={controller.setInputValue}
       onSubmit={controller.handleSubmit}
       onQuickPrompt={controller.handleQuickPrompt}

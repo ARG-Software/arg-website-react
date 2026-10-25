@@ -9,6 +9,7 @@ import { useAssistantLeadCapture } from './useAssistantLeadCapture';
 import { useAssistantSecurity } from './useAssistantSecurity';
 import {
   LEAD_DISMISS_MODES,
+  PANEL_MODE_STORAGE_KEY,
   getInputPlaceholder,
   getPanelStateForViewport,
   getPromptAction,
@@ -321,6 +322,16 @@ export function useAssistantWidgetController({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
+  // Opening, expanding or minimising resizes the thread, so jump back to the last message once laid out
+  useEffect(() => {
+    if (panelState === 'closed') return undefined;
+
+    const frame = requestAnimationFrame(() =>
+      messagesEndRef.current?.scrollIntoView({ block: 'end' })
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [panelState]);
+
   useEffect(() => {
     if (panelState !== 'closed') {
       setTimeout(() => inputRef.current?.focus(), 100);
@@ -389,8 +400,14 @@ export function useAssistantWidgetController({
   }, [startLeadCaptureFlow]);
 
   const toggleFullscreen = useCallback(() => {
-    setPanelState(prev => (prev === 'fullscreen' ? 'open' : 'fullscreen'));
-  }, []);
+    const next = panelState === 'fullscreen' ? 'open' : 'fullscreen';
+    setPanelState(next);
+    try {
+      localStorage.setItem(PANEL_MODE_STORAGE_KEY, next);
+    } catch {
+      // Storage can be blocked; the mode just won't be remembered
+    }
+  }, [panelState]);
 
   const handleClearConversation = useCallback(() => {
     if (loading || leadStep === LEAD_STEPS.SUBMITTING) return;
