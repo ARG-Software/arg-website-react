@@ -134,7 +134,7 @@ export default function AuditPage() {
           >
             <section
               id="architect"
-              className="au-section padding-section-large border-radius-top border-radius-bottom background-color-white"
+              className="au-section padding-section-large border-radius-top background-color-white"
             >
               <div className="container padding-global au-inner">
                 <div className="au-arch">
@@ -235,8 +235,14 @@ export default function AuditPage() {
                   </figure>
                 </div>
 
-                <div className="au-block au-video-block">
-                  <div data-animate-order="2">
+                <SectionDivider className="au-divider" variant="light" />
+              </div>
+            </section>
+
+            <section className="au-section padding-section-large background-color-white">
+              <div className="container padding-global au-inner">
+                <div className="au-video-block">
+                  <div data-animate-order="1">
                     <h3>{video.title}</h3>
                     <p>{video.text}</p>
                     <a
@@ -253,7 +259,7 @@ export default function AuditPage() {
                   </div>
                   <video
                     className="au-video"
-                    data-animate-order="3"
+                    data-animate-order="0"
                     src={video.src}
                     poster={video.cover}
                     aria-label={video.label}
@@ -267,36 +273,44 @@ export default function AuditPage() {
                 </div>
 
                 <SectionDivider className="au-divider" variant="light" />
+              </div>
+            </section>
 
-                <div className="au-block">
-                  <div className="au-block-head" data-animate-order="4">
-                    <h3>{PAGE.architect.checks.title}</h3>
-                  </div>
-                  <div className="au-cards au-cards--two">
-                    {PAGE.architect.checks.items.map((check, index) => (
-                      <BaseCard
-                        key={check.title}
-                        className="au-card"
-                        variant="light"
-                        padding="xl"
-                        animate={true}
-                        animationOrder={index + 5}
-                      >
-                        <span className="au-kicker">{String(index + 1).padStart(2, '0')}</span>
-                        <h4>{check.title}</h4>
-                        <p>{check.text}</p>
-                      </BaseCard>
-                    ))}
-                  </div>
+            <section className="au-section padding-section-large background-color-white">
+              <div className="container padding-global au-inner">
+                <div className="au-block-head" data-animate-order="0">
+                  <h3>{PAGE.architect.checks.title}</h3>
+                </div>
+                <div className="au-cards au-cards--two">
+                  {PAGE.architect.checks.items.map((check, index) => (
+                    <BaseCard
+                      key={check.title}
+                      className="au-card"
+                      variant="light"
+                      padding="xl"
+                      animate={true}
+                      animationOrder={index + 1}
+                    >
+                      <span className="au-kicker">{String(index + 1).padStart(2, '0')}</span>
+                      <h4>{check.title}</h4>
+                      <p>{check.text}</p>
+                    </BaseCard>
+                  ))}
                 </div>
 
+                <SectionDivider className="au-divider" variant="light" />
+              </div>
+            </section>
+
+            <section className="au-section padding-section-large border-radius-bottom background-color-white">
+              <div className="container padding-global au-inner">
                 <BaseCard
-                  className="au-block au-private"
+                  className="au-private"
                   variant="dark"
                   padding="xl"
                   hover="none"
                   animate={true}
-                  animationOrder={11}
+                  animationOrder={0}
                 >
                   <div>
                     <span className="au-private-icon">
@@ -333,7 +347,8 @@ export default function AuditPage() {
               <div className="container padding-global au-inner">
                 <div className="au-bridge-head" data-animate-order="0">
                   <h2 className="au-title">
-                    {PAGE.bridge.title}{' '}
+                    {PAGE.bridge.title}
+                    <br />
                     <span className="text-color-gradiant">{PAGE.bridge.titleHighlight}</span>
                   </h2>
                   <p className="au-lede">{PAGE.bridge.text}</p>
@@ -383,7 +398,7 @@ export default function AuditPage() {
 
             <section
               id="review"
-              className="au-section padding-section-large border-radius-top border-radius-bottom background-color-white"
+              className="au-section padding-section-large border-radius-top background-color-white"
             >
               <div className="container padding-global au-inner">
                 <div className="au-review">
@@ -446,29 +461,31 @@ export default function AuditPage() {
                 </div>
 
                 <SectionDivider className="au-divider" variant="light" />
+              </div>
+            </section>
 
-                <div className="au-block">
-                  <div className="au-block-head" data-animate-order="2">
-                    <h3>{PAGE.review.sizes.title}</h3>
-                    <p>{PAGE.review.sizes.text}</p>
-                  </div>
-                  <div className="au-cards">
-                    {PAGE.review.sizes.items.map((size, index) => (
-                      <BaseCard
-                        key={size.name}
-                        className="au-card"
-                        variant="light"
-                        padding="xl"
-                        animate={true}
-                        animationOrder={index + 3}
-                      >
-                        <span className="au-kicker">{size.name}</span>
-                        <h4>{size.title}</h4>
-                        <p>{size.text}</p>
-                        <span className="au-card-foot">{size.price}</span>
-                      </BaseCard>
-                    ))}
-                  </div>
+            <section className="au-section padding-section-large border-radius-bottom background-color-white">
+              <div className="container padding-global au-inner">
+                <div className="au-block-head" data-animate-order="0">
+                  <h3>{PAGE.review.sizes.title}</h3>
+                  <p>{PAGE.review.sizes.text}</p>
+                </div>
+                <div className="au-cards">
+                  {PAGE.review.sizes.items.map((size, index) => (
+                    <BaseCard
+                      key={size.name}
+                      className="au-card"
+                      variant="light"
+                      padding="xl"
+                      animate={true}
+                      animationOrder={index + 1}
+                    >
+                      <span className="au-kicker">{size.name}</span>
+                      <h4>{size.title}</h4>
+                      <p>{size.text}</p>
+                      <span className="au-card-foot">{size.price}</span>
+                    </BaseCard>
+                  ))}
                 </div>
               </div>
             </section>
