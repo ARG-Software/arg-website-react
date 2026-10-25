@@ -283,16 +283,14 @@ export default function BlogPage() {
 
                 {/* Below the layout so the sticky sidebar stops at the last article */}
                 {filteredPosts.length > 0 && totalPages > 1 && (
-                  <div className="blp-pagination">
-                    <Pagination
-                      page={page}
-                      totalPages={totalPages}
-                      onPageChange={goToPage}
-                      arrowIcon={arrowSvg}
-                      ariaLabel="Blog pagination"
-                      animateOrder={paginatedPosts.length + 3}
-                    />
-                  </div>
+                  <Pagination
+                    page={page}
+                    totalPages={totalPages}
+                    onPageChange={goToPage}
+                    arrowIcon={arrowSvg}
+                    ariaLabel="Blog pagination"
+                    animateOrder={paginatedPosts.length + 3}
+                  />
                 )}
               </div>
             </section>
