@@ -273,21 +273,24 @@ export default function BlogPage() {
                             </div>
                           </AppLink>
                         ))}
-
-                        {totalPages > 1 && (
-                          <Pagination
-                            page={page}
-                            totalPages={totalPages}
-                            onPageChange={goToPage}
-                            arrowIcon={arrowSvg}
-                            ariaLabel="Blog pagination"
-                            animateOrder={paginatedPosts.length + 3}
-                          />
-                        )}
                       </>
                     )}
                   </div>
                 </div>
+
+                {/* Below the layout so the sticky sidebar stops at the last article */}
+                {filteredPosts.length > 0 && totalPages > 1 && (
+                  <div className="blp-pagination">
+                    <Pagination
+                      page={page}
+                      totalPages={totalPages}
+                      onPageChange={goToPage}
+                      arrowIcon={arrowSvg}
+                      ariaLabel="Blog pagination"
+                      animateOrder={paginatedPosts.length + 3}
+                    />
+                  </div>
+                )}
               </div>
             </section>
           </div>
