@@ -10,8 +10,8 @@
       "description": "A global nonprofit building an open, interoperable payment network through the Interledger Protocol — enabling seamless, currency-agnostic transactions that bring digital financial services to the 1.4 billion people currently excluded from traditional banking.",
       "link": "https://interledger.org/",
       "timeline": {
-        "startYear": 2024,
-        "durationYears": 2
+        "start": "2024-01",
+        "end": "2025-12"
       }
     },
     {
@@ -23,8 +23,8 @@
       "description": "A social sector technology platform servicing community banks and credit unions in rural Mexico. Working with AMUCSS and the Interledger Foundation, it is building cross-border remittance infrastructure to connect 140 community banks to the global payments network — reducing fees and wait times for migrant families.",
       "link": "https://lacamara.mx/",
       "timeline": {
-        "startYear": 2024,
-        "durationYears": 2
+        "start": "2024-01",
+        "end": "2025-12"
       }
     },
     {
@@ -37,8 +37,8 @@
       "description": "An open-source foundation championing inclusive financial infrastructure. Mojaloop builds interoperable payment systems that bring affordable, accessible digital financial services to unbanked populations worldwide.",
       "link": "https://mojaloop.io/",
       "timeline": {
-        "startYear": 2021,
-        "durationYears": 3
+        "start": "2021-01",
+        "end": "2023-12"
       }
     },
     {
@@ -50,8 +50,8 @@
       "description": "A Portugal-based systems architecture consultancy focused on scalable distributed systems, technical audits, fractional leadership, and senior engineering support that helps teams build robust platforms and become more autonomous.",
       "link": "https://cyberbones.io/",
       "timeline": {
-        "startYear": 2021,
-        "durationYears": 6
+        "start": "2021-01",
+        "end": "2026-01"
       }
     },
     {
@@ -64,8 +64,8 @@
       "description": "A research-driven investment and advisory firm focused on blockchain ecosystems and decentralized finance, supporting crypto-native projects with deep technical and market expertise.",
       "link": "https://threesigma.xyz/",
       "timeline": {
-        "startYear": 2022,
-        "durationYears": 2
+        "start": "2022-01",
+        "end": "2023-12"
       }
     },
     {
@@ -78,8 +78,8 @@
       "description": "A hands-on venture studio that conceives, builds, and scales digital products — blending product strategy, design, and engineering to take ideas from zero to market.",
       "link": "https://angry.ventures/",
       "timeline": {
-        "startYear": 2020,
-        "durationYears": 1
+        "start": "2020-01",
+        "end": "2020-12"
       }
     },
     {
@@ -92,8 +92,8 @@
       "description": "A German digital consultancy specializing in software solutions for tax documentation and business process automation, with a strong focus on GDPR compliance and enterprise-grade reliability.",
       "link": "https://www.dokutar.de/",
       "timeline": {
-        "startYear": 2020,
-        "durationYears": 3
+        "start": "2020-01",
+        "end": "2022-12"
       }
     },
     {
@@ -106,8 +106,8 @@
       "description": "A nationwide network in the foodservice industry that connects supply and equipment dealers with manufacturers, providing collective buying power, marketing support, and training services to strengthen market presence and business operations.",
       "link": "https://www.sefa.com/",
       "timeline": {
-        "startYear": 2020,
-        "durationYears": 1
+        "start": "2020-01",
+        "end": "2020-12"
       }
     },
     {
@@ -120,7 +120,7 @@
       "description": "A hospitality management platform that helps property owners and tourism businesses streamline their operations — from bookings and scheduling to guest communication and day-to-day management.",
       "link": "https://hostelier.weebly.com/",
       "timeline": {
-        "startYear": 2020,
+        "start": "2020-01",
         "ongoing": true
       }
     },
@@ -133,9 +133,8 @@
       "description": "A cloud-based music production platform enabling real-time collaboration between musicians, producers, and audio engineers — anywhere in the world, with professional-grade tools built directly into the browser.",
       "link": "https://skytracks.io/",
       "timeline": {
-        "startYear": 2020,
-        "durationYears": 1,
-        "durationMonths": 6
+        "start": "2020-01",
+        "end": "2021-06"
       }
     },
     {
@@ -147,9 +146,8 @@
       "industry": "Music Rights",
       "description": "A music rights management company providing modern tools for catalog management, royalty tracking, and licensing — making music ownership transparent and efficient for artists and publishers alike.",
       "timeline": {
-        "startYear": 2020,
-        "durationYears": 2,
-        "durationMonths": 6
+        "start": "2020-01",
+        "end": "2022-06"
       }
     }
   ]

@@ -1,10 +1,10 @@
 import { Timeline } from './Timeline.jsx';
 
 const CLIENTS = [
-  { slug: 'alpha', name: 'Alpha', start: '2021-02', end: '2022-07' },
-  { slug: 'beta', name: 'Beta', start: '2022-01', ongoing: true },
-  { slug: 'gamma', name: 'Gamma', start: '2023-04', end: '2024-04' },
-  { slug: 'delta', name: 'Delta', start: '2024-06', ongoing: true },
+  { slug: 'alpha', name: 'Alpha', timeline: { start: '2021-02', end: '2022-07' } },
+  { slug: 'beta', name: 'Beta', timeline: { start: '2022-01', ongoing: true } },
+  { slug: 'gamma', name: 'Gamma', timeline: { start: '2023-04', end: '2024-04' } },
+  { slug: 'delta', name: 'Delta', timeline: { start: '2024-06', ongoing: true } },
 ];
 
 export default {

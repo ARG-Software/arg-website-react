@@ -230,6 +230,7 @@
 
 .pt-timeline-section {
   display: block !important;
+  padding: 6rem 0 7.5rem;
 }
 
 .pt-timeline-inner {
@@ -253,6 +254,7 @@
 }
 
 .pt-years-row {
+  container-type: inline-size;
   display: grid;
   grid-template-columns: repeat(var(--pt-month-count), minmax(0, 1fr));
   column-gap: 0;
@@ -261,145 +263,310 @@
 
 .pt-year-label {
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body);
+  /* Shrink with the column so a growing year range never overflows */
+  font-size: min(var(--type-body), calc(100cqi / var(--pt-year-count) / 3));
   font-weight: 400;
   color: rgba(255, 255, 255, 0.35);
   text-align: left;
   padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-/* Fade the last year (future) */
-.pt-year-label:last-child {
+.pt-year-label.is-future {
   color: rgba(255, 255, 255, 0.15);
 }
 
 .pt-divider {
   width: 100%;
   height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-  margin-bottom: 1.75rem;
+  background: rgba(255, 255, 255, 0.15);
 }
 
-/* Timeline rows container */
+/* Rows, CTA and the Today marker share one positioning box */
+.pt-chart {
+  padding-top: 2.25rem;
+  position: relative;
+}
+
+.pt-today {
+  border-left: 1px dashed var(--arg-color-magenta);
+  bottom: 0;
+  left: var(--pt-today);
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  z-index: 2;
+}
+
+.pt-today-label {
+  background: var(--arg-color-magenta);
+  border-radius: 999px;
+  color: #fff;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  left: 0;
+  letter-spacing: var(--tracking-meta);
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  position: absolute;
+  text-transform: uppercase;
+  top: 0.5rem;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
 .pt-rows {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-/* Each row is a grid matching the year columns */
+/* Each row is a grid matching the month columns */
 .pt-row {
   display: grid;
   grid-template-columns: repeat(var(--pt-month-count), minmax(0, 1fr));
-  column-gap: 0;
+  height: 3.5rem;
 }
 
-.pt-row-card {
-  display: flex;
+/* Outlined bar: full row height, position and length from the start and end dates */
+.pt-row-item {
   align-items: center;
-  gap: 0.75rem;
-  min-width: 0;
-  padding: 0 0.9rem;
-  height: 3.75rem;
-  background: #fff;
-  border: none;
+  border-radius: 0.625rem;
+  display: flex;
   justify-content: center;
-  border-radius: 0.5rem;
-  overflow: visible;
-  transition: background 0.3s ease;
-}
-
-.pt-row-card:hover {
-  background: rgba(255, 255, 255, 0.92);
-}
-
-.pt-row-logos {
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  gap: 0.75rem;
-  flex-wrap: nowrap;
   min-width: 0;
-  width: 100%;
-  overflow: hidden;
+  padding: 0 0.5rem;
+  position: relative;
+  transition: background 0.25s ease;
 }
 
+/* Border on a pseudo-element so ongoing bars can fade it without fading the logo */
+.pt-row-item::before {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: inherit;
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 0.25s ease;
+}
+
+.pt-row-item.is-ongoing::before {
+  -webkit-mask-image: linear-gradient(to right, #000 70%, transparent);
+  mask-image: linear-gradient(to right, #000 70%, transparent);
+}
+
+/* White panel the size of the client's span so dark logos stay readable in colour */
+.pt-row-item:hover {
+  background: #fff;
+}
+
+/* Same box for every logo so wide wordmarks and compact marks read at a similar size.
+   Centred on the line, and never wider than the line so it stays inside the chart. */
 .pt-row-logo {
-  flex: 0 1 auto;
-  height: 1.35rem;
-  max-width: 4.75rem;
-  width: auto;
+  filter: brightness(0) invert(1);
+  flex-shrink: 0;
+  height: 1.75rem;
+  max-width: 100%;
   object-fit: contain;
-  filter: grayscale(1) opacity(0.65);
-  transition: filter 0.25s ease;
+  object-position: center;
+  opacity: 0.8;
+  transition:
+    filter 0.25s ease,
+    opacity 0.25s ease;
+  width: 8.5rem;
 }
 
-.pt-row-card:hover .pt-row-logo {
+/* Compact marks fill the box height and read heavier than the wide wordmarks */
+.pt-row-logo:is(
+    [data-partner='angry-ventures'],
+    [data-partner='sefa'],
+    [data-partner='skytracks'],
+    [data-partner='north-music-group']
+  ),
+.pt-mobile-logo:is(
+    [data-partner='angry-ventures'],
+    [data-partner='sefa'],
+    [data-partner='skytracks'],
+    [data-partner='north-music-group']
+  ) {
+  height: 1.4rem;
+}
+
+/* Hover shows the logo in its original colours */
+.pt-row-item:hover .pt-row-logo {
   filter: none;
+  opacity: 1;
 }
 
-/* ── Your Project CTA row ── */
-.pt-row-cta-card {
-  justify-self: start;
-  align-self: center;
+/* The white panel replaces the outline on hover */
+.pt-row-item:hover::before {
+  opacity: 0;
 }
 
-.pt-row-cta {
-  margin-top: 1.5rem;
+/* ── Future slot: the "Your Time" CTA after Today ── */
+/* Vertically centred in the rows; centred with margins, not transform, so the
+   slide-in scroll animation doesn't fight it */
+.pt-future {
+  align-items: flex-start;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 0.625rem;
+  bottom: 0;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  height: 5rem;
+  justify-content: center;
+  left: calc(var(--pt-today) + 0.75rem);
+  margin: auto 0;
+  min-width: max-content;
+  padding: 0 1.25rem;
+  position: absolute;
+  right: 0;
+  text-decoration: none;
+  top: 2.25rem;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
+  z-index: 3;
 }
 
-.pt-row-cta-card:hover {
-  background: rgba(255, 255, 255, 0.08);
+/* Reuses the assistant button's gradient sweep: the ARG gradient draws itself around the slot */
+.pt-future::before {
+  animation: aw-trigger-sweep 6s linear infinite;
+  background: conic-gradient(
+    from -90deg,
+    var(--arg-color-violet) 0deg,
+    var(--arg-color-magenta),
+    var(--arg-color-red) var(--aw-sweep-angle),
+    transparent var(--aw-sweep-angle)
+  );
+  border-radius: inherit;
+  content: '';
+  inset: -1px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  padding: 1px;
+  pointer-events: none;
+  position: absolute;
+}
+
+.pt-future:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: transparent;
+}
+
+/* On hover the gradient border stays fully drawn */
+.pt-future:hover::before {
+  --aw-sweep-angle: 360deg;
+  animation: none;
+  opacity: 1;
+}
+
+.pt-future-kicker {
+  color: var(--arg-color-magenta);
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-meta);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.pt-future-title {
+  align-items: center;
+  display: inline-flex;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-body-large);
+  gap: 0.5rem;
+  letter-spacing: var(--tracking-card-title);
+  line-height: 1.1;
+}
+
+.pt-future .arrow_icon-embed,
+.pt-mobile-cta .arrow_icon-embed {
+  transition: transform 0.25s ease;
+}
+
+.pt-future:hover .arrow_icon-embed,
+.pt-mobile-cta:hover .arrow_icon-embed {
+  transform: translate(0.125rem, -0.125rem) rotate(-50deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-future::before {
+    animation: none;
+  }
 }
 
 /* ── Mobile Timeline ── */
 .pt-timeline-mobile {
   display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.pt-mobile-card {
-  padding: 1.25rem 1.5rem;
-  background: #fff;
-  border-radius: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.pt-mobile-duration {
-  font-family: Neuemontreal, sans-serif;
-  font-size: 1.125rem;
-  font-weight: 400;
-  color: #0c002e;
-  margin-bottom: 0.15rem;
-}
-
-.pt-mobile-since {
-  font-size: var(--type-meta);
-  color: rgba(0, 0, 0, 0.4);
-  margin-bottom: 0.75rem;
-  display: block;
-}
-
-.pt-mobile-logos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+.pt-mobile-row {
   align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 6.875rem minmax(0, 1fr);
+  padding: 1.125rem 0;
+}
+
+.pt-mobile-row:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.pt-mobile-range {
+  color: var(--arg-color-muted-on-dark);
+  font-size: var(--type-meta);
+}
+
+.pt-mobile-range.is-ongoing {
+  color: var(--arg-color-magenta);
 }
 
 .pt-mobile-logo {
-  height: 1.25rem;
-  width: auto;
+  filter: brightness(0) invert(1);
+  height: 1.75rem;
+  justify-self: start;
+  max-width: 100%;
   object-fit: contain;
-  filter: grayscale(1) opacity(0.65);
-  transition: filter 0.25s ease;
+  object-position: left center;
+  opacity: 0.8;
+  width: 8.5rem;
 }
 
-.pt-mobile-card:hover .pt-mobile-logo {
-  filter: grayscale(1) brightness(0.75) opacity(0.65);
+.pt-mobile-row--cta {
+  display: block;
+  padding: 0;
 }
 
 .pt-mobile-cta {
-  margin-top: 0.75rem;
+  justify-content: space-between;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+}
+
+.pt-mobile-cta:hover {
+  color: var(--arg-color-magenta);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -428,8 +595,14 @@
     flex-wrap: wrap;
     padding-bottom: 0;
   }
+}
 
-  /* ── Timeline → Mobile ── */
+/* ── Timeline → vertical list ── */
+@media screen and (max-width: 820px) {
+  .pt-timeline-section {
+    padding: 4rem 0 5rem;
+  }
+
   .pt-timeline-desktop {
     display: none;
   }

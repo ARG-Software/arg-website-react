@@ -109,7 +109,7 @@ export default function PartnersPage() {
               </div>
             </section>
 
-            <section id="timeline" className="pt-timeline-section padding-section-large">
+            <section id="timeline" className="pt-timeline-section">
               <Timeline
                 heading={PARTNERS_PAGE.timeline.heading}
                 clients={clients}

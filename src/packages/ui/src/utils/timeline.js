@@ -17,31 +17,25 @@ function getCurrentMonthIndex(date = new Date()) {
   return date.getFullYear() * MONTHS_PER_YEAR + date.getMonth();
 }
 
+// "YYYY-MM" → months since year 0
+function getMonthIndex(value) {
+  const [year, month] = String(value).split('-');
+  return toInteger(year) * MONTHS_PER_YEAR + Math.max(1, toInteger(month, 1)) - 1;
+}
+
 function getTimelineStartMonthIndex(timeline) {
-  return toInteger(timeline.startYear) * MONTHS_PER_YEAR;
-}
-
-function getFixedDurationMonths(timeline) {
-  const durationYears = Math.max(0, toInteger(timeline.durationYears));
-  const durationMonths = Math.max(0, toInteger(timeline.durationMonths));
-  return durationYears * MONTHS_PER_YEAR + durationMonths;
-}
-
-function getTimelineDurationMonths(timeline, currentDate) {
-  if (timeline.ongoing) {
-    return Math.max(
-      1,
-      getCurrentMonthIndex(currentDate) - getTimelineStartMonthIndex(timeline) + 1
-    );
-  }
-
-  return Math.max(1, getFixedDurationMonths(timeline) || MONTHS_PER_YEAR);
+  return getMonthIndex(timeline.start);
 }
 
 function getTimelineEndMonthIndex(timeline, currentDate) {
   if (timeline.ongoing) return getCurrentMonthIndex(currentDate);
-  return (
-    getTimelineStartMonthIndex(timeline) + getTimelineDurationMonths(timeline, currentDate) - 1
+  return getMonthIndex(timeline.end);
+}
+
+function getTimelineDurationMonths(timeline, currentDate) {
+  return Math.max(
+    1,
+    getTimelineEndMonthIndex(timeline, currentDate) - getTimelineStartMonthIndex(timeline) + 1
   );
 }
 
@@ -77,44 +71,33 @@ export function formatTimelineRange(row) {
 }
 
 export function createTimelineRows(clients, yearStart, yearEnd, currentDate = new Date()) {
-  const rowsByTimeframe = new Map();
+  const rows = [];
   const visibleStartMonthIndex = yearStart * MONTHS_PER_YEAR;
   const visibleEndMonthIndex = yearEnd * MONTHS_PER_YEAR + MONTHS_PER_YEAR - 1;
 
   clients.forEach(client => {
     const clientTimeline = client.timeline;
-    if (!clientTimeline?.startYear) return;
+    if (!clientTimeline?.start) return;
 
     const startMonthIndex = getTimelineStartMonthIndex(clientTimeline);
     const endMonthIndex = getTimelineEndMonthIndex(clientTimeline, currentDate);
     if (endMonthIndex < visibleStartMonthIndex || startMonthIndex > visibleEndMonthIndex) return;
 
-    const durationMonths = getTimelineDurationMonths(clientTimeline, currentDate);
-    const rowKey = [
+    rows.push({
+      key: client.slug,
+      client,
       startMonthIndex,
       endMonthIndex,
-      clientTimeline.ongoing ? 'ongoing' : 'fixed',
-    ].join('-');
-
-    if (!rowsByTimeframe.has(rowKey)) {
-      rowsByTimeframe.set(rowKey, {
-        key: rowKey,
-        startMonthIndex,
-        endMonthIndex,
-        visibleStartMonthIndex: Math.max(startMonthIndex, visibleStartMonthIndex),
-        visibleEndMonthIndex: Math.min(endMonthIndex, visibleEndMonthIndex),
-        startYear: getYearFromMonthIndex(startMonthIndex),
-        endYear: getYearFromMonthIndex(endMonthIndex),
-        durationMonths,
-        ongoing: Boolean(clientTimeline.ongoing),
-        clients: [],
-      });
-    }
-
-    rowsByTimeframe.get(rowKey).clients.push(client);
+      visibleStartMonthIndex: Math.max(startMonthIndex, visibleStartMonthIndex),
+      visibleEndMonthIndex: Math.min(endMonthIndex, visibleEndMonthIndex),
+      startYear: getYearFromMonthIndex(startMonthIndex),
+      endYear: getYearFromMonthIndex(endMonthIndex),
+      durationMonths: getTimelineDurationMonths(clientTimeline, currentDate),
+      ongoing: Boolean(clientTimeline.ongoing),
+    });
   });
 
-  return Array.from(rowsByTimeframe.values()).sort((a, b) => {
+  return rows.sort((a, b) => {
     if (a.startMonthIndex !== b.startMonthIndex) return a.startMonthIndex - b.startMonthIndex;
     return a.endMonthIndex - b.endMonthIndex;
   });

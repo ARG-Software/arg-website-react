@@ -6,10 +6,11 @@ import {
   getTimelineYearColumns,
 } from '../utils/timeline.js';
 import { AnimatedArrowButton } from '../buttons/AnimatedArrowButton.jsx';
+import { arrowSvg } from '../icons/SocialIcons.jsx';
 
-function formatTimelineTooltip(row) {
-  const range = row.ongoing ? `Since ${row.startYear}` : formatTimelineRange(row);
-  return `${formatTimelineDuration(row.durationMonths, row.ongoing)} · ${range}`;
+function formatTimelineLabel(row) {
+  const range = row.ongoing ? `since ${row.startYear}, ongoing` : formatTimelineRange(row);
+  return `${row.client.name}: ${formatTimelineDuration(row.durationMonths, row.ongoing)}, ${range}`;
 }
 
 export function Timeline({
@@ -27,12 +28,20 @@ export function Timeline({
 }) {
   const isExternal = ctaLink.startsWith('http');
   const ctaAttrs = isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
-  const safeYearEnd = new Date().getFullYear();
-  const yearColumns = getTimelineYearColumns(yearStart, safeYearEnd);
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  // One dimmed future year after the current one leaves room for the "Your time" row
+  const yearEnd = currentYear + 1;
+  const yearColumns = getTimelineYearColumns(yearStart, yearEnd);
   const monthColumnCount = yearColumns.length * MONTHS_PER_YEAR;
-  const timelineRows = createTimelineRows(clients, yearStart, safeYearEnd);
+  const timelineRows = createTimelineRows(clients, yearStart, yearEnd, now);
   const timelineStartMonthIndex = yearStart * MONTHS_PER_YEAR;
-  const finalYearStartColumn = (yearColumns.length - 1) * MONTHS_PER_YEAR + 1;
+  const daysInMonth = new Date(currentYear, now.getMonth() + 1, 0).getDate();
+  const todayMonths =
+    (currentYear - yearStart) * MONTHS_PER_YEAR +
+    now.getMonth() +
+    (now.getDate() - 1) / daysInMonth;
+  const todayPercent = (todayMonths / monthColumnCount) * 100;
 
   const scopeAttrs = animate
     ? {
@@ -60,7 +69,11 @@ export function Timeline({
   return (
     <div
       className="container padding-global pt-timeline-inner"
-      style={{ '--pt-month-count': monthColumnCount }}
+      style={{
+        '--pt-month-count': monthColumnCount,
+        '--pt-year-count': yearColumns.length,
+        '--pt-today': `${todayPercent}%`,
+      }}
       {...scopeAttrs}
     >
       <h2 className="pt-timeline-heading" data-animate-order={animate ? '0' : undefined}>
@@ -73,7 +86,7 @@ export function Timeline({
           {yearColumns.map(year => (
             <span
               key={year}
-              className="pt-year-label"
+              className={`pt-year-label${year > currentYear ? ' is-future' : ''}`}
               style={{ gridColumn: `span ${MONTHS_PER_YEAR}` }}
             >
               {year}
@@ -81,86 +94,86 @@ export function Timeline({
           ))}
         </div>
         <div className="pt-divider" data-animate-order={animate ? '2' : undefined} />
-        <div className="pt-rows">
-          {timelineRows.map((row, i) => {
-            const startCol = row.visibleStartMonthIndex - timelineStartMonthIndex + 1;
-            const span = row.visibleEndMonthIndex - row.visibleStartMonthIndex + 1;
-            const tooltip = formatTimelineTooltip(row);
-            const clientNames = row.clients.map(client => client.name).join(', ');
 
-            return (
-              <div key={row.key} className="pt-row">
-                <div
-                  className="pt-row-card tooltip-anchor"
-                  style={{ gridColumn: `${startCol} / span ${span}` }}
-                  data-tooltip={tooltip}
-                  role="group"
-                  aria-label={`${clientNames}: ${tooltip}`}
-                  {...rowAttrs(i + 3)}
-                >
-                  <div className="pt-row-logos">
-                    {row.clients.map(p => (
-                      <img
-                        key={p.slug}
-                        src={p.logoSmall || p.logo}
-                        alt={p.name}
-                        className="pt-row-logo"
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-          <div className="pt-row pt-row-cta">
-            <AnimatedArrowButton
-              href={ctaLink}
-              className="pt-row-cta-card"
-              style={{ gridColumn: `${finalYearStartColumn} / -1` }}
-              {...ctaAttrs}
-              onClick={onCtaClick}
-              hoverText={ctaButtonText}
-              {...rowAttrs(timelineRows.length + 3)}
-            >
-              {ctaText}
-            </AnimatedArrowButton>
+        <div className="pt-chart">
+          <div className="pt-today" aria-hidden="true">
+            <span className="pt-today-label">Today</span>
           </div>
+
+          <ol className="pt-rows">
+            {timelineRows.map((row, i) => {
+              const startCol = row.visibleStartMonthIndex - timelineStartMonthIndex + 1;
+              const span = row.visibleEndMonthIndex - row.visibleStartMonthIndex + 1;
+              const { client } = row;
+
+              return (
+                <li key={row.key} className="pt-row">
+                  <div
+                    className={`pt-row-item${row.ongoing ? ' is-ongoing' : ''}`}
+                    style={{ gridColumn: `${startCol} / span ${span}` }}
+                    role="img"
+                    aria-label={formatTimelineLabel(row)}
+                    {...rowAttrs(i + 3)}
+                  >
+                    <img
+                      src={client.logoSmall || client.logo}
+                      alt=""
+                      className="pt-row-logo"
+                      data-partner={client.slug}
+                    />
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+
+          {/* An open slot in the future, after Today: the gradient draws itself around it */}
+          <a
+            href={ctaLink}
+            className="pt-future"
+            {...ctaAttrs}
+            onClick={onCtaClick}
+            {...rowAttrs(timelineRows.length + 4)}
+          >
+            <span className="pt-future-kicker">{ctaText}</span>
+            <span className="pt-future-title">
+              {ctaButtonText}
+              <span className="arrow_icon-embed" aria-hidden="true">
+                {arrowSvg}
+              </span>
+            </span>
+          </a>
         </div>
       </div>
 
       {/* Mobile */}
-      <div className="pt-timeline-mobile">
-        {timelineRows.map((row, i) => {
-          return (
-            <div key={row.key} className="pt-mobile-card" {...cardAttrs(i + 1)}>
-              <div className="pt-mobile-duration">
-                {formatTimelineDuration(row.durationMonths, row.ongoing)}
-              </div>
-              <span className="pt-mobile-since">{formatTimelineRange(row)}</span>
-              <div className="pt-mobile-logos">
-                {row.clients.map(p => (
-                  <img
-                    key={p.slug}
-                    src={p.logoSmall || p.logo}
-                    alt={p.name}
-                    className="pt-mobile-logo"
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-        <AnimatedArrowButton
-          href={ctaLink}
-          className="pt-mobile-cta"
-          {...ctaAttrs}
-          onClick={onCtaClick}
-          hoverText={ctaButtonText}
-          {...cardAttrs(timelineRows.length + 1)}
-        >
-          {ctaText}
-        </AnimatedArrowButton>
-      </div>
+      <ol className="pt-timeline-mobile">
+        {timelineRows.map((row, i) => (
+          <li key={row.key} className="pt-mobile-row" {...cardAttrs(i + 1)}>
+            <span className={`pt-mobile-range${row.ongoing ? ' is-ongoing' : ''}`}>
+              {formatTimelineRange(row)}
+            </span>
+            <img
+              src={row.client.logoSmall || row.client.logo}
+              alt={row.client.name}
+              className="pt-mobile-logo"
+              data-partner={row.client.slug}
+            />
+          </li>
+        ))}
+        <li className="pt-mobile-row pt-mobile-row--cta" {...cardAttrs(timelineRows.length + 1)}>
+          <AnimatedArrowButton
+            href={ctaLink}
+            variant="ghost"
+            className="pt-mobile-cta"
+            {...ctaAttrs}
+            onClick={onCtaClick}
+            hoverText={ctaButtonText}
+          >
+            {ctaText}
+          </AnimatedArrowButton>
+        </li>
+      </ol>
     </div>
   );
 }
