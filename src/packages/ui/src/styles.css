@@ -1469,6 +1469,42 @@
   color: #b4b4be;
 }
 
+/* Bar under each list item, filled by its share of the articles */
+.tag-filter__bar {
+  background: #f0f0f3;
+  border-radius: 999px;
+  flex-basis: 100%;
+  height: 0.1875rem;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.tag-filter__bar-fill {
+  background: #c8c8d0;
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  position: relative;
+}
+
+/* The gradient sweeps in from the left on hover */
+.tag-filter__bar-fill::after {
+  background: var(--arg-gradient-primary);
+  border-radius: inherit;
+  content: '';
+  inset: 0;
+  position: absolute;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s ease;
+}
+
+.tag-filter__item:hover .tag-filter__bar-fill::after,
+.tag-filter__item:focus-visible .tag-filter__bar-fill::after,
+.tag-filter__item.is-active .tag-filter__bar-fill::after {
+  transform: scaleX(1);
+}
+
 .blp-pagination {
   align-items: center;
   display: flex;

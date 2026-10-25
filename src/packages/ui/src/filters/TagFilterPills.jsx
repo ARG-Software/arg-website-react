@@ -19,6 +19,13 @@ export function TagFilterPills({
   if (!tags.length) return null;
 
   const isList = layout === 'list';
+  // List bars show each tag's share of the largest count (usually all articles)
+  const barBase = Math.max(totalCount, ...tags.map(tag => tagCounts[tag] ?? 0), 1);
+  const bar = count => (
+    <span className="tag-filter__bar" aria-hidden="true">
+      <span className="tag-filter__bar-fill" style={{ width: `${(count / barBase) * 100}%` }} />
+    </span>
+  );
   const isAllSelected = selectedTags.length === 0;
   const animationAttrs = animate
     ? {
@@ -47,6 +54,7 @@ export function TagFilterPills({
             >
               <span className="tag-filter__name">{allLabel}</span>
               <span className="tag-filter__count">{totalCount}</span>
+              {bar(totalCount)}
             </button>
           ) : null}
 
@@ -62,6 +70,7 @@ export function TagFilterPills({
               >
                 <span className="tag-filter__name">{tag}</span>
                 <span className="tag-filter__count">{tagCounts[tag] ?? 0}</span>
+                {bar(tagCounts[tag] ?? 0)}
               </button>
             );
           })}

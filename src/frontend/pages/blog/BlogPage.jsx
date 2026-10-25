@@ -25,8 +25,8 @@ const HERO_TOPIC_COUNT = 6;
 
 const searchSvg = (
   <svg
-    width="18"
-    height="18"
+    width="16"
+    height="16"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -174,7 +174,6 @@ export default function BlogPage() {
                 <div className="blp-layout">
                   <aside className="blp-sidebar">
                     <div className="blp-search" data-animate-order="0">
-                      <span className="blp-search-icon">{searchSvg}</span>
                       <input
                         type="text"
                         className="blp-search-input"
@@ -183,6 +182,9 @@ export default function BlogPage() {
                         onChange={e => setSearchQuery(e.target.value)}
                         aria-label="Search blog posts"
                       />
+                      <span className="blp-search-icon" aria-hidden="true">
+                        {searchSvg}
+                      </span>
                     </div>
 
                     <TagFilterPills
@@ -205,6 +207,7 @@ export default function BlogPage() {
                       label="Collection"
                       tags={blogCollections}
                       tagCounts={collectionCounts}
+                      totalCount={blogPosts.length}
                       selectedTags={selectedCollections}
                       onToggle={toggleCollection}
                       showAll={false}
