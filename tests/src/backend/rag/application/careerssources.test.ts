@@ -21,6 +21,8 @@ test('careers sources say ARG is not hiring when there are no open roles', async
   );
   assert.match(chunkText(page.content)[0], /no open roles and is not hiring for a specific role today/u);
   assert.match(chunkText(jobs.content)[0], /Open roles at ARG Software: none/u);
+  assert.match(chunkText(page.content)[0], /Work mode for every role: Remote\./u);
+  assert.match(chunkText(jobs.content)[0], /hires for remote work only/u);
 
   for (const source of sources) {
     assert.doesNotMatch(source.content, OPEN_ROLES_COPY);
@@ -54,6 +56,7 @@ test('careers sources list open roles and the hiring process when a job exists',
     assert.match(page.content, /Explore open roles/u);
     assert.match(jobs.content, /Open role: Senior Backend Engineer \(Engineering, Full-time, Remote, Europe\)/u);
     assert.match(jobs.content, /Requirements: \.NET; PostgreSQL; Kafka\./u);
+    assert.match(chunkText(page.content)[0], /Work mode for every role: Remote\./u);
     assert.match(jobs.content, /Step 1, Send your application/u);
 
     for (const source of [page, jobs]) {

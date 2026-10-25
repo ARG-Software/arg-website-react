@@ -168,6 +168,16 @@ export function resolveRetrievalRoute(
   }
 
   if (CAREERS_PATTERN.test(routeText)) {
+    // When the subject itself is careers ("are you hiring?"), answer from the careers sources, which
+    // state whether any roles are open; "hire you for a project" stays on the general careers route
+    if (CAREERS_PATTERN.test(plan.subject)) {
+      return {
+        ...createRoute('careers', CAREERS_SOURCE_TYPES, plan),
+        sourceKeys: ['careers-page', 'jobs'],
+        forceFirstChunks: true,
+      };
+    }
+
     return createRoute('careers', CAREERS_SOURCE_TYPES, plan);
   }
 

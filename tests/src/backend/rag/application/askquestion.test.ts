@@ -1194,6 +1194,37 @@ test('static page context retrieves page-specific sources', async () => {
   assert.equal(supabase.calls.matchChunks.length, 0);
 });
 
+test('hiring questions retrieve the careers sources instead of keyword matches elsewhere', async () => {
+  const supabase = createSupabase({
+    sources: [
+      source('careers-id', 'Careers Page', null, 'careers', 'careers-page'),
+      source('jobs-id', 'Jobs and Hiring Traits', null, 'careers', 'jobs'),
+      source('gaspar-id', 'Gaspar', null, 'homepage', 'assistant-profile'),
+    ],
+    chunks: [
+      chunk('careers-id', 'careers', 'ARG Software has no open roles and is not hiring for a specific role today.'),
+      chunk('jobs-id', 'jobs', 'Open roles at ARG Software: none.'),
+      chunk('gaspar-id', 'gaspar', 'Gaspar can point visitors to careers and contact options.'),
+    ],
+  });
+  const embeddingProvider = createEmbeddingProvider(() => {
+    throw new Error('Embeddings must not be generated for hiring questions');
+  });
+
+  const result = await askQuestion({
+    question: 'Are you hiring?',
+    config,
+    readRepository: supabase.repository,
+    answerProvider: createAnswerProvider('Are you hiring?', {
+      plan: { mode: 'direct_evidence', entity: 'ARG', subject: 'careers' },
+    }),
+    embeddingProvider,
+    fallbackEmbeddingProvider: embeddingProvider,
+  });
+
+  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['careers-page', 'jobs']);
+});
+
 test('blog page context retrieves the current article source', async () => {
   const article = source(
     'article-id',

@@ -95,6 +95,7 @@ interface IJobsTitledBody {
 }
 
 export interface IJobsJson {
+  workMode: string;
   jobs: Array<{
     title: string;
     department: string;

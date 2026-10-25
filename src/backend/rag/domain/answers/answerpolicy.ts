@@ -11,21 +11,29 @@ export function normalizeAssistantAnswer(answer: string): string {
   );
 }
 
+const TEAM_VOICE_VERBS: Record<string, string> = {
+  was: 'were',
+  is: 'are',
+  has: 'have',
+  does: 'do',
+  started: 'started',
+  began: 'began',
+  appears: 'appear',
+  offers: 'offer',
+  provides: 'provide',
+  builds: 'build',
+  develops: 'develop',
+  helps: 'help',
+  works: 'work',
+  focuses: 'focus',
+  collaborates: 'collaborate',
+};
+
+// "ARG is" becomes "we are", but not after a preposition: "every role at ARG is remote" stays as written
 function normalizeTeamVoice(answer: string): string {
-  return answer
-    .replace(/\bARG(?: Software)? was\b/gi, 'we were')
-    .replace(/\bARG(?: Software)? is\b/gi, 'we are')
-    .replace(/\bARG(?: Software)? has\b/gi, 'we have')
-    .replace(/\bARG(?: Software)? does\b/gi, 'we do')
-    .replace(/\bARG(?: Software)? started\b/gi, 'we started')
-    .replace(/\bARG(?: Software)? began\b/gi, 'we began')
-    .replace(/\bARG(?: Software)? appears\b/gi, 'we appear')
-    .replace(/\bARG(?: Software)? offers\b/gi, 'we offer')
-    .replace(/\bARG(?: Software)? provides\b/gi, 'we provide')
-    .replace(/\bARG(?: Software)? builds\b/gi, 'we build')
-    .replace(/\bARG(?: Software)? develops\b/gi, 'we develop')
-    .replace(/\bARG(?: Software)? helps\b/gi, 'we help')
-    .replace(/\bARG(?: Software)? works\b/gi, 'we work')
-    .replace(/\bARG(?: Software)? focuses\b/gi, 'we focus')
-    .replace(/\bARG(?: Software)? collaborates\b/gi, 'we collaborate');
+  return answer.replace(
+    /(\b(?:about|at|by|for|from|in|into|join|joining|of|on|than|to|with)\s+)?\bARG(?: Software)? (was|is|has|does|started|began|appears|offers|provides|builds|develops|helps|works|focuses|collaborates)\b/gi,
+    (match, preposition: string | undefined, verb: string) =>
+      preposition ? match : `we ${TEAM_VOICE_VERBS[verb.toLowerCase()]}`
+  );
 }

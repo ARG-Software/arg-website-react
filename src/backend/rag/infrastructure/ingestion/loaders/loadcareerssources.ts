@@ -11,8 +11,9 @@ export async function loadCareersSources(rootDir: string, relativeFilePath: stri
   const filePath = resolveRoot(rootDir, relativeFilePath);
   const jobsFilePath = resolveRoot(rootDir, JOBS_FILE_PATH);
   const page = await readJsonFile<ICareersJson>(filePath);
-  const { jobs, careerTraits, hiringSteps } = await readJsonFile<IJobsJson>(jobsFilePath);
+  const { workMode, jobs, careerTraits, hiringSteps } = await readJsonFile<IJobsJson>(jobsFilePath);
   const hasJobs = jobs.length > 0;
+  const workModeLine = `ARG Software hires for ${workMode.toLowerCase()} work only. Work mode for every role: ${workMode}.`;
   const traitsContent = [
     'What ARG Software looks for in engineers:',
     ...careerTraits.map(trait => `${trait.title}: ${trait.body}`),
@@ -22,7 +23,7 @@ export async function loadCareersSources(rootDir: string, relativeFilePath: stri
   let jobsContent: string;
 
   if (hasJobs) {
-    const status = `ARG Software is hiring. Open roles: ${jobs.map(job => job.title).join(', ')}.`;
+    const status = `ARG Software is hiring. Open roles: ${jobs.map(job => job.title).join(', ')}. ${workModeLine}`;
 
     pageContent = [
       [status, page.seo.openRolesDescription, page.hero.openRolesSubtitle].join('\n'),
@@ -44,7 +45,7 @@ export async function loadCareersSources(rootDir: string, relativeFilePath: stri
       traitsContent,
     ].join('\n\n');
   } else {
-    const status = 'ARG Software has no open roles and is not hiring for a specific role today.';
+    const status = `ARG Software has no open roles and is not hiring for a specific role today. ${workModeLine}`;
 
     pageContent = [
       [status, page.seo.noRolesDescription, page.hero.noRolesSubtitle].join('\n'),
