@@ -181,6 +181,8 @@ npm run lint:backend
 
 A website deploy without ingest leaves Gaspar on old chunks.
 
+For blog posts and pattern pages (frontmatter, sources, cover image, pattern links, checks), see [`docs/content-guide.md`](docs/content-guide.md).
+
 ---
 
 ## Analytics

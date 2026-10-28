@@ -123,6 +123,7 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Cleans up inline `transform` after animation to prevent CSS hover conflicts
 
 ### 3.7 Blog System
+- **Writing or editing a post or pattern: follow `docs/content-guide.md`** (frontmatter, SEO keyword rule, sources, cover image, pattern links, checks, ingest). It is the single source for content rules
 - Posts are Markdown files in `src/frontend/content/blog/` with YAML frontmatter
 - Content folder paths live in `src/frontend/data/contentPaths.json`. Scripts and build plugins read it; the frontend uses the `@content` alias (built from it in `vite.config.js`), because `import.meta.glob` only accepts literal paths
 - Naming convention: `{slug}.md` (e.g. `angular-5-to-19-migration.md`)
@@ -138,6 +139,7 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Loaded by `src/frontend/utils/patternLoader.js`; prerendered and added to the sitemap by `plugins/seo-prerender/pages/patterns.js`
 - Body blocks render through `renderArticleBlock` in `src/frontend/components/content/ArticleBlock.jsx`, shared with `BlogPostPage`
 - Code examples are C# and TypeScript; compile every snippet (`dotnet build`, strict `tsc --noEmit`) before publishing
+- To link an article to a pattern, add the post slug to the pattern's `relatedPosts`; the blog post then shows a "Pattern reference" line automatically (runtime and prerender). `npm run check:content` fails on unknown slugs
 - Gaspar does not ingest pattern pages yet
 
 ### 3.8 External Links Service
@@ -394,24 +396,8 @@ Build output: `dist/` directory ready for deployment.
 6. Add SEO metadata (title, description) in the page component
 7. Follow README **Content Updates**: keep prerender/JSON-LD/`llms*.txt` in sync, add a RAG source if Gaspar should know the page, then `npm run rag:ingest:local -- --all`
 
-### Adding a New Blog Post
-1. Create `src/frontend/content/blog/{slug}.md` with YAML frontmatter:
-   ```yaml
-   ---
-   slug: my-post-slug
-   title: My Post Title
-   subtitle: Short subtitle
-   seoTitle: SEO-optimized title (optional, falls back to title)
-   tag: Category Name
-   date: 2025-01-15
-   readTime: 8 min read
-   image: /images/blog/.../header.webp
-   ---
-   ```
-2. Rebuild — sitemap, RSS, and Atom are auto-generated
-3. Or use `npm run blog:import:medium` to import from Medium feed
-4. Cover art: see `docs/blog-covers.md` (2560×1440 WebP on the site, PNG for Medium)
-5. Follow README **Content Updates**: ingest the post (`npm run rag:ingest:local -- --file src/frontend/content/blog/{slug}.md` or `--all`) so Gaspar has the new article
+### Adding a New Blog Post or Pattern
+Follow `docs/content-guide.md` end to end. It covers frontmatter, the keyword rule, `## Sources`, cover generation (`npm run blog:covers`), linking posts and patterns through `relatedPosts`, the pre-publish checks, the Gaspar ingest and Medium sync. Medium import: `npm run blog:import:medium`.
 
 ### Making a Link with Analytics
 ```jsx
