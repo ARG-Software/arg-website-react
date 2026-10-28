@@ -18,7 +18,8 @@ export function writeSkillPages({ distDir, baseHtml, generated }) {
     let html = replaceMetaTags(baseHtml, {
       title: `${skill.title} | ARG Software`,
       socialTitle: skill.title,
-      description: skill.summary || '',
+      // First sentence only: the full summary runs past 160 characters.
+      description: `${(skill.summary || '').split('. ')[0].replace(/\.$/, '')}.`,
       url: skillUrl,
       type: 'website',
       breadcrumbs: [
@@ -28,7 +29,10 @@ export function writeSkillPages({ distDir, baseHtml, generated }) {
       ],
     });
 
-    html = injectStaticContent(html, buildSkillStaticContent(skill));
+    const otherSkillLinks = skills
+      .filter(other => other.slug && other.slug !== skill.slug)
+      .map(other => ({ href: `/skills/${other.slug}/`, label: other.title }));
+    html = injectStaticContent(html, buildSkillStaticContent(skill, otherSkillLinks));
 
     const dir = path.join(distDir, 'skills', skill.slug);
     fs.mkdirSync(dir, { recursive: true });

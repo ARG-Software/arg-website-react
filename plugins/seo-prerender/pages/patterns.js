@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import contentPaths from '../../../src/frontend/data/contentPaths.json' with { type: 'json' };
 import { SITE_URL } from '../constants.js';
-import { parseFrontmatter } from '../blog-loader.js';
+import { loadBlogPosts, parseFrontmatter } from '../blog-loader.js';
 import { replaceMetaTags } from '../html-utils.js';
 import { buildPatternStaticContent, injectStaticContent } from '../static-content.js';
 import { parseBlocks } from '../../../src/frontend/utils/blog/articleContent.js';
@@ -20,9 +20,11 @@ export function loadPatterns() {
 }
 
 export function writePatternPages({ distDir, baseHtml, generated }) {
+  const patterns = loadPatterns();
+  const posts = loadBlogPosts();
   let count = generated;
 
-  for (const pattern of loadPatterns()) {
+  for (const pattern of patterns) {
     const patternPath = `/patterns/${pattern.slug}/`;
     let html = replaceMetaTags(baseHtml, {
       title: `${pattern.seoTitle || pattern.title} | ARG Software`,
@@ -37,7 +39,16 @@ export function writePatternPages({ distDir, baseHtml, generated }) {
       ],
     });
 
-    html = injectStaticContent(html, buildPatternStaticContent(pattern));
+    const slugsIn = field => (pattern[field] || '').split(',').map(slug => slug.trim());
+    const relatedLinks = [
+      ...patterns
+        .filter(item => slugsIn('relatedPatterns').includes(item.slug))
+        .map(item => ({ href: `/patterns/${item.slug}/`, label: item.title })),
+      ...posts
+        .filter(post => slugsIn('relatedPosts').includes(post.slug))
+        .map(post => ({ href: `/blog/${post.slug}/`, label: post.seoTitle || post.title })),
+    ];
+    html = injectStaticContent(html, buildPatternStaticContent(pattern, relatedLinks));
 
     const dir = path.join(distDir, 'patterns', pattern.slug);
     fs.mkdirSync(dir, { recursive: true });

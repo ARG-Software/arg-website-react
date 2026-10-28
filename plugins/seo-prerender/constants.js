@@ -88,7 +88,7 @@ export const STATIC_PAGES = [
   },
   {
     path: '/patterns/',
-    title: 'Software Architecture Patterns with C# and TypeScript Examples | ARG Software',
+    title: 'Architecture Patterns with C# and TypeScript | ARG Software',
     socialTitle: 'Software Architecture Patterns',
     h1: 'Architecture patterns with working code.',
     pageType: 'CollectionPage',
@@ -159,7 +159,7 @@ export const STATIC_PAGES = [
     priority: '0.8',
     changefreq: 'monthly',
     description:
-      'Run a free website audit from your browser with ARG Architect. When you need to go deeper, a one-week architecture review of the part of your system that matters most starts from €3,500.',
+      'Free website audit from your browser with ARG Architect, or a one-week architecture review of the part of your system that matters most, from €3,500.',
     paragraphs: [
       'ARG Architect is a free browser extension from ARG Software. Open any public page, press audit, and get one weighted score across eight categories: security, performance, architecture, efficiency, payload, accessibility, AI readiness and DOM. Every failing check names exactly what fails and recommends a fix. Audit the current tab or queue up to 10 URLs, compare any two runs side by side, and export any report as PDF, Markdown, or JSON. It is available on the Chrome Web Store and Firefox Add-ons; Brave, Edge and Opera install it from the Chrome Web Store. No account, no analytics, no tracking. It only sees what a browser can see; it does not review the system behind the page.',
       'A browser can only read what a site exposes publicly. The architecture review goes deeper: one week of a senior engineer on the part of the system that matters most, covering system design, code quality, scalability, integrations, infrastructure and security inside an agreed scope, with a written call on what to keep, fix, or rebuild.',

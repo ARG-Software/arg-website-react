@@ -3,6 +3,7 @@ import path from 'node:path';
 import { SITE_URL, STATIC_PAGES } from '../constants.js';
 import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js';
 import { replaceMetaTags } from '../html-utils.js';
+import { loadPatterns } from './patterns.js';
 
 function getSkillLinks() {
   const skillsPath = path.resolve('src/frontend/data/skills.json');
@@ -27,8 +28,15 @@ export function writeStaticPages({ distDir, baseHtml, blogPostLinks, generated }
       breadcrumbs: page.breadcrumbs,
       jsonLd: page.jsonLd,
     });
-    const extraLinks =
-      page.path === '/blog/' ? blogPostLinks : page.path === '/skills/' ? getSkillLinks() : [];
+    let extraLinks = [];
+    if (page.path === '/blog/') extraLinks = blogPostLinks;
+    if (page.path === '/skills/') extraLinks = getSkillLinks();
+    if (page.path === '/patterns/') {
+      extraLinks = loadPatterns().map(pattern => ({
+        href: `/patterns/${pattern.slug}/`,
+        label: pattern.title,
+      }));
+    }
     html = injectCrawlableBlock(
       html,
       buildCrawlableBlock(page.h1, {

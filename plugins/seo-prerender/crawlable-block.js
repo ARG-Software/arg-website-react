@@ -13,7 +13,7 @@ export function buildCrawlableBlock(
   const subHtml = subtitle ? `\n  <p>${escapeHtml(subtitle)}</p>` : '';
   const paraHtml = paragraphs.map(p => `\n  <p>${escapeHtml(p)}</p>`).join('');
   return `<div aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">
-  <h2>${escapeHtml(h1Text)}</h2>${descHtml}${subHtml}${paraHtml}
+  <h1>${escapeHtml(h1Text)}</h1>${descHtml}${subHtml}${paraHtml}
   <nav>
     ${navHtml}
   </nav>
@@ -21,5 +21,6 @@ export function buildCrawlableBlock(
 }
 
 export function injectCrawlableBlock(html, block) {
-  return html.replace('<div id="root"></div>', `<div id="root"></div>\n${block}`);
+  // Inside #root so React replaces it on render, leaving only the app's own h1.
+  return html.replace('<div id="root"></div>', () => `<div id="root">${block}</div>`);
 }

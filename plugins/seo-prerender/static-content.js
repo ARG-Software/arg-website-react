@@ -11,10 +11,11 @@ const SKILLS_PAGE = JSON.parse(
 const EXTERNAL_HREF_PATTERN = /^https?:\/\//i;
 
 export function injectStaticContent(html, content) {
-  return html.replace('<div id="root"></div>', `<div id="root">${content}</div>`);
+  // Function replacer: content such as C# `$"..."` would otherwise be read as `$&` patterns.
+  return html.replace('<div id="root"></div>', () => `<div id="root">${content}</div>`);
 }
 
-export function buildBlogPostStaticContent(meta, blocks) {
+export function buildBlogPostStaticContent(meta, blocks, relatedLinks = []) {
   const heroImageIndex = blocks.findIndex(block => block.type === 'image');
   const heroImage = heroImageIndex >= 0 ? blocks[heroImageIndex] : null;
   const articleBlocks = blocks.filter((_, index) => index !== heroImageIndex);
@@ -56,12 +57,12 @@ export function buildBlogPostStaticContent(meta, blocks) {
         </article>
       </div>
     </section>
-    ${renderNavigation([{ href: '/blog/', label: 'Blog' }])}
+    ${renderNavigation([{ href: '/blog/', label: 'Blog' }, ...relatedLinks])}
   </main>
 </div>`;
 }
 
-export function buildSkillStaticContent(skill) {
+export function buildSkillStaticContent(skill, relatedLinks = []) {
   const does = (skill.does || []).map(item => `<li>${escapeHtml(item)}</li>`).join('');
   const detailTitleLine = SKILLS_PAGE.hero?.detailTitleLine || 'for coding agents.';
 
@@ -87,12 +88,12 @@ export function buildSkillStaticContent(skill) {
       <p>${escapeHtml(skill.usedWhen || '')}</p>
       <p>${escapeHtml(skill.body || '')}</p>
     </section>
-    ${renderNavigation([{ href: '/skills/', label: 'AI Skills' }])}
+    ${renderNavigation([{ href: '/skills/', label: 'AI Skills' }, ...relatedLinks])}
   </main>
 </div>`;
 }
 
-export function buildPatternStaticContent(pattern) {
+export function buildPatternStaticContent(pattern, relatedLinks = []) {
   return `<div class="page-wrapper" data-prerendered-content>
   <main class="main-wrapper">
     <header class="page-header page-header--small page-header--article bp-article-page-header">
@@ -113,7 +114,7 @@ export function buildPatternStaticContent(pattern) {
         </article>
       </div>
     </section>
-    ${renderNavigation([{ href: '/patterns/', label: 'Patterns' }])}
+    ${renderNavigation([{ href: '/patterns/', label: 'Patterns' }, ...relatedLinks])}
   </main>
 </div>`;
 }

@@ -39,9 +39,10 @@ export default function SkillDetailPage() {
 
   return (
     <>
+      {/* First sentence only: the full summary runs past 160 characters. */}
       <SEO
         title={skill.title}
-        description={skill.summary}
+        description={`${skill.summary.split('. ')[0].replace(/\.$/, '')}.`}
         path={`/skills/${skill.slug}/`}
         breadcrumbs={breadcrumbs}
       />

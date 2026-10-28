@@ -7,11 +7,17 @@ import { buildBlogPostStaticContent, injectStaticContent } from '../static-conte
 import { loadPatterns } from './patterns.js';
 import { DEFAULT_AUTHOR } from '../../../src/frontend/constants/seo.js';
 import { parseBlocks } from '../../../src/frontend/utils/blog/articleContent.js';
+import { getRelatedPosts } from '../../../src/frontend/utils/blog/articleHelpers.js';
 import { buildArticleSchema } from '../../../src/frontend/utils/structuredData.js';
 import { toContentDateIso } from '../../../src/frontend/utils/contentDate.js';
 
 export async function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) {
   const patterns = loadPatterns();
+  // Frontmatter tags are a comma string; getRelatedPosts expects an array, as in the SPA.
+  const relatedCandidates = blogPostMetas.map(post => ({
+    ...post,
+    tags: post.tags ? post.tags.split(',').map(tag => tag.trim()) : undefined,
+  }));
   let count = generated;
   for (const meta of blogPostMetas) {
     const body = meta._body;
@@ -78,7 +84,15 @@ export async function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generat
     if (patternLinks.length > 0) {
       blocks.push({ type: 'paragraph', text: `Pattern reference: ${patternLinks.join(' · ')}` });
     }
-    html = injectStaticContent(html, buildBlogPostStaticContent(meta, blocks));
+    // Carousel posts plus the previous and next post, so every post gets crawlable inlinks.
+    const index = blogPostMetas.indexOf(meta);
+    const neighbours = [relatedCandidates[index - 1], relatedCandidates[index + 1]].filter(Boolean);
+    const related = getRelatedPosts(relatedCandidates, relatedCandidates[index], 9);
+    const relatedLinks = [...new Set([...related, ...neighbours])].map(post => ({
+      href: `/blog/${post.slug}/`,
+      label: post.seoTitle || post.title || post.slug,
+    }));
+    html = injectStaticContent(html, buildBlogPostStaticContent(meta, blocks, relatedLinks));
 
     const dir = path.join(distDir, 'blog', meta.slug);
     fs.mkdirSync(dir, { recursive: true });

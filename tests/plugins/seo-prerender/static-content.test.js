@@ -7,6 +7,10 @@ import {
   buildSkillStaticContent,
   injectStaticContent,
 } from '../../../plugins/seo-prerender/static-content.js';
+import {
+  buildCrawlableBlock,
+  injectCrawlableBlock,
+} from '../../../plugins/seo-prerender/crawlable-block.js';
 
 test('renders complete blog content inside the React root', () => {
   const blocks = parseBlocks(
@@ -115,4 +119,25 @@ test('renders skill install command and what it does for crawlers', () => {
   );
   assert.match(content, /Prefer the simplest readable implementation\./);
   assert.match(content, /href="\/skills\/"/);
+});
+
+test('links related pages from the prerendered navigation', () => {
+  const content = buildBlogPostStaticContent(
+    { title: 'Engineering article', slug: 'engineering-article' },
+    parseBlocks('Intro.'),
+    [{ href: '/blog/other-post/', label: 'Other post' }]
+  );
+
+  assert.match(content, /<a href="\/blog\/">Blog<\/a>/);
+  assert.match(content, /<a href="\/blog\/other-post\/">Other post<\/a>/);
+});
+
+test('renders the crawlable block as the only h1 inside the React root', () => {
+  const html = injectCrawlableBlock(
+    '<body><div id="root"></div></body>',
+    buildCrawlableBlock('Page heading', { description: 'Page description.' })
+  );
+
+  assert.match(html, /<div id="root"><div aria-hidden="true"[^>]*>\s*<h1>Page heading<\/h1>/);
+  assert.match(html, /<\/nav>\s*<\/div><\/div><\/body>/);
 });
