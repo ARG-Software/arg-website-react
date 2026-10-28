@@ -26,6 +26,7 @@
   "detail": {
     "relatedPostsLabel": "Go deeper on the ARG blog",
     "relatedPatternsLabel": "Related patterns",
-    "allPatternsLabel": "All patterns"
+    "allPatternsLabel": "All patterns",
+    "allPatternsLink": "Browse every pattern"
   }
 }

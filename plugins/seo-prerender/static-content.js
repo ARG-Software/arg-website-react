@@ -95,7 +95,7 @@ export function buildSkillStaticContent(skill) {
 export function buildPatternStaticContent(pattern) {
   return `<div class="page-wrapper" data-prerendered-content>
   <main class="main-wrapper">
-    <header class="page-header page-header--small">
+    <header class="page-header page-header--small page-header--article bp-article-page-header">
       <div class="page-header__inner page-header__inner--single">
         <div class="page-header__lead">
           <h1>

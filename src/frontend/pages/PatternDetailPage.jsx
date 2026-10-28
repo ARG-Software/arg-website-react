@@ -62,6 +62,7 @@ export default function PatternDetailPage() {
             subtitle={pattern.subtitle}
             breadcrumbs={breadcrumbs}
             size="small"
+            variant="article bp-article-page-header"
           />
 
           <div
@@ -84,48 +85,37 @@ export default function PatternDetailPage() {
 
                 <aside className="pa-aside" aria-label="Related reading">
                   {relatedPosts.length > 0 && (
-                    <div className="pa-aside-group">
-                      <p className="pa-aside-heading">{DETAIL.relatedPostsLabel}</p>
-                      <ul>
-                        {relatedPosts.map(post => (
-                          <li key={post.slug}>
-                            <AppLink
-                              to={`/blog/${post.slug}/`}
-                              trackEvent="blog_post_click"
-                              trackData={{
-                                blog_post_slug: post.slug,
-                                blog_post_title: post.title,
-                                link_location: 'pattern_detail',
-                              }}
-                            >
-                              {post.title}
-                            </AppLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <RelatedLinks
+                      label={DETAIL.relatedPostsLabel}
+                      items={relatedPosts.map(post => ({
+                        key: post.slug,
+                        to: `/blog/${post.slug}/`,
+                        title: post.title,
+                        trackEvent: 'blog_post_click',
+                        trackData: {
+                          blog_post_slug: post.slug,
+                          blog_post_title: post.title,
+                          link_location: 'pattern_detail',
+                        },
+                      }))}
+                    />
                   )}
                   {relatedPatterns.length > 0 && (
-                    <div className="pa-aside-group">
-                      <p className="pa-aside-heading">{DETAIL.relatedPatternsLabel}</p>
-                      <ul>
-                        {relatedPatterns.map(item => (
-                          <li key={item.slug}>
-                            <AppLink
-                              to={`/patterns/${item.slug}/`}
-                              trackEvent="pattern_click"
-                              trackData={{ pattern: item.slug, location: 'pattern_detail' }}
-                            >
-                              {item.title}
-                            </AppLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <RelatedLinks
+                      label={DETAIL.relatedPatternsLabel}
+                      items={relatedPatterns.map(item => ({
+                        key: item.slug,
+                        to: `/patterns/${item.slug}/`,
+                        title: item.title,
+                        trackEvent: 'pattern_click',
+                        trackData: { pattern: item.slug, location: 'pattern_detail' },
+                      }))}
+                    />
                   )}
-                  <AppLink className="pa-aside-all" to="/patterns/">
-                    {DETAIL.allPatternsLabel}
-                  </AppLink>
+                  <RelatedLinks
+                    label={DETAIL.allPatternsLabel}
+                    items={[{ key: 'all', to: '/patterns/', title: DETAIL.allPatternsLink }]}
+                  />
                 </aside>
               </div>
             </section>
@@ -150,5 +140,30 @@ export default function PatternDetailPage() {
         <Footer />
       </div>
     </>
+  );
+}
+
+// Same markup and classes as the blog's ArticleSidebar, so both read as one site.
+function RelatedLinks({ label, items }) {
+  return (
+    <div className="pa-aside-group">
+      <span className="article-sidebar__label">{label}</span>
+      <nav className="article-sidebar__links" aria-label={label}>
+        {items.map((item, index) => (
+          <AppLink
+            key={item.key}
+            to={item.to}
+            className="article-sidebar__link"
+            trackEvent={item.trackEvent}
+            trackData={item.trackData}
+          >
+            <span className="article-sidebar__link-number">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <span className="article-sidebar__link-text">{item.title}</span>
+          </AppLink>
+        ))}
+      </nav>
+    </div>
   );
 }
