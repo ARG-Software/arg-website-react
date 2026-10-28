@@ -32,6 +32,8 @@ const ProjectDetailPage = lazyWithRetry(() => import('./pages/ProjectDetailPage.
 const CareersPage = lazyWithRetry(() => import('./pages/CareersPage.jsx'));
 const SkillsPage = lazyWithRetry(() => import('./pages/SkillsPage.jsx'));
 const SkillDetailPage = lazyWithRetry(() => import('./pages/SkillDetailPage.jsx'));
+const PatternsPage = lazyWithRetry(() => import('./pages/PatternsPage.jsx'));
+const PatternDetailPage = lazyWithRetry(() => import('./pages/PatternDetailPage.jsx'));
 const WorkingWithUsPage = lazyWithRetry(() => import('./pages/WorkingWithUsPage.jsx'));
 const AuditPage = lazyWithRetry(() => import('./pages/AuditPage.jsx'));
 const AboutUsPage = lazyWithRetry(() => import('./pages/AboutUsPage.jsx'));
@@ -58,6 +60,11 @@ function SkillDetailPageWrapper() {
   return <SkillDetailPage key={slug} />;
 }
 
+function PatternDetailPageWrapper() {
+  const { slug } = useParams();
+  return <PatternDetailPage key={slug} />;
+}
+
 const appRoutes = (
   <>
     <Route path="/" element={<HomePage />} />
@@ -73,6 +80,10 @@ const appRoutes = (
     <Route path="/skills/" element={<SkillsPage />} />
     <Route path="/skills/:slug" element={<SkillDetailPageWrapper />} />
     <Route path="/skills/:slug/" element={<SkillDetailPageWrapper />} />
+    <Route path="/patterns" element={<PatternsPage />} />
+    <Route path="/patterns/" element={<PatternsPage />} />
+    <Route path="/patterns/:slug" element={<PatternDetailPageWrapper />} />
+    <Route path="/patterns/:slug/" element={<PatternDetailPageWrapper />} />
     <Route path="/working-with-us" element={<WorkingWithUsPage />} />
     <Route path="/working-with-us/" element={<WorkingWithUsPage />} />
     <Route path="/audit" element={<AuditPage />} />

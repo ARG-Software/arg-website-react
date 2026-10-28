@@ -49,6 +49,7 @@
 /partners         /partners/             301
 /careers          /careers/              301
 /skills           /skills/               301
+/patterns         /patterns/             301
 /about-us         /about-us/             301
 /working-with-us  /working-with-us/      301
 /audit            /audit/                301
@@ -65,6 +66,7 @@
 /projects/:slug   /projects/:slug/       301
 /blog/:slug       /blog/:slug/           301
 /skills/:slug     /skills/:slug/         301
+/patterns/:slug   /patterns/:slug/       301
 
 # Admin SPA route — protected by Supabase Auth + server-side admin API checks
 

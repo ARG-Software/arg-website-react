@@ -93,3 +93,19 @@ test('coalesces blank-separated unordered list items', () => {
     },
   ]);
 });
+
+test('adds a period only to bold list labels without closing punctuation', () => {
+  assert.deepEqual(
+    parseBlocks('- **Plain label** Text.\n- **Is it free?** Yes.\n- **Closed:** Calls pass.'),
+    [
+      {
+        type: 'list',
+        items: [
+          { label: 'Plain label.', text: 'Text.' },
+          { label: 'Is it free?', text: 'Yes.' },
+          { label: 'Closed:', text: 'Calls pass.' },
+        ],
+      },
+    ]
+  );
+});

@@ -6,6 +6,7 @@ import { writeStaticPages } from './pages/static-pages.js';
 import { writeBlogPosts } from './pages/blog-posts.js';
 import { writeProjectPages } from './pages/projects.js';
 import { writeSkillPages } from './pages/skills.js';
+import { writePatternPages } from './pages/patterns.js';
 import { writeNotFoundPage } from './pages/not-found.js';
 import { generateSitemap } from './feeds/sitemap.js';
 import { generateRss, generateAtom } from './feeds/rss.js';
@@ -48,6 +49,8 @@ export default function seoPrerender() {
       generated = writeProjectPages({ distDir, baseHtml, generated });
 
       generated = writeSkillPages({ distDir, baseHtml, generated });
+
+      generated = writePatternPages({ distDir, baseHtml, generated });
 
       // 404 page
       generated = writeNotFoundPage({ distDir, baseHtml, generated });

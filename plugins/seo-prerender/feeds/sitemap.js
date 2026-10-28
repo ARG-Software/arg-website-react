@@ -3,6 +3,7 @@ import path from 'node:path';
 import { SITE_URL, STATIC_PAGES } from '../constants.js';
 import { escapeHtml } from '../html-utils.js';
 import { toContentDateOnly } from '../../../src/frontend/utils/contentDate.js';
+import { loadPatterns } from '../pages/patterns.js';
 
 export function generateSitemap({ distDir, blogPostMetas }) {
   const sitemapUrls = [];
@@ -38,6 +39,16 @@ export function generateSitemap({ distDir, blogPostMetas }) {
         });
       }
     }
+  }
+
+  for (const pattern of loadPatterns()) {
+    const entry = {
+      loc: `${SITE_URL}/patterns/${pattern.slug}/`,
+      priority: '0.7',
+      changefreq: 'monthly',
+    };
+    entry.lastmod = toContentDateOnly(pattern.dateModified);
+    sitemapUrls.push(entry);
   }
 
   const projectsPath = path.resolve('src/frontend/data/projects.json');

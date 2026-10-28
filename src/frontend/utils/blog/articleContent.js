@@ -11,9 +11,11 @@ function normalizeCodeLanguage(language) {
 
 function parseListItem(row) {
   const match = row.match(/^\*\*(.+?)\*\*\.?\s*(.*)/s);
-  return match
-    ? { label: match[1].replace(/\.$/, '') + '.', text: match[2].trim() }
-    : { label: '', text: row };
+  if (!match) return { label: '', text: row };
+
+  // Questions and lead-ins already end in punctuation; only plain labels get a period.
+  const label = match[1].replace(/\.$/, '');
+  return { label: /[?!:]$/.test(label) ? label : `${label}.`, text: match[2].trim() };
 }
 
 function appendListItems(blocks, type, items) {

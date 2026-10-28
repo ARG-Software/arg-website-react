@@ -69,7 +69,7 @@ const RULES = [
     description: 'kebab-case.css or lowercase.css',
   },
   {
-    root: contentPaths.blog,
+    root: contentPaths.root,
     extensions: ['.md'],
     pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/,
     description: 'kebab-case.md',

@@ -57,6 +57,10 @@
           "to": "/skills/"
         },
         {
+          "label": "Patterns",
+          "to": "/patterns/"
+        },
+        {
           "label": "FAQ",
           "to": "/#faq"
         }

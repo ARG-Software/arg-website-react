@@ -92,6 +92,32 @@ export function buildSkillStaticContent(skill) {
 </div>`;
 }
 
+export function buildPatternStaticContent(pattern) {
+  return `<div class="page-wrapper" data-prerendered-content>
+  <main class="main-wrapper">
+    <header class="page-header page-header--small">
+      <div class="page-header__inner page-header__inner--single">
+        <div class="page-header__lead">
+          <h1>
+            <div class="heading_line"><span class="page-header__heading-line">${escapeHtml(pattern.title)}</span></div>
+            <div class="heading_line"><span class="page-header__heading-line text-color-gradiant">${escapeHtml(pattern.category || '')}</span></div>
+          </h1>
+          ${pattern.subtitle ? `<p class="page-header__subtitle">${escapeHtml(pattern.subtitle)}</p>` : ''}
+        </div>
+      </div>
+    </header>
+    <section class="bp-body background-color-white padding-section-large border-radius-all">
+      <div class="bp-body-inner container container--section padding-global">
+        <article class="bp-content">
+          ${pattern.blocks.map(renderBlogBlock).join('\n          ')}
+        </article>
+      </div>
+    </section>
+    ${renderNavigation([{ href: '/patterns/', label: 'Patterns' }])}
+  </main>
+</div>`;
+}
+
 export function buildProjectStaticContent(project, projectLinks = []) {
   const services = project.services.map(service => `<li>${escapeHtml(service)}</li>`).join('');
   const solution = project.solution.map(item => `<li>${escapeHtml(item)}</li>`).join('');

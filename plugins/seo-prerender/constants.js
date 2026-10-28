@@ -15,6 +15,7 @@ export const NAV_LINKS = [
   { href: '/#cases', label: 'Use Cases' },
   { href: '/careers/', label: 'Careers' },
   { href: '/skills/', label: 'AI Skills' },
+  { href: '/patterns/', label: 'Patterns' },
   { href: '/about-us/', label: 'About Us' },
   { href: '/working-with-us/', label: 'Working with Us' },
   { href: '/audit/', label: 'Audit' },
@@ -83,6 +84,25 @@ export const STATIC_PAGES = [
       "These are ARG's working habits, written down for AI coding tools — how we design, review, and ship — so the assistant follows the same standard we use on client work.",
       'Skills cover browser extensions, Angular, Nx monorepos, .NET, React Native, MCP servers, web quality audits, and code review.',
       'Install with npx skills add ARG-Software/arg-agent-skills. Available for Claude Code, Cursor, Codex, OpenCode, and GitHub Copilot.',
+    ],
+  },
+  {
+    path: '/patterns/',
+    title: 'Software Architecture Patterns with C# and TypeScript Examples | ARG Software',
+    socialTitle: 'Software Architecture Patterns',
+    h1: 'Architecture patterns with working code.',
+    pageType: 'CollectionPage',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Patterns', path: '/patterns/' },
+    ],
+    priority: '0.8',
+    changefreq: 'monthly',
+    description:
+      'Architecture and design patterns for distributed systems and domain-driven design, each with a short C# and TypeScript example, when to use it, and when to avoid it.',
+    paragraphs: [
+      'The patterns ARG Software uses on production systems, each explained with the problem it solves, a short C# example, a short TypeScript example, and when to avoid it.',
+      'Patterns cover distributed systems (transactional outbox, idempotent consumer, saga, event sourcing, database per service), resilience (circuit breaker), domain-driven design (aggregate, value object), and architecture (CQRS, API gateway and backend for frontend).',
     ],
   },
   {

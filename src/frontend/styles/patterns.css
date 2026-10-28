@@ -1,0 +1,54 @@
+.pa-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.pa-aside {
+  grid-column: 2;
+  position: sticky;
+  top: 8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.pa-aside-heading {
+  margin-bottom: 0.75rem;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-ui);
+  color: #474747;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pa-aside-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pa-aside-group li + li {
+  margin-top: 0.75rem;
+}
+
+.pa-aside-group a,
+.pa-aside-all {
+  color: #0c002e;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.pa-aside-group a:hover,
+.pa-aside-all:hover {
+  color: #7904fd;
+}
+
+@media (max-width: 991px) {
+  .pa-aside {
+    grid-column: 1;
+    position: static;
+    margin-top: 3rem;
+  }
+}

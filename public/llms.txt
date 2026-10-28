@@ -63,6 +63,7 @@ ARG Software has partnered with teams across fintech, open payments, music techn
 - ARG Architect (free browser extension): Chrome Web Store https://chromewebstore.google.com/detail/arg-architect/bijelgdokpgmffnddemjblgdocnbogid, Firefox Add-ons https://addons.mozilla.org/addon/arg-architect/
 - Partners: companies ARG has worked with. https://arg.software/partners/
 - Blog: architecture, TypeScript, .NET, DevOps, and engineering practice. https://arg.software/blog/
+- Patterns: architecture and design patterns (CQRS, transactional outbox, idempotent consumer, saga, event sourcing, circuit breaker, API gateway and BFF, database per service, aggregate, value object), each with a C# and a TypeScript example. https://arg.software/patterns/
 - Contact: project brief for a senior engineer. https://arg.software/contact/
 - AI Skills: playbooks ARG Software gives coding assistants so they work the way we do. For Claude Code, Cursor, Codex, OpenCode, and GitHub Copilot. https://arg.software/skills/
 - Careers: https://arg.software/careers/
