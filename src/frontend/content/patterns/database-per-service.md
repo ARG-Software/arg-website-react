@@ -6,12 +6,14 @@ seoTitle: Database per Service Pattern in Microservices
 subtitle: Each microservice owns its data and nobody else touches it: the database per service pattern, how services share data through events, and C# and TypeScript examples.
 category: Distributed Systems
 tags: Microservices, Data Ownership, Events
-relatedPosts: stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee
+relatedPosts:
 relatedPatterns: saga, transactional-outbox, idempotent-consumer
 date: October 28, 2026
 dateModified: October 28, 2026
 ---
-In the database per service pattern, each service owns its data and is the only one allowed to read or write it. Other services get that data through the owner's API or its events, never by connecting to its tables.
+In the database per service pattern, each service owns its data and is the only one allowed to read or write it.
+
+Other services get that data through the owner's API or its events, never by connecting to its tables.
 
 ## The problem
 

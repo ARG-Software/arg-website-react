@@ -4,12 +4,14 @@ import { SITE_URL } from '../constants.js';
 import { replaceMetaTags, escapeHtml } from '../html-utils.js';
 import { OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH, writeSocialJpeg } from '../og-image.js';
 import { buildBlogPostStaticContent, injectStaticContent } from '../static-content.js';
+import { loadPatterns } from './patterns.js';
 import { DEFAULT_AUTHOR } from '../../../src/frontend/constants/seo.js';
 import { parseBlocks } from '../../../src/frontend/utils/blog/articleContent.js';
 import { buildArticleSchema } from '../../../src/frontend/utils/structuredData.js';
 import { toContentDateIso } from '../../../src/frontend/utils/contentDate.js';
 
 export async function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generated }) {
+  const patterns = loadPatterns();
   let count = generated;
   for (const meta of blogPostMetas) {
     const body = meta._body;
@@ -64,7 +66,19 @@ export async function writeBlogPosts({ distDir, baseHtml, blogPostMetas, generat
       jsonLd: buildArticleSchema({ ...meta, author, authorUrl, image }),
     });
 
-    html = injectStaticContent(html, buildBlogPostStaticContent(meta, parseBlocks(body)));
+    const blocks = parseBlocks(body);
+    const patternLinks = patterns
+      .filter(pattern =>
+        pattern.relatedPosts
+          .split(',')
+          .map(s => s.trim())
+          .includes(meta.slug)
+      )
+      .map(pattern => `[${pattern.title}](/patterns/${pattern.slug}/)`);
+    if (patternLinks.length > 0) {
+      blocks.push({ type: 'paragraph', text: `Pattern reference: ${patternLinks.join(' · ')}` });
+    }
+    html = injectStaticContent(html, buildBlogPostStaticContent(meta, blocks));
 
     const dir = path.join(distDir, 'blog', meta.slug);
     fs.mkdirSync(dir, { recursive: true });

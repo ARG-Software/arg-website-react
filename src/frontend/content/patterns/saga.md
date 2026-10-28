@@ -6,12 +6,14 @@ seoTitle: Saga Pattern: Orchestration in C# and TypeScript
 subtitle: Keep data consistent across services without distributed transactions: the saga pattern with compensating actions, orchestration vs choreography, and examples in C# and TypeScript.
 category: Distributed Systems
 tags: Saga, Microservices, Consistency
-relatedPosts: from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript, stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee
+relatedPosts:
 relatedPatterns: transactional-outbox, idempotent-consumer, database-per-service
 date: October 28, 2026
 dateModified: October 28, 2026
 ---
-A saga is a sequence of local transactions across services, where each step has a compensating action that undoes it. When a later step fails, the saga runs the compensations for the steps that already finished, so the system ends in a consistent state without a distributed transaction.
+A saga is a sequence of local transactions across services, where each step has a compensating action that undoes it.
+
+When a later step fails, the saga runs the compensations for the steps that already finished, so the system ends in a consistent state without a distributed transaction.
 
 ## The problem
 

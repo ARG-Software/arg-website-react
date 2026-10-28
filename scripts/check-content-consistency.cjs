@@ -154,7 +154,10 @@ function parseBlogFrontmatter(lines) {
     if (separatorIndex === -1) continue;
 
     const key = line.slice(0, separatorIndex).trim();
-    const value = line.slice(separatorIndex + 1).trim().replace(/^['"]|['"]$/g, '');
+    const value = line
+      .slice(separatorIndex + 1)
+      .trim()
+      .replace(/^['"]|['"]$/g, '');
     frontmatter[key] = value;
   }
 
@@ -190,11 +193,42 @@ function findBlogFrontmatterDateIssues() {
   return violations;
 }
 
+function findPatternLinkIssues() {
+  const slugsIn = dir =>
+    fs
+      .readdirSync(path.join(ROOT_DIR, dir))
+      .filter(name => name.endsWith('.md'))
+      .map(name => {
+        const lines = fs.readFileSync(path.join(ROOT_DIR, dir, name), 'utf8').split(/\r?\n/);
+        return { name, frontmatter: parseBlogFrontmatter(lines) };
+      });
+  const posts = new Set(slugsIn(contentPaths.blog).map(({ frontmatter }) => frontmatter.slug));
+  const patterns = slugsIn(contentPaths.patterns);
+  const patternSlugs = new Set(patterns.map(({ frontmatter }) => frontmatter.slug));
+  const violations = [];
+
+  for (const { name, frontmatter } of patterns) {
+    for (const [field, known] of [
+      ['relatedPosts', posts],
+      ['relatedPatterns', patternSlugs],
+    ]) {
+      for (const slug of (frontmatter[field] || '').split(',').map(value => value.trim())) {
+        if (slug && !known.has(slug)) {
+          violations.push(`${contentPaths.patterns}/${name} ${field} names unknown slug "${slug}"`);
+        }
+      }
+    }
+  }
+
+  return violations;
+}
+
 const files = [...new Set(CONTENT_PATHS.flatMap(listFiles))];
 const violations = [
   ...findBlogProseDoubleHyphens(),
   ...findBlogFrontmatterDateIssues(),
   ...findBlogProseEmojis(),
+  ...findPatternLinkIssues(),
 ];
 
 for (const absolutePath of files) {
@@ -225,7 +259,11 @@ const clearinghouse = projects.find(project => project.slug === 'peoples-clearin
 if (mojaloop?.timeline !== '2021-2023') {
   violations.push('src/frontend/data/projects.json must set Mojaloop timeline to 2021-2023');
 }
-if (!mojaloop?.metrics.some(metric => metric.label === 'Transactions per second verified in load testing')) {
+if (
+  !mojaloop?.metrics.some(
+    metric => metric.label === 'Transactions per second verified in load testing'
+  )
+) {
   violations.push('src/frontend/data/projects.json must qualify the Mojaloop throughput metric');
 }
 if (!clearinghouse?.metrics.some(metric => metric.displayValue === '1,000-2,000')) {

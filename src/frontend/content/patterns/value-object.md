@@ -6,12 +6,14 @@ seoTitle: Value Object Pattern: C# Records and TypeScript
 subtitle: Model money, emails, and dates as value objects: immutable types compared by value that validate themselves, with C# records and a TypeScript class.
 category: Domain-Driven Design
 tags: DDD, Value Object, Immutability
-relatedPosts: pragmatic-clean-architecture-aspnet-core, enforce-clean-architecture-typescript
+relatedPosts: pragmatic-clean-architecture-aspnet-core
 relatedPatterns: aggregate, event-sourcing
 date: October 28, 2026
 dateModified: October 28, 2026
 ---
-A value object is a small immutable type defined by its values rather than an identity, such as a price, an email address, or a date range. Two value objects with the same values are equal, and a value object validates itself when it's created, so an invalid one can't exist.
+A value object is a small immutable type defined by its values rather than an identity, such as a price, an email address, or a date range.
+
+Two value objects with the same values are equal, and a value object validates itself when it's created, so an invalid one can't exist.
 
 ## The problem
 

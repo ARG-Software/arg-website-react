@@ -6,12 +6,14 @@ seoTitle: Transactional Outbox Pattern in C# and TypeScript
 subtitle: Publish events reliably without distributed transactions: the transactional outbox pattern with EF Core in C# and plain SQL in TypeScript, plus the relay that sends them.
 category: Distributed Systems
 tags: Outbox, EF Core, Messaging
-relatedPosts: stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee, from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript
+relatedPosts: stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee, pragmatic-clean-architecture-aspnet-core, from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript
 relatedPatterns: idempotent-consumer, saga, event-sourcing
 date: October 28, 2026
 dateModified: October 28, 2026
 ---
-The transactional outbox pattern saves a business change and the event that announces it in the same database transaction. A separate relay publishes the stored events to the message broker afterwards, so an event is never lost and never sent for a change that rolled back.
+The transactional outbox pattern saves a business change and the event that announces it in the same database transaction.
+
+A separate relay publishes the stored events to the message broker afterwards, so an event is never lost and never sent for a change that rolled back.
 
 ## The problem
 

@@ -6,12 +6,14 @@ seoTitle: Circuit Breaker Pattern: Polly in C# and TypeScript
 subtitle: Stop calling a failing dependency and fail fast instead: the circuit breaker pattern with Polly and Microsoft.Extensions.Http.Resilience in C#, and a small TypeScript implementation.
 category: Resilience
 tags: Circuit Breaker, Polly, Resilience
-relatedPosts: circuit-breaker-pattern-aspnet-core, how-to-log-complex-systems-like-a-senior-backend-engineer
+relatedPosts: circuit-breaker-pattern-aspnet-core
 relatedPatterns: api-gateway-bff, saga
 date: October 28, 2026
 dateModified: October 28, 2026
 ---
-A circuit breaker wraps calls to a remote dependency and stops making them once failures cross a threshold. While the circuit is open, calls fail immediately instead of waiting on timeouts, which protects your service and gives the dependency time to recover.
+A circuit breaker wraps calls to a remote dependency and stops making them once failures cross a threshold.
+
+While the circuit is open, calls fail immediately instead of waiting on timeouts, which protects your service and gives the dependency time to recover.
 
 ## The problem
 

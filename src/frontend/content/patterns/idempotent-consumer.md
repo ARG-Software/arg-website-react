@@ -11,7 +11,9 @@ relatedPatterns: transactional-outbox, saga
 date: October 28, 2026
 dateModified: October 28, 2026
 ---
-An idempotent consumer is a message handler where processing the same message more than once has the same durable effect as processing it once. It is how event-driven systems stay correct when the broker, the network, or a relay delivers a message twice.
+An idempotent consumer is a message handler where processing the same message more than once has the same durable effect as processing it once.
+
+It is how event-driven systems stay correct when the broker, the network, or a relay delivers a message twice.
 
 ## The problem
 

@@ -34,11 +34,13 @@ import {
 } from '@services/linksService';
 import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
 import { buildArticleSchema } from '@utils/structuredData';
+import { loadPatterns } from '@utils/patternLoader';
 import '../../styles/blog.css';
 
 // ─── Post metadata for every post; the body loads per post ──────────────────
 
 const BLOG_POSTS = loadBlogPostsMetadata();
+const PATTERNS = loadPatterns();
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -122,6 +124,8 @@ export default function BlogPostPage() {
   const heroImageIndex = BLOG_POST.content.findIndex(block => block.type === 'image');
   const heroImage = heroImageIndex >= 0 ? BLOG_POST.content[heroImageIndex] : null;
   const contentBlocks = BLOG_POST.content.filter((block, index) => index !== heroImageIndex);
+  // Patterns own the link: a post shows the patterns that list it in relatedPosts.
+  const postPatterns = PATTERNS.filter(pattern => pattern.relatedPosts.includes(BLOG_POST.slug));
   const breadcrumbs = [
     { label: 'Home', path: '/' },
     { label: 'Blog', path: '/blog/' },
@@ -304,6 +308,24 @@ export default function BlogPostPage() {
                   )}
 
                   {contentBlocks.map((block, i) => renderArticleBlock(block, i))}
+
+                  {postPatterns.length > 0 && (
+                    <p className="bp-p">
+                      Pattern reference:{' '}
+                      {postPatterns.map((pattern, index) => (
+                        <span key={pattern.slug}>
+                          {index > 0 && ' · '}
+                          <AppLink
+                            to={`/patterns/${pattern.slug}/`}
+                            trackEvent="pattern_click"
+                            trackData={{ pattern: pattern.slug, location: 'blog_post' }}
+                          >
+                            {pattern.title}
+                          </AppLink>
+                        </span>
+                      ))}
+                    </p>
+                  )}
 
                   <SocialShareButtons
                     items={shareItems}

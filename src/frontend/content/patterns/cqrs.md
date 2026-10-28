@@ -6,12 +6,14 @@ seoTitle: CQRS Pattern: C# and TypeScript Examples
 subtitle: Command Query Responsibility Segregation explained with a small C# dispatcher and a type-safe TypeScript version: separate writes from reads, and know when CQRS is overkill.
 category: Architecture
 tags: CQRS, .NET, TypeScript
-relatedPosts: cqrs-without-mediatr, typescript-dependency-injection-without-framework, pragmatic-clean-architecture-aspnet-core
+relatedPosts: cqrs-without-mediatr, pragmatic-clean-architecture-aspnet-core
 relatedPatterns: event-sourcing, aggregate, transactional-outbox
 date: October 28, 2026
 dateModified: October 28, 2026
 ---
-CQRS (Command Query Responsibility Segregation) splits an application's operations into two kinds: commands that change state and queries that read it. Each side gets its own model, so writes can protect business rules while reads return exactly what a screen needs.
+CQRS (Command Query Responsibility Segregation) splits an application's operations into two kinds: commands that change state and queries that read it.
+
+Each side gets its own model, so writes can protect business rules while reads return exactly what a screen needs.
 
 ## The problem
 

@@ -6,12 +6,14 @@ seoTitle: DDD Aggregate Pattern: C# and TypeScript Examples
 subtitle: The DDD aggregate pattern explained: a consistency boundary that protects business rules, with an Order aggregate in C# and TypeScript and the rules for sizing it.
 category: Domain-Driven Design
 tags: DDD, Aggregate, Invariants
-relatedPosts: from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript, pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm, pragmatic-clean-architecture-aspnet-core
+relatedPosts: from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript
 relatedPatterns: value-object, event-sourcing, cqrs
 date: October 28, 2026
 dateModified: October 28, 2026
 ---
-An aggregate is a cluster of domain objects treated as one unit for changes, with one entry point called the aggregate root. All changes go through the root, which enforces the business rules that must always hold true inside the boundary.
+An aggregate is a cluster of domain objects treated as one unit for changes, with one entry point called the aggregate root.
+
+All changes go through the root, which enforces the business rules that must always hold true inside the boundary.
 
 ## The problem
 

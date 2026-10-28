@@ -6,12 +6,14 @@ seoTitle: API Gateway vs BFF: Patterns with YARP and TypeScript
 subtitle: One entry point for your services, or one backend per frontend: the API gateway and backend for frontend (BFF) patterns with YARP in C# and a TypeScript aggregation endpoint.
 category: Architecture
 tags: API Gateway, BFF, YARP
-relatedPosts: why-your-jwt-implementation-probably-breaks, api-architecture-styles-every-developer-should-know
+relatedPosts:
 relatedPatterns: circuit-breaker, database-per-service
 date: October 28, 2026
 dateModified: October 28, 2026
 ---
-An API gateway is a single entry point in front of your services that routes requests and handles shared concerns such as TLS, authentication, and rate limiting. A backend for frontend (BFF) is a backend built for one specific client, such as the web app or the mobile app, that shapes data for that client's screens.
+An API gateway is a single entry point in front of your services that routes requests and handles shared concerns such as TLS, authentication, and rate limiting.
+
+A backend for frontend (BFF) is a backend built for one specific client, such as the web app or the mobile app, that shapes data for that client's screens.
 
 ## The problem
 

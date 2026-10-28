@@ -6,12 +6,14 @@ seoTitle: Event Sourcing Pattern: C# and TypeScript Examples
 subtitle: Store every change as an event and rebuild state by replaying them: the event sourcing pattern with a C# aggregate and a functional TypeScript version, plus when not to use it.
 category: Distributed Systems
 tags: Event Sourcing, Events, Audit
-relatedPosts: ai-architectural-changes-nobody-wants
+relatedPosts:
 relatedPatterns: cqrs, aggregate, transactional-outbox
 date: October 28, 2026
 dateModified: October 28, 2026
 ---
-Event sourcing stores the state of an entity as the ordered list of events that happened to it, instead of only its latest values. Current state is rebuilt by replaying those events, and the event log doubles as a complete history of every change.
+Event sourcing stores the state of an entity as the ordered list of events that happened to it, instead of only its latest values.
+
+Current state is rebuilt by replaying those events, and the event log doubles as a complete history of every change.
 
 ## The problem
 
