@@ -150,7 +150,7 @@ Check `dist/blog/{slug}/index.html` (or `dist/patterns/{slug}/index.html`) for t
 
 ## 8. After publishing
 
-1. **Gaspar.** It reads Supabase, not the files, so ingest the post: `npm run rag:ingest:local -- --file src/frontend/content/blog/{slug}.md`, or `--all`. This writes to the production RAG tables. Gaspar does not ingest pattern pages yet.
+1. **Gaspar.** It reads Supabase, not the files, so ingest after the deploy: `npm run rag:ingest:local -- --file src/frontend/content/blog/{slug}.md` (or `.../patterns/{slug}.md`). `--all` is fine too, because unchanged sources are skipped by content hash. Run it with `--dry-run` first to see what will change. This writes to the production RAG tables. A pattern's `relatedPosts` also become Gaspar's article recommendations when that pattern is retrieved.
 2. **Search Console.** Request indexing for the new or changed URL.
 3. **Medium.** Updates are manual, and only after the website version is approved. For edits, prepare only the changed sections in `docs/medium-replacements/<batch>/`:
    - `{slug}.html`: paste-ready, with the links preserved

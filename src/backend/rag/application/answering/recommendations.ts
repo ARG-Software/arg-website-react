@@ -3,6 +3,7 @@ import type { IArticleRecommendation } from '../../domain/answers/assistantanswe
 import type { IRetrievalRoute } from '../../domain/routing/retrievalroute.types.js';
 import {
   getArticleRecommendationLimit,
+  getPatternRelatedArticles,
   isArticleRecommendationContext,
   shouldRecommendArticles,
 } from '../../domain/answers/recommendations.js';
@@ -20,19 +21,23 @@ export function createArticleRecommendations(
   const recommendations: IArticleRecommendation[] = [];
   const seenUrls = new Set<string>();
 
+  const candidates: IArticleRecommendation[] = [];
   for (const context of contexts) {
-    if (!isArticleRecommendationContext(context)) {
-      continue;
+    if (isArticleRecommendationContext(context)) {
+      candidates.push({ title: context.title, url: context.url ?? `/blog/${context.sourceKey}/` });
     }
+    candidates.push(...getPatternRelatedArticles(context));
+  }
 
-    const url = resolveUrl(context.url ?? `/blog/${context.sourceKey}/`, siteUrl);
+  for (const candidate of candidates) {
+    const url = resolveUrl(candidate.url, siteUrl);
 
     if (!url || seenUrls.has(url)) {
       continue;
     }
 
     seenUrls.add(url);
-    recommendations.push({ title: context.title, url });
+    recommendations.push({ title: candidate.title, url });
 
     if (recommendations.length === getArticleRecommendationLimit(route)) {
       break;

@@ -62,8 +62,15 @@ export interface IFileManifestEntry {
   filePath: string;
 }
 
+export interface IPatternManifestEntry {
+  kind: 'pattern_dir';
+  filePath: string;
+  blogPath: string;
+}
+
 export type LocalManifestEntry =
   | IJsonManifestEntry
   | IInlineJsonManifestEntry
   | IFileManifestEntry
+  | IPatternManifestEntry
   | ILocalDocumentManifestEntry;

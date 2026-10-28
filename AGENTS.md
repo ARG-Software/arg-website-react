@@ -140,7 +140,7 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Body blocks render through `renderArticleBlock` in `src/frontend/components/content/ArticleBlock.jsx`, shared with `BlogPostPage`
 - Code examples are C# and TypeScript; compile every snippet (`dotnet build`, strict `tsc --noEmit`) before publishing
 - To link an article to a pattern, add the post slug to the pattern's `relatedPosts`; the blog post then shows a "Pattern reference" line automatically (runtime and prerender). `npm run check:content` fails on unknown slugs
-- Gaspar does not ingest pattern pages yet
+- Gaspar ingests patterns through `loadpatternsources.ts` as `homepage` sources keyed `pattern-{slug}` with URL `/patterns/{slug}/`; a retrieved pattern adds its `relatedPosts` articles to Gaspar's article recommendations
 
 ### 3.8 External Links Service
 - `src/frontend/services/linksService.js` centralizes all external URLs
@@ -210,7 +210,7 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Repository ports are split by direction: `IRagSourceReadRepository`/`IRagSourceWriteRepository` and `IRagChunkReadRepository`/`IRagChunkWriteRepository`. `IRagReadRepositories` bundles the read ports for retrieval. Supabase adapters implement both sides and the container passes the same instance to read and write slots.
 - Ports hold contracts plus symbols shared across the boundary: `providererrors.ts` defines `EmbeddingQuotaExceededError`, which infrastructure throws and application catches. Pure vocabulary types such as `EmbeddingIndex` belong in domain (`domain/sources/ragsource.types.ts`), not ports.
 - Infrastructure owns mechanisms (filesystem, network, format libraries, config files), not only port implementations. Add a port only when a second implementation or a test fake needs it.
-- `infrastructure/ingestion/loaders/` is split per source family: `loadfirstpartysources.ts` (entry with manifest dispatch and selection filtering), `loadjsonmanifestsources.ts`, `loadprojectsources.ts`, `loadpartnersources.ts`, `loadteamprofilesources.ts`, `loadblogsources.ts`, `loadlocaldocumentsources.ts`, `loadtrustedexternalsources.ts`, plus `loaderfiles.ts` for shared file/path/selection mechanics. Family loaders must not import back from the entry file.
+- `infrastructure/ingestion/loaders/` is split per source family: `loadfirstpartysources.ts` (entry with manifest dispatch and selection filtering), `loadjsonmanifestsources.ts`, `loadprojectsources.ts`, `loadpartnersources.ts`, `loadteamprofilesources.ts`, `loadblogsources.ts`, `loadpatternsources.ts`, `loadlocaldocumentsources.ts`, `loadtrustedexternalsources.ts`, plus `loaderfiles.ts` for shared file/path/selection mechanics. Family loaders must not import back from the entry file.
 - Source manifests live at the `infrastructure/ingestion/` root: `sourcemanifest.config.ts`, `sourcemanifest.types.ts`, and `sitedata.types.ts` (shapes of the site data files on disk).
 - CLI entry points live in `src/backend/rag/apps/scripts/` because they are executable app entrypoints. Ingest scripts (`ingestlocal.ts`, `ingestexternal.ts`) share batch mechanics from `apps/scripts/cli.ts`.
 

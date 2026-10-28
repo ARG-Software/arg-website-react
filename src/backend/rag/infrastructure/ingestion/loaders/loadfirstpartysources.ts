@@ -14,6 +14,7 @@ import { loadAuditSources } from './loadauditsources.js';
 import { loadCareersSources } from './loadcareerssources.js';
 import { loadTeamProfileSources } from './loadteamprofilesources.js';
 import { loadBlogSources } from './loadblogsources.js';
+import { loadPatternSources } from './loadpatternsources.js';
 import { loadLocalDocumentSource } from './loadlocaldocumentsources.js';
 
 export async function loadFirstPartySources(
@@ -56,6 +57,8 @@ async function loadManifestEntry(
       return loadCareersSources(rootDir, entry.filePath);
     case 'markdown_dir':
       return loadBlogSources(rootDir, entry.filePath, selection);
+    case 'pattern_dir':
+      return loadPatternSources(rootDir, entry.filePath, entry.blogPath, selection);
     case 'local_document':
       return loadLocalDocumentSource(rootDir, entry, selection);
   }
@@ -101,7 +104,7 @@ function shouldLoadManifestEntry(
   }
 
   if (
-    entry.kind === 'markdown_dir' &&
+    (entry.kind === 'markdown_dir' || entry.kind === 'pattern_dir') &&
     selection.filePaths.some(filePath => isPathInDirectory(rootDir, filePath, entry.filePath))
   ) {
     return true;
