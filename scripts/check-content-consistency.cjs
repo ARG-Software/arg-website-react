@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { findMarkdownEmoji } = require('./lib/strip-emojis.cjs');
+const contentPaths = require('../src/frontend/data/contentPaths.json');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const CONTENT_PATHS = [
@@ -71,7 +72,7 @@ function isAllowedException(filePath, line) {
 }
 
 function findBlogProseDoubleHyphens() {
-  const blogDir = path.join(ROOT_DIR, 'src/frontend/blog');
+  const blogDir = path.join(ROOT_DIR, contentPaths.blog);
   const violations = [];
 
   for (const file of fs.readdirSync(blogDir).filter(name => name.endsWith('.md'))) {
@@ -98,7 +99,7 @@ function findBlogProseDoubleHyphens() {
         .replace(/\b(?:https?:\/\/|mailto:|tel:)\S+/gi, '');
       if (prose.includes('--')) {
         violations.push(
-          `src/frontend/blog/${file}:${index + 1} contains a double hyphen in prose`
+          `${contentPaths.blog}/${file}:${index + 1} contains a double hyphen in prose`
         );
       }
     });
@@ -108,14 +109,14 @@ function findBlogProseDoubleHyphens() {
 }
 
 function findBlogProseEmojis() {
-  const blogDir = path.join(ROOT_DIR, 'src/frontend/blog');
+  const blogDir = path.join(ROOT_DIR, contentPaths.blog);
   return fs
     .readdirSync(blogDir)
     .filter(name => name.endsWith('.md'))
     .flatMap(file =>
       findMarkdownEmoji(
         fs.readFileSync(path.join(blogDir, file), 'utf8'),
-        `src/frontend/blog/${file}`
+        `${contentPaths.blog}/${file}`
       )
     );
 }
@@ -161,7 +162,7 @@ function parseBlogFrontmatter(lines) {
 }
 
 function findBlogFrontmatterDateIssues() {
-  const blogDir = path.join(ROOT_DIR, 'src/frontend/blog');
+  const blogDir = path.join(ROOT_DIR, contentPaths.blog);
   const violations = [];
 
   for (const file of fs.readdirSync(blogDir).filter(name => name.endsWith('.md'))) {
@@ -171,18 +172,18 @@ function findBlogFrontmatterDateIssues() {
     const modifiedDate = parseContentDate(frontmatter.dateModified || frontmatter.updated);
     const reviewedDate = parseContentDate(frontmatter.reviewedOn);
 
-    if (!publishedDate) violations.push(`src/frontend/blog/${file} has an invalid date`);
+    if (!publishedDate) violations.push(`${contentPaths.blog}/${file} has an invalid date`);
     if ((frontmatter.dateModified || frontmatter.updated) && !modifiedDate) {
-      violations.push(`src/frontend/blog/${file} has an invalid dateModified`);
+      violations.push(`${contentPaths.blog}/${file} has an invalid dateModified`);
     }
     if (frontmatter.reviewedOn && !reviewedDate) {
-      violations.push(`src/frontend/blog/${file} has an invalid reviewedOn`);
+      violations.push(`${contentPaths.blog}/${file} has an invalid reviewedOn`);
     }
     if (frontmatter.reviewedOn && !modifiedDate) {
-      violations.push(`src/frontend/blog/${file} has reviewedOn without dateModified`);
+      violations.push(`${contentPaths.blog}/${file} has reviewedOn without dateModified`);
     }
     if (publishedDate && modifiedDate && modifiedDate < publishedDate) {
-      violations.push(`src/frontend/blog/${file} has dateModified before date`);
+      violations.push(`${contentPaths.blog}/${file} has dateModified before date`);
     }
   }
 

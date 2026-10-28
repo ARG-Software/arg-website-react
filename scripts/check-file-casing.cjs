@@ -2,6 +2,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const contentPaths = require('../src/frontend/data/contentPaths.json');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 
@@ -68,7 +69,7 @@ const RULES = [
     description: 'kebab-case.css or lowercase.css',
   },
   {
-    root: 'src/frontend/blog',
+    root: contentPaths.blog,
     extensions: ['.md'],
     pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/,
     description: 'kebab-case.md',

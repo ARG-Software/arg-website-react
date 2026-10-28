@@ -30,10 +30,10 @@ test('source hashes ignore local provenance paths', () => {
   };
   const linuxSource = {
     ...source,
-    path: '/opt/build/repo/src/frontend/blog/post.md',
+    path: '/opt/build/repo/src/frontend/content/blog/post.md',
     metadata: {
       tag: 'Engineering',
-      source_file: '/opt/build/repo/src/frontend/blog/post.md',
+      source_file: '/opt/build/repo/src/frontend/content/blog/post.md',
       source_files: ['/opt/build/repo/src/frontend/data/about.json'],
     },
   };

@@ -47,7 +47,7 @@ and comprehensive Google Analytics 4 instrumentation.
     ├── frontend/
     │   ├── main.jsx        # React entry — providers shell, route table, lazy imports
     │   ├── animations/     # GSAP animation attribute presets; shaders/ holds GLSL used by WebGL hooks
-    │   ├── blog/           # Markdown blog posts with YAML frontmatter
+    │   ├── content/        # Markdown content: blog/ posts and patterns/ pages, with YAML frontmatter
     │   ├── components/     # App-specific React components
     │   ├── constants/      # Shared frontend constants
     │   ├── data/           # Frontend JSON/JS data files
@@ -113,7 +113,7 @@ import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { trackCTA } from '@utils/analytics';
 import { getProjectBookingLink } from '@services/linksService';
 ```
-Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`.
+Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`, `@content`.
 
 ### 3.6 Scroll Animations
 - `useScrollAnimations.js` — main animation hook
@@ -123,7 +123,8 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 - Cleans up inline `transform` after animation to prevent CSS hover conflicts
 
 ### 3.7 Blog System
-- Posts are Markdown files in `src/frontend/blog/` with YAML frontmatter
+- Posts are Markdown files in `src/frontend/content/blog/` with YAML frontmatter
+- Content folder paths live in `src/frontend/data/contentPaths.json`. Scripts and build plugins read it; the frontend uses the `@content` alias (built from it in `vite.config.js`), because `import.meta.glob` only accepts literal paths
 - Naming convention: `{slug}.md` (e.g. `angular-5-to-19-migration.md`)
 - Parsed at build time and runtime via `src/frontend/utils/blog/`
 - Metadata cached in `window.__BLOG_POSTS_METADATA__` after first load
@@ -350,7 +351,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 
 ### 7.4 Vite Config (`vite.config.js`)
 - Dev server: port 3000, auto-open browser
-- Path aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`
+- Path aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`, `@services`, `@data`, `@styles`, `@content`
 - Manual chunks: `vendor` (React/Router/Helmet), `three`, `gsap`, `hljs`
 - Local API routes: mounted through `plugins/local-api-dev/`, loaded with Vite SSR transforms, and delegated to backend API route handlers/factories
 - SPA fallback middleware for dev server
@@ -386,7 +387,7 @@ Build output: `dist/` directory ready for deployment.
 7. Follow README **Content Updates**: keep prerender/JSON-LD/`llms*.txt` in sync, add a RAG source if Gaspar should know the page, then `npm run rag:ingest:local -- --all`
 
 ### Adding a New Blog Post
-1. Create `src/frontend/blog/{slug}.md` with YAML frontmatter:
+1. Create `src/frontend/content/blog/{slug}.md` with YAML frontmatter:
    ```yaml
    ---
    slug: my-post-slug
@@ -402,7 +403,7 @@ Build output: `dist/` directory ready for deployment.
 2. Rebuild — sitemap, RSS, and Atom are auto-generated
 3. Or use `npm run blog:import:medium` to import from Medium feed
 4. Cover art: see `docs/blog-covers.md` (2560×1440 WebP on the site, PNG for Medium)
-5. Follow README **Content Updates**: ingest the post (`npm run rag:ingest:local -- --file src/frontend/blog/{slug}.md` or `--all`) so Gaspar has the new article
+5. Follow README **Content Updates**: ingest the post (`npm run rag:ingest:local -- --file src/frontend/content/blog/{slug}.md` or `--all`) so Gaspar has the new article
 
 ### Making a Link with Analytics
 ```jsx

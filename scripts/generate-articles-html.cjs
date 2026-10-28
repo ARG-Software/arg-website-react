@@ -1,11 +1,12 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const sharp = require('sharp');
+const contentPaths = require('../src/frontend/data/contentPaths.json');
 
 const ROOT = process.cwd();
 const SITE_URL = 'https://arg.software';
 
-const BLOG_DIR = path.join(ROOT, 'src', 'frontend', 'blog');
+const BLOG_DIR = path.join(ROOT, contentPaths.blog);
 
 const OUTPUT_DIR = path.join(
   ROOT,

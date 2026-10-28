@@ -15,6 +15,7 @@
       "@services/*": ["./src/frontend/services/*"],
       "@data/*": ["./src/frontend/data/*"],
       "@styles/*": ["./src/frontend/styles/*"],
+      "@content/*": ["./src/frontend/content/*"],
       "@ui/*": ["./src/packages/ui/src/*"],
       "@backend/*": ["./src/backend/*"],
       "@backend-rag/*": ["./src/backend/rag/*"],

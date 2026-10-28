@@ -83,7 +83,7 @@ npm run preview      # Preview production build
 | `npm run lint` | ESLint check (no auto-fix) |
 | `npm run lint:fix` | ESLint auto-fix |
 | `npm run format` | Prettier format |
-| `npm run blog:import:medium` | Import published Medium articles into `src/frontend/blog/` |
+| `npm run blog:import:medium` | Import published Medium articles into `src/frontend/content/blog/` |
 | `npm run blog:import:medium:drafts` | Import Medium drafts |
 | `npm run sync:blog` | Import Medium posts and re-index first-party RAG sources |
 | `npm run rag:ingest:local` | Index local website/blog/project/private sources into Supabase |
@@ -169,7 +169,7 @@ Whenever public site information changes (company story, team, services, project
 npm run rag:ingest:local -- --all
 ```
 
-One source: `npm run rag:ingest:local -- --source about` or `--file src/frontend/data/about.json`. One post: `--file src/frontend/blog/{slug}.md`.
+One source: `npm run rag:ingest:local -- --source about` or `--file src/frontend/data/about.json`. One post: `--file src/frontend/content/blog/{slug}.md`.
 
 5. **Curate Gaspar** — `src/frontend/data/assistant.json`, `src/backend/rag/domain/assistant/assistantpolicy.ts`, `src/backend/rag/infrastructure/ingestion/loaders/loadteamprofilesources.ts`, and answering prompts under `src/backend/rag/application/llm/prompts/`. Then:
 

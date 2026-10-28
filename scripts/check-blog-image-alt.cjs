@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const contentPaths = require('../src/frontend/data/contentPaths.json');
 
-const BLOG_DIR = path.resolve('src/frontend/blog');
+const BLOG_DIR = path.resolve(contentPaths.blog);
 const STRICT = process.argv.includes('--strict');
 const IMAGE_PATTERN = /!\[([^\]]*)\]\((\S+)(?:\s+["'][^"']*["'])?\)/g;
 const FRONTMATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---/;

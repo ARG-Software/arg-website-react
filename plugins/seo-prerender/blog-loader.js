@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import contentPaths from '../../src/frontend/data/contentPaths.json' with { type: 'json' };
 
 export function parseFrontmatter(raw) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
@@ -30,7 +31,7 @@ export function sortBlogPostsNewestFirst(a, b) {
 }
 
 export function loadBlogPosts() {
-  const articlesDir = path.resolve('src/frontend/blog');
+  const articlesDir = path.resolve(contentPaths.blog);
   if (!fs.existsSync(articlesDir)) {
     console.warn('[seo-prerender] blog/ directory not found, skipping blog posts.');
     return [];

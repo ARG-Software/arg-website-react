@@ -1,0 +1,5 @@
+{
+  "root": "src/frontend/content",
+  "blog": "src/frontend/content/blog",
+  "patterns": "src/frontend/content/patterns"
+}

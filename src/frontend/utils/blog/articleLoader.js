@@ -3,14 +3,14 @@ import { parseBlocks } from './articleContent.js';
 import { parseFrontmatter } from './articleMarkdown.js';
 
 // Frontmatter only, resolved at build time by plugins/blog-metadata.
-const metadataModules = import.meta.glob('../../blog/*.md', {
+const metadataModules = import.meta.glob('@content/blog/*.md', {
   eager: true,
   query: '?meta',
   import: 'default',
 });
 
 // Post bodies, one chunk per post, fetched when the post is opened.
-const bodyModules = import.meta.glob('../../blog/*.md', {
+const bodyModules = import.meta.glob('@content/blog/*.md', {
   query: '?raw',
   import: 'default',
 });

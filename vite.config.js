@@ -5,6 +5,7 @@ import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import seoPrerender from './plugins/seo-prerender/index.js';
 import { localApiDev } from './plugins/local-api-dev/index.js';
 import { blogMetadata } from './plugins/blog-metadata/index.js';
+import contentPaths from './src/frontend/data/contentPaths.json' with { type: 'json' };
 
 
 export default defineConfig(({ mode }) => {
@@ -23,6 +24,7 @@ export default defineConfig(({ mode }) => {
       '@data': fileURLToPath(new URL('./src/frontend/data', import.meta.url)),
       '@styles': fileURLToPath(new URL('./src/frontend/styles', import.meta.url)),
       '@admin': fileURLToPath(new URL('./src/frontend/admin', import.meta.url)),
+      '@content': fileURLToPath(new URL(`./${contentPaths.root}`, import.meta.url)),
       '@ui': fileURLToPath(new URL('./src/packages/ui/src', import.meta.url)),
     },
   },

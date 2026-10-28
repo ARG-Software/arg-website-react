@@ -2,8 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const { stripEmojis } = require('./lib/strip-emojis.cjs');
+const contentPaths = require('../src/frontend/data/contentPaths.json');
 
-const BLOG_DIR = path.resolve('src/frontend/blog');
+const BLOG_DIR = path.resolve(contentPaths.blog);
 const IMAGE_ROOT = path.resolve('public/images/blog');
 const ARTICLES_ROOT = path.resolve('external/articles');
 const PUBLISHED_DIR = path.join(ARTICLES_ROOT, 'published');

@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const contentPaths = require('../src/frontend/data/contentPaths.json');
 
-const BLOG_DIR = path.resolve('src/frontend/blog');
+const BLOG_DIR = path.resolve(contentPaths.blog);
 const PUBLIC_DIR = path.resolve('public');
 const MANIFEST_PATH = path.resolve('src/frontend/data/blogCoverSizes.json');
 const WIDTHS = [480, 960, 1600];
