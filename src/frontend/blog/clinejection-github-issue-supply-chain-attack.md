@@ -1,5 +1,5 @@
 ---
-seoTitle: Clinejection: GitHub Release Pipeline Attack
+seoTitle: Clinejection: Prompt Injection Supply Chain Attack
 slug: clinejection-github-issue-supply-chain-attack
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Security
 tags: Security, AI, Engineering Culture
 title: "Clinejection: How a GitHub Issue Exposed Cline’s Release Pipeline"
-subtitle: How prompt injection in Cline’s AI triage exposed a cache-poisoning path to release credentials, and what the later npm incident actually affected.
-intro: How prompt injection in Cline’s AI triage exposed a cache-poisoning path to release credentials, and what the later npm incident actually affected.
+subtitle: How a prompt-injected GitHub issue in Cline's AI triage workflow opened a cache-poisoning path to release credentials, and what the cline@2.3.0 npm incident actually affected.
+intro: How a prompt-injected GitHub issue in Cline's AI triage workflow opened a cache-poisoning path to release credentials, and what the cline@2.3.0 npm incident actually affected.
 date: February 19, 2026
-dateModified: September 19, 2026
+dateModified: October 28, 2026
 reviewedOn: September 19, 2026
 readTime: 6 min read
 mediumUrl: https://arg-software.medium.com/clinejection-how-a-simple-github-issue-could-have-hijacked-5-million-developer-machines-6dfafd6939b5
@@ -74,6 +74,13 @@ According to Khan, Cline merged the initial fix roughly 30 minutes after public 
 - **CI/CD Isolation.** Do not let low-trust workflows write caches consumed by privileged release jobs. GitHub now supports `cache-mode: read` and `cache-mode: none` at workflow or job level, and low-trust triggers default to read-only cache access. Workflow execution protections can also restrict which actors and events may trigger sensitive automation. Release workflows should avoid restoring executable dependency trees from less-trusted jobs.
 - **Credential Boundaries.** Use narrowly scoped publishing identities, protected environments, short-lived credentials, and OIDC-based trusted publishing wherever the registry supports it. For npm, stage-only trusted publishing can add maintainer review and two-factor authentication before a staged release becomes public.
 - **The "Human" Element.** The researcher tried GitHub private vulnerability reporting and multiple contact channels for weeks without an effective response. A reporting channel only works when it is monitored and has a clear response process.
+
+## FAQ
+
+- **What was Clinejection?** A vulnerability disclosed in February 2026 where a malicious GitHub issue title could prompt-inject Cline's AI triage workflow, poison caches used by publishing jobs, and potentially expose release credentials.
+- **Was the Cline VS Code extension affected?** No. The unauthorized `cline@2.3.0` npm release affected the CLI. The VS Code extension and JetBrains plugin were not affected.
+- **What should I do if I installed cline 2.3.0?** Upgrade to 2.4.0 or later, inspect your environment, and run `npm uninstall -g openclaw` if that global installation was unintended.
+- **How do I protect CI/CD from this kind of attack?** Never give AI agents powerful tools while they process untrusted input, stop low-trust workflows writing caches used by release jobs, and use short-lived, narrowly scoped publishing credentials such as OIDC trusted publishing.
 
 ## Conclusion
 

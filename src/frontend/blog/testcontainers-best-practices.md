@@ -1,5 +1,6 @@
 ---
 slug: testcontainers-best-practices-nestjs
+seoTitle: Testcontainers in NestJS: Integration Testing Guide
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
@@ -7,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Testing
 tags: Testing, Backend
 title: Testcontainers Best Practices for NestJS Integration Testing
-subtitle: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don’t do it right.
-intro: Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don’t do it right.
+subtitle: Testcontainers best practices for NestJS integration tests with real PostgreSQL and Redis containers: dynamic configuration, shared setup, auth helpers, and maintainable tests.
+intro: Testcontainers best practices for NestJS integration tests with real PostgreSQL and Redis containers: dynamic configuration, shared setup, auth helpers, and maintainable tests.
 date: March 10, 2026
-dateModified: September 19, 2026
+dateModified: October 28, 2026
 reviewedOn: September 19, 2026
 readTime: 9 min read
 mediumUrl: https://arg-software.medium.com/testcontainers-best-practices-for-nestjs-integration-testing
@@ -373,6 +374,13 @@ describe('POST /orders', () => {
 ```
 
 Notice how the test doesn't mention containers, connections, or infrastructure at all. The complexity is hidden behind well-designed helpers. You're not mocking Postgres or Redis - you're testing real behavior.
+
+## FAQ
+
+- **What is Testcontainers?** A library that starts real Docker containers for test dependencies such as PostgreSQL or Redis, manages their lifecycle, and destroys them when tests finish.
+- **Which packages do I need for NestJS?** `@testcontainers/postgresql` and `@testcontainers/redis` for the containers, plus `@nestjs/testing` and `supertest` for the application tests.
+- **Do I need Docker to run Testcontainers?** Yes. Docker must be running locally, because Testcontainers uses Docker's API under the hood.
+- **Testcontainers vs in-memory databases: why switch?** In-memory alternatives such as SQLite may not match production behavior. Testcontainers runs your tests against the same database engine you use in production.
 
 ## Conclusion
 

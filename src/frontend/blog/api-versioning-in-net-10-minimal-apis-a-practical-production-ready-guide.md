@@ -1,5 +1,5 @@
 ---
-seoTitle: API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide
+seoTitle: ASP.NET Core API Versioning in .NET 10 Minimal APIs
 slug: api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide
-subtitle: Version .NET 10 Minimal APIs with explicit URL contracts, per-version OpenAPI documents, and standards-based deprecation policies.
-intro: Version .NET 10 Minimal APIs with explicit URL contracts, per-version OpenAPI documents, and standards-based deprecation policies.
+subtitle: ASP.NET Core API versioning for .NET 10 Minimal APIs with Asp.Versioning: explicit URL versions, header versioning, per-version OpenAPI documents, and deprecation policies.
+intro: ASP.NET Core API versioning for .NET 10 Minimal APIs with Asp.Versioning: explicit URL versions, header versioning, per-version OpenAPI documents, and deprecation policies.
 date: April 27, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 13 min read
 ---
@@ -375,6 +375,13 @@ Snapshot tests can help, but review snapshots as contracts rather than approving
 ![.NET 10 Minimal API versioning endpoint examples](/images/blog/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide/image-2.webp)
 
 API versioning works as a lifecycle: release, deprecate, observe, and retire.
+
+## FAQ
+
+- **Which package do I need for API versioning in .NET 10 Minimal APIs?** `Asp.Versioning.Http`, plus `Asp.Versioning.Mvc.ApiExplorer` for per-version OpenAPI documents with Swashbuckle. `Asp.Versioning.OpenApi` integrates with the first-party `Microsoft.AspNetCore.OpenApi` stack.
+- **URL segment or header versioning?** URL segments such as `/api/v1/products` are explicit in logs, browser tools, gateways, and cache keys. Header versioning with `HeaderApiVersionReader` is a valid alternative when the contract requires it.
+- **Can the version be optional in the URL?** No. A URL-segment version cannot be omitted and inferred from `DefaultApiVersion`. `AssumeDefaultVersionWhenUnspecified` is mainly for compatibility with an existing unversioned service.
+- **What is the difference between deprecating and retiring a version?** Deprecation tells consumers to migrate without changing that version's behavior. Retirement removes it after communication and measured adoption.
 
 ## Final Thoughts
 

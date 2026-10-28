@@ -1,5 +1,5 @@
 ---
-seoTitle: Free Website Health Check Browser Extension - Arg Architect
+seoTitle: Free Website Audit Browser Extension: Arg Architect
 slug: website-audit-browser-extension
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,9 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Browser Extensions
 tags: Web Performance, Security
 title: Your website looks fine. But what's really going on behind the scenes?
-subtitle: We built a free tool to help you find out. No technical expertise, no account, and your data never leaves your device.
-intro: We built a free tool to help you find out. No technical expertise, no account, and your data never leaves your device.
+subtitle: A free website audit browser extension: check security, performance, efficiency, accessibility, and AI readiness in about two minutes. No account, and your data never leaves your device.
+intro: A free website audit browser extension: check security, performance, efficiency, accessibility, and AI readiness in about two minutes. No account, and your data never leaves your device.
 date: October 19, 2026
+dateModified: October 28, 2026
 readTime: 4 min read
 image: /images/blog/website-audit-browser-extension/website-audit-browser-extension-header.webp
 ---
@@ -148,6 +149,13 @@ You don't need to become a client. You don't need to sign up for anything.
 Just use it.
 
 If it helps make your website a little faster, safer, or easier to use, we're happy.
+
+## FAQ
+
+- **Is Arg Architect free?** Yes. It is a free browser extension and needs no account.
+- **What does the website audit check?** Security, performance, efficiency, accessibility, and AI readiness, plus page structure, file sizes, and dependence on external services.
+- **Does my data leave my device?** No. Audit results stay in your browser, and the small inference model used for part of the analysis runs locally. Two optional external lookups stay disabled unless you allow them.
+- **Which browsers are supported?** Chrome, Edge, Brave, and Opera through the Chrome Web Store, and Firefox through Firefox Add-ons.
 
 ## Now we're curious about your website
 

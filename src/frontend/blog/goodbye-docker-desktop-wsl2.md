@@ -1,5 +1,5 @@
 ---
-seoTitle: Run Docker Engine in WSL 2 Without Docker Desktop
+seoTitle: Docker Desktop Alternative: Docker Engine in WSL 2
 slug: goodbye-docker-desktop-wsl2
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: DevOps
 tags: DevOps
 title: Goodbye Docker Desktop: Run Docker Engine in WSL 2 on Windows
-subtitle: Set up a full-featured Linux development environment on Windows 10/11 without managing a traditional VM or installing Docker Desktop.
-intro: Set up a full-featured Linux development environment on Windows 10/11 without managing a traditional VM or installing Docker Desktop.
+subtitle: A Docker Desktop alternative for Windows 10/11: run Docker Engine directly in WSL 2, manage containers with Portainer, and avoid Docker Desktop license costs where you do not need its extra features.
+intro: A Docker Desktop alternative for Windows 10/11: run Docker Engine directly in WSL 2, manage containers with Portainer, and avoid Docker Desktop license costs where you do not need its extra features.
 date: May 5, 2025
-dateModified: September 19, 2026
+dateModified: October 28, 2026
 reviewedOn: September 19, 2026
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/goodbye-docker-desktop-run-linux-docker-natively-on-windows-with-wsl2-178ebb1deb51
@@ -69,6 +69,10 @@ wsl --set-default <DistributionName>
 ```
 
 ## Why Skip Docker Desktop?
+
+### Licensing Costs
+
+Docker Desktop is free for personal use, education, non-commercial open-source projects, and small businesses with fewer than 250 employees and less than $10 million in annual revenue. Larger organizations need a paid Docker subscription for each user. Docker Engine itself is open source under the Apache 2.0 license, so running it directly inside WSL 2 avoids that per-seat cost on machines that do not need Docker Desktop's extra features. Check Docker's current [subscription terms](https://www.docker.com/pricing/) before deciding, because they can change.
 
 ### The Architectural Sandwich Problem
 
@@ -184,6 +188,13 @@ wsl --shutdown
 ```
 
 This stops all WSL instances and reloads the .wslconfig settings on the next launch.
+
+## FAQ
+
+- **Is Docker Desktop free?** It is free for personal use, education, non-commercial open source, and small businesses with fewer than 250 employees and less than $10 million in annual revenue. Larger organizations need a paid subscription.
+- **What is a good Docker Desktop alternative on Windows?** For Linux containers, Docker Engine installed directly in a WSL 2 distribution gives you the same engine and CLI used on Linux servers. Portainer adds a lightweight web interface.
+- **Do I need Docker Desktop to use Docker on Windows?** No. With WSL 2 you can install Docker Engine inside a Linux distribution and run Linux containers without Docker Desktop.
+- **Can I keep Docker Desktop installed alongside Docker Engine in WSL?** Disable Docker Desktop's integration for that distribution and stop Docker Desktop first, otherwise the CLI may connect to the wrong daemon.
 
 ## Wrapping Up
 

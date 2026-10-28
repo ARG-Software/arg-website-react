@@ -1,5 +1,5 @@
 ---
-seoTitle: How We Built Gaspar, Our AI Sales Assistant
+seoTitle: RAG Chatbot Architecture: How We Built Gaspar
 slug: building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture
 title: Part 1: We Built an AI Assistant That Sells. Here’s the Architecture.
-subtitle: Meet Gaspar: an AI assistant that answers from curated company data, captures contact requests, and offers useful next steps without inventing evidence.
-intro: Meet Gaspar: an AI assistant that answers from curated company data, captures contact requests, and offers useful next steps without inventing evidence.
+subtitle: Meet Gaspar, our RAG AI sales assistant: the architecture behind a website chatbot that answers from curated company data, captures contact requests, and offers next steps without inventing evidence.
+intro: Meet Gaspar, our RAG AI sales assistant: the architecture behind a website chatbot that answers from curated company data, captures contact requests, and offers next steps without inventing evidence.
 date: July 30, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 7 min read
 mediumUrl: https://medium.com/p/546eab676aef

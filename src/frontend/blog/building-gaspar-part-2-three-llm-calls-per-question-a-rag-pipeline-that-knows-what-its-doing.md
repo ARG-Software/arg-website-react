@@ -1,5 +1,5 @@
 ---
-seoTitle: RAG Pipeline Design: 3 LLM Calls Per Question Explained
+seoTitle: RAG Pipeline Design: 3 LLM Calls Per Question
 slug: building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture
 title: Part 2: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing
-subtitle: Inside Gaspar’s normal three-call RAG path: classify, plan, retrieve evidence, and answer without asking one prompt to do every job.
-intro: Inside Gaspar’s normal three-call RAG path: classify, plan, retrieve evidence, and answer without asking one prompt to do every job.
+subtitle: Inside Gaspar's RAG pipeline: three LLM calls per question to classify, plan, retrieve evidence, and answer, instead of asking one big prompt to do every job.
+intro: Inside Gaspar's RAG pipeline: three LLM calls per question to classify, plan, retrieve evidence, and answer, instead of asking one big prompt to do every job.
 date: August 4, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 7 min read
 mediumUrl: https://medium.com/p/285c020b0daf
@@ -169,5 +169,12 @@ Splitting the work into steps makes each of these decisions explicit and separat
 The model is still the core piece, but it’s no longer doing everything by itself. It’s one component in a system that can actually be tested, constrained, and improved over time.
 
 That’s the difference between a chat bubble and a business assistant.
+
+## FAQ
+
+- **Why use several LLM calls in a RAG pipeline?** A single call may answer from training data instead of company data, blend context, invent answers without evidence, or misread follow-ups. Separate steps make each decision explicit and testable.
+- **What are the three calls?** Classify the message, plan what to retrieve, and write the answer. Retrieval runs between the second and third calls.
+- **Does the LLM choose the retrieval strategy?** No. Deterministic routing picks the retrieval strategy and evidence boundary from the plan.
+- **What happens when there is no evidence?** Generation follows a specific no-context path instead of inventing an answer.
 
 Next up: [Part 3 - “The Knowledge Design Behind a Business AI Assistant That Doesn’t Guess”](https://arg.software/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/)

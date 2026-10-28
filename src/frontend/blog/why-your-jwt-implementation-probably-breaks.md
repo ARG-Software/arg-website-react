@@ -1,5 +1,5 @@
 ---
-seoTitle: The JWT Logout Problem: Why Stateless Auth Breaks
+seoTitle: JWT vs Session: The JWT Logout Problem Explained
 slug: why-your-jwt-implementation-probably-breaks
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Security
 tags: Security, Backend
 title: Why Your JWT Implementation Probably Breaks
-subtitle: JWT logout is a revocation design problem. Here is how to handle access tokens, refresh tokens, rotation, and compromised sessions safely.
-intro: JWT logout is a revocation design problem. Here is how to handle access tokens, refresh tokens, rotation, and compromised sessions safely.
+subtitle: JWT vs session cookies and the JWT logout problem: how to handle access tokens, refresh-token rotation, revocation, and compromised sessions safely.
+intro: JWT vs session cookies and the JWT logout problem: how to handle access tokens, refresh-token rotation, revocation, and compromised sessions safely.
 date: July 6, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 11 min read
 mediumUrl: https://medium.com/@arg-software/why-your-jwt-implementation-probably-breaks-0e3defac3f6e
@@ -373,6 +373,13 @@ For a conventional same-origin web application, a mature server-side session coo
 7. The right design follows the threat model, not a claim that one pattern handles "99%" of systems.
 
 JWTs are useful, but they do not remove state from authentication as a whole. They move decisions about state, consistency, and revocation to architecture boundaries. Make those decisions explicit before production makes them for you.
+
+## FAQ
+
+- **JWT vs session: which should I use?** For a conventional same-origin web application, a server-side session cookie is often simpler because logout and per-session revocation are direct. Self-contained JWT access tokens make sense when independent validation across several resource servers gives a concrete benefit.
+- **How do you log out a user with JWT?** Deleting the token client-side only stops that client. Revoke the refresh session on the server, and use a denylist or session/grant versioning if access tokens must stop working immediately.
+- **What is refresh-token rotation?** Each refresh returns a new refresh token and invalidates the previous one. Replacement must be atomic, and reuse of an old token should revoke the whole token family.
+- **Are JWTs stateless?** A JWT is a token format. It does not require stateless validation, and authentication as a whole still needs state for revocation and sessions.
 
 ## References
 

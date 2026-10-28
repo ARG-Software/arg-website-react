@@ -1,5 +1,5 @@
 ---
-seoTitle: Debug Microservices with Prometheus & OTel
+seoTitle: Prometheus + OpenTelemetry: Debug Node.js Microservices
 slug: debug-microservices-prometheus-opentelemetry
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Observability
 tags: Observability, DevOps, Backend
 title: How We Debug Slow Microservices in Minutes (Not Hours): A Prometheus + OpenTelemetry Guide
-subtitle: From “checkout is broken” to a testable root-cause hypothesis using metrics, traces, and correlated logs.
-intro: From “checkout is broken” to a testable root-cause hypothesis using metrics, traces, and correlated logs.
+subtitle: A Prometheus, OpenTelemetry, Jaeger, and Grafana guide for Node.js microservices: metrics that matter, traces across async boundaries, correlated logs, and burn-rate alerts.
+intro: A Prometheus, OpenTelemetry, Jaeger, and Grafana guide for Node.js microservices: metrics that matter, traces across async boundaries, correlated logs, and burn-rate alerts.
 date: February 2, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 14 min read
 mediumUrl: https://arg-software.medium.com/how-we-debug-slow-microservices-in-18-minutes-not-4-hours-a-prometheus-opentelemetry-guide-0d7b551d1722
@@ -648,6 +648,13 @@ groups:
 For a 99.9% SLO, the allowed error ratio is `0.001`. A continuous 14.4x burn would exhaust a 30-day budget in about 2.1 days; over the one-hour alert window it consumes 2% of that budget. A continuous 6x burn would exhaust it in 5 days; over six hours it consumes 5%. Google SRE's recommended starting point pages on both conditions, paired with 5-minute and 30-minute windows so recovered incidents reset sooner. Tune notification policy to your service, and add explicit handling for low or absent traffic before using these rules in production.
 
 ![How we debug slow Microservices where to start](/images/blog/how-we-debug-slow-microservices/how-we-debug-slow-microservices-start.webp)
+
+## FAQ
+
+- **Prometheus vs OpenTelemetry: do I need both?** They do different jobs here. Prometheus stores and queries metrics and evaluates alert rules. OpenTelemetry provides vendor-neutral instrumentation for traces, metrics, and logs, exported to a backend such as Jaeger or Grafana Tempo.
+- **Jaeger or Grafana Tempo?** Jaeger is straightforward for local development, while Tempo integrates tightly with Grafana. For production, choose based on scale, storage, operations, tenancy, and query needs.
+- **Which packages do I need for OpenTelemetry in Node.js?** `@opentelemetry/api`, `@opentelemetry/sdk-node`, `@opentelemetry/auto-instrumentations-node`, and an exporter such as `@opentelemetry/exporter-trace-otlp-proto`. Initialize the SDK before loading instrumented modules.
+- **Why use burn-rate alerts instead of thresholds?** Burn-rate alerts page only while both a long and a short window show the error budget being consumed, which reduces noisy alerts from brief spikes.
 
 ## The Mindset Shift
 

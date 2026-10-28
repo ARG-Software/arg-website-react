@@ -1,5 +1,5 @@
 ---
-seoTitle: Securing an AI Chatbot with Layered Guardrails
+seoTitle: LLM Guardrails as Architecture for AI Chatbots
 slug: building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Security, Architecture
 title: Part 4: Guardrails as Architecture: How We Stopped Our Chatbot from Lying About Us
-subtitle: Why telling an AI to “behave” isn’t enough, and what it actually takes to stop a chatbot from making things up.
-intro: Why telling an AI to “behave” isn’t enough, and what it actually takes to stop a chatbot from making things up.
+subtitle: LLM guardrails as architecture: why telling an AI chatbot to behave isn't enough, and how policy data, retrieval filters, a PII firewall, and tests stop it making things up.
+intro: LLM guardrails as architecture: why telling an AI chatbot to behave isn't enough, and how policy data, retrieval filters, a PII firewall, and tests stop it making things up.
 date: August 17, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 8 min read
 mediumUrl: https://medium.com/p/93a4d22ff549
@@ -166,6 +166,13 @@ When we find a repeatable failure mode, we try to turn it into a test. The curre
 The evaluation prompt bank contains more than 100 non-duplicated prompts, backed by executable routing and use-case cases. Unit and API tests also cover policy, persona, language, security, fallback, and controller behavior.
 
 These tests are not proof that a model can never fail. They are executable documentation of the failures we know how to name. Prompts drift, models change, providers update, and source data evolves. Tests make those changes visible.
+
+## FAQ
+
+- **What are LLM guardrails?** Boundaries that keep an AI assistant within what it can support, enforced in routing, retrieval, data flow, and tests rather than only in a prompt.
+- **Why are prompt instructions not enough?** A prompt can be misapplied or outweighed by ambiguous context. Gaspar once read "go-to production languages" as evidence that ARG uses Go.
+- **How do you keep personal data away from the model?** Lead capture runs as a deterministic state machine. Email and message input is parsed with fixed rules, and lead-capture messages are excluded from the chat history sent to the answer model.
+- **Which guardrail layers does Gaspar use?** Policy as data, prompt rules, retrieval and evidence filters, a PII firewall, language guardrails, and tests as living documentation.
 
 ## What Guardrails Really Are
 

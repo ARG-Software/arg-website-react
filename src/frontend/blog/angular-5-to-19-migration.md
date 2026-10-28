@@ -1,5 +1,5 @@
 ---
-seoTitle: Angular 5 to 19 Migration Guide
+seoTitle: Angular Upgrade Guide: Migrating Angular 5 to 19
 slug: angular-5-to-19-migration
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Frontend
 tags: Frontend, Refactoring
 title: Upgrading Angular Legacy Project Version 5 to 19
-subtitle: A practical account of moving a legacy Angular 5 and NgRx application to Angular 19, one module at a time.
-intro: A practical account of moving a legacy Angular 5 and NgRx application to Angular 19, one module at a time.
+subtitle: How we upgraded a legacy Angular 5 and NgRx app to Angular 19 one module at a time: Angular CLI, bootstrap and DI fixes, standalone: false, RxJS 7, and NgRx Signals.
+intro: How we upgraded a legacy Angular 5 and NgRx app to Angular 19 one module at a time: Angular CLI, bootstrap and DI fixes, standalone: false, RxJS 7, and NgRx Signals.
 date: April 21, 2025
-dateModified: September 17, 2026
+dateModified: October 28, 2026
 reviewedOn: September 17, 2026
 readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/upgrading-angular-legacy-project-version-5-to-19-0216c5dd389a
@@ -171,6 +171,14 @@ To improve debugging and gain better visibility into our application's state, we
 We took the opportunity to explore the newly introduced @ngrx/signals package. Signals promise a more lightweight, declarative approach to state management-especially compared to the traditional NgRx setup with actions, reducers, selectors, and effects. We tried Signals in two of our feature modules. The experience was surprisingly smooth: less boilerplate, clear state updates, using patchState(), and automatic reactivity thanks to Angular Signals.
 
 While this worked great for those localized modules, we kept RxJS and classic NgRx architecture for the rest of the app. In our case, RxJS still felt more natural and powerful - especially in modules where effects often relied on stream transformations like switchMap, concatMap, withLatestFrom, and catchError to coordinate actions and handle responses.
+
+## FAQ
+
+- **How do you upgrade a legacy Angular app to a recent version?** We created a fresh Angular CLI project and moved the existing NgModules into it one at a time, fixing bootstrap, injection, and package compatibility issues module by module.
+- **Do I have to convert my components to standalone?** No. We kept the NgModule structure. Because Angular 19 changed the default, components declared in NgModules need an explicit `standalone: false` after the upgrade.
+- **Which RxJS version does Angular 19 support?** Angular 19 supports RxJS `^6.5.3` or `^7.4.0`. We moved from RxJS 5 to the v7 line.
+- **Should I replace RxJS with Signals?** In our project, Signals worked well for simple UI-bound state, while RxJS remained the better choice for complex, feature-rich flows.
+- **Is Angular 19 still supported?** No. Angular 19 has reached end of support, so treat it as a step on the way to a currently supported release.
 
 ## Final Thoughts
 

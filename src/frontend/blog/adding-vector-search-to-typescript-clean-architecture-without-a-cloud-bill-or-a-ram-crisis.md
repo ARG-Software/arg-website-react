@@ -1,5 +1,5 @@
 ---
-seoTitle: Adding Vector Search to TypeScript Clean Architecture with a TurboVec Sidecar
+seoTitle: Vector Search in TypeScript for RAG: TurboVec Sidecar
 slug: adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture, Backend
 title: Adding Vector Search to TypeScript Clean Architecture with a TurboVec Sidecar
-subtitle: Use a Python sidecar and an application port to test TurboVec from a TypeScript backend without coupling business logic to vector-search infrastructure.
-intro: Use a Python sidecar and an application port to test TurboVec from a TypeScript backend without coupling business logic to vector-search infrastructure.
+subtitle: Add vector search for RAG to a TypeScript Clean Architecture backend: a Python TurboVec sidecar behind an application port, an HTTP adapter, and Docker Compose.
+intro: Add vector search for RAG to a TypeScript Clean Architecture backend: a Python TurboVec sidecar behind an application port, an HTTP adapter, and Docker Compose.
 date: June 23, 2026
-dateModified: September 19, 2026
+dateModified: October 28, 2026
 reviewedOn: September 19, 2026
 readTime: 13 min read
 mediumUrl: https://ai.plainenglish.io/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis-1e9104ab278b
@@ -400,6 +400,13 @@ It is a poor fit when:
 - Your team cannot own sidecar deployment and persistence.
 - You need hybrid search, filtering, and access control that a mature vector database already solves better.
 - You have not measured recall loss at your embedding dimension and bit width.
+
+## FAQ
+
+- **Can I use TurboVec from Node.js or TypeScript?** Not directly. TurboVec ships Rust and Python APIs and has no Node.js package, so this article runs it in a small Python sidecar called over HTTP.
+- **Why put vector search behind an application port?** So business logic depends on "search indexed knowledge", not on Python, Rust, or quantization details. The sidecar can be replaced without touching use cases.
+- **Is TurboVec production-ready?** PyPI publishes it as version 1.0.0 but with an alpha development-status classifier, so benchmark recall, latency, memory, and recovery before relying on it.
+- **When is a managed vector database a better fit?** When you need managed operations, replication, mature admin tooling, or hybrid search, filtering, and access control out of the box.
 
 ## Summary
 

@@ -1,5 +1,5 @@
 ---
-seoTitle: CQRS in .NET Without MediatR
+seoTitle: MediatR Alternative: .NET CQRS Without MediatR
 slug: cqrs-without-mediatr
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend, Refactoring
 title: .NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think
-subtitle: MediatR changed its licensing. Learn how to build a clean .NET CQRS architecture using interfaces, dispatchers, and decorators.
-intro: MediatR changed its licensing. Learn how to build a clean .NET CQRS architecture using interfaces, dispatchers, and decorators.
+subtitle: MediatR 13 is no longer Apache-2.0. Build a lightweight MediatR alternative for .NET CQRS using plain interfaces, dispatchers, and decorators.
+intro: MediatR 13 is no longer Apache-2.0. Build a lightweight MediatR alternative for .NET CQRS using plain interfaces, dispatchers, and decorators.
 date: February 23, 2026
-dateModified: September 19, 2026
+dateModified: October 28, 2026
 reviewedOn: September 19, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/net-cqrs-architecture-without-mediatr-your-exit-plan-is-simpler-than-you-think-3c8f99077a03
@@ -385,6 +385,14 @@ This is the real reason the dispatcher pattern earns its place: it gives you muc
 - **Controllers stay lean.** Commands and queries share two entry points. Adding a use case means adding a handler rather than another CQRS constructor argument.
 - **Testing is flexible.** Mock the dispatcher for controller unit tests, instantiate handlers directly for handler unit tests, and use the real container and decorator chain for integration tests.
 - **You own the infrastructure.** Adding new handler variants, changing the decorator chain, or evolving the Result type doesn't require reading library documentation or waiting for updates.
+
+## FAQ
+
+- **Is MediatR still free?** MediatR 12.5 and earlier remain under Apache-2.0. MediatR 13 and later are available under the Reciprocal Public License 1.5 or Lucky Penny's Community and commercial licenses.
+- **What is a good MediatR alternative for CQRS?** For many applications, a small application-owned layer is enough: `ICommand` and `IQuery` markers, handler interfaces, and `ICommandDispatcher`/`IQueryDispatcher` implementations that resolve handlers from the DI container.
+- **Do I need MediatR to implement CQRS in .NET?** No. CQRS is a pattern and MediatR is a library. Separating reads from writes and making intent explicit only needs plain interfaces and a dispatcher.
+- **How do I replace MediatR pipeline behaviors?** Wrap handlers with decorators, like the logging and validation decorators above. Scrutor's `Decorate()` keeps the registration short.
+- **When does MediatR still make sense?** When you rely heavily on in-process notifications, streams, pipeline behaviors, or plugin-style dispatch.
 
 ## The Bigger Picture
 

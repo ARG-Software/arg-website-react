@@ -1,5 +1,5 @@
 ---
-seoTitle: Message Broker Guarantees and Idempotency
+seoTitle: Idempotent Consumers: Why Exactly-Once Is Not Enough
 slug: stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Reliability
 tags: Reliability, Architecture, Backend
 title: Stop Trusting Your Message Broker: Why Idempotency Is a Core Safety Net
-subtitle: Ordering, delivery semantics, outbox/inbox patterns, and the real limits of idempotency in event-driven systems.
-intro: Ordering, delivery semantics, outbox/inbox patterns, and the real limits of idempotency in event-driven systems.
+subtitle: Kafka exactly-once, ordering, and delivery semantics have limits. How idempotent consumers, the inbox and transactional outbox patterns, and idempotency keys keep event-driven systems correct.
+intro: Kafka exactly-once, ordering, and delivery semantics have limits. How idempotent consumers, the inbox and transactional outbox patterns, and idempotency keys keep event-driven systems correct.
 date: April 21, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 8 min read
 ---
@@ -269,6 +269,13 @@ Idempotency is necessary in many systems, but “idempotent” is not the same a
 - It does not atomically cover an external side effect and your database. Use the provider's idempotency contract plus persisted intent, status reconciliation, and compensating workflows.
 - It does not decide what to do with poison messages, permanent failures, or version gaps. Bound retries and provide dead-letter/parking and operator-visible reconciliation.
 - It is rarely infinite. Inbox records, broker deduplication windows, and API idempotency keys all have scopes and retention limits.
+
+## FAQ
+
+- **Does Kafka exactly-once mean my workflow runs exactly once?** No. Kafka transactions can atomically commit consumed offsets and produced Kafka records, but a database or payment API is outside that transaction unless it cooperates.
+- **What is an idempotent consumer?** A consumer where processing the same message more than once has the same durable effect as processing it once, within a defined scope and retention period.
+- **Inbox vs outbox pattern: what is the difference?** The inbox protects the consumer by claiming the message ID in the same transaction as its domain write. The transactional outbox protects the producer by writing the aggregate change and an outbox row in one transaction, then publishing later.
+- **Does idempotency guarantee message ordering?** No. Ordering needs partition or session keys, versions, and valid state-transition rules.
 
 ## Closing Thought
 

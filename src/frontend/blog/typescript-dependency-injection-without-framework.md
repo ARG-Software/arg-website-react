@@ -1,5 +1,5 @@
 ---
-seoTitle: TypeScript DI Without a Framework
+seoTitle: TypeScript Dependency Injection Without a Framework
 slug: typescript-dependency-injection-without-framework
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Architecture
 tags: Architecture, Backend
 title: TypeScript Dependency Injection Without the Framework (And Why You Might Prefer It)
-subtitle: Learn to build a type-safe DI container in TypeScript from scratch — no NestJS, no decorators, no reflect-metadata. Just pure TypeScript.
-intro: Learn to build a type-safe DI container in TypeScript from scratch — no NestJS, no decorators, no reflect-metadata. Just pure TypeScript.
+subtitle: Build a type-safe DI container in TypeScript from scratch, with no NestJS, InversifyJS, decorators, or reflect-metadata, and learn when a framework is still worth it.
+intro: Build a type-safe DI container in TypeScript from scratch, with no NestJS, InversifyJS, decorators, or reflect-metadata, and learn when a framework is still worth it.
 date: March 3, 2026
-dateModified: September 17, 2026
+dateModified: October 28, 2026
 reviewedOn: September 17, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/typescript-dependency-injection-without-the-framework-and-why-you-might-prefer-it-8e78d77b6735
@@ -345,6 +345,13 @@ We are not arguing that frameworks are bad. We use NestJS in production. The poi
 Reach for a framework when you need AOP concerns like logging, caching, or auth applied declaratively across methods via interceptors, your team is large and needs enforced conventions over architectural decisions, or you're building microservices and need the full ecosystem: Guards, Pipes, built-in OpenAPI, WebSockets, and more.
 
 Stay framework-free when you're building a library (pulling in NestJS as a peer dependency is a non-starter), startup time and bundle size matter, or you want explicit tests without a framework test module. DI frameworks differ in when and how they instantiate providers, so benchmark your actual application rather than assuming every container is eager or slow.
+
+## FAQ
+
+- **Do I need a framework for dependency injection in TypeScript?** No. Manual wiring, factory functions, typed keys, and a small container cover many applications using only generics, inference, and structural typing.
+- **When is NestJS or InversifyJS worth it?** When you need declarative cross-cutting concerns such as logging, caching, or auth through interceptors, a large team needs enforced conventions, or you want the full microservice ecosystem.
+- **When should I stay framework-free?** When building a library, when startup time and bundle size matter, or when you want explicit tests without a framework test module.
+- **What are the limits of a hand-rolled container?** Registration completeness, circular dependencies, lifetime violations, and disposal are runtime concerns. A small container can guard the first three; disposal is usually better left explicit.
 
 ## The Real Takeaway
 

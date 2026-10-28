@@ -1,5 +1,5 @@
 ---
-seoTitle: The Art of Pull Requests
+seoTitle: Pull Request Best Practices: Small and Stacked PRs
 slug: the-art-of-pull-requests
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Engineering Culture
 tags: Engineering Culture
 title: The Art of Pull Requests: How to Ship Faster Without Sacrificing Quality
-subtitle: Learn how to create clear, focused pull requests that speed up code reviews, improve collaboration, and help your team ship better.
-intro: Learn how to create clear, focused pull requests that speed up code reviews, improve collaboration, and help your team ship better.
+subtitle: Pull request best practices that speed up code review: write the why, keep one coherent change per PR, explain surprising choices, test edge cases, and stack small PRs.
+intro: Pull request best practices that speed up code review: write the why, keep one coherent change per PR, explain surprising choices, test edge cases, and stack small PRs.
 date: October 9, 2025
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 6 min read
 mediumUrl: https://arg-software.medium.com/the-art-of-pull-requests-how-to-ship-faster-without-sacrificing-quality-55209d645bb1
@@ -88,6 +88,13 @@ When you combine clear PRs with a careful stacking strategy, code review can sto
 Your teammates can review more readily because the work is easier to understand. You can continue with the next increment while earlier changes are reviewed. The feedback becomes more useful because reviewers can think deeply about focused changes.
 
 And perhaps most importantly, you build trust. When your PRs are consistently clear, focused, and well-tested, reviewers spend less time reconstructing intent and more time testing assumptions. Trust should improve the conversation, not end the questioning.
+
+## FAQ
+
+- **What should a good pull request description include?** The why: what problem you are solving, why it matters, and which alternatives you considered.
+- **How big should a pull request be?** One coherent change. Split unrelated refactoring, features, and bug fixes so each can be reviewed on its own.
+- **What are stacked pull requests?** A series of small PRs where each builds on the previous one, so you can keep working while earlier changes are reviewed. Keep the chain short and rebase as earlier PRs land.
+- **Do I need special tools for stacked PRs?** No. Tools can help, but discipline is enough to start: focused PRs, explicit dependencies, and a main branch that always stays shippable.
 
 ## The Bottom Line
 

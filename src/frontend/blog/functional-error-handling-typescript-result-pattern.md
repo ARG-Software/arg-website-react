@@ -1,5 +1,5 @@
 ---
-seoTitle: TypeScript Error Handling: Result Pattern
+seoTitle: TypeScript Error Handling with the Result Pattern
 slug: functional-error-handling-typescript-result-pattern
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: Functional Error Handling in TypeScript with the Result Pattern
-subtitle: Learn the Result pattern for explicit, type-safe error handling without treating every failure as an exception.
-intro: Learn the Result pattern for explicit, type-safe error handling without treating every failure as an exception.
+subtitle: TypeScript error handling with the Result pattern: explicit, type-safe results for expected failures, structured errors, and when try/catch exceptions are still the right tool.
+intro: TypeScript error handling with the Result pattern: explicit, type-safe results for expected failures, structured errors, and when try/catch exceptions are still the right tool.
 date: September 26, 2025
-dateModified: September 17, 2026
+dateModified: October 28, 2026
 reviewedOn: September 17, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/functional-error-handling-in-typescript-with-the-result-pattern-5b96a5abb6d3
@@ -392,6 +392,13 @@ class ConfigurationService {
 The first example adds startup context while preserving the original value as `cause`. The second stops startup because the application cannot satisfy a required invariant. A network timeout is not automatically “exceptional”: in a request workflow it may be an expected retryable Result, while during mandatory startup it may prevent the process from continuing. The right choice depends on who can handle the failure.
 
 Some failures, such as exhausted memory or process termination, are not useful candidates for ordinary application recovery at all. Do not promise that an exception policy can safely handle them.
+
+## FAQ
+
+- **What is the Result pattern in TypeScript?** A function returns a `Result<T, E>` that holds either a success value or a known error, modeled as a discriminated union so TypeScript can narrow it with ordinary control flow.
+- **Result vs try/catch: when should I use each?** Use a Result when failure is an expected outcome the caller can recover from, branch on, retry, or show to the user. Use exceptions for programmer errors, broken invariants, and failures where execution cannot sensibly continue at that layer.
+- **Where should I catch exceptions?** At a boundary where you can add context, translate a documented failure, retry, or clean up. Otherwise let them propagate to a centralized handler.
+- **Does the Result pattern make testing easier?** Yes. Expected failures become ordinary return values, so tests can assert on the error type and data instead of setting up thrown exceptions.
 
 ## Summary
 

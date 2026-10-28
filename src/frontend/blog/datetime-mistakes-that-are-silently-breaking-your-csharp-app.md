@@ -1,5 +1,5 @@
 ---
-seoTitle: DateTime Mistakes Breaking Your C# App
+seoTitle: C# DateTime vs DateTimeOffset: 10 Common Mistakes
 slug: datetime-mistakes-that-are-silently-breaking-your-csharp-app
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Backend
 tags: Backend, Reliability, Architecture
 title: DateTime Mistakes That Are Silently Breaking Your C# App
-subtitle: The small habits around UTC, DateTimeOffset, and time zones that quietly cause the hardest bugs to reproduce in production.
-intro: The small habits around UTC, DateTimeOffset, and time zones that quietly cause the hardest bugs to reproduce in production.
+subtitle: DateTime vs DateTimeOffset, UTC, time zones, DateOnly, and TimeProvider: the small C# date and time habits that quietly cause the hardest production bugs.
+intro: DateTime vs DateTimeOffset, UTC, time zones, DateOnly, and TimeProvider: the small C# date and time habits that quietly cause the hardest production bugs.
 date: August 27, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 7 min read
 mediumUrl: https://medium.com/p/87a8fa093119
@@ -195,6 +195,14 @@ Put it together:
 - Store a local date/time, time-zone ID, and recurrence rules when future wall-clock intent matters.
 - Never infer a user's zone from the server's local zone. An offset alone is not enough to recover it either.
 - Define precision, inclusive/exclusive boundaries, and ambiguous-time behavior in API and database contracts.
+
+## FAQ
+
+- **DateTime vs DateTimeOffset: which should I use in C#?** For timestamps, prefer `DateTimeOffset`, usually normalized to UTC. Keep `DateTime` with `Kind.Utc` for legacy contracts that are UTC-only.
+- **Should I store everything in UTC?** Use UTC for instants, not for every time concept. Calendar dates, wall-clock times, and future local schedules mean different things, and a future local schedule needs a local date/time plus a time-zone ID.
+- **When should I use DateOnly and TimeOnly?** When the value is a calendar date or a wall-clock time rather than an instant.
+- **How do I test code that depends on the current time?** Inject `TimeProvider`, which is built into .NET 8 and later and available to older targets through `Microsoft.Bcl.TimeProvider`. Tests can then control the clock.
+- **How should I measure elapsed time?** Use `TimeSpan` for durations and a monotonic clock for elapsed time, not the difference between two wall-clock readings.
 
 ## The takeaway
 

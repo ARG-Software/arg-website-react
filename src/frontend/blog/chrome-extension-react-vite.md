@@ -1,5 +1,5 @@
 ---
-seoTitle: Build a Chrome Extension with React & Vite
+seoTitle: Chrome Extension with React, Vite and Manifest V3
 slug: chrome-extension-react-vite
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Browser Extensions
 tags: Frontend
 title: Building a Chrome Extension with React and Vite: A Modern Developer's Guide
-subtitle: Learn to build Chrome extensions using React, TypeScript, and Vite. A step-by-step guide.
-intro: Learn to build Chrome extensions using React, TypeScript, and Vite. A step-by-step guide.
+subtitle: Build a Manifest V3 Chrome extension with React, TypeScript, and Vite: popup, content scripts, and an extension service worker, step by step.
+intro: Build a Manifest V3 Chrome extension with React, TypeScript, and Vite: popup, content scripts, and an extension service worker, step by step.
 date: June 30, 2025
-dateModified: September 17, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 9 min read
 mediumUrl: https://arg-software.medium.com/building-a-chrome-extension-with-react-and-vite-a-modern-developers-guide-83f98ee937ed
@@ -489,6 +489,13 @@ chrome-extension-boilerplate/
 The modern toolchain we've established handles the complexity, allowing you to focus on building features while maintaining a clean separation between your React UI and Chrome extension functionality.
 
 The combination of React's component architecture, TypeScript's type safety, and Vite's development experience creates an environment where Chrome extension development feels as natural as building any modern web application.
+
+## FAQ
+
+- **Can I build a Chrome extension with React and Vite?** Yes. Vite builds the React popup and extension files into `dist/`, which you load into Chrome as an unpacked extension.
+- **Does hot module replacement work in a Chrome extension?** Only for pages served by Vite. An extension loaded from `dist/` still needs a watch-and-reload workflow or extension-specific tooling.
+- **What is the background script in Manifest V3?** An extension service worker. It handles events independently of the popup but is not persistent, so durable state belongs in `chrome.storage`, not global variables.
+- **What are the main parts of a Chrome extension?** The popup, content scripts injected into matching pages, the extension service worker, and the manifest that ties them together.
 
 ## Moving Forward
 

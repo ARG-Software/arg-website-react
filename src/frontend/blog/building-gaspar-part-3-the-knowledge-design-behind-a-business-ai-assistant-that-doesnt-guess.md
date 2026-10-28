@@ -1,5 +1,5 @@
 ---
-seoTitle: RAG Knowledge Design for Business Chatbots
+seoTitle: RAG Knowledge Base Design: Chunking and Metadata
 slug: building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture
 title: Part 3: The knowledge design behind a business AI assistant that doesn’t guess
-subtitle: Why embeddings alone aren’t enough and what it actually takes to make an AI assistant trustworthy
-intro: Why embeddings alone aren’t enough and what it actually takes to make an AI assistant trustworthy
+subtitle: Why embeddings alone aren't enough for a trustworthy RAG chatbot: corpus design, metadata, chunking, dual embedding indexes, and ingestion as an admin workflow.
+intro: Why embeddings alone aren't enough for a trustworthy RAG chatbot: corpus design, metadata, chunking, dual embedding indexes, and ingestion as an admin workflow.
 date: August 16, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 8 min read
 mediumUrl: https://medium.com/p/10e7e6206c8e

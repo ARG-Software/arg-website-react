@@ -1,5 +1,5 @@
 ---
-seoTitle: TurboQuant, TurboVec, and the Real RAM Math for Local Vector Search
+seoTitle: Vector Search RAM: TurboQuant and TurboVec Explained
 slug: the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: AI
 tags: AI, Architecture
 title: TurboQuant, TurboVec, and the Real RAM Math for Local Vector Search
-subtitle: TurboQuant and TurboVec can make local vector search dramatically smaller, but the exact RAM savings depend on dimensions, bit width, metadata, and index overhead.
-intro: TurboQuant and TurboVec can make local vector search dramatically smaller, but the exact RAM savings depend on dimensions, bit width, metadata, and index overhead.
+subtitle: How much RAM does vector search need? TurboQuant and TurboVec quantization can shrink raw vectors 8x to 16x, but real savings depend on dimensions, bit width, metadata, and index overhead.
+intro: How much RAM does vector search need? TurboQuant and TurboVec quantization can shrink raw vectors 8x to 16x, but real savings depend on dimensions, bit width, metadata, and index overhead.
 date: June 10, 2026
-dateModified: September 19, 2026
+dateModified: October 28, 2026
 reviewedOn: September 19, 2026
 readTime: 7 min read
 ---
@@ -91,6 +91,13 @@ But the responsible decision is not "TurboVec means no more vector database." Th
 - Decide whether an alpha-classified package fits your operational risk.
 
 For some teams, a mature vector database remains the right answer. For others, a local compressed index behind a clear application boundary is exactly the right trade.
+
+## FAQ
+
+- **How much RAM do embeddings use?** A float32 embedding uses 4 bytes per dimension. Ten million 1,536-dimensional vectors need about 61.44 GB for the raw values alone, before text, metadata, and index overhead.
+- **What is TurboQuant?** A 2025 vector quantization method that compresses vectors without training a codebook on your corpus, using random rotation and scalar quantizers.
+- **How much can quantization save?** 4-bit quantization cuts the raw vector payload by 8x and 2-bit by 16x, before side data. Recall at your dimension and bit width still needs measuring.
+- **Is TurboVec ready for production?** It is published as 1.0.0 but still classified as alpha, so prototype against it and run your own benchmark, recovery test, and upgrade plan first.
 
 ## The Practical Takeaway
 

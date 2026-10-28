@@ -1,13 +1,13 @@
 ---
-seoTitle: How LLM Conversation Memory Actually Works
+seoTitle: Do LLMs Have Memory? How AI Chat Memory Works
 slug: llms-dont-remember-anything
 tag: AI
 tags: AI, Architecture
 title: LLMs Don’t Remember Conversations. Apps Do.
-subtitle: Why AI appears to recall a conversation, where that continuity actually lives, and what it costs
-intro: Why AI appears to recall a conversation, where that continuity actually lives, and what it costs
+subtitle: Do LLMs remember conversations? Why AI assistants appear to recall what you said: parametric knowledge, the context window, persistent app memory, and what long chats cost.
+intro: Do LLMs remember conversations? Why AI assistants appear to recall what you said: parametric knowledge, the context window, persistent app memory, and what long chats cost.
 date: September 15, 2026
-dateModified: September 26, 2026
+dateModified: October 28, 2026
 reviewedOn: September 26, 2026
 readTime: 10 min read
 mediumUrl: https://medium.com/p/0a1f8425e64c
@@ -154,6 +154,13 @@ One common cross-chat flow looks like this:
 The retrieval step is the key. The model is not independently browsing an internal archive of your previous sessions. The surrounding system decides what can be stored, what should be fetched, and what the model receives. Systems such as [MemGPT](https://arxiv.org/abs/2310.08560) explore this explicitly by moving information between bounded context and external memory tiers.
 
 Persistence also creates responsibilities that a simple chat demo can avoid. Personal memories may be incorrect, sensitive, outdated, or shared in a context where the user did not expect long-term storage. A production design should define consent, tenancy, retention, correction, deletion, provenance, and access controls alongside retrieval quality.
+
+## FAQ
+
+- **Do LLMs remember previous conversations?** Not by themselves. A standard request does not update the model's weights. Continuity comes from the app or provider storing history and sending it back as context.
+- **What is a context window?** The content included in the current request: instructions, messages, documents, tool results, and space for the output. It works like temporary, bounded working memory.
+- **Why do long chats cost more?** If the full history is resent every turn, input grows each time. At about 1,000 tokens per turn, ten turns add up to roughly 55,000 input tokens.
+- **How do AI products handle the context limit?** With trimming, summarization, compaction, sliding windows, and retrieval of stored facts or messages.
 
 ## The takeaway
 

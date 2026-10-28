@@ -1,5 +1,5 @@
 ---
-seoTitle: How to Debug Production Errors in Node.js
+seoTitle: Node.js Logging: Request IDs and AsyncLocalStorage
 slug: how-to-log-complex-systems-like-a-senior-backend-engineer
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Observability
 tags: Observability, Backend, Architecture
 title: How to Log Complex Systems Like a Senior Backend Engineer
-subtitle: Correlate production errors with the work that caused them, without transforming your code into a mess.
-intro: Correlate production errors with the work that caused them, without transforming your code into a mess.
+subtitle: Structured logging for Node.js and Express in TypeScript: request IDs, trace-context correlation, AsyncLocalStorage, redaction, and logging business decisions without making your code a mess.
+intro: Structured logging for Node.js and Express in TypeScript: request IDs, trace-context correlation, AsyncLocalStorage, redaction, and logging business decisions without making your code a mess.
 date: August 23, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 10 min read
 mediumUrl: https://medium.com/p/69d43f3adc36
@@ -480,6 +480,13 @@ It can add abstraction frames and makes the method less self-explanatory to whoe
 - Do not log passwords, cookies, tokens, prompts, or full bodies.
 - Correlate logs with W3C/OpenTelemetry trace and span IDs where available.
 - Apply retention, access controls, size limits, and logging-failure tests.
+
+## FAQ
+
+- **How do I correlate logs for one request in Node.js?** Give every incoming request a unique ID and stamp it on every log line produced while handling it. Across services and queues, the W3C trace ID from OpenTelemetry is the interoperable correlation key.
+- **How do I avoid passing requestId through every function?** Capture the context once at the boundary with Node's `AsyncLocalStorage`, and let a context-aware logger read it downstream.
+- **What should I never log?** Card numbers, authorization headers, secrets, and full request bodies. Even amounts and stable customer identifiers may be sensitive, so add redaction.
+- **Does structured logging make logs safe?** No. Structured does not mean safe. Field names need a schema, and sensitive values still need redaction.
 
 ## Final Thought
 

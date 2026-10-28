@@ -1,5 +1,5 @@
 ---
-seoTitle: How We Protected and Operate Our AI Chatbot at Low Cost
+seoTitle: Protect an AI Chatbot: Rate Limits, ALTCHA and Costs
 slug: building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Reliability, Security
 title: Part 5: Keeping an AI Assistant Online, Affordable, and Actually Useful
-subtitle: How proof-of-work, layered request limits, and controlled fallbacks keep a public AI chatbot affordable and useful
-intro: How proof-of-work, layered request limits, and controlled fallbacks keep a public AI chatbot affordable and useful
+subtitle: How ALTCHA proof-of-work, layered rate limits, and controlled fallbacks keep a public AI chatbot affordable, available, and actually useful.
+intro: How ALTCHA proof-of-work, layered rate limits, and controlled fallbacks keep a public AI chatbot affordable, available, and actually useful.
 date: August 19, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 9 min read
 mediumUrl: https://medium.com/p/53e8ef15ae81

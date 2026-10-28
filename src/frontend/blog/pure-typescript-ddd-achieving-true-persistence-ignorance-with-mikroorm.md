@@ -1,5 +1,5 @@
 ---
-seoTitle: Pure TypeScript DDD: Practical Persistence Ignorance with MikroORM
+seoTitle: MikroORM DDD in TypeScript: Persistence Ignorance
 slug: pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: Pure TypeScript DDD: Practical Persistence Ignorance with MikroORM
-subtitle: Decouple your business logic from your database. Discover how to build pure TypeScript DDD applications using MikroORM
-intro: Decouple your business logic from your database. Discover how to build pure TypeScript DDD applications using MikroORM
+subtitle: Keep your DDD domain model free of ORM decorators: pure TypeScript entities with external MikroORM EntitySchema mapping, repositories, and explicit error handling.
+intro: Keep your DDD domain model free of ORM decorators: pure TypeScript entities with external MikroORM EntitySchema mapping, repositories, and explicit error handling.
 date: April 13, 2026
-dateModified: September 17, 2026
+dateModified: October 28, 2026
 reviewedOn: September 17, 2026
 readTime: 9 min read
 ---
@@ -318,3 +318,10 @@ You don’t decouple your core logic from your ORM just so you can swap database
 - Performance Overrides: Eventually, a specific read-query using your ORM will become too slow. You will need to bypass the ORM and write highly optimized, raw SQL for that one specific use case. If your application layer expects an ORM object, you are stuck. If it relies on a pure Repository Interface, you can quietly swap the underlying implementation for that specific query without breaking a sweat.
 
 Decoupling your database isn’t about predicting the future. It is about protecting the present. It helps keep your most valuable asset, your core business rules, testable, readable, and under your control.
+
+## FAQ
+
+- **What is persistence ignorance in DDD?** The domain model avoids depending on how and where it is stored. Persistence concerns still exist, but core business behavior is less likely to change with them.
+- **Is MikroORM an Active Record ORM?** No. MikroORM follows the Data Mapper pattern: an `EntityManager` or repository coordinates persistence, rather than the entity saving itself.
+- **Why use EntitySchema instead of decorators?** Decorators put ORM mapping metadata inside the domain class. `EntitySchema` keeps that mapping in the infrastructure layer, so domain classes stay plain TypeScript.
+- **Is it worth it if we never swap databases?** Yes. The everyday benefits are fast unit tests with in-memory repositories, easier ORM major-version upgrades, simpler extraction of bounded contexts, and room for raw SQL where performance needs it.

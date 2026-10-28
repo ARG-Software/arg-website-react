@@ -1,5 +1,5 @@
 ---
-seoTitle: Why .NET Still Matters for Modern Software
+seoTitle: .NET vs Node.js, Java, Python and Go for CTOs
 slug: the-stack-nobody-hypes-but-serious-ctos-keep-choosing
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: The Stack Nobody Hypes, but Serious CTOs Keep Choosing
-subtitle: Why Serious CTOs Still Choose .NET for Long-Lived, High-Stakes Software Systems Over Trendier Stacks
-intro: Why Serious CTOs Still Choose .NET for Long-Lived, High-Stakes Software Systems Over Trendier Stacks
+subtitle: .NET vs Node.js, Java, Python, and Go: why serious CTOs still choose .NET for long-lived, high-stakes software systems, and when another stack fits better.
+intro: .NET vs Node.js, Java, Python, and Go: why serious CTOs still choose .NET for long-lived, high-stakes software systems, and when another stack fits better.
 date: July 15, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 7 min read
 mediumUrl: https://medium.com/@arg-software/the-stack-nobody-hypes-but-serious-ctos-keep-choosing-e56314281663
@@ -147,6 +147,13 @@ Go can build all of these things as well. Its minimalism is often a strength. De
 These are starting points, not universal rules.
 
 The team’s experience, existing systems, operational environment, and product requirements matter more than benchmark headlines.
+
+## FAQ
+
+- **.NET vs Node.js: which should I choose?** Node.js can help a small, web-focused team validate a product faster with one language across frontend and backend. .NET becomes compelling when the platform must stay maintainable for years.
+- **.NET vs Go: what is the difference?** Go is extremely effective for focused infrastructure services. .NET offers broader built-in building blocks for full application platforms.
+- **Is Python better than .NET for AI?** Python is the most mature environment for model research and training. .NET fits production integration of AI into larger business systems.
+- **Is .NET open source?** Yes. .NET is open source and cross-platform, with repositories generally under MIT or Apache 2.0 licenses.
 
 ## The real takeaway
 

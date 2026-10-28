@@ -1,5 +1,5 @@
 ---
-seoTitle: Behavior-Driven Domain Models in TypeScript
+seoTitle: Anemic Domain Model to Rich Aggregates in TypeScript
 slug: from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: From Anemic Models to Behaviour-rich Aggregates: Behavior-Driven Design in TypeScript
-subtitle: There’s a class of bug that doesn’t really look like a bug. No stack trace. No obvious failure. Just an OrderService file with 300 lines of…
-intro: There’s a class of bug that doesn’t really look like a bug. No stack trace. No obvious failure. Just an OrderService file with 300 lines of…
+subtitle: Refactor an anemic domain model into a behavior-rich DDD aggregate in TypeScript: move business rules out of god services, guard internal state, and test without a database.
+intro: Refactor an anemic domain model into a behavior-rich DDD aggregate in TypeScript: move business rules out of god services, guard internal state, and test without a database.
 date: July 3, 2026
-dateModified: September 17, 2026
+dateModified: October 28, 2026
 reviewedOn: September 17, 2026
 readTime: 9 min read
 mediumUrl: https://medium.com/@arg-software/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript-2789fc16762d
@@ -397,6 +397,13 @@ Not every noun deserves an aggregate, and not every rule that affects checkout b
 That leaves a deliberate choice for stock and credit. Separate aggregates should normally change in separate transactions and coordinate through events or a process manager. If the business truly requires one immediate atomic decision, reconsider the aggregate boundaries rather than hiding several boundaries inside one transaction. Across remote services, immediate atomic consistency is unavailable, so model the workflow explicitly, make retries idempotent, and decide how reservations expire or are compensated. A pending order is valid only when the business accepts that temporary state and eventual consistency.
 
 Start with the smallest boundary that protects the invariants you truly need. Reach for events and process managers when the consistency boundary genuinely crosses systems.
+
+## FAQ
+
+- **What is an anemic domain model?** A model where domain objects are just bags of data and all the real decisions happen in services, so the objects themselves have no behavior.
+- **Why is an anemic domain model a problem?** Business rules spread across large services, which makes them harder to find, test, and protect. Rules such as discounts, line totals, and order state end up mixed with database and external calls.
+- **Should every business rule live inside the aggregate?** No. An aggregate protects the invariants inside its own consistency boundary. Workflows that span aggregates or services belong in application services, events, or process managers.
+- **How do I start refactoring?** Pick one bloated service, find the business rule most clearly hiding in it, decide which boundary owns it, and move it there. Then repeat.
 
 ## Where to Go From Here
 

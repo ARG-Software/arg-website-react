@@ -1,5 +1,5 @@
 ---
-seoTitle: Nx + NestJS Monorepo Boilerplate
+seoTitle: Nx NestJS Monorepo Boilerplate: Nx vs Turborepo
 slug: nx-nestjs-monorepo-boilerplate
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: Scaling with Confidence: A Practical Nx + NestJS Monorepo Boilerplate
-subtitle: Discover a scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems.
-intro: Discover a scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems.
+subtitle: A scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems, and how Nx compares with Turborepo.
+intro: A scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems, and how Nx compares with Turborepo.
 date: April 27, 2025
-dateModified: September 17, 2026
+dateModified: October 28, 2026
 reviewedOn: September 17, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/scaling-with-confidence-a-practical-nx-nestjs-monorepo-boilerplate-b30b9266f6ba
@@ -39,6 +39,16 @@ The Nx Monorepo structure ensures consistent project organization, enforceable c
 NestJS complements this by providing a modular, opinionated backend framework ideal for Domain-Driven Design (DDD), Dependency Injection (DI), and microservice architecture. Combined, Nx and NestJS allow rapid development of distributed systems with shared tooling, isolated runtime contexts, efficient CI/CD pipelines, and native support for background jobs, messaging patterns, scheduled tasks, and centralized configuration.
 
 The workspace currently uses Nx 23.2.1 and NestJS 11.2.5. The two backend applications are bundled with Webpack, while the frontend uses Next.js 15.5 with React 18. Nx provides the project graph and task orchestration across all three applications and the shared packages.
+
+## Nx vs Turborepo: Why This Boilerplate Uses Nx
+
+Turborepo is the most common alternative for JavaScript and TypeScript monorepos. Both tools run tasks across workspace projects, cache task outputs locally and remotely, and avoid rebuilding what has not changed. The difference is scope.
+
+Turborepo focuses on task running and caching on top of your package manager's workspaces. It is a lightweight choice when the repository is mostly independent packages and you are happy to manage project structure and conventions yourself.
+
+Nx goes further. It builds a project graph from the dependencies in your code, can run commands only for affected projects, provides official plugins and generators for frameworks such as NestJS and Next.js, and can enforce module boundaries through lint rules.
+
+For this boilerplate, those extras matter. The workspace relies on Nx's project graph and task orchestration across three applications and shared packages, and the layered Domain, Application, and Infrastructure packages benefit from enforceable boundaries. If you only need fast cached builds for a handful of packages, Turborepo is a valid and simpler option.
 
 ## Repository Structure & Key Components
 

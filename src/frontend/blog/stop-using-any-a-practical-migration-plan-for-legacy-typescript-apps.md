@@ -1,5 +1,5 @@
 ---
-seoTitle: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps
+seoTitle: TypeScript any vs unknown: Migrate Legacy Code
 slug: stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Refactoring
 tags: Refactoring, Backend
 title: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps
-subtitle: any is spreading through your legacy codebase. A risk-based migration plan covering unknown, Zod validation, strict mode, and ESLint
-intro: any is spreading through your legacy codebase. A risk-based migration plan covering unknown, Zod validation, strict mode, and ESLint
+subtitle: Stop any spreading through your legacy TypeScript codebase: a risk-based migration plan with unknown, Zod validation, noImplicitAny, strict mode, and ESLint.
+intro: Stop any spreading through your legacy TypeScript codebase: a risk-based migration plan with unknown, Zod validation, noImplicitAny, strict mode, and ESLint.
 date: May 27, 2026
-dateModified: September 17, 2026
+dateModified: October 28, 2026
 reviewedOn: September 17, 2026
 readTime: 7 min read
 ---
@@ -382,6 +382,13 @@ const user = data as User;
 If data is untrusted, validate it. Otherwise, you have only replaced one unsafe pattern with another.
 
 The goal is not to shame people for old code. The goal is to make the codebase safer.
+
+## FAQ
+
+- **What is the difference between any and unknown in TypeScript?** `any` turns off type checking for a value. `unknown` accepts any value but forces you to narrow or validate it before use, which makes it the safer type for data from outside your system.
+- **Should I enable strict mode all at once in a legacy codebase?** No. That usually creates hundreds or thousands of errors overnight. Start with `noImplicitAny` and tighten other options gradually.
+- **How do I stop new any from spreading?** Measure current usage, add an ESLint warning for explicit `any`, block new `any` in new or critical modules, and add CI checks to prevent regressions.
+- **Is unknown enough for external data?** It forces a check, but external data such as HTTP requests, webhooks, and queue messages still needs runtime validation, for example with Zod.
 
 ## Final Thoughts
 

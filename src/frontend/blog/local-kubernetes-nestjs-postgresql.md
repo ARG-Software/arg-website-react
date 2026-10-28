@@ -1,5 +1,5 @@
 ---
-seoTitle: Local Kubernetes with NestJS & PostgreSQL
+seoTitle: k3d vs Minikube vs Kind: Local Kubernetes for NestJS
 slug: local-kubernetes-nestjs-postgresql
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: DevOps
 tags: DevOps, Backend
 title: From Zero to Hero: Mastering Local Kubernetes with NestJS and PostgreSQL in Minutes!
-subtitle: A step-by-step guide to running containerized applications locally with the speed and simplicity developers need.
-intro: A step-by-step guide to running containerized applications locally with the speed and simplicity developers need.
+subtitle: Run NestJS and PostgreSQL on local Kubernetes with k3d: why we chose it over Minikube, Kind, and Docker Desktop, plus deployments, services, volumes, secrets, and migrations.
+intro: Run NestJS and PostgreSQL on local Kubernetes with k3d: why we chose it over Minikube, Kind, and Docker Desktop, plus deployments, services, volumes, secrets, and migrations.
 date: May 14, 2025
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/from-zero-to-hero-mastering-local-kubernetes-with-nestjs-and-postgresql-in-minutes-4f3718c09004
@@ -467,6 +467,13 @@ spec:
 ```
 
 For TLS, configure a trusted certificate and a `tls` section on the Ingress. TLS normally terminates at Traefik; traffic from Traefik to the Service is not automatically encrypted. For new production designs that need richer, role-oriented routing, prefer Gateway API. Current K3s releases can enable Traefik's Gateway API provider through `HelmChartConfig`. The Kubernetes ingress-nginx project was retired in March 2026 and should not be installed for new deployments.
+
+## FAQ
+
+- **What is k3d?** A lightweight wrapper that runs k3s, a minimal certified Kubernetes distribution, inside Docker containers for local development and testing.
+- **k3d vs Minikube vs Kind: which should I use?** k3d stands out for low resource use, fast startup, and multi-cluster support. Minikube offers the most complete Kubernetes experience, and Docker Desktop provides UI integration.
+- **Do I need a virtual machine for k3d?** No. k3d runs entirely in Docker containers, so any system that can run Docker can run it.
+- **What changes when moving toward production?** Harden secret management, add horizontal pod autoscaling, run migrations through CI/CD tooling, and configure ingress, for example with the bundled Traefik controller.
 
 ## Conclusion
 

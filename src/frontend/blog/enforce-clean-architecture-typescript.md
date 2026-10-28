@@ -1,5 +1,5 @@
 ---
-seoTitle: Enforce Clean Architecture in TypeScript
+seoTitle: Architecture Tests in TypeScript with ArchUnitTS
 slug: enforce-clean-architecture-typescript
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend, Testing
 title: How to Actually Enforce Clean Architecture in TypeScript
-subtitle: Stop relying on PR reviews to enforce architecture. Learn how to use architecture tests to automatically enforce principles.
-intro: Stop relying on PR reviews to enforce architecture. Learn how to use architecture tests to automatically enforce principles.
+subtitle: Stop relying on PR reviews to enforce Clean Architecture. Use architecture tests with ArchUnitTS to fail the build when layers, imports, or naming conventions break the rules.
+intro: Stop relying on PR reviews to enforce Clean Architecture. Use architecture tests with ArchUnitTS to fail the build when layers, imports, or naming conventions break the rules.
 date: March 15, 2026
-dateModified: September 17, 2026
+dateModified: October 28, 2026
 reviewedOn: September 17, 2026
 readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/the-rules-are-in-the-readme-the-readme-is-a-lie-ce6597218a29
@@ -186,6 +186,13 @@ The usual way of enforcing architecture is expensive: pair programming is good b
 Architecture tests flip the model. You write the rule once, and it runs on every single push forever. A developer can't accidentally break your dependency rules without the CI pipeline telling them immediately, with a clear message about exactly which file violated which rule.
 
 This also makes onboarding easier. Instead of explaining "we don't import repositories in controllers here", you just say "try it and see what breaks." The tests become living documentation that actually stays up to date.
+
+## FAQ
+
+- **What are architecture tests?** Automated tests that check your code structure instead of its logic, such as whether the domain layer imports from infrastructure or a controller talks directly to a repository. If a rule breaks, the build fails.
+- **Is there an ArchUnit for TypeScript?** Yes. ArchUnitTS, published on npm as `archunit`, is inspired by ArchUnit from the Java world.
+- **Does this only work for Clean Architecture?** No. The same rules apply to Hexagonal, layered, or any architecture whose boundaries you can express as folders and dependencies.
+- **Why do empty architecture tests matter?** A rule with a typo in its folder pattern can match zero files and pass forever. ArchUnitTS fails empty tests by default, unless you opt out with `allowEmptyTests`.
 
 ## The Takeaway
 

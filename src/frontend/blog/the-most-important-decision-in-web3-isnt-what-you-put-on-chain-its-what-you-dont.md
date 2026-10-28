@@ -1,5 +1,5 @@
 ---
-seoTitle: The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t
+seoTitle: On-Chain vs Off-Chain Data: Web3 Architecture Guide
 slug: the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Web3
 tags: Web3, Architecture, Security
 title: The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t
-subtitle: Learn how to decide what belongs on-chain or off-chain in Web3 architecture to balance trust, cost, latency, UX, and verifiability.
-intro: Learn how to decide what belongs on-chain or off-chain in Web3 architecture to balance trust, cost, latency, UX, and verifiability.
+subtitle: On-chain vs off-chain: how to decide what belongs on the blockchain in Web3 architecture to balance trust, cost, latency, UX, and verifiability.
+intro: On-chain vs off-chain: how to decide what belongs on the blockchain in Web3 architecture to balance trust, cost, latency, UX, and verifiability.
 date: May 5, 2026
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 9 min read
 ---
@@ -354,6 +354,13 @@ Strong teams:
 They understand:
 
 Decentralization is not about maximizing what’s on-chain. It’s about minimizing what needs to be trusted.
+
+## FAQ
+
+- **What should go on-chain?** What must stay correct even if your company disappears, such as asset ownership, final balances, rule enforcement, and proof of outcomes.
+- **What should stay off-chain?** Frequent, low-friction interactions such as UI updates, browsing, search, order matching, and game state during play, or a scaling layer built for them.
+- **How do off-chain actions stay verifiable?** Through a verification mechanism, such as batched commitments of final state, cryptographic proofs of outcomes, or content-addressed commitments published on-chain.
+- **Why not put everything on-chain?** It adds cost, latency, and friction that many users will not tolerate, which often leads to low engagement and a painful architectural rethink.
 
 ## What Honesty Actually Requires
 

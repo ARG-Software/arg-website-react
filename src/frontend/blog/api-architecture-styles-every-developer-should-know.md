@@ -1,5 +1,5 @@
 ---
-seoTitle: API Architecture Styles for Developers
+seoTitle: REST vs GraphQL vs gRPC: API Architecture Styles
 slug: api-architecture-styles-every-developer-should-know
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: API Architecture Styles Every Developer Should Know
-subtitle: Compare REST, gRPC, GraphQL, WebSocket, SOAP, and MQTT by contract, transport, operational cost, and use case.
-intro: Compare REST, gRPC, GraphQL, WebSocket, SOAP, and MQTT by contract, transport, operational cost, and use case.
+subtitle: REST vs GraphQL vs gRPC, plus WebSocket, SOAP, and MQTT: compare API architecture styles by contract, transport, operational cost, and use case.
+intro: REST vs GraphQL vs gRPC, plus WebSocket, SOAP, and MQTT: compare API architecture styles by contract, transport, operational cost, and use case.
 date: November 6, 2025
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/api-architecture-styles-every-developer-should-know-74bd544820fb
@@ -272,6 +272,13 @@ Then test the choice against production constraints:
 - Can gateways, load balancers, browsers, and observability tools support it?
 - What happens during partial failure, retries, reconnects, and deployments?
 - Has performance been measured with representative payloads and concurrency?
+
+## FAQ
+
+- **REST vs GraphQL: which should I choose?** REST suits a resource-oriented HTTP contract that needs broad compatibility. GraphQL suits a client-selected data graph shared by several product experiences.
+- **When should I use gRPC instead of REST?** gRPC fits typed, contract-first RPC between services you control. REST is usually the safer default for public or browser-facing HTTP APIs.
+- **Is gRPC faster than REST?** It can be, but measure with representative payloads and concurrency before choosing on performance alone.
+- **Can one system use REST, GraphQL, and gRPC together?** Yes. A system might expose REST or GraphQL to product clients, use gRPC internally, and add WebSocket or MQTT where those interactions need them.
 
 ## The Bottom Line
 

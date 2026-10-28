@@ -1,5 +1,5 @@
 ---
-seoTitle: Circuit Breaker Pattern in ASP.NET Core
+seoTitle: Polly Circuit Breaker Pattern in ASP.NET Core
 slug: circuit-breaker-pattern-aspnet-core
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Reliability
 tags: Reliability, Backend, Architecture
 title: Stop Your ASP.NET Core App from Crashing: The Circuit Breaker Pattern Explained
-subtitle: Learn how the Circuit Breaker pattern in ASP.NET Core stops failing services from crashing your app. Fail fast, recover quickly.
-intro: Learn how the Circuit Breaker pattern in ASP.NET Core stops failing services from crashing your app. Fail fast, recover quickly.
+subtitle: Implement the circuit breaker pattern in ASP.NET Core with Polly and Microsoft.Extensions.Http.Resilience. Stop failing services from crashing your app: fail fast, recover quickly.
+intro: Implement the circuit breaker pattern in ASP.NET Core with Polly and Microsoft.Extensions.Http.Resilience. Stop failing services from crashing your app: fail fast, recover quickly.
 date: October 24, 2025
-dateModified: September 19, 2026
+dateModified: October 28, 2026
 reviewedOn: September 19, 2026
 readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/%EF%B8%8F-stop-your-asp-net-core-app-from-crashing-the-circuit-breaker-pattern-explained-9b5a4ba9f0c7
@@ -45,7 +45,7 @@ After the break duration has elapsed, the next execution becomes a single probe.
 
 Polly also exposes an Isolated state that can hold a circuit open through manual control. The automatic flow in this example uses Closed, Open, and Half-Open.
 
-## Real-World Example: Building a Weather Dashboard
+## Polly Circuit Breaker Example: Building a Weather Dashboard
 
 Let's say you're building a dashboard that pulls data from multiple weather APIs. Here's how you'd protect yourself in ASP.NET Core.
 
@@ -169,6 +169,14 @@ The handled response or exception that reaches the threshold is still returned o
 **Monitor Your Circuits.** Export Polly's `OnCircuitOpened`, `OnCircuitHalfOpened`, and `OnCircuitClosed` telemetry events. When you see patterns of circuits opening, you've got early signs of problems.
 
 **Combine with Other Patterns.** Circuit breakers work well alongside retries (for transient failures) and timeouts (to avoid hanging forever).
+
+## FAQ
+
+- **What are the states of a circuit breaker?** Closed lets calls through, Open rejects them immediately, and Half-Open allows a single probe to test recovery. Polly also has an Isolated state for holding a circuit open manually.
+- **Which package do I need for a Polly circuit breaker in ASP.NET Core?** `Microsoft.Extensions.Http.Resilience`. Add a resilience handler to your `HttpClient` and configure `AddCircuitBreaker` with `HttpCircuitBreakerStrategyOptions`.
+- **Which failures open the circuit by default?** HTTP 500 and above, 408, 429, `HttpRequestException`, and Polly's `TimeoutRejectedException`. Responses such as 400 or 404 do not count unless you customize `ShouldHandle`.
+- **What happens to calls while the circuit is open?** Polly rejects them with a `BrokenCircuitException`, so you can return a safe fallback or a controlled error.
+- **Should I combine a circuit breaker with retries?** Yes. Circuit breakers work well alongside retries for transient failures and timeouts to avoid hanging calls.
 
 ## The Bottom Line
 

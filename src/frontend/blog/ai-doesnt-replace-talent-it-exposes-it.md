@@ -1,5 +1,5 @@
 ---
-seoTitle: AI Does Not Replace Talent, It Exposes It
+seoTitle: Will AI Take Your Job? Why AI Exposes Talent
 slug: ai-doesnt-replace-talent-it-exposes-it
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: AI
 tags: AI, Engineering Culture
 title: The Great Professional Reckoning: AI Doesn't Replace Talent - It Exposes It
-subtitle: AI can automate tasks and reshape jobs, but it also exposes the judgment, context, and accountability behind professional work.
-intro: AI can automate tasks and reshape jobs, but it also exposes the judgment, context, and accountability behind professional work.
+subtitle: Will AI take your job? AI can automate tasks and reshape roles, but it also exposes the judgment, context, and accountability behind professional work.
+intro: Will AI take your job? AI can automate tasks and reshape roles, but it also exposes the judgment, context, and accountability behind professional work.
 date: September 2, 2025
-dateModified: September 20, 2026
+dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 6 min read
 mediumUrl: https://arg-software.medium.com/the-great-professional-reckoning-ai-doesnt-replace-talent-it-exposes-it-dea456f86660
@@ -85,6 +85,12 @@ When you use AI tools, can you explain why the result is fit for purpose? Relati
 Can you tell when AI is wrong about something in your domain? If not, do not use its output without a qualified reviewer or an independent verification method.
 
 Do you have a clear vision of what excellent work looks like in your area? If you can't define quality, you can't create it - with or without AI.
+
+## FAQ
+
+- **Will AI take my job?** There is no single answer. The ILO's 2025 global index concludes that, because most occupations still contain tasks requiring human input, job transformation is more likely than full automation. That is an aggregate assessment, not a prediction for any individual worker.
+- **Does AI make weak work better?** Not automatically. AI tends to amplify the context, direction, and evaluation you bring to it, which makes the gap between polished output and informed output easier to see.
+- **Which skills become more valuable with AI?** Domain expertise, creative problem-solving, empathy, accountability, and the ability to navigate ambiguity and complexity.
 
 ## The Bottom Line: Adaptation, Not a Slogan
 

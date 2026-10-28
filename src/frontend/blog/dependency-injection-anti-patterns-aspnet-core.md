@@ -1,5 +1,5 @@
 ---
-seoTitle: DI Anti-Patterns in ASP.NET Core
+seoTitle: Scoped vs Transient vs Singleton: DI Anti-Patterns
 slug: dependency-injection-anti-patterns-aspnet-core
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -8,10 +8,10 @@ authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend
 title: Dependency Injection Anti-Patterns Killing Your ASP.NET Core Apps
-subtitle: Avoid common DI mistakes in ASP.NET Core. Dependency injection anti-patterns that cause memory leaks, slowdowns & runtime crashes.
-intro: Avoid common DI mistakes in ASP.NET Core. Dependency injection anti-patterns that cause memory leaks, slowdowns & runtime crashes.
+subtitle: Scoped vs transient vs singleton, captive dependencies, and other ASP.NET Core dependency injection anti-patterns that cause memory leaks, slowdowns, and runtime crashes.
+intro: Scoped vs transient vs singleton, captive dependencies, and other ASP.NET Core dependency injection anti-patterns that cause memory leaks, slowdowns, and runtime crashes.
 date: September 19, 2025
-dateModified: September 19, 2026
+dateModified: October 28, 2026
 reviewedOn: September 19, 2026
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/dependency-injection-anti-patterns-killing-your-asp-net-core-apps-502f08d85d95
@@ -69,7 +69,7 @@ public sealed class ReportingService
 }
 ```
 
-## 2. The Performance Drain: Using Transient Services Everywhere
+## 2. Scoped vs Transient vs Singleton: Defaulting to Transient Everywhere
 
 We've seen developers register every service with the same lifetime "just to be safe." Transient services are created each time they are resolved, so expensive object graphs can add allocation and construction overhead. That does not make transient lifetime inherently wrong: lightweight stateless services are often good transient candidates.
 
@@ -264,6 +264,14 @@ builder.Host.UseDefaultServiceProvider(options =>
 ```
 
 `ValidateOnBuild` checks that registered services can be constructed. `ValidateScopes` rejects scoped services resolved from the root provider or injected into singletons. The Generic Host enables these checks by default in the Development environment; configuring them explicitly applies the policy in every environment. Open generic registrations are not checked by `ValidateOnBuild`, so startup validation cannot prove every runtime resolution path.
+
+## FAQ
+
+- **What is the difference between scoped, transient, and singleton in ASP.NET Core?** Transient creates a new instance for each resolution, scoped creates one instance per request or explicit scope, and singleton creates one instance for the whole application.
+- **What is a captive dependency?** A shorter-lived service, such as a scoped `DbContext`, injected into a singleton. The singleton keeps it alive for its own lifetime, so request state can leak across requests.
+- **How do I detect captive dependencies?** Enable `ValidateScopes` and `ValidateOnBuild` on the service provider. `ValidateScopes` rejects scoped services injected into singletons or resolved from the root provider.
+- **Should I register everything as transient to be safe?** No. Choose lifetimes from state ownership and sharing requirements. Transient is a good fit for lightweight stateless services, but expensive object graphs add allocation and construction overhead.
+- **Why is the service locator an anti-pattern?** Calling `IServiceProvider.GetService<T>()` inside your classes hides their dependencies, which makes them harder to test and to reason about.
 
 ## The Bottom Line
 
