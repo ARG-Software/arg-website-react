@@ -1590,7 +1590,7 @@
 }
 
 .arg-cookie-btn--accept {
-  background: linear-gradient(90deg, #f0060d 0%, #c924d7 49%, #0c002e 100%);
+  background: #0c002e;
   border: none;
   color: #ffffff;
 }

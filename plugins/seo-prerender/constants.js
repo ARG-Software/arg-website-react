@@ -220,7 +220,7 @@ export const STATIC_PAGES = [
     priority: '0.3',
     changefreq: 'yearly',
     description:
-      "ARG Software's privacy policy - how we collect, use, and protect your personal data.",
+      "ARG Software's privacy policy: what personal data we collect, how we use it, cookies and tracking, data sharing, retention, security, and your rights.",
     paragraphs: [
       'This privacy policy explains how ARG Software collects, uses, and protects your personal data when you visit our website or use our services.',
       'We are committed to ensuring that your privacy is protected and that we comply with applicable data protection regulations including GDPR.',
@@ -239,7 +239,7 @@ export const STATIC_PAGES = [
     priority: '0.3',
     changefreq: 'yearly',
     description:
-      "ARG Software's terms of service - the conditions governing the use of our website and services.",
+      "ARG Software's terms of service: use of our website and services, intellectual property, confidentiality, payment terms, liability, and Portuguese law.",
     paragraphs: [
       "These terms of service outline the rules and regulations for the use of ARG Software's website and services.",
       'By accessing this website, you accept these terms and conditions in full.',
