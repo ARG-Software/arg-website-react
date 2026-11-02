@@ -1,0 +1,52 @@
+/* Card flip, shared by any two-sided element.
+   Markup: .flip-card > .flip-card__face (front) + .flip-card__face.flip-card__face--back.
+   Add .is-flipped to show the back. Add .flip-card--hover to also flip on hover and
+   keyboard focus. Both faces share one grid cell, so the taller face sets the height. */
+
+.flip-card {
+  display: grid;
+  perspective: 1600px;
+}
+
+.flip-card__face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  grid-area: 1 / 1;
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.flip-card__face--back {
+  transform: rotateY(-180deg);
+}
+
+.flip-card.is-flipped > .flip-card__face {
+  transform: rotateY(180deg);
+}
+
+.flip-card.is-flipped > .flip-card__face--back {
+  transform: rotateY(0deg);
+}
+
+@media (hover: hover) {
+  .flip-card--hover:hover > .flip-card__face {
+    transform: rotateY(180deg);
+  }
+
+  .flip-card--hover:hover > .flip-card__face--back {
+    transform: rotateY(0deg);
+  }
+}
+
+.flip-card--hover:focus-visible > .flip-card__face {
+  transform: rotateY(180deg);
+}
+
+.flip-card--hover:focus-visible > .flip-card__face--back {
+  transform: rotateY(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-card__face {
+    transition: none;
+  }
+}

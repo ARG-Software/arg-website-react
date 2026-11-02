@@ -1,19 +1,21 @@
-import { Fragment, useState } from 'react';
-import { AltchaVerification } from '@components/forms/AltchaVerification';
-import { ContactForm } from '@components/forms/ContactForm';
+import { useState } from 'react';
 import { Footer } from '@components/layout/Footer';
 import { Navbar } from '@components/navigation/Navbar';
 import { PageHeader } from '@components/headers/PageHeader';
 import { SEO } from '@components/seo/SEO';
 import { CTASection } from '@components/layout/CTASection';
+import AppLink from '@components/navigation/AppLink';
+import { ReportGuideDeck } from '@components/cards/ReportGuideDeck';
+import { AuditLayersCard } from '@components/cards/AuditLayersCard';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { Pill, PillButton } from '@ui/pills/Pill.jsx';
+import { StepProgressTimeline } from '@ui/grids/StepProgressTimeline.jsx';
 import { AnimatedArrowButton } from '@ui/buttons/AnimatedArrowButton.jsx';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
-import { trackCTA, trackEvent, trackOutbound } from '@services/analytics';
-import { getBrowserStoreLink, getArchitectureBookingLink } from '../services/linksService';
+import { trackCTA, trackEvent, trackMailto, trackOutbound } from '@services/analytics';
+import { getBrowserStoreLink, getEmailAddress, getMailtoLink } from '../services/linksService';
 import { buildAuditSchemas } from '../utils/structuredData';
 import PAGE from '../data/auditPage.json';
 import '../styles/audit.css';
@@ -22,40 +24,6 @@ const AUDIT_SCHEMAS = buildAuditSchemas(PAGE, {
   chrome: getBrowserStoreLink('chrome'),
   firefox: getBrowserStoreLink('firefox'),
 });
-
-const FORM_FIELDS = [
-  {
-    name: 'name',
-    label: 'Name',
-    type: 'text',
-    autoComplete: 'name',
-    placeholder: 'Jane Rivera',
-    required: true,
-    layout: 'half',
-  },
-  {
-    name: 'email',
-    label: 'Work email',
-    type: 'email',
-    autoComplete: 'email',
-    placeholder: 'jane@company.com',
-    required: true,
-    layout: 'half',
-  },
-  {
-    name: 'system',
-    label: 'Product URL',
-    type: 'text',
-    placeholder: 'https://',
-  },
-  {
-    name: 'journey',
-    label: 'The part you want reviewed',
-    type: 'textarea',
-    placeholder: 'e.g. Checkout on the B2B portal, two repos, AWS',
-    required: true,
-  },
-];
 
 function StoreButton({ store, href, variant, location }) {
   const className = `button-base button-base--${variant} au-store-btn`;
@@ -82,13 +50,17 @@ function StoreButton({ store, href, variant, location }) {
 }
 
 export default function AuditPage() {
-  const bookingUrl = getArchitectureBookingLink();
+  const [flippedTier, setFlippedTier] = useState(null);
+  const reportMailto = getMailtoLink('dev', PAGE.send.emailSubject);
   const [activeFeature, setActiveFeature] = useState(-1);
   const [videoTracked, setVideoTracked] = useState(false);
-  const [verificationState, setVerificationState] = useState('unverified');
-  const [verificationKey, setVerificationKey] = useState(0);
-  const isVerified = verificationState === 'verified';
   const feature = PAGE.architect.features[activeFeature] ?? PAGE.architect.overview;
+  // The screenshot flips to its other face for each new feature, like the price cards
+  const [shot, setShot] = useState({
+    front: PAGE.architect.overview,
+    back: PAGE.architect.overview,
+    flipped: false,
+  });
   const video = PAGE.architect.video;
 
   useTimeOnPage('/audit/');
@@ -103,6 +75,12 @@ export default function AuditPage() {
   const selectFeature = index => {
     if (index === activeFeature) return;
     setActiveFeature(index);
+    const next = PAGE.architect.features[index];
+    setShot(current =>
+      current.flipped
+        ? { ...current, front: next, flipped: false }
+        : { ...current, back: next, flipped: true }
+    );
     trackEvent('audit_feature_click', { feature: PAGE.architect.features[index].id });
   };
 
@@ -137,14 +115,14 @@ export default function AuditPage() {
               className="au-section padding-section-large border-radius-top background-color-white"
             >
               <div className="container padding-global au-inner">
+                <h2 className="au-title au-arch-title" data-animate-order="0">
+                  {PAGE.architect.title}
+                  <br />
+                  <span className="text-color-gradiant">{PAGE.architect.privacy}</span>
+                </h2>
+
                 <div className="au-arch">
                   <div data-animate-order="0">
-                    <div className="au-step">
-                      <b>1</b>
-                      {PAGE.architect.step}
-                    </div>
-                    <h2 className="au-title">{PAGE.architect.title}</h2>
-                    <p className="au-subtitle">{PAGE.architect.privacy}</p>
                     <p className="au-lede">{PAGE.architect.text}</p>
 
                     <div className="au-tabs" role="tablist" aria-label={PAGE.architect.title}>
@@ -153,7 +131,7 @@ export default function AuditPage() {
                           key={item.id}
                           id={`au-tab-${item.id}`}
                           role="tab"
-                          variant={index === activeFeature ? 'dark' : 'outline'}
+                          variant="dark"
                           active={index === activeFeature}
                           aria-selected={index === activeFeature}
                           aria-controls={`au-panel-${item.id}`}
@@ -222,13 +200,25 @@ export default function AuditPage() {
                   </div>
 
                   <figure className="au-shot" data-animate-order="1">
-                    <img
-                      key={feature.id}
-                      src={feature.image}
-                      alt={feature.alt}
-                      width="598"
-                      height="896"
-                    />
+                    <div className={shot.flipped ? 'flip-card is-flipped' : 'flip-card'}>
+                      {[shot.front, shot.back].map((face, index) => {
+                        const isBack = index === 1;
+                        const isShown = isBack === shot.flipped;
+                        return (
+                          <img
+                            key={isBack ? 'back' : 'front'}
+                            className={
+                              isBack ? 'flip-card__face flip-card__face--back' : 'flip-card__face'
+                            }
+                            src={face.image}
+                            alt={isShown ? face.alt : ''}
+                            aria-hidden={isShown ? undefined : true}
+                            width="598"
+                            height="896"
+                          />
+                        );
+                      })}
+                    </div>
                     <figcaption className="au-kicker">
                       {feature.caption} · {PAGE.architect.captionSuffix}
                     </figcaption>
@@ -285,24 +275,43 @@ export default function AuditPage() {
                   {PAGE.architect.checks.items.map((check, index) => (
                     <BaseCard
                       key={check.title}
-                      className="au-card"
+                      className="au-card au-card--accent"
                       variant="light"
                       padding="xl"
                       animate={true}
                       animationOrder={index + 1}
                     >
-                      <span className="au-kicker">{String(index + 1).padStart(2, '0')}</span>
+                      <span className="au-kicker au-card-index">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
                       <h4>{check.title}</h4>
                       <p>{check.text}</p>
                     </BaseCard>
                   ))}
                 </div>
 
-                <SectionDivider className="au-divider" variant="light" />
+                <BaseCard
+                  className="au-not-tested"
+                  variant="light"
+                  padding="xl"
+                  hover="none"
+                  animate={true}
+                  animationOrder={5}
+                >
+                  <Pill variant="outline" size="xs">
+                    {PAGE.architect.notTested.label}
+                  </Pill>
+                  <ul>
+                    {PAGE.architect.notTested.items.map(item => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                  <p className="au-note">{PAGE.architect.notTested.text}</p>
+                </BaseCard>
               </div>
             </section>
 
-            <section className="au-section padding-section-large border-radius-bottom background-color-white">
+            <section className="au-section au-private-section padding-section-large background-color-white">
               <div className="container padding-global au-inner">
                 <BaseCard
                   className="au-private"
@@ -326,20 +335,38 @@ export default function AuditPage() {
                         aria-hidden="true"
                       >
                         <rect x="4" y="11" width="16" height="10" rx="2" />
-                        <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                        <path className="au-private-shackle" d="M8 11V7a4 4 0 0 1 8 0v4" />
                       </svg>
                     </span>
                     <h3>{PAGE.architect.private.title}</h3>
                   </div>
                   <ul>
-                    {PAGE.architect.private.items.map(item => (
-                      <li key={item.label}>
-                        <span className="au-kicker">{item.label}</span>
+                    {PAGE.architect.private.items.map((item, index) => (
+                      <li key={item.label} style={{ '--au-check-index': index }}>
+                        <span className="au-kicker">
+                          <span className="au-private-check" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                              <path d="M6 12.5l4 4L18 8" />
+                            </svg>
+                          </span>
+                          {item.label}
+                        </span>
                         <p>{item.text}</p>
                       </li>
                     ))}
                   </ul>
                 </BaseCard>
+
+                <SectionDivider className="au-divider" variant="light" />
+              </div>
+            </section>
+
+            <section
+              id="read-report"
+              className="au-section au-deck-section border-radius-bottom background-color-white"
+            >
+              <div className="container padding-global au-inner">
+                <ReportGuideDeck content={PAGE.read} />
               </div>
             </section>
 
@@ -354,202 +381,198 @@ export default function AuditPage() {
                   <p className="au-lede">{PAGE.bridge.text}</p>
                 </div>
 
-                <BaseCard
-                  className="au-layers"
-                  variant="dark"
-                  padding="none"
-                  hover="none"
-                  animate={true}
-                  animationOrder={1}
-                >
-                  {PAGE.bridge.layers.map((layer, index) => (
-                    <div key={layer.name} className="au-layer">
-                      {index > 0 && (
-                        <Pill className="au-layer-divider" variant="dark">
-                          {PAGE.bridge.divider}
-                        </Pill>
-                      )}
-                      <div>
-                        <span className="au-kicker">{layer.kicker}</span>
-                        <h3>{layer.name}</h3>
-                        <p>{layer.who}</p>
-                        <Pill
-                          className={index === 0 ? 'au-layer-free' : undefined}
-                          variant={index === 0 ? 'custom' : 'glass'}
-                        >
-                          {layer.tag}
-                        </Pill>
-                      </div>
-                      <ol>
-                        {layer.items.map((item, itemIndex) => (
-                          <li key={item}>
-                            <span className="au-kicker">
-                              {String(itemIndex + 1).padStart(2, '0')}
-                            </span>
-                            {item}
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
-                  ))}
-                </BaseCard>
+                <AuditLayersCard content={PAGE.bridge} />
               </div>
             </section>
 
             <section
-              id="review"
+              id="next-steps"
               className="au-section padding-section-large border-radius-top background-color-white"
             >
               <div className="container padding-global au-inner">
-                <div className="au-review">
+                <div data-animate-order="0">
+                  <span className="au-kicker">{PAGE.nextSteps.kicker}</span>
+                  <h2 className="au-title">
+                    {PAGE.nextSteps.title}
+                    <br />
+                    <span className="text-color-gradiant">{PAGE.nextSteps.titleHighlight}</span>
+                  </h2>
+                </div>
+
+                <div className="au-tiers">
+                  {PAGE.nextSteps.tiers.map((tier, index) => {
+                    const variant = tier.badge ? 'dark' : 'light';
+                    const isFlipped = flippedTier === tier.id;
+                    return (
+                      <div
+                        key={tier.id}
+                        id={`tier-${tier.id}`}
+                        className={tier.badge ? 'au-tier au-tier--featured' : 'au-tier'}
+                        data-animate-order={index + 1}
+                      >
+                        {/* Front: what it is. Back: what it contains. Hover, focus or tap turns it */}
+                        <div
+                          className={
+                            isFlipped
+                              ? 'au-tier-flip flip-card flip-card--hover is-flipped'
+                              : 'au-tier-flip flip-card flip-card--hover'
+                          }
+                          tabIndex={0}
+                          aria-label={`${tier.name}: ${tier.title}`}
+                          onClick={() => setFlippedTier(isFlipped ? null : tier.id)}
+                        >
+                          <BaseCard
+                            className="au-tier-face flip-card__face"
+                            variant={variant}
+                            padding="xl"
+                            hover="none"
+                          >
+                            <span className="au-kicker">{tier.name}</span>
+                            <p className="au-tier-price">{tier.price}</p>
+                            {tier.badge && (
+                              <Pill className="au-tier-badge" variant="glass">
+                                {tier.badge}
+                              </Pill>
+                            )}
+                            <h3>{tier.title}</h3>
+                            <span className="au-tier-hint au-tier-hint--hover" aria-hidden="true">
+                              {PAGE.nextSteps.flipHint}
+                            </span>
+                            <span className="au-tier-hint au-tier-hint--touch" aria-hidden="true">
+                              {PAGE.nextSteps.flipHintTouch}
+                            </span>
+                          </BaseCard>
+                          <BaseCard
+                            className="au-tier-face flip-card__face flip-card__face--back"
+                            variant={variant}
+                            padding="xl"
+                            hover="none"
+                          >
+                            <span className="au-kicker">{tier.name}</span>
+                            <p className="au-tier-note au-tier-meta">{tier.priceMeta}</p>
+                            <ul className="au-checks">
+                              {tier.items.map(item => (
+                                <li key={item}>{item}</li>
+                              ))}
+                            </ul>
+                            {tier.limit && <p className="au-tier-note">{tier.limit}</p>}
+                          </BaseCard>
+                        </div>
+
+                        <div className="au-tier-cta">
+                          {tier.id === 'architect' && (
+                            <AnimatedArrowButton
+                              href={getBrowserStoreLink('chrome')}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              variant="outline"
+                              hoverText={tier.ctaHover}
+                              onClick={() =>
+                                trackOutbound(
+                                  getBrowserStoreLink('chrome'),
+                                  tier.cta,
+                                  'audit_next_steps'
+                                )
+                              }
+                            >
+                              {tier.cta}
+                            </AnimatedArrowButton>
+                          )}
+                          {tier.id === 'report-review' && (
+                            <AnimatedArrowButton
+                              href="#send-report"
+                              variant="dark"
+                              hoverText={tier.ctaHover}
+                              onClick={() => trackCTA('report_review', 'audit_next_steps')}
+                            >
+                              {tier.cta}
+                            </AnimatedArrowButton>
+                          )}
+                          {tier.id === 'architecture-review' && (
+                            <AppLink
+                              to="/audit/architecture-review/"
+                              className="button-base button-base--dark"
+                              trackEvent="cta_click"
+                              trackData={{
+                                cta_type: 'architecture_review',
+                                cta_location: 'audit_next_steps',
+                              }}
+                            >
+                              {tier.cta}
+                            </AppLink>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <ol className="au-tier-flow" aria-hidden="true">
+                  {PAGE.nextSteps.flow.map(step => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ol>
+
+                <SectionDivider className="au-divider" variant="light" />
+              </div>
+            </section>
+
+            <section
+              id="send-report"
+              className="au-section padding-section-large border-radius-bottom background-color-white"
+            >
+              <div className="container padding-global au-inner">
+                <div className="au-send">
                   <div data-animate-order="0">
-                    <div className="au-step">
-                      <b>2</b>
-                      {PAGE.review.step}
-                    </div>
-                    <h2 className="au-title">{PAGE.review.title}</h2>
-                    <p className="au-lede">{PAGE.review.text}</p>
-                    {PAGE.review.lists.map(list => (
-                      <Fragment key={list.title}>
-                        <span className="au-kicker au-checks-title">{list.title}</span>
-                        <ul className="au-checks">
-                          {list.items.map(item => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
-                      </Fragment>
-                    ))}
-                    <p className="au-note au-not-included">
-                      <strong>{PAGE.review.notIncludedLabel}</strong> {PAGE.review.notIncluded}
+                    <h2 className="au-title au-send-title">
+                      {PAGE.send.title}
+                      <br />
+                      <span className="text-color-gradiant">{PAGE.send.titleHighlight}</span>
+                    </h2>
+                    <StepProgressTimeline
+                      className="au-send-timeline"
+                      items={PAGE.send.steps.map(step => ({
+                        id: step.title,
+                        title: step.title,
+                        description: step.text,
+                      }))}
+                      ariaLabel={PAGE.send.title}
+                    />
+                    <p className="au-note au-send-email">
+                      {PAGE.send.emailText}{' '}
+                      <a
+                        href={reportMailto}
+                        onClick={() => trackMailto(PAGE.send.emailSubject, 'audit_send')}
+                      >
+                        {getEmailAddress('dev')}
+                      </a>
+                      .
                     </p>
                   </div>
 
                   <BaseCard
                     as="aside"
-                    className="au-price"
+                    className="au-send-card"
                     variant="light"
                     padding="xl"
                     hover="none"
                     animate={true}
                     animationOrder={1}
                   >
-                    <span className="au-kicker">{PAGE.review.price.kicker}</span>
-                    <span className="au-price-from">{PAGE.review.price.from}</span>
-                    <p className="au-price-amount">{PAGE.review.price.amount}</p>
-                    <p className="au-price-meta">{PAGE.review.price.meta}</p>
-                    <span className="au-kicker au-scope-title">{PAGE.review.price.scopeTitle}</span>
-                    <dl className="au-scope">
-                      {PAGE.review.price.scope.map(item => (
-                        <div key={item.label}>
-                          <dt>{item.label}</dt>
-                          <dd>{item.value}</dd>
-                        </div>
+                    <span className="au-kicker au-checks-title">{PAGE.send.sentTitle}</span>
+                    <ul className="au-checks">
+                      {PAGE.send.sent.map(item => (
+                        <li key={item}>{item}</li>
                       ))}
-                    </dl>
-                    <p className="au-note au-scope-note">{PAGE.review.price.scopeNote}</p>
-                    <AnimatedArrowButton
-                      href={bookingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="au-price-cta"
-                      hoverText={PAGE.review.price.ctaHover}
-                      onClick={() => trackCTA('book_meeting', 'audit_price')}
-                    >
-                      {PAGE.review.price.cta}
-                    </AnimatedArrowButton>
+                    </ul>
+                    <span className="au-kicker au-checks-title">{PAGE.send.neverTitle}</span>
+                    <ul className="au-checks au-checks--never">
+                      {PAGE.send.never.map(item => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                    <p className="au-note au-send-note">{PAGE.send.note}</p>
                   </BaseCard>
-                </div>
-
-                <SectionDivider className="au-divider" variant="light" />
-              </div>
-            </section>
-
-            <section className="au-section padding-section-large border-radius-bottom background-color-white">
-              <div className="container padding-global au-inner">
-                <div className="au-block-head" data-animate-order="0">
-                  <h3>{PAGE.review.sizes.title}</h3>
-                  <p>{PAGE.review.sizes.text}</p>
-                </div>
-                <div className="au-cards">
-                  {PAGE.review.sizes.items.map((size, index) => (
-                    <BaseCard
-                      key={size.name}
-                      className="au-card"
-                      variant="light"
-                      padding="xl"
-                      animate={true}
-                      animationOrder={index + 1}
-                    >
-                      <span className="au-kicker">{size.name}</span>
-                      <h4>{size.title}</h4>
-                      <p>{size.text}</p>
-                      <span className="au-card-foot">{size.price}</span>
-                    </BaseCard>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            <section
-              id="start"
-              className="au-section au-section--dark padding-section-large background-color-dark"
-            >
-              <div className="container padding-global au-inner">
-                <div className="au-start">
-                  <div data-animate-order="0">
-                    <div className="au-step">
-                      <b>3</b>
-                      {PAGE.start.kicker}
-                    </div>
-                    <h2 className="au-title">{PAGE.start.title}</h2>
-                    <ol className="au-steps">
-                      {PAGE.start.steps.map((step, index) => (
-                        <li key={step.title}>
-                          <span className="au-steps-index">
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-                          <div>
-                            <strong>{step.title}</strong>
-                            <span>{step.text}</span>
-                          </div>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-
-                  <div data-animate-order="1">
-                    <ContactForm
-                      title={PAGE.start.form.title}
-                      description={PAGE.start.form.description}
-                      fields={FORM_FIELDS}
-                      submitLabel={PAGE.start.form.submitLabel}
-                      submitHoverLabel={PAGE.start.form.submitHoverLabel}
-                      helperText={PAGE.start.form.helperText}
-                      successMessage={PAGE.start.form.successMessage}
-                      subject={PAGE.start.form.subject}
-                      source="audit_page"
-                      formName="audit_page_fit"
-                      submitDisabled={!isVerified}
-                      verification={
-                        <AltchaVerification
-                          key={verificationKey}
-                          onStateChange={setVerificationState}
-                        />
-                      }
-                      onSubmit={() => trackEvent('audit_form_submit', { source: 'audit_page' })}
-                      onSuccess={() => {
-                        trackEvent('audit_form_success', { source: 'audit_page' });
-                        setVerificationState('unverified');
-                        setVerificationKey(key => key + 1);
-                      }}
-                      onError={() => {
-                        trackEvent('audit_form_error', { source: 'audit_page' });
-                        setVerificationState('unverified');
-                        setVerificationKey(key => key + 1);
-                      }}
-                    />
-                    <p className="au-note au-proof">{PAGE.start.proof}</p>
-                  </div>
                 </div>
               </div>
             </section>
@@ -562,12 +585,12 @@ export default function AuditPage() {
               titleHighlight={PAGE.cta.titleHighlight}
               buttonTextNotHover={PAGE.cta.buttonTextNotHover}
               buttonTextHover={PAGE.cta.buttonTextHover}
-              buttonLink={bookingUrl}
-              onPrimaryClick={() => trackCTA('book_meeting', 'audit_cta')}
+              buttonLink={reportMailto}
+              onPrimaryClick={() => trackMailto(PAGE.send.emailSubject, 'audit_cta')}
               secondButtonTextNotHover={PAGE.cta.secondButtonTextNotHover}
               secondButtonTextHover={PAGE.cta.secondButtonTextHover}
-              secondButtonLink="#architect"
-              onSecondaryClick={() => trackCTA('audit_architect', 'audit_cta')}
+              secondButtonLink="/audit/architecture-review/"
+              onSecondaryClick={() => trackCTA('architecture_review', 'audit_cta')}
               animationClass="au-animate"
               animate={true}
             />

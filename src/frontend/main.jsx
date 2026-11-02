@@ -26,6 +26,7 @@ import '@ui/styles.css';
 import './styles/home.css';
 import './styles/components.css';
 import './styles/effects.css';
+import './animations/flip.css';
 
 const PartnersPage = lazyWithRetry(() => import('./pages/PartnersPage.jsx'));
 const ProjectsPage = lazyWithRetry(() => import('./pages/ProjectsPage.jsx'));
@@ -37,6 +38,7 @@ const PatternsPage = lazyWithRetry(() => import('./pages/PatternsPage.jsx'));
 const PatternDetailPage = lazyWithRetry(() => import('./pages/PatternDetailPage.jsx'));
 const WorkingWithUsPage = lazyWithRetry(() => import('./pages/WorkingWithUsPage.jsx'));
 const AuditPage = lazyWithRetry(() => import('./pages/AuditPage.jsx'));
+const ArchitectureReviewPage = lazyWithRetry(() => import('./pages/ArchitectureReviewPage.jsx'));
 const AboutUsPage = lazyWithRetry(() => import('./pages/AboutUsPage.jsx'));
 const ContactPage = lazyWithRetry(() => import('./pages/ContactPage.jsx'));
 const BlogPage = lazyWithRetry(() => import('./pages/blog/BlogPage.jsx'));
@@ -89,6 +91,8 @@ const appRoutes = (
     <Route path="/working-with-us/" element={<WorkingWithUsPage />} />
     <Route path="/audit" element={<AuditPage />} />
     <Route path="/audit/" element={<AuditPage />} />
+    <Route path="/audit/architecture-review" element={<ArchitectureReviewPage />} />
+    <Route path="/audit/architecture-review/" element={<ArchitectureReviewPage />} />
     <Route path="/about-us" element={<AboutUsPage />} />
     <Route path="/about-us/" element={<AboutUsPage />} />
     <Route path="/contact" element={<ContactPage />} />

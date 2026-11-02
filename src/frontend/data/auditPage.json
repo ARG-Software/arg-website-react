@@ -5,7 +5,7 @@
   },
   "hero": {
     "title": ["Know what's", "holding your product back."],
-    "subtitle": "Run a free audit from your browser in one click. When you need to go deeper, we review the system behind it.",
+    "subtitle": "ARG Architect audits security headers, performance, architecture, payload, accessibility, DOM, efficiency and AI readiness from the outside, entirely in your browser. Reports never leave your device unless you send them.",
     "breadcrumbs": [
       {
         "label": "Home",
@@ -18,21 +18,20 @@
     ],
     "sideItems": [
       {
-        "label": "Start free",
-        "href": "#architect"
+        "label": "Read your report",
+        "href": "#read-report"
       },
       {
-        "label": "Go deeper with us",
-        "href": "#review"
+        "label": "Next steps",
+        "href": "#next-steps"
       },
       {
-        "label": "Start a review",
-        "href": "#start"
+        "label": "Send us a report",
+        "href": "#send-report"
       }
     ]
   },
   "architect": {
-    "step": "Start free",
     "title": "A full website audit in one click.",
     "text": "A free browser extension. Open any public page, press audit, and get one weighted score across eight categories, with every failing check explained.",
     "overview": {
@@ -43,6 +42,16 @@
       "image": "/images/audit/screens/architect-overview.webp",
       "alt": "ARG Architect overall score and priority issues for arg.software",
       "caption": "Overview"
+    },
+    "notTested": {
+      "label": "Not tested",
+      "text": "The extension never sends attack payloads, so server-side attack classes are out of reach by design.",
+      "items": [
+        "SQL injection",
+        "Command injection",
+        "SSRF",
+        "Authentication and authorization flaws"
+      ]
     },
     "features": [
       {
@@ -222,7 +231,7 @@
       }
     ],
     "browsersNote": "(Available through Chrome Store)",
-    "privacy": "Free · No account, no analytics, no tracking",
+    "privacy": "Free, and nothing is tracked",
     "video": {
       "src": "/videos/arg-architect.mp4",
       "youtubeUrl": "https://youtu.be/US4nJu6lXvU",
@@ -280,6 +289,8 @@
     "titleHighlight": "We see the inside.",
     "text": "A browser can only read what your site exposes publicly. The causes of most problems live in the code, the infrastructure and the integrations.",
     "divider": "Public surface · A browser stops here",
+    "lensLabel": "X-RAY",
+    "lensHint": "Move to look inside · Click to open",
     "layers": [
       {
         "kicker": "Outside",
@@ -300,16 +311,17 @@
         "tag": "One week · from €3,500",
         "who": "What only access to the system shows",
         "items": [
-          "System design and code quality",
-          "Scalability and infrastructure",
-          "Integrations and vendor coupling",
+          "Databases and data flows",
+          "Authentication and authorization",
+          "Server-side code",
+          "Infrastructure and integrations",
           "A 90-day plan: do now, do later, ignore"
         ]
       }
     ]
   },
   "review": {
-    "step": "Go deeper with us",
+    "step": "What we look at",
     "title": "Architecture review. One week on the part of your system that matters most.",
     "text": "€3,500 buys one week of a senior engineer, not a review of the whole application. On the architecture call we agree a scope that fits in that week, usually one slice of the product such as checkout or onboarding, and write it down before you pay. If the slice you have in mind is too big for a week, we say so and either narrow it or quote more weeks.",
     "lists": [
@@ -421,11 +433,278 @@
     "proof": "Senior-led delivery on production systems across countries, including payments-scale work above 2,000 transactions per second."
   },
   "cta": {
-    "title": "Book the",
-    "titleHighlight": "architecture call",
-    "buttonTextNotHover": "Book an architecture call",
+    "title": "Have a report?",
+    "titleHighlight": "Send it over",
+    "buttonTextNotHover": "Email us your report",
     "buttonTextHover": "Let's talk",
-    "secondButtonTextNotHover": "Free website audit",
-    "secondButtonTextHover": "ARG Architect"
+    "secondButtonTextNotHover": "Architecture review",
+    "secondButtonTextHover": "One week"
+  },
+  "read": {
+    "kicker": "Got a report?",
+    "title": "How to read your ARG Architect report.",
+    "cards": [
+      {
+        "id": "score",
+        "eyebrow": "Overall score",
+        "title": "One number, four bands.",
+        "next": "Category weights"
+      },
+      {
+        "id": "weights",
+        "eyebrow": "Category weights",
+        "title": "Eight categories, one score.",
+        "next": "Row states"
+      },
+      {
+        "id": "states",
+        "eyebrow": "Row states",
+        "title": "When a row has no verdict, it says why",
+        "next": "Good to know"
+      },
+      {
+        "id": "notes",
+        "eyebrow": "Good to know",
+        "title": "Two things to keep in mind.",
+        "next": "Start over",
+        "dark": true
+      }
+    ],
+    "bands": [
+      {
+        "label": "Critical",
+        "range": "Below 50",
+        "from": 0,
+        "to": 50,
+        "color": "#ef4444"
+      },
+      {
+        "label": "Needs Work",
+        "range": "50–59",
+        "from": 50,
+        "to": 60,
+        "color": "#f59e0b"
+      },
+      {
+        "label": "Good",
+        "range": "60–79",
+        "from": 60,
+        "to": 80,
+        "color": "#84cc16"
+      },
+      {
+        "label": "Excellent",
+        "range": "80+",
+        "from": 80,
+        "to": 100,
+        "color": "#10b981"
+      }
+    ],
+    "weights": [
+      {
+        "name": "Security",
+        "weight": 30
+      },
+      {
+        "name": "Performance",
+        "weight": 20
+      },
+      {
+        "name": "Architecture",
+        "weight": 15
+      },
+      {
+        "name": "Efficiency",
+        "weight": 9
+      },
+      {
+        "name": "Payload",
+        "weight": 8
+      },
+      {
+        "name": "Accessibility",
+        "weight": 7
+      },
+      {
+        "name": "AI Readiness",
+        "weight": 6
+      },
+      {
+        "name": "DOM",
+        "weight": 5
+      }
+    ],
+    "weightsNoteLabel": "Note",
+    "weightsNote": "A category counts by its weight times its evidence coverage, so a category the browser could only partly see counts for less.",
+    "states": [
+      {
+        "glyph": "off",
+        "label": "Off",
+        "text": "Turned off in Settings."
+      },
+      {
+        "glyph": "failed",
+        "label": "Check failed",
+        "text": "The check could not complete."
+      },
+      {
+        "glyph": "none",
+        "label": "Not detected",
+        "text": "There was nothing to check."
+      },
+      {
+        "glyph": "unseen",
+        "label": "Not observed",
+        "text": "The browser could not see it."
+      },
+      {
+        "glyph": "info",
+        "label": "Info",
+        "text": "Context only, never scored."
+      }
+    ],
+    "notes": [
+      {
+        "title": "Lab numbers, not field data",
+        "text": "Measurements come from repeated cache-bypass reloads in a desktop browser window. They show what the page does under controlled conditions, not what every visitor experiences."
+      },
+      {
+        "title": "One finding, one ticket",
+        "text": "\"Copy ticket draft\" turns a finding into a ticket with the measured value, the problem, the evidence and the recommendation, ready for Jira, GitHub or Linear."
+      }
+    ]
+  },
+  "nextSteps": {
+    "kicker": "Next steps",
+    "title": "Start with the report.",
+    "titleHighlight": "Go inside only if it points there.",
+    "flipHint": "Hover to see what's included",
+    "flipHintTouch": "Tap to see what's included",
+    "tiers": [
+      {
+        "id": "architect",
+        "name": "ARG Architect",
+        "price": "Free",
+        "priceMeta": "No account, no tracking",
+        "title": "Run the audit yourself.",
+        "items": [
+          "Score and findings",
+          "A ticket draft for every finding",
+          "PDF, Markdown and JSON export"
+        ],
+        "cta": "Add to Chrome",
+        "ctaHover": "Free"
+      },
+      {
+        "id": "report-review",
+        "name": "Report review",
+        "price": "€500",
+        "priceMeta": "Fixed price · delivered in 1 week",
+        "badge": "Start here if you have a report",
+        "title": "We go through your report with you.",
+        "items": [
+          "Every finding confirmed, false positives removed",
+          "What is left, ranked by impact",
+          "A fix plan with the effort for each item",
+          "A 60-minute call with the engineer who reviewed it",
+          "Delivered within one week"
+        ],
+        "limit": "Covers what the report shows. No access to code, database or infrastructure.",
+        "cta": "Send us your report",
+        "ctaHover": "How it works"
+      },
+      {
+        "id": "architecture-review",
+        "name": "Architecture review",
+        "price": "from €3,500",
+        "priceMeta": "1 week of work, scope agreed first",
+        "title": "We look inside the system.",
+        "items": [
+          "System design and code quality",
+          "Scalability and infrastructure",
+          "Integrations and vendor coupling",
+          "A 90-day plan: do now, do later, ignore"
+        ],
+        "limit": "For when the cause is in the code, the data or the infrastructure.",
+        "cta": "See the architecture review",
+        "ctaHover": "One week"
+      }
+    ],
+    "flow": ["Free", "€500", "from €3,500, minus €500"]
+  },
+  "send": {
+    "title": "Send the report.",
+    "titleHighlight": "We tell you which step fits.",
+    "steps": [
+      {
+        "title": "Open Contact",
+        "text": "In the extension, open the Contact tab and pick \"Audit Result\"."
+      },
+      {
+        "title": "Attach a saved report",
+        "text": "Pick the report and press Send."
+      },
+      {
+        "title": "We reply",
+        "text": "With the step that fits, report review or architecture review, and its price. Nothing starts until you confirm."
+      }
+    ],
+    "sentTitle": "What we receive",
+    "sent": [
+      "The scores and every check that needs attention, each with its measured value, evidence and recommendation",
+      "The measurements and the audit setup"
+    ],
+    "neverTitle": "What is never sent",
+    "never": ["Passing checks", "Script bodies", "Credential values"],
+    "note": "Nothing is sent until you press Send. No report or export sits behind an email gate.",
+    "emailText": "Only have the PDF? Email it to",
+    "emailSubject": "ARG Architect report"
+  },
+  "reviewPage": {
+    "seo": {
+      "title": "Architecture Review, One Week from €3,500",
+      "description": "One week of a senior engineer on the part of your system that matters most: system design, code, scalability, integrations, infrastructure and security, from €3,500."
+    },
+    "hero": {
+      "title": ["Architecture review.", "One week inside your system."],
+      "subtitle": "A browser sees the outside of your product. This is the inside: the code, the data, the infrastructure and the integrations, in the part that matters most.",
+      "breadcrumbs": [
+        {
+          "label": "Home",
+          "path": "/"
+        },
+        {
+          "label": "Audit",
+          "path": "/audit/"
+        },
+        {
+          "label": "Architecture review",
+          "path": "/audit/architecture-review/"
+        }
+      ],
+      "sideItems": [
+        {
+          "label": "What we look at",
+          "href": "#review"
+        },
+        {
+          "label": "Bigger system",
+          "href": "#sizes"
+        },
+        {
+          "label": "Start a review",
+          "href": "#start"
+        }
+      ]
+    },
+    "credit": "Had a report review? Book this within 60 days of getting it, and the €500 comes off the price.",
+    "cta": {
+      "title": "Book the",
+      "titleHighlight": "architecture call",
+      "buttonTextNotHover": "Book an architecture call",
+      "buttonTextHover": "Let's talk",
+      "secondButtonTextNotHover": "Free website audit",
+      "secondButtonTextHover": "ARG Architect"
+    }
   }
 }
