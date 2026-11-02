@@ -1390,8 +1390,7 @@
   align-items: center;
   background:
     radial-gradient(52rem 28rem at 100% 0%, rgba(121, 4, 253, 0.22), transparent 60%),
-    radial-gradient(38rem 24rem at 0% 100%, rgba(240, 6, 13, 0.12), transparent 62%),
-    #0c002e;
+    radial-gradient(38rem 24rem at 0% 100%, rgba(240, 6, 13, 0.12), transparent 62%), #0c002e;
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: center;
@@ -1651,6 +1650,31 @@
   z-index: 1;
 }
 
+/* Decorative fluid piece in the empty right side of sub page headers (wide screens only).
+   Article headers (blog posts, patterns) leave it out: their titles run across. */
+.page-header__inner {
+  position: relative;
+}
+
+.page-header__art {
+  aspect-ratio: 1;
+  pointer-events: none;
+  position: absolute;
+  right: 4.75rem;
+  top: 6.5rem;
+  width: min(26rem, 26vw);
+  z-index: -1;
+  /* Faint, so it sits in the background like the hero blob on the home page */
+  opacity: 0.18;
+}
+
+/* Below this the drawing would run into the subtitle */
+@media screen and (max-width: 1099px) {
+  .page-header__art {
+    display: none;
+  }
+}
+
 .page-header .breadcrumb-nav {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 0;
@@ -1852,6 +1876,27 @@
   .page-header__row--links .page-header__side-label {
     height: auto;
     padding-top: 1.5rem;
+  }
+
+  /* One link per row, numbers and arrows lined up in their own columns */
+  .page-header__side-list {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    margin-top: 0.75rem;
+    width: 100%;
+  }
+
+  .page-header__side-list a {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    height: 3.25rem;
+  }
+
+  .page-header__side-index {
+    min-width: 1.25rem;
+  }
+
+  .page-header__side-arrow {
+    margin-left: auto;
   }
 }
 
@@ -2436,12 +2481,7 @@
   background:
     radial-gradient(120% 95% at 50% 130%, rgba(64, 170, 255, 0.4), transparent 58%),
     radial-gradient(80% 60% at 78% 18%, rgba(201, 30, 142, 0.35), transparent 60%),
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.05) 0 2px,
-      transparent 2px 9px
-    ),
-    #0c0a26;
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 9px), #0c0a26;
 }
 
 .nav-menu__latest-thumb img {
@@ -2536,7 +2576,7 @@
 
 @keyframes nav-menu__blink {
   50% {
-    opacity: 0.35;
+    opacity: 0.18;
     transform: scale(0.75);
   }
 }
@@ -2549,7 +2589,7 @@
   }
 
   50% {
-    opacity: 0.35;
+    opacity: 0.18;
     transform: scale(0.75);
   }
 
@@ -2775,4 +2815,3 @@
     display: none;
   }
 }
-

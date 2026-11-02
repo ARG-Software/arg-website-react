@@ -1,6 +1,7 @@
 import { Breadcrumb } from '../navigation/Breadcrumb';
 import AppLink from '../navigation/AppLink';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import { HeroArt } from '../animated/HeroArt';
 
 const SIZE_CLASSES = {
   default: '',
@@ -118,6 +119,8 @@ export function PageHeader({
   return (
     <header className={headerClass} {...scopeAttrs}>
       <div className="page-header__inner">
+        {!variant && <HeroArt className="page-header__art" />}
+
         {breadcrumbs && breadcrumbs.length > 0 && (
           <Breadcrumb items={breadcrumbs} animate={animate} animationTrigger={animationTrigger} />
         )}
