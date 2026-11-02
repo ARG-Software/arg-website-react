@@ -122,6 +122,7 @@ export interface ISiteLinksJson {
   };
   emails?: {
     hello?: string;
+    dev?: string;
   };
   socials?: {
     github?: string;
@@ -185,5 +186,40 @@ export interface IAuditPageJson {
     title: string;
     steps: IAuditTitledText[];
     proof: string;
+  };
+  read: {
+    title: string;
+    bands: Array<{ label: string; range: string }>;
+    weights: Array<{ name: string; weight: number }>;
+    weightsNote: string;
+    states: Array<{ label: string; text: string }>;
+    notes: IAuditTitledText[];
+  };
+  nextSteps: {
+    title: string;
+    titleHighlight: string;
+    tiers: Array<{
+      id: string;
+      name: string;
+      price: string;
+      priceMeta: string;
+      title: string;
+      items: string[];
+      limit?: string;
+    }>;
+  };
+  send: {
+    title: string;
+    titleHighlight: string;
+    steps: IAuditTitledText[];
+    sentTitle: string;
+    sent: string[];
+    neverTitle: string;
+    never: string[];
+    note: string;
+    emailText: string;
+  };
+  reviewPage: {
+    credit: string;
   };
 }

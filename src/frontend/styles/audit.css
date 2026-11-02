@@ -1145,6 +1145,33 @@
     width: 100%;
   }
 
+  /* Stacked, the screenshot sits right under the pills so a tap visibly changes it,
+     instead of below the feature text, the store buttons and the browsers */
+  .au-arch {
+    gap: 0;
+  }
+
+  .au-arch > div:first-child {
+    display: contents;
+  }
+
+  .au-arch .au-lede {
+    order: 0;
+  }
+
+  .au-arch .au-tabs {
+    order: 1;
+  }
+
+  .au-arch .au-shot {
+    margin-top: 1.5rem;
+    order: 2;
+  }
+
+  .au-arch > div:first-child > :not(.au-lede, .au-tabs) {
+    order: 3;
+  }
+
   .au-price {
     position: static;
   }
@@ -2001,7 +2028,7 @@
   border: 1.5px solid #888;
 }
 
-/* No kicker above this title, so it starts flush with the aside card */
+/* Titles with no kicker above them start flush with the top of their section */
 .au-send-title {
   margin-top: 0;
 }

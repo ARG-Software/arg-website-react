@@ -1,7 +1,7 @@
 {
   "seo": {
     "title": "Free Website Audit & Architecture Review",
-    "description": "Free website audit from your browser with ARG Architect, or a one-week architecture review of the part of your system that matters most, from €3,500."
+    "description": "Free website audit from your browser with ARG Architect. Got a report? We review it with you for €500, or look inside the system from €3,500."
   },
   "hero": {
     "title": ["Know what's", "holding your product back."],
@@ -17,18 +17,10 @@
       }
     ],
     "sideItems": [
-      {
-        "label": "Read your report",
-        "href": "#read-report"
-      },
-      {
-        "label": "Next steps",
-        "href": "#next-steps"
-      },
-      {
-        "label": "Send us a report",
-        "href": "#send-report"
-      }
+      { "label": "The extension", "href": "#architect" },
+      { "label": "Read your report", "href": "#read-report" },
+      { "label": "Next steps", "href": "#next-steps" },
+      { "label": "Send us a report", "href": "#send-report" }
     ]
   },
   "architect": {
@@ -111,7 +103,7 @@
         ],
         "image": "/images/audit/screens/architect-architecture.webp",
         "alt": "ARG Architect Architecture report for arg.software",
-        "caption": "Overview"
+        "caption": "Architecture"
       },
       {
         "id": "efficiency",
@@ -127,7 +119,7 @@
         ],
         "image": "/images/audit/screens/architect-efficiency.webp",
         "alt": "ARG Architect Efficiency report for arg.software",
-        "caption": "Overview"
+        "caption": "Efficiency"
       },
       {
         "id": "payload",
@@ -146,7 +138,7 @@
         ],
         "image": "/images/audit/screens/architect-payload.webp",
         "alt": "ARG Architect Payload report for arg.software",
-        "caption": "Overview"
+        "caption": "Payload"
       },
       {
         "id": "accessibility",
@@ -167,7 +159,7 @@
         ],
         "image": "/images/audit/screens/architect-accessibility.webp",
         "alt": "ARG Architect Accessibility report for arg.software",
-        "caption": "Overview"
+        "caption": "Accessibility"
       },
       {
         "id": "ai",
@@ -199,7 +191,7 @@
         ],
         "image": "/images/audit/screens/architect-dom.webp",
         "alt": "ARG Architect DOM report for arg.software",
-        "caption": "Overview"
+        "caption": "DOM"
       }
     ],
     "captionSuffix": "arg.software",
@@ -575,7 +567,6 @@
     ]
   },
   "nextSteps": {
-    "kicker": "Next steps",
     "title": "Start with the report.",
     "titleHighlight": "Go inside only if it points there.",
     "flipHint": "Hover to see what's included",

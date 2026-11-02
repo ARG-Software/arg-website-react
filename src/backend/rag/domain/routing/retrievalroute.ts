@@ -27,8 +27,10 @@ export const DIRECT_EVIDENCE_SOURCE_TYPES: RagSourceType[] = [
 const LATEST_BLOG_PATTERN =
   /\b(?:latest|newest|most recent|recent)\b.{0,50}\b(?:articles?|blog posts?|posts?)\b|\b(?:articles?|blog posts?|posts?)\b.{0,50}\b(?:latest|newest|most recent|recent)\b/i;
 const PERSONAL_PRONOUN_PATTERN = /\b(?:he|she|they|him|her|his|hers|them|their|theirs)\b/i;
-const BLOG_DISCOVERY_PATTERN = /\b(?:articles?|blog posts?|posts?|read(?:ing)?|writ(?:e|ing|ten))\b/i;
-const CAREERS_PATTERN = /\b(?:career|careers|job|jobs|hiring|hire|apply|application|role|position|candidate|cv|resume)\b/i;
+const BLOG_DISCOVERY_PATTERN =
+  /\b(?:articles?|blog posts?|posts?|read(?:ing)?|writ(?:e|ing|ten))\b/i;
+const CAREERS_PATTERN =
+  /\b(?:career|careers|job|jobs|hiring|hire|apply|application|role|position|candidate|cv|resume)\b/i;
 const ENGAGEMENT_DURATION_PATTERN =
   /\b(?:work(?:ed|ing)? with|collaborat(?:ed|ion|ing)? with|engagement|partnership|client relationship)\b.{0,80}\b(?:duration|timeline|how long|months?|years?|ongoing|took|last(?:ed)?)\b|\b(?:duration|timeline|how long|months?|years?|ongoing|took|last(?:ed)?)\b.{0,80}\b(?:work(?:ed|ing)? with|collaborat(?:ed|ion|ing)? with|engagement|partnership|client relationship)\b/i;
 const EXTERNAL_LINK_PATTERN =
@@ -59,12 +61,17 @@ const SKILLS_QUESTION_NOISE_PATTERN =
   /\b(?:what|which|who|how|do|does|did|can|could|would|will|are|is|your|our|you|we|the|a|an|any|some|have|has|had|list|show|tell|me|about|please)\b/giu;
 const AGENT_SKILLS_SOURCE_KEY = 'agent-skills';
 const AUDIT_OFFERING_PATTERN =
-  /\b(?:arg architect|architecture (?:review|call)|(?:website|site|web|page|free) audits?)\b/i;
+  /\b(?:arg architect|architecture (?:review|call)|report review|(?:website|site|web|page|free) audits?)\b/i;
 const AUDIT_WORD_PATTERN = /\b(?:audit(?:s|ing|ed)?|extensions?|add-?ons?)\b/i;
 const NOT_AUDIT_OFFERING_PATTERN =
   /\b(?:team|staff|contract|deadline)\s+extensions?\b|\b(?:extend(?:ing)?|build(?:ing)?|develop(?:ing)?|create|make)\b/i;
 const ARTICLE_REQUEST_PATTERN = /\b(?:articles?|blog|posts?|written|wrote)\b/i;
-const AUDIT_OFFERING_SOURCE_KEYS = ['arg-architect', 'architecture-review', 'pricing-overview'];
+const AUDIT_OFFERING_SOURCE_KEYS = [
+  'arg-architect',
+  'report-review',
+  'architecture-review',
+  'pricing-overview',
+];
 
 export function resolveRetrievalRoute(
   retrievalQuestion: string,
@@ -99,7 +106,9 @@ export function resolveRetrievalRoute(
       kind: 'company_services',
       firstPartySourceTypes: ['homepage'],
       entity: 'Gaspar',
-      subject: isGasparHumanLanguageQuestion ? 'assistant profile' : plan.subject || 'assistant profile',
+      subject: isGasparHumanLanguageQuestion
+        ? 'assistant profile'
+        : plan.subject || 'assistant profile',
       sourceKeys: ['assistant-profile'],
       forceFirstChunks: true,
     };
@@ -181,7 +190,10 @@ export function resolveRetrievalRoute(
     return createRoute('careers', CAREERS_SOURCE_TYPES, plan);
   }
 
-  if (isAgentSkillsQuestion(routeText) || (isUnderspecifiedSkillsQuestion(retrievalQuestion, plan) && isSkillsPage(pageContext))) {
+  if (
+    isAgentSkillsQuestion(routeText) ||
+    (isUnderspecifiedSkillsQuestion(retrievalQuestion, plan) && isSkillsPage(pageContext))
+  ) {
     return createAgentSkillsRoute(plan);
   }
 
@@ -317,7 +329,9 @@ function isAgentSkillsQuestion(value: string): boolean {
 
 function isSkillsPage(pageContext: IPageContext | null): boolean {
   const pathname = pageContext?.pathname?.replace(/\/+$/, '') || '';
-  return pathname === '/skills' || Boolean(pageContext?.sourceKeys?.includes(AGENT_SKILLS_SOURCE_KEY));
+  return (
+    pathname === '/skills' || Boolean(pageContext?.sourceKeys?.includes(AGENT_SKILLS_SOURCE_KEY))
+  );
 }
 
 function isUnderspecifiedSkillsQuestion(
@@ -361,7 +375,11 @@ function createAgentSkillsRoute(plan: Pick<IRetrievalPlan, 'entity' | 'subject'>
   };
 }
 
-function resolveProjectEntity(routeText: string, entity: string, knownProjectNames: string[]): string {
+function resolveProjectEntity(
+  routeText: string,
+  entity: string,
+  knownProjectNames: string[]
+): string {
   if (entity && !isCompanyEntityName(entity)) {
     return entity;
   }

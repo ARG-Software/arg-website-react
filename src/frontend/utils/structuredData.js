@@ -317,6 +317,7 @@ export function buildProjectSchema(project) {
 export function buildAuditSchemas(page, stores) {
   const auditUrl = `${SITE_URL}/audit/`;
   const browsers = ['Chrome', 'Firefox', ...page.architect.browsers.map(browser => browser.name)];
+  const reportReview = page.nextSteps.tiers.find(tier => tier.id === 'report-review');
 
   return [
     {
@@ -336,11 +337,33 @@ export function buildAuditSchemas(page, stores) {
     {
       '@context': 'https://schema.org',
       '@type': 'Service',
-      '@id': `${auditUrl}#architecture-review`,
+      '@id': `${auditUrl}#report-review`,
+      name: 'Report Review',
+      serviceType: 'Website audit report review',
+      description: `${reportReview.title} ${reportReview.items.join('. ')}. ${reportReview.limit}`,
+      url: `${auditUrl}#next-steps`,
+      provider: { '@id': ORGANIZATION_ID },
+      offers: {
+        '@type': 'Offer',
+        price: reportReview.price.replace(/\D/g, ''),
+        priceCurrency: 'EUR',
+      },
+    },
+  ];
+}
+
+export function buildArchitectureReviewSchemas(page) {
+  const reviewUrl = `${SITE_URL}/audit/architecture-review/`;
+
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      '@id': `${reviewUrl}#architecture-review`,
       name: 'Architecture Review',
       serviceType: 'Software architecture review',
       description: page.review.text,
-      url: auditUrl,
+      url: reviewUrl,
       provider: { '@id': ORGANIZATION_ID },
       offers: {
         '@type': 'Offer',

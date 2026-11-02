@@ -16,7 +16,12 @@ import { createTestConfig } from '../fixtures/config.js';
 import { createContextFixture } from '../fixtures/contexts.js';
 import { createChunkFixture, createSourceFixture } from '../fixtures/sources.js';
 
-const AUDIT_SOURCE_KEYS = ['arg-architect', 'architecture-review', 'pricing-overview'];
+const AUDIT_SOURCE_KEYS = [
+  'arg-architect',
+  'report-review',
+  'architecture-review',
+  'pricing-overview',
+];
 
 function route(question: string, mode: IRetrievalPlan['mode'] = 'direct_evidence', subject = '') {
   return resolveRetrievalRoute(question, { mode, entity: '', subject }, getKnownProjectNames());
@@ -25,14 +30,38 @@ function route(question: string, mode: IRetrievalPlan['mode'] = 'direct_evidence
 function createAuditRepository(contexts: ReturnType<typeof createContextFixture>[] = []) {
   return new FakeRagReadRepository({
     sources: [
-      createSourceFixture('architect-id', 'ARG Architect', null, 'working_with_us', 'arg-architect'),
-      createSourceFixture('review-id', 'Architecture Review', null, 'working_with_us', 'architecture-review'),
-      createSourceFixture('pricing-id', 'ARG Pricing Overview', null, 'working_with_us', 'pricing-overview'),
+      createSourceFixture(
+        'architect-id',
+        'ARG Architect',
+        null,
+        'working_with_us',
+        'arg-architect'
+      ),
+      createSourceFixture('report-id', 'Report Review', null, 'working_with_us', 'report-review'),
+      createSourceFixture(
+        'review-id',
+        'Architecture Review',
+        null,
+        'working_with_us',
+        'architecture-review'
+      ),
+      createSourceFixture(
+        'pricing-id',
+        'ARG Pricing Overview',
+        null,
+        'working_with_us',
+        'pricing-overview'
+      ),
       createSourceFixture('faq-id', 'Frequently Asked Questions', null, 'faq', 'faq'),
     ],
     chunks: [
       createChunkFixture('architect-id', 'architect', 'ARG Architect is a free browser extension.'),
-      createChunkFixture('review-id', 'review', 'Architecture Review: from EUR 3,500 for one week.'),
+      createChunkFixture('report-id', 'report', 'Report Review: EUR 500, fixed price.'),
+      createChunkFixture(
+        'review-id',
+        'review',
+        'Architecture Review: from EUR 3,500 for one week.'
+      ),
       createChunkFixture('pricing-id', 'pricing', 'ARG Software pricing overview.'),
       createChunkFixture('faq-id', 'faq', 'Project budgets usually start around EUR 10,000.'),
     ],
@@ -50,6 +79,7 @@ test('audit and extension questions use the audit offerings route', () => {
     'Does the extension track me or send my data anywhere?',
     'Tell me about the extension',
     'Do you do audits?',
+    'How much is the report review?',
   ];
 
   for (const question of questions) {
@@ -65,11 +95,17 @@ test('similarly named things do not use the audit offerings route', () => {
   assert.notEqual(route('How do I install arg-browser-extension?').kind, 'audit_offerings');
   assert.notEqual(route('Tell me about senior team extension').kind, 'audit_offerings');
   assert.notEqual(route('Can you build a Chrome extension for us?').kind, 'audit_offerings');
-  assert.notEqual(route('How should a team audit its dependencies?', 'editorial').kind, 'audit_offerings');
+  assert.notEqual(
+    route('How should a team audit its dependencies?', 'editorial').kind,
+    'audit_offerings'
+  );
 });
 
 test('article questions about audits stay on the blog route', () => {
-  assert.equal(route('Do you have articles about website audits?', 'article_discovery').kind, 'blog');
+  assert.equal(
+    route('Do you have articles about website audits?', 'article_discovery').kind,
+    'blog'
+  );
   assert.equal(route('What have you written about auditing?').kind, 'blog');
 });
 
@@ -80,7 +116,7 @@ test('pricing questions without an offering keep the general pricing route', () 
   assert.equal(result.commercialKind, 'general_pricing');
 });
 
-test('audit offerings retrieval returns the three summaries plus matching detail', async () => {
+test('audit offerings retrieval returns the four summaries plus matching detail', async () => {
   const repository = createAuditRepository([
     createContextFixture(
       'working_with_us',
@@ -103,10 +139,10 @@ test('audit offerings retrieval returns the three summaries plus matching detail
   });
 
   assert.deepEqual(
-    contexts.slice(0, 3).map(context => context.sourceKey),
+    contexts.slice(0, 4).map(context => context.sourceKey),
     AUDIT_SOURCE_KEYS
   );
-  assert.match(contexts[3]?.content ?? '', /Security category/u);
+  assert.match(contexts[4]?.content ?? '', /Security category/u);
 });
 
 test('the summary of the best matching audit source leads so it is the one cited', async () => {
@@ -167,9 +203,9 @@ test('general pricing retrieval puts the pricing overview before the FAQ budget'
   );
 });
 
-test('audit page loads as separate extension, review, and pricing sources', async () => {
+test('audit page loads as separate extension, report review, architecture review, and pricing sources', async () => {
   const sources = await loadAuditSources(process.cwd(), 'src/frontend/data/auditPage.json');
-  const [architect, review, pricing] = sources;
+  const [architect, reportReview, review, pricing] = sources;
 
   assert.deepEqual(
     sources.map(source => source.sourceKey),
@@ -182,7 +218,18 @@ test('audit page loads as separate extension, review, and pricing sources', asyn
   assert.match(architectSummary, /addons\.mozilla\.org/u);
   assert.doesNotMatch(architect.content, /\/images\/|undefined/u);
 
+  assert.match(architect.content, /four bands: Critical \(Below 50\)/u);
+  assert.match(architect.content, /Security 30%/u);
+
+  const reportReviewSummary = chunkText(reportReview.content)[0];
+  assert.match(reportReviewSummary, /€500/u);
+  assert.match(reportReview.content, /dev@arg\.software/u);
+  assert.match(reportReview.content, /Script bodies/u);
+  assert.equal(reportReview.url, '/audit/#next-steps');
+  assert.doesNotMatch(reportReview.content, /undefined/u);
+
   const reviewSummary = chunkText(review.content)[0];
+  assert.equal(review.url, '/audit/architecture-review/');
   assert.match(reviewSummary, /from €3,500/u);
   assert.match(reviewSummary, /zcal\.co\/argsoftware\/architecture-call/u);
   assert.match(review.content, /not included: anything outside the agreed scope/u);
@@ -190,8 +237,12 @@ test('audit page loads as separate extension, review, and pricing sources', asyn
 
   assert.equal(chunkText(pricing.content).length, 1);
   assert.match(pricing.content, /ARG Architect browser extension: Free/u);
+  assert.match(pricing.content, /Report review of an ARG Architect report: €500/u);
   assert.match(pricing.content, /Architecture review: from €3,500/u);
-  assert.match(pricing.content, /Custom software and product delivery: Project budgets usually start around EUR 10,000/u);
+  assert.match(
+    pricing.content,
+    /Custom software and product delivery: Project budgets usually start around EUR 10,000/u
+  );
 });
 
 test('assistant policy separates audit offerings and their prices', () => {
@@ -199,5 +250,8 @@ test('assistant policy separates audit offerings and their prices', () => {
 
   assert.match(instructions, /Senior Team Extension is a staffing service/u);
   assert.match(instructions, /never apply the price of one offering to another/u);
-  assert.match(instructions, /Never take ARG Architect features, Architecture Review scope, or prices from a blog article/u);
+  assert.match(
+    instructions,
+    /Never take ARG Architect features, Architecture Review scope, or prices from a blog article/u
+  );
 });

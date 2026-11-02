@@ -391,8 +391,7 @@ export default function AuditPage() {
             >
               <div className="container padding-global au-inner">
                 <div data-animate-order="0">
-                  <span className="au-kicker">{PAGE.nextSteps.kicker}</span>
-                  <h2 className="au-title">
+                  <h2 className="au-title au-send-title">
                     {PAGE.nextSteps.title}
                     <br />
                     <span className="text-color-gradiant">{PAGE.nextSteps.titleHighlight}</span>

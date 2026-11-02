@@ -113,11 +113,11 @@ ARG Software project budgets usually start around EUR 10,000, but the company do
 
 Before estimating, the team usually defines the core workflows, technical risks, architecture direction, and realistic delivery range. Scope changes are reviewed clearly when they affect direction, workload, timeline, or expected value.
 
-## Free Website Audit and Architecture Review
+## Free Website Audit, Report Review and Architecture Review
 
-URL: https://arg.software/audit/
+URLs: https://arg.software/audit/ (ARG Architect, how to read a report, report review) and https://arg.software/audit/architecture-review/ (architecture review)
 
-This page covers two separate things: ARG Architect, a free browser extension, and the Architecture Review, a paid one-week service. Neither is the Senior Team Extension service, and neither is one of the agent skills on /skills/ (arg-browser-extension, arg-web-audit).
+These are three separate things: ARG Architect, a free browser extension; the Report Review, a fixed-price review of an ARG Architect report; and the Architecture Review, a paid one-week service. None of them is the Senior Team Extension service, and none is one of the agent skills on /skills/ (arg-browser-extension, arg-web-audit).
 
 ARG Software offers a fixed one-week architecture review of the part of a system that matters most, written so the client can decide what to keep, fix, or rebuild. EUR 3,500 buys one week of a senior engineer, remote, EU timezone; it is not a review of the whole application. The scope is agreed on the architecture call and written down before any invoice. What usually fits in a week: one product, one critical journey, up to two repos, one environment. Inside the agreed scope the review looks at system design, code quality, scalability, integrations, infrastructure and operations, and security (auth, tenant boundaries, data writes). The client gets a written report, a map of what was reviewed, risks ranked by impact, a 90-day plan (do now, do later, ignore), a list of what was left out of scope, and a 60-minute readout. For a bigger system the week does not grow; the path becomes Slice (one week, from EUR 3,500, as much of one journey as fits in a week), Map (one week, from EUR 3,500, high-level system map plus a recommended order of slices, no code-depth review), or Multi-week (large or several slices, quoted by the week after the architecture call).
 
@@ -128,6 +128,12 @@ It does not cover anything outside the agreed scope, and it is not a pentest, a 
 ARG Architect is ARG's free browser extension for auditing a public page in one click: one weighted score across eight categories (security, performance, architecture, efficiency, payload, accessibility, AI readiness, DOM), with reports kept on the device. It is free. It checks security (headers, cookies, mixed content, exposed secrets, known-vulnerable client libraries), performance (Core Web Vitals over repeated controlled page loads), architecture (third parties, API origins, redirect chains, detected stack), payload and efficiency, accessibility and DOM, and AI readiness (robots.txt bot rules, sitemaps, llms.txt, structured data, agent discovery). Every failing check names exactly what fails and recommends a fix. It can audit the current tab or queue up to 10 URLs, compare any two saved runs side by side, and export reports as PDF, Markdown, or JSON. No account, no analytics, no tracking; the language model and vulnerability database ship inside the extension. It only sees what a browser can see; it does not review the system behind the page. It is available on the Chrome Web Store (https://chromewebstore.google.com/detail/arg-architect/bijelgdokpgmffnddemjblgdocnbogid) and Firefox Add-ons (https://addons.mozilla.org/addon/arg-architect/); Brave, Edge and Opera install it from the Chrome Web Store.
 
 The review starts with a short form (name, work email, product URL, the part to review) and an architecture call (30, 45 or 60 minutes) where the scope for the week is agreed. If it is not a fit, ARG says so. If it is, invoice and a kickoff date.
+
+Reading an ARG Architect report: the overall score falls in one of four bands (Critical below 50, Needs Work 50 to 59, Good 60 to 79, Excellent 80 and above). Category weights are Security 30, Performance 20, Architecture 15, Efficiency 9, Payload 8, Accessibility 7, AI Readiness 6, DOM 5; each category counts by its weight times its evidence coverage. A row with no verdict says why: Off, Check failed, Not detected, Not observed, or Info (context only, never scored). Measurements are lab numbers from repeated cache-bypass reloads in a desktop browser, not field data.
+
+The Report Review costs EUR 500, fixed price, delivered within one week. Every finding is confirmed and false positives removed, what is left is ranked by impact, and the client gets a fix plan with the effort for each item and a 60-minute call with the engineer who reviewed it. It covers only what the report shows, with no access to code, database or infrastructure. Booking the architecture review within 60 days of a report review takes the EUR 500 off its price.
+
+To send a report: in the extension, open the Contact tab, pick "Audit Result", attach a saved report and press Send; or email the PDF to dev@arg.software. ARG replies with the step that fits, report review or architecture review, and its price; nothing starts until the client confirms. The report sends the scores and the checks that need attention with their evidence, plus the measurements and audit setup; passing checks, script bodies and credential values are never sent.
 
 ## Founders
 
@@ -235,7 +241,8 @@ Topics include:
 - Home: https://arg.software/
 - About Us: https://arg.software/about-us/
 - Working with ARG Software: https://arg.software/working-with-us/
-- Architecture review: https://arg.software/audit/
+- Audit and report review: https://arg.software/audit/
+- Architecture review: https://arg.software/audit/architecture-review/
 - Partners: https://arg.software/partners/
 - Blog: https://arg.software/blog/
 - Contact: https://arg.software/contact/

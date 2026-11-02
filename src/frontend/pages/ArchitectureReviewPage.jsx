@@ -14,9 +14,11 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA, trackEvent } from '@services/analytics';
 import { getArchitectureBookingLink } from '../services/linksService';
 import PAGE from '../data/auditPage.json';
+import { buildArchitectureReviewSchemas } from '../utils/structuredData';
 import '../styles/audit.css';
 
 const REVIEW_PAGE = PAGE.reviewPage;
+const REVIEW_SCHEMAS = buildArchitectureReviewSchemas(PAGE);
 
 const FORM_FIELDS = [
   {
@@ -68,6 +70,7 @@ export default function ArchitectureReviewPage() {
         description={REVIEW_PAGE.seo.description}
         path="/audit/architecture-review/"
         breadcrumbs={REVIEW_PAGE.hero.breadcrumbs}
+        jsonLd={REVIEW_SCHEMAS}
       />
       <div className="page-wrapper au-page">
         <Navbar position="absolute" isHomePage={true} />

@@ -1,5 +1,8 @@
 import fs from 'node:fs';
-import { buildAuditSchemas } from '../../src/frontend/utils/structuredData.js';
+import {
+  buildArchitectureReviewSchemas,
+  buildAuditSchemas,
+} from '../../src/frontend/utils/structuredData.js';
 
 const readData = name =>
   JSON.parse(fs.readFileSync(new URL(`../../src/frontend/data/${name}`, import.meta.url), 'utf8'));
@@ -159,11 +162,34 @@ export const STATIC_PAGES = [
     priority: '0.8',
     changefreq: 'monthly',
     description:
-      'Free website audit from your browser with ARG Architect, or a one-week architecture review of the part of your system that matters most, from €3,500.',
+      'Free website audit from your browser with ARG Architect. Got a report? We review it with you for €500, or look inside the system from €3,500.',
     paragraphs: [
       'ARG Architect is a free browser extension from ARG Software. Open any public page, press audit, and get one weighted score across eight categories: security, performance, architecture, efficiency, payload, accessibility, AI readiness and DOM. Every failing check names exactly what fails and recommends a fix. Audit the current tab or queue up to 10 URLs, compare any two runs side by side, and export any report as PDF, Markdown, or JSON. It is available on the Chrome Web Store and Firefox Add-ons; Brave, Edge and Opera install it from the Chrome Web Store. No account, no analytics, no tracking. It only sees what a browser can see; it does not review the system behind the page.',
-      'A browser can only read what a site exposes publicly. The architecture review goes deeper: one week of a senior engineer on the part of the system that matters most, covering system design, code quality, scalability, integrations, infrastructure and security inside an agreed scope, with a written call on what to keep, fix, or rebuild.',
+      'How to read an ARG Architect report: the overall score falls in one of four bands, Critical below 50, Needs Work from 50 to 59, Good from 60 to 79 and Excellent from 80. Category weights are Security 30, Performance 20, Architecture 15, Efficiency 9, Payload 8, Accessibility 7, AI Readiness 6 and DOM 5, and each category counts by its weight times its evidence coverage. A row with no verdict says why: off, check failed, not detected, not observed, or info. Measurements are lab numbers from repeated cache-bypass reloads, not field data.',
+      'Next steps start with the report. The report review costs EUR 500, fixed price, delivered within one week: every finding confirmed and false positives removed, what is left ranked by impact, a fix plan with the effort for each item, and a 60-minute call with the engineer who reviewed it. It covers what the report shows, with no access to code, database or infrastructure. When the cause is in the code, the data or the infrastructure, the architecture review looks inside the system, from EUR 3,500 for one week.',
+      'To send a report, open the Contact tab in the extension, pick Audit Result, attach a saved report and press Send. ARG replies with the step that fits and its price, and nothing starts until you confirm. Only the scores, the checks that need attention and the audit setup are sent; passing checks, script bodies and credential values never are.',
+    ],
+  },
+  {
+    path: '/audit/architecture-review/',
+    title: 'Architecture Review, One Week from €3,500 | ARG Software',
+    socialTitle: 'Architecture Review, One Week from €3,500',
+    h1: 'Architecture review. One week inside your system.',
+    pageType: 'WebPage',
+    jsonLd: buildArchitectureReviewSchemas(readData('auditPage.json')),
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Audit', path: '/audit/' },
+      { name: 'Architecture review', path: '/audit/architecture-review/' },
+    ],
+    priority: '0.8',
+    changefreq: 'monthly',
+    description:
+      'One week of a senior engineer on the part of your system that matters most: system design, code, scalability, integrations, infrastructure and security, from €3,500.',
+    paragraphs: [
+      'A browser sees the outside of a product. The architecture review is the inside: one week of a senior engineer on the part of the system that matters most, covering system design, code quality, scalability, integrations, infrastructure and operations, and security inside an agreed scope.',
       'The review starts from EUR 3,500 for one week, remote, in EU timezone. It is not a review of the whole application. The scope is agreed on the architecture call before any invoice; what usually fits in a week is one product, one critical journey, up to two repos, one environment. For a bigger system the week does not grow; the path becomes Slice, Map, or a multi-week review quoted by the week.',
+      'The client gets a written report, a map of what was reviewed, risks ranked by impact, a 90-day plan (do now, do later, ignore), a list of what was left out of scope, and a 60-minute readout. After a report review, booking the architecture review within 60 days takes the EUR 500 off the price.',
       'Not included: anything outside the agreed scope, a pentest, a full-platform certification, an AI-citation study, or a ticket-level rewrite plan.',
     ],
   },
