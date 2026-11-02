@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import AppLink from '@components/navigation/AppLink';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
@@ -7,53 +7,54 @@ import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
+import { BlogSidebar } from '@components/navigation/BlogSidebar';
 import { Pagination } from '@ui/navigation/Pagination.jsx';
-import { TagFilterPills } from '@ui/filters/TagFilterPills.jsx';
 import { Pill } from '@ui/pills/Pill.jsx';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useBlogSearch } from '@hooks/useBlogSearch';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackBlogPostClick, trackCTA, trackEvent } from '@services/analytics';
 
-import { getBlogCollections, getBlogTags, loadBlogPostsMetadata } from '@utils/blog';
+import {
+  getBlogCollections,
+  getBlogTags,
+  loadBlogPostsMetadata,
+  sortByCollectionPart,
+} from '@utils/blog';
 import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
 import { toShortContentDate } from '@utils/contentDate';
 import { BLOG_POSTS_PER_PAGE } from '@constants/config';
+import { LenisContext } from '@providers/LenisProvider';
 import '../../styles/blog.css';
 
 const HERO_TOPIC_COUNT = 6;
-
-const searchSvg = (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="11" cy="11" r="8" />
-    <path d="m21 21-4.3-4.3" />
-  </svg>
-);
+// Space left above the list when a filter brings it back into view
+const LIST_TOP_GAP = 24;
 
 export default function BlogPage() {
   const [blogPosts] = useState(() => loadBlogPostsMetadata());
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedCollections, setSelectedCollections] = useState([]);
+  // One selection across topics and collections; "All" by default
+  const [active, setActive] = useState({ type: 'all' });
+  const selectedTags = useMemo(() => (active.type === 'topic' ? [active.value] : []), [active]);
+  const selectedCollections = useMemo(
+    () => (active.type === 'collection' ? [active.value] : []),
+    [active]
+  );
   const { searchQuery, setSearchQuery, filteredPosts, debouncedQuery, resultCount } = useBlogSearch(
     blogPosts,
     { selectedTags, selectedCollections }
   );
   const [page, setPage] = useState(1);
+  const lenis = useContext(LenisContext);
+  const layoutRef = useRef(null);
+  const returnToListTop = useRef(false);
 
-  const totalPages = Math.ceil(filteredPosts.length / BLOG_POSTS_PER_PAGE);
+  // A collection reads in its own order, part 1 first
+  const listedPosts =
+    active.type === 'collection' ? [...filteredPosts].sort(sortByCollectionPart) : filteredPosts;
+  const totalPages = Math.ceil(listedPosts.length / BLOG_POSTS_PER_PAGE);
   const startIdx = (page - 1) * BLOG_POSTS_PER_PAGE;
-  const paginatedPosts = filteredPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
-  const blogTags = getBlogTags(blogPosts);
-  const blogCollections = getBlogCollections(blogPosts);
+  const paginatedPosts = listedPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
 
   const tagCounts = blogPosts.reduce((acc, post) => {
     (post.tags || [post.tag]).filter(Boolean).forEach(tag => {
@@ -61,52 +62,58 @@ export default function BlogPage() {
     });
     return acc;
   }, {});
+  const topics = getBlogTags(blogPosts).map(name => ({ name, count: tagCounts[name] }));
 
   const heroTopics = Object.keys(tagCounts)
     .sort((a, b) => tagCounts[b] - tagCounts[a])
     .slice(0, HERO_TOPIC_COUNT);
 
-  const collectionCounts = blogPosts.reduce((acc, post) => {
-    if (post.collectionTitle) {
-      acc[post.collectionTitle] = (acc[post.collectionTitle] || 0) + 1;
+  const collections = getBlogCollections(blogPosts).map(title => {
+    const posts = blogPosts.filter(post => post.collectionTitle === title);
+    const minutes = posts.reduce((sum, post) => sum + (Number.parseInt(post.readTime, 10) || 0), 0);
+    return { title, count: posts.length, minutes };
+  });
+  const activeCollection = collections.find(
+    collection => active.type === 'collection' && collection.title === active.value
+  );
+
+  // A filter changes how long the list is, and a shorter page clamps the scroll somewhere
+  // arbitrary. If the reader is already inside the list, put them back at its top instead.
+  function keepListTop() {
+    returnToListTop.current = layoutRef.current?.getBoundingClientRect().top < 0;
+  }
+
+  useLayoutEffect(() => {
+    if (!returnToListTop.current) return;
+    returnToListTop.current = false;
+    const top = window.scrollY + layoutRef.current.getBoundingClientRect().top - LIST_TOP_GAP;
+    // Lenis caches the page height; re-measure so a longer list is not clamped to the old one
+    if (lenis) {
+      lenis.resize();
+      lenis.scrollTo(top, { immediate: true, force: true });
+    } else {
+      window.scrollTo(0, top);
     }
-    return acc;
-  }, {});
+  }, [active, debouncedQuery, lenis]);
 
-  function toggleTag(tag) {
-    const isSelected = selectedTags.includes(tag);
+  function search(query) {
+    keepListTop();
+    setSearchQuery(query);
+  }
 
-    setSelectedTags(currentTags =>
-      currentTags.includes(tag)
-        ? currentTags.filter(currentTag => currentTag !== tag)
-        : [...currentTags, tag]
-    );
-    trackEvent(isSelected ? 'blog_tag_filter_remove' : 'blog_tag_filter_add', { tag });
+  function select(next) {
+    keepListTop();
+    setActive(next);
+    if (next.type === 'topic') trackEvent('blog_topic_select', { tag: next.value });
+    if (next.type === 'collection')
+      trackEvent('blog_collection_select', { collection: next.value });
+    if (next.type === 'all') trackEvent('blog_filter_clear', { previous: active.value || 'all' });
   }
 
   // Hero topic links show only that topic; the link's #blog-list href scrolls to the list.
   function showTopic(tag) {
-    setSelectedTags([tag]);
+    setActive({ type: 'topic', value: tag });
     trackEvent('blog_hero_topic_click', { tag });
-  }
-
-  function clearTags() {
-    if (selectedTags.length === 0) return;
-    setSelectedTags([]);
-    trackEvent('blog_tag_filter_clear', { previous: selectedTags });
-  }
-
-  function toggleCollection(collection) {
-    const isSelected = selectedCollections.includes(collection);
-
-    setSelectedCollections(currentCollections =>
-      currentCollections.includes(collection)
-        ? currentCollections.filter(currentCollection => currentCollection !== collection)
-        : [...currentCollections, collection]
-    );
-    trackEvent(isSelected ? 'blog_collection_filter_remove' : 'blog_collection_filter_add', {
-      collection,
-    });
   }
 
   useEffect(() => {
@@ -171,53 +178,31 @@ export default function BlogPage() {
               className="blp-section background-color-white padding-section-large border-radius-all"
             >
               <div className="blp-inner container padding-global">
-                <div className="blp-layout">
-                  <aside className="blp-sidebar">
-                    <div className="blp-search" data-animate-order="0">
-                      <input
-                        type="text"
-                        className="blp-search-input"
-                        placeholder="Search"
-                        value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
-                        aria-label="Search blog posts"
-                      />
-                      <span className="blp-search-icon" aria-hidden="true">
-                        {searchSvg}
-                      </span>
-                    </div>
-
-                    <TagFilterPills
-                      className="blp-topic-filter"
-                      layout="list"
-                      label="Topics"
-                      tags={blogTags}
-                      tagCounts={tagCounts}
+                <div className="blp-layout" ref={layoutRef}>
+                  <aside className="blp-sidebar" data-animate-order="0">
+                    <BlogSidebar
+                      searchQuery={searchQuery}
+                      onSearchChange={search}
+                      topics={topics}
                       totalCount={blogPosts.length}
-                      selectedTags={selectedTags}
-                      onToggle={toggleTag}
-                      onClear={clearTags}
-                      animate={true}
-                      animationOrder={1}
-                    />
-
-                    <TagFilterPills
-                      className="blp-collection-filter"
-                      layout="list"
-                      label="Collection"
-                      tags={blogCollections}
-                      tagCounts={collectionCounts}
-                      totalCount={blogPosts.length}
-                      selectedTags={selectedCollections}
-                      onToggle={toggleCollection}
-                      showAll={false}
-                      animate={true}
-                      animationOrder={2}
+                      collections={collections}
+                      active={active}
+                      onSelect={select}
                     />
                   </aside>
 
                   <div className="blp-feed">
-                    {filteredPosts.length === 0 ? (
+                    {activeCollection && (
+                      <header className="blp-collection-head">
+                        <span className="blp-collection-head-label">Collection</span>
+                        <h2 className="blp-collection-head-title">{activeCollection.title}</h2>
+                        <span className="blp-collection-head-meta">
+                          {activeCollection.count} articles · {activeCollection.minutes} min · in
+                          reading order
+                        </span>
+                      </header>
+                    )}
+                    {listedPosts.length === 0 ? (
                       <p className="blp-empty">
                         {blogPosts.length === 0
                           ? 'No blog posts yet — check back soon.'
@@ -282,7 +267,7 @@ export default function BlogPage() {
                 </div>
 
                 {/* Below the layout so the sticky sidebar stops at the last article */}
-                {filteredPosts.length > 0 && totalPages > 1 && (
+                {listedPosts.length > 0 && totalPages > 1 && (
                   <Pagination
                     page={page}
                     totalPages={totalPages}

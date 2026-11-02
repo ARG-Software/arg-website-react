@@ -43,7 +43,7 @@ export function getRelatedPosts(posts, sourcePost, limit = 3) {
   return [...collectionRelated, ...tagRelated, ...fallback].slice(0, limit);
 }
 
-function sortByCollectionPart(postA, postB) {
+export function sortByCollectionPart(postA, postB) {
   const partA = Number.parseInt(postA.collectionPart, 10);
   const partB = Number.parseInt(postB.collectionPart, 10);
   if (Number.isFinite(partA) && Number.isFinite(partB) && partA !== partB) {
