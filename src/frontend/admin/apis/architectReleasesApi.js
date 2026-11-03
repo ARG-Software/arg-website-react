@@ -4,7 +4,9 @@ const ADMIN_ARCHITECT_RELEASES_ENDPOINT = '/api/admin/architect-releases';
 const ADMIN_ARCHITECT_RELEASES_SYNC_ENDPOINT = '/api/admin/architect-releases/sync';
 
 export async function fetchAdminArchitectReleases(query = {}) {
-  const response = await fetch(createArchitectReleasesUrl(ADMIN_ARCHITECT_RELEASES_ENDPOINT, query));
+  const response = await fetch(
+    createArchitectReleasesUrl(ADMIN_ARCHITECT_RELEASES_ENDPOINT, query)
+  );
 
   return readAdminResponse(response);
 }

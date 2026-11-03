@@ -68,7 +68,9 @@ export function ChangelogTimeline({
             );
           }
 
-          return <span key={`slot-${index}`} className="au-cl-tick" style={style} aria-hidden="true" />;
+          return (
+            <span key={`slot-${index}`} className="au-cl-tick" style={style} aria-hidden="true" />
+          );
         })}
       </div>
     </div>

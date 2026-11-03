@@ -7,7 +7,10 @@ import { formatDateTime } from '../../shared/formatters.js';
 
 export default function ArchitectReleasesPage() {
   const [page, setPage] = useState(1);
-  const releasesQuery = useAdminArchitectReleases({ page, pageSize: PAGE_SIZE }, { keepPrevious: true });
+  const releasesQuery = useAdminArchitectReleases(
+    { page, pageSize: PAGE_SIZE },
+    { keepPrevious: true }
+  );
 
   return (
     <div className="admin-content-grid">

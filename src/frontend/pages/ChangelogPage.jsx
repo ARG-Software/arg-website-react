@@ -37,9 +37,15 @@ export default function ChangelogPage() {
       .then(result => {
         if (cancelled) return;
         const records = result.records || [];
+        const hash = window.location.hash.slice(1);
+        const match = records.find(release => releaseAnchor(release.tagName) === hash);
         setReleases(records);
-        setYear(latestYear(records));
+        setYear(match ? releaseYear(match.publishedAt) : latestYear(records));
+        setOpenId(match?.id || '');
         setStatus('ready');
+        if (match) {
+          requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView());
+        }
       })
       .catch(() => {
         if (cancelled) return;
@@ -57,17 +63,6 @@ export default function ChangelogPage() {
     () => (year ? releases.filter(release => releaseYear(release.publishedAt) === year) : releases),
     [releases, year]
   );
-
-  useEffect(() => {
-    if (status !== 'ready') return;
-    const hash = window.location.hash.slice(1);
-    if (!hash) return;
-    const match = releases.find(release => releaseAnchor(release.tagName) === hash);
-    if (!match) return;
-    setYear(releaseYear(match.publishedAt));
-    setOpenId(match.id);
-    document.getElementById(hash)?.scrollIntoView();
-  }, [status, releases]);
 
   function selectRelease(release) {
     setYear(releaseYear(release.publishedAt));
@@ -103,9 +98,7 @@ export default function ChangelogPage() {
               className="au-section padding-section-large border-radius-top border-radius-bottom background-color-white"
             >
               <div className="container padding-global au-inner">
-                {status === 'loading' ? (
-                  <p className="au-lede">{CHANGELOG_PAGE.loading}</p>
-                ) : null}
+                {status === 'loading' ? <p className="au-lede">{CHANGELOG_PAGE.loading}</p> : null}
                 {status === 'error' ? <p className="au-lede">{CHANGELOG_PAGE.error}</p> : null}
                 {status === 'ready' && releases.length === 0 ? (
                   <p className="au-lede">{CHANGELOG_PAGE.empty}</p>
@@ -276,7 +269,9 @@ function releaseYear(value) {
 }
 
 function uniqueYears(releases) {
-  return [...new Set(releases.map(release => releaseYear(release.publishedAt)).filter(Boolean))].sort();
+  return [
+    ...new Set(releases.map(release => releaseYear(release.publishedAt)).filter(Boolean)),
+  ].sort();
 }
 
 function latestYear(releases) {
