@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 
 const STORAGE_KEY = 'arg-audit-report-card';
 const AUTOPLAY_MS = 5000;
+const PAUSE_LABEL = 'Pause the slideshow';
+const PLAY_LABEL = 'Play the slideshow';
 const WHEEL_STEP_MS = 700;
 const SWIPE_PX = 50;
 const MAX_BEHIND = 2;
@@ -380,7 +382,7 @@ export function ReportGuideDeck({ content }) {
                   <button
                     type="button"
                     className="au-deck-play"
-                    aria-label={playing ? content.pauseLabel : content.playLabel}
+                    aria-label={playing ? PAUSE_LABEL : PLAY_LABEL}
                     onClick={() => setPlaying(!playing)}
                   >
                     <span aria-hidden="true">{playing ? '❚❚' : '▶'}</span>

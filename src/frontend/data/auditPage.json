@@ -164,7 +164,7 @@
       {
         "id": "ai",
         "title": "AI Readiness",
-        "text": "Shows whether AI systems can find, read and cite the page. It checks if AI crawlers are allowed in, whether the site publishes instructions and discovery files for agents such as llms.txt, and whether the content is structured clearly enough to be extracted and quoted accurately. The aim is to see how the page is likely to be represented when someone asks an assistant about it.",
+        "text": "Shows whether AI systems can find, read and cite the page. It checks that search and user-fetch crawlers can reach the site, whether training and scraper bots are fenced off to match the published policy, whether the site publishes instructions and discovery files for agents such as llms.txt, and whether the content is structured clearly enough to be extracted and quoted accurately. The aim is to see how the page is likely to be represented when someone asks an assistant about it.",
         "metrics": [
           "AI discoverability",
           "Bot access control",
@@ -527,8 +527,6 @@
       }
     ],
     "weightsNoteLabel": "Note",
-    "pauseLabel": "Pause the slideshow",
-    "playLabel": "Play the slideshow",
     "weightsNote": "A category counts by its weight times its evidence coverage, so a category the browser could only partly see counts for less.",
     "states": [
       {
