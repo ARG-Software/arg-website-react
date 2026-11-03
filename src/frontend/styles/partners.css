@@ -174,7 +174,7 @@
 .pc-drawer-industry {
   display: inline-block;
   font-size: var(--type-meta-small);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
   color: #0c002e;
@@ -186,7 +186,7 @@
 .pc-drawer-name {
   font-family: Neuemontreal, sans-serif;
   font-size: 2rem;
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: var(--line-title);
   color: #0c002e;
   margin-bottom: 1.5rem;
@@ -206,7 +206,7 @@
   gap: 0.5rem;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body-small);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   color: #0c002e;
   text-decoration: none;
   align-self: flex-start;
@@ -239,7 +239,7 @@
 .pt-timeline-heading {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: var(--line-tight);
   color: #fff;
   margin: 0 0 3rem;
@@ -264,7 +264,7 @@
   font-family: Neuemontreal, sans-serif;
   /* Shrink with the column so a growing year range never overflows */
   font-size: min(var(--type-body), calc(100cqi / var(--pt-year-count) / 3));
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   color: rgba(255, 255, 255, 0.35);
   text-align: left;
   padding: 0;
@@ -304,7 +304,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: 0.6875rem;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   left: 0;
   letter-spacing: var(--tracking-meta);
   line-height: 1;
@@ -479,7 +479,7 @@
   color: var(--arg-color-magenta);
   font-family: Consolas, 'Courier New', monospace;
   font-size: 0.6875rem;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-meta);
   line-height: 1;
   text-transform: uppercase;

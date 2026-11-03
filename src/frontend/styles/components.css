@@ -656,7 +656,7 @@
   padding: var(--size-button-padding-y) var(--size-button-padding-x);
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-button);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   line-height: var(--line-cta);
   text-decoration: none;
   display: flex;
@@ -687,7 +687,7 @@
   text-align: center;
   padding-right: 0;
   font-size: var(--type-button);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   display: block;
   position: absolute;
   inset: 200% auto auto 0%;
@@ -913,7 +913,7 @@
   color: rgba(12, 0, 46, 0.45);
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-kicker);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-kicker-wide);
   margin-right: 0.25rem;
   text-transform: uppercase;
@@ -929,7 +929,7 @@
   display: inline-flex;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   height: 2.25rem;
   justify-content: center;
   line-height: 1;
@@ -1156,7 +1156,7 @@
   display: block;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-kicker);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-kicker-wide);
   margin-bottom: 0.75rem;
   text-transform: uppercase;
@@ -1166,7 +1166,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(1.75rem, 4vw, 3rem);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: -0.035em;
   line-height: 1.05;
   margin: 0;
@@ -1213,7 +1213,7 @@
   display: inline-flex;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-kicker);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-kicker-wide);
   margin-bottom: 1rem;
   text-transform: uppercase;
@@ -1224,7 +1224,7 @@
   display: -webkit-box;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(1.25rem, 2vw, 1.5rem);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   line-height: 1.18;
@@ -1598,7 +1598,7 @@
   display: inline-flex;
   font-family: inherit;
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   justify-content: center;
   letter-spacing: var(--tracking-micro);
   padding: 0.6rem 1.375rem;
@@ -1720,7 +1720,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-page-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-heading);
   margin-bottom: 0;
   margin-top: 3.5rem;
@@ -2088,7 +2088,7 @@
 }
 
 .test_item_paragraph.text-align-center.is-bold {
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 
 @media screen and (max-width: 991px) {
@@ -2111,7 +2111,7 @@
 }
 
 .projects_stack_text.is-medium {
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 
 .projects_item_cover-link {
@@ -2154,7 +2154,7 @@
   color: currentColor;
   font-family: Neuemontreal, sans-serif;
   font-size: 0.85em;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   letter-spacing: 0;
   margin-left: 0.4rem;
   opacity: 0.6;
@@ -2191,7 +2191,7 @@
   display: flex;
   font-family: Neuemontreal, sans-serif;
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   justify-content: space-between;
   padding: 0.4rem 0;
   text-align: left;
@@ -2205,13 +2205,13 @@
 
 .tag-filter__item.is-active {
   color: #0c002e;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
 }
 
 .tag-filter--list .tag-filter__count {
   color: #c8c8d0;
   font-size: 0.875rem;
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   margin-left: 0.75rem;
   opacity: 1;
 }
@@ -2394,7 +2394,7 @@
   display: inline-block;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(2.375rem, 3.2vw, 3.75rem);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: -0.045em;
   line-height: 1.14;
   padding: 0.03em 0.02em 0.08em;
@@ -2443,7 +2443,7 @@
 .nav-menu__utility-link {
   color: #4a4763;
   text-decoration: none;
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   transition: color 0.16s ease;
 }
 
@@ -2565,7 +2565,7 @@
 .nav-menu__latest-title {
   max-width: 46ch;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   letter-spacing: -0.01em;
   line-height: 1.25;
   color: #ffffff;
@@ -2647,7 +2647,7 @@
   border-radius: 999px;
   font-family: Neuemontreal, sans-serif;
   font-size: 0.84375rem;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
@@ -2876,5 +2876,189 @@
     width: 2.75rem;
     height: 2.75rem;
     font-size: 1.375rem;
+  }
+}
+
+/* ==========================================================================
+   components/assistant-nudge
+   Gaspar's speech bubble above the assistant trigger
+   ========================================================================== */
+
+.aw-nudge {
+  animation: aw-nudge-in 0.6s var(--ease-out-expo) both;
+  background: #fff;
+  border: 1px solid rgba(12, 0, 46, 0.1);
+  border-radius: 0.5rem;
+  bottom: 7rem;
+  box-shadow: 0 1.5rem 3rem -1.25rem rgba(12, 0, 46, 0.45);
+  color: #0c002e;
+  max-width: 20rem;
+  padding: 1.125rem 2.75rem 1.125rem 1.25rem;
+  position: fixed;
+  right: 3.5rem;
+  transform-origin: bottom right;
+  z-index: 1090;
+}
+
+/* Straight tail pointing down at Gaspar */
+.aw-nudge::after {
+  background: #fff;
+  border-bottom: 1px solid rgba(12, 0, 46, 0.1);
+  border-right: 1px solid rgba(12, 0, 46, 0.1);
+  bottom: -0.4375rem;
+  content: '';
+  height: 0.75rem;
+  position: absolute;
+  right: 1.375rem;
+  transform: rotate(45deg);
+  width: 0.75rem;
+}
+
+.aw-nudge__close {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: rgba(12, 0, 46, 0.4);
+  cursor: pointer;
+  display: flex;
+  height: 1.75rem;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  right: 0.5rem;
+  top: 0.5rem;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+  width: 1.75rem;
+}
+
+.aw-nudge__close:hover {
+  background: rgba(12, 0, 46, 0.06);
+  color: #0c002e;
+}
+
+.aw-nudge__close svg {
+  fill: none;
+  height: 0.75rem;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.5;
+  width: 0.75rem;
+}
+
+.aw-nudge__message {
+  font-size: var(--type-body-small);
+  font-weight: var(--weight-regular);
+  line-height: 1.5;
+  margin: 0;
+  min-height: 4.5em;
+}
+
+.aw-nudge__sr {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.aw-nudge__caret {
+  animation: aw-nudge-caret 0.9s steps(1) infinite;
+  background: currentColor;
+  display: inline-block;
+  height: 1em;
+  margin-left: 0.125rem;
+  vertical-align: -0.125em;
+  width: 0.0625rem;
+}
+
+.aw-nudge__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+  opacity: 0;
+  transform: translateY(0.375rem);
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s var(--ease-out-expo),
+    visibility 0.4s;
+  visibility: hidden;
+}
+
+.aw-nudge__actions.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.aw-nudge__action {
+  background: transparent;
+  border: 1px solid rgba(12, 0, 46, 0.2);
+  border-radius: 999px;
+  color: #0c002e;
+  cursor: pointer;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-ui);
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  padding: 0.5rem 0.875rem;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.aw-nudge__action:hover {
+  border-color: #0c002e;
+}
+
+.aw-nudge__action--primary {
+  background: #0c002e;
+  border-color: #0c002e;
+  color: #fff;
+}
+
+.aw-nudge__action--primary:hover {
+  background: #2a0a6b;
+  border-color: #2a0a6b;
+}
+
+@keyframes aw-nudge-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.9);
+  }
+}
+
+@keyframes aw-nudge-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .aw-nudge {
+    bottom: 5.5rem;
+    max-width: calc(100vw - 2.5rem);
+    right: 1.25rem;
+  }
+
+  .aw-nudge::after {
+    right: 1.125rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-nudge,
+  .aw-nudge__caret {
+    animation: none;
+  }
+
+  .aw-nudge__actions {
+    transition: none;
   }
 }

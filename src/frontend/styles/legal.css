@@ -19,7 +19,7 @@
 .legal-content h2 {
   color: #000;
   font-size: var(--type-card-title);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   line-height: var(--line-title);
   margin-bottom: 1rem;
   margin-top: 2.5rem;
@@ -32,7 +32,7 @@
 .legal-content h3 {
   color: #000;
   font-size: var(--type-body-large);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   margin-bottom: 0.75rem;
   margin-top: 1.75rem;
 }

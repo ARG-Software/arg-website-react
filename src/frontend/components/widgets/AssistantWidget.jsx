@@ -94,12 +94,6 @@ function buildLeadPrompts(controller, leadAcceptPrompt, leadChatPrompt) {
     });
   }
 
-  prompts.push({
-    label: controller.assistantCopy.labels.dontShowAgain,
-    muted: true,
-    onClick: controller.handleLeadDismissForTwoDays,
-  });
-
   if (leadChatPrompt) {
     prompts.push({
       label: leadChatPrompt,

@@ -8,7 +8,6 @@ import { useAssistantCopy } from './useAssistantCopy';
 import { useAssistantLeadCapture } from './useAssistantLeadCapture';
 import { useAssistantSecurity } from './useAssistantSecurity';
 import {
-  LEAD_DISMISS_MODES,
   PANEL_MODE_STORAGE_KEY,
   getInputPlaceholder,
   getPanelStateForViewport,
@@ -83,8 +82,6 @@ function useMobileFullscreen() {
 export function useAssistantWidgetController({
   onOpenChange,
   reopenRequest = 0,
-  leadCaptureVisible = false,
-  onLeadCaptureDismiss,
   onLeadCaptureComplete,
 }) {
   const mobileViewport = useMobileFullscreen();
@@ -96,7 +93,6 @@ export function useAssistantWidgetController({
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const leadCaptureStartedRef = useRef(false);
-  const leadDismissHandledRef = useRef(false);
   const { activeLanguage, assistantCopy, assistantDirection, setActiveLanguage } =
     useAssistantCopy();
 
@@ -114,20 +110,6 @@ export function useAssistantWidgetController({
     loading,
   });
 
-  const dismissLeadCaptureOnce = useCallback(
-    (reopenAsChat = false, mode = LEAD_DISMISS_MODES.SESSION) => {
-      if (leadDismissHandledRef.current) return;
-      leadDismissHandledRef.current = true;
-      onLeadCaptureDismiss?.({ reopenAsChat, mode });
-    },
-    [onLeadCaptureDismiss]
-  );
-
-  const handleHookDismiss = useCallback(
-    () => dismissLeadCaptureOnce(true),
-    [dismissLeadCaptureOnce]
-  );
-
   const {
     leadStep,
     isActive: isLeadActive,
@@ -140,7 +122,6 @@ export function useAssistantWidgetController({
     LEAD_STEPS,
   } = useAssistantLeadCapture({
     copy: assistantCopy,
-    onDismiss: handleHookDismiss,
     onComplete: () => {
       setMessages(prev => [
         ...prev.filter(message => !message.isLoading),
@@ -192,7 +173,6 @@ export function useAssistantWidgetController({
         setPanelState(getPanelStateForViewport(mobileViewport));
       }
       leadCaptureStartedRef.current = true;
-      leadDismissHandledRef.current = false;
       setError(null);
       startLeadCapture(initialStep);
       setMessages(prev => [...prev, getLeadAssistantMessage(initialMessage)]);
@@ -215,7 +195,6 @@ export function useAssistantWidgetController({
 
       if (DAILY_RATE_LIMIT_SCOPES.has(limitScope) && !isLeadActive) {
         leadCaptureStartedRef.current = true;
-        leadDismissHandledRef.current = false;
         startLeadCapture(LEAD_STEPS.EMAIL, 'rate_limit');
         setMessages(prev => [
           ...prev,
@@ -300,25 +279,6 @@ export function useAssistantWidgetController({
   }, [rateLimitState]);
 
   useEffect(() => {
-    if (!leadCaptureVisible || panelState !== 'closed' || leadCaptureStartedRef.current) return;
-
-    leadCaptureStartedRef.current = true;
-    leadDismissHandledRef.current = false;
-    const next = getPanelStateForViewport(mobileViewport);
-
-    requestAnimationFrame(() => {
-      setPanelState(next);
-      setError(null);
-      startLeadCapture(undefined, LEAD_SOURCE);
-      setMessages(prev => [
-        ...prev,
-        getLeadAssistantMessage(assistantCopy.messages.leadCaptureOffer),
-      ]);
-      trackAssistantEvent('open', { source: LEAD_SOURCE });
-    });
-  }, [assistantCopy, leadCaptureVisible, mobileViewport, panelState, startLeadCapture, setError]);
-
-  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
@@ -364,17 +324,13 @@ export function useAssistantWidgetController({
 
   const close = useCallback(
     source => {
-      if (leadCaptureStartedRef.current && leadStep !== LEAD_STEPS.SUCCESS) {
-        dismissLeadCaptureOnce(false);
-      }
       setPanelState('closed');
       setError(null);
       cancelLeadCapture();
       leadCaptureStartedRef.current = false;
-      leadDismissHandledRef.current = false;
       trackAssistantEvent('close', { source });
     },
-    [setError, cancelLeadCapture, leadStep, LEAD_STEPS, dismissLeadCaptureOnce]
+    [setError, cancelLeadCapture]
   );
 
   useEffect(() => {
@@ -412,9 +368,6 @@ export function useAssistantWidgetController({
   const handleClearConversation = useCallback(() => {
     if (loading || leadStep === LEAD_STEPS.SUBMITTING) return;
 
-    if (leadCaptureStartedRef.current && leadStep !== LEAD_STEPS.SUCCESS) {
-      dismissLeadCaptureOnce(false);
-    }
     resetChat();
     cancelLeadCapture();
     flushConversation();
@@ -425,7 +378,6 @@ export function useAssistantWidgetController({
     setError(null);
     resetConversationLog();
     leadCaptureStartedRef.current = false;
-    leadDismissHandledRef.current = false;
     trackAssistantEvent('clear_conversation', {
       had_history: messages.length > 0,
     });
@@ -433,14 +385,12 @@ export function useAssistantWidgetController({
     loading,
     leadStep,
     LEAD_STEPS.SUBMITTING,
-    LEAD_STEPS.SUCCESS,
     messages.length,
     resetChat,
     flushConversation,
     cancelLeadCapture,
     setError,
     resetConversationLog,
-    dismissLeadCaptureOnce,
   ]);
 
   useEffect(() => {
@@ -465,10 +415,8 @@ export function useAssistantWidgetController({
           leadStep === LEAD_STEPS.OFFER ? getPromptAction(trimmed, assistantCopy) : null;
 
         if (leadStep === LEAD_STEPS.OFFER && !action) {
-          dismissLeadCaptureOnce(false);
           cancelLeadCapture();
           leadCaptureStartedRef.current = false;
-          leadDismissHandledRef.current = false;
           setInputValue('');
           submitChatMessage(trimmed);
           return;
@@ -495,7 +443,6 @@ export function useAssistantWidgetController({
       addLeadResultMessages,
       assistantCopy,
       cancelLeadCapture,
-      dismissLeadCaptureOnce,
       handleLeadInput,
       inputValue,
       isLeadActive,
@@ -563,29 +510,9 @@ export function useAssistantWidgetController({
 
   const handleLeadCancel = useCallback(() => {
     handleLeadInput('cancel', 'cancel');
-    dismissLeadCaptureOnce(false);
     cancelLeadCapture();
     addLeadResultMessages({ type: 'cancelled' }, assistantCopy.labels.cancel);
-  }, [
-    addLeadResultMessages,
-    assistantCopy,
-    cancelLeadCapture,
-    handleLeadInput,
-    dismissLeadCaptureOnce,
-  ]);
-
-  const handleLeadDismissForTwoDays = useCallback(() => {
-    if (leadCaptureStartedRef.current && leadStep !== LEAD_STEPS.SUCCESS) {
-      dismissLeadCaptureOnce(false, LEAD_DISMISS_MODES.TWO_DAYS);
-    }
-
-    setPanelState('closed');
-    setError(null);
-    cancelLeadCapture();
-    leadCaptureStartedRef.current = false;
-    leadDismissHandledRef.current = false;
-    trackAssistantEvent('close', { source: 'lead_capture_dont_show_again' });
-  }, [cancelLeadCapture, dismissLeadCaptureOnce, leadStep, LEAD_STEPS.SUCCESS, setError]);
+  }, [addLeadResultMessages, assistantCopy, cancelLeadCapture, handleLeadInput]);
 
   return {
     panelState,
@@ -621,7 +548,6 @@ export function useAssistantWidgetController({
     handleLeadConfirm,
     handleLeadEdit,
     handleLeadCancel,
-    handleLeadDismissForTwoDays,
     retrySubmit,
   };
 }

@@ -38,16 +38,37 @@ html.aw-fullscreen-open body {
 /* ===== FONTS ===== */
 @font-face {
   font-family: 'Neuemontreal';
-  src: url('/fonts/neuemontreal-medium.woff') format('woff');
+  src: url('/fonts/neuemontreal-light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Neuemontreal';
+  src: url('/fonts/neuemontreal-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Neuemontreal';
+  src: url('/fonts/neuemontreal-medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Neuemontreal';
-  src: url('/fonts/neuemontreal-regular.woff') format('woff');
+  src: url('/fonts/neuemontreal-light-italic.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Neuemontreal';
+  src: url('/fonts/neuemontreal-italic.woff2') format('woff2');
   font-weight: 400;
-  font-style: normal;
+  font-style: italic;
   font-display: swap;
 }
 
@@ -267,7 +288,6 @@ h4,
 h5,
 h6 {
   margin-bottom: 10px;
-  font-weight: 700;
 }
 h1 {
   margin-top: 20px;
@@ -334,7 +354,7 @@ button,
 
 label {
   margin-bottom: 5px;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   display: block;
 }
 
@@ -351,14 +371,13 @@ label {
   /* Typography roles */
   --type-display: clamp(3.25rem, 7vw, 7.5rem);
   --type-hero-title: clamp(3.25rem, 5.2vw, 4rem);
-  --type-about-title: 3rem;
   --type-marquee: clamp(1.5rem, 4vw, 3.4375rem);
   /* Page titles stay a clear step above section titles at every width */
   --type-page-title: clamp(2.25rem, 4.5vw, 3.75rem);
   --type-page-title-article: clamp(2rem, 3.6vw, 3.25rem);
-  --type-section-title: clamp(1.75rem, 3vw, 2.75rem);
+  --type-section-title: clamp(1.5rem, 2.6vw, 2.375rem);
   --type-section-subtitle: clamp(1rem, 1.2vw, 1.125rem);
-  --type-content-heading: clamp(1.75rem, 3.5vw, 2.5rem);
+  --type-content-heading: clamp(1.375rem, 2.2vw, 1.875rem);
   --type-card-title: clamp(1.25rem, 1.8vw, 1.5rem);
   --type-card-title-small: 1.25rem;
   --type-body-large: clamp(1.0625rem, 1.2vw, 1.125rem);
@@ -389,6 +408,11 @@ label {
   --type-footer-text: var(--type-ui);
   --type-footer-meta: var(--type-meta);
   --type-footer-tagline: var(--type-body-small);
+
+  /* Font weights. Only these three files exist; anything heavier is faux bold */
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
 
   --line-tight: 1.15;
   --line-title: 1.2;
@@ -423,21 +447,18 @@ label {
 @media screen and (max-width: 61.9375rem) {
   :root {
     --type-hero-title: clamp(2.5rem, 6.4vw, 3.5rem);
-    --type-about-title: 3.25rem;
   }
 }
 
 @media screen and (max-width: 47.9375rem) {
   :root {
     --type-hero-title: clamp(2rem, 7.8vw, 2.5rem);
-    --type-about-title: 2.75rem;
   }
 }
 
 @media screen and (max-width: 29.9375rem) {
   :root {
     --type-hero-title: clamp(1.875rem, 8.5vw, 2rem);
-    --type-about-title: 2.5rem;
   }
 }
 body {
@@ -446,12 +467,13 @@ body {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body);
   line-height: var(--line-compact);
+  font-synthesis-weight: none;
 }
 h1 {
   margin-top: 0;
   margin-bottom: 0;
   font-size: var(--type-display);
-  font-weight: 400;
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-display-tight);
   line-height: var(--line-tight);
 }
@@ -459,7 +481,7 @@ h2 {
   margin-top: 0;
   margin-bottom: 0;
   font-size: var(--type-section-title);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
 }
@@ -467,7 +489,7 @@ h3 {
   margin-top: 0;
   margin-bottom: 0;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-title);
 }
@@ -475,7 +497,7 @@ h4 {
   margin-top: 0;
   margin-bottom: 0;
   font-size: var(--type-card-title-small);
-  font-weight: 700;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-compact);
 }
@@ -483,14 +505,14 @@ h5 {
   margin-top: 0;
   margin-bottom: 0;
   font-size: var(--type-body-large);
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   line-height: var(--line-compact);
 }
 h6 {
   margin-top: 0;
   margin-bottom: 0;
   font-size: var(--type-body);
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   line-height: var(--line-compact);
 }
 p {
@@ -519,7 +541,7 @@ img {
 }
 label {
   margin-bottom: 0.25rem;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 blockquote {
   border-left: 0.25rem solid #e2e2e2;
@@ -697,7 +719,7 @@ figcaption {
 
 .heading-style-h3 {
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-title);
 }
@@ -710,7 +732,7 @@ figcaption {
 }
 .heading-style-h1 {
   font-size: var(--type-cta-title);
-  font-weight: 400;
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-display);
   line-height: var(--line-tight);
 }
@@ -719,7 +741,7 @@ figcaption {
   padding-right: 4.75rem;
 }
 .text-weight-normal {
-  font-weight: 400;
+  font-weight: var(--weight-regular);
 }
 .padding-section-small {
   --section-space: var(--section-space-small);
@@ -737,7 +759,7 @@ figcaption {
   font-style: italic;
 }
 .text-weight-medium {
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 .overflow-hidden {
   order: 1;
@@ -757,7 +779,7 @@ figcaption {
 }
 
 .text-weight-light {
-  font-weight: 300;
+  font-weight: var(--weight-light);
 }
 
 .max-width-xsmall {
@@ -769,13 +791,13 @@ figcaption {
   font-size: var(--type-body);
 }
 .text-weight-xbold {
-  font-weight: 800;
+  font-weight: var(--weight-medium);
 }
 .text-align-right {
   text-align: right;
 }
 .text-weight-bold {
-  font-weight: 700;
+  font-weight: var(--weight-medium);
 }
 .max-width-medium {
   width: 100%;
@@ -799,7 +821,7 @@ figcaption {
 }
 .heading-style-h4 {
   font-size: var(--type-card-title);
-  font-weight: 700;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-compact);
 }
@@ -818,7 +840,7 @@ figcaption {
 }
 .heading-style-h6 {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   line-height: 1.5;
 }
 .padding-section-large {
@@ -861,7 +883,7 @@ figcaption {
 .heading-style-h2 {
   max-width: 26ch;
   font-size: var(--type-section-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   overflow: hidden;
@@ -872,7 +894,7 @@ figcaption {
 
 .heading-style-h5 {
   font-size: var(--type-card-title-small);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-compact);
 }
@@ -1059,7 +1081,7 @@ section > :last-child > .line-separate:last-child {
 }
 
 .heading {
-  font-weight: 400;
+  font-weight: var(--weight-regular);
 }
 @media screen and (max-width: 991px) {
   .padding-xlarge {

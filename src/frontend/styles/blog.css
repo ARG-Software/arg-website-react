@@ -192,7 +192,7 @@
   color: var(--blp-muted);
   display: flex;
   font-size: 0.90625rem;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   transition: color 0.2s ease;
 }
 
@@ -216,7 +216,7 @@
 
 .blp-topic.is-active .blp-topic-name {
   color: #fff;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 
 .blp-topic.is-active .blp-topic-name::before {
@@ -253,7 +253,7 @@
   display: flex;
   font-family: var(--blp-mono);
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   height: 2.25rem;
   justify-content: center;
   width: 2.25rem;
@@ -269,7 +269,7 @@
 .blp-collection-name {
   color: var(--blp-ink);
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -349,7 +349,7 @@
   cursor: pointer;
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   height: 2.75rem;
   outline: none;
   padding: 0 2.5rem 0 0.75rem;
@@ -446,7 +446,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(1.125rem, 1.35vw, 1.3125rem);
-  font-weight: 700;
+  font-weight: var(--weight-regular);
   letter-spacing: -0.03em;
   line-height: 1.15;
   margin: 0 0 0.75rem;
@@ -632,7 +632,7 @@
   flex-wrap: wrap;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   gap: 0.875rem;
   letter-spacing: var(--tracking-meta);
   margin-top: 1.25rem;
@@ -717,7 +717,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body-large);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   line-height: 1.7;
   margin: 0 0 1.75rem;
 }
@@ -736,7 +736,7 @@
 .bp-callout a,
 .bp-list-item a {
   color: #7904fd;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   text-decoration: underline;
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.16em;
@@ -755,7 +755,7 @@
   display: flex;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   gap: 0;
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-title);
@@ -770,7 +770,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title-small);
-  font-weight: 600;
+  font-weight: var(--weight-regular);
   letter-spacing: -0.015em;
   line-height: 1.25;
   margin: 2.75rem 0 0.875rem;
@@ -790,7 +790,7 @@
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body-large);
   font-style: normal;
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: var(--line-small);
   margin: 3rem 0;
   padding: 1.25rem 1.5rem;
@@ -817,13 +817,13 @@
 
 .bp-list-item::marker {
   color: #c924d7;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 
 .bp-list-label {
   color: #0c002e;
   display: inline;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 
 .bp-content .inline-markdown-code {
@@ -1022,7 +1022,7 @@
   font-style: italic;
 }
 .hljs-strong {
-  font-weight: bold;
+  font-weight: var(--weight-medium);
 }
 .hljs-link {
   text-decoration: underline;

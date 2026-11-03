@@ -59,7 +59,7 @@
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.72);
   font-size: var(--type-ui);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   line-height: 1;
   padding: 0.65rem 1.125rem;
   text-decoration: none;
@@ -168,7 +168,7 @@
 .admin-visit-stat-card__label {
   color: rgba(12, 0, 46, 0.62);
   font-size: var(--type-ui);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 
 .admin-visit-stat-card__value {
@@ -210,7 +210,7 @@
 .admin-country-summary__metric span {
   color: rgba(12, 0, 46, 0.56);
   font-size: 0.74rem;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -218,7 +218,7 @@
 .admin-country-summary__metric strong {
   color: #0c002e;
   font-size: clamp(1.05rem, 2vw, 1.35rem);
-  font-weight: 700;
+  font-weight: var(--weight-regular);
   line-height: 1.05;
   min-width: 0;
   overflow: hidden;
@@ -274,13 +274,13 @@
   color: rgba(12, 0, 46, 0.4);
   font-size: 0.74rem;
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   letter-spacing: 0.04em;
 }
 
 .admin-country-ranking-list__country {
   font-size: 0.92rem;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -342,7 +342,7 @@
 }
 
 .ui-card--light.admin-data-table .admin-table-link--company {
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 
 .ui-card--light.admin-data-table .admin-table-link:hover,
@@ -420,7 +420,7 @@
 .admin-login-title {
   color: #fff;
   font-size: clamp(1.75rem, 5vw, 2.5rem);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   letter-spacing: -0.03em;
   line-height: 1;
   margin: 0;
@@ -488,7 +488,7 @@
   display: inline-flex;
   font: inherit;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   justify-content: center;
   line-height: 1;
   min-height: 2.75rem;
@@ -651,7 +651,7 @@
   color: #fff;
   display: inline-flex;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   height: 1.8rem;
   justify-content: center;
   width: 1.8rem;
@@ -726,7 +726,7 @@
   cursor: pointer;
   font: inherit;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   line-height: 1;
   padding: 0.5rem 0.8rem;
   transition:
@@ -839,7 +839,7 @@
   display: inline-flex;
   font: inherit;
   font-size: var(--type-ui);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   justify-content: center;
   line-height: 1;
   min-height: 2.75rem;
@@ -940,7 +940,7 @@
   color: rgba(12, 0, 46, 0.45);
   display: flex;
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   justify-content: center;
   letter-spacing: 0.04em;
   text-transform: uppercase;

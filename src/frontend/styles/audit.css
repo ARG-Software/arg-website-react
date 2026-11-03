@@ -19,7 +19,7 @@
   display: inline-flex;
   font-family: Consolas, 'Courier New', monospace;
   font-size: var(--type-kicker);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   letter-spacing: 0.18em;
   line-height: 1;
   text-transform: uppercase;
@@ -29,7 +29,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 1rem 0 0;
@@ -81,7 +81,7 @@
   display: flex;
   font-family: Consolas, 'Courier New', monospace;
   font-size: var(--type-kicker);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   gap: 0.75rem;
   letter-spacing: 0.18em;
   line-height: 1;
@@ -94,7 +94,7 @@
   border-radius: 50%;
   color: #0c002e;
   display: flex;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   height: 1.75rem;
   justify-content: center;
   letter-spacing: 0;
@@ -150,7 +150,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -307,7 +307,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0 0 1rem;
@@ -459,7 +459,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0.875rem 0 0;
@@ -738,7 +738,7 @@
 
 .au-not-included strong {
   color: #0c002e;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 
 .au-price {
@@ -758,7 +758,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(2.5rem, 5vw, 3.5rem);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: 1;
   margin: 0;
@@ -800,7 +800,7 @@
   color: #888;
   font-family: Consolas, 'Courier New', monospace;
   font-size: var(--type-kicker);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -808,7 +808,7 @@
 .au-scope dd {
   color: #0c002e;
   font-size: var(--type-body-small);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   margin: 0.25rem 0 0;
 }
 
@@ -829,7 +829,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -863,7 +863,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -937,7 +937,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 1.25rem 0 0;
@@ -1117,7 +1117,7 @@
   display: block;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body-large);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 
 .au-steps li div span {
@@ -1255,7 +1255,7 @@
 .au-deck-mono {
   font-family: Consolas, 'Courier New', monospace;
   font-size: clamp(0.6875rem, 1.5vmin, 0.8125rem);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -1268,7 +1268,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(1.375rem, 4vmin, 2.5rem);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0.5rem 0 0;
@@ -1298,7 +1298,7 @@
   cursor: pointer;
   display: flex;
   font-size: var(--type-ui);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   gap: 0.75rem;
   padding: 0;
 }
@@ -1407,7 +1407,7 @@
   display: flex;
   font-family: Consolas, 'Courier New', monospace;
   font-size: clamp(0.75rem, 1.7vmin, 0.875rem);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   gap: 0.5rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1579,7 +1579,7 @@
 }
 
 .au-deck-legend-name {
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 
 .au-deck-leader {
@@ -1713,7 +1713,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(1.25rem, 3.2vmin, 1.875rem);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -1918,7 +1918,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: auto 0 0;
@@ -1979,7 +1979,7 @@
 .au-credit {
   color: #c924d7;
   font-size: var(--type-ui);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   line-height: var(--line-small);
   margin: 0;
 }
@@ -2134,7 +2134,7 @@
 
 .au-cl-bar-year.is-active {
   color: #0c002e;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
 }
 
 .au-cl-bar-track {
@@ -2253,7 +2253,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(1.5rem, 2.4vw, 2rem);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: 1.1;
   margin: 0;

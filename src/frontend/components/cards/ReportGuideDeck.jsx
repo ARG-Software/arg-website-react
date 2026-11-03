@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-const STORAGE_KEY = 'arg-audit-report-card';
 const AUTOPLAY_MS = 5000;
 const PAUSE_LABEL = 'Pause the slideshow';
 const PLAY_LABEL = 'Play the slideshow';
@@ -205,14 +204,7 @@ function NotesCard({ notes }) {
 
 export function ReportGuideDeck({ content }) {
   const count = content.cards.length;
-  const [current, setCurrent] = useState(() => {
-    try {
-      const saved = Number(window.localStorage.getItem(STORAGE_KEY));
-      return Number.isInteger(saved) && saved > 0 && saved < count ? saved : 0;
-    } catch {
-      return 0;
-    }
-  });
+  const [current, setCurrent] = useState(0);
   const currentRef = useRef(0);
   const deckRef = useRef(null);
   const stackRef = useRef(null);
@@ -226,11 +218,6 @@ export function ReportGuideDeck({ content }) {
 
   useEffect(() => {
     currentRef.current = current;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, String(current));
-    } catch {
-      // Storage can be blocked; the deck then always starts at the first card.
-    }
   }, [current]);
 
   const go = index => setCurrent(Math.max(0, Math.min(count - 1, index)));

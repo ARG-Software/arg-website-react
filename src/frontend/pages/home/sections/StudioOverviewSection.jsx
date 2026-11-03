@@ -36,7 +36,7 @@ export function StudioOverviewSection({ className = '', content = HOMEPAGE.overv
               <span className="heading_line" data-animate-order="0">
                 {content.title[0]}
               </span>
-              <span className="heading_line text-color-gradiant" data-animate-order="1">
+              <span className="heading_line" data-animate-order="1">
                 {content.title[1]}
               </span>
             </h2>

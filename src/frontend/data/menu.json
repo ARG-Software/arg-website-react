@@ -29,9 +29,11 @@
   ],
   "selectedWork": {
     "label": "Featured work",
-    "desktopCount": 4,
-    "mobileCount": 4,
+    "desktopCount": 3,
+    "mobileCount": 3,
     "rotationSeed": "daily",
+    "viewAllLabel": "Testimonials",
+    "viewAllTo": "/#testimonials",
     "projectLabels": {
       "mojaloop": "Fintech rails",
       "peoples-clearinghouse": "Payments network",
@@ -78,10 +80,6 @@
         {
           "label": "Working with Us",
           "to": "/working-with-us/"
-        },
-        {
-          "label": "Testimonials",
-          "to": "/#testimonials"
         },
         {
           "label": "Contact",

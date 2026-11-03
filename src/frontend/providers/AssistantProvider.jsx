@@ -1,4 +1,4 @@
-import { Suspense, useContext, useEffect, useRef, useState } from 'react';
+import { Suspense, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import assistantContent from '@data/assistant.json';
 import {
@@ -8,8 +8,9 @@ import {
   LEAD_CAPTURE_SESSION_DISMISSED_KEY,
 } from '@constants/ui';
 import { LoadingContext } from '@providers/LoadingProvider';
-import { trackEvent } from '@services/analytics';
+import { trackCTA, trackEvent } from '@services/analytics';
 import { lazyWithRetry } from '@utils/lazyWithRetry';
+import { AssistantNudge } from '@components/widgets/AssistantNudge';
 
 const AssistantWidget = lazyWithRetry(() =>
   import('@components/widgets/AssistantWidget').then(module => ({
@@ -19,8 +20,7 @@ const AssistantWidget = lazyWithRetry(() =>
 
 const DEFAULT_IDLE_DELAY_MS = 10000;
 const CONTACT_PATH = '/contact';
-const TWO_DAY_DISMISS = 'expiry';
-const SESSION_DISMISS = 'session';
+const NUDGE_SOURCE = 'gaspar_nudge';
 
 function normalizePath(pathname) {
   return pathname.replace(/\/+$/, '') || '/';
@@ -73,6 +73,10 @@ function isLeadCaptureSuppressed() {
   );
 }
 
+function trackNudge(action, pagePath) {
+  trackEvent('assistant_lead_capture', { action, page_path: pagePath, source: NUDGE_SOURCE });
+}
+
 function AssistantTrigger({ onOpen }) {
   return (
     <button className="aw-trigger" onClick={onOpen} aria-label="Open assistant" type="button">
@@ -91,9 +95,8 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
   const [reopenRequest, setReopenRequest] = useState(0);
   const [visiblePath, setVisiblePath] = useState(null);
   const [inMemoryDismissed, setInMemoryDismissed] = useState(false);
-  const assistantWasOpenRef = useRef(false);
   const loadingDone = useContext(LoadingContext);
-  const leadCaptureVisible =
+  const nudgeVisible =
     visiblePath === normalizedPath &&
     !assistantOpen &&
     !isContactPath(location.pathname) &&
@@ -114,23 +117,18 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
     let idleTimer;
     let hasShown = false;
 
-    function showLeadCapture() {
+    function showNudge() {
       if (hasShown || isLeadCaptureSuppressed() || inMemoryDismissed) return;
 
       hasShown = true;
-      trackEvent('assistant_lead_capture', {
-        action: 'offer_shown',
-        page_path: normalizedPath,
-        source: 'idle_timer',
-      });
-      setShouldLoadAssistant(true);
+      trackNudge('offer_shown', normalizedPath);
       setVisiblePath(normalizedPath);
     }
 
     function resetIdleTimer() {
       if (hasShown) return;
       clearTimeout(idleTimer);
-      idleTimer = setTimeout(showLeadCapture, idleDelayMs);
+      idleTimer = setTimeout(showNudge, idleDelayMs);
     }
 
     resetIdleTimer();
@@ -153,31 +151,32 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
     normalizedPath,
   ]);
 
-  function handleLeadCaptureDismiss(options) {
-    const mode = options?.mode || SESSION_DISMISS;
-
-    if (mode === TWO_DAY_DISMISS) {
-      setStorageItem(
-        getClientStorage('localStorage'),
-        LEAD_CAPTURE_DISMISS_EXPIRY_KEY,
-        JSON.stringify({ dismissedAt: Date.now() })
-      );
-    } else {
-      setStorageItem(getClientStorage('sessionStorage'), LEAD_CAPTURE_SESSION_DISMISSED_KEY, '1');
-    }
-
-    trackEvent('assistant_lead_capture', {
-      action: 'dismissed',
-      dismissal_scope: mode === TWO_DAY_DISMISS ? 'two_days' : 'session',
-      page_path: normalizedPath,
-      source: 'idle_timer',
-    });
+  // Talking or booking hides the bubble for this visit; the close button hides it for two days
+  function hideNudge(storageName, key, value) {
+    setStorageItem(getClientStorage(storageName), key, value);
     setVisiblePath(null);
     setInMemoryDismissed(true);
+  }
 
-    if (options?.reopenAsChat && assistantOpen) {
-      assistantWasOpenRef.current = true;
-    }
+  function handleNudgeChat() {
+    trackNudge('chat_clicked', normalizedPath);
+    hideNudge('sessionStorage', LEAD_CAPTURE_SESSION_DISMISSED_KEY, '1');
+    handleTriggerOpen();
+  }
+
+  function handleNudgeMeeting() {
+    trackNudge('meeting_clicked', normalizedPath);
+    trackCTA('book_meeting', NUDGE_SOURCE);
+    hideNudge('sessionStorage', LEAD_CAPTURE_SESSION_DISMISSED_KEY, '1');
+  }
+
+  function handleNudgeClose() {
+    trackNudge('dismissed', normalizedPath);
+    hideNudge(
+      'localStorage',
+      LEAD_CAPTURE_DISMISS_EXPIRY_KEY,
+      JSON.stringify({ dismissedAt: Date.now() })
+    );
   }
 
   function handleTriggerOpen() {
@@ -185,27 +184,29 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
     setReopenRequest(request => request + 1);
   }
 
-  function handleAssistantOpenChange(isOpen) {
-    setAssistantOpen(isOpen);
+  const nudge = nudgeVisible ? (
+    <AssistantNudge
+      onChat={handleNudgeChat}
+      onMeeting={handleNudgeMeeting}
+      onClose={handleNudgeClose}
+    />
+  ) : null;
 
-    if (!isOpen && assistantWasOpenRef.current) {
-      assistantWasOpenRef.current = false;
-      setReopenRequest(request => request + 1);
-    }
-  }
-
-  if (!shouldLoadAssistant && !leadCaptureVisible) {
-    return <AssistantTrigger onOpen={handleTriggerOpen} />;
+  if (!shouldLoadAssistant) {
+    return (
+      <>
+        {nudge}
+        <AssistantTrigger onOpen={handleTriggerOpen} />
+      </>
+    );
   }
 
   return (
-    <Suspense fallback={<AssistantTrigger onOpen={handleTriggerOpen} />}>
-      <AssistantWidget
-        onOpenChange={handleAssistantOpenChange}
-        reopenRequest={reopenRequest}
-        leadCaptureVisible={leadCaptureVisible}
-        onLeadCaptureDismiss={handleLeadCaptureDismiss}
-      />
-    </Suspense>
+    <>
+      {nudge}
+      <Suspense fallback={<AssistantTrigger onOpen={handleTriggerOpen} />}>
+        <AssistantWidget onOpenChange={setAssistantOpen} reopenRequest={reopenRequest} />
+      </Suspense>
+    </>
   );
 }

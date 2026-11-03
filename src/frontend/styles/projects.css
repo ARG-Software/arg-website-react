@@ -115,7 +115,7 @@
 .prp-intro-title {
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: 700;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-display);
   line-height: 1.1;
   margin: 0;
@@ -136,7 +136,7 @@
   align-items: center;
   gap: 0.75rem;
   font-size: var(--type-ui);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   color: var(--prp-light-fg);
   text-decoration: none;
   padding-bottom: 0.15rem;
@@ -169,7 +169,7 @@
 .prp-intro-subtitle {
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(0.75rem, 2.5vw, 1.25rem);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-heading);
   line-height: 1.3;
   color: var(--prp-dark);
@@ -189,7 +189,7 @@
 
 .prp-inline-link {
   color: inherit;
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   text-decoration: underline;
   text-decoration-thickness: 0.0625rem;
   text-underline-offset: 0.2em;
@@ -222,7 +222,7 @@
 
 .prp-meta-label {
   font-size: var(--type-meta-small);
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
   color: var(--prp-muted-dark);
@@ -346,7 +346,7 @@
 
 .prp-section-label {
   font-size: var(--type-meta-small);
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
   color: var(--prp-dark);
@@ -356,7 +356,7 @@
 .prp-section-heading {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: 700;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -705,7 +705,7 @@
 .prp-image-gallery__placeholder span,
 .prp-image-gallery__lightbox-placeholder {
   font-size: 0.6875rem;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-meta);
   text-transform: uppercase;
   color: rgba(12, 0, 46, 0.55);
@@ -768,7 +768,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   position: absolute;
   bottom: -2.125rem;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   letter-spacing: 0.04em;
   color: rgba(255, 255, 255, 0.72);
 }
@@ -796,7 +796,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
 }
@@ -842,7 +842,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
 .prp-solution-label {
   font-size: var(--type-meta-small);
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
   color: var(--prp-muted-dark);
@@ -852,7 +852,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .prp-solution-heading {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: 700;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -926,7 +926,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .prp-results-heading {
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -935,7 +935,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
 .prp-results-text {
   font-size: clamp(1rem, 1.4vw, 1.1875rem);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   line-height: var(--line-body);
   color: var(--prp-muted-dark);
   margin: 0;
@@ -971,7 +971,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .prp-metric-card-number {
   font-family: 'Inter', sans-serif;
   font-size: clamp(2rem, 3vw, 2.5rem);
-  font-weight: 300;
+  font-weight: var(--weight-light);
   line-height: 1;
   display: flex;
   align-items: baseline;
@@ -979,7 +979,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 }
 
 .prp-metric-number {
-  font-weight: 300;
+  font-weight: var(--weight-light);
 }
 
 .prp-metric-card-label-row {
@@ -993,7 +993,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
 .prp-metric-card-label {
   font-size: var(--type-meta-small);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta-tight);
   line-height: var(--line-compact);
@@ -1257,7 +1257,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
 .prp-next-eyebrow {
   font-size: var(--type-meta-small);
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
   color: rgba(255, 255, 255, 0.5);

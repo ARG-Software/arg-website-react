@@ -27,6 +27,12 @@
     "Talk to Gaspar"
   ],
   "leadCaptureSkipWords": ["skip", "no", "no message"],
+  "nudge": {
+    "message": "Hi, I'm Gaspar. Need a hand finding something, or want to book a call with the team?",
+    "chatLabel": "Talk to Gaspar",
+    "meetingLabel": "Book a meeting",
+    "closeLabel": "Close"
+  },
   "messages": {
     "welcome": "Hi, I'm Gaspar, ARG's AI assistant. Ask me about our work, our research, or how to get in touch.",
     "leadCaptureOffer": "Want to send ARG a quick email? I can collect your email and message here.",
@@ -86,8 +92,7 @@
     "skip": "Skip",
     "chat": "Talk to Gaspar",
     "tryAgain": "Try Again",
-    "relatedLinks": "Related links",
-    "dontShowAgain": "Don't show me again"
+    "relatedLinks": "Related links"
   },
   "leadConfirm": {
     "title": "Send this to ARG?",

@@ -27,7 +27,7 @@
   color: #0f0a30;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -90,7 +90,7 @@
   color: rgba(15, 10, 48, 0.44);
   font-family: Consolas, 'Courier New', monospace;
   font-size: var(--type-kicker);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -98,7 +98,7 @@
 .contact-direct__card strong {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 
 .contact-direct__card--strong {
@@ -135,7 +135,7 @@
   color: #0f0a30;
   font-family: Consolas, 'Courier New', monospace;
   font-size: var(--type-kicker);
-  font-weight: 600;
+  font-weight: var(--weight-medium);
   letter-spacing: 0.14em;
   padding: 0.5rem 0.75rem;
   text-decoration: none;

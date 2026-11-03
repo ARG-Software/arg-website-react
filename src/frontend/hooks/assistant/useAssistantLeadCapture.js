@@ -49,7 +49,7 @@ function extractEmailAndMessage(input) {
 
 const SUCCESS_RESET_MS = 3000;
 
-export function useAssistantLeadCapture({ copy, onDismiss, onComplete }) {
+export function useAssistantLeadCapture({ copy, onComplete }) {
   const [leadStep, setLeadStep] = useState(null);
   const [capturedEmail, setCapturedEmail] = useState('');
   const [capturedMessage, setCapturedMessage] = useState('');
@@ -86,8 +86,7 @@ export function useAssistantLeadCapture({ copy, onDismiss, onComplete }) {
     setCapturedEmail('');
     setCapturedMessage('');
     trackEvent('assistant_lead_capture', { action: 'dismissed', source: 'assistant' });
-    onDismiss?.();
-  }, [onDismiss]);
+  }, []);
 
   const submitLead = useCallback(async () => {
     setLeadStep(LEAD_STEPS.SUBMITTING);

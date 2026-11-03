@@ -6,7 +6,7 @@
 .cp-section-title {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: var(--line-tight);
   color: #0c002e;
   margin: 0;
@@ -71,7 +71,7 @@
 .cp-value-title {
   color: #0c002e;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   font-family: Neuemontreal, sans-serif;
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
@@ -96,7 +96,7 @@
 .cp-value-anti strong {
   color: #c924d7;
   font-family: inherit;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 /* Why Us Section */
 
@@ -113,7 +113,7 @@
 .cp-whyus-title {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: var(--line-tight);
   color: #0c002e;
   margin: 0;
@@ -227,7 +227,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: 1.18;
   margin: 0 0 0.875rem;
@@ -253,7 +253,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: 1.18;
   margin: 0 0 0.75rem;
@@ -300,7 +300,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0 0 0.75rem;
@@ -370,7 +370,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body-large);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: var(--line-tight);
   margin: 0 0 0.5rem;
 }
@@ -458,7 +458,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body-large);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: var(--line-tight);
   margin: 0.1875rem 0 0.5rem;
 }
@@ -482,7 +482,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0 0 1.5rem;
@@ -541,7 +541,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -569,7 +569,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0 0 1.5rem;
@@ -618,7 +618,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   margin: 0;
 }

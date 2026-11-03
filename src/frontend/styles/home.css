@@ -2,8 +2,8 @@
 
 :root {
   --type-home-section-title: var(--type-section-title);
-  --type-testimonials-quote: 1.375rem;
-  --line-testimonials-quote: 1.5;
+  --type-testimonials-quote: 1.125rem;
+  --line-testimonials-quote: 1.55;
   --space-home-heading-content: 4rem;
 }
 
@@ -618,7 +618,7 @@
 }
 
 .heading_text {
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: 1.1;
 }
 
@@ -816,8 +816,8 @@
   display: flex;
   flex-direction: column;
   font-family: inherit;
-  font-size: var(--type-about-title);
-  font-weight: 500;
+  font-size: var(--type-home-section-title);
+  font-weight: var(--weight-regular);
   padding-top: 1.5rem;
   letter-spacing: -0.12rem;
   line-height: 1;
@@ -861,7 +861,7 @@
 .home-overview__value h3 {
   color: #0a0532;
   font-size: var(--type-card-title-small);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   letter-spacing: -0.02625rem;
   line-height: var(--line-tight);
   margin: 0;
@@ -975,7 +975,7 @@
 
 .home-section-title {
   font-size: var(--type-home-section-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -1469,6 +1469,8 @@
 
 .testimonials-item_quote {
   font-size: var(--type-testimonials-quote);
+  font-style: italic;
+  font-weight: var(--weight-regular);
   line-height: var(--line-testimonials-quote);
 }
 
@@ -1538,17 +1540,9 @@
   flex-shrink: 0;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   padding: 0.75rem 2rem;
   white-space: nowrap;
-}
-
-.faq_title {
-  color: #fff;
-  font-size: clamp(2rem, 4.5vw, 3.75rem);
-  font-weight: 400;
-  line-height: 1.1;
-  margin: 0;
 }
 
 .faq_question {
@@ -1568,7 +1562,7 @@
   color: rgba(0, 0, 0, 0.7);
   font-family: inherit;
   font-size: var(--type-body);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   line-height: var(--line-compact);
 }
 
@@ -1650,7 +1644,7 @@
   flex-shrink: 0;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-pill-sm);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-meta-tight);
   padding: 0.375rem 0.875rem;
   text-transform: uppercase;
@@ -1665,7 +1659,7 @@
 .faq_question_text {
   color: rgba(0, 0, 0, 0.7);
   font-size: var(--type-body-large);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: var(--line-compact);
   transition: color 0.35s ease;
 }
@@ -1745,7 +1739,7 @@
 .faq_question_text {
   color: rgba(0, 0, 0, 0.7);
   font-size: 1.125rem;
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: 1.4;
   transition:
     color 0.4s ease,
@@ -1907,7 +1901,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: var(--line-compact);
   margin: 0;
 }
@@ -1956,7 +1950,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body);
-  font-weight: 500;
+  font-weight: var(--weight-regular);
   line-height: var(--line-compact);
   margin: 0;
   transition: color 0.2s ease;
@@ -1990,7 +1984,7 @@
 }
 
 .blog-promo_card-new-tag {
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-subtle);
 }
 
@@ -2213,8 +2207,10 @@
 }
 
 .services-tag {
-  border: 1px solid #000;
+  background-color: #0c002e;
+  border: 1px solid #0c002e;
   border-radius: 1.5625rem;
+  color: #fff;
   padding: 0.5rem 1rem;
 }
 
@@ -2293,7 +2289,7 @@
 
 .services_heading_text {
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-title);
   margin: 0;
@@ -2561,8 +2557,8 @@
 
 @media screen and (max-width: 61.9375rem) {
   :root {
-    --type-testimonials-quote: 1.375rem;
-    --line-testimonials-quote: 1.5;
+    --type-testimonials-quote: 1.125rem;
+    --line-testimonials-quote: 1.55;
   }
 
   .home-overview__inner.container.padding-global {
@@ -2578,7 +2574,7 @@
 
 @media screen and (max-width: 47.9375rem) {
   :root {
-    --type-testimonials-quote: 1.1875rem;
+    --type-testimonials-quote: 1.0625rem;
     --line-testimonials-quote: 1.45;
   }
 
@@ -2622,7 +2618,7 @@
 
 @media screen and (max-width: 29.9375rem) {
   :root {
-    --type-testimonials-quote: 1.0625rem;
-    --line-testimonials-quote: 1.45;
+    --type-testimonials-quote: 1rem;
+    --line-testimonials-quote: 1.5;
   }
 }

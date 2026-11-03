@@ -79,7 +79,7 @@
 .sk-agents-heading {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta-small);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-meta-wide);
   text-transform: uppercase;
   color: #888;
@@ -166,7 +166,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0 0 0.75rem;
@@ -202,7 +202,7 @@
 .sk-detail-category {
   display: inline-block;
   font-size: var(--type-meta-small);
-  font-weight: 500;
+  font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
   color: #0c002e;
@@ -235,7 +235,7 @@
 .sk-detail-block h2 {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-card-title);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   color: #0c002e;
   margin: 0 0 0.75rem;
 }
