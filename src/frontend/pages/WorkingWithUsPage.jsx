@@ -41,11 +41,7 @@ export default function WorkingWithUsPage() {
             size="small"
           />
 
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="150"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             <section
               id="why-us"
               className="cp-whyus-section padding-section-large border-radius-top background-color-white"

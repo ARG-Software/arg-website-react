@@ -286,11 +286,7 @@ export default function BlogPostPage() {
             </div>
           </PageHeader>
 
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="80"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             <section className="bp-body background-color-white padding-section-large border-radius-all">
               <div className="bp-body-inner container container--section padding-global">
                 <article className="bp-content">
@@ -362,7 +358,6 @@ export default function BlogPostPage() {
                   className="related-articles-carousel"
                   data-animate-scope
                   data-animate-default-preset="fade-up"
-                  data-animate-default-stagger="120"
                 >
                   <div className="related-articles-carousel__head" data-animate-order="0">
                     <div className="related-articles-carousel__heading">

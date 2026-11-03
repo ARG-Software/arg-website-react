@@ -119,16 +119,11 @@ export default function ContactPage() {
             size="small"
           />
 
-          <section
-            id="brief"
-            className="contact-brief"
-            data-animate-scope
-            data-animate-default-stagger="100"
-          >
+          <section id="brief" className="contact-brief" data-animate-scope>
             <div className="padding-global">
               <div className="container-large">
                 <div className="contact-brief__grid">
-                  <div className="contact-brief__intro" data-animate="slide-from-left">
+                  <div className="contact-brief__intro" data-animate="fade-up">
                     <h2>
                       Hello. Nice to meet you.
                       <br />
@@ -169,12 +164,7 @@ export default function ContactPage() {
             </div>
           </section>
 
-          <section
-            id="direct"
-            className="contact-direct"
-            data-animate-scope
-            data-animate-default-stagger="100"
-          >
+          <section id="direct" className="contact-direct" data-animate-scope>
             <div className="padding-global">
               <div className="container-large">
                 <div className="contact-direct__grid">

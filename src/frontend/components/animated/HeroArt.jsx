@@ -4,7 +4,7 @@ import { GlowCoreArt } from './GlowCoreArt';
 import { MergingDropsArt } from './MergingDropsArt';
 import { RisingDropsArt } from './RisingDropsArt';
 import { DrippingDropArt } from './DrippingDropArt';
-import { LiquidRibbonArt } from './LiquidRibbonArt';
+import { OrbitingBeadsArt } from './OrbitingBeadsArt';
 
 const ARTS = [
   PearlBlobArt,
@@ -12,7 +12,7 @@ const ARTS = [
   MergingDropsArt,
   RisingDropsArt,
   DrippingDropArt,
-  LiquidRibbonArt,
+  OrbitingBeadsArt,
 ];
 
 // One of the fluid pieces, picked at random each time a page header mounts

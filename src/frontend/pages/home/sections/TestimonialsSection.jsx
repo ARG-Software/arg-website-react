@@ -10,7 +10,6 @@ export function TestimonialsSection({ className = '', testimonials = testimonial
       className={`section_testimonials padding-section-large ${className}`.trim()}
       data-animate-scope
       data-animate-trigger="scroll"
-      data-animate-default-stagger="180"
       data-animate-default-preset="fade-up"
     >
       <div className="padding-global">

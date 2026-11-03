@@ -58,11 +58,7 @@ export default function SkillsPage() {
             size="small"
           />
 
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="150"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             <section
               id="agents"
               className="sk-agents-section padding-section-large border-radius-top background-color-white"
@@ -112,13 +108,13 @@ export default function SkillsPage() {
               <div className="container padding-global sk-inner">
                 <div className="sk-header">
                   <div className="sk-filters">
-                    {categories.map((category, index) => (
+                    {categories.map(category => (
                       <button
                         key={category}
                         type="button"
                         className={`sk-filter-btn${activeCategory === category ? ' is-active' : ''}`}
                         onClick={() => handleCategoryChange(category)}
-                        data-animate-order={index}
+                        data-animate="fade-up"
                       >
                         {category}
                       </button>
@@ -127,7 +123,7 @@ export default function SkillsPage() {
                 </div>
 
                 <div className="sk-grid">
-                  {visibleSkills.map((skill, index) => (
+                  {visibleSkills.map(skill => (
                     <BaseCard
                       key={skill.slug}
                       as={AppLink}
@@ -136,7 +132,6 @@ export default function SkillsPage() {
                       variant="light"
                       padding="xl"
                       animate={true}
-                      animationOrder={index}
                       trackEvent="skill_click"
                       trackData={{ skill: skill.slug, category: skill.category }}
                     >

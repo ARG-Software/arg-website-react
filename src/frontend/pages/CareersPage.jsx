@@ -234,11 +234,7 @@ export default function CareersPage() {
             size="small"
           />
 
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="120"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             {hasJobs ? (
               <>
                 <section

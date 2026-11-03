@@ -2,14 +2,29 @@ import { useContext, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { animateCountUp, getCountUpEnd } from './useCountUp';
-import { ANIMATION_PRESETS, ATTRIBUTE_PRESETS } from '../animations/attribute-presets';
-import { DEFAULT_THRESHOLD, DEFAULT_ROOT_MARGIN } from '../constants/ui.js';
+import {
+  ANIMATION_PRESETS,
+  ATTRIBUTE_PRESETS,
+  REVEAL_INTRO_STEP_MS,
+  REVEAL_MAX_STEPS,
+  REVEAL_STEP_MS,
+} from '../animations/attribute-presets';
+import { DEFAULT_ROOT_MARGIN } from '../constants/ui.js';
 import { isMobile } from '../utils/helpers';
 import { LoadingContext } from '../providers/LoadingProvider';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Utility functions
+// How reveals are timed
+//
+// Elements of one scope that come into view together reveal as one cascade, REVEAL_STEP_MS
+// apart, in reading order: data-animate-order-mobile on phones when set, otherwise
+// data-animate-order, then their position on screen, top to bottom and left to right. The
+// cascade starts the moment they are seen, so an element that scrolls into view on its own
+// appears at once, whatever its order number. Every page shares this one rhythm.
+
+// Rows closer than this are treated as one line when sorting by position
+const SAME_ROW_PX = 16;
 
 // Get maximum transition duration from transition string (e.g., "opacity 0.8s ease, transform 0.8s ease")
 const getMaxTransitionDuration = transitionString => {
@@ -55,7 +70,7 @@ const getInheritedAttribute = (element, attrName) => {
 };
 
 // Get inherited preset name from element or nearest ancestor with animation attributes
-const getInheritedPreset = (element, _scope) => {
+const getInheritedPreset = element => {
   const elementPreset = element.getAttribute('data-animate');
 
   // If element has data-animate attribute with non-empty value, use it
@@ -85,104 +100,29 @@ const getInheritedPreset = (element, _scope) => {
   return null;
 };
 
-// Get animation configuration with inheritance from nearest ancestors
-const getAnimationConfig = element => {
-  // Get inherited values with fallbacks
-  const trigger =
-    getInheritedAttribute(element, 'data-animate-trigger') ||
-    getInheritedAttribute(element, 'data-animate-default-trigger') ||
-    'scroll';
+const getTrigger = element =>
+  getInheritedAttribute(element, 'data-animate-trigger') ||
+  getInheritedAttribute(element, 'data-animate-default-trigger') ||
+  'scroll';
 
-  const delayStr =
-    getInheritedAttribute(element, 'data-animate-delay') ||
-    getInheritedAttribute(element, 'data-animate-default-delay');
-  const delay = delayStr ? parseInt(delayStr) : 0;
-
-  const staggerStr =
-    getInheritedAttribute(element, 'data-animate-stagger') ||
-    getInheritedAttribute(element, 'data-animate-default-stagger');
-  const stagger = staggerStr ? parseInt(staggerStr) : 0;
-
-  const distance =
-    getInheritedAttribute(element, 'data-animate-distance') ||
-    getInheritedAttribute(element, 'data-animate-default-distance');
-
-  const rotate =
-    getInheritedAttribute(element, 'data-animate-rotate') ||
-    getInheritedAttribute(element, 'data-animate-default-rotate');
-
-  return { trigger, delay, stagger, distance, rotate };
-};
-
-// Calculate total delay for element using parent-based or scope-based timing
-const getTotalDelay = (element, orderIndex) => {
-  const config = getAnimationConfig(element);
-  const parent = element.parentElement;
-
-  // Priority 1: Parent-based staggering (most specific)
-  if (parent && parent.hasAttribute('data-animate-stagger')) {
-    const parentStagger = parseInt(parent.getAttribute('data-animate-stagger')) || 0;
-    const parentDelay = parseInt(parent.getAttribute('data-animate-delay')) || 0;
-    const childIndex = Array.from(parent.children).indexOf(element);
-    return parentDelay + parentStagger * childIndex;
-  }
-
-  // Priority 2: Scope-based timing
-  const scope = findAnimationScope(element);
-  if (scope) {
-    return config.delay + config.stagger * orderIndex;
-  }
-
-  // Priority 3: Element-based staggering (individual stagger attribute)
-  let totalDelay = config.delay;
-  if (config.stagger > 0) {
-    totalDelay += config.stagger * orderIndex;
-  }
-
-  return totalDelay;
-};
-
-// Apply custom CSS properties based on element attributes
-const applyCustomProperties = (element, preset) => {
-  const config = getAnimationConfig(element);
-
-  if (
-    config.distance &&
-    preset.initialTransform &&
-    preset.initialTransform.includes('var(--distance')
-  ) {
-    element.style.setProperty('--distance', config.distance);
-  }
-
-  if (config.rotate && preset.initialTransform && preset.initialTransform.includes('rotateZ')) {
-    // For slide-up-rotate, we need to replace the rotate value
-    // This is handled in applyInitialState via custom transform
-  }
+const getOrder = element => {
+  const mobileOrder = isMobile() ? element.getAttribute('data-animate-order-mobile') : null;
+  return Number(mobileOrder ?? element.getAttribute('data-animate-order')) || 0;
 };
 
 // Apply initial styles based on preset and element attributes
 const applyInitialState = (element, preset, presetName) => {
-  const config = getAnimationConfig(element);
-
-  // Apply custom CSS properties (e.g., --distance)
-  applyCustomProperties(element, preset);
-
-  // Handle custom rotate for slide-up-rotate preset
-  let initialTransform = preset.initialTransform;
-  if (presetName === ANIMATION_PRESETS.slideUpRotate && config.rotate) {
-    // Replace the rotate value in the transform
-    initialTransform = preset.initialTransform.replace(
-      'rotateZ(5deg)',
-      `rotateZ(${config.rotate})`
-    );
+  const distance = getInheritedAttribute(element, 'data-animate-distance');
+  if (distance && preset.initialTransform?.includes('var(--distance')) {
+    element.style.setProperty('--distance', distance);
   }
 
   if (preset.initialOpacity) {
     element.style.setProperty('opacity', preset.initialOpacity, 'important');
   }
 
-  if (initialTransform) {
-    element.style.setProperty('transform', initialTransform, 'important');
+  if (preset.initialTransform) {
+    element.style.setProperty('transform', preset.initialTransform, 'important');
   }
 
   // Special handling for team overlay (height collapse animation)
@@ -214,10 +154,8 @@ const getFinalTransform = presetName => {
   return 'translate3d(0, 0, 0)';
 };
 
-// Animate element when it becomes visible
-const animateElement = (element, preset, presetName, index = 0) => {
-  const totalDelay = getTotalDelay(element, index);
-
+// Animate element after the given delay
+const animateElement = (element, preset, presetName, delay) => {
   setTimeout(() => {
     // Remove !important flags
     element.style.removeProperty('opacity');
@@ -283,7 +221,45 @@ const animateElement = (element, preset, presetName, index = 0) => {
         }
       }
     }
-  }, totalDelay);
+  }, delay);
+};
+
+// Reveal elements of one scope that came into view together. A cascade still running in the
+// scope carries over for at most two steps, so fast scrolling never builds up a queue. Page
+// intros take the slower intro step and are never capped
+const revealBatch = (items, scope, intro) => {
+  const step = intro ? REVEAL_INTRO_STEP_MS : REVEAL_STEP_MS;
+  const maxSteps = intro ? items.length : REVEAL_MAX_STEPS;
+  const rects = new Map(items.map(item => [item, item.element.getBoundingClientRect()]));
+  items.sort((a, b) => {
+    const orderDiff = getOrder(a.element) - getOrder(b.element);
+    if (orderDiff) return orderDiff;
+    const rectA = rects.get(a);
+    const rectB = rects.get(b);
+    if (Math.abs(rectA.top - rectB.top) > SAME_ROW_PX) return rectA.top - rectB.top;
+    return rectA.left - rectB.left;
+  });
+
+  const now = performance.now();
+  const start = Math.min(Math.max(0, scope.nextReveal - now), 2 * step);
+  items.forEach((item, index) => {
+    const delay = start + Math.min(index, maxSteps) * step;
+    animateElement(item.element, item.preset, item.presetName, delay);
+  });
+  scope.nextReveal = now + start + (Math.min(items.length - 1, maxSteps) + 1) * step;
+};
+
+// Group items by their scope and reveal each group as one batch
+const revealByScope = (items, scopes, intro = false) => {
+  const groups = new Map();
+  items.forEach(item => {
+    if (!groups.has(item.scope)) groups.set(item.scope, []);
+    groups.get(item.scope).push(item);
+  });
+  groups.forEach((group, scopeElement) => {
+    if (!scopes.has(scopeElement)) scopes.set(scopeElement, { nextReveal: 0 });
+    revealBatch(group, scopes.get(scopeElement), intro);
+  });
 };
 
 // Main hook - attribute-based animation system
@@ -295,7 +271,6 @@ export function useScrollAnimations(config = {}) {
 
   const observerRef = useRef(null);
   const mountedRef = useRef(true);
-  const pendingLoadRef = useRef([]);
 
   const done = useContext(LoadingContext);
 
@@ -315,97 +290,54 @@ export function useScrollAnimations(config = {}) {
     requestAnimationFrame(() => {
       if (!mountedRef.current) return;
 
-      // Find all elements that need animation.
-      const scrollElements = [];
-      const loadElements = [];
+      const scrollItems = new Map();
+      const loadItems = [];
+      const scopes = new Map();
 
-      // Attribute-based elements with scope inheritance
-      const scopeMap = new Map(); // scope element → array of {element, originalIndex}
+      document.querySelectorAll('[data-animate], [data-animate-order]').forEach(element => {
+        const presetName = getInheritedPreset(element);
+        const preset = ATTRIBUTE_PRESETS[presetName];
+        // gsap-scale follows the scroll position instead of revealing (set up below)
+        if (!preset || presetName === ANIMATION_PRESETS.gsapScale) return;
 
-      // First pass: collect all animated elements with original document order
-      document
-        .querySelectorAll('[data-animate], [data-animate-order]')
-        .forEach((element, originalIndex) => {
-          const scope = findAnimationScope(element);
-          if (!scopeMap.has(scope)) {
-            scopeMap.set(scope, []);
-          }
-          scopeMap.get(scope).push({ element, originalIndex });
-        });
+        // Elements outside any scope are grouped by the section they sit in
+        const scope =
+          findAnimationScope(element) ??
+          element.closest('section, header, footer, article') ??
+          document.body;
+        const item = { element, preset, presetName, scope };
 
-      // Second pass: process each scope, sort by order, assign indices
-      scopeMap.forEach((items, scope) => {
-        // Sort items within scope: by data-animate-order then original document position
-        items.sort((a, b) => {
-          const orderA = parseInt(a.element.getAttribute('data-animate-order')) || 0;
-          const orderB = parseInt(b.element.getAttribute('data-animate-order')) || 0;
-          if (orderA !== orderB) return orderA - orderB;
-          // Same order value, maintain original document order
-          return a.originalIndex - b.originalIndex;
-        });
-
-        // Process each element in sorted order
-        items.forEach(({ element }, _scopeOrderIndex) => {
-          // Get inherited preset name (element attribute or scope default)
-          const presetName = getInheritedPreset(element, scope);
-
-          const preset = ATTRIBUTE_PRESETS[presetName];
-          if (preset) {
-            const config = getAnimationConfig(element);
-            // Use data-animate-order if explicitly set, otherwise fall back to scope index
-            const orderAttr = element.getAttribute('data-animate-order');
-            const orderValue = orderAttr !== null ? parseInt(orderAttr) || 0 : _scopeOrderIndex;
-            const animationData = { element, preset, presetName, orderIndex: orderValue };
-
-            if (config.trigger === 'load') {
-              loadElements.push(animationData);
-            } else {
-              scrollElements.push(animationData);
-            }
-          }
-        });
+        if (getTrigger(element) === 'load') loadItems.push(item);
+        else scrollItems.set(element, item);
       });
 
-      // Animate load-triggered elements — defer if loading screen is active
-      if (done) {
-        loadElements.forEach(({ element, preset, presetName, orderIndex }) => {
-          applyInitialState(element, preset, presetName);
-          animateElement(element, preset, presetName, orderIndex);
-        });
-      } else {
-        loadElements.forEach(({ element, preset, presetName }) => {
-          if (!element.closest('.ls-overlay')) {
-            applyInitialState(element, preset, presetName);
-          }
-        });
-        pendingLoadRef.current = loadElements;
-      }
+      // While the loading screen is up everything stays hidden; this effect runs again once it
+      // is done, so nothing reveals behind it
+      const visibleLoadItems = loadItems.filter(item => !item.element.closest('.ls-overlay'));
+      [...visibleLoadItems, ...scrollItems.values()].forEach(({ element, preset, presetName }) =>
+        applyInitialState(element, preset, presetName)
+      );
+      if (!done) return;
+      revealByScope(visibleLoadItems, scopes, true);
 
-      // Create observer for scroll-triggered elements
+      // Elements already scrolled past (a restored scroll position) reveal straight away
       const observer = new IntersectionObserver(
         entries => {
-          entries.forEach((entry, _entryIndex) => {
-            if (!entry.isIntersecting) return;
-
-            const element = entry.target;
-            const elementData = scrollElements.find(e => e.element === element);
-            if (elementData) {
-              const { preset, presetName, orderIndex } = elementData;
-              animateElement(element, preset, presetName, orderIndex);
-              observer.unobserve(element);
-            }
+          const entered = [];
+          entries.forEach(entry => {
+            if (!entry.isIntersecting && entry.boundingClientRect.top >= 0) return;
+            const item = scrollItems.get(entry.target);
+            if (!item) return;
+            scrollItems.delete(entry.target);
+            observer.unobserve(entry.target);
+            entered.push(item);
           });
+          if (entered.length) revealByScope(entered, scopes);
         },
-        {
-          threshold: DEFAULT_THRESHOLD,
-          rootMargin: DEFAULT_ROOT_MARGIN,
-        }
+        { threshold: 0, rootMargin: DEFAULT_ROOT_MARGIN }
       );
 
-      // Apply initial state and observe each scroll element
-      scrollElements.forEach(({ element, preset, presetName, orderIndex: _orderIndex }) => {
-        applyInitialState(element, preset, presetName);
-
+      scrollItems.forEach(({ element, presetName }) => {
         // Force reflow for CSS !important overrides
         if (presetName === ANIMATION_PRESETS.overlayReveal) {
           element.offsetHeight;
@@ -465,17 +397,4 @@ export function useScrollAnimations(config = {}) {
       gsapTriggers.forEach(t => t.kill());
     };
   }, [enabled, mobileBehavior, done]);
-
-  // When loading screen completes, process any deferred load-triggered animations
-  useEffect(() => {
-    if (!done || !pendingLoadRef.current.length) return;
-
-    const elements = pendingLoadRef.current;
-    pendingLoadRef.current = [];
-    elements.forEach(({ element, preset, presetName, orderIndex }) => {
-      if (!element.closest('.ls-overlay')) {
-        animateElement(element, preset, presetName, orderIndex);
-      }
-    });
-  }, [done]);
 }

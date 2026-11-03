@@ -1172,15 +1172,16 @@
 
 /* Read a report: card deck */
 
+/* Same large spacing above and below as the sections around it */
 .au-deck-section {
-  padding-bottom: clamp(1.5rem, 4vmin, 3rem);
+  padding-bottom: var(--section-space-large);
   padding-top: var(--section-space-large);
 }
 
 .au-deck {
   display: flex;
   flex-direction: column;
-  height: max(34rem, 100svh);
+  height: max(34rem, calc(100svh - var(--section-space-large)));
   max-height: 60rem;
   outline: none;
   padding-top: clamp(1.5rem, 4vmin, 3rem);
@@ -1305,6 +1306,43 @@
 .au-deck-next:hover .au-deck-next-icon {
   background: #0c002e;
   color: #fff;
+}
+
+.au-deck-foot-meta {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+}
+
+/* Pauses or resumes the five second slideshow */
+.au-deck-play {
+  align-items: center;
+  background: none;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font-size: 0.5625rem;
+  height: 2.125rem;
+  justify-content: center;
+  padding: 0;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+  width: 2.125rem;
+}
+
+.au-deck-play:hover {
+  background: #0c002e;
+  border-color: #0c002e;
+  color: #fff;
+}
+
+.au-deck-card--dark .au-deck-play:hover {
+  background: #fff;
+  border-color: #fff;
+  color: #0c002e;
 }
 
 .au-deck-card--dark .au-deck-eyebrow,
@@ -1539,7 +1577,7 @@
 
 .au-deck-note {
   color: #555;
-  font-size: clamp(0.8125rem, 1.8vmin, 0.9375rem);
+  font-size: var(--type-ui);
   line-height: var(--line-small);
   margin: 0;
   max-width: 44rem;

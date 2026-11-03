@@ -20,7 +20,6 @@ export default function NotFoundPage() {
       data-animate-scope
       data-animate-default-trigger="load"
       data-animate-default-preset="fade-up"
-      data-animate-default-stagger="120"
     >
       <SEO
         title="Page Not Found | ARG Software"

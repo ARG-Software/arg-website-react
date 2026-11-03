@@ -9,22 +9,23 @@ export function Footer({
   renderExternalLink = defaultRenderExternalLink,
   animate = true,
   animationPreset = 'fade-up',
-  animationStagger = 80,
 }) {
   const scopeAttrs = animate
     ? {
         'data-animate-scope': true,
         'data-animate-default-preset': animationPreset,
-        'data-animate-default-stagger': String(animationStagger),
       }
     : {};
 
   return (
     <>
-      <SectionDivider
-        variant="light"
-        data-animate={animate ? 'divider-expander-show' : undefined}
-      />
+      {/* Inside the page padding, so the line starts and ends with the content */}
+      <div className="container padding-global">
+        <SectionDivider
+          variant="light"
+          data-animate={animate ? 'divider-expander-show' : undefined}
+        />
+      </div>
 
       <footer className="footer-main" {...scopeAttrs}>
         <div className="container padding-global">

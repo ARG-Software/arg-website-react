@@ -65,11 +65,7 @@ export default function PartnersPage() {
             size="small"
           />
 
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="150"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             <section
               id="partners"
               className="pc-clients-section padding-section-large background-color-white border-radius-all"
@@ -104,7 +100,6 @@ export default function PartnersPage() {
                   renderItem={c => <img src={c.logoSmall || c.logo} alt={c.name} loading="lazy" />}
                   animate={true}
                   preset="fade-up"
-                  stagger={80}
                 />
               </div>
             </section>
@@ -116,9 +111,7 @@ export default function PartnersPage() {
                 ctaLink={getProjectBriefFormLink()}
                 onCtaClick={() => trackCTA('contact_brief', 'partners_timeline')}
                 animate={true}
-                rowPreset="slide-from-left"
                 cardPreset="fade-up"
-                stagger={150}
               />
             </section>
           </div>

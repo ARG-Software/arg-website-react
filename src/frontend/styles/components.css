@@ -750,6 +750,7 @@
   overflow: hidden;
 }
 
+/* Clips only above and below for the roll-up hover, so the rotated arrow keeps its tip */
 .text-button {
   --text-button-align: flex-start;
 
@@ -759,7 +760,8 @@
   font-size: var(--type-text-button);
   grid-template-areas: 'stack';
   line-height: var(--line-cta) !important;
-  overflow: hidden !important;
+  overflow: visible !important;
+  clip-path: inset(0 -0.5rem);
   position: relative !important;
 }
 
@@ -1283,10 +1285,6 @@
   position: static;
 }
 
-.header-animation {
-  overflow: hidden;
-}
-
 .text-color-gradiant-2 {
   color: #000;
   -webkit-text-fill-color: transparent;
@@ -1339,10 +1337,6 @@
     padding: 3rem 1.5rem;
   }
 
-  .cta-wrapper .heading-style-h1 {
-    font-size: clamp(2rem, 10vw, 3rem);
-  }
-
   .cta-wrapper .cta-subtitle {
     font-size: 0.9375rem;
     max-width: 28rem;
@@ -1376,11 +1370,6 @@
     padding: 2.25rem 1.25rem;
   }
 
-  .cta-wrapper .heading-style-h1 {
-    font-size: clamp(1.65rem, 9vw, 2.125rem);
-    line-height: 1.1;
-  }
-
   .cta-buttons {
     flex-direction: row;
     flex-wrap: wrap;
@@ -1405,9 +1394,7 @@
 
 .cta-wrapper {
   align-items: center;
-  background:
-    radial-gradient(52rem 28rem at 100% 0%, rgba(121, 4, 253, 0.22), transparent 60%),
-    radial-gradient(38rem 24rem at 0% 100%, rgba(240, 6, 13, 0.12), transparent 62%), #0c002e;
+  background: #0c002e;
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: center;
@@ -1419,12 +1406,41 @@
   width: 100%;
 }
 
+/* Coloured glows breathe slowly behind the content; they dim but never go out */
+.cta-wrapper::after {
+  animation: cta-glow 8s ease-in-out infinite;
+  background:
+    radial-gradient(52rem 28rem at 100% 0%, rgba(121, 4, 253, 0.22), transparent 60%),
+    radial-gradient(38rem 24rem at 0% 100%, rgba(240, 6, 13, 0.12), transparent 62%);
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+@keyframes cta-glow {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
 .cta-wrapper::before {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 34%);
   content: '';
   inset: 0;
   pointer-events: none;
   position: absolute;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-wrapper::after {
+    animation: none;
+  }
 }
 
 .cta-content {
@@ -1442,6 +1458,13 @@
   color: #fff;
   font-size: var(--type-cta-title);
   line-height: var(--line-tight);
+}
+
+/* On tablets and phones the call to action title matches the section titles around it */
+@media screen and (max-width: 1024px) {
+  .cta-wrapper .heading-style-h1 {
+    font-size: var(--type-section-title);
+  }
 }
 
 .cta-wrapper .cta-subtitle {
@@ -1479,25 +1502,17 @@
     display: inline;
   }
 
-  /* On phones the call to action sits straight on the dark page, without its card */
+  /* Same card as on desktop, glow and sheen included, just shorter */
   .cta-wrapper {
     min-height: auto;
-    background: none;
-    border: 0;
-    border-radius: 0;
-  }
-
-  .cta-wrapper::before {
-    display: none;
   }
 
   .cta-content {
-    padding: 3.25rem 0;
+    padding: 3.25rem 1.5rem;
     width: 100%;
   }
 
   .cta-wrapper .heading-style-h1 {
-    font-size: clamp(2rem, 9vw, 2.875rem);
     line-height: 1.08;
     text-wrap: balance;
   }
@@ -1518,10 +1533,6 @@
 @media screen and (max-width: 480px) {
   .cta-content {
     padding: 2.5rem 1rem;
-  }
-
-  .cta-wrapper .heading-style-h1 {
-    font-size: clamp(1.85rem, 10vw, 2.5rem);
   }
 
   .cta-wrapper .cta-subtitle {
@@ -1673,8 +1684,15 @@
   top: 6.5rem;
   width: min(26rem, 26vw);
   z-index: -1;
-  /* Faint, so it sits in the background like the hero blob on the home page */
-  opacity: 0.18;
+}
+
+/* Barely above the background, a texture rather than a feature. The opacity sits on the
+   canvas because the wrapper's reveal sets its own opacity */
+.page-header__art-canvas {
+  display: block;
+  height: 100%;
+  opacity: 0.07;
+  width: 100%;
 }
 
 /* Below this the drawing would run into the subtitle */
@@ -2367,6 +2385,11 @@
   border-top: none;
 }
 
+/* Index numbers only show in the mobile layout */
+.nav-menu__primary-index {
+  display: none;
+}
+
 .nav-menu__primary-name {
   display: inline-block;
   font-family: Neuemontreal, sans-serif;
@@ -2651,6 +2674,9 @@
    Mobile
    ===================================================================== */
 
+/* Phones and small tablets: a compact primary list with index numbers, the three groups in one
+   grid, and a dark footer with a single main call to action over the latest article. Spacing
+   follows one scale: 0.5, 1, 2 and 3rem */
 @media (max-width: 860px) {
   .nav-menu__container {
     --nav-menu-top: 1.25rem;
@@ -2666,61 +2692,92 @@
     align-items: stretch;
     justify-content: flex-start;
     min-height: auto;
-    padding: 1rem var(--nav-menu-right) 0 var(--nav-menu-left);
+    padding: 2rem var(--nav-menu-right) 0 var(--nav-menu-left);
     overflow: visible;
   }
 
   .nav-menu__primary {
     align-items: stretch;
-    margin: 0 0 1rem;
     gap: 0;
   }
 
   .nav-menu__primary-link {
-    justify-content: space-between;
-    padding: 0.875rem 0;
-    border-bottom: 1px solid rgba(15, 10, 48, 0.09);
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.5rem 0;
+  }
+
+  .nav-menu__primary-index {
+    display: inline;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    color: rgba(15, 10, 48, 0.46);
   }
 
   .nav-menu__primary-name {
-    font-size: clamp(2.25rem, 7vw, 2.75rem);
+    font-size: 2.5rem;
     letter-spacing: -0.03em;
+    line-height: 1.1;
   }
 
+  /* The only divider, between the primary list and the groups */
   .nav-menu__utilities {
     justify-content: flex-start;
     margin-bottom: 0;
-    padding: 0 var(--nav-menu-right) 1.5rem var(--nav-menu-left);
+    padding: 2rem var(--nav-menu-right) 3rem var(--nav-menu-left);
   }
 
   .nav-menu__columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1rem;
     width: 100%;
-    padding-top: 0.5rem;
-    border-top: none;
-  }
-
-  .nav-menu__column:first-child {
-    grid-column: 1 / -1;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(15, 10, 48, 0.09);
   }
 
   .nav-menu__column {
-    font-size: 0.9375rem;
+    gap: 0.5rem;
+    font-size: 1.0625rem;
+    line-height: 1.4;
+  }
+
+  /* Featured work spans the grid and lays its projects out in the same two columns */
+  .nav-menu__column:first-child {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    gap: 0.5rem 1rem;
+  }
+
+  .nav-menu__column:first-child .nav-menu__utility-label {
+    grid-column: 1 / -1;
+  }
+
+  .nav-menu__utility-label {
+    margin-bottom: 0.5rem;
   }
 
   .nav-menu__ribbon {
-    display: flex;
+    display: grid;
     flex: 1 0 auto;
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: end;
     gap: 1rem;
-    padding: 1.25rem var(--nav-menu-right) 1.5rem var(--nav-menu-left);
+    padding: 2rem var(--nav-menu-right) 2rem var(--nav-menu-left);
     border-top: none;
-    --nav-menu-pill-height: 2.75rem;
+    --nav-menu-pill-height: 3rem;
   }
 
+  /* The latest article reads as content: one tappable row under the main button */
   .nav-menu__latest {
-    padding: 0.5rem;
+    grid-column: 1 / -1;
+    gap: 1rem;
+    padding: 0.5rem 1rem 0.5rem 0.5rem;
+    order: 1;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.06);
   }
 
   .nav-menu__latest-thumb {
@@ -2736,15 +2793,23 @@
     -webkit-box-orient: vertical;
   }
 
-  .nav-menu__ai-chip {
-    font-size: 0.65rem;
+  .nav-menu__cta {
+    order: 0;
+    grid-column: 1 / -1;
+    width: 100%;
+    font-size: 0.9375rem;
   }
 
-  .nav-menu__cta {
-    margin-top: auto;
-    min-width: 0;
-    width: fit-content;
-    font-size: 0.75rem;
+  /* Audit and Gaspar share the row under the main button, half each */
+  .nav-menu__ai-chip {
+    order: 2;
+    justify-content: center;
+    width: 100%;
+    height: 2.75rem;
+    padding: 0 0.5rem;
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
   }
 }
 
@@ -2804,16 +2869,12 @@
   }
 
   .nav-menu__body {
-    padding-top: 0.75rem;
+    padding-top: 1rem;
   }
 
   .nav-menu__close-icon {
     width: 2.75rem;
     height: 2.75rem;
     font-size: 1.375rem;
-  }
-
-  .nav-menu__primary-name {
-    font-size: clamp(2rem, 9vw, 2.5rem);
   }
 }

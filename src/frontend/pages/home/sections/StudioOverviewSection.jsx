@@ -27,7 +27,6 @@ export function StudioOverviewSection({ className = '', content = HOMEPAGE.overv
       className={`home-overview padding-section-xlarge background-color-white ${className}`.trim()}
       data-animate-scope
       data-animate-trigger="scroll"
-      data-animate-default-stagger="120"
       data-animate-default-preset="fade-up"
     >
       <div className="home-overview__inner container padding-global">

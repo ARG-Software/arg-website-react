@@ -39,13 +39,11 @@ export function CTASection({
   onSecondaryClick,
   animate = true,
   animationPreset = 'fade-up',
-  animationStagger = 120,
 }) {
   const scopeAttrs = animate
     ? {
         'data-animate-scope': true,
         'data-animate-default-preset': animationPreset,
-        'data-animate-default-stagger': String(animationStagger),
       }
     : {};
 

@@ -15,8 +15,7 @@ export function ProjectsSection({ projects, className = '', content = HOMEPAGE.p
       className={`projects_wrap background-color-white padding-section-large border-radius-bottom ${className}`.trim()}
       data-animate-scope
       data-animate-trigger="scroll"
-      data-animate-default-preset={ANIMATION_PRESETS.slideUp}
-      data-animate-default-stagger="120"
+      data-animate-default-preset={ANIMATION_PRESETS.fadeUp}
     >
       <div className="projects_contain container padding-global">
         <div className="projects_heading-wrapper home-projects__heading-wrapper">

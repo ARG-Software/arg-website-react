@@ -71,13 +71,15 @@
   white-space: pre;
 }
 
-/* Each reel window is exactly one letter tall, so the rolling letters stay inside the text */
+/* Each reel window is exactly one letter tall, so the rolling letters stay inside the text. It
+   clips only above and below: tightly spaced letters are wider than their slot, and clipping the
+   sides would shave their edges */
 .slot-text__reel {
   display: inline-flex;
   flex-direction: column;
   height: 1.15em;
   line-height: 1.15;
-  overflow: hidden;
+  clip-path: inset(0 -0.25em);
 }
 
 /* The incoming gradient letter fades in as it rolls up while the plain one fades out, which

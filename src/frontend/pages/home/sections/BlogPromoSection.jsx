@@ -68,7 +68,6 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
       style={{ backgroundColor: '#0c002e' }}
       data-animate-scope
       data-animate-default-preset="fade-up"
-      data-animate-default-stagger="120"
     >
       <div className="padding-global">
         <div className="container-large">

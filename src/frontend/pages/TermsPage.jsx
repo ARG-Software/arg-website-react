@@ -37,11 +37,7 @@ export default function TermsPage() {
             breadcrumbs={[{ label: 'Home', path: '/' }, { label: PAGE.breadcrumbLabel }]}
             size="small"
           />
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="150"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             <section className="legal-section">
               <div className="container padding-global">
                 <LegalArticle page={PAGE} contactEmail={CONTACT_EMAIL} />

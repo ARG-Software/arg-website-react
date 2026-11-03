@@ -7,13 +7,11 @@ export function FilterGrid({
   renderItem,
   animate = true,
   preset = 'fade-up',
-  stagger = 100,
 }) {
   const scopeAttrs = animate
     ? {
         'data-animate-scope': true,
         'data-animate-default-preset': preset,
-        'data-animate-default-stagger': String(stagger),
       }
     : {};
 

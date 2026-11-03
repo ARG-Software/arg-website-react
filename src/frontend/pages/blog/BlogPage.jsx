@@ -28,8 +28,8 @@ import { LenisContext } from '@providers/LenisProvider';
 import '../../styles/blog.css';
 
 const HERO_TOPIC_COUNT = 6;
-// Space left above the list when a filter brings it back into view
-const LIST_TOP_GAP = 24;
+// Space left above the list when a filter brings it back into view, in rem so it follows the root font size
+const LIST_TOP_GAP_REM = 1.5;
 
 export default function BlogPage() {
   const [blogPosts] = useState(() => loadBlogPostsMetadata());
@@ -86,7 +86,11 @@ export default function BlogPage() {
   useLayoutEffect(() => {
     if (!returnToListTop.current) return;
     returnToListTop.current = false;
-    const top = window.scrollY + layoutRef.current.getBoundingClientRect().top - LIST_TOP_GAP;
+    const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const top =
+      window.scrollY +
+      layoutRef.current.getBoundingClientRect().top -
+      LIST_TOP_GAP_REM * rootFontSize;
     // Lenis caches the page height; re-measure so a longer list is not clamped to the old one
     if (lenis) {
       lenis.resize();
@@ -168,11 +172,7 @@ export default function BlogPage() {
             size="small"
           />
 
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="150"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             <section
               id="blog-list"
               className="blp-section background-color-white padding-section-large border-radius-all"

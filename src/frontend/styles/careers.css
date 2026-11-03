@@ -719,9 +719,6 @@
   .cp-whyus-header {
     margin-bottom: 2.75rem;
   }
-  .cp-whyus-title {
-    font-size: var(--type-section-title-mobile);
-  }
   .cp-whyus-pillar {
     min-height: auto;
   }
@@ -730,9 +727,6 @@
   }
   .cp-values-grid {
     grid-template-columns: 1fr;
-  }
-  .cp-fit-header h2 {
-    font-size: var(--type-section-title-mobile);
   }
   .cp-fit-panel {
     gap: 3rem;
@@ -758,7 +752,13 @@
     padding: 1.625rem 1.5rem;
   }
   .cp-founder-card {
-    grid-template-columns: 1fr;
+    gap: 1rem;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+  }
+  .cp-founder-monogram {
+    font-size: 1.25rem;
+    height: 4.5rem;
+    width: 4.5rem;
   }
   .cp-founder-focus {
     grid-template-columns: 1fr;

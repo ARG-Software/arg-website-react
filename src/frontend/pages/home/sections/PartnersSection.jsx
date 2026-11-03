@@ -17,12 +17,11 @@ export function PartnersSection({
       data-animate-scope
       data-animate-trigger="scroll"
       data-animate-default-preset="fade-up"
-      data-animate-default-stagger="50"
     >
       <Marquee
         items={clients}
-        renderItem={(client, index) => (
-          <span className="partners_logo_wrap" data-animate="fade-up" data-animate-order={index}>
+        renderItem={client => (
+          <span className="partners_logo_wrap">
             <img
               src={client.logoSmall || client.logo}
               alt={client.name}
@@ -33,6 +32,8 @@ export function PartnersSection({
         )}
         getItemKey={client => client.slug}
         repetitions={4}
+        animate={true}
+        animationOrder={0}
         outerClassName="partners_marquee-outer"
         trackClassName="partners_marquee-track"
         setClassName="partners_marquee-set"

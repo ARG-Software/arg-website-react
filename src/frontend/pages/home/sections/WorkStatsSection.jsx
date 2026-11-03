@@ -177,7 +177,6 @@ export function WorkStatsSection({ className = '', content = HOMEPAGE.workStats 
       data-animate-scope
       data-animate-trigger="scroll"
       data-animate-default-preset="fade-up"
-      data-animate-default-stagger="140"
     >
       <div className="padding-global">
         <div className="container-medium">

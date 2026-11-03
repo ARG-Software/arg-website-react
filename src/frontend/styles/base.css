@@ -353,10 +353,10 @@ label {
   --type-hero-title: clamp(3.25rem, 5.2vw, 4rem);
   --type-about-title: 3rem;
   --type-marquee: clamp(1.5rem, 4vw, 3.4375rem);
-  --type-page-title: clamp(1.75rem, 3vw, 3rem);
-  --type-page-title-article: clamp(1.75rem, 2.6vw, 2.875rem);
-  --type-section-title: clamp(2rem, 3vw, 2.75rem);
-  --type-section-title-mobile: clamp(1.875rem, 9vw, 2.5rem);
+  /* Page titles stay a clear step above section titles at every width */
+  --type-page-title: clamp(2.25rem, 4.5vw, 3.75rem);
+  --type-page-title-article: clamp(2rem, 3.6vw, 3.25rem);
+  --type-section-title: clamp(1.75rem, 3vw, 2.75rem);
   --type-section-subtitle: clamp(1rem, 1.2vw, 1.125rem);
   --type-content-heading: clamp(1.75rem, 3.5vw, 2.5rem);
   --type-card-title: clamp(1.25rem, 1.8vw, 1.5rem);

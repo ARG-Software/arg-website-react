@@ -1,21 +1,28 @@
 // Attribute-based animation presets
-import { DEFAULT_THRESHOLD, DEFAULT_ROOT_MARGIN, MOBILE_BREAKPOINT } from '../constants/ui.js';
+//
+// Reveals follow one pattern across the site, by role:
+// - fade-up: titles, text, cards, lists and buttons (the default for every scope)
+// - divider-expander-show: divider lines
+// - slide-up-rotate: page header title lines
+// - slide-in-left / slide-in-right: home project cards, each from its own side (fade-up on phones)
+// - width-countup, overlay-reveal and gsap-scale: stats, team photos and scroll-scaled images
+// Timing is shared too: see useScrollAnimations for how the steps below are applied.
 
-export { DEFAULT_THRESHOLD, DEFAULT_ROOT_MARGIN, MOBILE_BREAKPOINT };
+// Time between items revealing together
+export const REVEAL_STEP_MS = 100;
+// Page intros (load-triggered headers) take a slower step so they read as a sequence
+export const REVEAL_INTRO_STEP_MS = 250;
+// Longer scroll cascades stop adding delay after this many steps, so the last items never lag behind
+export const REVEAL_MAX_STEPS = 6;
 
 export const ANIMATION_PRESETS = {
   fadeUp: 'fade-up',
-  slideUp: 'slide-up',
   widthCountup: 'width-countup',
   overlayReveal: 'overlay-reveal',
   slideUpRotate: 'slide-up-rotate',
-  slideInRight: 'slide-in-right',
   slideInLeft: 'slide-in-left',
+  slideInRight: 'slide-in-right',
   dividerExpanderShow: 'divider-expander-show',
-  titleReveal: 'title-reveal',
-  slideFromLeft: 'slide-from-left',
-  solutionItem: 'solution-item',
-  tagPop: 'tag-pop',
   gsapScale: 'gsap-scale',
   // Hover presets, styled in hover.css
   slotText: 'slot-text',
@@ -25,114 +32,50 @@ export const ANIMATION_PRESETS = {
 
 // Preset configurations
 export const ATTRIBUTE_PRESETS = {
-  // Basic fade up with optional stagger
   [ANIMATION_PRESETS.fadeUp]: {
     initialOpacity: '0',
     initialTransform: 'translate3d(0, 2rem, 0)',
     transition: 'opacity 0.8s var(--ease-out-cubic), transform 0.8s var(--ease-out-cubic)',
-    threshold: DEFAULT_THRESHOLD,
-    rootMargin: DEFAULT_ROOT_MARGIN,
-  },
-
-  // Slide up from bottom (100%)
-  [ANIMATION_PRESETS.slideUp]: {
-    initialOpacity: '0',
-    initialTransform: 'translate3d(0, 100%, 0)',
-    transition: 'opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo)',
-    threshold: 0.1,
-    rootMargin: '0px 0px -10% 0px',
   },
 
   // Width expansion with count-up (for stats)
   [ANIMATION_PRESETS.widthCountup]: {
-    threshold: 0.3,
-    rootMargin: '0px 0px -10% 0px',
     transition: 'width 1s var(--ease-out-expo)',
     countUpDuration: 2500, // ms
   },
 
   // Overlay height collapse (team images)
   [ANIMATION_PRESETS.overlayReveal]: {
-    threshold: 0.1,
-    rootMargin: DEFAULT_ROOT_MARGIN,
     transition: 'height 0.9s var(--ease-out-expo)',
   },
 
-  // Slide up with fixed 5deg rotation (distance configurable via data-animate-distance)
+  // Masked line rising with a slight rotation (distance configurable via data-animate-distance)
   [ANIMATION_PRESETS.slideUpRotate]: {
     initialTransform: 'translate3d(0, var(--distance, 100%), 0) rotateZ(5deg)',
     transition: 'transform 0.8s var(--ease-out-cubic)',
-    threshold: DEFAULT_THRESHOLD,
-    rootMargin: DEFAULT_ROOT_MARGIN,
   },
 
-  // Slide in from right
-  [ANIMATION_PRESETS.slideInRight]: {
-    initialOpacity: '0',
-    initialTransform: 'translate3d(50%, 0, 0)',
-    transition: 'opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo)',
-    threshold: 0.1,
-    rootMargin: '0px 0px -10% 0px',
-  },
-
-  // Slide in from left
+  // Slide in from the left or right
   [ANIMATION_PRESETS.slideInLeft]: {
     initialOpacity: '0',
     initialTransform: 'translate3d(-50%, 0, 0)',
     transition: 'opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo)',
-    threshold: 0.1,
-    rootMargin: '0px 0px -10% 0px',
+  },
+
+  [ANIMATION_PRESETS.slideInRight]: {
+    initialOpacity: '0',
+    initialTransform: 'translate3d(50%, 0, 0)',
+    transition: 'opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo)',
   },
 
   // Horizontal scale animation (divider expand)
   [ANIMATION_PRESETS.dividerExpanderShow]: {
     initialTransform: 'scale3d(0.1, 1, 1)',
     transition: 'transform 0.8s var(--ease-out-cubic)',
-    threshold: DEFAULT_THRESHOLD,
-    rootMargin: DEFAULT_ROOT_MARGIN,
   },
 
-  // Project detail: title reveal (slide up with slight overshoot)
-  [ANIMATION_PRESETS.titleReveal]: {
-    initialOpacity: '0',
-    initialTransform: 'translate3d(0, 40px, 0)',
-    transition: 'opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo)',
-    threshold: 0.1,
-    rootMargin: '0px 0px -10% 0px',
-  },
-
-  // Project detail: slide from left (section labels)
-  [ANIMATION_PRESETS.slideFromLeft]: {
-    initialOpacity: '0',
-    initialTransform: 'translate3d(-30px, 0, 0)',
-    transition: 'opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo)',
-    threshold: 0.1,
-    rootMargin: '0px 0px -10% 0px',
-  },
-
-  // Project detail: solution list items (staggered slide from left)
-  [ANIMATION_PRESETS.solutionItem]: {
-    initialOpacity: '0',
-    initialTransform: 'translate3d(-20px, 0, 0)',
-    transition: 'opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo)',
-    threshold: 0.1,
-    rootMargin: '0px 0px -5% 0px',
-  },
-
-  // Project detail: tag pop-in (scale from 0.8)
-  [ANIMATION_PRESETS.tagPop]: {
-    initialOpacity: '0',
-    initialTransform: 'scale(0.8)',
-    transition: 'opacity 0.4s ease, transform 0.4s var(--ease-out-back)',
-    threshold: 0.1,
-    rootMargin: '0px 0px -5% 0px',
-  },
-
-  // GSAP scale on scroll (for images)
-  [ANIMATION_PRESETS.gsapScale]: {
-    threshold: 0,
-    rootMargin: '0px',
-  },
+  // GSAP scale on scroll (for images), driven by ScrollTrigger rather than a reveal
+  [ANIMATION_PRESETS.gsapScale]: {},
 };
 
 // Hover preset settings read by components; presets that are pure CSS (lift, circle-grow)

@@ -70,13 +70,16 @@ export function NavMenu({
 
         <div className="nav-menu__body">
           <nav className="nav-menu__primary" aria-label="Pages">
-            {primary.map(item =>
+            {primary.map((item, index) =>
               renderLink({
                 key: item.label,
                 to: item.to,
                 className: 'nav-menu__primary-link',
                 children: (
                   <>
+                    <span className="nav-menu__primary-index" aria-hidden="true">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
                     <span className="nav-menu__primary-name">{renderLabel(item.label)}</span>
                   </>
                 ),

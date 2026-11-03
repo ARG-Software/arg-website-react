@@ -65,11 +65,7 @@ export default function PatternDetailPage() {
             variant="article bp-article-page-header"
           />
 
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="80"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             <section className="bp-body background-color-white padding-section-large border-radius-all">
               <div className="bp-body-inner container container--section padding-global">
                 <article className="bp-content">

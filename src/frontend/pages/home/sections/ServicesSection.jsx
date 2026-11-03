@@ -15,7 +15,6 @@ export function ServicesSection({ className = '', content = HOMEPAGE.services })
       ref={containerRef}
       data-animate-scope
       data-animate-default-preset="fade-up"
-      data-animate-default-stagger="90"
     >
       <div className="services_contain container padding-global">
         <div className="services_grid">
@@ -31,8 +30,6 @@ export function ServicesSection({ className = '', content = HOMEPAGE.services })
                 className="services_item"
                 data-animate-scope
                 data-animate-default-preset="fade-up"
-                data-animate-default-stagger="60"
-                data-animate-order={index}
               >
                 <div className="services_item_number" data-animate-order="0">
                   <div className="service_number_text">{service.number}</div>

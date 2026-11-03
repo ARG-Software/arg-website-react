@@ -153,15 +153,11 @@ export default function ProjectDetailPage() {
             <div className="prp-intro-grid">
               <div className="prp-intro-top">
                 <div className="prp-intro-heading-group">
-                  <h1 className="prp-intro-title" data-animate="title-reveal">
+                  <h1 className="prp-intro-title" data-animate="fade-up">
                     {project.title}
                   </h1>
                   {projectLinks.length > 0 && (
-                    <div
-                      className="prp-intro-links"
-                      data-animate="fade-up"
-                      data-animate-delay="100"
-                    >
+                    <div className="prp-intro-links" data-animate="fade-up">
                       {projectLinks.map(link => (
                         <a
                           key={link.href}
@@ -185,17 +181,13 @@ export default function ProjectDetailPage() {
                     {project.intro}
                   </h3>
                   {project.description && (
-                    <p
-                      className="prp-intro-description"
-                      data-animate="fade-up"
-                      data-animate-delay="200"
-                    >
+                    <p className="prp-intro-description" data-animate="fade-up">
                       <InlineLinkText text={project.description} linkClassName="prp-inline-link" />
                     </p>
                   )}
                 </div>
               </div>
-              <div className="prp-meta-list" data-animate-scope data-animate-stagger="80">
+              <div className="prp-meta-list">
                 <div className="prp-meta-item" data-animate="fade-up" data-animate-order="0">
                   <span className="prp-meta-label">Category</span>
                   <span className="prp-meta-value">{project.subtitle}</span>
@@ -212,14 +204,7 @@ export default function ProjectDetailPage() {
                   <span className="prp-meta-label">Services</span>
                   <div className="prp-meta-services">
                     {project.services.map((service, i) => (
-                      <Pill
-                        key={i}
-                        className="prp-meta-service-tag"
-                        variant="outline"
-                        size="xs"
-                        data-animate="tag-pop"
-                        data-animate-order={i}
-                      >
+                      <Pill key={i} className="prp-meta-service-tag" variant="outline" size="xs">
                         {service}
                       </Pill>
                     ))}
@@ -239,8 +224,6 @@ export default function ProjectDetailPage() {
                         data-animate-hover="lift"
                         variant="light"
                         size="sm"
-                        data-animate="tag-pop"
-                        data-animate-order={i + 4}
                       >
                         {tech}
                       </Pill>
@@ -280,19 +263,14 @@ export default function ProjectDetailPage() {
                 )}
               </div>
               <div className="prp-challenge-content">
-                <span className="prp-section-label" data-animate="slide-from-left">
+                <span className="prp-section-label" data-animate="fade-up">
                   The Problem
                 </span>
-                <h2 className="prp-section-heading" data-animate="slide-up">
+                <h2 className="prp-section-heading" data-animate="fade-up">
                   What had to be solved
                 </h2>
                 {project.challenge.split('\n\n').map((paragraph, i) => (
-                  <p
-                    key={i}
-                    className="prp-section-text"
-                    data-animate="fade-up"
-                    data-animate-delay={i * 150}
-                  >
+                  <p key={i} className="prp-section-text" data-animate="fade-up">
                     <InlineLinkText text={paragraph} linkClassName="prp-inline-link" />
                   </p>
                 ))}
@@ -306,15 +284,15 @@ export default function ProjectDetailPage() {
           <div className="prp-grid-container">
             <div className="prp-solution-grid" ref={approachRef}>
               <div className="prp-solution-content">
-                <span className="prp-solution-label" data-animate="slide-from-left">
+                <span className="prp-solution-label" data-animate="fade-up">
                   The Approach
                 </span>
-                <h2 className="prp-solution-heading" data-animate="slide-up">
+                <h2 className="prp-solution-heading" data-animate="fade-up">
                   How we made it work
                 </h2>
-                <ul className="prp-solution-list" data-animate-scope data-animate-stagger="100">
+                <ul className="prp-solution-list">
                   {project.solution.map((item, i) => (
-                    <li key={i} data-animate="solution-item" data-animate-order={i}>
+                    <li key={i} data-animate="fade-up">
                       <span className="prp-solution-item-arrow arrow_icon-embed" aria-hidden="true">
                         {arrowSvg}
                       </span>
@@ -335,10 +313,10 @@ export default function ProjectDetailPage() {
           <div className="prp-grid-container">
             <div className="prp-results-grid">
               <div className="prp-results-left">
-                <span className="prp-section-label" data-animate="slide-from-left">
+                <span className="prp-section-label" data-animate="fade-up">
                   Results
                 </span>
-                <h2 className="prp-results-heading" data-animate="slide-up">
+                <h2 className="prp-results-heading" data-animate="fade-up">
                   By the numbers
                 </h2>
                 <p className="prp-results-text" data-animate="fade-up">
@@ -346,7 +324,7 @@ export default function ProjectDetailPage() {
                 </p>
               </div>
               <div className="prp-results-right">
-                <div className="prp-results-cards" data-animate-scope data-animate-stagger="150">
+                <div className="prp-results-cards">
                   {project.metrics.map((metric, i) => (
                     <BaseCard
                       key={i}
@@ -356,7 +334,6 @@ export default function ProjectDetailPage() {
                       radius="sm"
                       hover="none"
                       animate={true}
-                      animationOrder={i}
                     >
                       <div className="prp-metric-card-number" data-animate="width-countup">
                         {metric.displayValue ? (

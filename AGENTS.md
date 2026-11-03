@@ -117,9 +117,11 @@ Available aliases: `@components`, `@hooks`, `@constants`, `@providers`, `@utils`
 
 ### 3.6 Scroll Animations
 - `useScrollAnimations.js` — main animation hook
-- Uses `data-animate-scope`, `data-animate`, `data-animate-preset`, `data-animate-stagger`, etc.
-- Supported presets: `fade-up`, `slide-from-left`, `slide-from-right`, `zoom-in`, `width-countup`, `overlay-reveal`, `gsap-scale`
-- Sets up IntersectionObserver + GSAP `fromTo` tweens
+- Uses `data-animate-scope`, `data-animate`, `data-animate-default-preset`, `data-animate-order`, `data-animate-order-mobile` and `data-animate-trigger`
+- Presets by role (`src/frontend/animations/attribute-presets.js`): `fade-up` for content, `divider-expander-show` for lines, `slide-up-rotate` for page header title lines, `slide-in-left`/`slide-in-right` for home project cards, `width-countup`, `overlay-reveal` and `gsap-scale` for stats, team photos and images
+- Timing is shared, never per section: elements of a scope that enter view together reveal as one cascade, `REVEAL_STEP_MS` (100ms) apart and capped at `REVEAL_MAX_STEPS`; load-triggered page intros use `REVEAL_INTRO_STEP_MS` (250ms). An element entering view on its own reveals at once
+- Sequence inside a cascade: `data-animate-order-mobile` on phones when set, then `data-animate-order`, then on-screen position (top to bottom, left to right). Leave the order out when position already gives the right sequence
+- Nothing reveals while the loading screen is up
 - Cleans up inline `transform` after animation to prevent CSS hover conflicts
 
 ### 3.7 Blog System
@@ -448,10 +450,10 @@ export default function MyPage() {
 ### Animation Guidelines
 - Use `useScrollAnimations()` hook for scroll-triggered animations
 - Use `data-animate-scope` on parent, `data-animate="preset"` on children
-- Presets: `fade-up`, `slide-from-left`, `slide-from-right`, `zoom-in`, `width-countup`
-- Stagger: `data-animate-default-stagger="100"` on scope parent
-- Order override: `data-animate-order="2"` on individual elements
-- Components like `FilterGrid`, `Timeline` accept optional `animate`/`preset`/`stagger` props
+- Pick the preset by role (see § 3.6); do not add one-off effects or per-section staggers or delays
+- Order override: `data-animate-order="2"`, plus `data-animate-order-mobile` where the phone layout reorders elements
+- Do not nest animated elements; content inside a marquee animates the whole marquee (`animate` prop), since off-screen copies would pop in late
+- Components like `FilterGrid`, `Timeline` accept optional `animate`/`preset` props
 
 ### When to Use AppLink vs Plain `<a>`
 - **AppLink**: Internal SPA navigation (client-side routing, no full reload)

@@ -61,11 +61,7 @@ export default function SkillDetailPage() {
             size="small"
           />
 
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="150"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             <section className="sk-section padding-section-large background-color-white border-radius-all">
               <div className="container padding-global sk-inner sk-detail">
                 <div className="sk-detail-meta" data-animate="fade-up">

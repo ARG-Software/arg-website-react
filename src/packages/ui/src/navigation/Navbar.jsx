@@ -13,7 +13,6 @@ export function Navbar({
     <div
       className="nav_wrap padding-global"
       data-animate-scope
-      data-animate-default-stagger="300"
       data-animation="default"
       data-easing2="ease-in"
       data-easing="ease-in"

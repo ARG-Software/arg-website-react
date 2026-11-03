@@ -24,7 +24,6 @@ export function Timeline({
   animate = true,
   rowPreset = 'fade-up',
   cardPreset = 'fade-up',
-  stagger = 150,
 }) {
   const isExternal = ctaLink.startsWith('http');
   const ctaAttrs = isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
@@ -47,7 +46,6 @@ export function Timeline({
     ? {
         'data-animate-scope': true,
         'data-animate-default-preset': cardPreset,
-        'data-animate-default-stagger': String(stagger),
       }
     : {};
 

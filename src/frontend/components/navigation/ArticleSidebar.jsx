@@ -6,7 +6,6 @@ export function ArticleSidebar({
   className = '',
   animate = false,
   animationPreset = 'fade-up',
-  animationStagger = 80,
   animationOrder = 0,
 }) {
   if (!sectionLinks.length) return null;
@@ -15,7 +14,6 @@ export function ArticleSidebar({
     ? {
         'data-animate': animationPreset,
         'data-animate-order': String(animationOrder),
-        'data-animate-stagger': String(animationStagger),
       }
     : {};
 

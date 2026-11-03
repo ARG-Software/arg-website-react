@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 const STORAGE_KEY = 'arg-audit-report-card';
+const AUTOPLAY_MS = 5000;
 const WHEEL_STEP_MS = 700;
 const SWIPE_PX = 50;
 const MAX_BEHIND = 2;
@@ -211,7 +212,15 @@ export function ReportGuideDeck({ content }) {
     }
   });
   const currentRef = useRef(0);
+  const deckRef = useRef(null);
   const stackRef = useRef(null);
+  // The deck moves on by itself every few seconds while it is on screen, unless the visitor has
+  // paused it, is pointing at it, or prefers reduced motion
+  const [playing, setPlaying] = useState(
+    () => !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+  const [inView, setInView] = useState(false);
+  const [hovering, setHovering] = useState(false);
 
   useEffect(() => {
     currentRef.current = current;
@@ -223,6 +232,21 @@ export function ReportGuideDeck({ content }) {
   }, [current]);
 
   const go = index => setCurrent(Math.max(0, Math.min(count - 1, index)));
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+      threshold: 0.5,
+    });
+    observer.observe(deckRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Restarts on every card change, so a manual move also gets the full five seconds
+  useEffect(() => {
+    if (!playing || !inView || hovering) return undefined;
+    const timer = setTimeout(() => setCurrent(index => (index + 1) % count), AUTOPLAY_MS);
+    return () => clearTimeout(timer);
+  }, [playing, inView, hovering, current, count]);
 
   // Wheel and touch move the deck instead of the page, and hand the gesture back to the
   // page (and Lenis) once the deck is at its first or last card.
@@ -308,6 +332,7 @@ export function ReportGuideDeck({ content }) {
 
   return (
     <div
+      ref={deckRef}
       className="au-deck"
       role="region"
       aria-roledescription="carousel"
@@ -321,7 +346,12 @@ export function ReportGuideDeck({ content }) {
         <span className="text-color-gradiant">{content.title}</span>
       </h2>
 
-      <div className="au-deck-stack" ref={stackRef}>
+      <div
+        className="au-deck-stack"
+        ref={stackRef}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+      >
         {content.cards.map((card, index) => {
           const position = index - current;
           const isLast = index === count - 1;
@@ -343,9 +373,19 @@ export function ReportGuideDeck({ content }) {
               <div className="au-deck-card-body">{renderBody(card, position === 0)}</div>
 
               <div className="au-deck-card-foot">
-                <span className="au-deck-mono">
-                  {String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
-                </span>
+                <div className="au-deck-foot-meta">
+                  <span className="au-deck-mono">
+                    {String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
+                  </span>
+                  <button
+                    type="button"
+                    className="au-deck-play"
+                    aria-label={playing ? content.pauseLabel : content.playLabel}
+                    onClick={() => setPlaying(!playing)}
+                  >
+                    <span aria-hidden="true">{playing ? '❚❚' : '▶'}</span>
+                  </button>
+                </div>
                 <button
                   type="button"
                   className="au-deck-next"

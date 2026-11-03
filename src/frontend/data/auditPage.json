@@ -527,6 +527,8 @@
       }
     ],
     "weightsNoteLabel": "Note",
+    "pauseLabel": "Pause the slideshow",
+    "playLabel": "Play the slideshow",
     "weightsNote": "A category counts by its weight times its evidence coverage, so a category the browser could only partly see counts for less.",
     "states": [
       {

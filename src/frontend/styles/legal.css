@@ -70,22 +70,10 @@
   .legal-section {
     padding: 3.5rem 0;
   }
-
-  .legal-content {
-    font-size: 0.875rem;
-  }
-
-  .legal-content h2 {
-    font-size: var(--type-card-title-small);
-  }
 }
 
 @media screen and (max-width: 480px) {
   .legal-section {
     padding: 2.5rem 0;
-  }
-
-  .legal-content {
-    font-size: 0.8125rem;
   }
 }

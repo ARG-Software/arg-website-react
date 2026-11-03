@@ -1,6 +1,10 @@
 ---
 seoTitle: Do LLMs Have Memory? How AI Chat Memory Works
 slug: llms-dont-remember-anything
+author: José Antunes
+authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
+authorType: Person
+authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: AI
 tags: AI, Architecture
 title: LLMs Don’t Remember Conversations. Apps Do.

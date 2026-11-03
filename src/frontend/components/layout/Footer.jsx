@@ -18,7 +18,7 @@ const NAV_COLUMNS = [{ label: 'Navigate', items: MENU.primary }, ...MENU.groups]
   items: group.items.map(item => ({ label: item.label, path: item.to })),
 }));
 
-export function Footer({ animate = true, animationPreset = 'fade-up', animationStagger = 80 }) {
+export function Footer({ animate = true, animationPreset = 'fade-up' }) {
   const socialLinks = getCompanySocialLinks();
   const contactEmail = getEmailAddress(EMAIL_KEYS.INFO);
   const columns = buildFooterColumns(socialLinks);
@@ -47,7 +47,6 @@ export function Footer({ animate = true, animationPreset = 'fade-up', animationS
       renderExternalLink={renderFooterExternalLink}
       animate={animate}
       animationPreset={animationPreset}
-      animationStagger={animationStagger}
     />
   );
 }

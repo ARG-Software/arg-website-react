@@ -8,8 +8,8 @@ export function ServicesMarqueeSection({ className = '', items = HOMEPAGE.infini
       data-animate-scope
       data-animate-default-preset="fade-up"
     >
-      <Marquee repetitions={2} trackClassName="infinity_list">
-        <p className="infinity_text" data-animate="fade-up">
+      <Marquee repetitions={2} trackClassName="infinity_list" animate={true}>
+        <p className="infinity_text">
           {items.map(service => (
             <span className="infinity_item" key={service}>
               <span className="infinity_label">{service}</span>

@@ -1,7 +1,7 @@
 /* ===== HOMEPAGE STYLES ===== */
 
 :root {
-  --type-home-section-title: clamp(1.875rem, 2.6vw, 2.5rem);
+  --type-home-section-title: var(--type-section-title);
   --type-testimonials-quote: 1.375rem;
   --line-testimonials-quote: 1.5;
   --space-home-heading-content: 4rem;

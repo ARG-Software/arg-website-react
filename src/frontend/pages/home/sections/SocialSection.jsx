@@ -49,12 +49,7 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
   return (
     <section id="social" className={`section_blog padding-section-medium ${className}`.trim()}>
       <div className="padding-global">
-        <div
-          className="container-large"
-          data-animate-scope
-          data-animate-default-preset="fade-up"
-          data-animate-default-stagger="120"
-        >
+        <div className="container-large" data-animate-scope data-animate-default-preset="fade-up">
           <div className="blog-component">
             <div className="home-section-header" data-animate-order="0">
               <div>

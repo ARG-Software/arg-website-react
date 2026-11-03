@@ -52,16 +52,15 @@ export function HeroSection({ content }) {
       className="hero_wrap"
       data-animate-scope
       data-animate-trigger="load"
-      data-animate-default-stagger="500"
       data-animate-default-preset="fade-up"
     >
       <div className="hero_contain container padding-global">
-        <div className="hero_list" data-animate="fade-up">
+        <div className="hero_list">
           <h1 className="hero_heading heading-style-h1">
-            <div className="heading_line" data-animate-order="4">
+            <div className="heading_line" data-animate-order="0">
               <div className="heading_text">{content.title[0]}</div>
             </div>
-            <div className="heading_line" data-animate-order="5">
+            <div className="heading_line" data-animate-order="1">
               <div className="text-color-gradiant">{content.title[1]}</div>
             </div>
           </h1>
@@ -71,13 +70,13 @@ export function HeroSection({ content }) {
             variant="white"
             id="hero-divider"
             data-animate="divider-expander-show"
-            data-animate-order="0"
+            data-animate-order="2"
             style={{ opacity: 0 }}
           />
           <div className="hero_bottom_list">
             <div className="hero_bottom_info">
               <div className="hero_bottom_content">
-                <p className="hero_bottom_paragraph" data-animate="slide-up" data-animate-order="1">
+                <p className="hero_bottom_paragraph" data-animate-order="3">
                   {content.subtitle}
                 </p>
               </div>
@@ -88,7 +87,7 @@ export function HeroSection({ content }) {
                 className="text-button"
                 onClick={() => trackMailto('share_ideas', 'hero')}
               >
-                <div className="text-button_list" data-animate="slide-up" data-animate-order="2">
+                <div className="text-button_list" data-animate-order="4">
                   <div className="text-button_text">{content.mailCta.label}</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
@@ -101,7 +100,7 @@ export function HeroSection({ content }) {
             <div className="bottom_buttons-wrapper">
               <div className="overflow-hidden">
                 <a href="#contact" className="text-button" onClick={handleContactClick}>
-                  <div className="text-button_list" data-animate="slide-up" data-animate-order="3">
+                  <div className="text-button_list" data-animate-order="5">
                     <div className="text-button_text">{content.contactCta.label}</div>
                     <div className="arrow_icon-embed">{arrowSvg}</div>
                   </div>

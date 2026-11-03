@@ -60,11 +60,7 @@ export default function PatternsPage() {
             size="small"
           />
 
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="150"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             <section
               id="patterns"
               className="sk-section padding-section-large background-color-white border-radius-all"
@@ -72,13 +68,13 @@ export default function PatternsPage() {
               <div className="container padding-global sk-inner">
                 <div className="sk-header">
                   <div className="sk-filters">
-                    {PATTERNS_PAGE.categories.map((category, index) => (
+                    {PATTERNS_PAGE.categories.map(category => (
                       <button
                         key={category}
                         type="button"
                         className={`sk-filter-btn${activeCategory === category ? ' is-active' : ''}`}
                         onClick={() => handleCategoryChange(category)}
-                        data-animate-order={index}
+                        data-animate="fade-up"
                       >
                         {category}
                       </button>
@@ -87,7 +83,7 @@ export default function PatternsPage() {
                 </div>
 
                 <div className="sk-grid">
-                  {visiblePatterns.map((pattern, index) => (
+                  {visiblePatterns.map(pattern => (
                     <BaseCard
                       key={pattern.slug}
                       as={AppLink}
@@ -96,7 +92,6 @@ export default function PatternsPage() {
                       variant="light"
                       padding="xl"
                       animate={true}
-                      animationOrder={index}
                       trackEvent="pattern_click"
                       trackData={{ pattern: pattern.slug, location: 'patterns_hub' }}
                     >

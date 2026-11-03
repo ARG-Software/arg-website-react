@@ -29,10 +29,8 @@
   ],
   "selectedWork": {
     "label": "Featured work",
-    "viewAllLabel": "Testimonials",
-    "viewAllTo": "/#testimonials",
-    "desktopCount": 3,
-    "mobileCount": 3,
+    "desktopCount": 4,
+    "mobileCount": 4,
     "rotationSeed": "daily",
     "projectLabels": {
       "mojaloop": "Fintech rails",
@@ -80,6 +78,10 @@
         {
           "label": "Working with Us",
           "to": "/working-with-us/"
+        },
+        {
+          "label": "Testimonials",
+          "to": "/#testimonials"
         },
         {
           "label": "Contact",

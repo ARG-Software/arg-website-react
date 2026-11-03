@@ -84,11 +84,7 @@ export default function ArchitectureReviewPage() {
             size="small"
           />
 
-          <div
-            data-animate-scope
-            data-animate-default-preset="fade-up"
-            data-animate-default-stagger="150"
-          >
+          <div data-animate-scope data-animate-default-preset="fade-up">
             <section
               id="review"
               className="au-section padding-section-large border-radius-top background-color-white"

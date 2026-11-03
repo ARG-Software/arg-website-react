@@ -10,6 +10,8 @@
 .blp-inner {
   --blp-sidebar-width: 18rem;
   --blp-column-gap: clamp(2rem, 4vw, 3.5rem);
+  /* Frame padding around the inner panel; the feed starts level with the panel, not the frame */
+  --blp-sidebar-inset: 0.75rem;
 }
 
 .blp-layout {
@@ -38,12 +40,17 @@
   margin-left: calc(var(--blp-sidebar-width) + var(--blp-column-gap));
 }
 
+/* Starts level with the inner panel inside the sidebar frame */
+.blp-feed {
+  padding-top: var(--blp-sidebar-inset);
+}
+
 /* The column stretches to the list's height so the panel can stay in view while it scrolls */
 .blp-sidebar {
   align-self: stretch;
   background: var(--blp-soft);
   border-radius: 1.5rem;
-  padding: 0.75rem;
+  padding: var(--blp-sidebar-inset);
 }
 
 .blp-panel {
@@ -72,7 +79,7 @@
 }
 
 .blp-search:focus-within {
-  box-shadow: 0 0 0 0.125rem var(--blp-halo);
+  box-shadow: 0 0 0 0.125rem var(--blp-ink);
 }
 
 .blp-search-icon {
@@ -312,9 +319,9 @@
 }
 
 .blp-collection.is-active .blp-collection-tile {
-  background: var(--blp-accent);
+  background: #fff;
   border-color: transparent;
-  color: #fff;
+  color: var(--blp-ink);
 }
 
 /* Phone filter: one native select in place of the topic and collection lists */
@@ -532,6 +539,11 @@
 }
 
 @media screen and (max-width: 768px) {
+  /* The sidebar frame collapses on phones, so the feed loses its inset too */
+  .blp-inner {
+    --blp-sidebar-inset: 0;
+  }
+
   .blp-layout {
     grid-template-columns: minmax(0, 1fr);
     margin-top: 4rem;
@@ -544,7 +556,6 @@
 
   .blp-sidebar {
     background: transparent;
-    padding: 0;
   }
 
   .blp-panel {
@@ -705,7 +716,7 @@
 .bp-lead {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.0625rem, 1.5vw, 1.1875rem);
+  font-size: var(--type-body-large);
   font-weight: 500;
   line-height: 1.7;
   margin: 0 0 1.75rem;
@@ -743,11 +754,11 @@
   color: #0c002e;
   display: flex;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.625rem, 2.6vw, 2.25rem);
+  font-size: var(--type-content-heading);
   font-weight: 500;
   gap: 0;
-  letter-spacing: -0.035em;
-  line-height: 1.12;
+  letter-spacing: var(--tracking-card-title);
+  line-height: var(--line-title);
   margin: clamp(2rem, 4vw, 3rem) 0 1.25rem;
 }
 
@@ -758,7 +769,7 @@
 .bp-h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.125rem, 1.7vw, 1.375rem);
+  font-size: var(--type-card-title-small);
   font-weight: 600;
   letter-spacing: -0.015em;
   line-height: 1.25;
@@ -1089,6 +1100,5 @@
 
   .bp-h2 {
     align-items: flex-start;
-    font-size: clamp(1.65rem, 8vw, 2.25rem);
   }
 }

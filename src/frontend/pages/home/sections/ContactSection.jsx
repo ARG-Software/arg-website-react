@@ -9,7 +9,6 @@ export function ContactSection({ className = '', content = HOMEPAGE.contact }) {
       id="contact"
       className={`section_cta padding-section-medium ${className}`.trim()}
       data-animate-scope
-      data-animate-default-stagger="80"
     >
       <div className="padding-global is--cta-mobile">
         <div className="container-large">
@@ -27,7 +26,6 @@ export function ContactSection({ className = '', content = HOMEPAGE.contact }) {
             secondButtonLink={getProjectBriefFormLink()}
             onSecondaryClick={() => trackCTA('contact_brief', 'homepage_contact')}
             animate={true}
-            animationStagger={120}
           />
         </div>
       </div>

@@ -21,7 +21,6 @@ export function TeamSection({ className = '', content = HOMEPAGE.team }) {
       data-animate-scope
       data-animate-trigger="scroll"
       data-animate-default-preset="fade-up"
-      data-animate-default-stagger="120"
     >
       <div className="padding-global">
         <div className="container-medium">
@@ -49,7 +48,6 @@ export function TeamSection({ className = '', content = HOMEPAGE.team }) {
                     className="team-item"
                     data-animate-scope
                     data-animate-default-preset="fade-up"
-                    data-animate-default-stagger="80"
                   >
                     <div
                       className="team_image-wrapper"
