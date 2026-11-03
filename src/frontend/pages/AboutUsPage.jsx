@@ -75,6 +75,8 @@ export default function AboutUsPage() {
               <div className="container padding-global about-origin-inner">
                 <h2 className="about-lead" data-animate-order="0">
                   {ABOUT_DATA.origin.title}
+                  <br />
+                  <span className="text-color-gradiant">{ABOUT_DATA.origin.titleHighlight}</span>
                 </h2>
                 <div className="about-origin-paras" data-animate-order="1">
                   {ABOUT_DATA.origin.paragraphs.map(paragraph => (
@@ -82,7 +84,6 @@ export default function AboutUsPage() {
                   ))}
                 </div>
               </div>
-              <div className="padding-bottom padding-80-40"></div>
               <SectionDivider variant="default" hideOnMobile={false} />
             </section>
 
@@ -92,7 +93,13 @@ export default function AboutUsPage() {
             >
               <div className="container padding-global about-story-inner">
                 <header className="about-story-head" data-animate-order="0">
-                  <h2 className="about-section-title">{ABOUT_DATA.timeline.title}</h2>
+                  <h2 className="about-section-title">
+                    {ABOUT_DATA.timeline.title}
+                    <br />
+                    <span className="text-color-gradiant">
+                      {ABOUT_DATA.timeline.titleHighlight}
+                    </span>
+                  </h2>
                   <p className="about-section-intro">{ABOUT_DATA.timeline.intro}</p>
                 </header>
 
@@ -105,17 +112,22 @@ export default function AboutUsPage() {
                   />
                 </div>
               </div>
-              <div className="padding-bottom padding-80-40"></div>
               <SectionDivider variant="default" hideOnMobile={false} />
             </section>
 
             <section
               id="founders"
-              className="about-founders-section padding-section-large background-color-white"
+              className="about-founders-section padding-section-large border-radius-bottom background-color-white"
             >
               <div className="container padding-global about-founders-inner">
                 <header className="about-founders-head" data-animate-order="0">
-                  <h2 className="about-section-title">{ABOUT_DATA.founders.title}</h2>
+                  <h2 className="about-section-title">
+                    {ABOUT_DATA.founders.title}
+                    <br />
+                    <span className="text-color-gradiant">
+                      {ABOUT_DATA.founders.titleHighlight}
+                    </span>
+                  </h2>
                   <p className="about-section-intro">{ABOUT_DATA.founders.intro}</p>
                 </header>
 
@@ -163,7 +175,13 @@ export default function AboutUsPage() {
               <div className="container padding-global about-company-inner">
                 <div className="about-company-grid">
                   <div className="about-company-left" data-animate-order="0">
-                    <h2 className="about-company-title">{ABOUT_DATA.company.title}</h2>
+                    <h2 className="about-company-title">
+                      {ABOUT_DATA.company.title}
+                      <br />
+                      <span className="text-color-gradiant">
+                        {ABOUT_DATA.company.titleHighlight}
+                      </span>
+                    </h2>
                     <div className="about-company-copy">
                       {ABOUT_DATA.company.paragraphs.map(paragraph => (
                         <p key={paragraph}>{paragraph}</p>
@@ -184,11 +202,14 @@ export default function AboutUsPage() {
 
             <section
               id="beliefs"
-              className="about-why-section padding-section-large background-color-white"
+              className="about-why-section padding-section-large border-radius-top background-color-white"
             >
               <div className="container padding-global about-why-inner">
                 <header className="about-why-head" data-animate-order="0">
-                  <h2 className="about-section-title">{ABOUT_DATA.beliefs.title}</h2>
+                  <h2 className="about-section-title">
+                    {ABOUT_DATA.beliefs.title}{' '}
+                    <span className="text-color-gradiant">{ABOUT_DATA.beliefs.titleHighlight}</span>
+                  </h2>
                   <p className="about-section-intro">{ABOUT_DATA.beliefs.intro}</p>
                 </header>
 
@@ -211,7 +232,6 @@ export default function AboutUsPage() {
                   ))}
                 </div>
               </div>
-              <div className="padding-bottom padding-80-40"></div>
               <SectionDivider variant="default" hideOnMobile={false} />
             </section>
 
@@ -222,7 +242,13 @@ export default function AboutUsPage() {
               <div className="container padding-global about-collaborators-inner">
                 <div className="about-collaborators-grid">
                   <div className="about-collaborators-left" data-animate-order="0">
-                    <h2 className="about-section-title">{ABOUT_DATA.collaborators.title}</h2>
+                    <h2 className="about-section-title">
+                      {ABOUT_DATA.collaborators.title}
+                      <br />
+                      <span className="text-color-gradiant">
+                        {ABOUT_DATA.collaborators.titleHighlight}
+                      </span>
+                    </h2>
                     {ABOUT_DATA.collaborators.paragraphs.map(paragraph => (
                       <p key={paragraph}>{paragraph}</p>
                     ))}
@@ -230,9 +256,10 @@ export default function AboutUsPage() {
                   <div className="about-collaborators-right" data-animate-order="1">
                     <h3 className="about-disc-title">Capabilities we bring together</h3>
                     <div className="about-disc-chips">
-                      {ABOUT_DATA.collaborators.disciplines.map(discipline => (
+                      {ABOUT_DATA.collaborators.disciplines.map((discipline, index) => (
                         <span
                           key={discipline}
+                          style={{ '--i': index }}
                           className={`about-disc-chip ${discipline === 'AI integration' ? 'about-disc-chip--ai' : ''}`.trim()}
                         >
                           {discipline}

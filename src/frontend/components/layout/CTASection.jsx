@@ -80,7 +80,7 @@ export function CTASection({
                       style={{
                         color: '#000',
                         WebkitTextFillColor: 'transparent',
-                        backgroundImage: 'linear-gradient(to right, #f0060d, #c924d7 49%, #7904fd)',
+                        backgroundImage: 'var(--arg-gradient-primary)',
                         WebkitBackgroundClip: 'text',
                         backgroundClip: 'text',
                       }}

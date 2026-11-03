@@ -657,7 +657,7 @@
 }
 
 .about_paragraph .about_point::before {
-  background-image: linear-gradient(90deg, #f0060d, #c924d7 49%, #7904fd);
+  background-image: var(--arg-gradient-primary);
   border-radius: 999px;
   content: '';
   flex: 0 0 auto;
@@ -868,7 +868,7 @@
 }
 
 .home-overview__value-line {
-  background-image: linear-gradient(90deg, #f0060d, #c924d7 49%, #920ef1 84%, #7904fd);
+  background-image: var(--arg-gradient-primary);
   border-radius: 999rem;
   display: block;
   height: 0.125rem;
@@ -954,7 +954,7 @@
 }
 
 .work-item_line {
-  background-image: linear-gradient(90deg, #f0060d, #c924d7 49%, #7904fd);
+  background-image: var(--arg-gradient-primary);
   height: 1px;
   width: 0;
 }
@@ -1580,7 +1580,7 @@
   height: 1.5rem;
   justify-content: center;
   transition:
-    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s var(--ease-out-expo),
     color 0.4s ease;
   width: 1.5rem;
 }
@@ -1678,7 +1678,7 @@
   height: 20px;
   justify-content: center;
   transition:
-    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s var(--ease-out-expo),
     color 0.4s ease;
   width: 20px;
 }
@@ -1689,7 +1689,7 @@
 }
 
 .faq_answer {
-  transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: max-height 0.5s var(--ease-out-expo);
 }
 
 .faq_item.is-open .faq_answer {
@@ -1718,10 +1718,6 @@
   display: none;
 }
 
-.faq_question:hover .faq_question_text {
-  color: linear-gradient(90deg, #f0060d 0%, #c924d7 49%, #0c002e 100%);
-}
-
 .faq_question:hover .faq_icon {
   color: rgba(0, 0, 0, 0.6);
 }
@@ -1737,7 +1733,7 @@
   height: 18px;
   justify-content: center;
   transition:
-    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s var(--ease-out-expo),
     color 0.4s ease;
   width: 18px;
 }
@@ -1898,7 +1894,7 @@
   height: 1.125rem;
   transition:
     color 0.25s,
-    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transform 0.35s var(--ease-out-expo);
   width: 1.125rem;
 }
 
@@ -1948,7 +1944,6 @@
 .blog-promo_card-new:hover {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-2px);
 }
 
 .blog-promo_card-new-header {
@@ -1970,7 +1965,7 @@
 .blog-promo_card-new:hover .blog-promo_card-new-title {
   -webkit-background-clip: text;
   background-clip: text;
-  background-image: linear-gradient(90deg, #f0060d, #c924d7 49%, #7904fd);
+  background-image: var(--arg-gradient-primary);
   color: transparent;
 }
 

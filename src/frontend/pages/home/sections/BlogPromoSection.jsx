@@ -25,6 +25,7 @@ function BlogCard({ blogPost, animationOrder }) {
       to={`/blog/${blogPost.slug}/`}
       className="blog-promo_card-new"
       data-animate="fade-up"
+      data-animate-hover="lift"
       data-animate-order={animationOrder}
       onClick={() => trackBlogPostClick(blogPost.slug, blogPost.title, 'homepage_promo_card')}
     >
@@ -89,6 +90,7 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
               to={`/blog/${heroPost.slug}/`}
               className="blog-promo_hero blog-promo_card-new"
               data-animate="fade-up"
+              data-animate-hover="lift"
               data-animate-order="2"
               onClick={() =>
                 trackBlogPostClick(heroPost.slug, heroPost.title, 'homepage_promo_hero')

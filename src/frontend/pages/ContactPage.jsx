@@ -129,10 +129,11 @@ export default function ContactPage() {
               <div className="container-large">
                 <div className="contact-brief__grid">
                   <div className="contact-brief__intro" data-animate="slide-from-left">
-                    <span className="contact-kicker contact-kicker--dark">
+                    <h2>
                       Hello. Nice to meet you.
-                    </span>
-                    <h2>Send the short version.</h2>
+                      <br />
+                      <span className="text-color-gradiant">Send the short version.</span>
+                    </h2>
                     <p>
                       No long questionnaire. Just your name, a way to reply, and the context that
                       matters. If it looks like a fit, we will ask the precise technical questions
@@ -178,13 +179,15 @@ export default function ContactPage() {
               <div className="container-large">
                 <div className="contact-direct__grid">
                   <div className="contact-direct__headline" data-animate="fade-up">
-                    <span className="contact-kicker contact-kicker--dark">
-                      Prefer a direct route?
-                    </span>
                     <h2>
+                      Prefer a direct route?
+                      <br />
+                      <span className="text-color-gradiant">Use these contacts.</span>
+                    </h2>
+                    <p>
                       Email us directly or book time if a live conversation will save
                       back-and-forth.
-                    </h2>
+                    </p>
                   </div>
 
                   <div className="contact-direct__cards">

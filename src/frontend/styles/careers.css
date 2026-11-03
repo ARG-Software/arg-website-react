@@ -118,14 +118,13 @@
   color: #0c002e;
   margin: 0;
   letter-spacing: var(--tracking-title);
-  max-width: 18ch;
 }
 .cp-whyus-strike {
   color: rgba(12, 0, 46, 0.48);
   position: relative;
 }
 .cp-whyus-strike::after {
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  background: var(--arg-gradient-primary);
   border-radius: 999px;
   content: '';
   height: 0.08em;
@@ -188,10 +187,11 @@
   position: relative;
   z-index: 1;
 }
+.cp-whyus-pillar {
+  --lift-shadow: 0 1rem 2rem -1.4rem rgba(12, 0, 46, 0.22);
+}
 .cp-whyus-pillar:hover {
   border-color: rgba(12, 0, 46, 0.18);
-  box-shadow: 0 1rem 2rem -1.4rem rgba(12, 0, 46, 0.22);
-  transform: translateY(-0.125rem) !important;
 }
 .cp-whyus-pillar-index {
   color: #888;
@@ -248,13 +248,6 @@
   margin-top: 3rem;
   padding-top: 2rem;
   padding-bottom: 2rem;
-}
-.cp-tech-intro span {
-  color: #888;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta);
-  letter-spacing: var(--tracking-meta-wide);
-  text-transform: uppercase;
 }
 .cp-tech-intro h3 {
   color: #0c002e;
@@ -365,7 +358,7 @@
   padding: 1.5rem 0;
 }
 .cp-careers-step > span {
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  background: var(--arg-gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -411,7 +404,7 @@
     transform 0.2s ease;
 }
 .cp-careers-trait::before {
-  background: linear-gradient(90deg, #f0060d, #c924d7 49%, #7904fd);
+  background: var(--arg-gradient-primary);
   content: '';
   height: 0.1875rem;
   left: 0;
@@ -455,7 +448,7 @@
   -webkit-text-fill-color: #0c002e;
 }
 .cp-careers-trait:hover .cp-careers-trait-number i {
-  background: linear-gradient(90deg, #f0060d, #c924d7 49%, #7904fd);
+  background: var(--arg-gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -493,11 +486,6 @@
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0 0 1.5rem;
-  max-width: 18ch;
-}
-.cp-fit-header h2 span {
-  color: #0c002e;
-  display: block;
 }
 .cp-fit-header p {
   color: #555;
@@ -537,7 +525,7 @@
   width: fit-content;
 }
 .cp-fit-accent {
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  background: var(--arg-gradient-primary);
   border-radius: 999px;
   display: block;
   height: 0.1875rem;
@@ -587,7 +575,7 @@
   margin: 0 0 1.5rem;
 }
 .cp-founders-intro h2 span {
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  background: var(--arg-gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -710,9 +698,6 @@
     border-top: 1px solid rgba(12, 0, 46, 0.1);
     padding-left: 0;
     padding-top: 2rem;
-  }
-  .cp-whyus-title {
-    max-width: 14ch;
   }
   .cp-whyus-pillars {
     grid-template-columns: 1fr;

@@ -56,8 +56,10 @@ export default function WorkingWithUsPage() {
                     <h2 className="cp-whyus-title">
                       {WORKING_WITH_US.whyUs.title.beforeStrike}{' '}
                       <span className="cp-whyus-strike">{WORKING_WITH_US.whyUs.title.strike}</span>{' '}
-                      {WORKING_WITH_US.whyUs.title.middle}{' '}
-                      <span>{WORKING_WITH_US.whyUs.title.highlight}</span>
+                      <br />
+                      <span className="text-color-gradiant">
+                        {WORKING_WITH_US.whyUs.title.middle} {WORKING_WITH_US.whyUs.title.highlight}
+                      </span>
                     </h2>
                   </div>
                   <aside className="cp-whyus-side">
@@ -71,6 +73,7 @@ export default function WorkingWithUsPage() {
                     <article
                       key={pillar.index}
                       className="cp-whyus-pillar"
+                      data-animate-hover="lift"
                       data-animate-order={index + 1}
                     >
                       <span className="cp-whyus-pillar-index">{pillar.index}</span>
@@ -99,7 +102,11 @@ export default function WorkingWithUsPage() {
 
                 <div className="cp-tech-intro" data-animate-order="4">
                   <div>
-                    <h3>{WORKING_WITH_US.whyUs.techStackIntro.title}</h3>
+                    <h3>
+                      <span className="text-color-gradiant">
+                        {WORKING_WITH_US.whyUs.techStackIntro.title}
+                      </span>
+                    </h3>
                     <p>{WORKING_WITH_US.whyUs.techStackIntro.text}</p>
                   </div>
                 </div>
@@ -111,7 +118,6 @@ export default function WorkingWithUsPage() {
                   animationOrder={5}
                 />
               </div>
-              <div className="padding-bottom padding-80-40"></div>
               <SectionDivider variant="default" hideOnMobile={false} />
             </section>
 
@@ -122,7 +128,11 @@ export default function WorkingWithUsPage() {
               <div className="container padding-global cp-values-inner">
                 <div className="cp-section-header" data-animate-order="0">
                   <h2 className="cp-section-title">
-                    <span className="cp-line">{WORKING_WITH_US.values.title}</span>
+                    {WORKING_WITH_US.values.title}
+                    <br />
+                    <span className="text-color-gradiant">
+                      {WORKING_WITH_US.values.titleHighlight}
+                    </span>
                   </h2>
                   <p className="cp-section-subtitle">{WORKING_WITH_US.values.subtitle}</p>
                 </div>
@@ -146,7 +156,6 @@ export default function WorkingWithUsPage() {
                   ))}
                 </div>
               </div>
-              <div className="padding-bottom padding-80-40"></div>
               <SectionDivider variant="default" hideOnMobile={false} />
             </section>
 
@@ -158,8 +167,11 @@ export default function WorkingWithUsPage() {
                 <div className="cp-fit-header" data-animate-order="0">
                   <div>
                     <h2>
-                      {WORKING_WITH_US.fitCheck.title}{' '}
-                      <span>{WORKING_WITH_US.fitCheck.titleHighlight}</span>
+                      {WORKING_WITH_US.fitCheck.title}
+                      <br />
+                      <span className="text-color-gradiant">
+                        {WORKING_WITH_US.fitCheck.titleHighlight}
+                      </span>
                     </h2>
                     <p>{WORKING_WITH_US.fitCheck.intro}</p>
                   </div>

@@ -236,6 +236,7 @@ export default function ProjectDetailPage() {
                       <Pill
                         key={i}
                         className="prp-stack-tag prp-stack-tag--inline"
+                        data-animate-hover="lift"
                         variant="light"
                         size="sm"
                         data-animate="tag-pop"
@@ -249,7 +250,6 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           </div>
-          <div className="padding-bottom padding-80-40"></div>
         </section>
 
         {/* CHALLENGE — white */}
@@ -299,7 +299,6 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           </div>
-          <div className="padding-bottom padding-80-40"></div>
         </section>
 
         {/* SOLUTION — white card */}
@@ -329,7 +328,6 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           </div>
-          <div className="padding-bottom padding-80-40"></div>
         </section>
 
         {/* RESULTS — merged metrics + impact */}

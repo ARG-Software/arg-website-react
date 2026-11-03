@@ -1,0 +1,114 @@
+/* Hover presets. Put data-animate-hover="<preset>" on an element (several presets can be
+   listed, separated by spaces); the names are listed in ANIMATION_PRESETS in
+   attribute-presets.js. Each preset takes its look from custom properties, so a component
+   can tune it without restating the effect. */
+
+/* lift: rises slightly on hover. The element can set --lift-shadow, and should list
+   transform in its own transition when it has one */
+:where([data-animate-hover~='lift']) {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+[data-animate-hover~='lift']:hover {
+  box-shadow: var(--lift-shadow, none);
+  transform: translateY(-0.125rem) !important;
+}
+
+/* circle-grow: a circle grows out from behind the element's content. Tune it with
+   --circle-color and --circle-size; the content needs position: relative to stay on top */
+[data-animate-hover~='circle-grow'] {
+  position: relative;
+}
+
+[data-animate-hover~='circle-grow']::before {
+  background: var(--circle-color, #fff);
+  border-radius: 50%;
+  content: '';
+  height: var(--circle-size, 3.5rem);
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.5s var(--ease-out-expo);
+  width: var(--circle-size, 3.5rem);
+}
+
+@media (hover: hover) {
+  [data-animate-hover~='circle-grow']:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+[data-animate-hover~='circle-grow']:focus-visible::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* slot-text: letters roll over like a slot machine. Drawn by the SlotText component, which
+   reads its timing and colours from HOVER_PRESETS; each letter is a reel of two copies, and
+   when the link or button around it is hovered or focused the reels roll up once, one after
+   another, so the gradient copies roll into view. Leaving resets the reels at once */
+
+.slot-text {
+  display: inline-block;
+  position: relative;
+}
+
+/* The real text stays for screen readers and copying, hidden behind the reels */
+.slot-text__label {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.slot-text__reels {
+  display: inline-flex;
+  white-space: pre;
+}
+
+/* Each reel window is exactly one letter tall, so the rolling letters stay inside the text */
+.slot-text__reel {
+  display: inline-flex;
+  flex-direction: column;
+  height: 1.15em;
+  line-height: 1.15;
+  overflow: hidden;
+}
+
+/* The incoming gradient letter fades in as it rolls up while the plain one fades out, which
+   keeps the roll soft */
+.slot-text__reel > span:last-child {
+  color: var(--slot-color);
+  opacity: 0;
+}
+
+:is(a, button, .slot-text):hover .slot-text .slot-text__reel > span,
+:is(a, button):focus-visible .slot-text .slot-text__reel > span {
+  transform: translateY(-100%);
+  transition:
+    transform var(--slot-duration) var(--slot-ease),
+    opacity var(--slot-duration) var(--slot-ease);
+  transition-delay: calc(var(--i) * var(--slot-stagger));
+}
+
+:is(a, button, .slot-text):hover .slot-text .slot-text__reel > span:first-child,
+:is(a, button):focus-visible .slot-text .slot-text__reel > span:first-child {
+  opacity: 0;
+}
+
+:is(a, button, .slot-text):hover .slot-text .slot-text__reel > span:last-child,
+:is(a, button):focus-visible .slot-text .slot-text__reel > span:last-child {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(a, button, .slot-text):hover .slot-text .slot-text__reel > span,
+  :is(a, button):focus-visible .slot-text .slot-text__reel > span {
+    transition: none;
+  }
+}

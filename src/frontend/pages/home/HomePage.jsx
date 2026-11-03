@@ -4,7 +4,6 @@ import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { SEO } from '@components/seo/SEO';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
-import { SectionSpacer } from '@ui/layout/SectionSpacer.jsx';
 import { HOMEPAGE_BLOG_POSTS_COUNT } from '@constants/config';
 import { buildFAQPageSchema } from '@utils/structuredData';
 import { HeroSection } from './sections/HeroSection';
@@ -38,11 +37,8 @@ export default function HomePage() {
           <HeroSection content={HOMEPAGE.hero} />
 
           <PartnersSection />
-          <SectionSpacer color="white" size="lg" />
           <StudioOverviewSection />
-          <SectionSpacer color="white" size="lg" multiplier={2} />
           <ServicesMarqueeSection />
-          <SectionSpacer color="white" size="lg" />
           <ServicesSection content={HOMEPAGE.services} />
           <ProjectsSection projects={PROJECTS} content={HOMEPAGE.projects} />
           <TestimonialsSection testimonials={HOMEPAGE.testimonials} />

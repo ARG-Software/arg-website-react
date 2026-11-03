@@ -266,7 +266,6 @@ export default function CareersPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="padding-bottom padding-80-40"></div>
                   <SectionDivider variant="default" hideOnMobile={false} />
                 </section>
 
@@ -351,7 +350,6 @@ export default function CareersPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="padding-bottom padding-80-40"></div>
                   <SectionDivider variant="default" hideOnMobile={false} />
                 </section>
 

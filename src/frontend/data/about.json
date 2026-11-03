@@ -8,14 +8,16 @@
     "subtitle": "ARG is an architecture-first software engineering studio founded by José Antunes and Rui Rocha after years of working together across architecture, product engineering and production systems."
   },
   "origin": {
-    "title": "ARG was built on technical trust and shared standards.",
+    "title": "ARG was built on technical trust",
+    "titleHighlight": "and shared standards.",
     "paragraphs": [
       "ARG Software was born from a long-standing professional relationship and a common belief: great software is not created by adding more people to a project, but by bringing the right people together.",
       "Before becoming a company, ARG was already a way of working: precise, reliable, pragmatic, and deeply focused on quality. The company came later. The standard came first."
     ]
   },
   "timeline": {
-    "title": "Where it started, and how ARG became a company.",
+    "title": "Where it started,",
+    "titleHighlight": "and how ARG became a company.",
     "intro": "The story is not a pitch-deck origin. It is a working relationship tested across teams, clients, and production systems before ARG became official.",
     "steps": [
       {
@@ -176,7 +178,8 @@
     ]
   },
   "founders": {
-    "title": "Two paths. One engineering standard.",
+    "title": "Two paths.",
+    "titleHighlight": "One engineering standard.",
     "intro": "Different paths into software, held to the same standard. Both remain close to the work and accountable for delivery.",
     "people": [
       {
@@ -200,7 +203,8 @@
     ]
   },
   "company": {
-    "title": "From collaboration to company.",
+    "title": "From collaboration",
+    "titleHighlight": "to company.",
     "paragraphs": [
       "ARG was founded in 2020 to formalize a way of working that already existed between the founders: direct communication, technical discipline, clear ownership and a high standard for delivery.",
       "The goal was never to become a large vendor. It was to help companies build production-ready systems that can evolve with the business, using the right senior team for each problem rather than adding headcount for the sake of scale."
@@ -212,7 +216,7 @@
       },
       {
         "title": "Complementary skills",
-      "description": "Architecture, product thinking, delivery and engineering execution combine to challenge assumptions and cover blind spots."
+        "description": "Architecture, product thinking, delivery and engineering execution combine to challenge assumptions and cover blind spots."
       },
       {
         "title": "A shared definition of done",
@@ -221,7 +225,8 @@
     ]
   },
   "beliefs": {
-    "title": "What we believe.",
+    "title": "What we",
+    "titleHighlight": "believe.",
     "intro": "Long-term quality beats short-term volume. We are selective about the work we take on and the people we bring into it.",
     "principles": [
       {
@@ -239,7 +244,8 @@
     ]
   },
   "collaborators": {
-    "title": "A trusted network, assembled around the work.",
+    "title": "A trusted network,",
+    "titleHighlight": "assembled around the work.",
     "paragraphs": [
       "ARG extends beyond its founders through a trusted network of engineers and specialists we have worked with directly and bring in when their expertise fits the problem.",
       "Together, they cover backend and frontend engineering, mobile development, cloud infrastructure, software architecture, product engineering, AI integration and technical leadership. More importantly, they already know how to work together."

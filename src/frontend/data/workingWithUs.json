@@ -79,7 +79,8 @@
     }
   },
   "values": {
-    "title": "Four things we actually mean.",
+    "title": "Four things",
+    "titleHighlight": "we actually mean.",
     "subtitle": "Most companies list values that could belong to anyone. Ours are operational: they decide what we ship, what we refuse, and who fits on the team.",
     "items": [
       { "title": "Architecture first", "description": "The system is designed before it's written. If we can't explain it clearly, we don't build it yet.", "antiValue": "ship fast, fix later" },

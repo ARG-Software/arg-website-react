@@ -28,7 +28,7 @@
   background: #0c002e;
   display: block;
   height: 100%;
-  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 0.9s var(--ease-out-quint);
   width: var(--step-progress);
 }
 
@@ -79,21 +79,21 @@
     background 0.4s ease,
     border-color 0.4s ease,
     color 0.4s ease,
-    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transform 0.5s var(--ease-out-quint);
   width: 100%;
   z-index: 2;
 }
 
 .step-progress-timeline__ring,
 .cp-fit-step-ring {
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  background: var(--arg-gradient-primary);
   bottom: -0.8125rem;
   display: block;
   height: 1px;
   left: 50%;
   position: absolute;
   transform: translateX(-50%);
-  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 0.5s var(--ease-out-quint);
   width: 0;
   z-index: 1;
 }
@@ -173,7 +173,7 @@
   .step-progress-timeline__fill,
   .cp-fit-timeline-fill {
     height: var(--step-progress);
-    transition: height 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: height 0.9s var(--ease-out-quint);
     width: 100%;
   }
 

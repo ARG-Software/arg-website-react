@@ -1,0 +1,56 @@
+/* Shared keyframes for the site. Keep a keyframe here when more than one element uses it or
+   when it is generic enough to reuse; page-specific motion stays with its page styles. */
+
+/* Fades in from transparent */
+@keyframes arg-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Rises in a little while fading in, for items added to a list */
+@keyframes arg-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+/* Slides in from below its own height, for bars docked to the bottom of the screen */
+@keyframes arg-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* Slides a looping gradient (--arg-gradient-loop, background-size above 100%) back and forth */
+@keyframes arg-gradient-slide {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Dims and shrinks a status dot halfway through, like a slow heartbeat */
+@keyframes arg-blink {
+  50% {
+    opacity: 0.18;
+    transform: scale(0.75);
+  }
+}
+
+/* A ring that spreads out from a status dot and fades; colour from --ring-color */
+@keyframes arg-ring {
+  0% {
+    box-shadow: 0 0 0 0 var(--ring-color);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}

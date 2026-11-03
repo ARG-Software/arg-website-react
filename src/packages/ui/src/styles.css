@@ -174,6 +174,21 @@
     var(--arg-color-magenta),
     var(--arg-color-violet)
   );
+  /* Easing curves shared by transitions and animations */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  /* Ends where it starts, so it can slide along in a loop */
+  --arg-gradient-loop: linear-gradient(
+    90deg,
+    var(--arg-color-red),
+    var(--arg-color-magenta),
+    var(--arg-color-violet),
+    var(--arg-color-red)
+  );
   --type-pill-xs: var(--type-kicker, 0.6875rem);
   --type-pill-sm: var(--type-meta-small, 0.75rem);
   --type-pill-md: var(--type-ui, 0.875rem);
@@ -1332,10 +1347,6 @@
 }
 
 @media screen and (max-width: 991px) {
-  .line-separate {
-    margin-left: 0;
-  }
-
   .line-separate--white {
     height: 0;
     padding-left: 0;
@@ -1346,7 +1357,6 @@
 
 @media screen and (max-width: 768px) {
   .line-separate--white {
-    margin-left: 2.25rem;
     max-width: calc(100% - 4.5rem) !important;
     min-width: 0 !important;
   }
@@ -1364,12 +1374,10 @@
   }
 
   .line-separate--default {
-    margin-left: 1rem;
     max-width: calc(100% - 2rem) !important;
   }
 
   .line-separate--white {
-    margin-left: 1rem;
     max-width: calc(100% - 2rem) !important;
     min-width: 0 !important;
   }
@@ -1625,7 +1633,7 @@
 }
 
 .pc-drawer-panel {
-  animation: pcSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: pcSlideUp 0.35s var(--ease-out-expo) both;
   background: #fff;
   border-radius: 1.25rem 1.25rem 0 0;
   box-shadow: 0 -0.5rem 3rem rgba(12, 0, 46, 0.15);
@@ -2153,6 +2161,7 @@
 .interactive-console__input-field input {
   background: transparent;
   border: 0;
+  caret-color: #fff;
   color: var(--interactive-console-text);
   font: inherit;
   outline: 0;
@@ -2175,6 +2184,11 @@
   top: 50%;
   transform: translateY(-50%);
   width: 0.5rem;
+}
+
+/* Once the field has focus the white text caret takes over */
+.interactive-console__input-field:focus-within .interactive-console__cursor {
+  display: none;
 }
 
 @keyframes interactiveConsoleCursor {
@@ -2685,7 +2699,7 @@
   background: var(--arg-color-ink);
   display: block;
   height: 100%;
-  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 0.9s var(--ease-out-quint);
   width: var(--step-progress);
 }
 
@@ -2737,7 +2751,7 @@
   left: 50%;
   position: absolute;
   transform: translateX(-50%);
-  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 0.5s var(--ease-out-quint);
   width: 0;
   z-index: 1;
 }
@@ -2826,7 +2840,7 @@
 
   .step-progress-timeline__fill {
     height: var(--step-progress);
-    transition: height 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: height 0.9s var(--ease-out-quint);
     width: 100%;
   }
 
@@ -3191,7 +3205,7 @@
   line-height: var(--line-cta, 1);
   text-align: center;
   transform: translateY(0);
-  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1);
+  transition: transform 0.65s var(--ease-in-out-quart);
   white-space: nowrap;
 }
 
@@ -3282,7 +3296,7 @@
 
 .nav-hamburger .menu_icon-line {
   transition:
-    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s var(--ease-out-expo),
     opacity 0.2s ease;
 }
 
@@ -3598,13 +3612,12 @@
   width: 0.375rem;
   height: 0.375rem;
   border-radius: 50%;
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd, #f0060d);
+  background: var(--arg-gradient-loop);
   background-size: 260% 100%;
   box-shadow: 0 0 0.75rem rgba(201, 36, 215, 0.32);
 }
 
 .nav-menu__audit-chip {
-  background: transparent;
   text-decoration: none;
 }
 
@@ -3769,7 +3782,7 @@
   right: 1.5rem;
   transform: translateY(calc(100% + 2.5rem));
   transition:
-    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.75s var(--ease-out-expo),
     opacity 0.35s ease;
   width: 25rem;
   will-change: transform, opacity;
@@ -3815,7 +3828,7 @@
 }
 
 .aw-panel--fullscreen .aw-header::before {
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  background: var(--arg-gradient-primary);
   content: '';
   height: 2px;
   left: 0;
@@ -4402,7 +4415,7 @@
 
 .aw-send {
   align-items: center;
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  background: var(--arg-gradient-primary);
   border: none;
   border-radius: 0.625rem;
   color: #ffffff;

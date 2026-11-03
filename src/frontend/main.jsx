@@ -26,7 +26,9 @@ import '@ui/styles.css';
 import './styles/home.css';
 import './styles/components.css';
 import './styles/effects.css';
+import './animations/keyframes.css';
 import './animations/flip.css';
+import './animations/hover.css';
 
 const PartnersPage = lazyWithRetry(() => import('./pages/PartnersPage.jsx'));
 const ProjectsPage = lazyWithRetry(() => import('./pages/ProjectsPage.jsx'));

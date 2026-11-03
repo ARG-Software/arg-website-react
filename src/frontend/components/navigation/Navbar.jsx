@@ -119,9 +119,7 @@ export function Navbar({ variant = 'transparent', position = 'absolute' }) {
     right: 0,
     zIndex: 1050,
     transform: isHidden ? 'translateY(-100%)' : 'translateY(0)',
-    transition: hideInstant
-      ? 'none'
-      : 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease',
+    transition: hideInstant ? 'none' : 'transform 0.4s var(--ease-out-expo), opacity 0.3s ease',
     ...bgStyle,
     ...(isMobile
       ? {}

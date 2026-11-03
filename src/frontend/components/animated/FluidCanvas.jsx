@@ -10,7 +10,11 @@ const STILL_FRAME_SECONDS = 3;
 // (half the shorter canvas side) covers this much of the plane the blob floats on.
 const SCREEN_TO_WORLD = 3.2 / 2.2;
 const REACH_RANGE = 4;
-const FOLLOW_EASE = 0.08;
+// Seconds the reach takes to catch up with the pointer, and to grow or fade
+const FOLLOW_SECONDS = 0.9;
+const FADE_SECONDS = 0.8;
+// Frame gaps longer than this (a hidden tab, a resize) are treated as one normal frame
+const MAX_STEP_SECONDS = 1 / 20;
 
 function compile(gl, type, source) {
   const shader = gl.createShader(type);
@@ -57,13 +61,28 @@ export function FluidCanvas({ balls, melt = 0.35, className = '' }) {
     const packed = new Float32Array(MAX_BALLS * 4);
     // Pointer target in world units, and the eased point and strength that follow it
     const pointer = { x: 0, y: 0, active: false };
-    const reach = { x: 0, y: 0, strength: 0 };
+    const reach = { x: 0, y: 0, vx: 0, vy: 0, strength: 0 };
+    let lastSeconds = 0;
 
-    const withPointer = spheres => {
-      reach.x += (pointer.x - reach.x) * FOLLOW_EASE;
-      reach.y += (pointer.y - reach.y) * FOLLOW_EASE;
-      reach.strength += ((pointer.active ? 1 : 0) - reach.strength) * FOLLOW_EASE;
-      if (reach.strength < 0.01) return spheres;
+    const withPointer = (spheres, seconds) => {
+      const dt = Math.min(Math.max(seconds - lastSeconds, 0), MAX_STEP_SECONDS);
+      lastSeconds = seconds;
+      // A critically damped spring: the reach sets off gently, glides and settles without
+      // overshoot, and moves the same on any refresh rate
+      const omega = 2 / FOLLOW_SECONDS;
+      const decay = Math.exp(-omega * dt);
+      for (const [axis, velocity] of [
+        ['x', 'vx'],
+        ['y', 'vy'],
+      ]) {
+        const offset = reach[axis] - pointer[axis];
+        const pushed = (reach[velocity] + omega * offset) * dt;
+        reach[velocity] = (reach[velocity] - omega * pushed) * decay;
+        reach[axis] = pointer[axis] + (offset + pushed) * decay;
+      }
+      const fade = 1 - Math.exp(-dt / FADE_SECONDS);
+      reach.strength += ((pointer.active ? 1 : 0) - reach.strength) * fade;
+      if (reach.strength < 0.001) return spheres;
 
       const centreX = spheres.reduce((sum, sphere) => sum + sphere[0], 0) / spheres.length;
       const centreY = spheres.reduce((sum, sphere) => sum + sphere[1], 0) / spheres.length;
@@ -83,17 +102,19 @@ export function FluidCanvas({ balls, melt = 0.35, className = '' }) {
       // the neck shortens as the pull weakens, so the tip never breaks off
       const reachLength = Math.min(distance, 0.9) * (0.4 + 0.6 * pull) * reach.strength;
       if (leaned.length + 2 > MAX_BALLS) return leaned;
+      // The radii start below zero so a faint reach adds nothing to the melted surface,
+      // instead of a small bump that pops away when it is dropped
       leaned.push([
         centreX + nx * reachLength * 0.55,
         centreY + ny * reachLength * 0.55,
         0.15,
-        0.22 * reach.strength,
+        -0.3 + 0.52 * reach.strength,
       ]);
       leaned.push([
         centreX + nx * reachLength,
         centreY + ny * reachLength,
         0.2,
-        0.17 * reach.strength,
+        -0.3 + 0.47 * reach.strength,
       ]);
       return leaned;
     };
@@ -102,7 +123,7 @@ export function FluidCanvas({ balls, melt = 0.35, className = '' }) {
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform2f(resolution, canvas.width, canvas.height);
       gl.uniform1f(time, seconds);
-      const spheres = withPointer(balls(seconds)).slice(0, MAX_BALLS);
+      const spheres = withPointer(balls(seconds), seconds).slice(0, MAX_BALLS);
       spheres.forEach((sphere, i) => packed.set(sphere, i * 4));
       gl.uniform4fv(ballsUniform, packed);
       gl.uniform1f(count, spheres.length);

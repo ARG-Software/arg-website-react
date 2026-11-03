@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useEffect, useLayoutEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { NavMenu as UiNavMenu } from '@ui/navigation/NavMenu.jsx';
 import AppLink from './AppLink';
 import { Logo } from '../icons/Logo';
+import { SlotText } from '../animated/SlotText';
 import { trackEvent, trackCTA } from '@services/analytics';
 import { loadBlogPostsMetadata } from '../../utils/blog';
 import { getCoverSrcSet } from '../../utils/blog/coverSrcSet';
@@ -92,6 +93,36 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
     gsap.set(containerRef.current, { xPercent: 100 });
   }, []);
 
+  // Lines the menu's logo up with the navbar's and centres the close circle on the hamburger, and its
+  // content with the same side margins, so nothing jumps when the menu opens
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    const container = containerRef.current;
+    const alignWithNavbar = () => {
+      const burger = document.querySelector('.nav-hamburger .menu-icon');
+      const logo = document.querySelector('.nav_logo_icon svg');
+      const closeIcon = container.querySelector('.nav-menu__close-icon');
+      const menuLogo = container.querySelector('.nav-menu__logo');
+      if (!burger || !logo || !closeIcon || !menuLogo) return;
+      const burgerBox = burger.getBoundingClientRect();
+      const logoBox = logo.getBoundingClientRect();
+      if (burgerBox.bottom <= 0) return;
+      const logoHeight = (menuLogo.offsetHeight * logoBox.width) / menuLogo.offsetWidth;
+      const rowHeight = Math.max(closeIcon.offsetHeight, logoHeight);
+      const center = (burgerBox.top + burgerBox.bottom) / 2;
+      container.style.setProperty('--nav-menu-top', `${center - rowHeight / 2}px`);
+      container.style.setProperty('--nav-menu-left', `${logoBox.left}px`);
+      container.style.setProperty(
+        '--nav-menu-right',
+        `${container.offsetWidth - (burgerBox.left + burgerBox.right) / 2 - closeIcon.offsetWidth / 2}px`
+      );
+      container.style.setProperty('--nav-menu-logo-width', `${logoBox.width}px`);
+    };
+    alignWithNavbar();
+    window.addEventListener('resize', alignWithNavbar);
+    return () => window.removeEventListener('resize', alignWithNavbar);
+  }, [isOpen]);
+
   useEffect(() => {
     if (!isOpen) return;
     trackEvent('nav_menu_open', {});
@@ -128,7 +159,11 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
       try {
         const posts = loadBlogPostsMetadata();
         if (posts && posts.length > 0) {
-          setLatestPost({ ...posts[0], imageSrcSet: getCoverSrcSet(posts[0].image) });
+          setLatestPost({
+            ...posts[0],
+            to: `/blog/${posts[0].slug}/`,
+            imageSrcSet: getCoverSrcSet(posts[0].image),
+          });
         }
       } catch (err) {
         console.error('Failed to load latest blog post:', err);
@@ -194,6 +229,7 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
       renderLink={renderAppLink(handleLinkClick)}
       renderLatestLink={renderAppLink(handleLinkClick)}
       renderAuditLink={auditInstall.external ? renderExternalLink : renderAppLink()}
+      renderLabel={label => <SlotText text={label} />}
     />
   );
 }

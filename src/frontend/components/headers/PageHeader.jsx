@@ -17,7 +17,7 @@ const VARIANT_CLASSES = {
 /**
  * Unified page header component for subpages.
  * @param {Object} props
- * @param {string|string[]} props.title - Page title (string or array for multi-line titles)
+ * @param {string|string[]} props.title - Page title (string or array for multi-line titles; every line after the first is in the gradient)
  * @param {string} [props.subtitle] - Optional subtitle
  * @param {Array} [props.breadcrumbs] - Optional breadcrumb items: { label: string, path?: string, isTag?: boolean }
  * @param {Array} [props.sideItems] - Optional links row: { label: string, href?: string, to?: string, meta?: string }
@@ -119,7 +119,7 @@ export function PageHeader({
   return (
     <header className={headerClass} {...scopeAttrs}>
       <div className="page-header__inner">
-        {!variant && <HeroArt className="page-header__art" />}
+        <HeroArt className="page-header__art" />
 
         {breadcrumbs && breadcrumbs.length > 0 && (
           <Breadcrumb items={breadcrumbs} animate={animate} animationTrigger={animationTrigger} />
@@ -130,7 +130,7 @@ export function PageHeader({
             <div key={index} className="heading_line">
               <span
                 className={
-                  index === 1
+                  index >= 1
                     ? 'page-header__heading-line text-color-gradiant'
                     : 'page-header__heading-line'
                 }

@@ -27,6 +27,7 @@ export function NavMenu({
   renderLink = defaultRenderLink,
   renderLatestLink = defaultRenderLink,
   renderAuditLink = defaultRenderLink,
+  renderLabel = label => label,
   labels = {},
 }) {
   const handleContainerClick = event => {
@@ -61,7 +62,6 @@ export function NavMenu({
             aria-label="Close menu"
             type="button"
           >
-            <span className="nav-menu__close-text">Close</span>
             <span className="nav-menu__close-icon" aria-hidden="true">
               &times;
             </span>
@@ -77,7 +77,7 @@ export function NavMenu({
                 className: 'nav-menu__primary-link',
                 children: (
                   <>
-                    <span className="nav-menu__primary-name">{item.label}</span>
+                    <span className="nav-menu__primary-name">{renderLabel(item.label)}</span>
                   </>
                 ),
               })
@@ -96,14 +96,14 @@ export function NavMenu({
                   key: project.slug,
                   to: project.to || project.path || `/${project.slug}/`,
                   className: 'nav-menu__utility-link',
-                  children: project.title,
+                  children: renderLabel(project.title),
                 })
               )}
               {selectedWork?.viewAllTo &&
                 renderLink({
                   to: selectedWork.viewAllTo,
                   className: 'nav-menu__utility-link',
-                  children: selectedWork.viewAllLabel || 'All work',
+                  children: renderLabel(selectedWork.viewAllLabel || 'All work'),
                 })}
             </div>
 
@@ -115,7 +115,7 @@ export function NavMenu({
                     key: item.label,
                     to: item.to,
                     className: 'nav-menu__utility-link',
-                    children: item.label,
+                    children: renderLabel(item.label),
                   })
                 )}
               </div>
@@ -126,7 +126,7 @@ export function NavMenu({
         <div className="nav-menu__ribbon">
           {latestPost ? (
             renderLatestLink({
-              to: latestPost.to || latestPost.path || `/${latestPost.slug}/`,
+              to: latestPost.to || latestPost.path || `/blog/${latestPost.slug}/`,
               className: 'nav-menu__latest',
               children: (
                 <>
@@ -137,6 +137,17 @@ export function NavMenu({
                         srcSet={latestPost.imageSrcSet}
                         sizes="3rem"
                         alt=""
+                      />
+                    </span>
+                  )}
+                  {latestPost.image && (
+                    <span className="nav-menu__latest-preview" aria-hidden="true">
+                      <img
+                        src={latestPost.image}
+                        srcSet={latestPost.imageSrcSet}
+                        sizes="20rem"
+                        alt=""
+                        loading="lazy"
                       />
                     </span>
                   )}

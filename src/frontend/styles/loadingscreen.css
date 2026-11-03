@@ -93,7 +93,7 @@ html.ls-active {
   display: grid;
   grid-template-columns: 1.25em 6em 9em auto;
   flex-shrink: 0;
-  animation: ls-log-in 0.25s ease-out;
+  animation: arg-rise-in 0.25s ease-out;
 }
 
 .ls-log-verb {
@@ -102,13 +102,6 @@ html.ls-active {
 
 .ls-log .is-running .ls-log-result {
   animation: ls-dot-pulse 1.2s ease-in-out infinite;
-}
-
-@keyframes ls-log-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.5rem);
-  }
 }
 
 .ls-skip {

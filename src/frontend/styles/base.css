@@ -338,15 +338,12 @@ label {
   display: block;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 :root {
+  /* Section spacing tiers. They shrink with the viewport and keep their order at every width */
+  --section-space-small: clamp(3rem, 5vw, 4rem);
+  --section-space-medium: clamp(3rem, 6vw, 5rem);
+  --section-space-large: clamp(3.5rem, 8vw, 7rem);
+  --section-space-xlarge: clamp(4.5rem, 10vw, 9rem);
   --accessible-components--dark-grey: #9b9b9b;
   --accessible-components--dodger-blue: #1378d1;
   --padding-global: 2rem;
@@ -725,8 +722,9 @@ figcaption {
   font-weight: 400;
 }
 .padding-section-small {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
+  --section-space: var(--section-space-small);
+  padding-top: var(--section-space);
+  padding-bottom: var(--section-space);
 }
 .max-width-small {
   width: 100%;
@@ -824,12 +822,14 @@ figcaption {
   line-height: 1.5;
 }
 .padding-section-large {
-  padding-top: 7rem;
-  padding-bottom: 7rem;
+  --section-space: var(--section-space-large);
+  padding-top: var(--section-space);
+  padding-bottom: var(--section-space);
 }
 .padding-section-xlarge {
-  padding-top: 11rem;
-  padding-bottom: 11rem;
+  --section-space: var(--section-space-xlarge);
+  padding-top: var(--section-space);
+  padding-bottom: var(--section-space);
 }
 .padding-section-compact {
   padding-top: 4rem;
@@ -897,8 +897,20 @@ figcaption {
 }
 
 .padding-section-medium {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+  --section-space: var(--section-space-medium);
+  padding-top: var(--section-space);
+  padding-bottom: var(--section-space);
+}
+
+/* A divider closing a section sits halfway between it and the next one, so a
+   divided gap is exactly as wide as an undivided one */
+section:has(> .line-separate:last-child, > :last-child > .line-separate:last-child) {
+  padding-bottom: 0;
+}
+
+section > .line-separate:last-child,
+section > :last-child > .line-separate:last-child {
+  margin-top: var(--section-space, var(--section-space-large));
 }
 .container-medium {
   border: 1px #ffffff0d;
@@ -1160,16 +1172,6 @@ figcaption {
     padding-left: 3rem;
     padding-right: 3rem;
   }
-
-  .padding-section-large {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-  }
-
-  .padding-section-medium {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-  }
 }
 @media screen and (max-width: 767px) {
   h1 {
@@ -1327,11 +1329,6 @@ figcaption {
     padding-left: 2.25rem;
     padding-right: 2.25rem;
   }
-  .padding-section-small {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
-
   .max-width-full-mobile-landscape {
     width: 100%;
     max-width: none;
@@ -1341,14 +1338,6 @@ figcaption {
   }
   .heading-style-h6 {
     font-size: var(--type-meta);
-  }
-  .padding-section-large {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
-  .padding-section-medium {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
   }
 }
 @media screen and (max-width: 480px) {
@@ -1430,25 +1419,8 @@ figcaption {
   }
 }
 
-@media screen and (max-width: 1440px) {
-  .padding-section-xlarge {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-  }
-}
-
 @media screen and (max-width: 990px) {
   .padding-section-compact {
     padding-top: 0 !important;
-  }
-  .padding-section-xlarge {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
-}
-@media screen and (max-width: 480px) {
-  .padding-section-xlarge {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
   }
 }

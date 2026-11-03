@@ -47,7 +47,7 @@
 .text-color-gradiant {
   color: #000;
   -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(90deg, #f0060d, #c924d7 49%, #920ef1 84%, #7904fd);
+  background-image: var(--arg-gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
 }
@@ -206,18 +206,31 @@
    Navbar
    ========================================================================== */
 
-.nav-hamburger .menu_icon-line {
-  transition:
-    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.2s ease;
-}
-
 .nav-hamburger.is-open .menu_icon-line.is--top {
   transform: translateY(250%) rotate(45deg);
 }
 
 .nav-hamburger.is-open .menu_icon-line.is--bottom {
   transform: translateY(-250%) rotate(-45deg);
+}
+
+/* On hover the circle-grow preset draws a white circle behind the lines, and they turn dark */
+.nav-hamburger .menu-icon {
+  position: relative;
+}
+
+@media (hover: hover) {
+  .nav-hamburger:hover .menu_icon-line,
+  .nav-hamburger:focus-visible .menu_icon-line {
+    background-color: #0c002e;
+  }
+}
+
+.nav-hamburger .menu_icon-line {
+  transition:
+    transform 0.35s var(--ease-out-expo),
+    opacity 0.2s ease,
+    background-color 0.3s ease;
 }
 
 .hero_wrap ~ .nav_wrap .nav_logo-wrapper,
@@ -489,9 +502,10 @@
 }
 
 @media screen and (max-width: 767px) {
+  /* Same side padding as .padding-global, so the logo and hamburger line up with the content */
   .nav_wrap,
   .nav_wrap.padding-global {
-    padding: 0.875rem 1.125rem;
+    padding: 0.875rem 2.25rem;
   }
 
   .nav_contain.container,
@@ -516,12 +530,17 @@
     width: 2.625rem;
   }
 
+  /* Leaves room for the hamburger hover circle, so it never reaches the meeting button */
   .nav_buttons-wrapper {
     flex: 0 1 auto;
     justify-content: flex-end;
-    gap: 0.625rem;
+    gap: 1rem;
     min-width: 0;
     margin-left: 0;
+  }
+
+  .nav-hamburger {
+    --circle-size: 2.5rem;
   }
 
   .nav_buttons-wrapper .button-base {
@@ -554,23 +573,21 @@
   }
 }
 
-@media screen and (max-width: 380px) {
+@media screen and (max-width: 480px) {
   .nav_wrap,
   .nav_wrap.padding-global {
     padding-right: 1rem;
     padding-left: 1rem;
   }
+}
 
+@media screen and (max-width: 380px) {
   .nav-component {
     gap: 0.5rem;
   }
 
   .nav_logo_icon {
     width: 2.375rem;
-  }
-
-  .nav_buttons-wrapper {
-    gap: 0.5rem;
   }
 
   .nav_buttons-wrapper .button-base {
@@ -604,7 +621,7 @@
   line-height: var(--line-cta) !important;
   text-align: center;
   white-space: nowrap !important;
-  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1) !important;
+  transition: transform 0.65s var(--ease-in-out-quart) !important;
   transform: translateY(0) !important;
 }
 
@@ -704,7 +721,7 @@
   text-align: center;
   white-space: nowrap !important;
   width: max-content;
-  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1) !important;
+  transition: transform 0.65s var(--ease-in-out-quart) !important;
   transform: translateY(0) !important;
   cursor: pointer;
 }
@@ -762,7 +779,7 @@
   justify-content: var(--text-button-align) !important;
   line-height: var(--line-cta) !important;
   transform: translateY(0);
-  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1) !important;
+  transition: transform 0.65s var(--ease-in-out-quart) !important;
   width: 100%;
 }
 
@@ -1018,7 +1035,7 @@
 }
 
 .article-sidebar__link.is-active .article-sidebar__link-text {
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  background: var(--arg-gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1155,7 +1172,7 @@
 }
 
 .related-articles-carousel h2 span {
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd);
+  background: var(--arg-gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1273,7 +1290,7 @@
 .text-color-gradiant-2 {
   color: #000;
   -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(90deg, #f0060d, #c924d7 49%, #7904fd);
+  background-image: var(--arg-gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
 }
@@ -1462,10 +1479,12 @@
     display: inline;
   }
 
+  /* On phones the call to action sits straight on the dark page, without its card */
   .cta-wrapper {
     min-height: auto;
-    background: #ffffff0d;
-    border: 2px solid #ffffff0d;
+    background: none;
+    border: 0;
+    border-radius: 0;
   }
 
   .cta-wrapper::before {
@@ -1473,7 +1492,7 @@
   }
 
   .cta-content {
-    padding: 3.25rem 1.5rem;
+    padding: 3.25rem 0;
     width: 100%;
   }
 
@@ -1529,7 +1548,7 @@
 
 #arg-cookie-banner {
   align-items: center;
-  animation: arg-cookie-slide-up 0.3s ease-out;
+  animation: arg-slide-up 0.3s ease-out;
   background: #ffffff;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   bottom: 0;
@@ -1547,15 +1566,6 @@
   position: fixed;
   right: 0;
   z-index: 9999;
-}
-
-@keyframes arg-cookie-slide-up {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
 }
 
 #arg-cookie-banner p {
@@ -1650,8 +1660,7 @@
   z-index: 1;
 }
 
-/* Decorative fluid piece in the empty right side of sub page headers (wide screens only).
-   Article headers (blog posts, patterns) leave it out: their titles run across. */
+/* Decorative fluid piece in the empty right side of sub page headers (wide screens only) */
 .page-header__inner {
   position: relative;
 }
@@ -1672,6 +1681,14 @@
 @media screen and (max-width: 1099px) {
   .page-header__art {
     display: none;
+  }
+}
+
+/* Article titles run to several lines, so keep them clear of the drawing */
+@media screen and (min-width: 1100px) {
+  .page-header--article h1,
+  .page-header--article .page-header__subtitle {
+    max-width: calc(100% - min(26rem, 26vw) - 6.75rem);
   }
 }
 
@@ -1753,25 +1770,14 @@
 }
 
 .page-header__side-dot {
-  animation: page-header-dot-gradient 3s ease-in-out infinite;
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd, #f0060d);
+  animation: arg-gradient-slide 3s ease-in-out infinite;
+  background: var(--arg-gradient-loop);
   background-size: 260% 100%;
   border-radius: 999px;
   box-shadow: 0 0 0.75rem rgba(201, 36, 215, 0.32);
   display: inline-block;
   height: 0.375rem;
   width: 0.375rem;
-}
-
-@keyframes page-header-dot-gradient {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
 }
 
 .page-header__side-list {
@@ -1930,7 +1936,7 @@
 
 @media (min-width: 992px) {
   .projects_item_wrap .projects_item {
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.4s var(--ease-out-expo);
   }
 
   .projects_item_wrap:hover .projects_item {
@@ -2237,7 +2243,12 @@
   pointer-events: auto;
 }
 
+/* The side and top spacing default to the page's own, and the menu replaces them on open with
+   the navbar's live position so the logo and close button sit exactly where the navbar's were */
 .nav-menu__container {
+  --nav-menu-top: clamp(1.75rem, 3vw, 3.5rem);
+  --nav-menu-left: clamp(2.875rem, 4.5vw, 5rem);
+  --nav-menu-right: clamp(2.875rem, 4.5vw, 5rem);
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -2256,7 +2267,7 @@
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  padding: clamp(1.75rem, 3vw, 3.5rem) clamp(2.875rem, 4.5vw, 5rem) 0;
+  padding: var(--nav-menu-top) var(--nav-menu-right) 0 var(--nav-menu-left);
 }
 
 .nav-menu__logo {
@@ -2266,54 +2277,43 @@
 }
 
 .nav-menu__logo svg {
-  width: 3.5rem;
+  width: var(--nav-menu-logo-width, 3.5rem);
   height: auto;
 }
 
 .nav-menu__close {
-  position: static;
   display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
   padding: 0;
   border: none;
   background: transparent;
-  color: rgba(15, 10, 48, 0.38);
-  font-family: Consolas, 'Courier New', monospace;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  line-height: 1;
-  text-transform: uppercase;
   cursor: pointer;
-  transition: color 0.18s ease;
 }
 
-.nav-menu__close:hover {
-  color: #0f0a30;
-}
-
+/* A dark circle that grows in where the hamburger was, and grows a little more on hover */
 .nav-menu__close-icon {
   display: grid;
   place-items: center;
-  width: 2.125rem;
-  height: 2.125rem;
-  border: 1px solid rgba(15, 10, 48, 0.09);
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 50%;
-  color: #0f0a30;
+  background: #0c002e;
+  color: #ffffff;
   font-family: Neuemontreal, sans-serif;
-  font-size: 1.0625rem;
+  font-size: 1.625rem;
   line-height: 1;
-  transition:
-    background 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease;
+  transform: scale(0);
+  transition: transform 0.5s var(--ease-out-expo);
 }
 
-.nav-menu__close:hover .nav-menu__close-icon {
-  border-color: #0f0a30;
-  background: #0f0a30;
-  color: #ffffff;
+.nav-menu.is-open .nav-menu__close-icon {
+  transform: scale(1);
+  transition-delay: 0.2s;
+}
+
+.nav-menu.is-open .nav-menu__close:hover .nav-menu__close-icon,
+.nav-menu.is-open .nav-menu__close:focus-visible .nav-menu__close-icon {
+  transform: scale(1.15);
+  transition-delay: 0s;
 }
 
 /* ---------------------------------------------------------------- body */
@@ -2325,7 +2325,7 @@
   align-items: center;
   justify-content: center;
   min-height: 0;
-  padding: clamp(1rem, 2vh, 2rem) clamp(2.875rem, 4.5vw, 5rem);
+  padding: clamp(1rem, 2vh, 2rem) var(--nav-menu-right) clamp(1rem, 2vh, 2rem) var(--nav-menu-left);
   overflow-x: hidden;
   overflow-y: hidden;
   overscroll-behavior: contain;
@@ -2379,13 +2379,6 @@
   transition:
     background 0.18s ease,
     color 0.18s ease;
-}
-
-.nav-menu__primary-link:hover .nav-menu__primary-name {
-  background: linear-gradient(90deg, #ff3855 0%, #c91e8e 60%, #9c27b0 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
 }
 
 /* ---------------------------------------------------------------- utilities */
@@ -2445,13 +2438,14 @@
   align-items: center;
   flex-shrink: 0;
   gap: 1.375rem;
-  padding: 1rem clamp(2.875rem, 4.5vw, 5rem) 1.375rem;
+  padding: 1rem var(--nav-menu-right) 1.375rem var(--nav-menu-left);
   background: #0c002e;
   color: #ffffff;
   border-top: 1px solid #0c002e;
 }
 
 .nav-menu__latest {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.875rem;
@@ -2464,6 +2458,46 @@
 
 .nav-menu__latest:hover .nav-menu__latest-title {
   color: rgba(255, 255, 255, 0.72);
+}
+
+/* The cover rises above the link on hover, as a preview of the article */
+.nav-menu__latest-preview {
+  position: absolute;
+  bottom: calc(100% + 1.25rem);
+  left: 0;
+  width: 20rem;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #0c0a26;
+  box-shadow: 0 1.5rem 3rem rgba(12, 0, 46, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.75rem) scale(0.96);
+  transform-origin: bottom left;
+  transition:
+    opacity 0.3s ease,
+    transform 0.45s var(--ease-out-expo);
+}
+
+.nav-menu__latest-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (hover: hover) and (min-width: 861px) {
+  .nav-menu__latest:hover .nav-menu__latest-preview,
+  .nav-menu__latest:focus-visible .nav-menu__latest-preview {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .nav-menu__latest-preview {
+    display: none;
+  }
 }
 
 .nav-menu__latest--placeholder {
@@ -2542,16 +2576,15 @@
   width: 0.375rem;
   height: 0.375rem;
   border-radius: 50%;
-  background: linear-gradient(90deg, #f0060d, #c924d7, #7904fd, #f0060d);
+  background: var(--arg-gradient-loop);
   background-size: 260% 100%;
   box-shadow: 0 0 0.75rem rgba(201, 36, 215, 0.32);
   animation:
-    page-header-dot-gradient 3s ease-in-out infinite,
-    nav-menu__blink 2.4s ease-in-out infinite;
+    arg-gradient-slide 3s ease-in-out infinite,
+    arg-blink 2.4s ease-in-out infinite;
 }
 
 .nav-menu__audit-chip {
-  background: transparent;
   text-decoration: none;
 }
 
@@ -2570,38 +2603,10 @@
   height: 0.375rem;
   border-radius: 50%;
   background: #22c55e;
-  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
-  animation: nav-menu__pulse 2.4s infinite;
-}
-
-@keyframes nav-menu__blink {
-  50% {
-    opacity: 0.18;
-    transform: scale(0.75);
-  }
-}
-
-@keyframes nav-menu__pulse {
-  0% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
-  }
-
-  50% {
-    opacity: 0.18;
-    transform: scale(0.75);
-  }
-
-  70% {
-    box-shadow: 0 0 0 7px rgba(34, 197, 94, 0);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
-  }
+  --ring-color: rgba(34, 197, 94, 0.4);
+  animation:
+    arg-blink 2.4s infinite,
+    arg-ring 2.4s infinite;
 }
 
 .nav-menu__cta {
@@ -2648,13 +2653,12 @@
 
 @media (max-width: 860px) {
   .nav-menu__container {
+    --nav-menu-top: 1.25rem;
+    --nav-menu-left: 1.5rem;
+    --nav-menu-right: 1.5rem;
     max-width: 100%;
     overflow-y: auto;
     box-shadow: none;
-  }
-
-  .nav-menu__head {
-    padding: 1.25rem 1.5rem 0;
   }
 
   .nav-menu__body {
@@ -2662,7 +2666,7 @@
     align-items: stretch;
     justify-content: flex-start;
     min-height: auto;
-    padding: 1rem 1.5rem 0;
+    padding: 1rem var(--nav-menu-right) 0 var(--nav-menu-left);
     overflow: visible;
   }
 
@@ -2686,7 +2690,7 @@
   .nav-menu__utilities {
     justify-content: flex-start;
     margin-bottom: 0;
-    padding: 0 1.5rem 1.5rem;
+    padding: 0 var(--nav-menu-right) 1.5rem var(--nav-menu-left);
   }
 
   .nav-menu__columns {
@@ -2710,7 +2714,7 @@
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
-    padding: 1.25rem 1.5rem 1.5rem;
+    padding: 1.25rem var(--nav-menu-right) 1.5rem var(--nav-menu-left);
     border-top: none;
     --nav-menu-pill-height: 2.75rem;
   }
@@ -2745,8 +2749,8 @@
 }
 
 @media (min-width: 861px) and (max-height: 860px) {
-  .nav-menu__head {
-    padding-top: 1.5rem;
+  .nav-menu__container {
+    --nav-menu-top: 1.5rem;
   }
 
   .nav-menu__body {
@@ -2793,25 +2797,23 @@
 }
 
 @media (max-width: 480px) {
-  .nav-menu__head {
-    padding: 1rem 1.25rem 0;
+  .nav-menu__container {
+    --nav-menu-top: 1rem;
+    --nav-menu-left: 1.25rem;
+    --nav-menu-right: 1.25rem;
   }
 
   .nav-menu__body {
-    padding: 0.75rem 1.25rem 0;
+    padding-top: 0.75rem;
   }
 
-  .nav-menu__utilities,
-  .nav-menu__ribbon {
-    padding-right: 1.25rem;
-    padding-left: 1.25rem;
+  .nav-menu__close-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1.375rem;
   }
 
   .nav-menu__primary-name {
     font-size: clamp(2rem, 9vw, 2.5rem);
-  }
-
-  .nav-menu__close-text {
-    display: none;
   }
 }

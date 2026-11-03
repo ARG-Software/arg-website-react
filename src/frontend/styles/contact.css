@@ -4,21 +4,6 @@
   color: #ffffff;
 }
 
-.contact-kicker {
-  color: rgba(255, 255, 255, 0.56);
-  display: inline-flex;
-  font-family: Consolas, 'Courier New', monospace;
-  font-size: var(--type-kicker);
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.contact-kicker--dark {
-  color: rgba(15, 10, 48, 0.44);
-}
-
 .contact-brief,
 .contact-direct {
   background: #ffffff;
@@ -27,7 +12,7 @@
 
 .contact-brief {
   border-radius: 2rem 2rem 0 0;
-  padding: clamp(4rem, 8vw, 7rem) 0;
+  padding: var(--section-space-large) 0;
 }
 
 .contact-brief__grid {
@@ -45,10 +30,11 @@
   font-weight: 400;
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
-  margin: 1rem 0 0;
+  margin: 0;
 }
 
-.contact-brief__intro p {
+.contact-brief__intro p,
+.contact-direct__headline p {
   color: rgba(15, 10, 48, 0.64);
   font-size: var(--type-body);
   line-height: var(--line-body);
@@ -61,7 +47,7 @@
 }
 
 .contact-direct {
-  padding: 0 0 clamp(4rem, 8vw, 7rem);
+  padding: 0 0 var(--section-space-large);
 }
 
 .contact-direct__grid {
@@ -69,7 +55,7 @@
   display: grid;
   gap: clamp(2rem, 5vw, 4rem);
   grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
-  padding-top: clamp(3rem, 6vw, 5rem);
+  padding-top: var(--section-space-large);
 }
 
 .contact-direct__cards {

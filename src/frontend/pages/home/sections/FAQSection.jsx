@@ -39,7 +39,7 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
 
       answer.style.overflow = 'hidden';
       answer.style.maxHeight = '0';
-      answer.style.transition = 'max-height 0.55s cubic-bezier(0.16, 1, 0.3, 1)';
+      answer.style.transition = 'max-height 0.55s var(--ease-out-expo)';
 
       const questionText = button.querySelector('.faq_question_text');
       if (questionText) {
@@ -58,8 +58,7 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
       answer.style.maxHeight = answer.scrollHeight / 16 + 'rem';
 
       if (questionText) {
-        questionText.style.background =
-          'linear-gradient(90deg, #F0060D 0%, #C924D7 49%, #7904FD 100%)';
+        questionText.style.background = 'var(--arg-gradient-primary)';
         questionText.style.WebkitBackgroundClip = 'text';
         questionText.style.backgroundClip = 'text';
         questionText.style.WebkitTextFillColor = 'transparent';

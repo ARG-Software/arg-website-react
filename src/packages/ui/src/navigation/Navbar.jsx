@@ -54,6 +54,7 @@ export function Navbar({
             </a>
             <button
               className={`nav-hamburger${menuOpen ? ' is-open' : ''}`}
+              data-animate-hover="circle-grow"
               onClick={onMenuToggle}
               type="button"
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
