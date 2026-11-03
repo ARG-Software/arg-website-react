@@ -26,6 +26,9 @@ export const adminContainer = {
   get socialPosts() {
     return getAdminContainer().socialPosts;
   },
+  get architectReleases() {
+    return getAdminContainer().architectReleases;
+  },
   get loginRateLimitNotifier() {
     return getAdminContainer().loginRateLimitNotifier;
   },

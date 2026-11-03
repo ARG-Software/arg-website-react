@@ -175,8 +175,16 @@ export default function AuditPage() {
                     </div>
 
                     <div className="au-browsers">
-                      <span className="au-kicker">{PAGE.architect.browsersLabel}</span>
-                      <span className="au-kicker">{PAGE.architect.browsersNote}</span>
+                      <p className="au-kicker au-browsers-copy">
+                        {PAGE.architect.browsersLabel} {PAGE.architect.browsersNote}{' '}
+                        {PAGE.architect.changelogPrefix}
+                        <AppLink
+                          to={PAGE.architect.changelogPath}
+                          onClick={() => trackCTA('architect_changelog', 'audit_architect')}
+                        >
+                          {PAGE.architect.changelogLinkLabel}
+                        </AppLink>
+                      </p>
                       <ul>
                         {PAGE.architect.browsers.map(browser => (
                           <li key={browser.name} title={browser.name}>

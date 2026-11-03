@@ -238,6 +238,19 @@
   width: 2.125rem;
 }
 
+.au-browsers-copy {
+  display: block;
+  flex-basis: 100%;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.au-browsers-copy a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 /* Full width above the columns, so both lines fit on one line each at the standard size */
 .au-arch-title {
   margin: 0 0 clamp(2rem, 4vw, 3rem);
@@ -2079,5 +2092,233 @@
 @media (prefers-reduced-motion: reduce) {
   .au-panel.is-active {
     animation: none;
+  }
+
+  .au-cl-tick {
+    transition: none;
+  }
+}
+
+.au-cl-bar {
+  margin: 0 0 4.5rem;
+}
+
+.au-cl-bar-labels {
+  height: 1.25rem;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.au-cl-bar-year {
+  background: none;
+  border: 0;
+  color: rgba(12, 0, 46, 0.32);
+  cursor: pointer;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.au-cl-bar-year:first-child {
+  transform: none;
+}
+
+.au-cl-bar-year:last-child:not(:first-child) {
+  transform: translateX(-100%);
+}
+
+.au-cl-bar-year.is-active {
+  color: #0c002e;
+  font-weight: 600;
+}
+
+.au-cl-bar-track {
+  align-items: flex-end;
+  display: flex;
+  height: 3.375rem;
+  justify-content: space-between;
+}
+
+.au-cl-tick {
+  background: rgba(12, 0, 46, 0.16);
+  border: 0;
+  flex: 0 0 0.125rem;
+  height: 2.75rem;
+  padding: 0;
+  pointer-events: none;
+  transform-origin: center bottom;
+  transition: transform 0.45s var(--ease-out-quint);
+  width: 0.125rem;
+}
+
+.au-cl-tick--release {
+  background: transparent;
+  background-image: linear-gradient(
+    180deg,
+    var(--arg-color-red),
+    var(--arg-color-magenta),
+    var(--arg-color-violet)
+  );
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.au-cl-layout {
+  align-items: start;
+  display: grid;
+  gap: 3rem 4.5rem;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+}
+
+.au-cl-years {
+  display: grid;
+  gap: 0.85rem;
+  justify-items: start;
+  padding-top: 0.35rem;
+  position: sticky;
+  top: 6rem;
+}
+
+.au-cl-year {
+  background: none;
+  border: 0;
+  color: rgba(12, 0, 46, 0.28);
+  cursor: pointer;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 1.125rem;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  padding: 0;
+}
+
+.au-cl-year.is-active {
+  color: #0c002e;
+}
+
+.au-cl-intro {
+  margin: 0 0 1.5rem;
+}
+
+.au-cl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.au-cl-item {
+  border-top: 1px solid rgba(12, 0, 46, 0.08);
+  display: grid;
+  gap: 1rem 2.75rem;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  padding: 2.75rem 0;
+  scroll-margin-top: 7rem;
+}
+
+.au-cl-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.au-cl-date {
+  color: #8a8a96;
+  font-family: Neuemontreal, sans-serif;
+  font-size: 0.9375rem;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  padding-top: 0.45rem;
+}
+
+.au-cl-copy {
+  min-width: 0;
+}
+
+.au-cl-toggle {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.au-cl-title {
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 400;
+  letter-spacing: var(--tracking-title);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.au-cl-item:hover .au-cl-title,
+.au-cl-item:focus-within .au-cl-title,
+.au-cl-item.is-open .au-cl-title {
+  background-image: var(--arg-gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.au-cl-item:hover .pill--dark,
+.au-cl-item:focus-within .pill--dark,
+.au-cl-item.is-open .pill--dark {
+  background: var(--arg-gradient-primary);
+  border-color: transparent;
+  color: #fff;
+}
+
+.au-cl-lede {
+  color: #555;
+  font-size: var(--type-body);
+  line-height: var(--line-body);
+  margin: 0;
+  max-width: 34rem;
+}
+
+.au-cl-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.au-cl-notes {
+  margin-top: 1.75rem;
+  max-width: 42rem;
+}
+
+.au-cl-notes .bp-p,
+.au-cl-notes .bp-lead {
+  color: #555;
+  font-size: var(--type-body);
+  line-height: var(--line-body);
+}
+
+@media (max-width: 991px) {
+  .au-cl-layout,
+  .au-cl-item {
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  .au-cl-years {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.25rem;
+    position: static;
+  }
+
+  .au-cl-intro {
+    margin-bottom: 2rem;
   }
 }

@@ -43,7 +43,7 @@ const tempRoot = path.join(
 try {
   await stageSupabaseProject(tempRoot, selectedTarget);
   await runSupabase(['supabase', 'link', '--project-ref', projectRef], tempRoot, accessToken);
-  await runSupabase(['supabase', 'db', 'push'], tempRoot, accessToken);
+  await runSupabase(['supabase', 'db', 'push', '--remote'], tempRoot, accessToken);
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }

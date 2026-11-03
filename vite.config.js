@@ -96,6 +96,8 @@ export default defineConfig(({ mode }) => {
           '/api/admin/assistant-conversation',
           '/api/admin/social-posts',
           '/api/admin/social-posts/sync',
+          '/api/admin/architect-releases',
+          '/api/admin/architect-releases/sync',
         ],
         module: '/src/backend/admin/apps/api/api.ts',
         handler: 'routeAdminRequest',
@@ -119,6 +121,11 @@ export default defineConfig(({ mode }) => {
         path: '/api/social-posts',
         module: '/src/backend/admin/apps/api/api.ts',
         handler: 'routeSocialPostRequest',
+      },
+      {
+        path: '/api/architect-releases',
+        module: '/src/backend/admin/apps/api/api.ts',
+        handler: 'routeArchitectReleaseRequest',
       },
     ]),
     // SPA fallback: serve index.html for routes without file extensions

@@ -115,7 +115,7 @@ Before estimating, the team usually defines the core workflows, technical risks,
 
 ## Free Website Audit, Report Review and Architecture Review
 
-URLs: https://arg.software/audit/ (ARG Architect, how to read a report, report review) and https://arg.software/audit/architecture-review/ (architecture review)
+URLs: https://arg.software/audit/ (ARG Architect, how to read a report, report review), https://arg.software/audit/architecture-review/ (architecture review), and https://arg.software/audit/changelog/ (ARG Architect release notes)
 
 These are three separate things: ARG Architect, a free browser extension; the Report Review, a fixed-price review of an ARG Architect report; and the Architecture Review, a paid one-week service. None of them is the Senior Team Extension service, and none is one of the agent skills on /skills/ (arg-browser-extension, arg-web-audit).
 
@@ -243,6 +243,7 @@ Topics include:
 - Working with ARG Software: https://arg.software/working-with-us/
 - Audit and report review: https://arg.software/audit/
 - Architecture review: https://arg.software/audit/architecture-review/
+- ARG Architect changelog: https://arg.software/audit/changelog/
 - Partners: https://arg.software/partners/
 - Blog: https://arg.software/blog/
 - Contact: https://arg.software/contact/

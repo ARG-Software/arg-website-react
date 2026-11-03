@@ -61,6 +61,7 @@ ARG Software has partnered with teams across fintech, open payments, music techn
 - Working with ARG Software: how engagements start and how senior delivery works. https://arg.software/working-with-us/
 - Audit: a free website audit from the browser with ARG Architect, how to read its report, and the report review (EUR 500, fixed price). https://arg.software/audit/
 - Architecture review: one week of a senior engineer on the part of a system that matters most, from EUR 3,500. https://arg.software/audit/architecture-review/
+- ARG Architect changelog: published versions and release notes. https://arg.software/audit/changelog/
 - ARG Architect (free browser extension): Chrome Web Store https://chromewebstore.google.com/detail/arg-architect/bijelgdokpgmffnddemjblgdocnbogid, Firefox Add-ons https://addons.mozilla.org/addon/arg-architect/
 - Partners: companies ARG has worked with. https://arg.software/partners/
 - Blog: architecture, TypeScript, .NET, DevOps, and engineering practice. https://arg.software/blog/

@@ -41,6 +41,8 @@ export interface IAdminConfigValues {
   assistantConversationEncryptionKeyActiveVersion: number;
   assistantConversationEncryptionKeys: Record<number, string>;
   bufferApiKey: string;
+  gitHubReleasesToken: string;
+  gitHubReleasesRepo: string;
 }
 
 export class AdminConfig implements IAdminConfiguration {
@@ -174,6 +176,14 @@ export class AdminConfig implements IAdminConfiguration {
     return this.values.bufferApiKey;
   }
 
+  getGitHubReleasesToken(): string {
+    return this.values.gitHubReleasesToken;
+  }
+
+  getGitHubReleasesRepo(): string {
+    return this.values.gitHubReleasesRepo;
+  }
+
 }
 
 export function readAdminConfigValues(env: NodeJS.ProcessEnv): IAdminConfigValues {
@@ -243,6 +253,8 @@ export function readAdminConfigValues(env: NodeJS.ProcessEnv): IAdminConfigValue
       'ASSISTANT_CONVERSATION_ENCRYPTION_KEY'
     ),
     bufferApiKey: env.BUFFER_API_KEY || '',
+    gitHubReleasesToken: env.GITHUB_RELEASES_TOKEN || '',
+    gitHubReleasesRepo: env.GITHUB_RELEASES_REPO || '',
   };
 }
 

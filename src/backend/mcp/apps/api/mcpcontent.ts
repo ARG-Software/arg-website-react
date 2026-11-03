@@ -118,6 +118,7 @@ export const CONTACT_OPTIONS = {
   projectBrief: 'https://arg.software/contact/#brief',
   architectureReview: 'https://arg.software/audit/architecture-review/',
   audit: 'https://arg.software/audit/',
+  architectChangelog: 'https://arg.software/audit/changelog/',
   architectureCall: 'https://zcal.co/argsoftware/architecture-call',
   argArchitectChrome:
     'https://chromewebstore.google.com/detail/arg-architect/bijelgdokpgmffnddemjblgdocnbogid',

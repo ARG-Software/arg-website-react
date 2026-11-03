@@ -17,6 +17,7 @@ import { ImportOutreachCsvUseCase } from '../../application/usecases/outreach/im
 import { ListAssistantConversationsUseCase } from '../../application/usecases/assistantConversations/listassistantconversations.usecase.js';
 import { ListAllVisitSessionsUseCase } from '../../application/usecases/visits/listallvisitsessions.usecase.js';
 import { ListOutreachRecordsUseCase } from '../../application/usecases/outreach/listoutreachrecords.usecase.js';
+import { ListArchitectReleasesUseCase } from '../../application/usecases/architectReleases/listarchitectreleases.usecase.js';
 import { ListSocialPostsUseCase } from '../../application/usecases/socialPosts/listsocialposts.usecase.js';
 import { ListVisitCountryBreakdownUseCase } from '../../application/usecases/visits/listvisitcountrybreakdown.usecase.js';
 import { ListVisitJourneyUseCase } from '../../application/usecases/visits/listvisitjourney.usecase.js';
@@ -27,11 +28,13 @@ import { LoginUserUseCase } from '../../application/usecases/sessions/loginuser.
 import { RecordVisitSessionUseCase } from '../../application/usecases/visits/recordvisitsession.usecase.js';
 import { RefreshUserSessionUseCase } from '../../application/usecases/sessions/refreshusersession.usecase.js';
 import { SignOutUserUseCase } from '../../application/usecases/sessions/signoutuser.usecase.js';
+import { SyncArchitectReleasesUseCase } from '../../application/usecases/architectReleases/syncarchitectreleases.usecase.js';
 import { SyncSocialPostsUseCase } from '../../application/usecases/socialPosts/syncsocialposts.usecase.js';
 import { UpdateOutreachRecordUseCase } from '../../application/usecases/outreach/updateoutreachrecord.usecase.js';
 import { UpdateUserUseCase } from '../../application/usecases/users/updateuser.usecase.js';
 import { createUserAccessPolicy } from '../../application/policies/useraccess.policy.js';
 import { BufferProvider } from '../../infrastructure/buffer/buffer.provider.js';
+import { GitHubReleasesProvider } from '../../infrastructure/github/githubreleases.provider.js';
 import { OpenGraphImageProvider } from '../../infrastructure/opengraph/opengraphimage.provider.js';
 import { SupabaseSocialCoverProvider } from '../../infrastructure/storage/supabasesocialcover.provider.js';
 import { OutreachCsvParser } from '../../infrastructure/csv/outreachcsv.parser.js';
@@ -39,6 +42,7 @@ import { SupabaseAdminUserRepository } from '../../infrastructure/repositories/s
 import { SupabaseAssistantConversationRepository } from '../../infrastructure/repositories/supabase/supabaseassistantconversation.repository.js';
 import { SupabaseOutreachAuditRepository } from '../../infrastructure/repositories/supabase/supabaseoutreachaudit.repository.js';
 import { SupabaseOutreachRepository } from '../../infrastructure/repositories/supabase/supabaseoutreach.repository.js';
+import { SupabaseArchitectReleaseRepository } from '../../infrastructure/repositories/supabase/supabasearchitectrelease.repository.js';
 import { SupabaseSocialPostRepository } from '../../infrastructure/repositories/supabase/supabasesocialpost.repository.js';
 import { SupabaseUserIdentityProvider } from '../../infrastructure/repositories/supabase/supabaseuseridentity.provider.js';
 import { SupabaseVisitEventRepository } from '../../infrastructure/repositories/supabase/supabasevisitevent.repository.js';
@@ -71,7 +75,13 @@ export function createAdminContainer() {
   const visitEventRepository = new SupabaseVisitEventRepository(serviceClient, logger);
   const visitSessionRecorderRepository = new SupabaseVisitSessionRecorderRepository(serviceClient, logger);
   const socialPostRepository = new SupabaseSocialPostRepository(serviceClient, logger);
+  const architectReleaseRepository = new SupabaseArchitectReleaseRepository(serviceClient, logger);
   const bufferProvider = new BufferProvider(config.getBufferApiKey(), logger);
+  const gitHubReleasesProvider = new GitHubReleasesProvider(
+    config.getGitHubReleasesToken(),
+    config.getGitHubReleasesRepo(),
+    logger
+  );
   const openGraphImageProvider = new OpenGraphImageProvider();
   const socialCoverStorage = new SupabaseSocialCoverProvider(serviceClient, logger);
   const adminRateLimitRepository = new SupabaseRateLimitRepository(
@@ -182,6 +192,17 @@ export function createAdminContainer() {
         socialPostRepository,
         openGraphImageProvider,
         socialCoverStorage,
+        logger
+      ),
+    },
+    architectReleases: {
+      listArchitectReleasesUseCase: new ListArchitectReleasesUseCase(
+        architectReleaseRepository,
+        logger
+      ),
+      syncArchitectReleasesUseCase: new SyncArchitectReleasesUseCase(
+        gitHubReleasesProvider,
+        architectReleaseRepository,
         logger
       ),
     },

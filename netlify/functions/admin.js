@@ -21,6 +21,8 @@ export const config = {
     '/api/admin/assistant-conversation',
     '/api/admin/social-posts',
     '/api/admin/social-posts/sync',
+    '/api/admin/architect-releases',
+    '/api/admin/architect-releases/sync',
   ],
   method: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
 };

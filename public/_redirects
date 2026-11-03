@@ -43,6 +43,9 @@
 /api/social-posts        /.netlify/functions/social-posts        200
 /api/admin/social-posts  /.netlify/functions/admin               200
 /api/admin/social-posts/sync /.netlify/functions/admin           200
+/api/architect-releases  /.netlify/functions/architect-releases  200
+/api/admin/architect-releases /.netlify/functions/admin          200
+/api/admin/architect-releases/sync /.netlify/functions/admin     200
 /mcp                     /.netlify/functions/mcp                 200
 
 # Trailing-slash canonicalization — fixes Ahrefs "3XX in sitemap" errors
@@ -54,6 +57,7 @@
 /working-with-us  /working-with-us/      301
 /audit            /audit/                301
 /audit/architecture-review  /audit/architecture-review/  301
+/audit/changelog  /audit/changelog/        301
 /contact          /contact/              301
 /privacy          /privacy/              301
 /terms            /terms/                301

@@ -222,7 +222,10 @@
         "icon": "/images/audit/browsers/opera.svg"
       }
     ],
-    "browsersNote": "(Available through Chrome Store)",
+    "browsersNote": "(Available through Chrome Store).",
+    "changelogPrefix": "Check our ",
+    "changelogLinkLabel": "changelog",
+    "changelogPath": "/audit/changelog/",
     "privacy": "Free, and nothing is tracked",
     "video": {
       "src": "/videos/arg-architect.mp4",
@@ -695,6 +698,50 @@
       "buttonTextNotHover": "Book an architecture call",
       "buttonTextHover": "Let's talk",
       "secondButtonTextNotHover": "Free website audit",
+      "secondButtonTextHover": "ARG Architect"
+    }
+  },
+  "changelogPage": {
+    "seo": {
+      "title": "ARG Architect Changelog",
+      "description": "Release notes for ARG Architect, the free browser extension that audits a public page in one click."
+    },
+    "hero": {
+      "title": ["What's new", "in ARG Architect."],
+      "subtitle": "Versioned releases, updates, and fixes for the free website audit extension.",
+      "breadcrumbs": [
+        {
+          "label": "Home",
+          "path": "/"
+        },
+        {
+          "label": "Audit",
+          "path": "/audit/"
+        },
+        {
+          "label": "Changelog",
+          "path": "/audit/changelog/"
+        }
+      ]
+    },
+    "updatesLabel": "updates",
+    "yearsLabel": "Years",
+    "timelineLabel": "Release timeline",
+    "kinds": {
+      "major": "Major",
+      "minor": "Minor",
+      "patch": "Patch",
+      "release": "Release"
+    },
+    "loading": "Loading releases…",
+    "empty": "No releases published yet.",
+    "error": "Unable to load the changelog.",
+    "cta": {
+      "title": "Audit a",
+      "titleHighlight": "public page",
+      "buttonTextNotHover": "Get ARG Architect",
+      "buttonTextHover": "Chrome Web Store",
+      "secondButtonTextNotHover": "How the audit works",
       "secondButtonTextHover": "ARG Architect"
     }
   }

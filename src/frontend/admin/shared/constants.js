@@ -7,6 +7,7 @@ export const ADMIN_ROUTES = {
   visits: '/admin/visits/',
   visitsAll: '/admin/visits/all/',
   social: '/admin/social/',
+  changelog: '/admin/changelog/',
   help: '/admin/help/',
   settings: '/admin/settings/',
 };

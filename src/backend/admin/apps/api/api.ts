@@ -4,6 +4,7 @@ import { dispatchControllerRoutes } from './controllerroute.handler.js';
 import { getAssistantConversationRoutes } from './controllers/assistantconversations.controller.js';
 import { getAuthRoutes } from './controllers/auth.controller.js';
 import { getOutreachRoutes } from './controllers/outreach.controller.js';
+import { getArchitectReleaseRoutes } from './controllers/architectreleases.controller.js';
 import { getSocialPostRoutes } from './controllers/socialposts.controller.js';
 import { getUserRoutes } from './controllers/user.controller.js';
 import { getVisitRoutes } from './controllers/visits.controller.js';
@@ -16,6 +17,7 @@ const ROUTE_MAP = {
     ...getVisitRoutes(),
     ...getAssistantConversationRoutes(),
     ...getSocialPostRoutes(),
+    ...getArchitectReleaseRoutes(),
   ],
   auth: getAuthRoutes,
   user: getUserRoutes,
@@ -23,6 +25,7 @@ const ROUTE_MAP = {
   visit: getVisitRoutes,
   assistantConversation: getAssistantConversationRoutes,
   socialPost: getSocialPostRoutes,
+  architectRelease: getArchitectReleaseRoutes,
 };
 
 export function routeAdminRequest(request: Request): Promise<Response> {
@@ -51,6 +54,10 @@ export function routeAssistantConversationRequest(request: Request): Promise<Res
 
 export function routeSocialPostRequest(request: Request): Promise<Response> {
   return routeRequest('socialPost', request);
+}
+
+export function routeArchitectReleaseRequest(request: Request): Promise<Response> {
+  return routeRequest('architectRelease', request);
 }
 
 function routeRequest(type: keyof typeof ROUTE_MAP, request: Request): Promise<Response> {

@@ -21,6 +21,7 @@ import AssistantConversationsPage from './pages/AssistantConversationsPage.jsx';
 import VisitsDashboardPage from './pages/visits/VisitsDashboardPage.jsx';
 import VisitsListPage from './pages/visits/VisitsListPage.jsx';
 import SocialPostsPage from './pages/social/SocialPostsPage.jsx';
+import ArchitectReleasesPage from './pages/changelog/ArchitectReleasesPage.jsx';
 import HelpPage from './pages/HelpPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import { AssistantConversationOverlay } from './components/overlays/AssistantConversationOverlay.jsx';
@@ -34,6 +35,7 @@ import {
 } from './queries/outreach/useOutreachQueries.js';
 import { useAssistantConversation } from './queries/assistant/useAssistantQueries.js';
 import { useSyncAdminSocialPosts } from './queries/social/useSocialQueries.js';
+import { useSyncAdminArchitectReleases } from './queries/changelog/useArchitectReleaseQueries.js';
 import { ADMIN_ROUTES } from './shared/constants.js';
 import '@ui/styles.css';
 import './admin.css';
@@ -70,6 +72,7 @@ function AdminWorkspace() {
   const exportMutation = useExportOutreachCsv();
   const importMutation = useImportOutreachCsv();
   const socialSyncMutation = useSyncAdminSocialPosts();
+  const changelogSyncMutation = useSyncAdminArchitectReleases();
   const selectedRecordQuery = useOutreachRecord(selectedRecordId, {
     enabled: isAuthenticated && Boolean(selectedRecordId),
   });
@@ -80,6 +83,7 @@ function AdminWorkspace() {
   const visitsView = getVisitsView(location.pathname);
   const importStatus = getImportStatus(importMutation);
   const socialSyncStatus = getSocialSyncStatus(socialSyncMutation);
+  const changelogSyncStatus = getChangelogSyncStatus(changelogSyncMutation);
   const deepLinkedConversationId =
     view === 'aiBot' ? new URLSearchParams(location.search).get('conversationId') : '';
   const deepLinkedConversationQuery = useAssistantConversation(deepLinkedConversationId, {
@@ -256,6 +260,25 @@ function AdminWorkspace() {
               </div>
             }
           />
+        ) : view === 'changelog' ? (
+          <AdminNav
+            items={[]}
+            trailing={
+              <div className="admin-nav-actions">
+                <button
+                  type="button"
+                  className="admin-nav__control"
+                  onClick={() => changelogSyncMutation.mutate()}
+                  disabled={pageLoading || changelogSyncMutation.isPending}
+                >
+                  {changelogSyncMutation.isPending ? 'Fetching...' : 'Fetch releases'}
+                </button>
+                {changelogSyncStatus && (
+                  <span className="admin-save-status">{changelogSyncStatus}</span>
+                )}
+              </div>
+            }
+          />
         ) : null
       }
       loading={pageLoading}
@@ -343,6 +366,10 @@ function renderAdminFragment(view, handlers) {
     return <SocialPostsPage onSelectSocialPost={handlers.onSelectSocialPost} />;
   }
 
+  if (view === 'changelog') {
+    return <ArchitectReleasesPage />;
+  }
+
   if (view === 'settings') {
     return <SettingsPage userEmail={handlers.userEmail} />;
   }
@@ -399,6 +426,7 @@ function getAdminView(rawPathname) {
   if (pathname.startsWith('/admin/ai-bot')) return 'aiBot';
   if (pathname.startsWith('/admin/visits')) return 'visits';
   if (pathname.startsWith('/admin/social')) return 'social';
+  if (pathname.startsWith('/admin/changelog')) return 'changelog';
   if (pathname.startsWith('/admin/help')) return 'help';
   if (pathname.startsWith('/admin/settings')) return 'settings';
   return 'dashboard';
@@ -426,6 +454,7 @@ function getAdminTopNavItems(pathname) {
     { href: ADMIN_ROUTES.aiBot, label: 'AI Bot', isActive: view === 'aiBot' },
     { href: ADMIN_ROUTES.visits, label: 'Visits', isActive: view === 'visits' },
     { href: ADMIN_ROUTES.social, label: 'Social', isActive: view === 'social' },
+    { href: ADMIN_ROUTES.changelog, label: 'Changelog', isActive: view === 'changelog' },
   ];
 }
 
@@ -464,5 +493,13 @@ function getSocialSyncStatus(syncMutation) {
   if (syncMutation.isError) return syncMutation.error.message;
   if (syncMutation.data?.upserted !== undefined)
     return `Synced ${syncMutation.data.upserted} posts.`;
+  return '';
+}
+
+function getChangelogSyncStatus(syncMutation) {
+  if (syncMutation.isPending) return 'Fetching...';
+  if (syncMutation.isError) return syncMutation.error.message;
+  if (syncMutation.data?.upserted !== undefined)
+    return `Fetched ${syncMutation.data.upserted} releases.`;
   return '';
 }

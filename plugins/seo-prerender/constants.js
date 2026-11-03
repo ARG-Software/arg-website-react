@@ -194,6 +194,26 @@ export const STATIC_PAGES = [
     ],
   },
   {
+    path: '/audit/changelog/',
+    title: 'ARG Architect Changelog | ARG Software',
+    socialTitle: 'ARG Architect Changelog',
+    h1: "What's new in ARG Architect.",
+    pageType: 'WebPage',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Audit', path: '/audit/' },
+      { name: 'Changelog', path: '/audit/changelog/' },
+    ],
+    priority: '0.6',
+    changefreq: 'weekly',
+    description:
+      'Release notes for ARG Architect, the free browser extension that audits a public page in one click.',
+    paragraphs: [
+      'ARG Architect is versioned through GitHub Releases. This page lists published versions, titles, and release notes for the free website audit extension.',
+      'Each entry is a published version: tag, date, and notes. Draft releases are not shown. The changelog lives on arg.software so the extension can link to it while the Architect repository stays private.',
+    ],
+  },
+  {
     path: '/about-us/',
     title: 'About Our Architecture-First Studio | ARG Software',
     socialTitle: 'About Our Architecture-First Studio',

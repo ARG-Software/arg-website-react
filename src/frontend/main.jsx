@@ -41,6 +41,7 @@ const PatternDetailPage = lazyWithRetry(() => import('./pages/PatternDetailPage.
 const WorkingWithUsPage = lazyWithRetry(() => import('./pages/WorkingWithUsPage.jsx'));
 const AuditPage = lazyWithRetry(() => import('./pages/AuditPage.jsx'));
 const ArchitectureReviewPage = lazyWithRetry(() => import('./pages/ArchitectureReviewPage.jsx'));
+const ChangelogPage = lazyWithRetry(() => import('./pages/ChangelogPage.jsx'));
 const AboutUsPage = lazyWithRetry(() => import('./pages/AboutUsPage.jsx'));
 const ContactPage = lazyWithRetry(() => import('./pages/ContactPage.jsx'));
 const BlogPage = lazyWithRetry(() => import('./pages/blog/BlogPage.jsx'));
@@ -95,6 +96,8 @@ const appRoutes = (
     <Route path="/audit/" element={<AuditPage />} />
     <Route path="/audit/architecture-review" element={<ArchitectureReviewPage />} />
     <Route path="/audit/architecture-review/" element={<ArchitectureReviewPage />} />
+    <Route path="/audit/changelog" element={<ChangelogPage />} />
+    <Route path="/audit/changelog/" element={<ChangelogPage />} />
     <Route path="/about-us" element={<AboutUsPage />} />
     <Route path="/about-us/" element={<AboutUsPage />} />
     <Route path="/contact" element={<ContactPage />} />

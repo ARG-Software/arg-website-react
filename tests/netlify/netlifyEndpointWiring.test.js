@@ -74,6 +74,7 @@ test('function files use backend API entrypoints', () => {
   );
   assert.match(readNetlifyFile('functions/mcp.js'), /mcp\/apps\/api\/api\.ts/);
   assert.match(readNetlifyFile('functions/social-posts.js'), /apps\/api\/api\.ts/);
+  assert.match(readNetlifyFile('functions/architect-releases.js'), /apps\/api\/api\.ts/);
   assert.match(
     readNetlifyFile('functions/maintenance-sync-social-posts.js'),
     /maintenance\/apps\/api\/api\.ts/
@@ -98,6 +99,10 @@ test('TypeScript-backed visit log function bundles', async () => {
 
 test('TypeScript-backed social posts function bundles', async () => {
   await buildFunction('functions/social-posts.js');
+});
+
+test('TypeScript-backed architect releases function bundles', async () => {
+  await buildFunction('functions/architect-releases.js');
 });
 
 test('TypeScript-backed social posts sync function bundles', async () => {
@@ -161,6 +166,9 @@ test('public redirects expose function endpoints before the 404 fallback', () =>
     '/api/social-posts        /.netlify/functions/social-posts        200',
     '/api/admin/social-posts  /.netlify/functions/admin               200',
     '/api/admin/social-posts/sync /.netlify/functions/admin           200',
+    '/api/architect-releases  /.netlify/functions/architect-releases  200',
+    '/api/admin/architect-releases /.netlify/functions/admin          200',
+    '/api/admin/architect-releases/sync /.netlify/functions/admin     200',
     '/mcp                     /.netlify/functions/mcp                 200',
   ]) {
     const redirectIndex = redirects.indexOf(redirect);
@@ -193,6 +201,7 @@ test('netlify functions do not reference removed implementation folders or old c
     'functions/mcp.js',
     'functions/maintenance-keep-database-alive.js',
     'functions/social-posts.js',
+    'functions/architect-releases.js',
     'functions/maintenance-sync-social-posts.js',
   ];
 

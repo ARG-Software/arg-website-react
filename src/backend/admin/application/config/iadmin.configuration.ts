@@ -21,4 +21,6 @@ export interface IAdminConfiguration {
   getAssistantConversationLogRateLimitConfig(): IRateLimitConfig;
   getAltchaSettings(): AltchaSettings;
   getBufferApiKey(): string;
+  getGitHubReleasesToken(): string;
+  getGitHubReleasesRepo(): string;
 }
