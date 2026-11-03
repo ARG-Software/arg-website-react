@@ -716,7 +716,7 @@
   --prp-gallery-placeholder-b: #d4d3ce;
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 1200;
   font-family: Neuemontreal, sans-serif;
   display: flex;
   align-items: center;
@@ -732,7 +732,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
 .prp-image-gallery__lightbox-stage {
   position: relative;
-  width: 100%;
+  width: auto;
   max-width: 92vw;
   max-height: 86vh;
   display: flex;
@@ -746,7 +746,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   display: block;
   width: auto;
   height: auto;
-  max-width: 100%;
+  max-width: 92vw;
   max-height: 86vh;
   object-fit: contain;
   border-radius: 0;
@@ -775,6 +775,10 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
 .prp-image-gallery__lightbox-caption {
   left: 0;
+  overflow: hidden;
+  right: 4rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .prp-image-gallery__lightbox-count {

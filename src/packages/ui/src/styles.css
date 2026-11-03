@@ -2331,7 +2331,7 @@
   justify-content: center;
   padding: 5vmin;
   position: fixed;
-  z-index: 1000;
+  z-index: 1200;
 }
 
 .prp-image-gallery__lightbox-stage {
@@ -2341,14 +2341,14 @@
   max-height: 86vh;
   max-width: 92vw;
   position: relative;
-  width: 100%;
+  width: auto;
 }
 
 .prp-image-gallery__lightbox-image {
   display: block;
   height: auto;
   max-height: 86vh;
-  max-width: 100%;
+  max-width: 92vw;
   object-fit: contain;
   width: auto;
 }
@@ -2365,6 +2365,10 @@
 
 .prp-image-gallery__lightbox-caption {
   left: 0;
+  overflow: hidden;
+  right: 4rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .prp-image-gallery__lightbox-count {
