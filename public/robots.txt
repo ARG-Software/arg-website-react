@@ -1,3 +1,7 @@
+# Search engines, human visitors, and AI answer/user-fetch crawlers are welcome.
+# OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot,
+# Perplexity-User, DuckAssistBot and similar agents fall under * on purpose, so
+# they can cite and link the site.
 User-agent: *
 Allow: /
 Allow: /llm.txt
@@ -15,36 +19,24 @@ Content-Signal: ai-train=no, search=yes, ai-input=yes
 Disallow: /404.html
 Disallow: /404
 
-User-agent: ai2bot
+# Training, advertising, and bulk-scraper crawlers: they collect content for model
+# training or data resale and send no visitors, so they get nothing. Keep this in
+# step with "ai-train=no" above.
+User-agent: GPTBot
+User-agent: ClaudeBot
 User-agent: anthropic-ai
-User-agent: applebot-extended
-User-agent: bytespider
-User-agent: ccbot
-User-agent: chatgpt-user
-User-agent: claudebot
-User-agent: cohere-ai
-User-agent: diffbot
-User-agent: facebookbot
-User-agent: google-extended
-User-agent: gptbot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
 User-agent: meta-externalagent
+User-agent: meta-externalads
+User-agent: Bytespider
+User-agent: CCBot
+User-agent: ai2bot
+User-agent: cohere-ai
+User-agent: Diffbot
+User-agent: FacebookBot
 User-agent: omgili
-User-agent: perplexitybot
-Allow: /
-Allow: /llm.txt
-Allow: /llms.txt
-Allow: /full-llm.txt
-Allow: /llms-full.txt
-Allow: /auth.md
-Allow: /ai-plugin.json
-Allow: /.well-known/ard.json
-Allow: /.well-known/api-catalog
-Allow: /.well-known/openapi.json
-Allow: /.well-known/agent-skills/
-Allow: /.well-known/mcp/server-card.json
-Content-Signal: ai-train=no, search=yes, ai-input=yes
-Disallow: /404.html
-Disallow: /404
+Disallow: /
 
 Agentmap: https://arg.software/.well-known/ard.json
 Sitemap: https://arg.software/sitemap.xml
