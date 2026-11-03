@@ -1166,7 +1166,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(1.75rem, 4vw, 3rem);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: -0.035em;
   line-height: 1.05;
   margin: 0;
@@ -1720,7 +1720,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-page-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-heading);
   margin-bottom: 0;
   margin-top: 3.5rem;

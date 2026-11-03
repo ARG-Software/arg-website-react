@@ -6,7 +6,7 @@
 .cp-section-title {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   line-height: var(--line-tight);
   color: #0c002e;
   margin: 0;
@@ -113,7 +113,7 @@
 .cp-whyus-title {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   line-height: var(--line-tight);
   color: #0c002e;
   margin: 0;
@@ -482,7 +482,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0 0 1.5rem;
@@ -569,7 +569,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0 0 1.5rem;

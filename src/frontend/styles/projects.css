@@ -115,7 +115,7 @@
 .prp-intro-title {
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-display);
   line-height: 1.1;
   margin: 0;
@@ -356,7 +356,7 @@
 .prp-section-heading {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -852,7 +852,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .prp-solution-heading {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -926,7 +926,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .prp-results-heading {
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
   margin: 0;

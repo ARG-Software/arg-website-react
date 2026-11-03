@@ -13,7 +13,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0 0 1.5rem;
@@ -284,7 +284,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(2rem, 3.2vw, 3.375rem);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -547,7 +547,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-card-title);
   line-height: 1.16;
   margin: 0 0 1.5rem;

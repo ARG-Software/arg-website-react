@@ -29,7 +29,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 1rem 0 0;
@@ -307,7 +307,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0 0 1rem;
@@ -459,7 +459,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0.875rem 0 0;
@@ -829,7 +829,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0;
@@ -937,7 +937,7 @@
   color: #fff;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-content-heading);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 1.25rem 0 0;
@@ -2253,7 +2253,7 @@
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(1.5rem, 2.4vw, 2rem);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: 1.1;
   margin: 0;

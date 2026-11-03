@@ -481,7 +481,7 @@ h2 {
   margin-top: 0;
   margin-bottom: 0;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
 }
@@ -883,7 +883,7 @@ figcaption {
 .heading-style-h2 {
   max-width: 26ch;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   overflow: hidden;

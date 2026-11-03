@@ -239,7 +239,7 @@
 .pt-timeline-heading {
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   line-height: var(--line-tight);
   color: #fff;
   margin: 0 0 3rem;

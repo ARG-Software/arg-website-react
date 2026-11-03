@@ -8,7 +8,7 @@ import {
   LEAD_CAPTURE_SESSION_DISMISSED_KEY,
 } from '@constants/ui';
 import { LoadingContext } from '@providers/LoadingProvider';
-import { trackCTA, trackEvent } from '@services/analytics';
+import { trackCTA } from '@services/analytics';
 import { lazyWithRetry } from '@utils/lazyWithRetry';
 import { AssistantNudge } from '@components/widgets/AssistantNudge';
 
@@ -73,10 +73,6 @@ function isLeadCaptureSuppressed() {
   );
 }
 
-function trackNudge(action, pagePath) {
-  trackEvent('assistant_lead_capture', { action, page_path: pagePath, source: NUDGE_SOURCE });
-}
-
 function AssistantTrigger({ onOpen }) {
   return (
     <button className="aw-trigger" onClick={onOpen} aria-label="Open assistant" type="button">
@@ -121,7 +117,6 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
       if (hasShown || isLeadCaptureSuppressed() || inMemoryDismissed) return;
 
       hasShown = true;
-      trackNudge('offer_shown', normalizedPath);
       setVisiblePath(normalizedPath);
     }
 
@@ -159,19 +154,16 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
   }
 
   function handleNudgeChat() {
-    trackNudge('chat_clicked', normalizedPath);
     hideNudge('sessionStorage', LEAD_CAPTURE_SESSION_DISMISSED_KEY, '1');
     handleTriggerOpen();
   }
 
   function handleNudgeMeeting() {
-    trackNudge('meeting_clicked', normalizedPath);
     trackCTA('book_meeting', NUDGE_SOURCE);
     hideNudge('sessionStorage', LEAD_CAPTURE_SESSION_DISMISSED_KEY, '1');
   }
 
   function handleNudgeClose() {
-    trackNudge('dismissed', normalizedPath);
     hideNudge(
       'localStorage',
       LEAD_CAPTURE_DISMISS_EXPIRY_KEY,

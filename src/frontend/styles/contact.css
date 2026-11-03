@@ -27,7 +27,7 @@
   color: #0f0a30;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0;

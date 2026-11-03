@@ -2425,7 +2425,7 @@
 
 .pt-timeline-heading {
   font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   line-height: var(--line-tight);
   margin: 0;
 }
@@ -2608,7 +2608,7 @@
 .vertical-timeline__card-headline {
   color: var(--arg-color-ink);
   font-size: clamp(2rem, 3.2vw, 3.375rem);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   line-height: var(--line-tight);
   margin: 0;
 }
