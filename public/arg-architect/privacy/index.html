@@ -140,6 +140,13 @@
           headers observed for the audited page load.
         </li>
         <li>
+          <strong>Script errors and failed requests:</strong> messages of uncaught script
+          exceptions, unhandled promise rejections, and scripts that failed to load (with the
+          script URL without its query string, line, and column), and page requests that failed
+          or answered with an error status. They are stored with the report and leave your device
+          only inside a report you attach to a Contact request.
+        </li>
+        <li>
           <strong>Storage evidence:</strong> <code>localStorage</code> /
           <code>sessionStorage</code> key names, and cookie names and values visible to the page
           (<code>document.cookie</code>). Cookie values are inspected transiently in memory to
