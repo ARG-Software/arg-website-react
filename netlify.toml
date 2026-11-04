@@ -13,6 +13,7 @@
 [[edge_functions]]
   function = "markdownNegotiation"
   path = "/*"
+  excludedPath = ["/assets/*", "/images/*", "/icons/*", "/fonts/*", "/videos/*", "/files/*"]
 
 [[plugins]]
   package = "@netlify/plugin-lighthouse"

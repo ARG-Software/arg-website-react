@@ -31,6 +31,12 @@ export function writeStaticPages({ distDir, baseHtml, blogPostLinks, generated }
     let extraLinks = [];
     if (page.path === '/blog/') extraLinks = blogPostLinks;
     if (page.path === '/skills/') extraLinks = getSkillLinks();
+    if (page.path === '/audit/') {
+      extraLinks = [
+        { href: '/audit/architecture-review/', label: 'Architecture review' },
+        { href: '/audit/changelog/', label: 'ARG Architect changelog' },
+      ];
+    }
     if (page.path === '/patterns/') {
       extraLinks = loadPatterns().map(pattern => ({
         href: `/patterns/${pattern.slug}/`,
