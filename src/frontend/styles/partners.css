@@ -553,19 +553,19 @@
 }
 
 .pt-mobile-row--cta {
+  border-bottom: none;
   display: block;
-  padding: 0;
+  padding: 1.5rem 0 0;
 }
 
-.pt-mobile-cta {
-  justify-content: space-between;
-  padding-left: 0;
-  padding-right: 0;
+/* The desktop future slot, in the flow of the list instead of on the chart */
+.pt-future.pt-mobile-cta {
+  height: auto;
+  inset: auto;
+  min-width: 0;
+  padding: 1.25rem;
+  position: relative;
   width: 100%;
-}
-
-.pt-mobile-cta:hover {
-  color: var(--arg-color-magenta);
 }
 
 /* ═══════════════════════════════════════════════════════════

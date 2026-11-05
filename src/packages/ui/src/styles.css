@@ -2377,6 +2377,7 @@
 }
 
 .prp-image-gallery__lightbox-button {
+  z-index: 1;
   align-items: center;
   background: rgba(255, 255, 255, 0.1);
   border: 0;
@@ -4653,11 +4654,18 @@
     display: none;
   }
 
+  /* A floating panel that leaves the top of the page visible */
   .aw-panel--open {
-    border: none;
+    bottom: 0.75rem;
+    height: min(36rem, calc(100dvh - 6rem));
+    right: 0.75rem;
+    width: calc(100% - 1.5rem);
+  }
+
+  .aw-panel--fullscreen {
     border-radius: 0;
     bottom: 0;
-    height: 100%;
+    height: 100dvh;
     right: 0;
     width: 100%;
   }

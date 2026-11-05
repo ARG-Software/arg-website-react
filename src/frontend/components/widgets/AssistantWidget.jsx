@@ -51,7 +51,6 @@ export function AssistantWidget(props) {
       inputDisabled={controller.isInputDisabled}
       submitDisabled={controller.isSubmitDisabled}
       clearDisabled={controller.isClearDisabled}
-      showFullscreenToggle={!controller.mobileViewport}
       darkMode={darkMode}
       loading={controller.loading}
       error={!controller.isLeadActive ? controller.error : null}

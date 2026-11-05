@@ -5,7 +5,6 @@ import {
   formatTimelineRange,
   getTimelineYearColumns,
 } from '../utils/timeline.js';
-import { AnimatedArrowButton } from '../buttons/AnimatedArrowButton.jsx';
 import { arrowSvg } from '../icons/SocialIcons.jsx';
 
 function formatTimelineLabel(row) {
@@ -160,16 +159,15 @@ export function Timeline({
           </li>
         ))}
         <li className="pt-mobile-row pt-mobile-row--cta" {...cardAttrs(timelineRows.length + 1)}>
-          <AnimatedArrowButton
-            href={ctaLink}
-            variant="ghost"
-            className="pt-mobile-cta"
-            {...ctaAttrs}
-            onClick={onCtaClick}
-            hoverText={ctaButtonText}
-          >
-            {ctaText}
-          </AnimatedArrowButton>
+          <a href={ctaLink} className="pt-future pt-mobile-cta" {...ctaAttrs} onClick={onCtaClick}>
+            <span className="pt-future-kicker">{ctaText}</span>
+            <span className="pt-future-title">
+              {ctaButtonText}
+              <span className="arrow_icon-embed" aria-hidden="true">
+                {arrowSvg}
+              </span>
+            </span>
+          </a>
         </li>
       </ol>
     </div>

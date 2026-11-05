@@ -29,9 +29,9 @@ export function getInputPlaceholder({
 
 export const PANEL_MODE_STORAGE_KEY = 'arg_assistant_mode';
 
-// Mobile always opens full screen; desktop reopens in the last mode the visitor picked
+// Mobile always opens as a floating panel; desktop reopens in the last mode the visitor picked
 export function getPanelStateForViewport(mobileViewport) {
-  if (mobileViewport) return 'fullscreen';
+  if (mobileViewport) return 'open';
   try {
     return localStorage.getItem(PANEL_MODE_STORAGE_KEY) === 'fullscreen' ? 'fullscreen' : 'open';
   } catch {

@@ -53,6 +53,7 @@ function GalleryImage({ image, index, onOpen }) {
 export function ImageGallery({ images = [], className = '' }) {
   const [open, setOpen] = useState(-1);
   const closeButtonRef = useRef(null);
+  const touchStartRef = useRef(null);
   const isOpen = open >= 0 && open < images.length;
 
   const show = index => {
@@ -113,6 +114,22 @@ export function ImageGallery({ images = [], className = '' }) {
             data-lenis-prevent
             onClick={event => {
               if (event.target === event.currentTarget) close();
+            }}
+            onTouchStart={event => {
+              const touch = event.touches[0];
+              touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+            }}
+            onTouchEnd={event => {
+              const start = touchStartRef.current;
+              touchStartRef.current = null;
+              if (!start || images.length < 2) return;
+
+              // A mostly horizontal swipe of at least 3rem moves to the next or previous image
+              const touch = event.changedTouches[0];
+              const deltaX = touch.clientX - start.x;
+              const deltaY = touch.clientY - start.y;
+              if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+              show(deltaX < 0 ? open + 1 : open - 1);
             }}
           >
             <button

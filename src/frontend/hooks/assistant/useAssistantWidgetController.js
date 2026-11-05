@@ -62,7 +62,7 @@ function addRateLimitNotice(messages, content) {
   return [...messages, getRateLimitAssistantMessage(content)];
 }
 
-function useMobileFullscreen() {
+function useMobileViewport() {
   const [mobileViewport, setMobileViewport] = useState(() => {
     if (typeof window === 'undefined') return false;
     return isMobile();
@@ -84,7 +84,7 @@ export function useAssistantWidgetController({
   reopenRequest = 0,
   onLeadCaptureComplete,
 }) {
-  const mobileViewport = useMobileFullscreen();
+  const mobileViewport = useMobileViewport();
   const [panelState, setPanelState] = useState('closed');
   const [inputValue, setInputValue] = useState('');
   const [preferredLanguage, setPreferredLanguage] = useState('');

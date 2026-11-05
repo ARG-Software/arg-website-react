@@ -734,7 +734,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   position: relative;
   width: auto;
   max-width: 92vw;
-  max-height: 86vh;
+  max-height: 86dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -747,7 +747,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   width: auto;
   height: auto;
   max-width: 92vw;
-  max-height: 86vh;
+  max-height: 86dvh;
   object-fit: contain;
   border-radius: 0;
   background: transparent;
@@ -786,8 +786,10 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   color: rgba(255, 255, 255, 0.52);
 }
 
+/* Above the stage, whose open animation transform layers it over earlier siblings */
 .prp-image-gallery__lightbox-button {
   position: fixed;
+  z-index: 1;
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
@@ -966,20 +968,23 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   align-items: start;
   text-align: left;
   will-change: transform;
+  container-type: inline-size;
 }
 
 .prp-metric-card:hover {
   transform: translateY(-5px);
 }
 
+/* Sized by the card, not the viewport, so values like "1,000-2,000" always fit on one line */
 .prp-metric-card-number {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(2rem, 3vw, 2.5rem);
+  font-size: clamp(1rem, 17cqi, 2.5rem);
   font-weight: var(--weight-light);
   line-height: 1;
   display: flex;
   align-items: baseline;
   gap: 0.1rem;
+  white-space: nowrap;
 }
 
 .prp-metric-number {
@@ -1049,6 +1054,18 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 /* ============================================
    Responsive
    ============================================ */
+
+/* Beside the text, three cards are too narrow below 1600px: stack them under it */
+@media (max-width: 1599px) {
+  .prp-results-left {
+    grid-column: 2 / span 5;
+  }
+
+  .prp-results-right {
+    grid-column: 2 / span 10;
+    margin-top: 2rem;
+  }
+}
 @media (max-width: 1023px) {
   .prp-intro-top {
     grid-template-columns: minmax(0, 1fr);
