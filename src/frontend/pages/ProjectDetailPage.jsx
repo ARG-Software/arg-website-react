@@ -5,7 +5,7 @@ import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { UseCaseCarousel } from '@ui/grids/UseCaseCarousel.jsx';
 import { ImageGallery } from '@ui/grids/ImageGallery.jsx';
 import { Navbar } from '@components/navigation/Navbar';
-import AppLink from '@components/navigation/AppLink';
+import { PageHeader } from '@components/headers/PageHeader';
 import { Footer } from '@components/layout/Footer';
 import { CTASection } from '@components/layout/CTASection';
 import { Pill } from '@ui/pills/Pill.jsx';
@@ -159,79 +159,33 @@ export default function ProjectDetailPage() {
         <Navbar position="fixed" variant="dark" />
 
         <main className="main-wrapper background-color-dark">
-          {/* HERO: case study facts on the left, the product image on the right */}
-          <section className="prp-hero">
-            <div className="container container--section padding-global">
-              <div className="prp-hero-grid">
-                <div className="prp-hero-text">
-                  <span className="prp-hero-eyebrow" data-animate="fade-up">
-                    Case study
-                  </span>
-                  <h1 className="prp-hero-title" data-animate="fade-up">
-                    {project.title}
-                  </h1>
-                  <p className="prp-hero-intro" data-animate="fade-up">
-                    {project.intro}
-                  </p>
-                  <dl className="prp-hero-facts" data-animate="fade-up">
-                    <div className="prp-hero-fact">
-                      <dt>Client</dt>
-                      <dd>{project.client}</dd>
-                    </div>
-                    <div className="prp-hero-fact">
-                      <dt>Engagement</dt>
-                      <dd>{project.timeline}</dd>
-                    </div>
-                    <div className="prp-hero-fact prp-hero-fact--wide">
-                      <dt>Stack</dt>
-                      <dd className="prp-hero-tags">
-                        {stackItems.map(tech => (
-                          <Pill key={tech} variant="glass" size="sm">
-                            {tech}
-                          </Pill>
-                        ))}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-                <div className="prp-hero-image-wrap">
-                  <img
-                    src={project.imgSrc}
-                    srcSet={project.imgSrcSet}
-                    sizes="(max-width: 1024px) 100vw, 60vw"
-                    alt={project.title}
-                    className="prp-hero-image"
-                    width="1920"
-                    height="1080"
-                    fetchPriority="high"
-                    decoding="sync"
-                    data-transition-target
-                  />
-                </div>
-              </div>
-              <div className="page-header__row page-header__row--links prp-hero-topics">
-                <div className="page-header__side-label" data-animate="fade-up">
-                  <span className="page-header__side-dot" aria-hidden="true" />
-                  On this page
-                </div>
-                <nav className="page-header__side-list" aria-label="On this page">
-                  {PAGE_TOPICS.map((topic, index) => (
-                    <AppLink key={topic.href} to={topic.href} data-animate="fade-up">
-                      <span className="page-header__side-index">
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-                      <span className="page-header__side-item-label">{topic.label}</span>
-                      <span className="page-header__side-arrow arrow_icon-embed" aria-hidden="true">
-                        {arrowSvg}
-                      </span>
-                    </AppLink>
-                  ))}
-                </nav>
-              </div>
-            </div>
-          </section>
+          {/* HERO: the shared sub page header, with the project image in place of the drawing */}
+          <PageHeader
+            title={[project.title, project.subtitle]}
+            subtitle={project.intro}
+            breadcrumbs={[
+              { label: 'Home', path: '/' },
+              { label: 'Use Cases', path: '/#cases' },
+              { label: project.title },
+            ]}
+            sideItems={PAGE_TOPICS}
+            size="small"
+            aside={
+              <img
+                src={project.imgSrc}
+                srcSet={project.imgSrcSet}
+                sizes="(max-width: 1099px) 100vw, 40vw"
+                alt={project.title}
+                width="1920"
+                height="1080"
+                fetchPriority="high"
+                decoding="sync"
+                data-transition-target
+              />
+            }
+          />
 
-          {/* OVERVIEW: description beside the category and services */}
+          {/* OVERVIEW: description and live links beside the project details */}
           <section
             id="overview"
             className="prp-overview padding-section-large border-radius-top background-color-white"
@@ -269,8 +223,12 @@ export default function ProjectDetailPage() {
                 </div>
                 <div className="prp-meta-list">
                   <div className="prp-meta-item" data-animate="fade-up">
-                    <span className="prp-meta-label">Category</span>
-                    <span className="prp-meta-value">{project.subtitle}</span>
+                    <span className="prp-meta-label">Client</span>
+                    <span className="prp-meta-value">{project.client}</span>
+                  </div>
+                  <div className="prp-meta-item" data-animate="fade-up">
+                    <span className="prp-meta-label">Engagement</span>
+                    <span className="prp-meta-value">{project.timeline}</span>
                   </div>
                   <div className="prp-meta-item prp-meta-item--wide" data-animate="fade-up">
                     <span className="prp-meta-label">Services</span>
@@ -283,6 +241,22 @@ export default function ProjectDetailPage() {
                           size="xs"
                         >
                           {service}
+                        </Pill>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="prp-meta-item prp-meta-item--wide" data-animate="fade-up">
+                    <span className="prp-meta-label">Technology</span>
+                    <div className="prp-meta-pills">
+                      {stackItems.map(tech => (
+                        <Pill
+                          key={tech}
+                          className="prp-stack-tag"
+                          data-animate-hover="lift"
+                          variant="light"
+                          size="sm"
+                        >
+                          {tech}
                         </Pill>
                       ))}
                     </div>

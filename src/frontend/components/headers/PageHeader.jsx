@@ -24,6 +24,7 @@ const VARIANT_CLASSES = {
  * @param {string} [props.sideLabel] - Links row label
  * @param {React.ReactNode} [props.children] - Optional content pinned to the bottom of the header when there are no links (e.g., blog post meta)
  * @param {string} [props.size] - Header size class hook: 'default', 'large', 'small'
+ * @param {React.ReactNode} [props.aside] - Optional content shown on the right in place of the decorative art (e.g., a project image)
  * @param {string} [props.variant] - Optional visual variant
  */
 export function PageHeader({
@@ -35,6 +36,7 @@ export function PageHeader({
   children,
   size = 'default',
   variant,
+  aside,
   animate = true,
   animationTrigger = 'load',
 }) {
@@ -43,6 +45,7 @@ export function PageHeader({
     'page-header',
     SIZE_CLASSES[size] ?? SIZE_CLASSES.default,
     variant ? VARIANT_CLASSES[variant] : '',
+    aside ? 'page-header--with-aside' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -114,13 +117,15 @@ export function PageHeader({
     <header className={headerClass} {...scopeAttrs}>
       <div className="page-header__inner">
         {/* Fades in last, after the header text */}
-        <div
-          className="page-header__art"
-          {...itemAnimationAttrs}
-          data-animate-order={animate ? '1' : undefined}
-        >
-          <HeroArt className="page-header__art-canvas" />
-        </div>
+        {!aside && (
+          <div
+            className="page-header__art"
+            {...itemAnimationAttrs}
+            data-animate-order={animate ? '1' : undefined}
+          >
+            <HeroArt className="page-header__art-canvas" />
+          </div>
+        )}
 
         {breadcrumbs && breadcrumbs.length > 0 && (
           <Breadcrumb items={breadcrumbs} animate={animate} animationTrigger={animationTrigger} />
@@ -155,6 +160,9 @@ export function PageHeader({
             {subtitle}
           </p>
         )}
+
+        {/* Beside the title on wide screens, under the subtitle on narrow ones */}
+        {aside && <div className="page-header__aside">{aside}</div>}
 
         {sideItems.length > 0 && (
           <div className="page-header__row page-header__row--links">

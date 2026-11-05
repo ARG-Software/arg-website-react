@@ -135,15 +135,17 @@ export function buildProjectStaticContent(project, projectLinks = []) {
 
   return `<div class="prp-page" data-prerendered-content>
   <main>
-    <section class="prp-hero">
-      <div class="container container--section padding-global"><div class="prp-hero-grid"><div class="prp-hero-text">
-        <span class="prp-hero-eyebrow">Case study</span>
-        <h1 class="prp-hero-title">${escapeHtml(project.title)}</h1></div></div>
+    <header class="page-header page-header--small page-header--with-aside">
+      <div class="page-header__inner">
+        <h1>
+          <div class="heading_line"><span class="page-header__heading-line">${escapeHtml(project.title)}</span></div>
+          <div class="heading_line"><span class="page-header__heading-line text-color-gradiant">${escapeHtml(project.subtitle)}</span></div>
+        </h1>
+        <p class="page-header__subtitle">${escapeHtml(project.intro)}</p>
       </div>
-    </section>
+    </header>
     <section class="prp-overview padding-section-large border-radius-top background-color-white">
       <div class="container container--section padding-global">
-        <p class="prp-overview-lead">${escapeHtml(project.intro)}</p>
         ${project.description ? `<p class="prp-section-text">${renderInlineText(project.description)}</p>` : ''}
         <dl>
           <dt>Category</dt><dd>${escapeHtml(project.subtitle)}</dd>
