@@ -4955,7 +4955,7 @@
 }
 
 .ucc-strip-wrap {
-  height: var(--ucc-thumb-h);
+  height: calc(var(--ucc-thumb-h) / 2);
   left: 0;
   position: absolute;
   right: 0;
@@ -4985,7 +4985,9 @@
   overflow: hidden;
   padding: 0;
   position: relative;
-  transition: height 0.6s var(--ucc-ease);
+  transition:
+    transform 0.6s var(--ucc-ease),
+    box-shadow 0.6s var(--ucc-ease);
   width: calc(var(--ucc-thumb-h) * 0.75);
 }
 
@@ -5008,9 +5010,12 @@
   outline-offset: 2px;
 }
 
+/* The selected thumbnail keeps its size in the row and pops forward over its neighbours */
 .ucc-thumb.is-active {
+  box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  height: var(--ucc-thumb-h);
+  transform: scale(1.25);
+  z-index: 1;
 }
 
 .ucc-thumb img {
@@ -5024,16 +5029,18 @@
 
 /* Styled by the shared .prp-intro-live-link; here it only sits under the selected
    thumbnail, which the strip always keeps centred */
+/* Centred under the selected thumbnail (the strip keeps it centred), clear of its scaled edge */
 .ucc .ucc-cta {
   background: none;
-  border-left: 0;
-  border-right: 0;
-  border-top: 0;
+  border: 0;
   cursor: pointer;
   font-family: inherit;
-  left: calc(50% - var(--ucc-thumb-h) * 0.375);
+  left: 50%;
+  padding: 0;
   position: absolute;
-  top: calc(100% + 1rem);
+  top: calc(100% + var(--ucc-thumb-h) / 16 + 1.25rem);
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
 
 /* Sides from .padding-global, bottom from the large section spacing */
