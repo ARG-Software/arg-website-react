@@ -439,7 +439,7 @@ export function TransitionProvider({ children }) {
       waitForTransitionTarget().then(image => {
         const rect = image?.getBoundingClientRect();
         if (rect) {
-          const radius = getComputedStyle(image.parentElement).borderTopLeftRadius;
+          const radius = getComputedStyle(image.parentElement).borderRadius;
           setImageTransition(current => current && { ...current, landing: { rect, radius } });
         }
         revealPage(reveal);

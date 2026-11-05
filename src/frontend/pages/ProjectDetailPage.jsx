@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
+import { AnimatedArrowButton } from '@ui/buttons/AnimatedArrowButton.jsx';
 import { UseCaseCarousel } from '@ui/grids/UseCaseCarousel.jsx';
 import { ImageGallery } from '@ui/grids/ImageGallery.jsx';
 import { Navbar } from '@components/navigation/Navbar';
@@ -150,17 +151,86 @@ export default function ProjectDetailPage() {
         <Navbar position="fixed" variant="dark" />
 
         <main className="main-wrapper background-color-dark">
-          {/* HERO: title over the hero image, sized to fit the first screen */}
+          {/* HERO: case study facts on the left, the product image bleeding off the right edge */}
           <section className="prp-hero">
-            <div className="container padding-global prp-hero-inner">
-              <h1 className="prp-hero-title" data-animate="fade-up">
-                {project.title}
-              </h1>
+            <div className="prp-hero-grid">
+              <div className="prp-hero-text">
+                <span className="prp-hero-eyebrow" data-animate="fade-up">
+                  Case study
+                </span>
+                <h1 className="prp-hero-title" data-animate="fade-up">
+                  {project.title}
+                </h1>
+                <p className="prp-hero-intro" data-animate="fade-up">
+                  {project.intro}
+                </p>
+                <dl className="prp-hero-facts" data-animate="fade-up">
+                  <div className="prp-hero-fact">
+                    <dt>Client</dt>
+                    <dd>{project.client}</dd>
+                  </div>
+                  <div className="prp-hero-fact">
+                    <dt>Engagement</dt>
+                    <dd>{project.timeline}</dd>
+                  </div>
+                  <div className="prp-hero-fact prp-hero-fact--wide">
+                    <dt>Stack</dt>
+                    <dd className="prp-hero-tags">
+                      {stackItems.map(tech => (
+                        <Pill key={tech} variant="glass" size="sm">
+                          {tech}
+                        </Pill>
+                      ))}
+                    </dd>
+                  </div>
+                </dl>
+                {projectLinks.length > 0 && (
+                  <div className="prp-hero-links" data-animate="fade-up">
+                    {projectLinks.map((link, i) => {
+                      const trackType = link.trackType ?? 'view_live';
+                      const onClick = () => trackCTA(trackType, `project_${slug}`);
+
+                      // The first link is the primary action; any others stay plain text links
+                      if (i === 0) {
+                        return (
+                          <AnimatedArrowButton
+                            key={link.href}
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            variant="outline"
+                            className="prp-hero-cta"
+                            onClick={onClick}
+                          >
+                            {trackType === 'view_live' ? 'Visit live site' : link.label}
+                          </AnimatedArrowButton>
+                        );
+                      }
+
+                      return (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="prp-live-link"
+                          onClick={onClick}
+                        >
+                          <span>{link.label}</span>
+                          <span className="arrow_icon-embed" aria-hidden="true">
+                            {arrowSvg}
+                          </span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
               <div className="prp-hero-image-wrap">
                 <img
                   src={project.imgSrc}
                   srcSet={project.imgSrcSet}
-                  sizes="100vw"
+                  sizes="(max-width: 1024px) 100vw, 60vw"
                   alt={project.title}
                   className="prp-hero-image"
                   width="1920"
@@ -173,7 +243,7 @@ export default function ProjectDetailPage() {
             </div>
           </section>
 
-          {/* OVERVIEW: description and live links beside the project details */}
+          {/* OVERVIEW: description beside the category and services */}
           <section className="prp-overview padding-section-large border-radius-top background-color-white">
             <div className="container container--section padding-global">
               <div className="prp-grid">
@@ -181,32 +251,10 @@ export default function ProjectDetailPage() {
                   <span className="prp-section-label" data-animate="fade-up">
                     Overview
                   </span>
-                  <p className="prp-overview-lead" data-animate="fade-up">
-                    {project.intro}
-                  </p>
                   {project.description && (
-                    <p className="prp-section-text" data-animate="fade-up">
+                    <p className="prp-overview-lead" data-animate="fade-up">
                       <InlineLinkText text={project.description} linkClassName="prp-inline-link" />
                     </p>
-                  )}
-                  {projectLinks.length > 0 && (
-                    <div className="prp-overview-links" data-animate="fade-up">
-                      {projectLinks.map(link => (
-                        <a
-                          key={link.href}
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="prp-live-link"
-                          onClick={() => trackCTA(link.trackType ?? 'view_live', `project_${slug}`)}
-                        >
-                          <span>{link.label}</span>
-                          <span className="arrow_icon-embed" aria-hidden="true">
-                            {arrowSvg}
-                          </span>
-                        </a>
-                      ))}
-                    </div>
                   )}
                 </div>
                 <div className="prp-meta-list">
@@ -214,11 +262,7 @@ export default function ProjectDetailPage() {
                     <span className="prp-meta-label">Category</span>
                     <span className="prp-meta-value">{project.subtitle}</span>
                   </div>
-                  <div className="prp-meta-item" data-animate="fade-up">
-                    <span className="prp-meta-label">Client</span>
-                    <span className="prp-meta-value">{project.client}</span>
-                  </div>
-                  <div className="prp-meta-item" data-animate="fade-up">
+                  <div className="prp-meta-item prp-meta-item--wide" data-animate="fade-up">
                     <span className="prp-meta-label">Services</span>
                     <div className="prp-meta-pills">
                       {project.services.map(service => (
@@ -229,22 +273,6 @@ export default function ProjectDetailPage() {
                           size="xs"
                         >
                           {service}
-                        </Pill>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="prp-meta-item" data-animate="fade-up">
-                    <span className="prp-meta-label">Technology</span>
-                    <div className="prp-meta-pills">
-                      {stackItems.map(tech => (
-                        <Pill
-                          key={tech}
-                          className="prp-stack-tag"
-                          data-animate-hover="lift"
-                          variant="light"
-                          size="sm"
-                        >
-                          {tech}
                         </Pill>
                       ))}
                     </div>
