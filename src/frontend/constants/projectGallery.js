@@ -1,42 +1,50 @@
+// `feature`: the gallery numbers shown large under the overview; the rest fill the gallery
 const PROJECT_GALLERY_CONFIG = {
   mojaloop: {
     count: 4,
+    feature: [1],
     width: 1448,
     height: 1086,
     widths: [360, 640, 828, 1080, 1440, 1448],
   },
   'peoples-clearinghouse': {
     count: 9,
+    feature: [2, 5, 9],
     width: 1122,
     height: 1402,
     widths: [360, 640, 828, 1080, 1122],
   },
   dokutar: {
     count: 3,
+    feature: [1],
     width: 1448,
     height: 1086,
     widths: [360, 640, 828, 1080, 1440, 1448],
   },
   'sky-tracks': {
     count: 4,
+    feature: [2],
     width: 1448,
     height: 1086,
     widths: [360, 640, 828, 1080, 1440, 1448],
   },
   'tv-cine': {
     count: 3,
+    feature: [2],
     width: 1448,
     height: 1086,
     widths: [360, 640, 828, 1080, 1440, 1448],
   },
   'royalty-flush': {
     count: 3,
+    feature: [2],
     width: 1536,
     height: 1024,
     widths: [360, 640, 828, 1080, 1440, 1536],
   },
   vector: {
     count: 4,
+    feature: [1],
     width: 1536,
     height: 1024,
     widths: [360, 640, 828, 1080, 1440, 1536],
@@ -60,6 +68,7 @@ export function getProjectGallery(slug, title) {
       caption,
       width: config.width,
       height: config.height,
+      featured: config.feature.includes(index + 1),
     };
   });
 }

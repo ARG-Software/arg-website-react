@@ -4829,6 +4829,14 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   user-select: none;
 }
 
+/* Same edges as the page content: .container width, sides from .padding-global */
+.ucc-head,
+.ucc-strip-wrap,
+.ucc-foot {
+  margin-inline: auto;
+  max-width: 89rem;
+}
+
 .ucc:focus-visible {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
@@ -4973,8 +4981,8 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   white-space: nowrap;
 }
 
+/* Sides from .padding-global: the row never crosses the page margins */
 .ucc-strip-wrap {
-  height: calc(var(--ucc-thumb-h) / 2);
   left: 0;
   position: absolute;
   right: 0;
@@ -4982,23 +4990,26 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   z-index: 3;
 }
 
-.ucc-strip {
-  align-items: flex-start;
-  cursor: grab;
-  display: flex;
-  gap: 0.25rem;
+/* Clips sideways only, so thumbnails outside the margins stay hidden while the
+   selected one can still pop above and below the row */
+.ucc-strip-viewport {
+  clip-path: inset(-100% 0 -300% 0);
+  height: calc(var(--ucc-thumb-h) / 2);
+  position: relative;
   touch-action: pan-y;
-  width: max-content;
 }
 
-.ucc-strip:active {
-  cursor: grabbing;
+.ucc-strip {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.25rem;
+  width: max-content;
 }
 
 .ucc-thumb {
   background: rgba(255, 255, 255, 0.06);
   border: 0;
-  cursor: inherit;
+  cursor: pointer;
   flex: none;
   height: calc(var(--ucc-thumb-h) / 2);
   overflow: hidden;
@@ -5007,7 +5018,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   transition:
     transform 0.6s var(--ucc-ease),
     box-shadow 0.6s var(--ucc-ease);
-  width: calc(var(--ucc-thumb-h) * 0.75);
+  width: var(--ucc-thumb-w, calc(var(--ucc-thumb-h) * 0.75));
 }
 
 .ucc-thumb::after {
@@ -5029,12 +5040,20 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   outline-offset: 2px;
 }
 
-/* The selected thumbnail keeps its size in the row and pops forward over its neighbours */
+/* The selected thumbnail keeps its slot and pops forward over its neighbours.
+   At either end of the row it grows inwards, so it stays inside the margins. */
 .ucc-thumb.is-active {
   box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.5);
-  cursor: pointer;
   transform: scale(1.25);
   z-index: 1;
+}
+
+.ucc-thumb.is-edge-start {
+  transform-origin: left center;
+}
+
+.ucc-thumb.is-edge-end {
+  transform-origin: right center;
 }
 
 .ucc-thumb img {
@@ -5046,28 +5065,78 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   width: 100%;
 }
 
-/* Styled by the shared .prp-live-link; here it only sits under the selected
-   thumbnail, which the strip always keeps centred */
-/* Centred under the selected thumbnail (the strip keeps it centred), clear of its scaled edge */
+/* Styled by the shared .prp-live-link; `left` is set inline to the selected thumbnail's centre */
 .ucc .ucc-cta {
   background: none;
   border: 0;
   cursor: pointer;
   font-family: inherit;
-  left: 50%;
   padding: 0;
   position: absolute;
   top: calc(100% + var(--ucc-thumb-h) / 16 + 1.25rem);
   transform: translateX(-50%);
+  transition: left 0.6s var(--ucc-ease);
   white-space: nowrap;
 }
 
 /* Sides from .padding-global, bottom from the large section spacing */
 .ucc-foot {
+  align-items: flex-end;
   bottom: var(--section-space-large);
+  display: flex;
+  justify-content: space-between;
   left: 0;
   position: absolute;
+  right: 0;
   z-index: 3;
+}
+
+.ucc-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ucc-nav-button {
+  align-items: center;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  height: 2.75rem;
+  justify-content: center;
+  padding: 0;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    opacity 0.3s ease;
+  width: 2.75rem;
+}
+
+.ucc-nav-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #fff;
+}
+
+.ucc-nav-button:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
+}
+
+.ucc-nav-button:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.ucc-nav-button svg {
+  fill: none;
+  height: 1.125rem;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.75;
+  width: 1.125rem;
 }
 
 .ucc-progress {
@@ -5156,7 +5225,8 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   .ucc-bg.is-active,
   .ucc-thumb,
   .ucc-thumb::after,
-  .ucc-track-fill {
+  .ucc-track-fill,
+  .ucc .ucc-cta {
     transition: none;
   }
 

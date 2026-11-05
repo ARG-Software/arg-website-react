@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Draggable } from 'gsap/Draggable';
 import { arrowSvg } from '../icons/SocialIcons.jsx';
-
-gsap.registerPlugin(Draggable);
 
 const WHEEL_THRESHOLD = 60;
 const WHEEL_COOLDOWN_MS = 420;
+const SWIPE_THRESHOLD = 40;
+// Matches `.ucc-thumb.is-active` scale: half of the extra width it gains
+const ACTIVE_GROWTH = 0.125;
 
 function clampIndex(index, length) {
   return Math.min(length - 1, Math.max(0, index));
 }
 
 /**
- * Full-bleed picker: the selected item fills the background, a strip of thumbnails sits across
- * the middle. Selecting only changes the slide; `onOpen` is the explicit "go there" action.
+ * Full-bleed picker: the selected item fills the background, a fixed row of thumbnails sits
+ * between the page margins. The row only shifts when the selection moves past its first or
+ * last visible thumbnail. Selecting only changes the slide; `onOpen` is the "go there" action.
  */
 export function UseCaseCarousel({
   items = [],
@@ -26,13 +27,20 @@ export function UseCaseCarousel({
   onOpen,
 }) {
   const rootRef = useRef(null);
+  const viewportRef = useRef(null);
   const stripRef = useRef(null);
-  const draggableRef = useRef(null);
   const backgroundRefs = useRef([]);
+  const swipeStartRef = useRef(null);
+  const swipedRef = useRef(false);
+  const positionedRef = useRef(false);
   const [index, setIndex] = useState(() => clampIndex(defaultIndex, items.length));
   const [visited, setVisited] = useState(() => new Set([clampIndex(defaultIndex, items.length)]));
+  const [layout, setLayout] = useState({ visible: items.length, thumbWidth: 0, gap: 0 });
+  const [windowStart, setWindowStart] = useState(0);
   const indexRef = useRef(index);
-  indexRef.current = index;
+  useLayoutEffect(() => {
+    indexRef.current = index;
+  }, [index]);
 
   const select = useCallback(
     (nextIndex, method) => {
@@ -46,90 +54,53 @@ export function UseCaseCarousel({
     [items.length, onSelect]
   );
 
-  // The strip is translated so the selected thumbnail sits in the middle of the section
-  const getStripX = useCallback(targetIndex => {
-    const root = rootRef.current;
-    const strip = stripRef.current;
-    const thumb = strip?.firstElementChild;
-    if (!root || !thumb) return 0;
-
-    const gap = parseFloat(getComputedStyle(strip).columnGap) || 0;
-    const step = thumb.offsetWidth + gap;
-    return root.clientWidth / 2 - (targetIndex * step + thumb.offsetWidth / 2);
-  }, []);
-
-  const getNearestIndex = useCallback(
-    x => {
-      const strip = stripRef.current;
-      const thumb = strip?.firstElementChild;
-      if (!thumb) return indexRef.current;
-
-      const gap = parseFloat(getComputedStyle(strip).columnGap) || 0;
-      const step = thumb.offsetWidth + gap;
-      return clampIndex(
-        Math.round((rootRef.current.clientWidth / 2 - x - thumb.offsetWidth / 2) / step),
-        items.length
-      );
-    },
-    [items.length]
-  );
-
+  // As many thumbnails as fit at their base size, stretched to fill the margins exactly
   useLayoutEffect(() => {
+    const viewport = viewportRef.current;
     const strip = stripRef.current;
-    if (!strip || items.length === 0) return undefined;
+    if (!viewport || !strip) return undefined;
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const measure = () => {
+      const gap = parseFloat(getComputedStyle(strip).columnGap) || 0;
+      // The viewport is half a thumbnail-height tall; thumbnails are 0.75 of that height wide
+      const baseWidth = viewport.clientHeight * 1.5;
+      if (!baseWidth) return;
 
-    const [draggable] = Draggable.create(strip, {
-      type: 'x',
-      edgeResistance: 0.85,
-      zIndexBoost: false,
-      minimumMovement: 6,
-      onDragEnd() {
-        const target = getNearestIndex(this.x);
-        if (target === indexRef.current) {
-          gsap.to(strip, {
-            x: getStripX(target),
-            duration: reducedMotion ? 0 : 0.5,
-            ease: 'power3.out',
-          });
-        } else {
-          select(target, 'drag');
-        }
-      },
-    });
-    draggableRef.current = draggable;
-
-    const applyLayout = () => {
-      draggable.applyBounds({ minX: getStripX(items.length - 1), maxX: getStripX(0) });
-      gsap.set(strip, { x: getStripX(indexRef.current) });
-      draggable.update();
+      const visible = Math.min(
+        items.length,
+        Math.max(1, Math.floor((viewport.clientWidth + gap) / (baseWidth + gap)))
+      );
+      const thumbWidth = (viewport.clientWidth - gap * (visible - 1)) / visible;
+      setLayout({ visible, thumbWidth, gap });
     };
 
-    applyLayout();
-    const observer = new ResizeObserver(applyLayout);
-    observer.observe(rootRef.current);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, [items.length]);
 
-    return () => {
-      observer.disconnect();
-      draggable.kill();
-      draggableRef.current = null;
-    };
-  }, [getNearestIndex, getStripX, items.length, select]);
+  // The visible window only moves when the selection steps past its first or last thumbnail
+  let start = Math.min(windowStart, Math.max(0, items.length - layout.visible));
+  if (index < start) start = index;
+  if (index > start + layout.visible - 1) start = index - layout.visible + 1;
+  if (start !== windowStart) setWindowStart(start);
 
   useEffect(() => {
     const strip = stripRef.current;
-    if (!strip) return undefined;
+    if (!strip || !layout.thumbWidth) return undefined;
 
+    const x = -start * (layout.thumbWidth + layout.gap);
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const tween = gsap.to(strip, {
-      x: getStripX(index),
-      duration: reducedMotion ? 0 : 0.6,
-      ease: 'power3.out',
-      onComplete: () => draggableRef.current?.update(),
-    });
+    if (!positionedRef.current || reducedMotion) {
+      positionedRef.current = true;
+      gsap.set(strip, { x });
+      return undefined;
+    }
+
+    const tween = gsap.to(strip, { x, duration: 0.6, ease: 'power3.out' });
     return () => tween.kill();
-  }, [getStripX, index]);
+  }, [layout, start]);
 
   // Horizontal trackpad swipes step through the slides; vertical wheel stays with page scrolling
   useEffect(() => {
@@ -174,6 +145,17 @@ export function UseCaseCarousel({
 
   const titleLines = active.title.split('\n');
   const count = String(items.length).padStart(2, '0');
+  const end = start + layout.visible - 1;
+
+  // The selected thumbnail grows away from the margin it touches, so it never crosses it
+  let edge = 'center';
+  if (index === start && index !== end) edge = 'start';
+  if (index === end && index !== start) edge = 'end';
+
+  const step = layout.thumbWidth + layout.gap;
+  let ctaLeft = (index - start) * step + layout.thumbWidth / 2;
+  if (edge === 'start') ctaLeft += layout.thumbWidth * ACTIVE_GROWTH;
+  if (edge === 'end') ctaLeft -= layout.thumbWidth * ACTIVE_GROWTH;
 
   return (
     <div
@@ -239,45 +221,81 @@ export function UseCaseCarousel({
         </div>
       </div>
 
-      <div className="ucc-strip-wrap">
-        <div ref={stripRef} className="ucc-strip">
-          {items.map((item, i) => (
-            <button
-              key={item.key}
-              type="button"
-              className={`ucc-thumb${i === index ? ' is-active' : ''}`}
-              aria-label={item.title.replace(/\n/g, ' ')}
-              aria-current={i === index}
-              onClick={() => {
-                if (i === indexRef.current) {
-                  onOpen?.(i, backgroundRefs.current[i]);
-                } else {
-                  select(i, 'click');
-                }
-              }}
-            >
-              <img
-                src={item.thumb}
-                srcSet={item.thumbSrcSet}
-                sizes="(max-width: 767px) 10rem, 18rem"
-                alt=""
-                loading="lazy"
-                decoding="async"
-                draggable="false"
-              />
-            </button>
-          ))}
-        </div>
-        <button
-          type="button"
-          className="prp-live-link ucc-cta"
-          onClick={() => onOpen?.(index, backgroundRefs.current[index])}
+      <div className="ucc-strip-wrap padding-global">
+        <div
+          ref={viewportRef}
+          className="ucc-strip-viewport"
+          onPointerDown={event => {
+            swipeStartRef.current = event.clientX;
+            swipedRef.current = false;
+          }}
+          onPointerUp={event => {
+            if (swipeStartRef.current === null) return;
+            const delta = event.clientX - swipeStartRef.current;
+            swipeStartRef.current = null;
+            if (Math.abs(delta) < SWIPE_THRESHOLD) return;
+
+            swipedRef.current = true;
+            select(indexRef.current + (delta < 0 ? 1 : -1), 'swipe');
+          }}
         >
-          <span>{ctaText}</span>
-          <span className="arrow_icon-embed" aria-hidden="true">
-            {arrowSvg}
-          </span>
-        </button>
+          <div
+            ref={stripRef}
+            className="ucc-strip"
+            style={{ '--ucc-thumb-w': layout.thumbWidth ? `${layout.thumbWidth}px` : undefined }}
+          >
+            {items.map((item, i) => {
+              const outside = i < start || i > end;
+              const classes = ['ucc-thumb'];
+              if (i === index) classes.push('is-active', `is-edge-${edge}`);
+              if (outside) classes.push('is-outside');
+
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  className={classes.join(' ')}
+                  aria-label={item.title.replace(/\n/g, ' ')}
+                  aria-current={i === index}
+                  tabIndex={outside ? -1 : undefined}
+                  onClick={() => {
+                    // A swipe ends with a click on whichever thumbnail it started on
+                    if (swipedRef.current) {
+                      swipedRef.current = false;
+                      return;
+                    }
+                    if (i === indexRef.current) {
+                      onOpen?.(i, backgroundRefs.current[i]);
+                    } else {
+                      select(i, 'click');
+                    }
+                  }}
+                >
+                  <img
+                    src={item.thumb}
+                    srcSet={item.thumbSrcSet}
+                    sizes="(max-width: 767px) 10rem, 18rem"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                </button>
+              );
+            })}
+          </div>
+          <button
+            type="button"
+            className="prp-live-link ucc-cta"
+            style={{ left: `${ctaLeft}px` }}
+            onClick={() => onOpen?.(index, backgroundRefs.current[index])}
+          >
+            <span>{ctaText}</span>
+            <span className="arrow_icon-embed" aria-hidden="true">
+              {arrowSvg}
+            </span>
+          </button>
+        </div>
       </div>
 
       <div className="ucc-foot padding-global">
@@ -292,6 +310,30 @@ export function UseCaseCarousel({
               style={{ width: `${100 / items.length}%`, left: `${(index / items.length) * 100}%` }}
             />
           </div>
+        </div>
+        <div className="ucc-nav">
+          <button
+            type="button"
+            className="ucc-nav-button"
+            aria-label="Previous use case"
+            disabled={index === 0}
+            onClick={() => select(index - 1, 'button')}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M15 5l-7 7 7 7" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="ucc-nav-button"
+            aria-label="Next use case"
+            disabled={index === items.length - 1}
+            onClick={() => select(index + 1, 'button')}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
       </div>
 

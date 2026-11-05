@@ -5,6 +5,8 @@ import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { UseCaseCarousel } from '@ui/grids/UseCaseCarousel.jsx';
 import { ImageGallery } from '@ui/grids/ImageGallery.jsx';
 import { Navbar } from '@components/navigation/Navbar';
+import { Footer } from '@components/layout/Footer';
+import { CTASection } from '@components/layout/CTASection';
 import { Pill } from '@ui/pills/Pill.jsx';
 import { SEO } from '@components/seo/SEO';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
@@ -17,6 +19,7 @@ import { TransitionContext } from '@providers/TransitionProvider';
 import { isMobile } from '@utils/helpers';
 import { buildProjectSchema } from '@utils/structuredData';
 import { getProjectGallery } from '@constants/projectGallery';
+import { getProjectBriefFormLink } from '@services/linksService';
 import PROJECTS from '../data/projects.json';
 import '../styles/projects.css';
 
@@ -48,14 +51,9 @@ export default function ProjectDetailPage() {
     () => getProjectGallery(project?.slug, project?.title),
     [project?.slug, project?.title]
   );
+  const featureImages = projectGallery.filter(image => image.featured);
+  const galleryImages = projectGallery.filter(image => !image.featured);
   const stackItems = project?.stack.split(',').map(s => s.trim()) ?? [];
-  const projectMockup = project?.mockupSrc
-    ? {
-        src: project.mockupSrc,
-        srcSet: project.mockupSrcSet,
-        alt: `${project.title} mockup`,
-      }
-    : null;
   const seoDescription = (project?.intro || project?.challenge || '')
     .replace(/\n+/g, ' ')
     .slice(0, 160)
@@ -148,220 +146,240 @@ export default function ProjectDetailPage() {
         ]}
         jsonLd={buildProjectSchema(project)}
       />
-      <div className="prp-page">
+      <div className="page-wrapper prp-page">
         <Navbar position="fixed" variant="dark" />
 
-        {/* HERO: title over the rounded hero image, on the dark blue */}
-        <section className="prp-hero">
-          <div className="prp-grid-container prp-hero-grid">
-            <div className="prp-hero-head">
+        <main className="main-wrapper background-color-dark">
+          {/* HERO: title over the hero image, sized to fit the first screen */}
+          <section className="prp-hero">
+            <div className="container padding-global prp-hero-inner">
               <h1 className="prp-hero-title" data-animate="fade-up">
                 {project.title}
               </h1>
-              {projectLinks.length > 0 && (
-                <div className="prp-hero-links" data-animate="fade-up">
-                  {projectLinks.map(link => (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="prp-live-link"
-                      onClick={() => trackCTA(link.trackType ?? 'view_live', `project_${slug}`)}
-                    >
-                      <span>{link.label}</span>
-                      <span className="arrow_icon-embed" aria-hidden="true">
+              <div className="prp-hero-image-wrap">
+                <img
+                  src={project.imgSrc}
+                  srcSet={project.imgSrcSet}
+                  sizes="100vw"
+                  alt={project.title}
+                  className="prp-hero-image"
+                  width="1920"
+                  height="1080"
+                  fetchPriority="high"
+                  decoding="sync"
+                  data-transition-target
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* OVERVIEW: description and live links beside the project details */}
+          <section className="prp-overview padding-section-large border-radius-top background-color-white">
+            <div className="container container--section padding-global">
+              <div className="prp-grid">
+                <div className="prp-overview-text">
+                  <span className="prp-section-label" data-animate="fade-up">
+                    Overview
+                  </span>
+                  <p className="prp-overview-lead" data-animate="fade-up">
+                    {project.intro}
+                  </p>
+                  {project.description && (
+                    <p className="prp-section-text" data-animate="fade-up">
+                      <InlineLinkText text={project.description} linkClassName="prp-inline-link" />
+                    </p>
+                  )}
+                  {projectLinks.length > 0 && (
+                    <div className="prp-overview-links" data-animate="fade-up">
+                      {projectLinks.map(link => (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="prp-live-link"
+                          onClick={() => trackCTA(link.trackType ?? 'view_live', `project_${slug}`)}
+                        >
+                          <span>{link.label}</span>
+                          <span className="arrow_icon-embed" aria-hidden="true">
+                            {arrowSvg}
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="prp-meta-list">
+                  <div className="prp-meta-item" data-animate="fade-up">
+                    <span className="prp-meta-label">Category</span>
+                    <span className="prp-meta-value">{project.subtitle}</span>
+                  </div>
+                  <div className="prp-meta-item" data-animate="fade-up">
+                    <span className="prp-meta-label">Client</span>
+                    <span className="prp-meta-value">{project.client}</span>
+                  </div>
+                  <div className="prp-meta-item" data-animate="fade-up">
+                    <span className="prp-meta-label">Services</span>
+                    <div className="prp-meta-pills">
+                      {project.services.map(service => (
+                        <Pill
+                          key={service}
+                          className="prp-meta-service-tag"
+                          variant="outline"
+                          size="xs"
+                        >
+                          {service}
+                        </Pill>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="prp-meta-item" data-animate="fade-up">
+                    <span className="prp-meta-label">Technology</span>
+                    <div className="prp-meta-pills">
+                      {stackItems.map(tech => (
+                        <Pill
+                          key={tech}
+                          className="prp-stack-tag"
+                          data-animate-hover="lift"
+                          variant="light"
+                          size="sm"
+                        >
+                          {tech}
+                        </Pill>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* FEATURE: the best gallery shots, large */}
+          {featureImages.length > 0 && (
+            <div className="background-color-white">
+              <div className="container container--section padding-global">
+                <div
+                  className="prp-feature"
+                  style={{ '--prp-feature-count': featureImages.length }}
+                  data-animate="fade-up"
+                >
+                  {featureImages.map(image => (
+                    <img
+                      key={image.src}
+                      src={image.src}
+                      srcSet={image.srcSet}
+                      sizes={featureImages.length > 1 ? '(max-width: 767px) 33vw, 30vw' : '100vw'}
+                      alt={image.alt}
+                      width={image.width}
+                      height={image.height}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PROBLEM and APPROACH: label on the left, text on the right */}
+          <section className="prp-story padding-section-large background-color-white">
+            <div className="container container--section padding-global">
+              <div className="prp-grid prp-row">
+                <div className="prp-row-head">
+                  <span className="prp-section-label" data-animate="fade-up">
+                    The Problem
+                  </span>
+                  <h2 className="prp-section-heading" data-animate="fade-up">
+                    What had to be solved
+                  </h2>
+                </div>
+                <div className="prp-row-body">
+                  {project.challenge.split('\n\n').map((paragraph, i) => (
+                    <p key={i} className="prp-section-text" data-animate="fade-up">
+                      <InlineLinkText text={paragraph} linkClassName="prp-inline-link" />
+                    </p>
+                  ))}
+                </div>
+              </div>
+              <div className="prp-grid prp-row">
+                <div className="prp-row-head">
+                  <span className="prp-section-label" data-animate="fade-up">
+                    The Approach
+                  </span>
+                  <h2 className="prp-section-heading" data-animate="fade-up">
+                    How we made it work
+                  </h2>
+                </div>
+                <ul className="prp-row-body prp-solution-list">
+                  {project.solution.map((item, i) => (
+                    <li key={i} data-animate="fade-up">
+                      <span className="prp-solution-item-arrow arrow_icon-embed" aria-hidden="true">
                         {arrowSvg}
                       </span>
-                    </a>
+                      <span>{item}</span>
+                    </li>
                   ))}
-                </div>
-              )}
+                </ul>
+              </div>
             </div>
-            <div className="prp-hero-image-wrap">
-              <img
-                src={project.imgSrc}
-                srcSet={project.imgSrcSet}
-                sizes="(max-width: 767px) 100vw, 85vw"
-                alt={project.title}
-                className="prp-hero-image"
-                width="1920"
-                height="1080"
-                fetchPriority="high"
-                decoding="sync"
-                data-transition-target
-              />
-            </div>
-          </div>
-        </section>
+          </section>
 
-        {/* OVERVIEW: description beside the project details */}
-        <section className="prp-overview padding-section-large">
-          <div className="prp-grid-container prp-overview-grid">
-            <div className="prp-overview-text">
-              <span className="prp-section-label" data-animate="fade-up">
-                Overview
-              </span>
-              <p className="prp-overview-lead" data-animate="fade-up">
-                {project.intro}
-              </p>
-              {project.description && (
-                <p className="prp-section-text" data-animate="fade-up">
-                  <InlineLinkText text={project.description} linkClassName="prp-inline-link" />
-                </p>
-              )}
-            </div>
-            <div className="prp-meta-list">
-              <div className="prp-meta-item" data-animate="fade-up">
-                <span className="prp-meta-label">Category</span>
-                <span className="prp-meta-value">{project.subtitle}</span>
-              </div>
-              <div className="prp-meta-item" data-animate="fade-up">
-                <span className="prp-meta-label">Client</span>
-                <span className="prp-meta-value">{project.client}</span>
-              </div>
-              <div className="prp-meta-item" data-animate="fade-up">
-                <span className="prp-meta-label">Services</span>
-                <div className="prp-meta-pills">
-                  {project.services.map(service => (
-                    <Pill
-                      key={service}
-                      className="prp-meta-service-tag"
-                      variant="outline"
-                      size="xs"
-                    >
-                      {service}
-                    </Pill>
-                  ))}
-                </div>
-              </div>
-              <div className="prp-meta-item" data-animate="fade-up">
-                <span className="prp-meta-label">Technology</span>
-                <div className="prp-meta-pills">
-                  {stackItems.map(tech => (
-                    <Pill
-                      key={tech}
-                      className="prp-stack-tag"
-                      data-animate-hover="lift"
-                      variant="light"
-                      size="sm"
-                    >
-                      {tech}
-                    </Pill>
-                  ))}
-                </div>
+          {galleryImages.length > 0 && (
+            <div className="background-color-white">
+              <div className="container container--section padding-global" data-animate="fade-up">
+                <ImageGallery images={galleryImages} />
               </div>
             </div>
-          </div>
-        </section>
+          )}
 
-        {projectMockup && (
-          <div className="prp-showcase" data-animate="fade-up">
-            <img
-              src={projectMockup.src}
-              srcSet={projectMockup.srcSet}
-              sizes="(max-width: 767px) 60vw, 22rem"
-              alt={projectMockup.alt}
-              loading="lazy"
-            />
-          </div>
-        )}
-
-        {/* PROBLEM and APPROACH: label on the left, text on the right */}
-        <section className="prp-story padding-section-large">
-          <div className="prp-grid-container">
-            <div className="prp-row">
-              <div className="prp-row-head">
-                <span className="prp-section-label" data-animate="fade-up">
-                  The Problem
-                </span>
-                <h2 className="prp-section-heading" data-animate="fade-up">
-                  What had to be solved
-                </h2>
-              </div>
-              <div className="prp-row-body">
-                {project.challenge.split('\n\n').map((paragraph, i) => (
-                  <p key={i} className="prp-section-text" data-animate="fade-up">
-                    <InlineLinkText text={paragraph} linkClassName="prp-inline-link" />
+          {/* RESULTS: impact text, then the metric cards across the row */}
+          <section
+            className="prp-results padding-section-large border-radius-bottom background-color-white"
+            id="results"
+          >
+            <div className="container container--section padding-global">
+              <div className="prp-grid prp-row">
+                <div className="prp-row-head">
+                  <span className="prp-section-label" data-animate="fade-up">
+                    Results
+                  </span>
+                  <h2 className="prp-section-heading" data-animate="fade-up">
+                    By the numbers
+                  </h2>
+                </div>
+                <div className="prp-row-body">
+                  <p className="prp-section-text" data-animate="fade-up">
+                    <InlineLinkText text={project.impact} linkClassName="prp-inline-link" />
                   </p>
-                ))}
-              </div>
-            </div>
-            <div className="prp-row">
-              <div className="prp-row-head">
-                <span className="prp-section-label" data-animate="fade-up">
-                  The Approach
-                </span>
-                <h2 className="prp-section-heading" data-animate="fade-up">
-                  How we made it work
-                </h2>
-              </div>
-              <ul className="prp-row-body prp-solution-list">
-                {project.solution.map((item, i) => (
-                  <li key={i} data-animate="fade-up">
-                    <span className="prp-solution-item-arrow arrow_icon-embed" aria-hidden="true">
-                      {arrowSvg}
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {projectGallery.length > 0 && (
-          <div className="prp-grid-container prp-gallery" data-animate="fade-up">
-            <ImageGallery images={projectGallery} />
-          </div>
-        )}
-
-        {/* RESULTS: impact text, then the metric cards across the row */}
-        <section className="prp-results padding-section-large" id="results">
-          <div className="prp-grid-container">
-            <div className="prp-row">
-              <div className="prp-row-head">
-                <span className="prp-section-label" data-animate="fade-up">
-                  Results
-                </span>
-                <h2 className="prp-section-heading" data-animate="fade-up">
-                  By the numbers
-                </h2>
-              </div>
-              <div className="prp-row-body">
-                <p className="prp-section-text" data-animate="fade-up">
-                  <InlineLinkText text={project.impact} linkClassName="prp-inline-link" />
-                </p>
-              </div>
-              <div className="prp-results-cards">
-                {project.metrics.map((metric, i) => (
-                  <BaseCard
-                    key={i}
-                    className="prp-metric-card"
-                    variant="dark"
-                    padding="sm"
-                    radius="sm"
-                    hover="none"
-                    animate={true}
-                  >
-                    <div className="prp-metric-card-number" data-animate="width-countup">
-                      {metric.displayValue ? (
-                        <span className="prp-metric-number">{metric.displayValue}</span>
-                      ) : (
-                        <>
-                          <span
-                            className="prp-metric-number"
-                            fs-numbercount-element="number"
-                            fs-numbercount-start="0"
-                            fs-numbercount-end={metric.value}
-                          >
-                            0
-                          </span>
-                          {metric.suffix ?? (parseFloat(metric.value) % 1 !== 0 ? '' : '+')}
-                        </>
-                      )}
-                    </div>
-                    <div className="prp-metric-card-label-row">
+                </div>
+                <div className="prp-results-cards">
+                  {project.metrics.map((metric, i) => (
+                    <BaseCard
+                      key={i}
+                      className="prp-metric-card"
+                      variant="dark"
+                      padding="sm"
+                      radius="sm"
+                      hover="none"
+                      animate={true}
+                    >
+                      <div className="prp-metric-card-number" data-animate="width-countup">
+                        {metric.displayValue ? (
+                          <span className="prp-metric-number">{metric.displayValue}</span>
+                        ) : (
+                          <>
+                            <span
+                              className="prp-metric-number"
+                              fs-numbercount-element="number"
+                              fs-numbercount-start="0"
+                              fs-numbercount-end={metric.value}
+                            >
+                              0
+                            </span>
+                            {metric.suffix ?? (parseFloat(metric.value) % 1 !== 0 ? '' : '+')}
+                          </>
+                        )}
+                      </div>
                       <p className="prp-metric-card-label">
                         <span className="prp-metric-bullet"></span>
                         <span className="prp-metric-label-text">
@@ -376,26 +394,42 @@ export default function ProjectDetailPage() {
                           />
                         </span>
                       </p>
-                    </div>
-                  </BaseCard>
-                ))}
+                    </BaseCard>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="prp-use-cases" id="use-cases">
-          <UseCaseCarousel
-            key={slug}
-            items={carouselItems}
-            defaultIndex={otherProjects.findIndex(p => p.slug === nextProject.slug)}
-            eyebrow="Explore use cases"
-            ctaText="View use case"
-            ariaLabel="Use cases"
-            onSelect={handleCarouselSelect}
-            onOpen={handleCarouselOpen}
-          />
-        </section>
+          <section className="prp-use-cases" id="use-cases">
+            <UseCaseCarousel
+              key={slug}
+              items={carouselItems}
+              defaultIndex={otherProjects.findIndex(p => p.slug === nextProject.slug)}
+              eyebrow="Explore use cases"
+              ctaText="View use case"
+              ariaLabel="Use cases"
+              onSelect={handleCarouselSelect}
+              onOpen={handleCarouselOpen}
+            />
+          </section>
+
+          <section className="page-cta-wrapper background-color-dark" id="contact">
+            <CTASection
+              title="Facing a similar"
+              titleHighlight="challenge?"
+              mobileTitleHighlight="challenge?"
+              buttonTextNotHover="Start a project"
+              buttonTextHover="Tell us about it"
+              animationClass="cp-animate"
+              animate={true}
+              buttonLink={getProjectBriefFormLink()}
+              onPrimaryClick={() => trackCTA('project_brief', `project_${slug}_cta`)}
+            />
+          </section>
+        </main>
+
+        <Footer />
       </div>
     </>
   );

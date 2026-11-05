@@ -1,95 +1,43 @@
 /* ============================================
    Project Detail Pages
+   Dark page with rounded white sections, like the other pages; content sits
+   inside .padding-global
    ============================================ */
 
 .prp-page {
   --prp-dark: #0c002e;
-  --prp-light: #ededed;
-  --prp-dark-fg: #ffffff;
   --prp-light-fg: var(--prp-dark);
-  --prp-muted-light: rgba(255, 255, 255, 0.5);
   --prp-muted-dark: var(--prp-dark);
-  --prp-border-light: rgba(255, 255, 255, 0.1);
-  --prp-border-dark: rgba(0, 0, 0, 0.1);
-  --prp-max-width: 120rem;
-  --prp-grid-margin: 2.5rem;
   --prp-grid-gutter: 1rem;
-  background-color: #fff;
-  overflow-x: clip;
 }
 
-.prp-grid-container {
-  width: calc(100vw - var(--prp-grid-margin) * 2);
-  max-width: var(--prp-max-width);
-  margin-inline: auto;
-  box-sizing: border-box;
-  min-width: 0;
-}
-
-.prp-page .nav_contain.container {
-  width: calc(100vw - var(--prp-grid-margin) * 2);
-  max-width: var(--prp-max-width);
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.prp-page .nav-component {
+.prp-grid {
+  align-items: start;
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--prp-grid-gutter);
-}
-
-.prp-page .nav_logo-wrapper {
-  grid-column: 2 / span 3;
-  justify-self: start;
-}
-
-.prp-page .nav_buttons-wrapper {
-  grid-column: 7 / span 5;
-  justify-self: end;
-}
-
-@media (max-width: 767px) {
-  .prp-grid-container {
-    width: calc(100% - 1.25rem * 2);
-  }
-
-  .prp-page .nav_contain.container {
-    width: 100%;
-    max-width: none;
-  }
-
-  .prp-page .nav-component {
-    display: flex;
-  }
+  grid-template-columns: repeat(12, minmax(0, 1fr));
 }
 
 /* ============================================
-   Hero: title and links over the rounded hero image, on the dark blue
+   Hero: title over the hero image, together filling the first screen
    ============================================ */
 .prp-hero {
   --prp-light-fg: #fff;
-  background: var(--prp-dark);
-  border-radius: 0 0 2rem 2rem;
+  box-sizing: border-box;
   color: #fff;
-  padding-bottom: var(--section-space-large);
-  padding-top: calc(var(--section-space-large) + 5rem);
-}
-
-.prp-hero-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--prp-grid-gutter);
-}
-
-.prp-hero-head {
-  align-items: flex-end;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem 3rem;
-  grid-column: 2 / span 10;
-  justify-content: space-between;
-  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  height: 100svh;
+  min-height: 36rem;
+  padding-bottom: var(--section-space-large);
+  padding-top: calc(5rem + clamp(2rem, 4vw, 3.5rem));
+}
+
+.prp-hero-inner {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
 }
 
 .prp-hero-title {
@@ -99,15 +47,22 @@
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-display);
   line-height: 1.1;
-  margin: 0;
+  margin: 0 0 clamp(2rem, 4vw, 3.5rem);
   overflow-wrap: break-word;
 }
 
-.prp-hero-links {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
+.prp-hero-image-wrap {
+  border-radius: 1.25rem;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.prp-hero-image {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }
 
 /* Text link with arrow, no pill: also used by the use case carousel */
@@ -131,34 +86,14 @@
   width: 1rem;
 }
 
-.prp-hero-image-wrap {
-  border-radius: 1rem;
-  grid-column: 2 / span 10;
-  overflow: hidden;
-}
-
-.prp-hero-image {
-  aspect-ratio: 16 / 9;
-  display: block;
-  object-fit: cover;
-  width: 100%;
-}
-
 /* ============================================
-   Overview: description beside a 2 x 2 details grid
+   Overview: description and live links beside a 2 x 2 details grid
    ============================================ */
-.prp-overview-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--prp-grid-gutter);
-  align-items: start;
-}
-
 .prp-overview-text {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  grid-column: 2 / span 5;
+  grid-column: 1 / span 6;
   min-width: 0;
 }
 
@@ -171,10 +106,17 @@
   margin: 0;
 }
 
+.prp-overview-links {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem 2rem;
+}
+
 .prp-meta-list {
   display: grid;
   gap: 2.5rem 2rem;
-  grid-column: 8 / span 4;
+  grid-column: 8 / span 5;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -211,33 +153,30 @@
 }
 
 /* ============================================
-   Showcase band: the device mockup, full width
+   Feature: the best gallery shots, wide and low; portrait shots sit side by side
    ============================================ */
-.prp-showcase {
-  background: var(--prp-light);
-  display: flex;
-  justify-content: center;
-  padding: var(--section-space-large) 1.25rem;
+.prp-feature {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(var(--prp-feature-count, 1), minmax(0, 1fr));
 }
 
-.prp-showcase img {
+.prp-feature img {
+  aspect-ratio: 4 / 5;
+  border-radius: 1.25rem;
   display: block;
   height: auto;
-  max-height: 32rem;
-  max-width: min(22rem, 60vw);
+  object-fit: cover;
   width: 100%;
+}
+
+.prp-feature img:only-child {
+  aspect-ratio: 21 / 9;
 }
 
 /* ============================================
    Story rows: label and heading on the left, text on the right
    ============================================ */
-.prp-row {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--prp-grid-gutter);
-  align-items: start;
-}
-
 .prp-row + .prp-row {
   margin-top: var(--section-space-large);
 }
@@ -246,14 +185,14 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  grid-column: 2 / span 4;
+  grid-column: 1 / span 5;
 }
 
 .prp-row-body {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  grid-column: 7 / span 5;
+  grid-column: 7 / span 6;
   min-width: 0;
 }
 
@@ -337,21 +276,24 @@
 .prp-results-cards {
   display: grid;
   gap: 1rem;
-  grid-column: 2 / span 10;
+  grid-column: 1 / -1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: clamp(2.5rem, 5vw, 4rem);
   min-width: 0;
 }
 
+/* Number and label centred together in the card */
 .prp-metric-card {
-  min-width: 0;
-  min-height: 17.5rem;
-  display: grid;
-  grid-template-rows: auto 1fr minmax(5rem, auto);
-  align-items: start;
-  text-align: left;
-  will-change: transform;
+  align-items: center;
   container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  justify-content: center;
+  min-height: 17.5rem;
+  min-width: 0;
+  text-align: center;
+  will-change: transform;
 }
 
 .prp-metric-card:hover {
@@ -374,15 +316,6 @@
   font-weight: var(--weight-light);
 }
 
-.prp-metric-card-label-row {
-  align-self: end;
-  display: flex;
-  align-items: flex-start;
-  width: 100%;
-  min-width: 0;
-  min-height: 5rem;
-}
-
 .prp-metric-card-label {
   font-size: var(--type-meta-small);
   font-weight: var(--weight-medium);
@@ -393,14 +326,14 @@
   margin: 0;
   display: flex;
   align-items: flex-start;
+  justify-content: center;
   gap: 0.5rem;
   cursor: default;
-  width: 100%;
+  max-width: 100%;
   min-width: 0;
 }
 
 .prp-metric-label-text {
-  flex: 1;
   min-width: 0;
   white-space: normal;
   overflow-wrap: anywhere;
@@ -434,13 +367,9 @@
   color: var(--prp-light-fg);
 }
 
-/* ============================================
-   Use case carousel: the dark closing block, rounded like the hero
-   ============================================ */
+/* Carousel CTA reuses .prp-live-link, white on the dark block */
 .prp-use-cases {
   --prp-light-fg: #fff;
-  border-radius: 2rem 2rem 0 0;
-  overflow: hidden;
 }
 
 /* ============================================
@@ -451,7 +380,7 @@
   .prp-meta-list,
   .prp-row-head,
   .prp-row-body {
-    grid-column: 2 / span 10;
+    grid-column: 1 / -1;
   }
 
   .prp-meta-list {
@@ -467,23 +396,29 @@
   }
 }
 
+/* Phones: the hero keeps the image's own shape instead of filling a tall screen */
 @media (max-width: 767px) {
   .prp-hero {
-    border-radius: 0 0 1.25rem 1.25rem;
-  }
-
-  .prp-hero-head,
-  .prp-hero-image-wrap,
-  .prp-overview-text,
-  .prp-meta-list,
-  .prp-row-head,
-  .prp-row-body,
-  .prp-results-cards {
-    grid-column: 1 / -1;
+    height: auto;
+    min-height: 0;
   }
 
   .prp-hero-image-wrap {
-    border-radius: 0.75rem;
+    border-radius: 0.875rem;
+    flex: none;
+  }
+
+  .prp-hero-image {
+    aspect-ratio: 4 / 3;
+    height: auto;
+  }
+
+  .prp-feature img {
+    border-radius: 0.875rem;
+  }
+
+  .prp-feature img:only-child {
+    aspect-ratio: 16 / 10;
   }
 
   .prp-meta-list {
@@ -502,8 +437,8 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .prp-use-cases {
-    border-radius: 1.25rem 1.25rem 0 0;
+  .prp-metric-card {
+    min-height: 12rem;
   }
 
   .prp-page .nav_buttons-wrapper .button-base {
