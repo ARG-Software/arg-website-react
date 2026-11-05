@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { Draggable } from 'gsap/Draggable';
-import { AnimatedArrowButton } from '../buttons/AnimatedArrowButton.jsx';
+import { arrowSvg } from '../icons/SocialIcons.jsx';
 
 gsap.registerPlugin(Draggable);
 
@@ -210,7 +210,7 @@ export function UseCaseCarousel({
       <div className="ucc-shade" aria-hidden="true" />
       <div className="ucc-grain" aria-hidden="true" />
 
-      <div className="ucc-head">
+      <div className="ucc-head padding-global">
         {eyebrow && <p className="ucc-eyebrow">{eyebrow}</p>}
         <div className="ucc-head-row">
           <h2 key={`title-${active.key}`} className="ucc-title">
@@ -237,13 +237,6 @@ export function UseCaseCarousel({
             </ul>
           )}
         </div>
-        <AnimatedArrowButton
-          variant="light"
-          className="ucc-cta"
-          onClick={() => onOpen?.(index, backgroundRefs.current[index])}
-        >
-          {ctaText}
-        </AnimatedArrowButton>
       </div>
 
       <div className="ucc-strip-wrap">
@@ -275,9 +268,19 @@ export function UseCaseCarousel({
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          className="prp-intro-live-link ucc-cta"
+          onClick={() => onOpen?.(index, backgroundRefs.current[index])}
+        >
+          <span>{ctaText}</span>
+          <span className="arrow_icon-embed" aria-hidden="true">
+            {arrowSvg}
+          </span>
+        </button>
       </div>
 
-      <div className="ucc-foot">
+      <div className="ucc-foot padding-global">
         <div className="ucc-progress">
           <div className="ucc-count">
             <span>{String(index + 1).padStart(2, '0')}</span>

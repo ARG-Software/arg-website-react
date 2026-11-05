@@ -1241,6 +1241,11 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   }
 }
 
+/* The use case carousel reuses the intro's text link on a dark background */
+.prp-use-cases {
+  --prp-light-fg: #fff;
+}
+
 /* ============================================
    Responsive — Results
    ============================================ */

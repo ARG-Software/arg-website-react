@@ -1,15 +1,15 @@
 import { UseCaseCarousel } from './UseCaseCarousel.jsx';
 
 const ITEMS = [
-  ['mojaloop', 'Mojaloop', 'Fintech', 'Mojaloop', '2021-2023'],
-  ['dokutar', 'Dokutar', 'Document Automation', 'Dokutar', '2023-2024'],
-  ['sky-tracks', 'SkyTracks', 'Music Technology', 'SkyTracks', '2022-2024'],
-  ['vector', 'Vector', 'Trading', 'Vector', '2024-2025'],
-].map(([key, title, credit, client, timeline]) => ({
+  ['mojaloop', 'Mojaloop', 'Fintech', 'Mojaloop'],
+  ['dokutar', 'Dokutar', 'Document Automation', 'Dokutar'],
+  ['sky-tracks', 'SkyTracks', 'Music Technology', 'SkyTracks'],
+  ['vector', 'Vector', 'Trading', 'Vector'],
+].map(([key, title, credit, client]) => ({
   key,
   title,
   credit,
-  meta: [client, timeline],
+  meta: [client],
   image: `/images/projects/heroes/${key}-hero-1920.webp`,
   thumb: `/images/projects/heroes/${key}-thumb-500.webp`,
 }));

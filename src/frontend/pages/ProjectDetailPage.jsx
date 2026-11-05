@@ -37,7 +37,7 @@ export default function ProjectDetailPage() {
         key: p.slug,
         title: p.title,
         credit: p.subtitle,
-        meta: [p.client, p.timeline],
+        meta: [p.client],
         image: p.imgSrc,
         srcSet: p.imgSrcSet,
         thumb: p.thumbnailSrc,
