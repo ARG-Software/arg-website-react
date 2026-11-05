@@ -4796,3 +4796,350 @@
   mix-blend-mode: color;
   position: absolute;
 }
+
+/* ── Use case carousel: end-of-page project picker ── */
+.ucc {
+  --ucc-pad: clamp(1rem, 4vw, 3rem);
+  --ucc-thumb-h: clamp(6rem, 26svh, 22.5rem);
+  --ucc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--arg-color-ink, #0c002e);
+  color: #fff;
+  min-height: max(36rem, 100svh);
+  outline: none;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+}
+
+.ucc:focus-visible {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.ucc-bg {
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  transition:
+    opacity 0.7s ease,
+    visibility 0s linear 0.7s;
+  visibility: hidden;
+}
+
+.ucc-bg.is-active {
+  opacity: 1;
+  transition: opacity 0.7s ease;
+  visibility: visible;
+  z-index: 1;
+}
+
+.ucc-bg-img {
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.28);
+  width: 100%;
+}
+
+.ucc-bg.is-active .ucc-bg-img {
+  animation: ucc-zoom 6s linear both;
+}
+
+/* ARG violet over the photo: hue from the brand, light from the image */
+.ucc-tint {
+  background: var(--arg-color-violet);
+  inset: 0;
+  mix-blend-mode: color;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.ucc-tint::after {
+  background: var(--arg-color-violet);
+  content: '';
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+  position: absolute;
+}
+
+/* Darker on the text side: the project heroes are busy mockups with their own copy */
+.ucc-shade {
+  background:
+    linear-gradient(to right, rgba(12, 0, 46, 0.8), rgba(12, 0, 46, 0.25) 65%),
+    linear-gradient(to bottom, rgba(12, 0, 46, 0.6), rgba(12, 0, 46, 0) 45%, rgba(12, 0, 46, 0.75));
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.ucc-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 11.25rem 11.25rem;
+  inset: 0;
+  mix-blend-mode: overlay;
+  opacity: 0.2;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.ucc-head {
+  bottom: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: flex-end;
+  left: 0;
+  padding: 0 var(--ucc-pad) 1.5rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 3;
+}
+
+.ucc-eyebrow,
+.ucc-credit,
+.ucc-meta,
+.ucc-count {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: var(--type-meta-small, 0.75rem);
+  letter-spacing: var(--tracking-meta, 0.12em);
+  text-transform: uppercase;
+}
+
+.ucc-eyebrow {
+  color: var(--arg-color-magenta);
+  margin: 0;
+}
+
+.ucc-head-row {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ucc-title {
+  font-family: Neuemontreal, sans-serif;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  font-weight: var(--weight-regular);
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  margin: 0;
+}
+
+.ucc-title-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+
+.ucc-title-line {
+  animation: ucc-line-in 0.62s var(--ucc-ease) both;
+  animation-delay: calc(var(--ucc-line) * 70ms);
+  display: block;
+}
+
+.ucc-credit {
+  animation: ucc-fade-in 0.5s ease 0.1s both;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.ucc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ucc-meta li {
+  animation: ucc-rise-in 0.45s ease both;
+  animation-delay: calc(120ms + var(--ucc-meta) * 60ms);
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+.ucc-strip-wrap {
+  height: var(--ucc-thumb-h);
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  z-index: 3;
+}
+
+.ucc-strip {
+  align-items: flex-start;
+  cursor: grab;
+  display: flex;
+  gap: 0.25rem;
+  touch-action: pan-y;
+  width: max-content;
+}
+
+.ucc-strip:active {
+  cursor: grabbing;
+}
+
+.ucc-thumb {
+  background: rgba(255, 255, 255, 0.06);
+  border: 0;
+  cursor: inherit;
+  flex: none;
+  height: calc(var(--ucc-thumb-h) / 2);
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  transition: height 0.6s var(--ucc-ease);
+  width: calc(var(--ucc-thumb-h) * 0.75);
+}
+
+.ucc-thumb::after {
+  background: rgba(12, 0, 46, 0.35);
+  content: '';
+  inset: 0;
+  position: absolute;
+  transition: opacity 0.6s var(--ucc-ease);
+}
+
+.ucc-thumb:hover::after,
+.ucc-thumb:focus-visible::after,
+.ucc-thumb.is-active::after {
+  opacity: 0;
+}
+
+.ucc-thumb:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
+}
+
+.ucc-thumb.is-active {
+  cursor: pointer;
+  height: var(--ucc-thumb-h);
+}
+
+.ucc-thumb img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  pointer-events: none;
+  width: 100%;
+}
+
+.ucc-cta {
+  align-self: flex-start;
+}
+
+.ucc .ucc-cta,
+.ucc .ucc-cta .button-base__button-text {
+  color: var(--arg-color-ink);
+}
+
+/* Bottom left only: the assistant button owns the bottom-right corner */
+.ucc-foot {
+  bottom: 2rem;
+  left: var(--ucc-pad);
+  position: absolute;
+  width: min(18rem, calc(100% - 2 * var(--ucc-pad)));
+  z-index: 3;
+}
+
+.ucc-count {
+  display: flex;
+  font-variant-numeric: tabular-nums;
+  justify-content: space-between;
+  opacity: 0.85;
+}
+
+.ucc-track {
+  background: rgba(255, 255, 255, 0.25);
+  height: 1px;
+  margin-top: 0.5rem;
+  position: relative;
+}
+
+.ucc-track-fill {
+  background: #fff;
+  bottom: 0;
+  position: absolute;
+  top: 0;
+  transition: left 0.6s var(--ucc-ease);
+}
+
+.ucc-live {
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+@keyframes ucc-zoom {
+  from {
+    transform: scale(1.42);
+  }
+  to {
+    transform: scale(1.28);
+  }
+}
+
+@keyframes ucc-line-in {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes ucc-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ucc-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.375rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .ucc {
+    --ucc-thumb-h: clamp(5rem, 22svh, 12rem);
+  }
+
+  .ucc-meta {
+    gap: 0.5rem 1.5rem;
+  }
+
+  .ucc-foot {
+    bottom: 1.5rem;
+    width: calc(100% - 2 * var(--ucc-pad) - 4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ucc-bg,
+  .ucc-bg.is-active,
+  .ucc-thumb,
+  .ucc-thumb::after,
+  .ucc-track-fill {
+    transition: none;
+  }
+
+  .ucc-bg.is-active .ucc-bg-img,
+  .ucc-title-line,
+  .ucc-credit,
+  .ucc-meta li {
+    animation: none;
+  }
+}

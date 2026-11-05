@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
+import { UseCaseCarousel } from '@ui/grids/UseCaseCarousel.jsx';
 import { ImageGallery } from '@ui/grids/ImageGallery.jsx';
 import { Navbar } from '@components/navigation/Navbar';
 import { Pill } from '@ui/pills/Pill.jsx';
@@ -10,9 +11,10 @@ import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { InlineLinkText } from '@components/widgets/InlineLinkText';
 import { ShuffleText } from '@components/widgets/ShuffleText';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
-import { useNextProjectSection } from '@hooks/useNextProjectSection';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
-import { trackCTA } from '@services/analytics';
+import { trackCTA, trackEvent } from '@services/analytics';
+import { TransitionContext } from '@providers/TransitionProvider';
+import { isMobile } from '@utils/helpers';
 import { buildProjectSchema } from '@utils/structuredData';
 import { getProjectGallery } from '@constants/projectGallery';
 import PROJECTS from '../data/projects.json';
@@ -21,14 +23,28 @@ import '../styles/projects.css';
 export default function ProjectDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const nextSectionRef = useRef(null);
-  const progressRef = useRef(null);
+  const { go } = useContext(TransitionContext);
   const approachRef = useRef(null);
   useScrollAnimations();
 
   const projectIndex = PROJECTS.findIndex(p => p.slug === slug);
   const project = PROJECTS[projectIndex];
   const nextProject = PROJECTS[(projectIndex + 1) % PROJECTS.length];
+  const otherProjects = useMemo(() => PROJECTS.filter(p => p.slug !== slug), [slug]);
+  const carouselItems = useMemo(
+    () =>
+      otherProjects.map(p => ({
+        key: p.slug,
+        title: p.title,
+        credit: p.subtitle,
+        meta: [p.client, p.timeline],
+        image: p.imgSrc,
+        srcSet: p.imgSrcSet,
+        thumb: p.thumbnailSrc,
+        thumbSrcSet: p.thumbnailSrcSet,
+      })),
+    [otherProjects]
+  );
   const projectGallery = useMemo(
     () => getProjectGallery(project?.slug, project?.title),
     [project?.slug, project?.title]
@@ -71,7 +87,41 @@ export default function ProjectDetailPage() {
     }
   }, [project, navigate]);
 
-  useNextProjectSection(nextSectionRef, progressRef, nextProject);
+  const handleCarouselSelect = useCallback(
+    (index, method) =>
+      trackEvent('project_carousel_select', {
+        from_project: slug,
+        to_project: otherProjects[index].slug,
+        method,
+      }),
+    [slug, otherProjects]
+  );
+
+  // Opening plays the same image handoff as the homepage project cards
+  const handleCarouselOpen = useCallback(
+    (index, image) => {
+      const target = otherProjects[index];
+      trackEvent('project_carousel_open', { from_project: slug, to_project: target.slug });
+
+      const rect = image?.getBoundingClientRect();
+      if (!rect || isMobile()) {
+        go(`/projects/${target.slug}`, { scrollMode: 'top' });
+        return;
+      }
+
+      go(`/projects/${target.slug}`, {
+        scrollMode: 'top',
+        transition: 'project-image',
+        sourceImage: {
+          src: target.imgSrc,
+          srcSet: target.imgSrcSet,
+          sizes: '100vw',
+          rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
+        },
+      });
+    },
+    [slug, otherProjects, go]
+  );
 
   useEffect(() => {
     const grid = approachRef.current;
@@ -376,27 +426,18 @@ export default function ProjectDetailPage() {
           </div>
         </section>
 
-        {/* NEXT PROJECT — full viewport pinned */}
-        <section
-          className="prp-next-section padding-section-large"
-          id="next-project"
-          ref={nextSectionRef}
-        >
-          <div className="prp-next-bg">
-            <img src={nextProject.imgSrc} alt={nextProject.title} className="prp-next-bg-img" />
-          </div>
-          <div className="prp-next-content">
-            <span className="prp-next-eyebrow">Next use case</span>
-            <div className="prp-next-hint">
-              <span>Keep scrolling for the next use case</span>
-              <div className="prp-next-hint-arrow prp-next-hint-arrow--down">{arrowSvg}</div>
-            </div>
-          </div>
+        <section className="prp-use-cases" id="use-cases">
+          <UseCaseCarousel
+            key={slug}
+            items={carouselItems}
+            defaultIndex={otherProjects.findIndex(p => p.slug === nextProject.slug)}
+            eyebrow="Explore use cases"
+            ctaText="View use case"
+            ariaLabel="Use cases"
+            onSelect={handleCarouselSelect}
+            onOpen={handleCarouselOpen}
+          />
         </section>
-
-        <div className="prp-scroll-progress" ref={progressRef}>
-          <div className="prp-scroll-progress-bar" />
-        </div>
       </div>
     </>
   );
