@@ -2,10 +2,10 @@ import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
-import { AnimatedArrowButton } from '@ui/buttons/AnimatedArrowButton.jsx';
 import { UseCaseCarousel } from '@ui/grids/UseCaseCarousel.jsx';
 import { ImageGallery } from '@ui/grids/ImageGallery.jsx';
 import { Navbar } from '@components/navigation/Navbar';
+import AppLink from '@components/navigation/AppLink';
 import { Footer } from '@components/layout/Footer';
 import { CTASection } from '@components/layout/CTASection';
 import { Pill } from '@ui/pills/Pill.jsx';
@@ -23,6 +23,14 @@ import { getProjectGallery } from '@constants/projectGallery';
 import { getProjectBriefFormLink } from '@services/linksService';
 import PROJECTS from '../data/projects.json';
 import '../styles/projects.css';
+
+const PAGE_TOPICS = [
+  { label: 'Overview', href: '#overview' },
+  { label: 'The Problem', href: '#problem' },
+  { label: 'The Approach', href: '#approach' },
+  { label: 'Results', href: '#results' },
+  { label: 'Use Cases', href: '#use-cases' },
+];
 
 export default function ProjectDetailPage() {
   const { slug } = useParams();
@@ -151,100 +159,83 @@ export default function ProjectDetailPage() {
         <Navbar position="fixed" variant="dark" />
 
         <main className="main-wrapper background-color-dark">
-          {/* HERO: case study facts on the left, the product image bleeding off the right edge */}
+          {/* HERO: case study facts on the left, the product image on the right */}
           <section className="prp-hero">
-            <div className="prp-hero-grid">
-              <div className="prp-hero-text">
-                <span className="prp-hero-eyebrow" data-animate="fade-up">
-                  Case study
-                </span>
-                <h1 className="prp-hero-title" data-animate="fade-up">
-                  {project.title}
-                </h1>
-                <p className="prp-hero-intro" data-animate="fade-up">
-                  {project.intro}
-                </p>
-                <dl className="prp-hero-facts" data-animate="fade-up">
-                  <div className="prp-hero-fact">
-                    <dt>Client</dt>
-                    <dd>{project.client}</dd>
-                  </div>
-                  <div className="prp-hero-fact">
-                    <dt>Engagement</dt>
-                    <dd>{project.timeline}</dd>
-                  </div>
-                  <div className="prp-hero-fact prp-hero-fact--wide">
-                    <dt>Stack</dt>
-                    <dd className="prp-hero-tags">
-                      {stackItems.map(tech => (
-                        <Pill key={tech} variant="glass" size="sm">
-                          {tech}
-                        </Pill>
-                      ))}
-                    </dd>
-                  </div>
-                </dl>
-                {projectLinks.length > 0 && (
-                  <div className="prp-hero-links" data-animate="fade-up">
-                    {projectLinks.map((link, i) => {
-                      const trackType = link.trackType ?? 'view_live';
-                      const onClick = () => trackCTA(trackType, `project_${slug}`);
-
-                      // The first link is the primary action; any others stay plain text links
-                      if (i === 0) {
-                        return (
-                          <AnimatedArrowButton
-                            key={link.href}
-                            href={link.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            variant="outline"
-                            className="prp-hero-cta"
-                            onClick={onClick}
-                          >
-                            {trackType === 'view_live' ? 'Visit live site' : link.label}
-                          </AnimatedArrowButton>
-                        );
-                      }
-
-                      return (
-                        <a
-                          key={link.href}
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="prp-live-link"
-                          onClick={onClick}
-                        >
-                          <span>{link.label}</span>
-                          <span className="arrow_icon-embed" aria-hidden="true">
-                            {arrowSvg}
-                          </span>
-                        </a>
-                      );
-                    })}
-                  </div>
-                )}
+            <div className="container container--section padding-global">
+              <div className="prp-hero-grid">
+                <div className="prp-hero-text">
+                  <span className="prp-hero-eyebrow" data-animate="fade-up">
+                    Case study
+                  </span>
+                  <h1 className="prp-hero-title" data-animate="fade-up">
+                    {project.title}
+                  </h1>
+                  <p className="prp-hero-intro" data-animate="fade-up">
+                    {project.intro}
+                  </p>
+                  <dl className="prp-hero-facts" data-animate="fade-up">
+                    <div className="prp-hero-fact">
+                      <dt>Client</dt>
+                      <dd>{project.client}</dd>
+                    </div>
+                    <div className="prp-hero-fact">
+                      <dt>Engagement</dt>
+                      <dd>{project.timeline}</dd>
+                    </div>
+                    <div className="prp-hero-fact prp-hero-fact--wide">
+                      <dt>Stack</dt>
+                      <dd className="prp-hero-tags">
+                        {stackItems.map(tech => (
+                          <Pill key={tech} variant="glass" size="sm">
+                            {tech}
+                          </Pill>
+                        ))}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+                <div className="prp-hero-image-wrap">
+                  <img
+                    src={project.imgSrc}
+                    srcSet={project.imgSrcSet}
+                    sizes="(max-width: 1024px) 100vw, 60vw"
+                    alt={project.title}
+                    className="prp-hero-image"
+                    width="1920"
+                    height="1080"
+                    fetchPriority="high"
+                    decoding="sync"
+                    data-transition-target
+                  />
+                </div>
               </div>
-              <div className="prp-hero-image-wrap">
-                <img
-                  src={project.imgSrc}
-                  srcSet={project.imgSrcSet}
-                  sizes="(max-width: 1024px) 100vw, 60vw"
-                  alt={project.title}
-                  className="prp-hero-image"
-                  width="1920"
-                  height="1080"
-                  fetchPriority="high"
-                  decoding="sync"
-                  data-transition-target
-                />
+              <div className="page-header__row page-header__row--links prp-hero-topics">
+                <div className="page-header__side-label" data-animate="fade-up">
+                  <span className="page-header__side-dot" aria-hidden="true" />
+                  On this page
+                </div>
+                <nav className="page-header__side-list" aria-label="On this page">
+                  {PAGE_TOPICS.map((topic, index) => (
+                    <AppLink key={topic.href} to={topic.href} data-animate="fade-up">
+                      <span className="page-header__side-index">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <span className="page-header__side-item-label">{topic.label}</span>
+                      <span className="page-header__side-arrow arrow_icon-embed" aria-hidden="true">
+                        {arrowSvg}
+                      </span>
+                    </AppLink>
+                  ))}
+                </nav>
               </div>
             </div>
           </section>
 
           {/* OVERVIEW: description beside the category and services */}
-          <section className="prp-overview padding-section-large border-radius-top background-color-white">
+          <section
+            id="overview"
+            className="prp-overview padding-section-large border-radius-top background-color-white"
+          >
             <div className="container container--section padding-global">
               <div className="prp-grid">
                 <div className="prp-overview-text">
@@ -252,9 +243,28 @@ export default function ProjectDetailPage() {
                     Overview
                   </span>
                   {project.description && (
-                    <p className="prp-overview-lead" data-animate="fade-up">
+                    <p className="prp-section-text" data-animate="fade-up">
                       <InlineLinkText text={project.description} linkClassName="prp-inline-link" />
                     </p>
+                  )}
+                  {projectLinks.length > 0 && (
+                    <div className="prp-overview-links" data-animate="fade-up">
+                      {projectLinks.map(link => (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="prp-live-link"
+                          onClick={() => trackCTA(link.trackType ?? 'view_live', `project_${slug}`)}
+                        >
+                          <span>{link.label}</span>
+                          <span className="arrow_icon-embed" aria-hidden="true">
+                            {arrowSvg}
+                          </span>
+                        </a>
+                      ))}
+                    </div>
                   )}
                 </div>
                 <div className="prp-meta-list">
@@ -310,7 +320,7 @@ export default function ProjectDetailPage() {
           )}
 
           {/* PROBLEM and APPROACH: label on the left, text on the right */}
-          <section className="prp-story padding-section-large background-color-white">
+          <section id="problem" className="prp-story padding-section-large background-color-white">
             <div className="container container--section padding-global">
               <div className="prp-grid prp-row">
                 <div className="prp-row-head">
@@ -329,7 +339,7 @@ export default function ProjectDetailPage() {
                   ))}
                 </div>
               </div>
-              <div className="prp-grid prp-row">
+              <div className="prp-grid prp-row" id="approach">
                 <div className="prp-row-head">
                   <span className="prp-section-label" data-animate="fade-up">
                     The Approach
@@ -337,14 +347,23 @@ export default function ProjectDetailPage() {
                   <h2 className="prp-section-heading" data-animate="fade-up">
                     How we made it work
                   </h2>
+                  {project.mockupSrc && (
+                    <img
+                      className="prp-approach-mockup"
+                      src={project.mockupSrc}
+                      srcSet={project.mockupSrcSet}
+                      sizes="(max-width: 767px) 50vw, 16rem"
+                      alt={`${project.title} mockup`}
+                      loading="lazy"
+                      decoding="async"
+                      data-animate="fade-up"
+                    />
+                  )}
                 </div>
                 <ul className="prp-row-body prp-solution-list">
                   {project.solution.map((item, i) => (
                     <li key={i} data-animate="fade-up">
-                      <span className="prp-solution-item-arrow arrow_icon-embed" aria-hidden="true">
-                        {arrowSvg}
-                      </span>
-                      <span>{item}</span>
+                      {item}
                     </li>
                   ))}
                 </ul>

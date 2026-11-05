@@ -4927,7 +4927,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 }
 
 .ucc-eyebrow {
-  color: var(--arg-color-magenta);
+  color: #fff;
   margin: 0;
 }
 

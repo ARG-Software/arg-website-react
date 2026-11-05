@@ -136,9 +136,9 @@ export function buildProjectStaticContent(project, projectLinks = []) {
   return `<div class="prp-page" data-prerendered-content>
   <main>
     <section class="prp-hero">
-      <div class="prp-hero-grid"><div class="prp-hero-text">
+      <div class="container container--section padding-global"><div class="prp-hero-grid"><div class="prp-hero-text">
         <span class="prp-hero-eyebrow">Case study</span>
-        <h1 class="prp-hero-title">${escapeHtml(project.title)}</h1></div>
+        <h1 class="prp-hero-title">${escapeHtml(project.title)}</h1></div></div>
       </div>
     </section>
     <section class="prp-overview padding-section-large border-radius-top background-color-white">
