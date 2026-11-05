@@ -311,30 +311,6 @@ export function UseCaseCarousel({
             />
           </div>
         </div>
-        <div className="ucc-nav">
-          <button
-            type="button"
-            className="ucc-nav-button"
-            aria-label="Previous use case"
-            disabled={index === 0}
-            onClick={() => select(index - 1, 'button')}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M15 5l-7 7 7 7" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            className="ucc-nav-button"
-            aria-label="Next use case"
-            disabled={index === items.length - 1}
-            onClick={() => select(index + 1, 'button')}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
       </div>
 
       <p className="ucc-live" aria-live="polite">

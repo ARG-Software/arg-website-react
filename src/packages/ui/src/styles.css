@@ -4870,21 +4870,23 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   animation: ucc-zoom 6s linear both;
 }
 
-/* ARG dark blue over the greyscale photo, so every project reads in the site's own colour */
+/* ARG dark blue over the greyscale photo, dense enough that the grey never turns the
+   section purple; the photo is only a faint texture */
 .ucc-tint {
   background: var(--arg-color-ink);
   inset: 0;
-  opacity: 0.72;
+  opacity: 0.92;
   pointer-events: none;
   position: absolute;
   z-index: 2;
 }
 
-/* Darker on the text side: the project heroes are busy mockups with their own copy */
+/* Darker on the text side, and solid page blue at the top and bottom so the section
+   runs into the dark sections around it without a seam */
 .ucc-shade {
   background:
-    linear-gradient(to right, rgba(12, 0, 46, 0.6), rgba(12, 0, 46, 0) 65%),
-    linear-gradient(to bottom, rgba(12, 0, 46, 0.4), rgba(12, 0, 46, 0) 45%, rgba(12, 0, 46, 0.6));
+    linear-gradient(to right, rgba(12, 0, 46, 0.5), rgba(12, 0, 46, 0) 65%),
+    linear-gradient(to bottom, #0c002e, rgba(12, 0, 46, 0) 25%, rgba(12, 0, 46, 0) 70%, #0c002e);
   inset: 0;
   pointer-events: none;
   position: absolute;
@@ -4896,7 +4898,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   background-size: 11.25rem 11.25rem;
   inset: 0;
   mix-blend-mode: overlay;
-  opacity: 0.2;
+  opacity: 0.12;
   pointer-events: none;
   position: absolute;
   z-index: 2;
@@ -5081,62 +5083,11 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
 /* Sides from .padding-global, bottom from the large section spacing */
 .ucc-foot {
-  align-items: flex-end;
   bottom: var(--section-space-large);
-  display: flex;
-  justify-content: space-between;
   left: 0;
   position: absolute;
   right: 0;
   z-index: 3;
-}
-
-.ucc-nav {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.ucc-nav-button {
-  align-items: center;
-  background: none;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  height: 2.75rem;
-  justify-content: center;
-  padding: 0;
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    opacity 0.3s ease;
-  width: 2.75rem;
-}
-
-.ucc-nav-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: #fff;
-}
-
-.ucc-nav-button:focus-visible {
-  outline: 1px solid #fff;
-  outline-offset: 2px;
-}
-
-.ucc-nav-button:disabled {
-  cursor: default;
-  opacity: 0.3;
-}
-
-.ucc-nav-button svg {
-  fill: none;
-  height: 1.125rem;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.75;
-  width: 1.125rem;
 }
 
 .ucc-progress {

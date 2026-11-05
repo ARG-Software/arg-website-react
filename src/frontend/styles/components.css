@@ -1713,33 +1713,68 @@
   white-space: normal;
 }
 
+/* The image blends into the header instead of sitting in a card: tinted to the brand
+   navy and faded into the page. Below 1024px it sits in the flow under the subtitle */
 .page-header__aside {
-  border-radius: 1.25rem;
-  margin: 2.5rem 0;
-  overflow: hidden;
-}
-
-.page-header__aside img {
+  -webkit-mask-image: linear-gradient(0deg, transparent 0%, #000 30%);
+  mask-image: linear-gradient(0deg, transparent 0%, #000 30%);
   aspect-ratio: 16 / 10;
-  display: block;
-  height: auto;
-  object-fit: cover;
+  margin-top: 2.5rem;
+  overflow: hidden;
+  pointer-events: none;
+  position: relative;
   width: 100%;
 }
 
-@media screen and (min-width: 1100px) {
-  /* Same spot as the drawing on the other headers, under the breadcrumb line */
-  .page-header__aside {
-    margin: 0;
-    position: absolute;
-    right: 4.75rem;
-    top: 6.5rem;
-    width: min(36rem, 40vw);
+/* Multiplies the light grey studio backgrounds down to the header's navy */
+.page-header__aside::after {
+  background: linear-gradient(180deg, #2a1670 0%, #7a62c9 45%, #3a2385 100%);
+  content: '';
+  inset: 0;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  position: absolute;
+}
+
+.page-header__aside img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: 55% 50%;
+  width: 100%;
+}
+
+/* Wide screens: the right half of the header, from behind the nav down to the links
+   row, bleeding off the right edge and fading into the page on the left and bottom */
+@media screen and (min-width: 1024px) {
+  .page-header--with-aside .page-header__inner {
+    position: static;
   }
 
-  .page-header--with-aside h1,
+  .page-header--with-aside .page-header__inner > :not(.page-header__aside) {
+    position: relative;
+    z-index: 2;
+  }
+
+  .page-header__aside {
+    -webkit-mask-composite: source-in;
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 12%, #000 40%);
+    aspect-ratio: auto;
+    bottom: 0;
+    margin: 0;
+    mask-composite: intersect;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 12%, #000 40%);
+    position: absolute;
+    right: 0;
+    top: calc(-1 * var(--navbar-height-desktop));
+    width: 52%;
+    z-index: 0;
+  }
+
   .page-header--with-aside .page-header__subtitle {
-    max-width: calc(100% - min(36rem, 40vw) - 4rem);
+    max-width: 40rem;
   }
 }
 

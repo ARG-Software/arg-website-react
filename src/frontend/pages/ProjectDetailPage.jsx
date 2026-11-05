@@ -6,6 +6,7 @@ import { UseCaseCarousel } from '@ui/grids/UseCaseCarousel.jsx';
 import { ImageGallery } from '@ui/grids/ImageGallery.jsx';
 import { Navbar } from '@components/navigation/Navbar';
 import { PageHeader } from '@components/headers/PageHeader';
+import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { Footer } from '@components/layout/Footer';
 import { CTASection } from '@components/layout/CTASection';
 import { Pill } from '@ui/pills/Pill.jsx';
@@ -266,29 +267,27 @@ export default function ProjectDetailPage() {
             </div>
           </section>
 
-          {/* FEATURE: the best gallery shots, large */}
+          {/* FEATURE: the best gallery shots, across the full width */}
           {featureImages.length > 0 && (
             <div className="background-color-white">
-              <div className="container container--section padding-global">
-                <div
-                  className="prp-feature"
-                  style={{ '--prp-feature-count': featureImages.length }}
-                  data-animate="fade-up"
-                >
-                  {featureImages.map(image => (
-                    <img
-                      key={image.src}
-                      src={image.src}
-                      srcSet={image.srcSet}
-                      sizes={featureImages.length > 1 ? '(max-width: 767px) 33vw, 30vw' : '100vw'}
-                      alt={image.alt}
-                      width={image.width}
-                      height={image.height}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ))}
-                </div>
+              <div
+                className="prp-feature"
+                style={{ '--prp-feature-count': featureImages.length }}
+                data-animate="fade-up"
+              >
+                {featureImages.map(image => (
+                  <img
+                    key={image.src}
+                    src={image.src}
+                    srcSet={image.srcSet}
+                    sizes={featureImages.length > 1 ? '(max-width: 767px) 33vw, 30vw' : '100vw'}
+                    alt={image.alt}
+                    width={image.width}
+                    height={image.height}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -313,7 +312,17 @@ export default function ProjectDetailPage() {
                   ))}
                 </div>
               </div>
-              <div className="prp-grid prp-row" id="approach">
+            </div>
+            <SectionDivider
+              variant="default"
+              hideOnMobile={false}
+              data-animate="divider-expander-show"
+            />
+          </section>
+
+          <section id="approach" className="prp-story padding-section-large background-color-white">
+            <div className="container container--section padding-global">
+              <div className="prp-grid prp-row">
                 <div className="prp-row-head">
                   <span className="prp-section-label" data-animate="fade-up">
                     The Approach
@@ -343,14 +352,26 @@ export default function ProjectDetailPage() {
                 </ul>
               </div>
             </div>
+            <SectionDivider
+              variant="default"
+              hideOnMobile={false}
+              data-animate="divider-expander-show"
+            />
           </section>
 
           {galleryImages.length > 0 && (
-            <div className="background-color-white">
-              <div className="container container--section padding-global" data-animate="fade-up">
-                <ImageGallery images={galleryImages} />
+            <section className="padding-section-large background-color-white">
+              <div className="container container--section padding-global">
+                <div data-animate="fade-up">
+                  <ImageGallery images={galleryImages} />
+                </div>
               </div>
-            </div>
+              <SectionDivider
+                variant="default"
+                hideOnMobile={false}
+                data-animate="divider-expander-show"
+              />
+            </section>
           )}
 
           {/* RESULTS: impact text, then the metric cards across the row */}
