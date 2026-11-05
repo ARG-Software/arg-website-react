@@ -92,12 +92,11 @@ export function ImageGallery({ images = [], className = '' }) {
 
   return (
     <div className={rootClassName}>
-      <div className="prp-image-gallery__mosaic" data-count={images.length}>
+      <div className="prp-image-gallery__mosaic">
         {images.map((image, index) => (
           <GalleryImage
             key={image.src ?? image.thumb ?? index}
             image={image}
-            kind="tile"
             index={index}
             onOpen={show}
           />

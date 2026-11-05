@@ -270,7 +270,7 @@ export function UseCaseCarousel({
         </div>
         <button
           type="button"
-          className="prp-intro-live-link ucc-cta"
+          className="prp-live-link ucc-cta"
           onClick={() => onOpen?.(index, backgroundRefs.current[index])}
         >
           <span>{ctaText}</span>

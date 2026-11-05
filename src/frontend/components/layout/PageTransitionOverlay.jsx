@@ -2,7 +2,7 @@ import { Logo } from '../icons/Logo';
 
 const SHADE_COUNT = 32;
 const SHADES = Array.from({ length: SHADE_COUNT }, (_, index) => index);
-// Matches the `.prp-hero-image` aspect ratio so the overlay lands exactly on the hero.
+// The hero image is 16:9: the overlay grows to that shape, then settles on the measured hero box.
 const HERO_ASPECT_RATIO = 9 / 16;
 
 const PHASE_CLASSES = {
@@ -38,6 +38,15 @@ export function PageTransitionOverlay({ phase, variant, imageTransition }) {
       '--pt-target-width': `${targetWidth}px`,
       '--pt-target-height': `${targetWidth * HERO_ASPECT_RATIO}px`,
     };
+
+    const landing = imageTransition.landing;
+    if (landing) {
+      imageStyle['--pt-land-left'] = `${landing.rect.left}px`;
+      imageStyle['--pt-land-top'] = `${landing.rect.top}px`;
+      imageStyle['--pt-land-width'] = `${landing.rect.width}px`;
+      imageStyle['--pt-land-height'] = `${landing.rect.height}px`;
+      imageStyle['--pt-land-radius'] = landing.radius;
+    }
   }
 
   const overlayClass = [

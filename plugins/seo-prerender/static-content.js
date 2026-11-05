@@ -135,11 +135,15 @@ export function buildProjectStaticContent(project, projectLinks = []) {
 
   return `<div class="prp-page" data-prerendered-content>
   <main>
-    <section class="prp-intro padding-section-large">
+    <section class="prp-hero">
       <div class="prp-grid-container">
-        <h1 class="prp-intro-title">${escapeHtml(project.title)}</h1>
-        <p class="prp-intro-subtitle">${escapeHtml(project.intro)}</p>
-        ${project.description ? `<p class="prp-intro-description">${renderInlineText(project.description)}</p>` : ''}
+        <h1 class="prp-hero-title">${escapeHtml(project.title)}</h1>
+      </div>
+    </section>
+    <section class="prp-overview padding-section-large">
+      <div class="prp-grid-container">
+        <p class="prp-overview-lead">${escapeHtml(project.intro)}</p>
+        ${project.description ? `<p class="prp-section-text">${renderInlineText(project.description)}</p>` : ''}
         <dl>
           <dt>Category</dt><dd>${escapeHtml(project.subtitle)}</dd>
           <dt>Client</dt><dd>${escapeHtml(project.client)}</dd>
@@ -150,22 +154,18 @@ export function buildProjectStaticContent(project, projectLinks = []) {
         <ul>${services}</ul>
       </div>
     </section>
-    <section class="prp-challenge padding-section-large">
+    <section class="prp-story padding-section-large">
       <div class="prp-grid-container">
         <h2 class="prp-section-heading">What had to be solved</h2>
         ${challenge}
-      </div>
-    </section>
-    <section class="prp-solution padding-section-large">
-      <div class="prp-grid-container">
-        <h2 class="prp-solution-heading">How we made it work</h2>
+        <h2 class="prp-section-heading">How we made it work</h2>
         <ul class="prp-solution-list">${solution}</ul>
       </div>
     </section>
     <section class="prp-results padding-section-large">
       <div class="prp-grid-container">
-        <h2 class="prp-results-heading">Results</h2>
-        <p class="prp-results-text">${renderInlineText(project.impact)}</p>
+        <h2 class="prp-section-heading">Results</h2>
+        <p class="prp-section-text">${renderInlineText(project.impact)}</p>
         <ul class="prp-results-cards">${metrics}</ul>
       </div>
     </section>

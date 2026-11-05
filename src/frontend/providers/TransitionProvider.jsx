@@ -59,9 +59,12 @@ function waitForTransitionTarget() {
       const image = document.querySelector('[data-transition-target]');
       if (image?.complete) {
         if (image.decode) {
-          image.decode().then(resolve, resolve);
+          image.decode().then(
+            () => resolve(image),
+            () => resolve(image)
+          );
         } else {
-          resolve();
+          resolve(image);
         }
         return;
       }
@@ -432,7 +435,15 @@ export function TransitionProvider({ children }) {
     }
 
     if (overlayVariant === 'project-image') {
-      waitForTransitionTarget().then(() => revealPage(reveal));
+      // The growing image settles onto the hero's real box before fading out
+      waitForTransitionTarget().then(image => {
+        const rect = image?.getBoundingClientRect();
+        if (rect) {
+          const radius = getComputedStyle(image.parentElement).borderTopLeftRadius;
+          setImageTransition(current => current && { ...current, landing: { rect, radius } });
+        }
+        revealPage(reveal);
+      });
       return;
     }
 

@@ -55,7 +55,7 @@ export function getProjectGallery(slug, title) {
     return {
       src: `${basePath}-${config.width}.webp`,
       srcSet: config.widths.map(width => `${basePath}-${width}.webp ${width}w`).join(', '),
-      sizes: '(max-width: 1023px) calc(100vw - 2.5rem), 36vw',
+      sizes: '(max-width: 767px) 50vw, 45vw',
       alt: caption,
       caption,
       width: config.width,

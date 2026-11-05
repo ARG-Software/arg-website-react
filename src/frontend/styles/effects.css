@@ -105,7 +105,7 @@
 .pt-overlay__backdrop {
   position: absolute;
   inset: 0;
-  background: #ededed;
+  background: #0c002e;
   animation: pt-project-backdrop-in 760ms var(--ease-in-out-quart) both;
 }
 
@@ -137,17 +137,35 @@
   animation: pt-project-image-target-in 380ms ease-out 380ms both;
 }
 
-.pt-overlay.revealing .pt-project-image,
 .pt-overlay.revealing .pt-overlay__backdrop {
   animation: pt-project-image-reveal 300ms var(--ease-out-expo) both;
 }
 
+/* Settles onto the destination hero image's measured box, then fades into it */
 .pt-overlay.revealing .pt-project-image {
-  left: 0;
-  top: 0;
-  width: var(--pt-target-width);
-  height: var(--pt-target-height);
-  border-radius: 0;
+  animation: pt-project-image-land 300ms var(--ease-out-expo) both;
+}
+
+@keyframes pt-project-image-land {
+  from {
+    left: 0;
+    top: 0;
+    width: var(--pt-target-width);
+    height: var(--pt-target-height);
+    border-radius: 0;
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    left: var(--pt-land-left, 0);
+    top: var(--pt-land-top, 0);
+    width: var(--pt-land-width, var(--pt-target-width));
+    height: var(--pt-land-height, var(--pt-target-height));
+    border-radius: var(--pt-land-radius, 0);
+    opacity: 0;
+  }
 }
 
 @keyframes pt-project-image-cover {
