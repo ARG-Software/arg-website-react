@@ -4838,7 +4838,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 }
 
 .ucc:focus-visible {
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  box-shadow: inset 0 0 0 0.0625rem rgba(255, 255, 255, 0.4);
 }
 
 .ucc-bg {
@@ -5038,8 +5038,8 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 }
 
 .ucc-thumb:focus-visible {
-  outline: 1px solid #fff;
-  outline-offset: 2px;
+  outline: 0.0625rem solid #fff;
+  outline-offset: 0.125rem;
 }
 
 /* The selected thumbnail keeps its slot and pops forward over its neighbours.
@@ -5103,7 +5103,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
 .ucc-track {
   background: rgba(255, 255, 255, 0.25);
-  height: 1px;
+  height: 0.0625rem;
   margin-top: 0.5rem;
   position: relative;
 }
@@ -5118,12 +5118,12 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
 .ucc-live {
   clip: rect(0, 0, 0, 0);
-  height: 1px;
-  margin: -1px;
+  height: 0.0625rem;
+  margin: -0.0625rem;
   overflow: hidden;
   position: absolute;
   white-space: nowrap;
-  width: 1px;
+  width: 0.0625rem;
 }
 
 @keyframes ucc-zoom {
@@ -5157,7 +5157,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 47.9375rem) {
   .ucc {
     --ucc-thumb-h: clamp(5rem, 22svh, 12rem);
   }

@@ -60,17 +60,20 @@ export function UseCaseCarousel({
     const strip = stripRef.current;
     if (!viewport || !strip) return undefined;
 
+    // The browser reports pixels; the layout is kept in rem, like the rest of the CSS
     const measure = () => {
-      const gap = parseFloat(getComputedStyle(strip).columnGap) || 0;
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const viewportWidth = viewport.clientWidth / rem;
+      const gap = (parseFloat(getComputedStyle(strip).columnGap) || 0) / rem;
       // The viewport is half a thumbnail-height tall; thumbnails are 0.75 of that height wide
-      const baseWidth = viewport.clientHeight * 1.5;
+      const baseWidth = (viewport.clientHeight / rem) * 1.5;
       if (!baseWidth) return;
 
       const visible = Math.min(
         items.length,
-        Math.max(1, Math.floor((viewport.clientWidth + gap) / (baseWidth + gap)))
+        Math.max(1, Math.floor((viewportWidth + gap) / (baseWidth + gap)))
       );
-      const thumbWidth = (viewport.clientWidth - gap * (visible - 1)) / visible;
+      const thumbWidth = (viewportWidth - gap * (visible - 1)) / visible;
       setLayout({ visible, thumbWidth, gap });
     };
 
@@ -90,7 +93,7 @@ export function UseCaseCarousel({
     const strip = stripRef.current;
     if (!strip || !layout.thumbWidth) return undefined;
 
-    const x = -start * (layout.thumbWidth + layout.gap);
+    const x = `${-start * (layout.thumbWidth + layout.gap)}rem`;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!positionedRef.current || reducedMotion) {
       positionedRef.current = true;
@@ -242,7 +245,7 @@ export function UseCaseCarousel({
           <div
             ref={stripRef}
             className="ucc-strip"
-            style={{ '--ucc-thumb-w': layout.thumbWidth ? `${layout.thumbWidth}px` : undefined }}
+            style={{ '--ucc-thumb-w': layout.thumbWidth ? `${layout.thumbWidth}rem` : undefined }}
           >
             {items.map((item, i) => {
               const outside = i < start || i > end;
@@ -274,7 +277,7 @@ export function UseCaseCarousel({
                   <img
                     src={item.thumb}
                     srcSet={item.thumbSrcSet}
-                    sizes="(max-width: 767px) 10rem, 18rem"
+                    sizes="(max-width: 47.9375rem) 10rem, 18rem"
                     alt=""
                     loading="lazy"
                     decoding="async"
@@ -287,7 +290,7 @@ export function UseCaseCarousel({
           <button
             type="button"
             className="prp-live-link ucc-cta"
-            style={{ left: `${ctaLeft}px` }}
+            style={{ left: `${ctaLeft}rem` }}
             onClick={() => onOpen?.(index, backgroundRefs.current[index])}
           >
             <span>{ctaText}</span>

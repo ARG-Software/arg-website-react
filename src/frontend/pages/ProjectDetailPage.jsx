@@ -175,7 +175,7 @@ export default function ProjectDetailPage() {
               <img
                 src={project.imgSrc}
                 srcSet={project.imgSrcSet}
-                sizes="(max-width: 1099px) 100vw, 40vw"
+                sizes="(max-width: 63.9375rem) 100vw, 52vw"
                 alt={project.title}
                 width="1920"
                 height="1080"
@@ -280,7 +280,9 @@ export default function ProjectDetailPage() {
                     key={image.src}
                     src={image.src}
                     srcSet={image.srcSet}
-                    sizes={featureImages.length > 1 ? '(max-width: 767px) 33vw, 30vw' : '100vw'}
+                    sizes={
+                      featureImages.length > 1 ? '(max-width: 47.9375rem) 33vw, 30vw' : '100vw'
+                    }
                     alt={image.alt}
                     width={image.width}
                     height={image.height}
@@ -335,7 +337,7 @@ export default function ProjectDetailPage() {
                       className="prp-approach-mockup"
                       src={project.mockupSrc}
                       srcSet={project.mockupSrcSet}
-                      sizes="(max-width: 767px) 50vw, 16rem"
+                      sizes="(max-width: 47.9375rem) 50vw, 16rem"
                       alt={`${project.title} mockup`}
                       loading="lazy"
                       decoding="async"
