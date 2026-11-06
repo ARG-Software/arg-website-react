@@ -87,15 +87,14 @@
 .prp-meta-label {
   color: var(--prp-dark);
   font-size: var(--type-meta-small);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-meta);
+  letter-spacing: var(--tracking-meta-wide);
   text-transform: uppercase;
 }
 
 .prp-meta-value {
   color: var(--prp-dark);
-  font-size: var(--type-ui);
-  line-height: 1.5;
+  font-size: var(--type-body-small);
+  line-height: var(--line-small);
   overflow-wrap: break-word;
 }
 
@@ -112,23 +111,21 @@
 /* ============================================
    Feature: the best gallery shots, wide and low; portrait shots sit side by side
    ============================================ */
-/* Edge to edge, like a section of its own between the overview and the story */
+/* A thin full-width band between the overview and the story (1440 x 351 at desktop,
+   same ratio on every screen); several shots share the band side by side */
 .prp-feature {
+  aspect-ratio: 1440 / 351;
   display: grid;
   gap: 0.25rem;
   grid-template-columns: repeat(var(--prp-feature-count, 1), minmax(0, 1fr));
 }
 
 .prp-feature img {
-  aspect-ratio: 4 / 5;
   display: block;
-  height: auto;
+  height: 100%;
+  min-height: 0;
   object-fit: cover;
   width: 100%;
-}
-
-.prp-feature img:only-child {
-  aspect-ratio: 21 / 9;
 }
 
 /* ============================================
@@ -152,8 +149,7 @@
 .prp-section-label {
   color: var(--prp-dark);
   font-size: var(--type-meta-small);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-meta);
+  letter-spacing: var(--tracking-meta-wide);
   margin: 0;
   text-transform: uppercase;
 }
@@ -161,9 +157,9 @@
 .prp-section-heading {
   color: var(--prp-dark);
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-content-heading);
+  font-size: var(--type-section-title);
   font-weight: var(--weight-light);
-  letter-spacing: var(--tracking-card-title);
+  letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
   margin: 0;
 }
@@ -202,7 +198,7 @@
   border-radius: 0.5rem;
   color: var(--prp-dark);
   font-size: var(--type-body);
-  line-height: var(--line-small);
+  line-height: var(--line-body);
   padding: 0.75rem 1rem;
   transition: background 0.3s ease;
 }
@@ -258,7 +254,7 @@
 
 /* Sized by the card, not the viewport, so values like "1,000-2,000" always fit on one line */
 .prp-metric-card-number {
-  font-family: 'Inter', sans-serif;
+  font-family: Neuemontreal, sans-serif;
   font-size: clamp(1rem, 17cqi, 2.5rem);
   font-weight: var(--weight-light);
   line-height: 1;
@@ -274,9 +270,8 @@
 
 .prp-metric-card-label {
   font-size: var(--type-meta-small);
-  font-weight: var(--weight-medium);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-meta-tight);
+  letter-spacing: var(--tracking-meta-wide);
   line-height: var(--line-compact);
   color: #fff;
   margin: 0;
@@ -353,20 +348,12 @@
 }
 
 @media (max-width: 767px) {
-  .prp-feature img:only-child {
-    aspect-ratio: 16 / 10;
-  }
-
   .prp-meta-list {
     gap: 2rem 1.5rem;
   }
 
   .prp-meta-item:has(.prp-meta-pills) {
     grid-column: 1 / -1;
-  }
-
-  .prp-section-heading {
-    font-size: clamp(1.5rem, 5vw, 2rem);
   }
 
   .prp-results-cards {
