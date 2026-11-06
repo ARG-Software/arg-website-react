@@ -1,53 +1,45 @@
-// `feature`: the gallery numbers shown large under the overview; the rest fill the gallery
 const PROJECT_GALLERY_CONFIG = {
+  dokutar: {
+    count: 3,
+    width: 3840,
+    height: 2880,
+    widths: [360, 640, 828, 1080, 1440, 1920, 2560, 3840],
+  },
   mojaloop: {
     count: 4,
-    feature: [1],
-    width: 1448,
-    height: 1086,
-    widths: [360, 640, 828, 1080, 1440, 1448],
+    width: 3840,
+    height: 2880,
+    widths: [360, 640, 828, 1080, 1440, 1920, 2560, 3840],
   },
   'peoples-clearinghouse': {
     count: 9,
-    feature: [2, 5, 9],
-    width: 1122,
-    height: 1402,
-    widths: [360, 640, 828, 1080, 1122],
-  },
-  dokutar: {
-    count: 3,
-    feature: [1],
-    width: 1448,
-    height: 1086,
-    widths: [360, 640, 828, 1080, 1440, 1448],
-  },
-  'sky-tracks': {
-    count: 4,
-    feature: [2],
-    width: 1448,
-    height: 1086,
-    widths: [360, 640, 828, 1080, 1440, 1448],
-  },
-  'tv-cine': {
-    count: 3,
-    feature: [2],
-    width: 1448,
-    height: 1086,
-    widths: [360, 640, 828, 1080, 1440, 1448],
+    width: 3073,
+    height: 3840,
+    widths: [360, 640, 828, 1080, 1440, 1920, 2560, 3073],
   },
   'royalty-flush': {
     count: 3,
-    feature: [2],
-    width: 1536,
-    height: 1024,
-    widths: [360, 640, 828, 1080, 1440, 1536],
+    width: 3840,
+    height: 2560,
+    widths: [360, 640, 828, 1080, 1440, 1920, 2560, 3840],
+  },
+  'sky-tracks': {
+    count: 4,
+    width: 3840,
+    height: 2880,
+    widths: [360, 640, 828, 1080, 1440, 1920, 2560, 3840],
+  },
+  'tv-cine': {
+    count: 3,
+    width: 3840,
+    height: 2880,
+    widths: [360, 640, 828, 1080, 1440, 1920, 2560, 3840],
   },
   vector: {
     count: 4,
-    feature: [1],
-    width: 1536,
-    height: 1024,
-    widths: [360, 640, 828, 1080, 1440, 1536],
+    width: 3840,
+    height: 2560,
+    widths: [360, 640, 828, 1080, 1440, 1920, 2560, 3840],
   },
 };
 
@@ -63,12 +55,11 @@ export function getProjectGallery(slug, title) {
     return {
       src: `${basePath}-${config.width}.webp`,
       srcSet: config.widths.map(width => `${basePath}-${width}.webp ${width}w`).join(', '),
-      sizes: '(max-width: 767px) 50vw, 45vw',
+      sizes: '(max-width: 47.9375rem) 50vw, 45vw',
       alt: caption,
       caption,
       width: config.width,
       height: config.height,
-      featured: config.feature.includes(index + 1),
     };
   });
 }

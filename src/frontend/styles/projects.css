@@ -109,15 +109,11 @@
 }
 
 /* ============================================
-   Feature: the best gallery shots, wide and low; portrait shots sit side by side
+   Feature: the project hero as a thin full-width band between the overview and
+   the story (1440 x 351 at desktop, same ratio on every screen)
    ============================================ */
-/* A thin full-width band between the overview and the story (1440 x 351 at desktop,
-   same ratio on every screen); several shots share the band side by side */
 .prp-feature {
   aspect-ratio: 1440 / 351;
-  display: grid;
-  gap: 0.25rem;
-  grid-template-columns: repeat(var(--prp-feature-count, 1), minmax(0, 1fr));
 }
 
 .prp-feature img {

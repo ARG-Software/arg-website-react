@@ -61,8 +61,6 @@ export default function ProjectDetailPage() {
     () => getProjectGallery(project?.slug, project?.title),
     [project?.slug, project?.title]
   );
-  const featureImages = projectGallery.filter(image => image.featured);
-  const galleryImages = projectGallery.filter(image => !image.featured);
   const stackItems = project?.stack.split(',').map(s => s.trim()) ?? [];
   const seoDescription = (project?.intro || project?.challenge || '')
     .replace(/\n+/g, ' ')
@@ -178,7 +176,7 @@ export default function ProjectDetailPage() {
               <img
                 src={project.imgSrc}
                 srcSet={project.imgSrcSet}
-                sizes="(max-width: 63.9375rem) 100vw, 52vw"
+                sizes="(max-width: 63.9375rem) 100vw, max(52vw, 89rem)"
                 alt={project.title}
                 width="1920"
                 height="1080"
@@ -270,32 +268,21 @@ export default function ProjectDetailPage() {
             </div>
           </section>
 
-          {/* FEATURE: the best gallery shots, across the full width */}
-          {featureImages.length > 0 && (
-            <div className="background-color-white">
-              <div
-                className="prp-feature"
-                style={{ '--prp-feature-count': featureImages.length }}
-                data-animate="fade-up"
-              >
-                {featureImages.map(image => (
-                  <img
-                    key={image.src}
-                    src={image.src}
-                    srcSet={image.srcSet}
-                    sizes={
-                      featureImages.length > 1 ? '(max-width: 47.9375rem) 33vw, 30vw' : '100vw'
-                    }
-                    alt={image.alt}
-                    width={image.width}
-                    height={image.height}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ))}
-              </div>
+          {/* FEATURE: the project hero as a thin band across the full width */}
+          <div className="background-color-white">
+            <div className="prp-feature" data-animate="fade-up">
+              <img
+                src={project.imgSrc}
+                srcSet={project.imgSrcSet}
+                sizes="100vw"
+                alt=""
+                width="1920"
+                height="1080"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
-          )}
+          </div>
 
           {/* PROBLEM and APPROACH: label on the left, text on the right */}
           <section id="problem" className="prp-story padding-section-large background-color-white">
@@ -364,11 +351,11 @@ export default function ProjectDetailPage() {
             />
           </section>
 
-          {galleryImages.length > 0 && (
+          {projectGallery.length > 0 && (
             <section className="padding-section-large background-color-white">
               <div className="container container--section padding-global">
                 <div data-animate="fade-up">
-                  <ImageGallery images={galleryImages} />
+                  <ImageGallery images={projectGallery} />
                 </div>
               </div>
               <SectionDivider
