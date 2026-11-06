@@ -1747,6 +1747,14 @@
 /* Wide screens: the right half of the header, from behind the nav down to the links
    row, bleeding off the right edge and fading into the page on the left and bottom */
 @media screen and (min-width: 1024px) {
+  /* Starts at the top of the page, with padding in place of the usual margin: the page
+     wrapper clips anything above it, and the image has to reach behind the nav */
+  .page-header--with-aside {
+    margin-top: 0;
+    min-height: calc(45rem + var(--navbar-height-desktop));
+    padding-top: var(--navbar-height-desktop);
+  }
+
   .page-header--with-aside .page-header__inner {
     position: static;
   }
@@ -1768,7 +1776,7 @@
       linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 12%, #000 40%);
     position: absolute;
     right: 0;
-    top: calc(-1 * var(--navbar-height-desktop));
+    top: 0;
     width: 52%;
     z-index: 0;
   }

@@ -376,10 +376,6 @@
   .prp-metric-card {
     min-height: 12rem;
   }
-
-  .prp-page .nav_buttons-wrapper .button-base {
-    display: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

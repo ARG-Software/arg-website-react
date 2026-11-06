@@ -157,7 +157,7 @@ export default function ProjectDetailPage() {
         jsonLd={buildProjectSchema(project)}
       />
       <div className="page-wrapper prp-page">
-        <Navbar position="fixed" variant="dark" />
+        <Navbar position="absolute" isHomePage={true} />
 
         <main className="main-wrapper background-color-dark">
           {/* HERO: the shared sub page header, with the project image in place of the drawing */}
