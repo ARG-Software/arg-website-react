@@ -25,7 +25,7 @@ export const Default = {
     <UseCaseCarousel
       items={ITEMS}
       defaultIndex={1}
-      eyebrow="Explore use cases"
+      eyebrow="Explore other use cases"
       ctaText="View use case"
       ariaLabel="Use cases"
     />

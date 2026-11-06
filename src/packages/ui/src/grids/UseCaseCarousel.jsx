@@ -6,7 +6,7 @@ const WHEEL_THRESHOLD = 60;
 const WHEEL_COOLDOWN_MS = 420;
 const SWIPE_THRESHOLD = 40;
 // Matches `.ucc-thumb.is-active` scale: half of the extra width it gains
-const ACTIVE_GROWTH = 0.125;
+const ACTIVE_GROWTH = 0.15;
 
 function clampIndex(index, length) {
   return Math.min(length - 1, Math.max(0, index));
@@ -15,7 +15,8 @@ function clampIndex(index, length) {
 /**
  * Full-bleed picker: the selected item fills the background, a fixed row of thumbnails sits
  * between the page margins. The row only shifts when the selection moves past its first or
- * last visible thumbnail. Selecting only changes the slide; `onOpen` is the "go there" action.
+ * last visible thumbnail. Hovering (or tapping on touch screens) selects; clicking the selected
+ * thumbnail or the CTA calls `onOpen`, the "go there" action.
  */
 export function UseCaseCarousel({
   items = [],
@@ -65,7 +66,7 @@ export function UseCaseCarousel({
       const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
       const viewportWidth = viewport.clientWidth / rem;
       const gap = (parseFloat(getComputedStyle(strip).columnGap) || 0) / rem;
-      // The viewport is half a thumbnail-height tall; thumbnails are 0.75 of that height wide
+      // The viewport is one thumbnail tall; thumbnails start at 3:2, like the images
       const baseWidth = (viewport.clientHeight / rem) * 1.5;
       if (!baseWidth) return;
 
@@ -195,36 +196,36 @@ export function UseCaseCarousel({
       <div className="ucc-shade" aria-hidden="true" />
       <div className="ucc-grain" aria-hidden="true" />
 
-      <div className="ucc-head padding-global">
-        {eyebrow && <p className="ucc-eyebrow">{eyebrow}</p>}
-        <div className="ucc-head-row">
-          <h2 key={`title-${active.key}`} className="ucc-title">
-            {titleLines.map((line, i) => (
-              <span key={line} className="ucc-title-mask">
-                <span className="ucc-title-line" style={{ '--ucc-line': i }}>
-                  {line}
+      <div className="ucc-inner container padding-global">
+        <div className="ucc-head">
+          {eyebrow && <p className="ucc-eyebrow">{eyebrow}</p>}
+          <div className="ucc-head-row">
+            <h2 key={`title-${active.key}`} className="ucc-title">
+              {titleLines.map((line, i) => (
+                <span key={line} className="ucc-title-mask">
+                  <span className="ucc-title-line" style={{ '--ucc-line': i }}>
+                    {line}
+                  </span>
                 </span>
-              </span>
-            ))}
-          </h2>
-          {active.credit && (
-            <p key={`credit-${active.key}`} className="ucc-credit">
-              {active.credit}
-            </p>
-          )}
-          {active.meta?.length > 0 && (
-            <ul key={`meta-${active.key}`} className="ucc-meta">
-              {active.meta.map((entry, i) => (
-                <li key={entry} style={{ '--ucc-meta': i }}>
-                  {entry}
-                </li>
               ))}
-            </ul>
-          )}
+            </h2>
+            {active.credit && (
+              <p key={`credit-${active.key}`} className="ucc-credit">
+                {active.credit}
+              </p>
+            )}
+            {active.meta?.length > 0 && (
+              <ul key={`meta-${active.key}`} className="ucc-meta">
+                {active.meta.map((entry, i) => (
+                  <li key={entry} style={{ '--ucc-meta': i }}>
+                    {entry}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className="ucc-strip-wrap padding-global">
         <div
           ref={viewportRef}
           className="ucc-strip-viewport"
@@ -261,6 +262,10 @@ export function UseCaseCarousel({
                   aria-label={item.title.replace(/\n/g, ' ')}
                   aria-current={i === index}
                   tabIndex={outside ? -1 : undefined}
+                  onPointerEnter={event => {
+                    // Mouse hover selects; touch and pen select on tap, and a held button is a drag
+                    if (event.pointerType === 'mouse' && event.buttons === 0) select(i, 'hover');
+                  }}
                   onClick={() => {
                     // A swipe ends with a click on whichever thumbnail it started on
                     if (swipedRef.current) {
@@ -277,7 +282,7 @@ export function UseCaseCarousel({
                   <img
                     src={item.thumb}
                     srcSet={item.thumbSrcSet}
-                    sizes="(max-width: 47.9375rem) 10rem, 18rem"
+                    sizes="(max-width: 47.9375rem) 14rem, 18rem"
                     alt=""
                     loading="lazy"
                     decoding="async"
@@ -299,9 +304,7 @@ export function UseCaseCarousel({
             </span>
           </button>
         </div>
-      </div>
 
-      <div className="ucc-foot padding-global">
         <div className="ucc-progress">
           <div className="ucc-count">
             <span>{String(index + 1).padStart(2, '0')}</span>

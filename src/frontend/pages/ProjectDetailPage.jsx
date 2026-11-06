@@ -94,13 +94,16 @@ export default function ProjectDetailPage() {
     }
   }, [project, navigate]);
 
+  // Hover is not tracked: sweeping the mouse along the row would send an event per thumbnail
   const handleCarouselSelect = useCallback(
-    (index, method) =>
+    (index, method) => {
+      if (method === 'hover') return;
       trackEvent('project_carousel_select', {
         from_project: slug,
         to_project: otherProjects[index].slug,
         method,
-      }),
+      });
+    },
     [slug, otherProjects]
   );
 
@@ -450,9 +453,9 @@ export default function ProjectDetailPage() {
               key={slug}
               items={carouselItems}
               defaultIndex={otherProjects.findIndex(p => p.slug === nextProject.slug)}
-              eyebrow="Explore use cases"
+              eyebrow="Explore other use cases"
               ctaText="View use case"
-              ariaLabel="Use cases"
+              ariaLabel="Other use cases"
               onSelect={handleCarouselSelect}
               onOpen={handleCarouselOpen}
             />
