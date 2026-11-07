@@ -2,20 +2,45 @@
   width: 100%;
 }
 
-.social-feed .simple-carousel__slide {
-  display: grid;
+/* One row starting at the content margin and running off the right edge of the
+   screen. The block padding leaves room for the hover scale, which the scroll box
+   would otherwise clip */
+.social-feed__track {
+  display: flex;
   gap: 1.5rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+  margin: -1rem calc(50% - 50vw) -1rem 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 1rem 0;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
 }
 
-.social-feed .simple-carousel__track {
-  display: block;
+.social-feed__track::-webkit-scrollbar {
+  display: none;
+}
+
+.social-feed__item {
+  flex: 0 0 clamp(17.5rem, 26vw, 23.125rem);
+  scroll-snap-align: start;
+}
+
+/* Last card can still scroll to the margin instead of stopping at the screen edge */
+.social-feed__item:last-child {
+  margin-right: max(1.5rem, calc(50vw - 50%));
+}
+
+.social-feed .social-feed__controls {
+  justify-content: flex-start;
+  margin-top: 2rem;
 }
 
 /* Tall image card: cover image behind, label and text on top, arrow at the bottom right */
 .social-feed-card {
   aspect-ratio: 37 / 60;
   background: #160046;
+  height: 100%;
   border: 0.0625rem solid rgba(255, 255, 255, 0.08);
   border-radius: 1rem;
   color: #fff;
@@ -45,16 +70,37 @@
   z-index: 1;
 }
 
-.social-feed-card__image,
+/* Blurred copy of the cover filling the card: the blur hides that the image is
+   enlarged, and it carries the cover's colours behind the text */
+.social-feed-card__backdrop {
+  filter: blur(1.5rem) saturate(1.2);
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  transform: scale(1.2);
+  width: 100%;
+}
+
+/* The cover itself, whole and sharp across the bottom of the card */
+.social-feed-card__image {
+  aspect-ratio: 16 / 9;
+  bottom: 0;
+  /* The global img rule sets height: 100% */
+  height: auto;
+  left: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  /* Above the top shade, which is only for the text */
+  z-index: 1;
+}
+
 .social-feed-card__placeholder {
   height: 100%;
   inset: 0;
   position: absolute;
   width: 100%;
-}
-
-.social-feed-card__image {
-  object-fit: cover;
 }
 
 .social-feed-card__placeholder {
@@ -157,21 +203,5 @@
   .social-feed-card:hover,
   .social-feed-card:hover .social-feed-card__open .arrow_icon-embed {
     transform: none;
-  }
-}
-
-@media screen and (max-width: 991px) {
-  .social-feed .simple-carousel__slide {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media screen and (max-width: 767px) {
-  .social-feed .simple-carousel__slide {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .social-feed-card {
-    aspect-ratio: 7 / 10;
   }
 }

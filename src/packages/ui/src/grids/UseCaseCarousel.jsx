@@ -13,10 +13,11 @@ function clampIndex(index, length) {
 }
 
 /**
- * Project picker: the selected item's image fades in behind the section, its title sits above a
- * fixed row of thumbnails between the page margins. The row only shifts when the selection moves past its first or
- * last visible thumbnail. Hovering (or tapping on touch screens) selects; clicking the selected
- * thumbnail or the CTA calls `onOpen`, the "go there" action.
+ * Project picker: the selected item's image fades in behind the section, its title sits above
+ * a fixed row of thumbnails between the page margins. The row only shifts when the selection
+ * moves past its first or last visible thumbnail. Hovering (or tapping on touch screens) and
+ * the arrows select; clicking the selected thumbnail or the CTA calls `onOpen`, the "go there"
+ * action.
  */
 export function UseCaseCarousel({
   items = [],
@@ -301,6 +302,28 @@ export function UseCaseCarousel({
             <span className="arrow_icon-embed" aria-hidden="true">
               {arrowSvg}
             </span>
+          </button>
+        </div>
+
+        {/* Same round arrows as the site's other carousels */}
+        <div className="simple-carousel__controls ucc-controls">
+          <button
+            type="button"
+            className="simple-carousel__arrow"
+            aria-label="Show previous"
+            disabled={index === 0}
+            onClick={() => select(index - 1, 'arrow')}
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            className="simple-carousel__arrow"
+            aria-label="Show next"
+            disabled={index === items.length - 1}
+            onClick={() => select(index + 1, 'arrow')}
+          >
+            →
           </button>
         </div>
       </div>

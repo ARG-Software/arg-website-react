@@ -5050,6 +5050,12 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   white-space: nowrap;
 }
 
+/* Arrows at the left, under the CTA row the viewport keeps room for */
+.ucc .ucc-controls {
+  justify-content: flex-start;
+  margin-top: 1.5rem;
+}
+
 .ucc-live {
   clip: rect(0, 0, 0, 0);
   height: 0.0625rem;
