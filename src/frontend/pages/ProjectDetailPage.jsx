@@ -447,7 +447,7 @@ export default function ProjectDetailPage() {
               items={carouselItems}
               defaultIndex={otherProjects.findIndex(p => p.slug === nextProject.slug)}
               eyebrow="Explore other use cases"
-              ctaText="View use case"
+              ctaText="View"
               ariaLabel="Other use cases"
               onSelect={handleCarouselSelect}
               onOpen={handleCarouselOpen}

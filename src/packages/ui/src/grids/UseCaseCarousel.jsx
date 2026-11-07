@@ -294,6 +294,7 @@ export function UseCaseCarousel({
             type="button"
             className="prp-live-link ucc-cta"
             style={{ left: `${ctaLeft}rem` }}
+            aria-label={`${ctaText} ${items[index]?.title.replace(/\n/g, ' ')}`}
             onClick={() => onOpen?.(index, thumbRefs.current[index])}
           >
             <span>{ctaText}</span>

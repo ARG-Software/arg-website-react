@@ -25,7 +25,7 @@ export const Default = {
       items={ITEMS}
       defaultIndex={1}
       eyebrow="Explore other use cases"
-      ctaText="View use case"
+      ctaText="View"
       ariaLabel="Use cases"
     />
   ),
