@@ -50,6 +50,8 @@ export default function ProjectDetailPage() {
         title: p.title,
         credit: p.subtitle,
         meta: [p.client],
+        image: p.imgSrc,
+        srcSet: p.imgSrcSet,
         thumb: p.thumbnailSrc,
         thumbSrcSet: p.thumbnailSrcSet,
       })),

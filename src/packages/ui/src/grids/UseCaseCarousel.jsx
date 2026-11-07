@@ -13,8 +13,8 @@ function clampIndex(index, length) {
 }
 
 /**
- * Project picker: the selected item's title above a fixed row of thumbnails between the page
- * margins. The row only shifts when the selection moves past its first or
+ * Project picker: the selected item's image fades in behind the section, its title sits above a
+ * fixed row of thumbnails between the page margins. The row only shifts when the selection moves past its first or
  * last visible thumbnail. Hovering (or tapping on touch screens) selects; clicking the selected
  * thumbnail or the CTA calls `onOpen`, the "go there" action.
  */
@@ -35,6 +35,8 @@ export function UseCaseCarousel({
   const swipedRef = useRef(false);
   const positionedRef = useRef(false);
   const [index, setIndex] = useState(() => clampIndex(defaultIndex, items.length));
+  // Background images load only once their item has been selected
+  const [visited, setVisited] = useState(() => new Set([clampIndex(defaultIndex, items.length)]));
   const [layout, setLayout] = useState({ visible: items.length, thumbWidth: 0, gap: 0 });
   const [windowStart, setWindowStart] = useState(0);
   const indexRef = useRef(index);
@@ -48,6 +50,7 @@ export function UseCaseCarousel({
       if (target === indexRef.current) return;
 
       setIndex(target);
+      setVisited(previous => (previous.has(target) ? previous : new Set(previous).add(target)));
       onSelect?.(target, method);
     },
     [items.length, onSelect]
@@ -168,6 +171,26 @@ export function UseCaseCarousel({
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
+      {items.map((item, i) => (
+        <div
+          key={item.key}
+          className={`ucc-bg${i === index ? ' is-active' : ''}`}
+          aria-hidden="true"
+        >
+          {visited.has(i) && item.image && (
+            <img
+              className="ucc-bg-img"
+              src={item.image}
+              srcSet={item.srcSet}
+              sizes="100vw"
+              alt=""
+              draggable="false"
+            />
+          )}
+        </div>
+      ))}
+      <div className="ucc-wash" aria-hidden="true" />
+
       <div className="ucc-inner container padding-global">
         <div className="ucc-head">
           {eyebrow && <p className="ucc-eyebrow">{eyebrow}</p>}

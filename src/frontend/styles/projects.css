@@ -309,6 +309,11 @@
   color: var(--prp-light-fg);
 }
 
+/* Keeps the carousel's background image inside the rounded bottom corners */
+.prp-use-cases {
+  overflow: clip;
+}
+
 /* ============================================
    Responsive
    ============================================ */

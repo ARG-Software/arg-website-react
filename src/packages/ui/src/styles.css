@@ -4835,6 +4835,55 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   display: flex;
   flex-direction: column;
   position: relative;
+  z-index: 3;
+}
+
+/* The selected project's image, crossfading and slowly zooming behind the section */
+.ucc-bg {
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  transition:
+    opacity 0.7s ease,
+    visibility 0s linear 0.7s;
+  visibility: hidden;
+}
+
+.ucc-bg.is-active {
+  opacity: 1;
+  transition: opacity 0.7s ease;
+  visibility: visible;
+  z-index: 1;
+}
+
+.ucc-bg-img {
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.28);
+  width: 100%;
+}
+
+.ucc-bg.is-active .ucc-bg-img {
+  animation: ucc-zoom 6s linear both;
+}
+
+/* White wash: the photo shows through in the middle and fades to solid white at the
+   top and bottom, so the section meets the white page around it without a seam;
+   lighter on the text side so the title stays readable */
+.ucc-wash {
+  background:
+    linear-gradient(to right, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(
+      to bottom,
+      #fff,
+      rgba(255, 255, 255, 0.72) 30%,
+      rgba(255, 255, 255, 0.72) 70%,
+      #fff
+    );
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
 }
 
 .ucc:focus-visible {
@@ -4870,7 +4919,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .ucc-title {
   font-family: Neuemontreal, sans-serif;
   font-size: clamp(2.25rem, 5vw, 4.5rem);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-light);
   letter-spacing: -0.03em;
   line-height: 0.95;
   margin: 0;
@@ -4932,6 +4981,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .ucc-thumb {
   background: rgba(12, 0, 46, 0.06);
   border: 0;
+  border-radius: 0.5rem;
   cursor: pointer;
   flex: none;
   height: var(--ucc-thumb-h);
@@ -5010,6 +5060,15 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   width: 0.0625rem;
 }
 
+@keyframes ucc-zoom {
+  from {
+    transform: scale(1.42);
+  }
+  to {
+    transform: scale(1.28);
+  }
+}
+
 @keyframes ucc-line-in {
   from {
     transform: translateY(110%);
@@ -5043,12 +5102,15 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ucc-bg,
+  .ucc-bg.is-active,
   .ucc-thumb,
   .ucc-thumb::after,
   .ucc .ucc-cta {
     transition: none;
   }
 
+  .ucc-bg.is-active .ucc-bg-img,
   .ucc-title-line,
   .ucc-credit,
   .ucc-meta li {
