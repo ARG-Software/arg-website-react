@@ -198,11 +198,16 @@ export default function ProjectDetailPage() {
                   <span className="prp-section-label" data-animate="fade-up">
                     Overview
                   </span>
-                  {project.description && (
-                    <p className="prp-section-text" data-animate="fade-up">
-                      <InlineLinkText text={project.description} linkClassName="prp-inline-link" />
+                  <h2 className="prp-section-heading" data-animate="fade-up">
+                    The project
+                    <br />
+                    <span className="text-color-gradiant">at a glance</span>
+                  </h2>
+                  {project.description?.split('\n\n').map(paragraph => (
+                    <p key={paragraph} className="prp-section-text" data-animate="fade-up">
+                      <InlineLinkText text={paragraph} linkClassName="prp-inline-link" />
                     </p>
-                  )}
+                  ))}
                   {projectLinks.length > 0 && (
                     <div className="prp-overview-links" data-animate="fade-up">
                       {projectLinks.map(link => (
@@ -293,7 +298,9 @@ export default function ProjectDetailPage() {
                     The Problem
                   </span>
                   <h2 className="prp-section-heading" data-animate="fade-up">
-                    What had to be solved
+                    What had to
+                    <br />
+                    <span className="text-color-gradiant">be solved</span>
                   </h2>
                 </div>
                 <div className="prp-row-body">
@@ -320,7 +327,9 @@ export default function ProjectDetailPage() {
                     The Approach
                   </span>
                   <h2 className="prp-section-heading" data-animate="fade-up">
-                    How we made it work
+                    How we
+                    <br />
+                    <span className="text-color-gradiant">made it work</span>
                   </h2>
                   {project.mockupSrc && (
                     <img
@@ -378,7 +387,9 @@ export default function ProjectDetailPage() {
                     Results
                   </span>
                   <h2 className="prp-section-heading" data-animate="fade-up">
-                    By the numbers
+                    By the
+                    <br />
+                    <span className="text-color-gradiant">numbers</span>
                   </h2>
                 </div>
                 <div className="prp-row-body">

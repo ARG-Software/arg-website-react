@@ -104,7 +104,10 @@
   gap: 0.375rem;
 }
 
+/* Outline pill in the ARG dark blue: border and text */
 .prp-meta-service-tag {
+  border-color: var(--prp-dark);
+  color: var(--prp-dark);
   padding: 0.2rem 0.5rem;
 }
 

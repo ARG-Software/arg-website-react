@@ -128,6 +128,11 @@ export function buildProjectStaticContent(project, projectLinks = []) {
         `<li><strong>${escapeHtml(`${metric.displayValue || metric.value}${metric.suffix || ''}`)}</strong> ${escapeHtml(metric.label)}</li>`
     )
     .join('');
+  const description = (project.description || '')
+    .split('\n\n')
+    .filter(Boolean)
+    .map(paragraph => `<p class="prp-section-text">${renderInlineText(paragraph)}</p>`)
+    .join('');
   const challenge = project.challenge
     .split('\n\n')
     .map(paragraph => `<p class="prp-section-text">${renderInlineText(paragraph)}</p>`)
@@ -146,7 +151,8 @@ export function buildProjectStaticContent(project, projectLinks = []) {
     </header>
     <section class="prp-overview padding-section-large border-radius-top background-color-white">
       <div class="container container--section padding-global">
-        ${project.description ? `<p class="prp-section-text">${renderInlineText(project.description)}</p>` : ''}
+        <h2 class="prp-section-heading">The project <span class="text-color-gradiant">at a glance</span></h2>
+        ${description}
         <dl>
           <dt>Category</dt><dd>${escapeHtml(project.subtitle)}</dd>
           <dt>Client</dt><dd>${escapeHtml(project.client)}</dd>
