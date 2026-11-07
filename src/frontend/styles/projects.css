@@ -145,14 +145,6 @@
   min-width: 0;
 }
 
-.prp-section-label {
-  color: var(--prp-dark);
-  font-size: var(--type-meta-small);
-  letter-spacing: var(--tracking-meta-wide);
-  margin: 0;
-  text-transform: uppercase;
-}
-
 .prp-section-heading {
   color: var(--prp-dark);
   font-family: Neuemontreal, sans-serif;

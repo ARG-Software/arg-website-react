@@ -195,11 +195,8 @@ export default function ProjectDetailPage() {
             <div className="container container--section padding-global">
               <div className="prp-grid">
                 <div className="prp-overview-text">
-                  <span className="prp-section-label" data-animate="fade-up">
-                    Overview
-                  </span>
                   <h2 className="prp-section-heading" data-animate="fade-up">
-                    The project
+                    Overview
                     <br />
                     <span className="text-color-gradiant">at a glance</span>
                   </h2>
@@ -294,13 +291,10 @@ export default function ProjectDetailPage() {
             <div className="container container--section padding-global">
               <div className="prp-grid prp-row">
                 <div className="prp-row-head">
-                  <span className="prp-section-label" data-animate="fade-up">
-                    The Problem
-                  </span>
                   <h2 className="prp-section-heading" data-animate="fade-up">
-                    What had to
+                    The Problem
                     <br />
-                    <span className="text-color-gradiant">be solved</span>
+                    <span className="text-color-gradiant">what had to be solved</span>
                   </h2>
                 </div>
                 <div className="prp-row-body">
@@ -323,13 +317,10 @@ export default function ProjectDetailPage() {
             <div className="container container--section padding-global">
               <div className="prp-grid prp-row">
                 <div className="prp-row-head">
-                  <span className="prp-section-label" data-animate="fade-up">
-                    The Approach
-                  </span>
                   <h2 className="prp-section-heading" data-animate="fade-up">
-                    How we
+                    The Approach
                     <br />
-                    <span className="text-color-gradiant">made it work</span>
+                    <span className="text-color-gradiant">how we made it work</span>
                   </h2>
                   {project.mockupSrc && (
                     <img
@@ -383,13 +374,10 @@ export default function ProjectDetailPage() {
             <div className="container container--section padding-global">
               <div className="prp-grid prp-row">
                 <div className="prp-row-head">
-                  <span className="prp-section-label" data-animate="fade-up">
-                    Results
-                  </span>
                   <h2 className="prp-section-heading" data-animate="fade-up">
-                    By the
+                    Results
                     <br />
-                    <span className="text-color-gradiant">numbers</span>
+                    <span className="text-color-gradiant">by the numbers</span>
                   </h2>
                 </div>
                 <div className="prp-row-body">

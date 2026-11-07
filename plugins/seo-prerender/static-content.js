@@ -151,7 +151,7 @@ export function buildProjectStaticContent(project, projectLinks = []) {
     </header>
     <section class="prp-overview padding-section-large border-radius-top background-color-white">
       <div class="container container--section padding-global">
-        <h2 class="prp-section-heading">The project <span class="text-color-gradiant">at a glance</span></h2>
+        <h2 class="prp-section-heading">Overview <span class="text-color-gradiant">at a glance</span></h2>
         ${description}
         <dl>
           <dt>Category</dt><dd>${escapeHtml(project.subtitle)}</dd>
@@ -165,15 +165,15 @@ export function buildProjectStaticContent(project, projectLinks = []) {
     </section>
     <section class="prp-story padding-section-large background-color-white">
       <div class="container container--section padding-global">
-        <h2 class="prp-section-heading">What had to be solved</h2>
+        <h2 class="prp-section-heading">The Problem <span class="text-color-gradiant">what had to be solved</span></h2>
         ${challenge}
-        <h2 class="prp-section-heading">How we made it work</h2>
+        <h2 class="prp-section-heading">The Approach <span class="text-color-gradiant">how we made it work</span></h2>
         <ul class="prp-solution-list">${solution}</ul>
       </div>
     </section>
     <section class="prp-results padding-section-large border-radius-bottom background-color-white">
       <div class="container container--section padding-global">
-        <h2 class="prp-section-heading">Results</h2>
+        <h2 class="prp-section-heading">Results <span class="text-color-gradiant">by the numbers</span></h2>
         <p class="prp-section-text">${renderInlineText(project.impact)}</p>
         <ul class="prp-results-cards">${metrics}</ul>
       </div>
