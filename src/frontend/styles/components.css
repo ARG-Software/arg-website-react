@@ -1784,6 +1784,11 @@
   .page-header--with-aside .page-header__subtitle {
     max-width: 40rem;
   }
+
+  /* The line under the breadcrumb stops with the breadcrumb, clear of the image */
+  .page-header--with-aside .breadcrumb-nav {
+    width: fit-content;
+  }
 }
 
 /* Article titles run to several lines, so keep them clear of the drawing */
