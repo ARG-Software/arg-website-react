@@ -67,6 +67,16 @@ export default function SkillDetailPage() {
               className="sk-section padding-section-large border-radius-top background-color-white"
             >
               <div className="container padding-global sk-inner">
+                <div className="sk-detail-meta" data-animate="fade-up">
+                  <span className="sk-detail-category">{skill.category}</span>
+                  <div className="sk-card-tags">
+                    {skill.tags.map(tag => (
+                      <Pill key={tag} variant="outline" size="sm">
+                        {tag}
+                      </Pill>
+                    ))}
+                  </div>
+                </div>
                 <h2 className="sk-section-title" data-animate="fade-up">
                   {DETAIL.overviewLabel}
                 </h2>
@@ -74,27 +84,9 @@ export default function SkillDetailPage() {
                   <p className="sk-detail-summary" data-animate="fade-up">
                     {skill.summary}
                   </p>
-                  <div className="sk-detail-meta" data-animate="fade-up">
-                    <span className="sk-detail-category">{skill.category}</span>
-                    <div className="sk-card-tags">
-                      {skill.tags.map(tag => (
-                        <Pill key={tag} variant="outline" size="sm">
-                          {tag}
-                        </Pill>
-                      ))}
-                    </div>
-                  </div>
                 </div>
-              </div>
-              <SectionDivider variant="default" hideOnMobile={false} />
-            </section>
 
-            <section
-              id="install"
-              className="sk-section padding-section-large background-color-white"
-            >
-              <div className="container padding-global sk-inner">
-                <h2 className="sk-section-title" data-animate="fade-up">
+                <h2 id="install" className="sk-section-title" data-animate="fade-up">
                   {DETAIL.installLabel}
                   <br />
                   <span className="text-color-gradiant">{DETAIL.installHighlight}</span>

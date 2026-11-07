@@ -217,6 +217,11 @@
   min-width: 0;
 }
 
+/* Overview and Installation share one section, spaced like two */
+.sk-detail-body + .sk-section-title {
+  margin-top: var(--section-space-large);
+}
+
 /* The command is wider than a paragraph */
 .sk-detail-body:has(.sk-install) {
   max-width: 46rem;
@@ -227,6 +232,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
+  margin-bottom: 2rem;
 }
 
 .sk-detail-category {
