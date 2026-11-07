@@ -85,66 +85,53 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
   );
 }
 
+/**
+ * Tall image card: the post's cover fills the card, the date and post text sit on top
+ * in white, and a round arrow sits at the bottom right. The whole card links to the post.
+ */
 function SocialPostCard({ post }) {
-  const linkedInHref = getCompanySocialLink('linkedin');
-  const postHref = post.externalUrl || '';
+  const postHref = post.externalUrl || getCompanySocialLink('linkedin');
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = Boolean(post.coverImageUrl) && !imageFailed;
 
   return (
-    <article className="social-feed-card">
-      <div className="social-feed-card__body">
-        <div className="social-feed-card__media">
-          {showImage ? (
-            <img
-              src={post.coverImageUrl}
-              alt=""
-              referrerPolicy="no-referrer"
-              onError={() => setImageFailed(true)}
-            />
-          ) : (
-            <div className="social-feed-card__placeholder">
-              <ArgMarkIcon />
-            </div>
-          )}
+    <a
+      href={postHref}
+      className="social-feed-card"
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={() => trackOutbound(postHref, 'Open the post on LinkedIn', 'homepage_social')}
+    >
+      {showImage ? (
+        <img
+          className="social-feed-card__image"
+          src={post.coverImageUrl}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <div className="social-feed-card__placeholder" aria-hidden="true">
+          <ArgMarkIcon />
         </div>
+      )}
+
+      <div className="social-feed-card__head">
+        <p className="social-feed-card__label">
+          <LinkedInIcon />
+          <time dateTime={post.publishedAt}>{formatPostDate(post.publishedAt)}</time>
+          <span aria-hidden="true">·</span>
+          <span>{formatLikeCount(post.likeCount)}</span>
+        </p>
         <p className="social-feed-card__excerpt">{post.excerpt}</p>
       </div>
-      <div className="social-feed-card__meta">
-        <time dateTime={post.publishedAt}>{formatPostDate(post.publishedAt)}</time>
-        <span>{formatLikeCount(post.likeCount)}</span>
-        <div className="social-feed-card__actions">
-          <a
-            href={linkedInHref}
-            className="social-feed-card__action"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="ARG Software on LinkedIn"
-            onClick={() =>
-              trackOutbound(linkedInHref, 'ARG Software on LinkedIn', 'homepage_social')
-            }
-          >
-            <LinkedInIcon />
-          </a>
-          {postHref ? (
-            <a
-              href={postHref}
-              className="social-feed-card__action"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Open on LinkedIn to repost"
-              onClick={() =>
-                trackOutbound(postHref, 'Open on LinkedIn to repost', 'homepage_social_share')
-              }
-            >
-              <span className="arrow_icon-embed" aria-hidden="true">
-                {arrowSvg}
-              </span>
-            </a>
-          ) : null}
-        </div>
-      </div>
-    </article>
+
+      <span className="social-feed-card__open" aria-hidden="true">
+        <span className="arrow_icon-embed">{arrowSvg}</span>
+      </span>
+    </a>
   );
 }
 
