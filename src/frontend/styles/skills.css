@@ -1,9 +1,19 @@
 @media (max-width: 991px) {
-  .sk-page .nav_wrap { z-index: 100 !important; }
-  .sk-page .nav_contain.container { background-color: transparent !important; }
-  .sk-page .nav_wrap .nav_contain { background: transparent !important; }
-  .sk-page .nav_contain { background: transparent !important; }
-  .sk-page .container { background: transparent !important; }
+  .sk-page .nav_wrap {
+    z-index: 100 !important;
+  }
+  .sk-page .nav_contain.container {
+    background-color: transparent !important;
+  }
+  .sk-page .nav_wrap .nav_contain {
+    background: transparent !important;
+  }
+  .sk-page .nav_contain {
+    background: transparent !important;
+  }
+  .sk-page .container {
+    background: transparent !important;
+  }
   .sk-page .nav-component {
     display: flex !important;
     align-items: center !important;
@@ -187,8 +197,32 @@
   margin-top: auto;
 }
 
-.sk-detail {
-  max-width: 46rem;
+/* Detail page: each section has the two-line title (dark, then gradient) on the
+   left and its content on the right, like About Us and the project pages */
+.sk-row {
+  align-items: start;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.sk-section-title {
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
+  font-size: var(--type-section-title);
+  font-weight: var(--weight-light);
+  grid-column: 1 / span 5;
+  letter-spacing: var(--tracking-title);
+  line-height: var(--line-tight);
+  margin: 0;
+}
+
+.sk-row-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  grid-column: 7 / span 6;
+  min-width: 0;
 }
 
 .sk-detail-meta {
@@ -196,7 +230,6 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
 }
 
 .sk-detail-category {
@@ -216,32 +249,13 @@
   font-size: var(--type-body);
   line-height: var(--line-body);
   color: #0c002e;
-  margin: 0 0 2.5rem;
-}
-
-.sk-install {
-  margin: 0 0 2.5rem;
+  margin: 0;
 }
 
 .sk-install-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: flex-end;
   margin-bottom: 0.75rem;
-}
-
-.sk-install h2,
-.sk-detail-block h2 {
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
-  font-weight: var(--weight-regular);
-  color: #0c002e;
-  margin: 0 0 0.75rem;
-}
-
-.sk-install-header h2 {
-  margin: 0;
 }
 
 .sk-install pre {
@@ -264,10 +278,6 @@
   word-break: break-word;
 }
 
-.sk-detail-block {
-  margin: 0 0 2.5rem;
-}
-
 .sk-detail-block ul {
   margin: 0;
   padding-left: 1.25rem;
@@ -284,7 +294,18 @@
   font-size: var(--type-body);
   line-height: var(--line-body);
   color: #474747;
-  margin: 0 0 1rem;
+  margin: 0;
+}
+
+@media (max-width: 63.9375rem) {
+  .sk-section-title,
+  .sk-row-body {
+    grid-column: 1 / -1;
+  }
+
+  .sk-section-title {
+    margin-bottom: 1.5rem;
+  }
 }
 
 @media (max-width: 991px) {

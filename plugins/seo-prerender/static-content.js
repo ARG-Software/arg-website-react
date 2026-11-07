@@ -65,6 +65,9 @@ export function buildBlogPostStaticContent(meta, blocks, relatedLinks = []) {
 export function buildSkillStaticContent(skill, relatedLinks = []) {
   const does = (skill.does || []).map(item => `<li>${escapeHtml(item)}</li>`).join('');
   const detailTitleLine = SKILLS_PAGE.hero?.detailTitleLine || 'for coding agents.';
+  const detail = SKILLS_PAGE.detail;
+  const title = key =>
+    `<h2>${escapeHtml(detail[`${key}Label`])} <span class="text-color-gradiant">${escapeHtml(detail[`${key}Highlight`])}</span></h2>`;
 
   return `<div class="page-wrapper" data-prerendered-content>
   <main class="main-wrapper">
@@ -79,12 +82,13 @@ export function buildSkillStaticContent(skill, relatedLinks = []) {
       </div>
     </header>
     <section class="sk-section padding-section-large background-color-white">
+      ${title('overview')}
       <p>${escapeHtml(skill.summary || '')}</p>
-      <h2>Installation</h2>
+      ${title('install')}
       <pre><code>${escapeHtml(skill.installCommand || '')}</code></pre>
-      <h2>What it does</h2>
+      ${title('does')}
       <ul>${does}</ul>
-      <h2>Used when</h2>
+      ${title('usedWhen')}
       <p>${escapeHtml(skill.usedWhen || '')}</p>
       <p>${escapeHtml(skill.body || '')}</p>
     </section>

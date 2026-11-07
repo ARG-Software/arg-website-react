@@ -62,38 +62,94 @@ export default function SkillDetailPage() {
           />
 
           <div data-animate-scope data-animate-default-preset="fade-up">
-            <section className="sk-section padding-section-large background-color-white border-radius-all">
-              <div className="container padding-global sk-inner sk-detail">
-                <div className="sk-detail-meta" data-animate="fade-up">
-                  <span className="sk-detail-category">{skill.category}</span>
-                  <div className="sk-card-tags">
-                    {skill.tags.map(tag => (
-                      <Pill key={tag} variant="outline" size="sm">
-                        {tag}
-                      </Pill>
-                    ))}
+            <section
+              id="overview"
+              className="sk-section padding-section-large border-radius-top background-color-white"
+            >
+              <div className="container padding-global">
+                <div className="sk-row">
+                  <h2 className="sk-section-title" data-animate="fade-up">
+                    {DETAIL.overviewLabel}
+                    <br />
+                    <span className="text-color-gradiant">{DETAIL.overviewHighlight}</span>
+                  </h2>
+                  <div className="sk-row-body">
+                    <p className="sk-detail-summary" data-animate="fade-up">
+                      {skill.summary}
+                    </p>
+                    <div className="sk-detail-meta" data-animate="fade-up">
+                      <span className="sk-detail-category">{skill.category}</span>
+                      <div className="sk-card-tags">
+                        {skill.tags.map(tag => (
+                          <Pill key={tag} variant="outline" size="sm">
+                            {tag}
+                          </Pill>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
+              </div>
+              <SectionDivider variant="default" hideOnMobile={false} />
+            </section>
 
-                <p className="sk-detail-summary" data-animate="fade-up">
-                  {skill.summary}
-                </p>
-
-                <InstallCommand command={skill.installCommand} slug={skill.slug} />
-
-                <div id="what-it-does" className="sk-detail-block" data-animate="fade-up">
-                  <h2>{DETAIL.doesLabel}</h2>
-                  <ul>
-                    {skill.does.map(item => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+            <section
+              id="install"
+              className="sk-section padding-section-large background-color-white"
+            >
+              <div className="container padding-global">
+                <div className="sk-row">
+                  <h2 className="sk-section-title" data-animate="fade-up">
+                    {DETAIL.installLabel}
+                    <br />
+                    <span className="text-color-gradiant">{DETAIL.installHighlight}</span>
+                  </h2>
+                  <div className="sk-row-body">
+                    <InstallCommand command={skill.installCommand} slug={skill.slug} />
+                  </div>
                 </div>
+              </div>
+              <SectionDivider variant="default" hideOnMobile={false} />
+            </section>
 
-                <div id="used-when" className="sk-detail-block" data-animate="fade-up">
-                  <h2>{DETAIL.usedWhenLabel}</h2>
-                  <p>{skill.usedWhen}</p>
-                  <p>{skill.body}</p>
+            <section
+              id="what-it-does"
+              className="sk-section padding-section-large background-color-white"
+            >
+              <div className="container padding-global">
+                <div className="sk-row">
+                  <h2 className="sk-section-title" data-animate="fade-up">
+                    {DETAIL.doesLabel}
+                    <br />
+                    <span className="text-color-gradiant">{DETAIL.doesHighlight}</span>
+                  </h2>
+                  <div className="sk-row-body sk-detail-block">
+                    <ul data-animate="fade-up">
+                      {skill.does.map(item => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <SectionDivider variant="default" hideOnMobile={false} />
+            </section>
+
+            <section
+              id="used-when"
+              className="sk-section padding-section-large border-radius-bottom background-color-white"
+            >
+              <div className="container padding-global">
+                <div className="sk-row">
+                  <h2 className="sk-section-title" data-animate="fade-up">
+                    {DETAIL.usedWhenLabel}
+                    <br />
+                    <span className="text-color-gradiant">{DETAIL.usedWhenHighlight}</span>
+                  </h2>
+                  <div className="sk-row-body sk-detail-block">
+                    <p data-animate="fade-up">{skill.usedWhen}</p>
+                    <p data-animate="fade-up">{skill.body}</p>
+                  </div>
                 </div>
               </div>
             </section>
@@ -136,9 +192,8 @@ function InstallCommand({ command, slug }) {
   }
 
   return (
-    <div id="install" className="sk-install" data-animate="fade-up">
+    <div className="sk-install" data-animate="fade-up">
       <div className="sk-install-header">
-        <h2>{DETAIL.installLabel}</h2>
         <PillButton type="button" variant="dark" size="sm" onClick={copyCommand}>
           {copied ? DETAIL.copiedLabel : DETAIL.copyLabel}
         </PillButton>

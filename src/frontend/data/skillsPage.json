@@ -61,10 +61,15 @@
     "buttonTextHover": "Let's meet"
   },
   "detail": {
+    "overviewLabel": "Overview",
+    "overviewHighlight": "at a glance",
     "installLabel": "Installation",
+    "installHighlight": "in one command",
     "copyLabel": "Copy",
     "copiedLabel": "Copied",
     "doesLabel": "What it does",
-    "usedWhenLabel": "Used when"
+    "doesHighlight": "step by step",
+    "usedWhenLabel": "Used when",
+    "usedWhenHighlight": "and why it matters"
   }
 }
