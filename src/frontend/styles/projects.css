@@ -309,11 +309,6 @@
   color: var(--prp-light-fg);
 }
 
-/* Carousel CTA reuses .prp-live-link, white on the dark block */
-.prp-use-cases {
-  --prp-light-fg: #fff;
-}
-
 /* ============================================
    Responsive
    ============================================ */

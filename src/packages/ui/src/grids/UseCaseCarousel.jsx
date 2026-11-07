@@ -13,8 +13,8 @@ function clampIndex(index, length) {
 }
 
 /**
- * Full-bleed picker: the selected item fills the background, a fixed row of thumbnails sits
- * between the page margins. The row only shifts when the selection moves past its first or
+ * Project picker: the selected item's title above a fixed row of thumbnails between the page
+ * margins. The row only shifts when the selection moves past its first or
  * last visible thumbnail. Hovering (or tapping on touch screens) selects; clicking the selected
  * thumbnail or the CTA calls `onOpen`, the "go there" action.
  */
@@ -30,12 +30,11 @@ export function UseCaseCarousel({
   const rootRef = useRef(null);
   const viewportRef = useRef(null);
   const stripRef = useRef(null);
-  const backgroundRefs = useRef([]);
+  const thumbRefs = useRef([]);
   const swipeStartRef = useRef(null);
   const swipedRef = useRef(false);
   const positionedRef = useRef(false);
   const [index, setIndex] = useState(() => clampIndex(defaultIndex, items.length));
-  const [visited, setVisited] = useState(() => new Set([clampIndex(defaultIndex, items.length)]));
   const [layout, setLayout] = useState({ visible: items.length, thumbWidth: 0, gap: 0 });
   const [windowStart, setWindowStart] = useState(0);
   const indexRef = useRef(index);
@@ -49,7 +48,6 @@ export function UseCaseCarousel({
       if (target === indexRef.current) return;
 
       setIndex(target);
-      setVisited(previous => (previous.has(target) ? previous : new Set(previous).add(target)));
       onSelect?.(target, method);
     },
     [items.length, onSelect]
@@ -148,7 +146,6 @@ export function UseCaseCarousel({
   if (!active) return null;
 
   const titleLines = active.title.split('\n');
-  const count = String(items.length).padStart(2, '0');
   const end = start + layout.visible - 1;
 
   // The selected thumbnail grows away from the margin it touches, so it never crosses it
@@ -171,31 +168,6 @@ export function UseCaseCarousel({
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
-      {items.map((item, i) => (
-        <div
-          key={item.key}
-          className={`ucc-bg${i === index ? ' is-active' : ''}`}
-          aria-hidden="true"
-        >
-          {visited.has(i) && (
-            <img
-              ref={element => {
-                backgroundRefs.current[i] = element;
-              }}
-              className="ucc-bg-img"
-              src={item.image}
-              srcSet={item.srcSet}
-              sizes="100vw"
-              alt=""
-              draggable="false"
-            />
-          )}
-        </div>
-      ))}
-      <div className="ucc-tint" aria-hidden="true" />
-      <div className="ucc-shade" aria-hidden="true" />
-      <div className="ucc-grain" aria-hidden="true" />
-
       <div className="ucc-inner container padding-global">
         <div className="ucc-head">
           {eyebrow && <p className="ucc-eyebrow">{eyebrow}</p>}
@@ -273,13 +245,16 @@ export function UseCaseCarousel({
                       return;
                     }
                     if (i === indexRef.current) {
-                      onOpen?.(i, backgroundRefs.current[i]);
+                      onOpen?.(i, thumbRefs.current[i]);
                     } else {
                       select(i, 'click');
                     }
                   }}
                 >
                   <img
+                    ref={element => {
+                      thumbRefs.current[i] = element;
+                    }}
                     src={item.thumb}
                     srcSet={item.thumbSrcSet}
                     sizes="(max-width: 47.9375rem) 14rem, 18rem"
@@ -296,26 +271,13 @@ export function UseCaseCarousel({
             type="button"
             className="prp-live-link ucc-cta"
             style={{ left: `${ctaLeft}rem` }}
-            onClick={() => onOpen?.(index, backgroundRefs.current[index])}
+            onClick={() => onOpen?.(index, thumbRefs.current[index])}
           >
             <span>{ctaText}</span>
             <span className="arrow_icon-embed" aria-hidden="true">
               {arrowSvg}
             </span>
           </button>
-        </div>
-
-        <div className="ucc-progress">
-          <div className="ucc-count">
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <span>{count}</span>
-          </div>
-          <div className="ucc-track">
-            <div
-              className="ucc-track-fill"
-              style={{ width: `${100 / items.length}%`, left: `${(index / items.length) * 100}%` }}
-            />
-          </div>
         </div>
       </div>
 

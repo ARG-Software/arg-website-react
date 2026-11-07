@@ -50,8 +50,6 @@ export default function ProjectDetailPage() {
         title: p.title,
         credit: p.subtitle,
         meta: [p.client],
-        image: p.imgSrc,
-        srcSet: p.imgSrcSet,
         thumb: p.thumbnailSrc,
         thumbSrcSet: p.thumbnailSrcSet,
       })),
@@ -368,7 +366,7 @@ export default function ProjectDetailPage() {
 
           {/* RESULTS: impact text, then the metric cards across the row */}
           <section
-            className="prp-results padding-section-large border-radius-bottom background-color-white"
+            className="prp-results padding-section-large background-color-white"
             id="results"
           >
             <div className="container container--section padding-global">
@@ -432,9 +430,18 @@ export default function ProjectDetailPage() {
                 </div>
               </div>
             </div>
+            <SectionDivider
+              variant="default"
+              hideOnMobile={false}
+              data-animate="divider-expander-show"
+            />
           </section>
 
-          <section className="prp-use-cases" id="use-cases">
+          {/* USE CASES: last white section, rounded into the dark contact block */}
+          <section
+            className="prp-use-cases border-radius-bottom background-color-white"
+            id="use-cases"
+          >
             <UseCaseCarousel
               key={slug}
               items={carouselItems}

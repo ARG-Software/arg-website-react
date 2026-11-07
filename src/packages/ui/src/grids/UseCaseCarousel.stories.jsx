@@ -10,14 +10,13 @@ const ITEMS = [
   title,
   credit,
   meta: [client],
-  image: `/images/projects/heroes/${key}-hero-1920.webp`,
   thumb: `/images/projects/heroes/${key}-thumb-500.webp`,
 }));
 
 export default {
   title: 'Grids/UseCaseCarousel',
   component: UseCaseCarousel,
-  parameters: { layout: 'fullscreen', backgrounds: { default: 'ARG dark' } },
+  parameters: { layout: 'fullscreen' },
 };
 
 export const Default = {
