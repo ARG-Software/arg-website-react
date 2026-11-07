@@ -62,7 +62,6 @@
   },
   "detail": {
     "overviewLabel": "Overview",
-    "overviewHighlight": "at a glance",
     "installLabel": "Installation",
     "installHighlight": "in one command",
     "copyLabel": "Copy",

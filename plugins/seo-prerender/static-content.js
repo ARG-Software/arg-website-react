@@ -82,7 +82,7 @@ export function buildSkillStaticContent(skill, relatedLinks = []) {
       </div>
     </header>
     <section class="sk-section padding-section-large background-color-white">
-      ${title('overview')}
+      <h2>${escapeHtml(detail.overviewLabel)}</h2>
       <p>${escapeHtml(skill.summary || '')}</p>
       ${title('install')}
       <pre><code>${escapeHtml(skill.installCommand || '')}</code></pre>
@@ -155,7 +155,7 @@ export function buildProjectStaticContent(project, projectLinks = []) {
     </header>
     <section class="prp-overview padding-section-large border-radius-top background-color-white">
       <div class="container container--section padding-global">
-        <h2 class="prp-section-heading">Overview <span class="text-color-gradiant">at a glance</span></h2>
+        <h2 class="prp-section-heading">Overview</h2>
         ${description}
         <dl>
           <dt>Category</dt><dd>${escapeHtml(project.subtitle)}</dd>

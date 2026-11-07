@@ -66,26 +66,22 @@ export default function SkillDetailPage() {
               id="overview"
               className="sk-section padding-section-large border-radius-top background-color-white"
             >
-              <div className="container padding-global">
-                <div className="sk-row">
-                  <h2 className="sk-section-title" data-animate="fade-up">
-                    {DETAIL.overviewLabel}
-                    <br />
-                    <span className="text-color-gradiant">{DETAIL.overviewHighlight}</span>
-                  </h2>
-                  <div className="sk-row-body">
-                    <p className="sk-detail-summary" data-animate="fade-up">
-                      {skill.summary}
-                    </p>
-                    <div className="sk-detail-meta" data-animate="fade-up">
-                      <span className="sk-detail-category">{skill.category}</span>
-                      <div className="sk-card-tags">
-                        {skill.tags.map(tag => (
-                          <Pill key={tag} variant="outline" size="sm">
-                            {tag}
-                          </Pill>
-                        ))}
-                      </div>
+              <div className="container padding-global sk-inner">
+                <h2 className="sk-section-title" data-animate="fade-up">
+                  {DETAIL.overviewLabel}
+                </h2>
+                <div className="sk-detail-body">
+                  <p className="sk-detail-summary" data-animate="fade-up">
+                    {skill.summary}
+                  </p>
+                  <div className="sk-detail-meta" data-animate="fade-up">
+                    <span className="sk-detail-category">{skill.category}</span>
+                    <div className="sk-card-tags">
+                      {skill.tags.map(tag => (
+                        <Pill key={tag} variant="outline" size="sm">
+                          {tag}
+                        </Pill>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -97,16 +93,14 @@ export default function SkillDetailPage() {
               id="install"
               className="sk-section padding-section-large background-color-white"
             >
-              <div className="container padding-global">
-                <div className="sk-row">
-                  <h2 className="sk-section-title" data-animate="fade-up">
-                    {DETAIL.installLabel}
-                    <br />
-                    <span className="text-color-gradiant">{DETAIL.installHighlight}</span>
-                  </h2>
-                  <div className="sk-row-body">
-                    <InstallCommand command={skill.installCommand} slug={skill.slug} />
-                  </div>
+              <div className="container padding-global sk-inner">
+                <h2 className="sk-section-title" data-animate="fade-up">
+                  {DETAIL.installLabel}
+                  <br />
+                  <span className="text-color-gradiant">{DETAIL.installHighlight}</span>
+                </h2>
+                <div className="sk-detail-body">
+                  <InstallCommand command={skill.installCommand} slug={skill.slug} />
                 </div>
               </div>
               <SectionDivider variant="default" hideOnMobile={false} />
@@ -116,20 +110,18 @@ export default function SkillDetailPage() {
               id="what-it-does"
               className="sk-section padding-section-large background-color-white"
             >
-              <div className="container padding-global">
-                <div className="sk-row">
-                  <h2 className="sk-section-title" data-animate="fade-up">
-                    {DETAIL.doesLabel}
-                    <br />
-                    <span className="text-color-gradiant">{DETAIL.doesHighlight}</span>
-                  </h2>
-                  <div className="sk-row-body sk-detail-block">
-                    <ul data-animate="fade-up">
-                      {skill.does.map(item => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
+              <div className="container padding-global sk-inner">
+                <h2 className="sk-section-title" data-animate="fade-up">
+                  {DETAIL.doesLabel}
+                  <br />
+                  <span className="text-color-gradiant">{DETAIL.doesHighlight}</span>
+                </h2>
+                <div className="sk-detail-body sk-detail-block">
+                  <ul data-animate="fade-up">
+                    {skill.does.map(item => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
                 </div>
               </div>
               <SectionDivider variant="default" hideOnMobile={false} />
@@ -139,17 +131,15 @@ export default function SkillDetailPage() {
               id="used-when"
               className="sk-section padding-section-large border-radius-bottom background-color-white"
             >
-              <div className="container padding-global">
-                <div className="sk-row">
-                  <h2 className="sk-section-title" data-animate="fade-up">
-                    {DETAIL.usedWhenLabel}
-                    <br />
-                    <span className="text-color-gradiant">{DETAIL.usedWhenHighlight}</span>
-                  </h2>
-                  <div className="sk-row-body sk-detail-block">
-                    <p data-animate="fade-up">{skill.usedWhen}</p>
-                    <p data-animate="fade-up">{skill.body}</p>
-                  </div>
+              <div className="container padding-global sk-inner">
+                <h2 className="sk-section-title" data-animate="fade-up">
+                  {DETAIL.usedWhenLabel}
+                  <br />
+                  <span className="text-color-gradiant">{DETAIL.usedWhenHighlight}</span>
+                </h2>
+                <div className="sk-detail-body sk-detail-block">
+                  <p data-animate="fade-up">{skill.usedWhen}</p>
+                  <p data-animate="fade-up">{skill.body}</p>
                 </div>
               </div>
             </section>

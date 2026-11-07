@@ -197,32 +197,29 @@
   margin-top: auto;
 }
 
-/* Detail page: each section has the two-line title (dark, then gradient) on the
-   left and its content on the right, like About Us and the project pages */
-.sk-row {
-  align-items: start;
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-}
-
+/* Detail page: each section has the title (dark, then gradient) with its content
+   below, like About Us */
 .sk-section-title {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-section-title);
   font-weight: var(--weight-light);
-  grid-column: 1 / span 5;
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
-  margin: 0;
+  margin: 0 0 1.5rem;
 }
 
-.sk-row-body {
+.sk-detail-body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  grid-column: 7 / span 6;
+  max-width: 62ch;
   min-width: 0;
+}
+
+/* The command is wider than a paragraph */
+.sk-detail-body:has(.sk-install) {
+  max-width: 46rem;
 }
 
 .sk-detail-meta {
@@ -295,17 +292,6 @@
   line-height: var(--line-body);
   color: #474747;
   margin: 0;
-}
-
-@media (max-width: 63.9375rem) {
-  .sk-section-title,
-  .sk-row-body {
-    grid-column: 1 / -1;
-  }
-
-  .sk-section-title {
-    margin-bottom: 1.5rem;
-  }
 }
 
 @media (max-width: 991px) {

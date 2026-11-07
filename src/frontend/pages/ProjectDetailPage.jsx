@@ -197,8 +197,6 @@ export default function ProjectDetailPage() {
                 <div className="prp-overview-text">
                   <h2 className="prp-section-heading" data-animate="fade-up">
                     Overview
-                    <br />
-                    <span className="text-color-gradiant">at a glance</span>
                   </h2>
                   {project.description?.split('\n\n').map(paragraph => (
                     <p key={paragraph} className="prp-section-text" data-animate="fade-up">
