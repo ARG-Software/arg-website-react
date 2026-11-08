@@ -20,7 +20,10 @@ type SocialPostRow = {
   like_count: number;
 };
 
-export class SupabaseSocialPostRepository extends SupabaseRepositoryBase implements ISocialPostRepository {
+export class SupabaseSocialPostRepository
+  extends SupabaseRepositoryBase
+  implements ISocialPostRepository
+{
   constructor(
     private readonly client: SupabaseClient,
     private readonly logger?: ILogger
@@ -28,19 +31,22 @@ export class SupabaseSocialPostRepository extends SupabaseRepositoryBase impleme
     super();
   }
 
-  async list({ page, pageSize }: SocialPostListQuery): Promise<SocialPostListResult> {
+  async list({ page, pageSize, sort }: SocialPostListQuery): Promise<SocialPostListResult> {
     return logOperation(
       this.logger,
       'Supabase social posts query',
-      { table: 'social_posts', page, pageSize },
+      { table: 'social_posts', page, pageSize, sort },
       async () => {
         const { from, to } = this.getPageRange(page, pageSize);
-        const { data, error, count } = await this.client
+        let query = this.client
           .from('social_posts')
           .select(
             'id, buffer_post_id, text, cover_image_url, external_url, published_at, like_count',
             { count: 'exact' }
-          )
+          );
+        // Most liked first; posts with the same likes stay newest first
+        if (sort === 'likes') query = query.order('like_count', { ascending: false });
+        const { data, error, count } = await query
           .order('published_at', { ascending: false })
           .range(from, to);
 

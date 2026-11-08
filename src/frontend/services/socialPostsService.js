@@ -1,9 +1,10 @@
 const SOCIAL_POSTS_ENDPOINT = '/api/social-posts';
 
-export async function fetchSocialPosts({ page = 1, pageSize = 3 } = {}) {
+export async function fetchSocialPosts({ page = 1, pageSize = 3, sort = 'recent' } = {}) {
   const params = new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize),
+    sort,
   });
   const response = await fetch(`${SOCIAL_POSTS_ENDPOINT}?${params.toString()}`);
 

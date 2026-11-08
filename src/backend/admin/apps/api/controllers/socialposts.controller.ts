@@ -22,6 +22,7 @@ export class SocialPostsController extends ControllerBase {
       await this.socialPosts.listSocialPostsUseCase.execute({
         page: query.page,
         pageSize: query.pageSize || 3,
+        sort: query.sort,
       })
     );
   }

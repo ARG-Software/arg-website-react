@@ -17,9 +17,8 @@ export class SyncSocialPostsUseCase {
 
   async execute(): Promise<{ upserted: number }> {
     this.logger?.info('Social posts sync use case started');
-    const latest = (
-      await this.socialPostRepository.list({ page: 1, pageSize: 1 })
-    ).records[0];
+    const latest = (await this.socialPostRepository.list({ page: 1, pageSize: 1, sort: 'recent' }))
+      .records[0];
     const posts = await this.bufferProvider.listSentLinkedInPosts({
       publishedAfter: latest?.publishedAt,
       limit: latest ? undefined : SOCIAL_POST_LIMIT,
@@ -43,7 +42,7 @@ export class SyncSocialPostsUseCase {
     }
 
     const keepIds = (
-      await this.socialPostRepository.list({ page: 1, pageSize: SOCIAL_POST_LIMIT })
+      await this.socialPostRepository.list({ page: 1, pageSize: SOCIAL_POST_LIMIT, sort: 'recent' })
     ).records.map(post => post.bufferPostId);
     if (keepIds.length) {
       await this.socialPostRepository.deleteMissing(keepIds);

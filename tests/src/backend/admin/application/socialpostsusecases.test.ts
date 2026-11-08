@@ -7,7 +7,7 @@ import { SyncSocialPostsUseCase } from '../../../../../src/backend/admin/applica
 test('lists social posts with excerpts and pagination', async () => {
   const useCase = new ListSocialPostsUseCase({
     async list(query) {
-      assert.deepEqual(query, { page: 1, pageSize: 3 });
+      assert.deepEqual(query, { page: 1, pageSize: 3, sort: 'recent' });
       return {
         records: [
           {
@@ -45,6 +45,28 @@ test('lists social posts with excerpts and pagination', async () => {
     totalRecords: 1,
     totalPages: 1,
   });
+});
+
+test('lists social posts by likes when asked', async () => {
+  let receivedSort;
+  const useCase = new ListSocialPostsUseCase({
+    async list(query) {
+      receivedSort = query.sort;
+      return { records: [], totalRecords: 0 };
+    },
+    async upsertMany() {
+      throw new Error('should not upsert');
+    },
+    async deleteMissing() {
+      throw new Error('should not prune');
+    },
+  });
+
+  await useCase.execute({ page: 1, pageSize: 12, sort: 'likes' });
+  assert.equal(receivedSort, 'likes');
+
+  await useCase.execute({ page: 1, pageSize: 12, sort: 'anything-else' });
+  assert.equal(receivedSort, 'recent');
 });
 
 test('syncs sent Buffer posts into the repository', async () => {

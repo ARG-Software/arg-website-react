@@ -8,6 +8,7 @@ const EXCERPT_LENGTH = 180;
 export interface ListSocialPostsInput {
   page?: string | number;
   pageSize?: string | number;
+  sort?: string;
 }
 
 export class ListSocialPostsUseCase {
@@ -18,8 +19,9 @@ export class ListSocialPostsUseCase {
 
   async execute(input: ListSocialPostsInput = {}) {
     const pagination = getPagination(input);
-    this.logger?.info('Social posts list use case started', pagination);
-    const result = await this.socialPostRepository.list(pagination);
+    const sort = input.sort === 'likes' ? 'likes' : 'recent';
+    this.logger?.info('Social posts list use case started', { ...pagination, sort });
+    const result = await this.socialPostRepository.list({ ...pagination, sort });
     this.logger?.info('Social posts list use case completed', {
       recordCount: result.records.length,
       totalRecords: result.totalRecords,
