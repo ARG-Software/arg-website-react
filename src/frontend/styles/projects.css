@@ -42,10 +42,15 @@
 /* ============================================
    Overview: description and live links beside a 2 x 2 details grid
    ============================================ */
+/* Overview: the page's key section, so its text runs one size up */
+.prp-overview .prp-section-text {
+  font-size: var(--type-body-large);
+}
+
 .prp-overview-text {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
   grid-column: 1 / span 6;
   min-width: 0;
 }
@@ -68,7 +73,7 @@
 
 .prp-meta-list {
   display: grid;
-  gap: 2.5rem 2rem;
+  gap: 3rem 2rem;
   grid-column: 8 / span 5;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -102,13 +107,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
-}
-
-/* Outline pill in the ARG dark blue: border and text */
-.prp-meta-service-tag {
-  border-color: var(--prp-dark);
-  color: var(--prp-dark);
-  padding: 0.2rem 0.5rem;
 }
 
 /* ============================================
@@ -186,8 +184,11 @@
 }
 
 .prp-solution-list li {
+  align-items: flex-start;
   border-radius: 0.5rem;
   color: var(--prp-dark);
+  display: flex;
+  gap: 0.75rem;
   font-size: var(--type-body);
   line-height: var(--line-body);
   padding: 0.75rem 1rem;
@@ -198,6 +199,26 @@
   background: rgba(0, 0, 0, 0.03);
 }
 
+/* The site's diagonal arrow (up and to the right, as on the homepage links) before each item,
+   centred on its first line; it steps along its own direction when the item is hovered */
+.prp-solution-arrow {
+  align-items: center;
+  display: flex;
+  flex: 0 0 1rem;
+  height: 1lh;
+  transition: transform 0.35s var(--ease-out-expo);
+}
+
+.prp-solution-arrow svg {
+  height: 1rem;
+  transform: rotate(-50deg);
+  width: 1rem;
+}
+
+.prp-solution-list li:hover .prp-solution-arrow {
+  transform: translate(0.1875rem, -0.1875rem);
+}
+
 /* The device mockup sits under the Approach heading */
 .prp-approach-mockup {
   display: block;
@@ -205,12 +226,50 @@
   margin-top: 2rem;
   max-width: 100%;
   transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-  width: 14rem;
+  width: 16rem;
 }
 
-/* Pops forward on hover, with a slight overshoot */
+/* Grows on hover with a slight overshoot, from its bottom-left corner so it stays on the line
+   of the last sentence */
+.prp-approach-mockup {
+  transform-origin: left bottom;
+}
+
 .prp-approach-mockup:hover {
-  transform: scale(1.08);
+  transform: scale(1.18);
+}
+
+/* Side by side, the mockup's bottom lines up with the last line of the list. The heading column
+   takes the row's full height and the mockup sits at its foot, raised by the list items' bottom
+   padding. The mockup gives way first, from 17rem wide down to 14rem (heights 31.875rem and
+   26.25rem for the 8:15 phones); if the list is still shorter, its items spread out to meet it */
+@media (min-width: 64rem) {
+  .prp-row-head:has(.prp-approach-mockup) {
+    align-self: stretch;
+  }
+
+  .prp-row-head:has(.prp-approach-mockup) .prp-section-heading {
+    margin-bottom: 2rem;
+  }
+
+  /* Height 0 with a minimum: the row is sized by the smallest mockup, then the mockup grows */
+  .prp-approach-mockup {
+    align-self: flex-start;
+    flex: 1 1 auto;
+    height: 0;
+    margin-bottom: 0.75rem;
+    margin-top: auto;
+    max-height: 31.875rem;
+    min-height: 26.25rem;
+    object-fit: contain;
+    object-position: left bottom;
+    width: auto;
+  }
+
+  .prp-row-head:has(.prp-approach-mockup) + .prp-solution-list {
+    align-self: stretch;
+    justify-content: space-between;
+  }
 }
 
 /* ============================================
@@ -357,7 +416,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .prp-approach-mockup {
+  .prp-approach-mockup,
+  .prp-solution-arrow {
     transition: none;
   }
 }

@@ -256,8 +256,9 @@ const llmsFull = fs.readFileSync(path.join(ROOT_DIR, 'public/llms-full.txt'), 'u
 const mojaloop = projects.find(project => project.slug === 'mojaloop');
 const clearinghouse = projects.find(project => project.slug === 'peoples-clearinghouse');
 
-if (mojaloop?.timeline !== '2021-2023') {
-  violations.push('src/frontend/data/projects.json must set Mojaloop timeline to 2021-2023');
+// The engagement ran from 2021 to 2023 (see the Partners timeline), so it must never read as ongoing
+if (mojaloop?.timeline !== '3 Years') {
+  violations.push('src/frontend/data/projects.json must set Mojaloop timeline to 3 Years');
 }
 if (
   !mojaloop?.metrics.some(

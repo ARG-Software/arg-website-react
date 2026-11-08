@@ -2,7 +2,7 @@ VECTOR
 
 Industry: Fintech
 Client: Liminality Labs (quantapes.com)
-Featured engagement: 6 Months
+Featured engagement: 2 Years
 Services: Backend Rebuild, Authentication, Exchange Integrations, Trading Automation
 
 THE CHALLENGE

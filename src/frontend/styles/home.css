@@ -1685,24 +1685,6 @@
   line-height: var(--line-compact);
 }
 
-.faq_icon {
-  align-items: center;
-  color: rgba(0, 0, 0, 0.35);
-  display: flex;
-  flex-shrink: 0;
-  height: 1.5rem;
-  justify-content: center;
-  transition:
-    transform 0.5s var(--ease-out-expo),
-    color 0.4s ease;
-  width: 1.5rem;
-}
-
-.faq_item.is-open .faq_icon {
-  color: #000;
-  transform: rotate(90deg);
-}
-
 .faq_answer {
   max-height: 0;
   overflow: hidden;
@@ -1783,24 +1765,6 @@
   transition: color 0.35s ease;
 }
 
-.faq_icon {
-  align-items: center;
-  color: rgba(0, 0, 0, 0.35);
-  display: flex;
-  flex-shrink: 0;
-  height: 20px;
-  justify-content: center;
-  transition:
-    transform 0.5s var(--ease-out-expo),
-    color 0.4s ease;
-  width: 20px;
-}
-
-.faq_item.is-open .faq_icon {
-  color: #000;
-  transform: rotate(90deg);
-}
-
 .faq_answer {
   transition: max-height 0.5s var(--ease-out-expo);
 }
@@ -1831,28 +1795,178 @@
   display: none;
 }
 
-.faq_question:hover .faq_icon {
-  color: rgba(0, 0, 0, 0.6);
-}
-
 .section_faq .container-large {
   padding-bottom: 5rem;
 }
 
-.faq_icon {
-  align-items: center;
-  display: flex;
-  flex-shrink: 0;
-  height: 18px;
-  justify-content: center;
-  transition:
-    transform 0.5s var(--ease-out-expo),
-    color 0.4s ease;
-  width: 18px;
+/* Stacked by default: the video above the questions */
+.faq_layout {
+  align-items: start;
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: minmax(0, 1fr);
 }
 
-.faq_item.is-open .faq_icon {
-  transform: rotate(90deg);
+/* Desktop: the header and the layout share one grid. The left column is as wide as the title's
+   longest line and holds the video; the questions keep a capped column on the right; the
+   space between them takes whatever width is left, never less than 4rem */
+@media screen and (min-width: 62rem) {
+  .section_faq .container-large {
+    display: grid;
+    grid-template-columns: max-content minmax(4rem, 1fr) minmax(0, 40rem);
+  }
+
+  .section_faq .faq_header,
+  .section_faq .faq_layout {
+    column-gap: 0;
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+
+  .section_faq .faq_header .subtitle_tag-wrapper,
+  .section_faq .faq_list {
+    grid-column: 3;
+  }
+
+  .section_faq .faq_header .subtitle_tag-wrapper {
+    justify-self: end;
+  }
+}
+
+/* The first question's text starts on the video's top edge */
+.faq_layout .faq_item:first-child .faq_question {
+  padding-top: 0;
+}
+
+.faq_layout .faq_question {
+  align-items: flex-start;
+}
+
+.faq_video {
+  aspect-ratio: 16 / 9;
+  /* The video's own 1920px width must not size the column; the title does */
+  contain: inline-size;
+  position: relative;
+  background: #f1f0f5;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.faq_video iframe,
+.faq_video video {
+  border: 0;
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* Small round play button in the poster's bottom-left corner; the controls take over once the
+   film plays */
+.faq_video-play {
+  align-items: center;
+  backdrop-filter: blur(0.5rem);
+  background-color: rgba(255, 255, 255, 0.14);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  bottom: 1rem;
+  height: 2.75rem;
+  justify-content: center;
+  left: 1rem;
+  padding: 0;
+  position: absolute;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+  width: 2.75rem;
+}
+
+.faq_video-play svg {
+  height: 1rem;
+  /* Nudged right so the triangle looks centred in the circle */
+  margin-left: 0.125rem;
+  width: 1rem;
+}
+
+.faq_video-play:hover {
+  background-color: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.faq_video-play:focus-visible {
+  outline: 0.125rem solid #fff;
+  outline-offset: 0.25rem;
+}
+
+.faq_video-placeholder {
+  align-items: center;
+  color: rgba(12, 0, 46, 0.35);
+  display: flex;
+  font-size: var(--type-footer-title);
+  height: 100%;
+  justify-content: center;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* A thin plus in a circle that turns into a minus: the upright bar rotates flat onto the
+   other. The circle is centred on the question's first line (1.125rem at line-height 1.4) */
+.faq_toggle {
+  border: 0.0625rem solid currentColor;
+  border-radius: 50%;
+  box-sizing: border-box;
+  color: #0c002e;
+  flex-shrink: 0;
+  height: 2.25rem;
+  margin-top: calc((1.125rem * 1.4 - 2.25rem) / 2);
+  position: relative;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+  width: 2.25rem;
+}
+
+.faq_item.is-open .faq_toggle {
+  background-color: #0c002e;
+  color: #fff;
+}
+
+.faq_toggle::before,
+.faq_toggle::after {
+  background-color: currentColor;
+  border-radius: 0.125rem;
+  content: '';
+  left: 50%;
+  position: absolute;
+  top: 50%;
+}
+
+.faq_toggle::before {
+  height: 0.0625rem;
+  transform: translate(-50%, -50%);
+  width: 0.875rem;
+}
+
+.faq_toggle::after {
+  height: 0.875rem;
+  transform: translate(-50%, -50%);
+  transition: transform 0.5s var(--ease-out-expo);
+  width: 0.0625rem;
+}
+
+.faq_item.is-open .faq_toggle::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq_toggle,
+  .faq_toggle::after {
+    transition: none;
+  }
 }
 
 .faq_question_text {
@@ -1938,6 +2052,7 @@
 
 @media screen and (max-width: 480px) {
   .faq_header,
+  .faq_video,
   .faq_list {
     margin-left: 1rem;
     margin-right: 1rem;
@@ -1959,11 +2074,13 @@
   padding-top: 6rem;
 }
 
+/* The featured post sets the row height; the list fits into it and spreads its posts, so the
+   two columns end on the same line */
 .blog-promo_layout {
-  align-items: start;
+  align-items: stretch;
   display: grid;
-  gap: 4rem;
-  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: 6.5rem;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
 }
 
 /* Featured post */
@@ -1977,7 +2094,7 @@
 }
 
 .blog-promo_featured-media {
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   background: #160046;
   border-radius: 1.5rem;
   margin-bottom: 0.75rem;
@@ -2039,9 +2156,31 @@
 /* Post list */
 
 .blog-promo_list {
+  /* Sized by the row, not by its own posts */
+  contain: size;
+  display: flex;
+  flex-direction: column;
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+/* Spare height goes to the posts: the first keeps its post at the top, the last at the bottom
+   and the middle ones centre theirs with twice the share, so every divider sits midway */
+.blog-promo_item {
+  display: flex;
+  flex: 2 1 auto;
+  align-items: center;
+}
+
+.blog-promo_item:first-child {
+  align-items: flex-start;
+  flex-grow: 1;
+}
+
+.blog-promo_item:last-child {
+  align-items: flex-end;
+  flex-grow: 1;
 }
 
 .blog-promo_item + .blog-promo_item {
@@ -2053,8 +2192,9 @@
   color: #fff;
   display: flex;
   gap: 1.5rem;
-  padding: 1.75rem 0;
+  padding: 1.25rem 0;
   text-decoration: none;
+  width: 100%;
 }
 
 .blog-promo_item:first-child .blog-promo_post {
@@ -2069,7 +2209,7 @@
   aspect-ratio: 1;
   background: #160046;
   border-radius: 0.75rem;
-  flex: 0 0 6rem;
+  flex: 0 0 5rem;
   overflow: hidden;
 }
 
@@ -2105,8 +2245,12 @@
   font-size: 1.25rem;
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-title);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
   line-height: 1.3;
   margin: 0;
+  overflow: hidden;
   text-wrap: pretty;
 }
 
@@ -2156,6 +2300,13 @@
   padding-top: 2.5rem;
 }
 
+/* Narrower desktops: a tighter gap leaves the list room for its posts */
+@media screen and (max-width: 79.9375rem) {
+  .blog-promo_layout {
+    gap: 4rem;
+  }
+}
+
 /* Tablets: the list moves under the featured post */
 @media screen and (max-width: 61.9375rem) {
   .section_blog-promo .container-large {
@@ -2169,6 +2320,19 @@
   .blog-promo_layout {
     gap: 3rem;
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Stacked, the list takes its own height again */
+  .blog-promo_list {
+    contain: none;
+  }
+
+  .blog-promo_item {
+    flex: none;
+  }
+
+  .blog-promo_post {
+    padding: 1.75rem 0;
   }
 }
 

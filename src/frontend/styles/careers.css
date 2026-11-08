@@ -42,7 +42,8 @@
   overflow: hidden;
   text-align: left;
 }
-.cp-value-card::before {
+/* Faint gradient border; ::before is left for BaseCard's hover accent line */
+.cp-value-card::after {
   content: '';
   position: absolute;
   inset: -1px;
@@ -268,7 +269,6 @@
 
 /* Careers Roles */
 .cp-careers-inner,
-.cp-founders-inner,
 .cp-fit-inner {
   display: block !important;
 }
@@ -557,136 +557,6 @@
 /* Step-progress timeline rules moved to step-progress-timeline.css
    (legacy .cp-fit-* classes are kept there as aliases). */
 
-/* Founder Contact */
-.cp-founders-section {
-  border-bottom: 1px solid #e0e0e0;
-}
-.cp-founders-intro {
-  margin-bottom: 3rem;
-  max-width: 54rem;
-}
-.cp-founders-intro h2 {
-  color: #0c002e;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
-  font-weight: var(--weight-light);
-  letter-spacing: var(--tracking-title);
-  line-height: var(--line-tight);
-  margin: 0 0 1.5rem;
-}
-.cp-founders-intro h2 span {
-  background: var(--arg-gradient-primary);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: block;
-}
-.cp-founders-intro p {
-  color: #555;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body);
-  line-height: var(--line-body);
-  margin: 0;
-  max-width: 42rem;
-}
-.cp-founders-grid {
-  display: grid;
-  gap: 1.375rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-.cp-founder-card {
-  display: grid;
-  gap: 1.75rem;
-  grid-template-columns: 7.5rem minmax(0, 1fr);
-}
-.cp-founder-monogram {
-  align-items: center;
-  background: #0c002e;
-  border: 1px solid #fff;
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  font-family: Neuemontreal, sans-serif;
-  font-size: 2.25rem;
-  height: 7.5rem;
-  justify-content: center;
-  letter-spacing: var(--tracking-display);
-  position: relative;
-  width: 7.5rem;
-}
-.cp-founder-content h3 {
-  color: #0c002e;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
-  font-weight: var(--weight-regular);
-  letter-spacing: var(--tracking-card-title);
-  margin: 0;
-}
-.cp-founder-role {
-  color: #888;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
-  letter-spacing: var(--tracking-meta-wide);
-  margin: 0.375rem 0 0.875rem;
-  text-transform: uppercase;
-}
-.cp-founder-bio {
-  color: #555;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
-  line-height: var(--line-small);
-  margin: 0 0 1.25rem;
-}
-.cp-founder-focus {
-  border-bottom: 1px dashed rgba(12, 0, 46, 0.12);
-  border-top: 1px dashed rgba(12, 0, 46, 0.12);
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-bottom: 1.25rem;
-  padding: 0.875rem 0;
-}
-.cp-founder-focus-key,
-.cp-founder-focus-value {
-  display: block;
-  font-family: Neuemontreal, sans-serif;
-}
-.cp-founder-focus-key {
-  color: #888;
-  font-size: var(--type-kicker);
-  letter-spacing: var(--tracking-meta-wide);
-  margin-bottom: 0.25rem;
-  text-transform: uppercase;
-}
-.cp-founder-focus-value {
-  color: #0c002e;
-  font-size: var(--type-ui);
-  line-height: var(--line-compact);
-}
-.cp-founder-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.625rem;
-}
-.cp-founder-links a {
-  border: 1px solid rgba(12, 0, 46, 0.16);
-  border-radius: 999px;
-  color: #0c002e;
-  display: inline-flex;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
-  padding: 0.5rem 0.875rem;
-  text-decoration: none;
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
-}
-.cp-founder-links a:hover {
-  border-color: #0c002e;
-  transform: translateY(-1px);
-}
-
 /* Responsive */
 @media screen and (max-width: 991px) {
   .cp-whyus-header {
@@ -704,9 +574,6 @@
   }
   .cp-values-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-  .cp-founders-grid {
-    grid-template-columns: 1fr;
   }
   .cp-fit-columns {
     grid-template-columns: 1fr;
@@ -750,18 +617,6 @@
   }
   .cp-careers-trait {
     padding: 1.625rem 1.5rem;
-  }
-  .cp-founder-card {
-    gap: 1rem;
-    grid-template-columns: 4.5rem minmax(0, 1fr);
-  }
-  .cp-founder-monogram {
-    font-size: 1.25rem;
-    height: 4.5rem;
-    width: 4.5rem;
-  }
-  .cp-founder-focus {
-    grid-template-columns: 1fr;
   }
 }
 @media screen and (max-width: 479px) {

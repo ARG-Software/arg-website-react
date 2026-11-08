@@ -192,7 +192,13 @@
   },
   "faq": {
     "title": ["Common questions,", "honest answers."],
-    "eyebrow": "FAQ"
+    "eyebrow": "FAQ",
+    "video": {
+      "title": "ARG Software",
+      "src": "/videos/arg-film.mp4",
+      "poster": "/images/arg-film-poster.jpg",
+      "embedUrl": ""
+    }
   },
   "contact": {
     "title": "Hard problem?",

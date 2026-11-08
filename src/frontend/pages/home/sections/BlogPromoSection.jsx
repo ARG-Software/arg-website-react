@@ -71,7 +71,7 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
                       className="blog-promo_featured-image"
                       src={featured.image}
                       srcSet={getCoverSrcSet(featured.image)}
-                      sizes="(max-width: 61.9375rem) 100vw, 45rem"
+                      sizes="(max-width: 61.9375rem) 100vw, 40rem"
                       alt=""
                       loading="lazy"
                       decoding="async"
@@ -105,7 +105,7 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
                           <img
                             src={post.image}
                             srcSet={getCoverSrcSet(post.image)}
-                            sizes="6rem"
+                            sizes="5rem"
                             alt=""
                             loading="lazy"
                             decoding="async"

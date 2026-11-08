@@ -1,7 +1,9 @@
+import { useContext } from 'react';
 import { Footer as UiFooter } from '@ui/layout/Footer.jsx';
 import { trackEvent, trackSocial } from '@services/analytics';
 import { MarkNameWhite } from '../icons/MarkNameWhite';
 import AppLink from '../navigation/AppLink';
+import { LenisContext } from '../../providers/LenisProvider';
 import SITE from '../../data/site.json';
 import MENU from '../../data/menu.json';
 import {
@@ -18,7 +20,8 @@ const NAV_COLUMNS = [{ label: 'Navigate', items: MENU.primary }, ...MENU.groups]
   items: group.items.map(item => ({ label: item.label, path: item.to })),
 }));
 
-export function Footer({ animate = true, animationPreset = 'fade-up' }) {
+export function Footer() {
+  const lenis = useContext(LenisContext);
   const socialLinks = getCompanySocialLinks();
   const contactEmail = getEmailAddress(EMAIL_KEYS.INFO);
   const columns = buildFooterColumns(socialLinks);
@@ -28,25 +31,29 @@ export function Footer({ animate = true, animationPreset = 'fade-up' }) {
       brand={{
         logo: <MarkNameWhite />,
         tagline: SITE.footer.tagline,
-        contact: (
-          <>
-            Porto and Funchal, Portugal ·{' '}
-            <a href={getMailtoLink(EMAIL_KEYS.INFO)}>{contactEmail}</a>
-          </>
-        ),
+        contact: [
+          'Porto and Funchal, Portugal',
+          <a key="email" href={getMailtoLink(EMAIL_KEYS.INFO)}>
+            {contactEmail}
+          </a>,
+        ],
         actionsTitle: SITE.footer.askAi.title,
         actions: buildFooterAiActions(),
       }}
       columns={columns}
       legalLinks={[
-        { label: 'Privacy Policy', href: '/privacy/' },
-        { label: 'Terms of Service', href: '/terms/' },
+        { label: 'Privacy Policy', path: '/privacy/' },
+        { label: 'Terms of Service', path: '/terms/' },
       ]}
       copyright="© 2020-2026 ARG Software. All rights reserved."
+      wordmark="arg.software"
+      onBackToTop={() => {
+        trackEvent('footer_back_to_top');
+        if (lenis) lenis.scrollTo(0);
+        else window.scrollTo({ top: 0, behavior: 'smooth' });
+      }}
       renderLink={renderFooterAppLink}
       renderExternalLink={renderFooterExternalLink}
-      animate={animate}
-      animationPreset={animationPreset}
     />
   );
 }
@@ -56,11 +63,13 @@ function buildFooterColumns(socialLinks) {
     ...NAV_COLUMNS,
     {
       title: 'Services',
+      // Spans both columns on phones, where its long labels need the room
+      wide: true,
       items: SITE.footer.services.map(item => ({ label: item })),
     },
     {
       title: 'Socials',
-      items: socialLinks.map(link => ({ ...link, className: 'footer-socials__link' })),
+      items: socialLinks,
     },
   ];
 }

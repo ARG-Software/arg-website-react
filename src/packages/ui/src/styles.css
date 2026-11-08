@@ -1711,243 +1711,346 @@
   background: #e0e0e5;
 }
 
-.footer-main {
-  background-color: #0c002e;
-  color: #fff;
-  display: block;
-  overflow: clip;
-  padding-bottom: 2.5rem;
-  padding-top: 3.5rem;
+/* Footer reveal: the page scrolls off the footer, which waits underneath. The track starts a
+   screen above the footer's slot, so the sticky footer can hold still while its slot scrolls
+   in; the clip shows it only inside the slot. A footer that fits the screen holds against the
+   bottom edge, a taller one against the top edge until its slot catches up, then scrolls on.
+   Footer.jsx measures --footer-height. */
+.footer-reveal {
+  clip-path: inset(0);
   position: relative;
 }
 
-.footer-main .container.padding-global {
-  display: block;
-  height: auto;
+.footer-reveal.is-revealing {
+  height: var(--footer-height);
 }
 
-.footer-wrapper {
-  align-items: center;
+.footer-reveal.is-revealing .footer-reveal__track {
+  height: calc(100% + 100vh);
+  position: relative;
+  top: -100vh;
+}
+
+.footer-reveal.is-revealing .footer-main {
+  position: sticky;
+  top: max(0rem, calc(100vh - var(--footer-height)));
+}
+
+/* Every row shares the footer's side padding, so all edges line up */
+.footer-main {
+  background-color: #070019;
+  border-top: 0.0625rem solid #9b9fbb33;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: Neuemontreal, sans-serif;
+  box-sizing: border-box;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: clamp(3rem, 8vh, 6rem) clamp(1.5rem, 5vw, 6rem) 0;
+  position: relative;
+}
+
+/* Fine print grain over the whole footer */
+.footer-main::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 10rem;
+  content: '';
+  inset: 0;
+  mix-blend-mode: overlay;
+  opacity: 0.14;
+  pointer-events: none;
+  position: absolute;
+}
+
+.footer-main > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 1. Header: brand on the left, Ask via AI on the right, both on the bottom line */
+.footer-header {
+  align-items: end;
   display: grid;
-  gap: 4rem;
-  grid-template-columns: 1fr 2fr;
-  width: 100%;
+  gap: 3rem;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
-.footer-left {
-  align-items: center;
-  align-self: flex-start;
-  display: flex;
-  flex-direction: column;
-  margin-top: 3.5rem;
-  text-align: center;
-}
-
-.footer-left__logo {
+.footer-brand__logo {
   color: #fff;
-  margin-bottom: 1.25rem;
-  width: 8em;
+  width: 7rem;
 }
 
-.footer-left__tagline {
-  color: #fff;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-footer-tagline);
-  font-weight: var(--weight-medium);
-  line-height: var(--line-footer);
-  margin-bottom: 0.5rem;
+.footer-brand__statement {
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.1;
+  margin: 2.5rem 0 0;
+  max-width: 14ch;
 }
 
-.footer-left__contact {
-  color: rgba(255, 255, 255, 0.5);
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-footer-text);
-  line-height: var(--line-footer);
-  margin-bottom: 0.5rem;
-}
-
-.footer-left__contact a {
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.footer-left__contact a:hover {
-  color: #fff;
-}
-
-.footer-left__actions {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  margin-top: 1rem;
-}
-
-.footer-left__actions-title {
-  color: rgba(255, 255, 255, 0.5);
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-footer-title);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-meta);
-  text-transform: uppercase;
-}
-
-.footer-left__actions-list {
+.footer-brand__contact {
+  color: rgba(255, 255, 255, 0.55);
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: center;
+  font-size: var(--type-footer-text);
+  gap: 0.625rem 1.5rem;
+  line-height: var(--line-footer);
+  margin-top: 1.25rem;
+}
+
+.footer-brand__contact a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+}
+
+.footer-ai {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.footer-ai .footer-col-title {
+  margin-bottom: 0;
+}
+
+.footer-ai__list {
+  display: flex;
+  gap: 0.625rem;
 }
 
 .footer-ai-link {
   align-items: center;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
   color: #fff;
   display: inline-flex;
-  height: 2.25rem;
+  height: 3rem;
   justify-content: center;
   text-decoration: none;
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
-    color 0.2s ease,
     transform 0.2s ease;
-  width: 2.25rem;
+  width: 3rem;
 }
 
 .footer-ai-link:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.36);
-  color: #fff;
-  transform: translateY(-1px);
+  background: rgba(201, 36, 215, 0.16);
+  border-color: #c924d7;
+  transform: translateY(-0.0625rem);
 }
 
 .footer-ai-link__mark {
-  font-family: Neuemontreal, sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: var(--weight-medium);
   letter-spacing: -0.02em;
   line-height: 1;
 }
 
 .footer-ai-link__mark--chatgpt {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
 }
 
-.footer-right {
+/* 2. Link columns: the first flush left, the last flush right */
+.footer-nav-row {
+  border-top: 0.0625rem solid rgba(255, 255, 255, 0.12);
+  column-gap: 3rem;
+  display: grid;
+  grid-template-columns: repeat(5, auto);
+  justify-content: space-between;
+  margin-top: clamp(3rem, 9vh, 7rem);
+  padding-top: 2rem;
+}
+
+.footer-nav-col {
+  align-items: flex-start;
   display: flex;
   flex-direction: column;
-}
-
-.footer-nav-row {
-  display: inline-flex;
-  justify-content: space-between;
-  padding-bottom: 2rem;
-}
-
-.footer-col-section + .footer-col-section {
-  margin-top: 1.75rem;
+  gap: 0.875rem;
+  min-width: 0;
 }
 
 .footer-col-title {
-  color: rgba(255, 255, 255, 0.5);
-  font-family: Neuemontreal, sans-serif;
+  color: rgba(255, 255, 255, 0.4);
   font-size: var(--type-footer-title);
   font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-meta);
-  margin-bottom: 1rem;
+  letter-spacing: 0.18em;
+  line-height: var(--line-footer);
+  margin-bottom: 0.625rem;
   text-transform: uppercase;
 }
 
-.footer-col-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.footer-col-link,
+.footer-col-text {
+  font-size: var(--type-footer-link);
+  line-height: var(--line-footer);
 }
 
 .footer-col-link {
-  color: #fff;
-  display: inline-block;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-footer-link);
-  line-height: var(--line-footer);
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.footer-col-link:hover {
-  color: rgba(255, 255, 255, 0.6);
 }
 
 .footer-col-text {
   color: rgba(255, 255, 255, 0.5);
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-footer-text);
-  line-height: var(--line-footer);
 }
 
-.footer-col-text a {
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  transition: color 0.2s ease;
+/* Links draw a hairline underline from the left on hover */
+.footer-col-link,
+.footer-brand__contact a,
+.footer-bottom__link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 0.0625rem;
+  transition:
+    color 0.25s ease,
+    background-size 0.35s cubic-bezier(0.2, 0.7, 0.1, 1);
 }
 
-.footer-col-text a:hover {
+.footer-col-link:hover,
+.footer-brand__contact a:hover,
+.footer-bottom__link:hover {
+  background-size: 100% 0.0625rem;
   color: #fff;
 }
 
-.footer-socials {
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 1.5rem;
-  padding-top: 1.5rem;
-}
-
-.footer-socials__link {
+.footer-main a:focus-visible,
+.footer-bottom__top:focus-visible {
   color: #fff;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-footer-link);
-  line-height: var(--line-footer);
-  text-decoration: none;
-  transition: color 0.2s ease;
+  outline: 0.0625rem solid currentColor;
+  outline-offset: 0.1875rem;
 }
 
-.footer-socials__link:hover {
-  color: rgba(255, 255, 255, 0.6);
+/* 3. Spacer: takes the leftover height, so the bar and the wordmark sit on the bottom edge */
+.footer-spacer {
+  flex: 1;
+  min-height: 3rem;
 }
 
+/* 4. Bottom bar */
 .footer-bottom {
   align-items: center;
+  border-top: 0.0625rem solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
-  padding-bottom: 1rem;
-  padding-top: 3rem;
-}
-
-.footer-bottom__link {
-  color: rgba(255, 255, 255, 0.9);
-  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-footer-meta);
+  gap: 1.5rem;
+  justify-content: space-between;
+  letter-spacing: 0.18em;
   line-height: var(--line-footer);
-  text-decoration: none;
-  transition: color 0.2s ease;
+  padding: 1.5rem 0;
+  text-transform: uppercase;
 }
 
 .footer-bottom__copyright {
-  color: rgba(255, 255, 255, 0.9);
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-footer-meta);
-  line-height: var(--line-footer);
-  margin-left: auto;
+  color: rgba(255, 255, 255, 0.6);
 }
 
-.footer-main .line-separate {
-  border-color: rgba(255, 255, 255, 0.1);
-  margin: 0;
+.footer-bottom__links {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.footer-bottom__link {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+}
+
+.footer-bottom__top {
+  background-color: transparent;
+  border: 0;
+  font-family: inherit;
+  letter-spacing: normal;
+  padding: 0;
+  text-transform: none;
+}
+
+/* The homepage arrow, turned to point straight up */
+.footer-bottom__top .footer-bottom__top-arrow {
+  transform: rotate(-90deg);
+}
+
+/* 5. Wordmark: the full content width, on the bottom edge */
+.footer-wordmark {
+  flex: none;
+  touch-action: pan-y;
+  width: 100%;
+}
+
+.footer-wordmark canvas {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+@media screen and (max-width: 62.5rem) {
+  .footer-header {
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .footer-ai {
+    align-items: flex-start;
+  }
+
+  .footer-nav-row {
+    column-gap: 3rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: normal;
+    row-gap: 2.5rem;
+  }
+}
+
+@media screen and (max-width: 37.5rem) {
+  /* Taller than the screen here, so it grows with its content */
+  .footer-main {
+    min-height: 0;
+  }
+
+  .footer-spacer {
+    flex: none;
+    height: 4rem;
+    min-height: 0;
+  }
+
+  .footer-nav-row {
+    column-gap: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 2.5rem;
+  }
+
+  .footer-nav-col--wide {
+    grid-column: 1 / -1;
+  }
+
+  /* Tap targets: every link row at least 2.75rem tall */
+  .footer-nav-col {
+    gap: 0;
+  }
+
+  .footer-col-link,
+  .footer-col-text {
+    align-items: center;
+    display: flex;
+    min-height: 2.75rem;
+    overflow-wrap: anywhere;
+  }
+
+  .footer-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .footer-bottom__links {
+    gap: 1.5rem;
+  }
 }
 
 .breadcrumb-nav {
@@ -2926,21 +3029,6 @@ body:has(.prp-image-gallery__lightbox.is-open) {
     width: 1px;
   }
 
-  .footer-main {
-    padding-bottom: 2rem;
-    padding-top: 2.5rem;
-  }
-
-  .footer-main .container.padding-global {
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
-
-  .footer-wrapper {
-    gap: 2.5rem;
-    grid-template-columns: 1fr;
-  }
-
   .section-spacer--md,
   .section-spacer--lg {
     --section-spacer-height: 5rem;
@@ -2977,66 +3065,6 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
   .prp-image-gallery__lightbox-next {
     right: 1rem;
-  }
-
-  .footer-main {
-    padding-bottom: 1.5rem;
-    padding-top: 2rem;
-  }
-
-  .footer-main .container.padding-global {
-    padding-left: 2.25rem;
-    padding-right: 2.25rem;
-  }
-
-  .footer-nav-row {
-    column-gap: 1.5rem;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding-bottom: 1.5rem;
-    row-gap: 1.75rem;
-    width: 100%;
-  }
-
-  .footer-nav-col {
-    min-width: 0;
-  }
-
-  .footer-col-title {
-    font-size: 0.6875rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .footer-col-link,
-  .footer-col-text,
-  .footer-socials__link {
-    font-size: 0.8125rem;
-    overflow-wrap: anywhere;
-  }
-
-  .footer-col-list {
-    gap: 0.4rem;
-  }
-
-  .footer-left {
-    align-items: flex-start;
-    text-align: left;
-  }
-
-  .footer-left__actions {
-    align-items: flex-start;
-  }
-
-  .footer-left__actions-list {
-    justify-content: flex-start;
-  }
-
-  .footer-left__tagline {
-    font-size: 0.875rem;
-  }
-
-  .footer-bottom__copyright {
-    margin-left: 0;
   }
 
   .interactive-console {
@@ -3128,41 +3156,6 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 }
 
 @media screen and (max-width: 480px) {
-  .footer-main {
-    padding-bottom: 1.25rem;
-    padding-top: 1.5rem;
-  }
-
-  .footer-main .container.padding-global {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  .footer-wrapper {
-    gap: 2rem;
-  }
-
-  .footer-nav-row {
-    column-gap: 1rem;
-    row-gap: 1.5rem;
-  }
-
-  .footer-socials {
-    padding-bottom: 1.25rem;
-    padding-top: 1.25rem;
-  }
-
-  .footer-ai-link {
-    height: 2rem;
-    width: 2rem;
-  }
-
-  .footer-bottom {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
   .pc-drawer-panel {
     max-height: 78vh;
     padding: 1rem 1rem 1.25rem;
@@ -3480,7 +3473,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   color: rgba(15, 10, 48, 0.38);
   cursor: pointer;
   display: inline-flex;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: 0.6875rem;
   font-weight: var(--weight-medium);
   gap: 0.75rem;
@@ -3575,7 +3568,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 }
 
 .nav-menu__utility-label {
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -3633,7 +3626,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 
 .nav-menu__latest-label {
   color: rgba(255, 255, 255, 0.56);
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: 0.59375rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -3668,7 +3661,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   border: 1px solid rgba(255, 255, 255, 0.16);
   color: #ffffff;
   cursor: pointer;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: 0.65625rem;
   gap: 0.5625rem;
   letter-spacing: 0.12em;
@@ -4943,8 +4936,11 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .ucc-eyebrow,
 .ucc-credit,
 .ucc-meta {
-  font-family: Consolas, 'Courier New', monospace;
+  color: #0c002e;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta-small, 0.75rem);
+  /* Medium, full-strength navy: the fine meta text has to read over the background image */
+  font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-meta, 0.12em);
   text-transform: uppercase;
 }
@@ -4978,13 +4974,18 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .ucc-title-line {
   animation: ucc-line-in 0.62s var(--ucc-ease) both;
   animation-delay: calc(var(--ucc-line) * 70ms);
+  /* The project name in the site's brand gradient */
+  background-clip: text;
+  background-image: var(--arg-gradient-primary);
+  -webkit-background-clip: text;
   display: block;
+  -webkit-text-fill-color: transparent;
+  width: fit-content;
 }
 
 .ucc-credit {
   animation: ucc-fade-in 0.5s ease 0.1s both;
   margin: 0;
-  opacity: 0.85;
 }
 
 .ucc-meta {
@@ -4999,7 +5000,6 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .ucc-meta li {
   animation: ucc-rise-in 0.45s ease both;
   animation-delay: calc(120ms + var(--ucc-meta) * 60ms);
-  opacity: 0.85;
   white-space: nowrap;
 }
 

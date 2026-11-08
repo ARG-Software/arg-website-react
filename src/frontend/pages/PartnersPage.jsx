@@ -11,6 +11,7 @@ import { Drawer } from '@ui/overlays/Drawer.jsx';
 import { FilterGrid } from '@ui/grids/FilterGrid.jsx';
 import { Timeline } from '@ui/grids/Timeline.jsx';
 import { PageHeader } from '@components/headers/PageHeader';
+import AppLink from '@components/navigation/AppLink';
 import data from '../data/partners.json';
 import PARTNERS_PAGE from '../data/partnersPage.json';
 import { getProjectBookingLink, getProjectBriefFormLink } from '../services/linksService';
@@ -110,6 +111,11 @@ export default function PartnersPage() {
                 clients={clients}
                 ctaLink={getProjectBriefFormLink()}
                 onCtaClick={() => trackCTA('contact_brief', 'partners_timeline')}
+                renderLink={({ href, children, ...props }) => (
+                  <AppLink to={href} {...props}>
+                    {children}
+                  </AppLink>
+                )}
                 animate={true}
                 cardPreset="fade-up"
               />

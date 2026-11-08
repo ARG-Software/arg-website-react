@@ -17,7 +17,7 @@
 .au-kicker {
   color: rgba(15, 10, 48, 0.44);
   display: inline-flex;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-kicker);
   font-weight: var(--weight-medium);
   letter-spacing: 0.18em;
@@ -79,7 +79,7 @@
   align-items: center;
   color: rgba(15, 10, 48, 0.44);
   display: flex;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-kicker);
   font-weight: var(--weight-medium);
   gap: 0.75rem;
@@ -440,7 +440,7 @@
   background: #0c002e;
   border-color: #0c002e;
   color: #fff;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   left: 50%;
   letter-spacing: 0.18em;
   position: absolute;
@@ -616,7 +616,7 @@
 .au-lens-readout,
 .au-lens-hint {
   color: rgba(15, 10, 48, 0.5);
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-kicker);
   letter-spacing: 0.18em;
   line-height: 1;
@@ -766,7 +766,7 @@
 
 .au-price-meta {
   color: #555;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta);
   margin: 0.75rem 0 0;
 }
@@ -798,7 +798,7 @@
 
 .au-scope dt {
   color: #888;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-kicker);
   font-weight: var(--weight-medium);
   letter-spacing: 0.12em;
@@ -888,7 +888,7 @@
 .au-card-foot {
   border-top: 1px solid rgba(12, 0, 46, 0.08);
   color: #c924d7;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta);
   margin-top: auto;
   padding-top: 0.875rem;
@@ -1085,7 +1085,7 @@
 
 .au-steps-index {
   color: #c924d7;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta);
   padding-top: 0.25rem;
 }
@@ -1231,7 +1231,7 @@
 
 .au-deck-eyebrow,
 .au-deck-mono {
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: clamp(0.6875rem, 1.5vmin, 0.8125rem);
   font-weight: var(--weight-medium);
   letter-spacing: 0.14em;
@@ -1383,7 +1383,7 @@
   align-items: center;
   color: #0c002e;
   display: flex;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: clamp(0.75rem, 1.7vmin, 0.875rem);
   font-weight: var(--weight-medium);
   gap: 0.5rem;
@@ -1406,7 +1406,7 @@
 .au-deck-scale-ends {
   color: #888;
   display: flex;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta);
   justify-content: space-between;
   margin-bottom: 0.625rem;
@@ -1918,7 +1918,7 @@
 
 .au-tier-hint {
   color: rgba(15, 10, 48, 0.44);
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-kicker);
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -2000,7 +2000,7 @@
   color: #888;
   display: flex;
   flex-wrap: wrap;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta);
   gap: 0.5rem;
   justify-content: center;

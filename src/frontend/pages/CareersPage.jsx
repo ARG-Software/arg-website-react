@@ -11,26 +11,14 @@ import { CTASection } from '@components/layout/CTASection';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
-import { FounderCard } from '@components/cards/FounderCard';
 import CAREERS_DATA from '../data/jobs.json';
 import CAREERS_PAGE from '../data/careersPage.json';
-import {
-  EMAIL_KEYS,
-  getMailtoLink,
-  getPersonLinkedInLink,
-  PERSON_KEYS,
-} from '../services/linksService';
+import { EMAIL_KEYS, getMailtoLink } from '../services/linksService';
 import '../styles/careers.css';
 
 const JOBS = CAREERS_DATA.jobs;
 const CAREER_TRAITS = CAREERS_DATA.careerTraits;
 const HIRING_STEPS = CAREERS_DATA.hiringSteps;
-
-const FOUNDERS = CAREERS_PAGE.founders.cards.map(founder => ({
-  ...founder,
-  emailHref: getMailtoLink(EMAIL_KEYS[founder.emailKey], founder.emailSubject),
-  linkedin: getPersonLinkedInLink(PERSON_KEYS[founder.personKey]),
-}));
 
 const EMPTY_FORM = {
   name: '',
@@ -198,14 +186,6 @@ export default function CareersPage() {
     });
   };
 
-  const handleFounderEmail = founderName => {
-    trackEvent('career_founder_email_click', { founder_name: founderName });
-  };
-
-  const handleFounderLinkedIn = founderName => {
-    trackEvent('career_founder_linkedin_click', { founder_name: founderName });
-  };
-
   return (
     <>
       <SEO
@@ -315,7 +295,7 @@ export default function CareersPage() {
               <>
                 <section
                   id="who"
-                  className="cp-careers-who-section padding-section-large border-radius-top background-color-white"
+                  className="cp-careers-who-section padding-section-large border-radius-top border-radius-bottom background-color-white"
                 >
                   <div className="container padding-global cp-careers-inner">
                     <div className="cp-section-header" data-animate-order="0">
@@ -343,34 +323,6 @@ export default function CareersPage() {
                             <p>{trait.body}</p>
                           </div>
                         </article>
-                      ))}
-                    </div>
-                  </div>
-                  <SectionDivider variant="default" hideOnMobile={false} />
-                </section>
-
-                <section
-                  id="founders"
-                  className="cp-founders-section padding-section-large border-radius-bottom background-color-white"
-                >
-                  <div className="container padding-global cp-founders-inner">
-                    <div className="cp-founders-intro" data-animate-order="0">
-                      <h2>
-                        {CAREERS_PAGE.founders.title}{' '}
-                        <span>{CAREERS_PAGE.founders.titleHighlight}</span>
-                      </h2>
-                      <p>{CAREERS_PAGE.founders.intro}</p>
-                    </div>
-                    <div className="cp-founders-grid">
-                      {FOUNDERS.map((founder, index) => (
-                        <FounderCard
-                          key={founder.name}
-                          founder={founder}
-                          animate={true}
-                          animateOrder={index + 1}
-                          onEmailClick={handleFounderEmail}
-                          onLinkedInClick={handleFounderLinkedIn}
-                        />
                       ))}
                     </div>
                   </div>

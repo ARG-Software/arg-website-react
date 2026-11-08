@@ -1,7 +1,10 @@
 import { Fragment } from 'react';
+import AppLink from '@components/navigation/AppLink';
 import { parseInlineMarkdown } from '@utils/inlineMarkdown';
 
 const EXTERNAL_HREF_PATTERN = /^https?:\/\//i;
+// A site page or an anchor: no file extension, so files such as PDFs and images load normally
+const PAGE_HREF_PATTERN = /^(#|\/[^.?#]*([?#].*)?$)/;
 
 /**
  * Renders the small inline Markdown subset used by website copy. Escaping
@@ -15,6 +18,14 @@ function renderParts(parts, linkClassName, keyPrefix = '') {
   return parts.map((part, index) => {
     const key = `${keyPrefix}${index}`;
     if (part.type === 'link') {
+      // Site pages and anchors navigate in the app, with the page transition
+      if (PAGE_HREF_PATTERN.test(part.href)) {
+        return (
+          <AppLink key={key} to={part.href} className={linkClassName}>
+            {renderParts(part.parts, linkClassName, `${key}-`)}
+          </AppLink>
+        );
+      }
       const isExternal = EXTERNAL_HREF_PATTERN.test(part.href);
       return (
         <a

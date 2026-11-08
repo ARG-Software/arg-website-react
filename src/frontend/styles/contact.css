@@ -111,7 +111,7 @@
 
 .contact-direct__card span {
   color: rgba(15, 10, 48, 0.44);
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-kicker);
   font-weight: var(--weight-medium);
   letter-spacing: 0.14em;
@@ -156,7 +156,7 @@
   border: 1px solid rgba(15, 10, 48, 0.12);
   border-radius: 999px;
   color: #0f0a30;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: var(--type-kicker);
   font-weight: var(--weight-medium);
   letter-spacing: 0.14em;

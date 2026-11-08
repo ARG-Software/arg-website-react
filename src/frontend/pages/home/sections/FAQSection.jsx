@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import React, { useEffect, useRef, useState } from 'react';
 import { trackFAQOpen } from '@services/analytics';
 import HOMEPAGE from '../../../data/homePage.json';
 import FAQ from '../../../data/faq.json';
@@ -20,17 +19,75 @@ function renderAnswerBlock(block, index) {
   return <p key={index}>{block.text}</p>;
 }
 
+// Fill `faq.video` in homePage.json: `src` for a file in /public, or `embedUrl` for a player
+// (that host must also be allowed in frame-src in public/_headers). Empty, it shows the frame.
+// Only a play button shows at first; once the film plays, its controls appear on hover or focus
+function FAQVideo({ video = {} }) {
+  const videoRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  let media = <div className="faq_video-placeholder">Video</div>;
+  if (video.embedUrl) {
+    media = (
+      <iframe
+        src={video.embedUrl}
+        title={video.title}
+        loading="lazy"
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+        allowFullScreen
+      />
+    );
+  } else if (video.src) {
+    media = (
+      <>
+        <video
+          ref={videoRef}
+          src={video.src}
+          poster={video.poster || undefined}
+          title={video.title}
+          controls={playing && hovered}
+          playsInline
+          preload="metadata"
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onEnded={() => setPlaying(false)}
+        />
+        {!playing && (
+          <button
+            type="button"
+            className="faq_video-play"
+            aria-label={`Play the ${video.title} film`}
+            onClick={() => videoRef.current.play()}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+            </svg>
+          </button>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <div
+      className="faq_video"
+      data-animate-order="0"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+    >
+      {media}
+    </div>
+  );
+}
+
 export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faqData }) {
   // Inlined useFAQAnimations hook
   useEffect(() => {
     const items = document.querySelectorAll('.faq_item');
     if (!items.length) return;
-
-    const faqHeader = document.querySelector('.faq_header');
-    if (faqHeader) {
-      faqHeader.style.display = 'flex';
-      faqHeader.style.justifyContent = 'space-between';
-    }
 
     items.forEach(item => {
       const button = item.querySelector('.faq_question');
@@ -152,18 +209,21 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
               <div>{content.eyebrow}</div>
             </div>
           </div>
-          <div className="faq_list" data-animate-scope data-animate-default-preset="fade-up">
-            {items.map((item, i) => (
-              <div key={i} className="faq_item" data-animate-order={i}>
-                <button className="faq_question" aria-expanded="false">
-                  <span className="faq_question_text">{item.q}</span>
-                  <div className="faq_icon arrow_icon-embed">{arrowSvg}</div>
-                </button>
-                <div className="faq_answer">
-                  <div className="faq_answer_inner">{item.answer.map(renderAnswerBlock)}</div>
+          <div className="faq_layout" data-animate-scope data-animate-default-preset="fade-up">
+            <FAQVideo video={content.video} />
+            <div className="faq_list">
+              {items.map((item, i) => (
+                <div key={i} className="faq_item" data-animate-order={i + 1}>
+                  <button className="faq_question" aria-expanded="false">
+                    <span className="faq_question_text">{item.q}</span>
+                    <span className="faq_toggle" aria-hidden="true" />
+                  </button>
+                  <div className="faq_answer">
+                    <div className="faq_answer_inner">{item.answer.map(renderAnswerBlock)}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

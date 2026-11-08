@@ -2,7 +2,7 @@ MOJALOOP
 
 Industry: Fintech
 Client: Mojaloop Foundation (mojaloop.io)
-Featured engagement: 2021-2023
+Featured engagement: 3 Years
 Services: Core Platform Rebuild, Payments Architecture, Backend, Frontend Implementation, Mobile App Development, QA & Testing
 
 THE CHALLENGE

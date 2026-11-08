@@ -263,7 +263,7 @@ input[type='file']:focus-visible {
 html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
-  font-family: sans-serif;
+  font-family: Neuemontreal, sans-serif;
   font-size: 16px;
   height: 100%;
 }
@@ -272,7 +272,7 @@ body {
   background-color: #fff;
   min-height: 100%;
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: Neuemontreal, sans-serif;
   font-size: 14px;
   line-height: 20px;
 }
@@ -1056,7 +1056,6 @@ section > :last-child > .line-separate:last-child {
 .align-self-baseline {
   align-self: baseline !important;
 }
-
 
 .container {
   width: 100%;

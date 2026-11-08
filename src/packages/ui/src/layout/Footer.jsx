@@ -1,104 +1,109 @@
-import { SectionDivider } from './SectionDivider.jsx';
+import { useEffect, useRef, useState } from 'react';
+import { arrowSvg } from '../icons/SocialIcons.jsx';
+import { DotWordmark } from './DotWordmark.jsx';
 
 export function Footer({
   brand,
   columns = [],
   legalLinks = [],
   copyright,
+  wordmark,
+  onBackToTop,
   renderLink = defaultRenderLink,
   renderExternalLink = defaultRenderExternalLink,
-  animate = true,
-  animationPreset = 'fade-up',
 }) {
-  const scopeAttrs = animate
-    ? {
-        'data-animate-scope': true,
-        'data-animate-default-preset': animationPreset,
-      }
-    : {};
+  const footerRef = useRef(null);
+  const [footerHeight, setFooterHeight] = useState(0);
+
+  // The page scrolls off the footer, which waits underneath (see .footer-reveal in styles.css)
+  useEffect(() => {
+    const footer = footerRef.current;
+    const resizeObserver = new ResizeObserver(() => setFooterHeight(footer.offsetHeight));
+    resizeObserver.observe(footer);
+    return () => resizeObserver.disconnect();
+  }, []);
 
   return (
-    <>
-      {/* Inside the page padding, so the line starts and ends with the content */}
-      <div className="container padding-global">
-        <SectionDivider
-          variant="light"
-          data-animate={animate ? 'divider-expander-show' : undefined}
-        />
-      </div>
-
-      <footer className="footer-main" {...scopeAttrs}>
-        <div className="container padding-global">
-          <div className="footer-wrapper">
-            <div className="footer-left" data-animate-order={animate ? '0' : undefined}>
-              {brand?.logo && <div className="footer-left__logo">{brand.logo}</div>}
-              {brand?.tagline && <div className="footer-left__tagline">{brand.tagline}</div>}
-              {brand?.contact && <div className="footer-left__contact">{brand.contact}</div>}
-              {brand?.actions?.length > 0 && (
-                <div className="footer-left__actions">
-                  {brand.actionsTitle && (
-                    <div className="footer-left__actions-title">{brand.actionsTitle}</div>
-                  )}
-                  <div className="footer-left__actions-list">
-                    {brand.actions.map(action =>
-                      renderFooterLink(
-                        action,
-                        renderLink,
-                        renderExternalLink,
-                        action.className || 'footer-left__action'
-                      )
-                    )}
-                  </div>
+    <div
+      className={`footer-reveal${footerHeight ? ' is-revealing' : ''}`}
+      style={footerHeight ? { '--footer-height': `${footerHeight}px` } : undefined}
+    >
+      <div className="footer-reveal__track">
+        <footer ref={footerRef} className="footer-main">
+          <div className="footer-header">
+            <div className="footer-brand">
+              {brand?.logo && <div className="footer-brand__logo">{brand.logo}</div>}
+              {brand?.tagline && <p className="footer-brand__statement">{brand.tagline}</p>}
+              {brand?.contact?.length > 0 && (
+                <div className="footer-brand__contact">
+                  {brand.contact.map((item, index) => (
+                    <span key={index}>{item}</span>
+                  ))}
                 </div>
               )}
             </div>
 
-            <div className="footer-right">
-              <div className="footer-nav-row" data-animate-order={animate ? '1' : undefined}>
-                {columns.map(column => (
-                  <FooterColumn
-                    key={column.title || column.sections[0].title}
-                    column={column}
-                    renderLink={renderLink}
-                    renderExternalLink={renderExternalLink}
-                  />
-                ))}
+            {brand?.actions?.length > 0 && (
+              <div className="footer-ai">
+                {brand.actionsTitle && <div className="footer-col-title">{brand.actionsTitle}</div>}
+                <div className="footer-ai__list">
+                  {brand.actions.map(action =>
+                    renderFooterLink(
+                      action,
+                      renderLink,
+                      renderExternalLink,
+                      action.className || 'footer-ai__action'
+                    )
+                  )}
+                </div>
               </div>
+            )}
+          </div>
 
-              <SectionDivider
-                variant="light"
-                data-animate={animate ? 'divider-expander-show' : undefined}
-                data-animate-order={animate ? '2' : undefined}
-              />
+          <div className="footer-nav-row">
+            {columns.map(column => (
+              <nav
+                key={column.title}
+                className={`footer-nav-col${column.wide ? ' footer-nav-col--wide' : ''}`}
+                aria-label={column.title}
+              >
+                <div className="footer-col-title">{column.title}</div>
+                {column.items.map(item => renderFooterItem(item, renderLink, renderExternalLink))}
+              </nav>
+            ))}
+          </div>
 
-              <div className="footer-bottom" data-animate="">
-                {legalLinks.map(link =>
-                  renderFooterLink(link, renderLink, renderExternalLink, 'footer-bottom__link')
-                )}
-                {copyright && <span className="footer-bottom__copyright">{copyright}</span>}
-              </div>
+          {/* Takes the leftover height so the bar and the wordmark sit on the bottom edge */}
+          <div className="footer-spacer" />
+
+          <div className="footer-bottom">
+            {copyright && <span className="footer-bottom__copyright">{copyright}</span>}
+            <div className="footer-bottom__links">
+              {legalLinks.map(link =>
+                renderFooterLink(link, renderLink, renderExternalLink, 'footer-bottom__link')
+              )}
+              {onBackToTop && (
+                <button
+                  type="button"
+                  className="text-button footer-bottom__top"
+                  onClick={onBackToTop}
+                >
+                  <span className="text-button_list">
+                    <span className="text-button_text text-no-wrap">Back to top</span>
+                    <span className="arrow_icon-embed footer-bottom__top-arrow">{arrowSvg}</span>
+                  </span>
+                  <span className="text-button_list is-animated" aria-hidden="true">
+                    <span className="text-button_text text-no-wrap">Back to top</span>
+                    <span className="arrow_icon-embed footer-bottom__top-arrow">{arrowSvg}</span>
+                  </span>
+                </button>
+              )}
             </div>
           </div>
-        </div>
-      </footer>
-    </>
-  );
-}
 
-function FooterColumn({ column, renderLink, renderExternalLink }) {
-  // A column is one titled list, or several stacked under `sections`
-  const sections = column.sections || [column];
-
-  return (
-    <div className="footer-nav-col">
-      {sections.map(section => (
-        <div key={section.title} className="footer-col-section">
-          <div className="footer-col-title">{section.title}</div>
-          <div className="footer-col-list">
-            {section.items.map(item => renderFooterItem(item, renderLink, renderExternalLink))}
-          </div>
-        </div>
-      ))}
+          {wordmark && <DotWordmark word={wordmark} className="footer-wordmark" />}
+        </footer>
+      </div>
     </div>
   );
 }
@@ -113,17 +118,9 @@ function renderFooterItem(item, renderLink, renderExternalLink) {
     );
   }
 
-  if (item.html) {
-    return (
-      <span key={item.key || item.label} className="footer-col-text">
-        {item.html}
-      </span>
-    );
-  }
-
   return (
     <span key={item.key || item.label} className="footer-col-text">
-      {item.label}
+      {item.html || item.label}
     </span>
   );
 }

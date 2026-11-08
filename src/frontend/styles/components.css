@@ -800,6 +800,37 @@
   transform: translateY(0) !important;
 }
 
+/* Hairline underline that draws in from the left on hover and leaves to the right */
+.text-button::after {
+  background-color: #fff;
+  bottom: 0;
+  content: '';
+  height: 0.0625rem;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.65s var(--ease-in-out-quart);
+}
+
+.text-button:has(.is-dark, .is--black, .text-color-black, .portfolio)::after {
+  background-color: #000;
+}
+
+.text-button:hover::after,
+.text-button:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-button::after {
+    transition: none;
+  }
+}
+
 .text-button_list {
   grid-column-gap: 0.5rem;
   grid-row-gap: 0.5rem;
@@ -1567,7 +1598,7 @@
   color: #111111;
   display: flex;
   flex-wrap: wrap;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: Neuemontreal, sans-serif;
   font-size: 0.875rem;
   gap: 1.5rem;
   justify-content: space-between;
@@ -1767,13 +1798,15 @@
   .page-header__aside {
     -webkit-mask-composite: source-in;
     -webkit-mask-image:
-      linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 12%, #000 40%);
+      linear-gradient(90deg, transparent 0%, #000 22%),
+      linear-gradient(0deg, transparent 12%, #000 40%);
     aspect-ratio: auto;
     bottom: 0;
     margin: 0;
     mask-composite: intersect;
     mask-image:
-      linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 12%, #000 40%);
+      linear-gradient(90deg, transparent 0%, #000 22%),
+      linear-gradient(0deg, transparent 12%, #000 40%);
     position: absolute;
     right: 0;
     top: 0;
@@ -2521,7 +2554,7 @@
 }
 
 .nav-menu__utility-label {
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -2644,7 +2677,7 @@
 }
 
 .nav-menu__latest-label {
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: 0.59375rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -2676,7 +2709,7 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
   color: #ffffff;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: 0.65625rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -2799,7 +2832,7 @@
 
   .nav-menu__primary-index {
     display: inline;
-    font-family: Consolas, 'Courier New', monospace;
+    font-family: Neuemontreal, sans-serif;
     font-size: 0.625rem;
     letter-spacing: 0.14em;
     color: rgba(15, 10, 48, 0.46);

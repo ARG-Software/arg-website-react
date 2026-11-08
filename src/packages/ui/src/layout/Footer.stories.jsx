@@ -83,6 +83,6 @@ export default meta;
 export const Default = {
   args: {
     ...MOCK_FOOTER,
-    animate: false,
+    wordmark: 'example',
   },
 };

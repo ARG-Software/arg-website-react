@@ -1,7 +1,26 @@
+import AppLink from '@components/navigation/AppLink';
 import { getProjectBookingLink } from '../../services/linksService';
 
 function isExternal(href) {
   return /^https?:\/\//.test(href) || href.startsWith('mailto:');
+}
+
+// Site pages go through AppLink for the page transition; external links, email and files stay plain
+function CTAButton({ link, children, ...props }) {
+  if (/^(#|\/[^.?#]*([?#].*)?$)/.test(link)) {
+    return (
+      <AppLink to={link} {...props}>
+        {children}
+      </AppLink>
+    );
+  }
+
+  const externalAttrs = isExternal(link) ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+  return (
+    <a href={link} {...externalAttrs} {...props}>
+      {children}
+    </a>
+  );
 }
 
 function ResponsiveText({ children, mobileText }) {
@@ -107,9 +126,8 @@ export function CTASection({
           )}
           <div className="padding-bottom padding-48"></div>
           <div className="cta-buttons">
-            <a
-              href={buttonLink}
-              {...(isExternal(buttonLink) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            <CTAButton
+              link={buttonLink}
               className={`button-base button-contact ${animationClass} pp-d2`}
               {...animationAttrs(3)}
               onClick={onPrimaryClick}
@@ -118,13 +136,10 @@ export function CTASection({
                 <div className="button-base__button-text">{buttonTextNotHover}</div>
                 <div className="button-base__button-text is-animated">{buttonTextHover}</div>
               </div>
-            </a>
+            </CTAButton>
             {secondButtonLink && (
-              <a
-                href={secondButtonLink}
-                {...(isExternal(secondButtonLink)
-                  ? { target: '_blank', rel: 'noopener noreferrer' }
-                  : {})}
+              <CTAButton
+                link={secondButtonLink}
                 className={`button-base button-contact ${animationClass} pp-d2`}
                 {...animationAttrs(4)}
                 onClick={onSecondaryClick}
@@ -135,7 +150,7 @@ export function CTASection({
                     {secondButtonTextHover}
                   </div>
                 </div>
-              </a>
+              </CTAButton>
             )}
           </div>
         </div>

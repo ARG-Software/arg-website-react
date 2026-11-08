@@ -477,7 +477,7 @@
 
 .pt-future-kicker {
   color: var(--arg-color-magenta);
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: Neuemontreal, sans-serif;
   font-size: 0.6875rem;
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-meta);

@@ -20,12 +20,24 @@ export function Timeline({
   ctaButtonText = 'Start Now',
   ctaLink = '#page-cta',
   onCtaClick,
+  renderLink = defaultRenderLink,
   animate = true,
   rowPreset = 'fade-up',
   cardPreset = 'fade-up',
 }) {
   const isExternal = ctaLink.startsWith('http');
   const ctaAttrs = isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+  const ctaContent = (
+    <>
+      <span className="pt-future-kicker">{ctaText}</span>
+      <span className="pt-future-title">
+        {ctaButtonText}
+        <span className="arrow_icon-embed" aria-hidden="true">
+          {arrowSvg}
+        </span>
+      </span>
+    </>
+  );
   const now = new Date();
   const currentYear = now.getFullYear();
   // One dimmed future year after the current one leaves room for the "Your time" row
@@ -125,21 +137,14 @@ export function Timeline({
           </ol>
 
           {/* An open slot in the future, after Today: the gradient draws itself around it */}
-          <a
-            href={ctaLink}
-            className="pt-future"
-            {...ctaAttrs}
-            onClick={onCtaClick}
-            {...rowAttrs(timelineRows.length + 4)}
-          >
-            <span className="pt-future-kicker">{ctaText}</span>
-            <span className="pt-future-title">
-              {ctaButtonText}
-              <span className="arrow_icon-embed" aria-hidden="true">
-                {arrowSvg}
-              </span>
-            </span>
-          </a>
+          {renderLink({
+            href: ctaLink,
+            className: 'pt-future',
+            onClick: onCtaClick,
+            ...ctaAttrs,
+            ...rowAttrs(timelineRows.length + 4),
+            children: ctaContent,
+          })}
         </div>
       </div>
 
@@ -159,17 +164,23 @@ export function Timeline({
           </li>
         ))}
         <li className="pt-mobile-row pt-mobile-row--cta" {...cardAttrs(timelineRows.length + 1)}>
-          <a href={ctaLink} className="pt-future pt-mobile-cta" {...ctaAttrs} onClick={onCtaClick}>
-            <span className="pt-future-kicker">{ctaText}</span>
-            <span className="pt-future-title">
-              {ctaButtonText}
-              <span className="arrow_icon-embed" aria-hidden="true">
-                {arrowSvg}
-              </span>
-            </span>
-          </a>
+          {renderLink({
+            href: ctaLink,
+            className: 'pt-future pt-mobile-cta',
+            onClick: onCtaClick,
+            ...ctaAttrs,
+            children: ctaContent,
+          })}
         </li>
       </ol>
     </div>
+  );
+}
+
+function defaultRenderLink({ href, children, ...props }) {
+  return (
+    <a href={href} {...props}>
+      {children}
+    </a>
   );
 }

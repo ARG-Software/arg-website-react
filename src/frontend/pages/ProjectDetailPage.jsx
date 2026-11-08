@@ -190,7 +190,7 @@ export default function ProjectDetailPage() {
           {/* OVERVIEW: description and live links beside the project details */}
           <section
             id="overview"
-            className="prp-overview padding-section-large border-radius-top background-color-white"
+            className="prp-overview padding-section-xlarge border-radius-top background-color-white"
           >
             <div className="container container--section padding-global">
               <div className="prp-grid">
@@ -236,12 +236,7 @@ export default function ProjectDetailPage() {
                     <span className="prp-meta-label">Services</span>
                     <div className="prp-meta-pills">
                       {project.services.map(service => (
-                        <Pill
-                          key={service}
-                          className="prp-meta-service-tag"
-                          variant="outline"
-                          size="xs"
-                        >
+                        <Pill key={service} variant="dark" size="xs">
                           {service}
                         </Pill>
                       ))}
@@ -325,7 +320,7 @@ export default function ProjectDetailPage() {
                       className="prp-approach-mockup"
                       src={project.mockupSrc}
                       srcSet={project.mockupSrcSet}
-                      sizes="(max-width: 47.9375rem) 50vw, 16rem"
+                      sizes="(max-width: 47.9375rem) 50vw, 17rem"
                       alt={`${project.title} mockup`}
                       loading="lazy"
                       decoding="async"
@@ -336,7 +331,10 @@ export default function ProjectDetailPage() {
                 <ul className="prp-row-body prp-solution-list">
                   {project.solution.map((item, i) => (
                     <li key={i} data-animate="fade-up">
-                      {item}
+                      <span className="prp-solution-arrow" aria-hidden="true">
+                        {arrowSvg}
+                      </span>
+                      <span>{item}</span>
                     </li>
                   ))}
                 </ul>

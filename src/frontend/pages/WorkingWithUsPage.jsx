@@ -139,6 +139,7 @@ export default function WorkingWithUsPage() {
                       className="cp-value-card"
                       variant="light"
                       padding="lg"
+                      accentLine
                       animate={true}
                       animationOrder={index + 1}
                     >
