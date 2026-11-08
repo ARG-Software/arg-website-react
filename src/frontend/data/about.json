@@ -184,7 +184,6 @@
     "people": [
       {
         "id": "jose",
-        "initials": "JA",
         "name": "José Antunes",
         "role": "Co-founder, Software Engineer",
         "bio": "José studied Computer Science and earned an M.Sc. in Software Architecture from the University of Porto. His experience spans backend, frontend, mobile and full-stack development, alongside architecture and technical leadership.",
@@ -193,7 +192,6 @@
       },
       {
         "id": "rui",
-        "initials": "RR",
         "name": "Rui Rocha",
         "role": "Co-founder, Software Engineer",
         "bio": "Rui studied Computer Engineering at ISEP. His experience spans freelance work, telecommunications, product delivery and running a programming studio for international clients and national brands.",

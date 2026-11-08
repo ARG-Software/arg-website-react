@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA, trackEvent, trackOutbound } from '@services/analytics';
@@ -9,6 +9,7 @@ import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
+import { useFilterReveal } from '@ui/utils/useFilterReveal.js';
 import { Pill } from '@ui/pills/Pill.jsx';
 import AppLink from '@components/navigation/AppLink';
 import data from '../data/skills.json';
@@ -20,6 +21,8 @@ const { categories, skills } = data;
 
 export default function SkillsPage() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const gridRef = useRef(null);
+  useFilterReveal(gridRef, '.sk-card', activeCategory);
 
   useTimeOnPage('/skills/');
   useScrollAnimations();
@@ -122,7 +125,7 @@ export default function SkillsPage() {
                   </div>
                 </div>
 
-                <div className="sk-grid">
+                <div className="sk-grid" ref={gridRef}>
                   {visibleSkills.map(skill => (
                     <BaseCard
                       key={skill.slug}
@@ -131,6 +134,7 @@ export default function SkillsPage() {
                       className="sk-card"
                       variant="light"
                       padding="xl"
+                      accentLine
                       animate={true}
                       trackEvent="skill_click"
                       trackData={{ skill: skill.slug, category: skill.category }}

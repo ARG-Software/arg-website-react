@@ -18,6 +18,7 @@ uniform float uTime;
 uniform vec4 uBalls[${MAX_BALLS}];
 uniform float uCount;
 uniform float uMelt;
+uniform vec3 uColour;
 
 float smoothUnion(float a, float b, float k) {
   float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
@@ -50,10 +51,18 @@ void main() {
   vec3 origin = vec3(0.0, 0.0, 3.2);
   vec3 ray = normalize(vec3(uv, -2.2));
 
+  // The closest the ray came to the surface, and where, so a ray that only just misses can
+  // still cover part of its pixel: that softens the outline instead of leaving it jagged
   float travelled = 0.0;
+  float closest = 100.0;
+  float closestAt = 0.0;
   bool hit = false;
   for (int i = 0; i < 80; i++) {
     float d = field(origin + ray * travelled);
+    if (d < closest) {
+      closest = d;
+      closestAt = travelled;
+    }
     if (d < 0.001) {
       hit = true;
       break;
@@ -61,9 +70,17 @@ void main() {
     travelled += d;
     if (travelled > 6.0) break;
   }
+
+  float coverage = 1.0;
   if (!hit) {
-    gl_FragColor = vec4(0.0);
-    return;
+    // Width of one pixel on the plane where the ray passed closest
+    float pixel = closestAt * 2.0 / (min(uResolution.x, uResolution.y) * 2.2);
+    coverage = 1.0 - smoothstep(0.0, pixel * 1.5, closest);
+    if (coverage <= 0.0) {
+      gl_FragColor = vec4(0.0);
+      return;
+    }
+    travelled = closestAt;
   }
 
   vec3 p = origin + ray * travelled;
@@ -74,8 +91,8 @@ void main() {
   float facing = max(dot(n, view), 0.0);
   float fresnel = pow(1.0 - facing, 3.0);
 
-  // One soft white-grey for every piece, so they sit quietly on the navy header
-  vec3 colour = vec3(0.8, 0.8, 0.85) * (0.55 + 0.45 * dot(n, key));
+  // Soft white-grey by default, so the pieces sit quietly on the navy header
+  vec3 colour = uColour * (0.55 + 0.45 * dot(n, key));
   // Reflected surroundings: the navy page below, soft light above
   vec3 reflected = reflect(-view, n);
   vec3 surroundings = mix(vec3(0.05, 0.0, 0.18), vec3(1.0), smoothstep(-0.2, 0.9, reflected.y));
@@ -83,6 +100,7 @@ void main() {
   colour += pow(max(dot(reflect(-key, n), view), 0.0), 60.0) * 1.1;
   colour += pow(max(dot(reflect(-fill, n), view), 0.0), 24.0) * 0.35;
 
-  gl_FragColor = vec4(colour, 1.0);
+  // Premultiplied, as the canvas expects
+  gl_FragColor = vec4(colour * coverage, coverage);
 }
 `;

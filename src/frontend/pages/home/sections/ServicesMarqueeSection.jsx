@@ -13,9 +13,7 @@ export function ServicesMarqueeSection({ className = '', items = HOMEPAGE.infini
           {items.map(service => (
             <span className="infinity_item" key={service}>
               <span className="infinity_label">{service}</span>
-              <span className="infinity_dot" aria-hidden="true">
-                •
-              </span>
+              <span className="infinity_dot" aria-hidden="true" />
             </span>
           ))}
         </p>

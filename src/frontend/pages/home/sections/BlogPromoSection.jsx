@@ -2,8 +2,12 @@ import AppLink from '../../../components/navigation/AppLink';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { Pill } from '@ui/pills/Pill.jsx';
 import { trackBlogPostClick } from '@services/analytics';
+import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import HOMEPAGE from '../../../data/homePage.json';
+
+// One featured post plus four in the list beside it
+const BLOG_PROMO_LIST_COUNT = 4;
 
 function getTagColorStyle(tag) {
   let hash = 0;
@@ -18,48 +22,13 @@ function getTagColorStyle(tag) {
   };
 }
 
-function BlogCard({ blogPost, animationOrder }) {
-  const tagStyle = getTagColorStyle(blogPost.tag);
-  return (
-    <AppLink
-      to={`/blog/${blogPost.slug}/`}
-      className="blog-promo_card-new"
-      data-animate="fade-up"
-      data-animate-hover="lift"
-      data-animate-order={animationOrder}
-      onClick={() => trackBlogPostClick(blogPost.slug, blogPost.title, 'homepage_promo_card')}
-    >
-      <div className="blog-promo_card-new-header">
-        <h4 className="blog-promo_card-new-title">{blogPost.title}</h4>
-        <p className="blog-promo_card-new-excerpt">{blogPost.subtitle}</p>
-      </div>
-      <div className="blog-promo_card-new-footer">
-        <Pill className="blog-promo_card-new-tag" variant="custom" size="xs" style={tagStyle}>
-          {blogPost.tag}
-        </Pill>
-        <div className="blog-promo_card-new-meta">
-          <span className="blog-promo_card-new-date">{blogPost.date}</span>
-          <div className="arrow_icon-embed">{arrowSvg}</div>
-        </div>
-      </div>
-    </AppLink>
-  );
-}
-
-function displayBlogGridRow(blogPosts = [], startOrder = 0) {
-  return (
-    <div className="blog-promo_cards-new">
-      {blogPosts.map((blogPost, index) => (
-        <BlogCard key={blogPost.slug} blogPost={blogPost} animationOrder={startOrder + index} />
-      ))}
-    </div>
-  );
-}
-
+/**
+ * Title with the eyebrow pill on the right, the latest post as a large featured card and
+ * the next four as a list with square thumbnails beside it, then the blog link.
+ */
 export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE.blogPromo }) {
-  const heroPost = blogPosts[0];
-  const gridPosts = blogPosts.slice(1, 7);
-  const heroTagStyle = getTagColorStyle(heroPost.tag);
+  const featured = blogPosts[0];
+  const listPosts = blogPosts.slice(1, 1 + BLOG_PROMO_LIST_COUNT);
 
   return (
     <section
@@ -85,40 +54,78 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
                 <div>{content.eyebrow}</div>
               </div>
             </div>
-            <AppLink
-              to={`/blog/${heroPost.slug}/`}
-              className="blog-promo_hero blog-promo_card-new"
-              data-animate="fade-up"
-              data-animate-hover="lift"
-              data-animate-order="2"
-              onClick={() =>
-                trackBlogPostClick(heroPost.slug, heroPost.title, 'homepage_promo_hero')
-              }
-            >
-              <div className="blog-promo_hero-content">
-                <div className="blog-promo_card-new-header">
-                  <h3 className="blog-promo_card-new-title blog-promo_hero-title">
-                    {heroPost.title}
-                  </h3>
-                  <p className="blog-promo_card-new-excerpt">{heroPost.subtitle}</p>
+
+            <div className="blog-promo_layout">
+              <AppLink
+                to={`/blog/${featured.slug}/`}
+                className="blog-promo_featured"
+                data-animate="fade-up"
+                data-animate-order="3"
+                onClick={() =>
+                  trackBlogPostClick(featured.slug, featured.title, 'homepage_promo_featured')
+                }
+              >
+                <div className="blog-promo_featured-media">
+                  {featured.image ? (
+                    <img
+                      className="blog-promo_featured-image"
+                      src={featured.image}
+                      srcSet={getCoverSrcSet(featured.image)}
+                      sizes="(max-width: 61.9375rem) 100vw, 45rem"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : null}
+                  <span className="blog-promo_featured-pill">{featured.tag}</span>
+                  {featured.readTime ? (
+                    <span className="blog-promo_featured-pill blog-promo_featured-pill--end">
+                      {featured.readTime}
+                    </span>
+                  ) : null}
                 </div>
-                <div className="blog-promo_card-new-footer blog-promo_hero-footer">
-                  <Pill
-                    className="blog-promo_card-new-tag"
-                    variant="custom"
-                    size="xs"
-                    style={heroTagStyle}
-                  >
-                    {heroPost.tag}
-                  </Pill>
-                  <div className="blog-promo_card-new-meta">
-                    <span className="blog-promo_card-new-date">{heroPost.date}</span>
-                    <div className="arrow_icon-embed">{arrowSvg}</div>
-                  </div>
-                </div>
-              </div>
-            </AppLink>
-            {displayBlogGridRow(gridPosts, 3)}
+                <h3 className="blog-promo_featured-title">{featured.title}</h3>
+                <p className="blog-promo_featured-excerpt">{featured.subtitle}</p>
+              </AppLink>
+
+              <ul className="blog-promo_list">
+                {listPosts.map((post, index) => (
+                  <li key={post.slug} className="blog-promo_item">
+                    <AppLink
+                      to={`/blog/${post.slug}/`}
+                      className="blog-promo_post"
+                      data-animate="fade-up"
+                      data-animate-order={4 + index}
+                      onClick={() =>
+                        trackBlogPostClick(post.slug, post.title, 'homepage_promo_list')
+                      }
+                    >
+                      <div className="blog-promo_post-thumb">
+                        {post.image ? (
+                          <img
+                            src={post.image}
+                            srcSet={getCoverSrcSet(post.image)}
+                            sizes="6rem"
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : null}
+                      </div>
+                      <div className="blog-promo_post-body">
+                        <div className="blog-promo_post-meta">
+                          <Pill variant="custom" size="xs" style={getTagColorStyle(post.tag)}>
+                            {post.tag}
+                          </Pill>
+                          <span className="blog-promo_post-date">{post.date}</span>
+                        </div>
+                        <h3 className="blog-promo_post-title">{post.title}</h3>
+                      </div>
+                    </AppLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             <div className="blog-promo_footer" data-animate-order="10">
               <AppLink to="/blog/" className="text-button text-button--align-end">

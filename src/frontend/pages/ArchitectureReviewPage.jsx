@@ -212,6 +212,7 @@ export default function ArchitectureReviewPage() {
 
                   <div data-animate-order="1">
                     <ContactForm
+                      className="form-card--minimal"
                       title={PAGE.start.form.title}
                       description={PAGE.start.form.description}
                       fields={FORM_FIELDS}

@@ -42,6 +42,29 @@
   max-width: 34rem;
 }
 
+/* The intro column stretches to the form's height, and the lava lamp fills what the text
+   leaves, so it ends level with the form: a quiet distraction beside it */
+.contact-brief__intro {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-brief__lamp {
+  flex: 1 1 0;
+  margin-top: 2.5rem;
+  min-height: 0;
+  width: min(100%, 20rem);
+}
+
+.contact-brief__lamp-canvas {
+  display: block;
+  height: 100%;
+  /* Drops fade in at the bottom and out at the top instead of crossing a hard edge */
+  mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+  width: 100%;
+}
+
 .contact-form-panel {
   width: 100%;
 }
@@ -159,6 +182,11 @@
 
   .contact-social {
     grid-column: auto;
+  }
+
+  /* Stacked above the form there is no free space for it */
+  .contact-brief__lamp {
+    display: none;
   }
 }
 

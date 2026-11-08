@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AltchaVerification } from '@components/forms/AltchaVerification';
+import { LavaLampArt } from '@components/animated/LavaLampArt';
 import { ContactForm } from '@components/forms/ContactForm';
 import { Footer } from '@components/layout/Footer';
 import { Navbar } from '@components/navigation/Navbar';
@@ -134,10 +135,14 @@ export default function ContactPage() {
                       matters. If it looks like a fit, we will ask the precise technical questions
                       next.
                     </p>
+                    <div className="contact-brief__lamp">
+                      <LavaLampArt className="contact-brief__lamp-canvas" />
+                    </div>
                   </div>
 
                   <div className="contact-form-panel" data-animate="fade-up">
                     <ContactForm
+                      className="form-card--minimal"
                       title="Send a brief"
                       description="Reviewed directly by senior engineers. No sales handoff."
                       fields={CONTACT_FIELDS}

@@ -67,7 +67,7 @@ function listFiles(targetPath) {
 function isAllowedException(filePath, line) {
   return (
     filePath === 'src/frontend/data/homePage.json' &&
-    line.includes('Marc-Andre Mignault, Project Manager at Skytracks')
+    line.includes('"role": "Project Manager at Skytracks"')
   );
 }
 

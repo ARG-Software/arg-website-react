@@ -6,6 +6,8 @@ import {
 } from '../../animations/shaders/fluidBlob';
 
 const STILL_FRAME_SECONDS = 3;
+// The white-grey of the pieces on the navy headers
+const DEFAULT_COLOUR = [0.8, 0.8, 0.85];
 // The camera sits 3.2 units back with a focal length of 2.2, so one unit of screen space
 // (half the shorter canvas side) covers this much of the plane the blob floats on.
 const SCREEN_TO_WORLD = 3.2 / 2.2;
@@ -26,11 +28,11 @@ function compile(gl, type, source) {
 /**
  * Decorative liquid blob drawn with WebGL. `balls(seconds)` returns the spheres that melt
  * together, as [x, y, z, radius] in a view about 2.9 units tall; `melt` sets how strongly
- * they flow into each other. The blob leans towards the pointer and stretches a drop out to
+ * they flow into each other, and `colour` is the liquid's base colour as [r, g, b] from 0 to 1. The blob leans towards the pointer and stretches a drop out to
  * meet it; that only moves the spheres already sent each frame, so it adds no rendering
  * work. The loop only runs while the canvas is on screen; reduced motion gets one still frame.
  */
-export function FluidCanvas({ balls, melt = 0.35, className = '' }) {
+export function FluidCanvas({ balls, melt = 0.35, colour = DEFAULT_COLOUR, className = '' }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -54,6 +56,7 @@ export function FluidCanvas({ balls, melt = 0.35, className = '' }) {
 
     const uniform = name => gl.getUniformLocation(program, name);
     gl.uniform1f(uniform('uMelt'), melt);
+    gl.uniform3fv(uniform('uColour'), colour);
     const resolution = uniform('uResolution');
     const time = uniform('uTime');
     const ballsUniform = uniform('uBalls');
@@ -185,7 +188,7 @@ export function FluidCanvas({ balls, melt = 0.35, className = '' }) {
       area.removeEventListener('pointerleave', onPointerLeave);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [balls, melt]);
+  }, [balls, melt, colour]);
 
   return <canvas ref={canvasRef} className={className} aria-hidden="true" />;
 }

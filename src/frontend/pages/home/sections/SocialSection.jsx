@@ -1,127 +1,242 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import {
+  ANIMATION_PRESETS,
+  ATTRIBUTE_PRESETS,
+  REVEAL_MAX_STEPS,
+  REVEAL_STEP_MS,
+} from '../../../animations/attribute-presets';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
 import { LinkedInIcon } from '@ui/icons/LinkedInIcon.jsx';
-import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { getCompanySocialLink } from '@services/linksService';
 import { trackOutbound } from '@services/analytics';
 import { fetchSocialPosts } from '@services/socialPostsService';
 import HOMEPAGE from '../../../data/homePage.json';
 import '../../../styles/social.css';
 
-// Enough cards to fill a wide screen; more load as the track nears its end
-const SOCIAL_PAGE_SIZE = 6;
+// Two rows of three on desktop, so the arrows stay in view
+const SOCIAL_POST_COUNT = 6;
+
+// Random start or end point of a card in the shuffle
+const scatter = range => () => gsap.utils.random(-range, range);
 
 export function SocialSection({ className = '', content = HOMEPAGE.social }) {
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [edges, setEdges] = useState({ start: true, end: true });
-  const trackRef = useRef(null);
-  const loadingRef = useRef(false);
+  const [totalPages, setTotalPages] = useState(1);
+  const wallRef = useRef(null);
+  const pagesRef = useRef(new Map());
+  const busyRef = useRef(false);
+  const dealInRef = useRef(false);
+  const tweenRef = useRef(null);
+  const controlsRef = useRef(null);
+  const revealedRef = useRef(false);
+
+  // Most liked posts first; each page is fetched once and kept
+  const loadPage = useCallback(pageNumber => {
+    const cache = pagesRef.current;
+    if (!cache.has(pageNumber)) {
+      const request = fetchSocialPosts({
+        page: pageNumber,
+        pageSize: SOCIAL_POST_COUNT,
+        sort: 'likes',
+      }).catch(error => {
+        cache.delete(pageNumber);
+        throw error;
+      });
+      cache.set(pageNumber, request);
+    }
+    return cache.get(pageNumber);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
 
-    fetchSocialPosts({ page: 1, pageSize: SOCIAL_PAGE_SIZE })
+    loadPage(1)
       .then(result => {
         if (cancelled) return;
         setPosts(result.records || []);
-        setPage(result.pagination?.page || 1);
-        setHasMore(hasNextPage(result.pagination));
+        setTotalPages(result.pagination?.totalPages || 1);
       })
       .catch(() => {
-        if (cancelled) return;
-        setPosts([]);
-        setHasMore(false);
+        if (!cancelled) setPosts([]);
       });
 
     return () => {
       cancelled = true;
+      tweenRef.current?.kill();
     };
-  }, []);
+  }, [loadPage]);
 
-  const loadMore = useCallback(async () => {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
-    try {
-      const result = await fetchSocialPosts({ page: page + 1, pageSize: SOCIAL_PAGE_SIZE });
-      const records = result.records || [];
-      setPosts(current => mergePosts(current, records));
-      setPage(result.pagination?.page || page + 1);
-      setHasMore(records.length > 0 && hasNextPage(result.pagination));
-    } catch {
-      setHasMore(false);
-    } finally {
-      loadingRef.current = false;
-    }
-  }, [page]);
-
-  // Tracks whether the row can move either way, and loads the next page once less
-  // than a screen of cards is left to the right
-  const handleScroll = useCallback(() => {
-    const track = trackRef.current;
-    if (!track) return;
-
-    const maxScroll = track.scrollWidth - track.clientWidth;
-    setEdges({ start: track.scrollLeft <= 1, end: track.scrollLeft >= maxScroll - 1 });
-    if (hasMore && track.scrollLeft >= maxScroll - track.clientWidth) loadMore();
-  }, [hasMore, loadMore]);
-
-  // Re-measure once new cards are in the row
+  // Fetch the next page ahead, so the arrow responds at once
   useEffect(() => {
-    const frame = requestAnimationFrame(handleScroll);
-    return () => cancelAnimationFrame(frame);
-  }, [posts, handleScroll]);
+    if (page < totalPages) loadPage(page + 1).catch(() => {});
+  }, [page, totalPages, loadPage]);
 
-  function scrollByCard(direction) {
-    const track = trackRef.current;
-    const card = track?.firstElementChild;
-    if (!card) return;
+  const hasPosts = posts.length > 0;
 
-    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    track.scrollBy({
-      left: direction * (card.getBoundingClientRect().width + gap),
-      behavior: reduceMotion ? 'auto' : 'smooth',
+  // The posts arrive after useScrollAnimations has collected the page, so the first page
+  // reveals here, with the same fade-up preset and step: card by card in reading order,
+  // then the arrows
+  useEffect(() => {
+    const wall = wallRef.current;
+    if (!wall || revealedRef.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const preset = ATTRIBUTE_PRESETS[ANIMATION_PRESETS.fadeUp];
+    const cards = [...wall.children].sort((a, b) => {
+      const boxA = a.getBoundingClientRect();
+      const boxB = b.getBoundingClientRect();
+      return boxA.top - boxB.top || boxA.left - boxB.left;
+    });
+    const elements = controlsRef.current ? [...cards, controlsRef.current] : cards;
+    elements.forEach(element => {
+      element.style.opacity = preset.initialOpacity;
+      element.style.transform = preset.initialTransform;
+    });
+
+    let cleanupTimer;
+    const observer = new IntersectionObserver(
+      entries => {
+        if (!entries[0].isIntersecting) return;
+        observer.disconnect();
+        revealedRef.current = true;
+        elements.forEach((element, index) => {
+          element.style.transition = preset.transition;
+          element.style.transitionDelay = `${Math.min(index, REVEAL_MAX_STEPS) * REVEAL_STEP_MS}ms`;
+          element.style.opacity = '';
+          element.style.transform = '';
+        });
+        // Drop the transition afterwards, so it does not fight the shuffle
+        cleanupTimer = setTimeout(
+          () => elements.forEach(element => element.style.removeProperty('transition')),
+          REVEAL_MAX_STEPS * REVEAL_STEP_MS + 1000
+        );
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(wall);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(cleanupTimer);
+    };
+  }, [hasPosts]);
+
+  // Shuffle: the current cards scatter out, then the next page's cards are dealt in
+  async function goToPage(nextPage) {
+    if (busyRef.current || nextPage < 1 || nextPage > totalPages) return;
+    busyRef.current = true;
+
+    let result;
+    try {
+      result = await loadPage(nextPage);
+    } catch {
+      busyRef.current = false;
+      return;
+    }
+
+    const showNextPage = () => {
+      dealInRef.current = true;
+      setPage(nextPage);
+      setPosts(result.records || []);
+    };
+
+    const cards = wallRef.current?.children;
+    if (!cards?.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      showNextPage();
+      return;
+    }
+
+    tweenRef.current = gsap.to(cards, {
+      x: scatter(120),
+      y: scatter(60),
+      rotation: scatter(10),
+      scale: 0.9,
+      opacity: 0,
+      duration: 0.35,
+      ease: 'power2.in',
+      stagger: { each: 0.03, from: 'random' },
+      onComplete: showNextPage,
     });
   }
+
+  useLayoutEffect(() => {
+    if (!dealInRef.current) return;
+    dealInRef.current = false;
+
+    const cards = wallRef.current?.children;
+    if (!cards?.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      busyRef.current = false;
+      return;
+    }
+
+    tweenRef.current = gsap.fromTo(
+      cards,
+      { x: scatter(120), y: scatter(60), rotation: scatter(10), scale: 0.9, opacity: 0 },
+      {
+        x: 0,
+        y: 0,
+        rotation: 0,
+        scale: 1,
+        opacity: 1,
+        duration: 0.5,
+        ease: 'power3.out',
+        stagger: { each: 0.04, from: 'random' },
+        clearProps: 'transform,opacity',
+        onComplete: () => {
+          busyRef.current = false;
+        },
+      }
+    );
+  }, [posts]);
+
+  // Only every other post with a cover keeps it, so the wall stays compact
+  let coverCount = 0;
+  const items = posts.map(post => {
+    const showCover = Boolean(post.coverImageUrl) && coverCount++ % 2 === 0;
+    return { post, showCover };
+  });
 
   return (
     <section id="social" className={`section_blog padding-section-medium ${className}`.trim()}>
       <div className="padding-global">
         <div className="container-large" data-animate-scope data-animate-default-preset="fade-up">
           <div className="blog-component">
-            <div className="home-section-header" data-animate-order="0">
+            <div className="home-section-header">
               <div>
-                <h2 className="home-section-title home-section-title--light">{content.title}</h2>
+                <h2 className="home-section-title home-section-title--light" data-animate-order="0">
+                  {content.title}
+                </h2>
               </div>
-              <div className="subtitle_tag-wrapper is--white hide-mobile-landscape">
+              <div
+                className="subtitle_tag-wrapper is--white hide-mobile-landscape"
+                data-animate-order="1"
+              >
                 <div>{content.eyebrow}</div>
               </div>
             </div>
-            <div className="swiper_blog-component" data-animate-order="1">
-              {posts.length > 0 ? (
-                <div className="social-feed">
-                  {/* Scrolls sideways (trackpad, touch or the arrows) and runs off the right edge */}
-                  <ul
-                    ref={trackRef}
-                    className="social-feed__track"
-                    aria-label="Social posts"
-                    onScroll={handleScroll}
+            {items.length > 0 ? (
+              <div className="social-feed">
+                {/* Masonry wall: the cards flow down three columns */}
+                <ul ref={wallRef} className="social-feed__wall" aria-label="Social posts">
+                  {items.map(({ post, showCover }) => (
+                    <li key={post.id} className="social-feed__item">
+                      <SocialPostCard post={post} showCover={showCover} />
+                    </li>
+                  ))}
+                </ul>
+                {totalPages > 1 ? (
+                  <div
+                    ref={controlsRef}
+                    className="simple-carousel__controls social-feed__controls"
                   >
-                    {posts.map(post => (
-                      <li key={post.id} className="social-feed__item">
-                        <SocialPostCard post={post} />
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="simple-carousel__controls social-feed__controls">
                     <button
                       type="button"
                       className="simple-carousel__arrow"
                       aria-label="Show previous social posts"
-                      disabled={edges.start}
-                      onClick={() => scrollByCard(-1)}
+                      disabled={page <= 1}
+                      onClick={() => goToPage(page - 1)}
                     >
                       ←
                     </button>
@@ -129,15 +244,15 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
                       type="button"
                       className="simple-carousel__arrow"
                       aria-label="Show next social posts"
-                      disabled={edges.end && !hasMore}
-                      onClick={() => scrollByCard(1)}
+                      disabled={page >= totalPages}
+                      onClick={() => goToPage(page + 1)}
                     >
                       →
                     </button>
                   </div>
-                </div>
-              ) : null}
-            </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -146,13 +261,14 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
 }
 
 /**
- * Tall image card: the post's cover fills the card, the date and post text sit on top
- * in white, and a round arrow sits at the bottom right. The whole card links to the post.
+ * Post card: the company as the author with the date under it, the start of the post
+ * text, the cover image when asked for, and the like count. The whole card links to the
+ * post.
  */
-function SocialPostCard({ post }) {
+function SocialPostCard({ post, showCover }) {
   const postHref = post.externalUrl || getCompanySocialLink('linkedin');
   const [imageFailed, setImageFailed] = useState(false);
-  const showImage = Boolean(post.coverImageUrl) && !imageFailed;
+  const showImage = showCover && !imageFailed;
 
   return (
     <a
@@ -162,47 +278,38 @@ function SocialPostCard({ post }) {
       rel="noopener noreferrer"
       onClick={() => trackOutbound(postHref, 'Open the post on LinkedIn', 'homepage_social')}
     >
-      {/* The cover is 16:9: shown whole at the bottom over a blurred copy filling the
-          card, instead of being enlarged and cropped to the card's tall shape */}
-      {showImage ? (
-        <>
-          <img
-            className="social-feed-card__backdrop"
-            src={post.coverImageUrl}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            referrerPolicy="no-referrer"
-          />
-          <img
-            className="social-feed-card__image"
-            src={post.coverImageUrl}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            referrerPolicy="no-referrer"
-            onError={() => setImageFailed(true)}
-          />
-        </>
-      ) : (
-        <div className="social-feed-card__placeholder" aria-hidden="true">
+      <div className="social-feed-card__author">
+        <span className="social-feed-card__avatar" aria-hidden="true">
           <ArgMarkIcon />
-        </div>
-      )}
-
-      <div className="social-feed-card__head">
-        <p className="social-feed-card__label">
-          <LinkedInIcon />
-          <time dateTime={post.publishedAt}>{formatPostDate(post.publishedAt)}</time>
-          <span aria-hidden="true">·</span>
-          <span>{formatLikeCount(post.likeCount)}</span>
-        </p>
-        <p className="social-feed-card__excerpt">{post.excerpt}</p>
+        </span>
+        <span className="social-feed-card__who">
+          <span className="social-feed-card__name">
+            ARG Software
+            <LinkedInIcon className="social-feed-card__network" />
+          </span>
+          <time className="social-feed-card__date" dateTime={post.publishedAt}>
+            {formatPostDate(post.publishedAt)}
+          </time>
+        </span>
       </div>
 
-      <span className="social-feed-card__open" aria-hidden="true">
-        <span className="arrow_icon-embed">{arrowSvg}</span>
-      </span>
+      <p className="social-feed-card__text">{post.text || post.excerpt}</p>
+
+      {showImage ? (
+        <img
+          className="social-feed-card__image"
+          src={post.coverImageUrl}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          onError={() => setImageFailed(true)}
+        />
+      ) : null}
+
+      <p className="social-feed-card__stats">
+        <span aria-hidden="true">♥</span> {formatLikeCount(post.likeCount)}
+      </p>
     </a>
   );
 }
@@ -224,22 +331,4 @@ function formatLikeCount(value) {
   const likes = Number(value || 0);
 
   return likes === 1 ? '1 like' : `${likes} likes`;
-}
-
-function hasNextPage(pagination) {
-  if (!pagination) return false;
-  return pagination.page < pagination.totalPages;
-}
-
-function mergePosts(current, records) {
-  const seen = new Set(current.map(post => post.id));
-  const next = [...current];
-
-  for (const post of records) {
-    if (seen.has(post.id)) continue;
-    seen.add(post.id);
-    next.push(post);
-  }
-
-  return next;
 }

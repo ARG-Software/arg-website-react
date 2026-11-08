@@ -9,7 +9,7 @@ import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { BlogSidebar } from '@components/navigation/BlogSidebar';
 import { Pagination } from '@ui/navigation/Pagination.jsx';
-import { Pill } from '@ui/pills/Pill.jsx';
+import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useBlogSearch } from '@hooks/useBlogSearch';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
@@ -25,9 +25,14 @@ import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
 import { toShortContentDate } from '@utils/contentDate';
 import { BLOG_POSTS_PER_PAGE } from '@constants/config';
 import { LenisContext } from '@providers/LenisProvider';
+import HOMEPAGE from '../../data/homePage.json';
 import '../../styles/blog.css';
 
 const HERO_TOPIC_COUNT = 6;
+// Author avatars come from the team photos on the homepage
+const AUTHOR_AVATARS = Object.fromEntries(
+  HOMEPAGE.team.members.map(member => [member.name, member.imgSrc.replace('-1024.', '-360.')])
+);
 // Space left above the list when a filter brings it back into view, in rem so it follows the root font size
 const LIST_TOP_GAP_REM = 1.5;
 
@@ -52,9 +57,15 @@ export default function BlogPage() {
   // A collection reads in its own order, part 1 first
   const listedPosts =
     active.type === 'collection' ? [...filteredPosts].sort(sortByCollectionPart) : filteredPosts;
-  const totalPages = Math.ceil(listedPosts.length / BLOG_POSTS_PER_PAGE);
+  // The latest article is featured above the grid while nothing is filtered, and the grid
+  // pages through the rest. A filtered list is all grid
+  const featuredPost = active.type === 'all' && !debouncedQuery ? listedPosts[0] : null;
+  const gridPosts = featuredPost ? listedPosts.slice(1) : listedPosts;
+  const totalPages = Math.ceil(gridPosts.length / BLOG_POSTS_PER_PAGE);
   const startIdx = (page - 1) * BLOG_POSTS_PER_PAGE;
-  const paginatedPosts = listedPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
+  const paginatedPosts = gridPosts.slice(startIdx, startIdx + BLOG_POSTS_PER_PAGE);
+  const shownPosts =
+    featuredPost && page === 1 ? [featuredPost, ...paginatedPosts] : paginatedPosts;
 
   const tagCounts = blogPosts.reduce((acc, post) => {
     (post.tags || [post.tag]).filter(Boolean).forEach(tag => {
@@ -209,59 +220,83 @@ export default function BlogPage() {
                           : 'No articles found for those filters.'}
                       </p>
                     ) : (
-                      <>
-                        {paginatedPosts.map((article, i) => (
-                          <AppLink
-                            key={article.slug}
-                            to={`/blog/${article.slug}/`}
-                            className="blp-article-row"
-                            data-animate-order={i + 3}
-                            style={{ transitionDelay: `${i * 0.07}s` }}
-                            onClick={() =>
-                              trackBlogPostClick(article.slug, article.title, 'blog_list')
-                            }
-                          >
-                            {article.image ? (
-                              <img
-                                src={article.image}
-                                srcSet={getCoverSrcSet(article.image)}
-                                sizes="8.75rem"
-                                alt=""
-                                className="blp-row-image"
-                                loading={i === 0 ? 'eager' : 'lazy'}
-                              />
-                            ) : (
-                              <span className="blp-row-image" aria-hidden="true" />
-                            )}
-                            <div className="blp-row-body">
-                              <h2 className="blp-row-title">{article.title}</h2>
-                              <p className="blp-row-excerpt">{article.subtitle}</p>
-                              {article.collectionTitle ? (
-                                <span className="blp-row-collection">
-                                  <span className="blp-row-collection-label">Collection</span>
-                                  {article.collectionTitle}
-                                </span>
-                              ) : null}
-                              <div className="blp-row-tags">
-                                {(article.tags || [article.tag]).filter(Boolean).map(tag => (
-                                  <Pill key={tag} variant="outline" size="xs">
-                                    {tag}
-                                  </Pill>
-                                ))}
+                      <div className="blp-grid">
+                        {shownPosts.map((article, i) => {
+                          const featured = article === featuredPost;
+                          const tags = (article.tags || [article.tag]).filter(Boolean);
+                          const author = article.author || 'ARG Software';
+                          const avatar = AUTHOR_AVATARS[author];
+
+                          return (
+                            <AppLink
+                              key={article.slug}
+                              to={`/blog/${article.slug}/`}
+                              className={`blp-card${featured ? ' blp-card--featured' : ''}`}
+                              data-animate-order={i + 3}
+                              onClick={() =>
+                                trackBlogPostClick(article.slug, article.title, 'blog_list')
+                              }
+                            >
+                              {article.image ? (
+                                <img
+                                  src={article.image}
+                                  srcSet={getCoverSrcSet(article.image)}
+                                  sizes={
+                                    featured
+                                      ? '(max-width: 48rem) 100vw, 30rem'
+                                      : '(max-width: 48rem) 100vw, 25rem'
+                                  }
+                                  alt=""
+                                  className="blp-card-image"
+                                  loading={i === 0 ? 'eager' : 'lazy'}
+                                />
+                              ) : (
+                                <span className="blp-card-image" aria-hidden="true" />
+                              )}
+                              <div className="blp-card-body">
+                                <div className="blp-card-badges">
+                                  {featured ? (
+                                    <span className="blp-badge blp-badge--featured">Featured</span>
+                                  ) : null}
+                                  {tags[0] ? <span className="blp-badge">{tags[0]}</span> : null}
+                                  {article.collectionTitle ? (
+                                    <span className="blp-badge blp-badge--collection">
+                                      {article.collectionTitle}
+                                    </span>
+                                  ) : null}
+                                </div>
+                                <h2 className="blp-card-title">{article.title}</h2>
+                                <p className="blp-card-excerpt">{article.subtitle}</p>
+                                <div className="blp-card-footer">
+                                  <span className="blp-card-author">
+                                    {avatar ? (
+                                      <img
+                                        src={avatar}
+                                        alt=""
+                                        className="blp-card-avatar"
+                                        loading="lazy"
+                                      />
+                                    ) : (
+                                      <span className="blp-card-avatar" aria-hidden="true">
+                                        <ArgMarkIcon />
+                                      </span>
+                                    )}
+                                    <span className="blp-card-who">
+                                      <span className="blp-card-name">{author}</span>
+                                      <span className="blp-card-meta">
+                                        {toShortContentDate(article.date)} · {article.readTime}
+                                      </span>
+                                    </span>
+                                  </span>
+                                  <span className="blp-card-arrow" aria-hidden="true">
+                                    {arrowSvg}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                            <div className="blp-row-meta">
-                              <span className="blp-row-date">
-                                {toShortContentDate(article.date)}
-                              </span>
-                              <span className="blp-row-author">
-                                {article.author || 'ARG Software'}
-                              </span>
-                              <span className="blp-row-readtime">{article.readTime}</span>
-                            </div>
-                          </AppLink>
-                        ))}
-                      </>
+                            </AppLink>
+                          );
+                        })}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -274,7 +309,7 @@ export default function BlogPage() {
                     onPageChange={goToPage}
                     arrowIcon={arrowSvg}
                     ariaLabel="Blog pagination"
-                    animateOrder={paginatedPosts.length + 3}
+                    animateOrder={shownPosts.length + 3}
                   />
                 )}
               </div>

@@ -33,6 +33,8 @@ export function BaseCard({
   padding = 'md',
   radius = 'xl',
   hover = 'lift',
+  // A gradient line sweeps across the top edge on hover and keyboard focus
+  accentLine = false,
   animate = false,
   animationPreset = 'fade-up',
   animationOrder,
@@ -44,6 +46,7 @@ export function BaseCard({
     PADDING_CLASSES[padding] ?? PADDING_CLASSES.md,
     RADIUS_CLASSES[radius] ?? RADIUS_CLASSES.xl,
     HOVER_CLASSES[hover] ?? HOVER_CLASSES.lift,
+    accentLine ? 'base-card--accent-line' : '',
     className,
   ]
     .filter(Boolean)

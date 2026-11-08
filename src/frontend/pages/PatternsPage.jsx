@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA, trackEvent } from '@services/analytics';
@@ -9,6 +9,7 @@ import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
+import { useFilterReveal } from '@ui/utils/useFilterReveal.js';
 import { Pill } from '@ui/pills/Pill.jsx';
 import AppLink from '@components/navigation/AppLink';
 import { loadPatterns } from '@utils/patternLoader';
@@ -20,6 +21,8 @@ const PATTERNS = loadPatterns();
 
 export default function PatternsPage() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const gridRef = useRef(null);
+  useFilterReveal(gridRef, '.sk-card', activeCategory);
 
   useTimeOnPage('/patterns/');
   useScrollAnimations();
@@ -82,7 +85,7 @@ export default function PatternsPage() {
                   </div>
                 </div>
 
-                <div className="sk-grid">
+                <div className="sk-grid" ref={gridRef}>
                   {visiblePatterns.map(pattern => (
                     <BaseCard
                       key={pattern.slug}
@@ -91,6 +94,7 @@ export default function PatternsPage() {
                       className="sk-card"
                       variant="light"
                       padding="xl"
+                      accentLine
                       animate={true}
                       trackEvent="pattern_click"
                       trackData={{ pattern: pattern.slug, location: 'patterns_hub' }}

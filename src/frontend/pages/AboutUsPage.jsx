@@ -134,13 +134,11 @@ export default function AboutUsPage() {
                       className="about-founder-card"
                       variant="light"
                       padding="xl"
+                      accentLine
                       animate={true}
                       animationOrder={index + 1}
                     >
                       <div className="about-founder-card__head">
-                        <div className="about-founder-monogram" aria-hidden="true">
-                          <span>{founder.initials}</span>
-                        </div>
                         <div>
                           <h3>{founder.name}</h3>
                           <span className="about-founder-card__role">{founder.role}</span>
@@ -216,6 +214,7 @@ export default function AboutUsPage() {
                       className="about-principle"
                       variant="light"
                       padding="xl"
+                      accentLine
                       animate={true}
                       animationOrder={index + 1}
                     >

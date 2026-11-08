@@ -877,28 +877,6 @@
 }
 
 /* Same hover as the Working with us traits: a gradient bar draws across the top and the number takes the gradient */
-.au-card--accent {
-  overflow: hidden;
-  position: relative;
-}
-
-.au-card--accent::before {
-  background: var(--arg-gradient-primary);
-  content: '';
-  height: 0.1875rem;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s ease;
-}
-
-.au-card--accent:hover::before {
-  transform: scaleX(1);
-}
-
 .au-card--accent:hover .au-card-index {
   background: var(--arg-gradient-primary);
   -webkit-background-clip: text;

@@ -282,6 +282,7 @@ export default function AuditPage() {
                       className="au-card au-card--accent"
                       variant="light"
                       padding="xl"
+                      accentLine
                       animate={true}
                       animationOrder={index + 1}
                     >

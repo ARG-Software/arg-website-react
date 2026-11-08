@@ -1,4 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const TRANSITION_DELAY_MS = 360;
 
@@ -55,17 +59,102 @@ function TimelineCard({ item }) {
 }
 
 function DesktopVerticalTimeline({ items, activeIndex, onSelect }) {
-  const activeItem = items[activeIndex];
+  const railRef = useRef(null);
+  const cardsRef = useRef(null);
+  const onSelectRef = useRef(onSelect);
+
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  });
+
+  // The years stay pinned beside the cards. The cards stack: each one pins while it is read,
+  // then the next slides over it, and the year of the card on top is selected, in both
+  // directions. Each date
+  // fades in once, and the line only ever draws downwards, so scrolling back up never hides
+  // what was already shown
+  useEffect(() => {
+    const rail = railRef.current;
+    const cards = cardsRef.current;
+    if (!rail || !cards) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const context = gsap.context(() => {
+      // Pinned cards break per-card trigger positions, so the card on top is read from
+      // where the cards sit: the last one whose top has passed the middle of the screen
+      const selectTopCard = () => {
+        let index = 0;
+        [...cards.children].forEach((card, cardIndex) => {
+          if (card.getBoundingClientRect().top <= window.innerHeight / 2) index = cardIndex;
+        });
+        onSelectRef.current(index);
+      };
+      ScrollTrigger.create({
+        trigger: cards,
+        start: 'top bottom',
+        end: 'bottom top',
+        onUpdate: selectTopCard,
+        onRefresh: selectTopCard,
+      });
+
+      if (reduceMotion) return;
+      // The date buttons, not the list items, so the grey line covers stay opaque
+      gsap.fromTo(
+        rail.querySelectorAll('.vertical-timeline__node'),
+        { opacity: 0, y: '1.5rem' },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power2.out',
+          stagger: 0.1,
+          scrollTrigger: { trigger: rail, start: 'top 85%', once: true },
+        }
+      );
+
+      let drawn = 0;
+      rail.style.setProperty('--timeline-drawn', '0');
+      ScrollTrigger.create({
+        trigger: cards,
+        start: 'top 50%',
+        end: 'bottom 50%',
+        onUpdate: self => {
+          if (self.progress <= drawn) return;
+          drawn = self.progress;
+          rail.style.setProperty('--timeline-drawn', String(drawn));
+        },
+      });
+    }, rail.parentElement);
+
+    return () => {
+      context.revert();
+      rail.style.removeProperty('--timeline-drawn');
+    };
+  }, []);
+
+  // A year in the rail takes the reader to its card. A pinned card reports its pinned spot,
+  // so scrolling it into view would not move back up; its place in the stack is measured
+  // from the cards before it instead
+  const showCard = index => {
+    const cards = cardsRef.current;
+    if (!cards) return;
+    onSelect(index);
+    const gap = Number.parseFloat(getComputedStyle(cards).rowGap) || 0;
+    let offset = 0;
+    for (let i = 0; i < index; i++) offset += cards.children[i].offsetHeight + gap;
+    const pinnedTop = Number.parseFloat(getComputedStyle(cards.children[index]).top) || 0;
+    const top = window.scrollY + cards.getBoundingClientRect().top + offset - pinnedTop;
+    window.scrollTo({ top, behavior: 'smooth' });
+  };
 
   const handleKeyDown = (event, index) => {
     if (event.key !== 'Enter' && event.key !== ' ') return;
     event.preventDefault();
-    onSelect(index);
+    showCard(index);
   };
 
   return (
-    <div className="vertical-timeline__desktop" data-animate="fade-up">
-      <ol className="vertical-timeline__rail">
+    <div className="vertical-timeline__desktop">
+      <ol ref={railRef} className="vertical-timeline__rail">
         {items.map((item, index) => {
           const isActive = index === activeIndex;
           return (
@@ -73,7 +162,7 @@ function DesktopVerticalTimeline({ items, activeIndex, onSelect }) {
               <button
                 type="button"
                 className={`vertical-timeline__node ${isActive ? 'is-active' : ''}`.trim()}
-                onClick={() => onSelect(index)}
+                onClick={() => showCard(index)}
                 onKeyDown={event => handleKeyDown(event, index)}
                 aria-current={isActive ? 'step' : undefined}
                 aria-label={`${item.period} ${item.kicker ?? ''}`.trim()}
@@ -86,7 +175,13 @@ function DesktopVerticalTimeline({ items, activeIndex, onSelect }) {
         })}
       </ol>
 
-      <TimelineCard key={activeItem.id ?? activeItem.period ?? activeIndex} item={activeItem} />
+      <div ref={cardsRef} className="vertical-timeline__cards">
+        {items.map((item, index) => (
+          <div key={item.id ?? item.period ?? index} data-animate="fade-up">
+            <TimelineCard item={item} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
