@@ -138,6 +138,6 @@ test('renders the crawlable block as the only h1 inside the React root', () => {
     buildCrawlableBlock('Page heading', { description: 'Page description.' })
   );
 
-  assert.match(html, /<div id="root"><div aria-hidden="true"[^>]*>\s*<h1>Page heading<\/h1>/);
-  assert.match(html, /<\/nav>\s*<\/div><\/div><\/body>/);
+  assert.match(html, /<div id="root"><main data-prerendered-content>\s*<h1>Page heading<\/h1>/);
+  assert.match(html, /<\/nav>\s*<\/main><\/div><\/body>/);
 });

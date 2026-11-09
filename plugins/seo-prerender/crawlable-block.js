@@ -12,12 +12,13 @@ export function buildCrawlableBlock(
   const descHtml = description ? `\n  <p>${escapeHtml(description)}</p>` : '';
   const subHtml = subtitle ? `\n  <p>${escapeHtml(subtitle)}</p>` : '';
   const paraHtml = paragraphs.map(p => `\n  <p>${escapeHtml(p)}</p>`).join('');
-  return `<div aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">
+  // Hidden until the app replaces it (see the prerendered-content style in index.html)
+  return `<main data-prerendered-content>
   <h1>${escapeHtml(h1Text)}</h1>${descHtml}${subHtml}${paraHtml}
   <nav>
     ${navHtml}
   </nav>
-</div>`;
+</main>`;
 }
 
 export function injectCrawlableBlock(html, block) {

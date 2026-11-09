@@ -83,6 +83,21 @@
       crossorigin
     />
 
+    <!-- Prerendered page content (plugins/seo-prerender) is for crawlers: visitors wait for the
+         app, which draws the page with its own animations. Without JavaScript it shows as is. -->
+    <style>
+      #root > [data-prerendered-content] {
+        display: none;
+      }
+    </style>
+    <noscript>
+      <style>
+        #root > [data-prerendered-content] {
+          display: block;
+        }
+      </style>
+    </noscript>
+
     <!-- GA4 — skipped on localhost to avoid Brave Shields breaking the dev server -->
     <script>
       window.dataLayer = window.dataLayer || [];

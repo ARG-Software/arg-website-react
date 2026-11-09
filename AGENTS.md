@@ -265,6 +265,7 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 3. **rss.xml** — RSS 2.0 feed of all 34 blog posts
 4. **atom.xml** — Atom 1.0 feed of all 34 blog posts
 5. **Crawlable nav blocks** — static `<nav>` with all site links for Ahrefs/crawlers
+   - All prerendered content (crawlable `<main>` and the detail page markup) carries `data-prerendered-content` and stays hidden for visitors via a style in `index.html`, so the app's own render and animations are the first thing they see; `<noscript>` shows it without JavaScript
 6. **Project detail pages** — prerendered with per-project OG tags
 
 ### Key Config
