@@ -1,12 +1,17 @@
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { useRAF } from './useRAF';
+import { LoadingContext } from '../providers/LoadingProvider';
 import { prefersReducedMotion } from '../utils/helpers';
 
 export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
   const renderRef = useRef(null);
   const cleanupRef = useRef(null);
+  const loadingDone = useContext(LoadingContext);
 
   useEffect(() => {
+    // Wait for the intro to finish on a first visit, like the hero ripple
+    if (!loadingDone) return;
+
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
@@ -28,6 +33,7 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
         ACESFilmicToneMapping,
         AmbientLight,
         BackSide,
+        BufferGeometry,
         Color,
         DirectionalLight,
         DoubleSide,
@@ -69,6 +75,22 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
 
       const pmremGenerator = new PMREMGenerator(renderer);
       pmremGenerator.compileEquirectangularShader();
+      // fromScene builds and compiles its reflection shaders in one blocking go (~1 s of frozen
+      // scroll). Build them first through the generator's own setup and compile them off the main
+      // thread, into the same render target fromScene draws to. If three changes these internals,
+      // fromScene simply compiles them itself as before.
+      pmremGenerator._setSize(256);
+      pmremGenerator._allocateTargets().dispose();
+      const reflectionShaders = [pmremGenerator._ggxMaterial, pmremGenerator._blurMaterial];
+      renderer.setRenderTarget(pmremGenerator._pingPongRenderTarget ?? null);
+      const reflectionsCompiled = Promise.all(
+        reflectionShaders
+          .filter(Boolean)
+          .map(material => renderer.compileAsync(new Mesh(new BufferGeometry(), material), camera))
+      );
+      renderer.setRenderTarget(null);
+      await reflectionsCompiled;
+      if (!mounted) return;
 
       const envScene = new Scene();
       const domeMat = new MeshBasicMaterial({ color: 0xf0e8f4, side: BackSide });
@@ -177,6 +199,11 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
       const reducedMotion = prefersReducedMotion();
       const servicesSection = canvas.closest('.services_wrap') || canvas.closest('.services_grid');
 
+      // Compile the sphere shaders off the main thread (KHR_parallel_shader_compile) before the
+      // first frame; a plain first render compiles them in one go and freezes the scroll for ~2 s
+      await renderer.compileAsync(scene, camera);
+      if (!mounted) return;
+
       // Render function called by RAF coordinator
       renderRef.current = delta => {
         if (!mounted || !renderer || !scene || !camera) return;
@@ -255,7 +282,9 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
           }
         });
       },
-      { rootMargin: '400px' }
+      // The scene takes about 1.4 s to compile in the background, so it starts well before the
+      // section comes into view. A hidden canvas (phones) never intersects, so it never starts
+      { rootMargin: '2000px' }
     );
 
     observer.observe(canvas);
@@ -265,7 +294,7 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
       observer.disconnect();
       if (cleanupRef.current) cleanupRef.current();
     };
-  }, [canvasId]);
+  }, [canvasId, loadingDone]);
 
   useRAF((delta, elapsed, transitioning) => {
     if (renderRef.current) renderRef.current(delta, elapsed, transitioning);
