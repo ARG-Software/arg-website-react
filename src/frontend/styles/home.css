@@ -823,7 +823,7 @@
 
 .home-overview__lead {
   color: #5b596f;
-  font-size: var(--type-section-subtitle);
+  font-size: var(--type-body-small);
   line-height: var(--line-body);
   margin: 0 0 3rem;
   max-width: 30rem;
@@ -2039,6 +2039,11 @@
   color: var(--arg-color-muted);
   font-size: var(--type-body-large);
   margin: 0;
+}
+
+/* The text stays still on hover; only the button's underline draws in */
+.faq_closing .faq_closing-link:hover .text-button_list:not(.is-animated) {
+  transform: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
