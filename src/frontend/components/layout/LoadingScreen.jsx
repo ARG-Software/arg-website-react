@@ -134,7 +134,15 @@ export function LoadingScreen({ onComplete }) {
 
   return (
     <div className="ls-overlay" ref={overlayRef} aria-hidden="true">
-      <video className="ls-video" ref={videoRef} autoPlay muted playsInline preload="auto">
+      <video
+        className="ls-video"
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        poster="/videos/intro-poster.webp"
+      >
         <source src="/videos/intro.mp4" type="video/mp4" />
       </video>
 
