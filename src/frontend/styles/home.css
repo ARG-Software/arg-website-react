@@ -2097,13 +2097,13 @@
   padding-top: 6rem;
 }
 
-/* The featured post sets the row height; the list fits into it and spreads its posts, so the
-   two columns end on the same line */
+/* The taller column sets the row height; the list spreads its posts over it, so the two columns
+   end on the same line */
 .blog-promo_layout {
   align-items: stretch;
   display: grid;
-  gap: 6.5rem;
-  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  gap: 9rem;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 5fr);
 }
 
 /* Featured post */
@@ -2116,13 +2116,13 @@
   text-decoration: none;
 }
 
+/* A low, wide image keeps the weight on the title and excerpt below it */
 .blog-promo_featured-media {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 21 / 9;
   background: #160046;
   border-radius: 1.5rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
   overflow: hidden;
-  position: relative;
 }
 
 .blog-promo_featured-image {
@@ -2132,41 +2132,20 @@
   width: 100%;
 }
 
-/* White pills over the image: the tag at the bottom left, the read time at the right */
-.blog-promo_featured-pill {
-  background: #fff;
-  border-radius: 100vw;
-  bottom: 1.25rem;
-  color: #0c002e;
-  font-family: Neuemontreal, sans-serif;
-  font-size: 0.875rem;
-  font-weight: var(--weight-medium);
-  left: 1.25rem;
-  line-height: 1;
-  padding: 0.5rem 0.875rem;
-  position: absolute;
-}
-
-.blog-promo_featured-pill--end {
-  font-weight: var(--weight-regular);
-  left: auto;
-  right: 1.25rem;
-}
-
 .blog-promo_featured-title {
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-size: clamp(1.75rem, 2.6vw, 2.375rem);
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-heading);
   line-height: var(--line-title);
   margin: 0;
-  max-width: 34rem;
+  max-width: 38rem;
   text-wrap: pretty;
 }
 
 .blog-promo_featured-excerpt {
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 4;
   color: rgba(255, 255, 255, 0.55);
   display: -webkit-box;
   font-family: Neuemontreal, sans-serif;
@@ -2179,8 +2158,6 @@
 /* Post list */
 
 .blog-promo_list {
-  /* Sized by the row, not by its own posts */
-  contain: size;
   display: flex;
   flex-direction: column;
   list-style: none;
@@ -2326,7 +2303,7 @@
 /* Narrower desktops: a tighter gap leaves the list room for its posts */
 @media screen and (max-width: 79.9375rem) {
   .blog-promo_layout {
-    gap: 4rem;
+    gap: 5rem;
   }
 }
 
@@ -2343,11 +2320,6 @@
   .blog-promo_layout {
     gap: 3rem;
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  /* Stacked, the list takes its own height again */
-  .blog-promo_list {
-    contain: none;
   }
 
   .blog-promo_item {
@@ -2380,17 +2352,6 @@
 
   .blog-promo_featured-media {
     border-radius: 1rem;
-  }
-
-  .blog-promo_featured-pill {
-    bottom: 0.875rem;
-    font-size: 0.75rem;
-    left: 0.875rem;
-  }
-
-  .blog-promo_featured-pill--end {
-    left: auto;
-    right: 0.875rem;
   }
 
   .blog-promo_post {

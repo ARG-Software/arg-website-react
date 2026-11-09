@@ -80,12 +80,13 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
                       decoding="async"
                     />
                   ) : null}
-                  <span className="blog-promo_featured-pill">{featured.tag}</span>
-                  {featured.readTime ? (
-                    <span className="blog-promo_featured-pill blog-promo_featured-pill--end">
-                      {featured.readTime}
-                    </span>
-                  ) : null}
+                </div>
+                {/* Same tag and date line as the posts in the list */}
+                <div className="blog-promo_post-meta">
+                  <Pill variant="custom" size="xs" style={getTagColorStyle(featured.tag)}>
+                    {featured.tag}
+                  </Pill>
+                  <span className="blog-promo_post-date">{featured.date}</span>
                 </div>
                 <h3 className="blog-promo_featured-title">{featured.title}</h3>
                 <p className="blog-promo_featured-excerpt">{featured.subtitle}</p>
