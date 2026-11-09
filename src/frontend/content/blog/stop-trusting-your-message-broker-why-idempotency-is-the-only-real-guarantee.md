@@ -15,7 +15,7 @@ dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 8 min read
 ---
-### A practical look at what actually keeps event-driven systems correct.
+A practical look at what actually keeps event-driven systems correct.
 
 ![Stop Trusting Your Message Broker: Why Idempotency Is a Core Safety Net](/images/blog/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee-header.webp)
 

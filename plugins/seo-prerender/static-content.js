@@ -8,6 +8,10 @@ const SKILLS_PAGE = JSON.parse(
   fs.readFileSync(new URL('../../src/frontend/data/skillsPage.json', import.meta.url), 'utf8')
 );
 
+const IMAGE_SIZES = JSON.parse(
+  fs.readFileSync(new URL('../../src/frontend/data/blogImageSizes.json', import.meta.url), 'utf8')
+);
+
 const EXTERNAL_HREF_PATTERN = /^https?:\/\//i;
 
 export function injectStaticContent(html, content) {
@@ -226,7 +230,9 @@ function renderList(items, tag, className) {
 
 function renderImage(image, className) {
   const caption = image.caption ? `<figcaption>${escapeHtml(image.caption)}</figcaption>` : '';
-  return `<figure class="${className}"><img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt || '')}" class="bp-image" loading="lazy">${caption}</figure>`;
+  const [width, height] = IMAGE_SIZES[image.src] || [];
+  const size = width ? ` width="${width}" height="${height}"` : '';
+  return `<figure class="${className}"><img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt || '')}"${size} class="bp-image" loading="lazy">${caption}</figure>`;
 }
 
 function renderInlineText(text) {

@@ -69,7 +69,7 @@ Website covers are **2560×1440 WebP**, at `/images/blog/.../{name}-header.webp`
 
 1. **Generate** `{slug}.png` at 16:9 with the prompt below.
 2. **Convert** it to a 2560×1440 WebP (Squoosh, or `npx sharp-cli`). Save it under `public/images/blog/...`, and reference it as the first image of the post: `![descriptive alt](/images/blog/.../header.webp)`.
-3. **Generate the smaller sizes** with `npm run blog:covers`. This writes the 480, 960 and 1600 sizes and updates `src/frontend/data/blogCoverSizes.json`.
+3. **Generate the smaller sizes** with `npm run blog:covers`. This writes the 480, 960 and 1600 sizes and updates `src/frontend/data/blogCoverSizes.json`. It also records the width and height of every image in the posts in `src/frontend/data/blogImageSizes.json`, so pages reserve their space; run it again whenever you add an image to a post.
 4. **Write a descriptive alt:** describe the topic, not a poetic title. Run `npm run blog:check-images` to check it.
 5. **For Medium,** copy the PNG to the Medium `covers/` folder and replace the story's featured image with it.
 

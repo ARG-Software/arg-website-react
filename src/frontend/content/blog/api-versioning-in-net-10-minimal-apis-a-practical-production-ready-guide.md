@@ -16,7 +16,7 @@ reviewedOn: September 20, 2026
 readTime: 13 min read
 ---
 
-### Implement API versioning in .NET 10 Minimal APIs without hiding contract decisions behind framework defaults.
+Implement API versioning in .NET 10 Minimal APIs without hiding contract decisions behind framework defaults.
 
 ![API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide](/images/blog/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide-header.webp)
 

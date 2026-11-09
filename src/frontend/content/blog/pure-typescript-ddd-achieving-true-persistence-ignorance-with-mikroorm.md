@@ -15,7 +15,7 @@ dateModified: October 28, 2026
 reviewedOn: September 17, 2026
 readTime: 9 min read
 ---
-### How to decouple your Domain Model from the database layer to build scalable, testable, and future-proof enterprise systems.
+How to decouple your Domain Model from the database layer to build scalable, testable, and future-proof enterprise systems.
 
 ![Pure TypeScript DDD: Practical Persistence Ignorance with MikroORM](/images/blog/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm-header.webp)
 

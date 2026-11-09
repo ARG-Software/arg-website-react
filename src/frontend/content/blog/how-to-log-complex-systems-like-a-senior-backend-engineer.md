@@ -16,7 +16,7 @@ reviewedOn: September 20, 2026
 readTime: 10 min read
 mediumUrl: https://medium.com/p/69d43f3adc36
 ---
-### Request IDs, trace context, AsyncLocalStorage, and honest error handling (Express.js + TypeScript)
+Request IDs, trace context, AsyncLocalStorage, and honest error handling (Express.js + TypeScript)
 
 ![How to Log Complex Systems Like a Senior Backend Engineer](/images/blog/how-to-log-complex-systems-like-a-senior-backend-engineer/how-to-log-complex-systems-like-a-senior-backend-engineer-header.webp)
 

@@ -33,6 +33,7 @@ import {
   getTwitterShareLink,
 } from '@services/linksService';
 import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
+import IMAGE_SIZES from '@data/blogImageSizes.json';
 import { buildArticleSchema } from '@utils/structuredData';
 import { loadPatterns } from '@utils/patternLoader';
 import '../../styles/blog.css';
@@ -296,6 +297,8 @@ export default function BlogPostPage() {
                       <img
                         src={heroImage.src}
                         srcSet={getCoverSrcSet(heroImage.src)}
+                        width={IMAGE_SIZES[heroImage.src]?.[0]}
+                        height={IMAGE_SIZES[heroImage.src]?.[1]}
                         sizes="(max-width: 991px) 92vw, 56rem"
                         alt={heroImage.alt || BLOG_POST.title}
                         loading="eager"

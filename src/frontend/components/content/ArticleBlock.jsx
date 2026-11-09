@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { InlineLinkText } from '@components/widgets/InlineLinkText';
 import { getHeadingId } from '@utils/blog/articleHelpers.js';
+import IMAGE_SIZES from '@data/blogImageSizes.json';
 import {
   getCodeLanguageLabel,
   getCodeLineNumbers,
@@ -128,13 +129,23 @@ export const renderArticleBlock = (block, i) => {
           ))}
         </ul>
       );
-    case 'image':
+    case 'image': {
+      // Sizes from `npm run blog:covers` reserve the image's space, so the text doesn't jump
+      const [width, height] = IMAGE_SIZES[block.src] || [];
       return (
         <figure key={i} className="bp-figure">
-          <img src={block.src} alt={block.alt} className="bp-image" loading="lazy" />
+          <img
+            src={block.src}
+            alt={block.alt}
+            width={width}
+            height={height}
+            className="bp-image"
+            loading="lazy"
+          />
           {block.caption ? <figcaption>{block.caption}</figcaption> : null}
         </figure>
       );
+    }
     default:
       return null;
   }
