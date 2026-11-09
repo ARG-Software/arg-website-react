@@ -1947,6 +1947,17 @@
   color: #fff;
 }
 
+/* Hover on devices with a mouse: darker question, grey circle; an open question keeps its dark circle */
+@media (hover: hover) {
+  .faq_question:hover .faq_question_text {
+    color: #0c002e;
+  }
+
+  .faq_item:not(.is-open) .faq_question:hover .faq_toggle {
+    background-color: #ececee;
+  }
+}
+
 .faq_toggle::before,
 .faq_toggle::after {
   background-color: currentColor;

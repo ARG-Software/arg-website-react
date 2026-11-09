@@ -2469,6 +2469,54 @@ main:focus {
     color 0.18s ease;
 }
 
+/* The site's diagonal arrow appears after a hovered menu link, big or small. It sits outside the
+   text flow, so the centred names never shift and the column links never wrap */
+.nav-menu__primary-name,
+.nav-menu__utility-link {
+  position: relative;
+}
+
+.nav-menu__link-arrow {
+  display: flex;
+  height: 0.4em;
+  left: 100%;
+  margin-left: 0.3em;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-0.15em, -40%) rotate(-50deg);
+  transition:
+    opacity 0.25s ease,
+    transform 0.35s var(--ease-out-expo);
+  width: 0.4em;
+}
+
+/* The column links are much smaller, so their arrow takes a larger share of the text size */
+.nav-menu__utility-link .nav-menu__link-arrow {
+  height: 0.75em;
+  width: 0.75em;
+}
+
+.nav-menu__link-arrow svg {
+  height: 100%;
+  width: 100%;
+}
+
+.nav-menu__primary-link:hover .nav-menu__link-arrow,
+.nav-menu__primary-link:focus-visible .nav-menu__link-arrow,
+.nav-menu__utility-link:hover .nav-menu__link-arrow,
+.nav-menu__utility-link:focus-visible .nav-menu__link-arrow {
+  opacity: 1;
+  transform: translate(0, -50%) rotate(-50deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-menu__link-arrow {
+    transition: none;
+  }
+}
+
 /* ---------------------------------------------------------------- utilities */
 
 .nav-menu__utilities {
