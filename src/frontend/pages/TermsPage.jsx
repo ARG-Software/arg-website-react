@@ -31,7 +31,7 @@ export default function TermsPage() {
       />
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
-        <main className="main-wrapper">
+        <main id="main" className="main-wrapper">
           <PageHeader
             title={PAGE.headerTitle}
             breadcrumbs={[{ label: 'Home', path: '/' }, { label: PAGE.breadcrumbLabel }]}

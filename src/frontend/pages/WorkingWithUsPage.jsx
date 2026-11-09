@@ -32,7 +32,7 @@ export default function WorkingWithUsPage() {
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper background-color-dark">
+        <main id="main" className="main-wrapper background-color-dark">
           <PageHeader
             title={WORKING_WITH_US.hero.title}
             subtitle={WORKING_WITH_US.hero.subtitle}
@@ -185,7 +185,7 @@ export default function WorkingWithUsPage() {
                         <article key={item.title} className="cp-fit-column">
                           <div className="cp-fit-column-title">
                             <span className="cp-fit-accent" aria-hidden="true" />
-                            <h4>{item.title}</h4>
+                            <h3>{item.title}</h3>
                           </div>
                           <p>{item.description}</p>
                         </article>

@@ -240,7 +240,7 @@
 }
 
 .vertical-timeline__kicker {
-  color: #888;
+  color: #737373;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-body);
   line-height: var(--line-small);
@@ -281,7 +281,7 @@
 .about-founder-card__role,
 .about-founder-card__focus-label,
 .about-principle__num {
-  color: #888;
+  color: #737373;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta-small);
   letter-spacing: var(--tracking-meta-wide);
@@ -416,7 +416,7 @@
 }
 
 .vertical-timeline__strand--jose .vertical-timeline__strand-who {
-  color: #c924d7;
+  color: #c022cd;
 }
 
 .vertical-timeline__strand--rui .vertical-timeline__strand-who {

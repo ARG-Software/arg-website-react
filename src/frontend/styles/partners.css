@@ -265,7 +265,7 @@
   /* Shrink with the column so a growing year range never overflows */
   font-size: min(var(--type-body), calc(100cqi / var(--pt-year-count) / 3));
   font-weight: var(--weight-regular);
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.47);
   text-align: left;
   padding: 0;
   overflow: hidden;
@@ -299,7 +299,8 @@
 }
 
 .pt-today-label {
-  background: var(--arg-color-magenta);
+  /* A shade under the brand magenta so the white label reads (4.6:1) */
+  background: #c022cd;
   border-radius: 999px;
   color: #fff;
   font-family: Neuemontreal, sans-serif;

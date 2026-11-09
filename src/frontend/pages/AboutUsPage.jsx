@@ -47,7 +47,7 @@ export default function AboutUsPage() {
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper background-color-dark">
+        <main id="main" className="main-wrapper background-color-dark">
           <PageHeader
             title={ABOUT_DATA.hero.title}
             subtitle={ABOUT_DATA.hero.subtitle}

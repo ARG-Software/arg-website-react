@@ -166,9 +166,9 @@ function DesktopVerticalTimeline({ items, activeIndex, onSelect }) {
                 onClick={() => showCard(index)}
                 onKeyDown={event => handleKeyDown(event, index)}
                 aria-current={isActive ? 'step' : undefined}
-                aria-label={`${item.period} ${item.kicker ?? ''}`.trim()}
               >
-                <span className="vertical-timeline__period">{item.period}</span>
+                {/* The visible year and title name the button; the space keeps them apart when read */}
+                <span className="vertical-timeline__period">{item.period}</span>{' '}
                 <span className="vertical-timeline__kicker">{item.kicker}</span>
               </button>
             </li>

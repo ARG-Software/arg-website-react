@@ -92,7 +92,7 @@
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-meta-wide);
   text-transform: uppercase;
-  color: #888;
+  color: #737373;
   margin: 0 0 1rem;
 }
 
@@ -172,6 +172,8 @@
   text-transform: uppercase;
 }
 
+/* Skill and pattern cards sit right under the page title, so theirs is an h2 */
+.sk-card h2,
 .sk-card h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;

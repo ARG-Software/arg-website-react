@@ -49,7 +49,7 @@ export default function SkillDetailPage() {
       <div className="page-wrapper sk-page">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper">
+        <main id="main" className="main-wrapper">
           <PageHeader
             title={[skill.title, SKILLS_PAGE.hero.detailTitleLine]}
             breadcrumbs={breadcrumbs}

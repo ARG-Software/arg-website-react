@@ -56,7 +56,7 @@ export default function PartnersPage() {
       <div className="page-wrapper pp-page">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper">
+        <main id="main" className="main-wrapper">
           <PageHeader
             title={PARTNERS_PAGE.hero.title}
             breadcrumbs={PARTNERS_PAGE.hero.breadcrumbs}

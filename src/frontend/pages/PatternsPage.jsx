@@ -52,7 +52,7 @@ export default function PatternsPage() {
       <div className="page-wrapper sk-page">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper">
+        <main id="main" className="main-wrapper">
           <PageHeader
             title={PATTERNS_PAGE.hero.title}
             subtitle={PATTERNS_PAGE.hero.subtitle}
@@ -100,7 +100,7 @@ export default function PatternsPage() {
                       trackData={{ pattern: pattern.slug, location: 'patterns_hub' }}
                     >
                       <span className="sk-card-category">{pattern.category}</span>
-                      <h3>{pattern.title}</h3>
+                      <h2>{pattern.title}</h2>
                       <p>{pattern.subtitle}</p>
                       <div className="sk-card-tags">
                         {pattern.tags.map(tag => (

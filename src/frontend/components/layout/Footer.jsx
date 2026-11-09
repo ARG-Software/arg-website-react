@@ -83,7 +83,6 @@ function buildFooterAiActions() {
     provider: provider.provider,
     label: provider.label,
     title: `Ask ${provider.label} about ARG Software`,
-    ariaLabel: `Ask ${provider.label} about ARG Software`,
     className: 'footer-ai-link',
     html: (
       <span
@@ -119,7 +118,7 @@ function renderFooterExternalLink({ item, className, children }) {
         target="_blank"
         rel="noopener noreferrer"
         className={className}
-        aria-label={item.ariaLabel}
+        // The mark ("GPT", "C") is aria-hidden, so the title names the link in full
         title={item.title}
         onClick={() =>
           trackEvent('ai_research_click', {

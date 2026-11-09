@@ -84,7 +84,7 @@ export default function ChangelogPage() {
       <div className="page-wrapper au-page">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper background-color-dark">
+        <main id="main" className="main-wrapper background-color-dark">
           <PageHeader
             title={CHANGELOG_PAGE.hero.title}
             subtitle={CHANGELOG_PAGE.hero.subtitle}

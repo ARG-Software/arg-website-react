@@ -160,7 +160,7 @@ export default function ProjectDetailPage() {
       <div className="page-wrapper prp-page">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper background-color-dark">
+        <main id="main" className="main-wrapper background-color-dark">
           {/* HERO: the shared sub page header, with the project image in place of the drawing */}
           <PageHeader
             title={[project.title, project.subtitle]}

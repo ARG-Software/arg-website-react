@@ -103,6 +103,7 @@ export default function BlogPostPage() {
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
         <main
+          id="main"
           className="main-wrapper"
           style={{
             minHeight: '60vh',
@@ -244,7 +245,7 @@ export default function BlogPostPage() {
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper">
+        <main id="main" className="main-wrapper">
           <PageHeader
             title={titleLines}
             subtitle={BLOG_POST.subtitle}

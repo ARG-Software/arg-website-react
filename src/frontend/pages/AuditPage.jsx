@@ -96,7 +96,7 @@ export default function AuditPage() {
       <div className="page-wrapper au-page">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper background-color-dark">
+        <main id="main" className="main-wrapper background-color-dark">
           <PageHeader
             title={PAGE.hero.title}
             subtitle={PAGE.hero.subtitle}

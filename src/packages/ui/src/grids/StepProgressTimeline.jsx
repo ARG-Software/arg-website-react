@@ -5,7 +5,7 @@ const DEFAULT_INTERVAL_MS = 6000;
 function defaultRenderItem(item, _index, _isActive) {
   return (
     <>
-      <h4>{item.title}</h4>
+      <h3>{item.title}</h3>
       {item.description && <p>{item.description}</p>}
     </>
   );
@@ -77,7 +77,7 @@ export function StepProgressTimeline({
         <span className="step-progress-timeline__fill" />
       </span>
       {items.map((item, index) => (
-        <article
+        <div
           key={item.id ?? item.title ?? index}
           className={`step-progress-timeline__step ${
             activeIndex === index ? 'is-active' : ''
@@ -94,7 +94,7 @@ export function StepProgressTimeline({
             <span className="step-progress-timeline__dot">{renderLabel(item, index)}</span>
           </span>
           {renderItem(item, index, activeIndex === index)}
-        </article>
+        </div>
       ))}
     </div>
   );

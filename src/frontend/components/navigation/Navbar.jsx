@@ -132,6 +132,10 @@ export function Navbar({ variant = 'transparent', position = 'absolute' }) {
 
   return (
     <>
+      {/* First stop for keyboard users; hidden until focused (components.css) */}
+      <a href="#main" className="skip-link" onClick={skipToContent}>
+        Skip to content
+      </a>
       <UiNavbar
         logo={<Logo />}
         menuOpen={menuOpen}
@@ -149,4 +153,13 @@ export function Navbar({ variant = 'transparent', position = 'absolute' }) {
       <NavMenu isOpen={menuOpen} isClosing={isClosing} onClose={closeMenu} />
     </>
   );
+}
+
+// Focuses the page's <main id="main"> without touching the URL, so the router's hash scrolling stays out of it
+function skipToContent(event) {
+  const main = document.getElementById('main');
+  if (!main) return;
+  event.preventDefault();
+  main.setAttribute('tabindex', '-1');
+  main.focus();
 }

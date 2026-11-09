@@ -197,7 +197,7 @@ export default function CareersPage() {
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper background-color-dark">
+        <main id="main" className="main-wrapper background-color-dark">
           <PageHeader
             title={hasJobs ? CAREERS_PAGE.hero.openRolesTitle : CAREERS_PAGE.hero.noRolesTitle}
             subtitle={

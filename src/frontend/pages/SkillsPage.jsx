@@ -50,7 +50,7 @@ export default function SkillsPage() {
       <div className="page-wrapper sk-page">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper">
+        <main id="main" className="main-wrapper">
           <PageHeader
             title={SKILLS_PAGE.hero.title}
             subtitle={SKILLS_PAGE.hero.subtitle}
@@ -140,7 +140,7 @@ export default function SkillsPage() {
                       trackData={{ skill: skill.slug, category: skill.category }}
                     >
                       <span className="sk-card-category">{skill.category}</span>
-                      <h3>{skill.title}</h3>
+                      <h2>{skill.title}</h2>
                       <p>{skill.summary}</p>
                       <div className="sk-card-tags">
                         {skill.tags.map(tag => (

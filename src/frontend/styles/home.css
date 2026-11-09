@@ -1447,7 +1447,7 @@
 }
 
 .testimonials-eyebrow {
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.47);
   font-family: Neuemontreal, sans-serif;
   font-size: 0.75rem;
   letter-spacing: 0.18em;
@@ -1543,7 +1543,7 @@
   display: flex;
   flex-direction: column;
   font: inherit;
-  opacity: 0.4;
+  opacity: 0.47;
   padding: 1.25rem 0 0;
   position: relative;
   text-align: left;
@@ -1593,6 +1593,11 @@
   font-family: Neuemontreal, sans-serif;
   font-size: 0.875rem;
   margin-top: 0.125rem;
+}
+
+/* The dimmed people already fade as a whole; a second fade on the role would make it unreadable */
+.testimonials-person:not(.is-active) .testimonials-person-role {
+  color: #fff;
 }
 
 @media (max-width: 47.5rem) {
@@ -2242,7 +2247,7 @@
 }
 
 .blog-promo_post-date {
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.47);
   font-family: Neuemontreal, sans-serif;
   font-size: 0.875rem;
 }

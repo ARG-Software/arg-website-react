@@ -146,7 +146,7 @@
   margin: 0;
 }
 .cp-whyus-side span {
-  color: #888;
+  color: #737373;
   display: block;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta);
@@ -195,7 +195,7 @@
   border-color: rgba(12, 0, 46, 0.18);
 }
 .cp-whyus-pillar-index {
-  color: #888;
+  color: #737373;
   display: block;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta-small);
@@ -216,7 +216,7 @@
   line-height: 1;
 }
 .cp-whyus-kpi small {
-  color: #888;
+  color: #737373;
   font-family: Neuemontreal, sans-serif;
   font-size: var(--type-meta);
   letter-spacing: var(--tracking-ui);
@@ -536,7 +536,7 @@
 .cp-fit-column:hover .cp-fit-accent {
   width: 100%;
 }
-.cp-fit-column h4,
+.cp-fit-column h3,
 .cp-fit-step h4 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;

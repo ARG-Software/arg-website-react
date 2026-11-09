@@ -33,7 +33,7 @@ export default function HomePage() {
       <SEO path="/" jsonLd={buildFAQPageSchema(FAQ.items)} />
       <div className="page-wrapper home-page">
         <Navbar position="absolute" isHomePage={true} />
-        <main className="main-wrapper">
+        <main id="main" className="main-wrapper">
           <HeroSection content={HOMEPAGE.hero} />
 
           <PartnersSection />

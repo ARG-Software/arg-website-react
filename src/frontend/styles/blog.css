@@ -26,7 +26,7 @@
 .blp-inner {
   --blp-ink: #0a0532;
   --blp-muted: #5b596f;
-  --blp-subtle: #9a99ad;
+  --blp-subtle: #747483;
   --blp-hairline: rgba(10, 5, 50, 0.08);
   --blp-soft: #f6f5f8;
   --blp-accent: linear-gradient(92deg, #ff3855, #e91e63 45%, #9c27b0);
@@ -946,7 +946,7 @@
 }
 
 .bp-code-lang {
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.47);
   font-family: Neuemontreal, sans-serif;
   font-size: 0.7rem;
   letter-spacing: var(--tracking-kicker-tight);

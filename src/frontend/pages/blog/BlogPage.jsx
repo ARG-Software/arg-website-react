@@ -169,7 +169,7 @@ export default function BlogPage() {
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper">
+        <main id="main" className="main-wrapper">
           <PageHeader
             title={['The thinking', 'behind the doing.']}
             subtitle="Technical essays, engineering deep dives, and field notes from the systems we build and the tradeoffs we make."

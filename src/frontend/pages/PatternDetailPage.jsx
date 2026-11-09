@@ -56,7 +56,7 @@ export default function PatternDetailPage() {
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper">
+        <main id="main" className="main-wrapper">
           <PageHeader
             title={[pattern.title, pattern.category]}
             subtitle={pattern.subtitle}

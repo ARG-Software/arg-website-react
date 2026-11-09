@@ -108,7 +108,7 @@ export default function ContactPage() {
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />
 
-        <main className="main-wrapper contact-page background-color-dark">
+        <main id="main" className="main-wrapper contact-page background-color-dark">
           <PageHeader
             title={['Everything starts', 'with a clear brief']}
             subtitle="Tell us what you are building, what feels risky, and where senior engineering help is needed."
