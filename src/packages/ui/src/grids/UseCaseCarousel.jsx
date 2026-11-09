@@ -284,6 +284,8 @@ export function UseCaseCarousel({
                     srcSet={item.thumbSrcSet}
                     sizes="(max-width: 47.9375rem) 14rem, 18rem"
                     alt=""
+                    width={item.thumbSize?.[0]}
+                    height={item.thumbSize?.[1]}
                     loading="lazy"
                     decoding="async"
                     draggable="false"

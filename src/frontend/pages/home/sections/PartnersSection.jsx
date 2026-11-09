@@ -25,6 +25,8 @@ export function PartnersSection({
             <img
               src={client.logoSmall || client.logo}
               alt={client.name}
+              width={client.logoSize[0]}
+              height={client.logoSize[1]}
               className="partners_logo"
               loading="lazy"
             />

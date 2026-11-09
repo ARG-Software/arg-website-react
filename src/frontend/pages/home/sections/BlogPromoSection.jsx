@@ -5,6 +5,7 @@ import { trackBlogPostClick } from '@services/analytics';
 import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import HOMEPAGE from '../../../data/homePage.json';
+import IMAGE_SIZES from '@data/blogImageSizes.json';
 
 // One featured post plus four in the list beside it
 const BLOG_PROMO_LIST_COUNT = 4;
@@ -73,6 +74,8 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
                       srcSet={getCoverSrcSet(featured.image)}
                       sizes="(max-width: 61.9375rem) 100vw, 40rem"
                       alt=""
+                      width={IMAGE_SIZES[featured.image]?.[0]}
+                      height={IMAGE_SIZES[featured.image]?.[1]}
                       loading="lazy"
                       decoding="async"
                     />
@@ -107,6 +110,8 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
                             srcSet={getCoverSrcSet(post.image)}
                             sizes="5rem"
                             alt=""
+                            width={IMAGE_SIZES[post.image]?.[0]}
+                            height={IMAGE_SIZES[post.image]?.[1]}
                             loading="lazy"
                             decoding="async"
                           />

@@ -274,6 +274,9 @@ export default function BlogPage() {
                                         src={avatar}
                                         alt=""
                                         className="blp-card-avatar"
+                                        // The -360 team photos are square
+                                        width={360}
+                                        height={360}
                                         loading="lazy"
                                       />
                                     ) : (

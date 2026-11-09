@@ -54,6 +54,7 @@ export default function ProjectDetailPage() {
         srcSet: p.imgSrcSet,
         thumb: p.thumbnailSrc,
         thumbSrcSet: p.thumbnailSrcSet,
+        thumbSize: p.thumbnailSize,
       })),
     [otherProjects]
   );
@@ -322,6 +323,8 @@ export default function ProjectDetailPage() {
                       srcSet={project.mockupSrcSet}
                       sizes="(max-width: 47.9375rem) 50vw, 17rem"
                       alt={`${project.title} mockup`}
+                      width={project.mockupSize?.[0]}
+                      height={project.mockupSize?.[1]}
                       loading="lazy"
                       decoding="async"
                       data-animate="fade-up"
