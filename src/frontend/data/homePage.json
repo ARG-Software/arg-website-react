@@ -193,8 +193,12 @@
   "faq": {
     "title": ["Common questions,", "honest answers."],
     "eyebrow": "FAQ",
+    "topics": ["All", "Cost & timeline", "Working together", "Technical"],
+    "closing": { "text": "Still have questions?", "link": "Get in touch" },
     "video": {
       "title": "ARG Software",
+      "label": "How we work",
+      "duration": "1:06",
       "src": "/videos/arg-film.mp4",
       "poster": "/images/arg-film-poster.jpg",
       "embedUrl": ""

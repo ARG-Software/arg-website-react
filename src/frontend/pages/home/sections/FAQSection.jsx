@@ -1,9 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { trackFAQOpen } from '@services/analytics';
+import { useContext, useRef, useState } from 'react';
+import { AnimatedArrowButton } from '@ui/buttons/AnimatedArrowButton.jsx';
+import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
+import { trackEvent, trackFAQOpen } from '@services/analytics';
+import { LenisContext } from '../../../providers/LenisProvider';
+import { TransitionContext } from '../../../providers/TransitionProvider';
 import HOMEPAGE from '../../../data/homePage.json';
 import FAQ from '../../../data/faq.json';
 
 const faqData = FAQ.items;
+const ALL_TOPICS = 'All';
 
 function renderAnswerBlock(block, index) {
   if (block.type === 'list') {
@@ -19,176 +24,115 @@ function renderAnswerBlock(block, index) {
   return <p key={index}>{block.text}</p>;
 }
 
-// Fill `faq.video` in homePage.json: `src` for a file in /public, or `embedUrl` for a player
-// (that host must also be allowed in frame-src in public/_headers). Empty, it shows the frame.
-// Only a play button shows at first; once the film plays, its controls appear on hover or focus
-function FAQVideo({ video = {} }) {
-  const videoRef = useRef(null);
-  const [playing, setPlaying] = useState(false);
-  const [hovered, setHovered] = useState(false);
+const playIcon = (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+  </svg>
+);
 
-  let media = <div className="faq_video-placeholder">Video</div>;
-  if (video.embedUrl) {
-    media = (
-      <iframe
-        src={video.embedUrl}
-        title={video.title}
-        loading="lazy"
-        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-        allowFullScreen
-      />
-    );
-  } else if (video.src) {
-    media = (
-      <>
-        <video
-          ref={videoRef}
-          src={video.src}
-          poster={video.poster || undefined}
-          title={video.title}
-          controls={playing && hovered}
-          playsInline
-          preload="metadata"
-          onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
-          onEnded={() => setPlaying(false)}
-        />
-        {!playing && (
-          <button
-            type="button"
-            className="faq_video-play"
-            aria-label={`Play the ${video.title} film`}
-            onClick={() => videoRef.current.play()}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
-            </svg>
-          </button>
-        )}
-      </>
-    );
-  }
+// Fill `faq.video` in homePage.json: `src` for a file in /public, or `embedUrl` for a player
+// (that host must also be allowed in frame-src in public/_headers). A small thumbnail sits in
+// the header; the film itself plays large in a dialog over the page
+function FAQVideo({ video = {} }) {
+  const dialogRef = useRef(null);
+  const lenis = useContext(LenisContext);
+  const [open, setOpen] = useState(false);
+
+  if (!video.src && !video.embedUrl) return null;
+
+  const openFilm = () => {
+    trackEvent('faq_film_open');
+    setOpen(true);
+    dialogRef.current.showModal();
+    lenis?.stop();
+  };
+
+  // Closing by button, Escape or a click on the backdrop all end here
+  const onClose = () => {
+    setOpen(false);
+    lenis?.start();
+  };
 
   return (
-    <div
-      className="faq_video"
-      data-animate-order="0"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
-    >
-      {media}
-    </div>
+    <>
+      <button
+        type="button"
+        className="faq_video"
+        onClick={openFilm}
+        aria-label={`Play the ${video.title} film`}
+      >
+        <ArgMarkIcon className="faq_video-mark" />
+        <span className="faq_video-bar">
+          <span className="faq_video-play">{playIcon}</span>
+          <span className="faq_video-label">{video.label}</span>
+          <span className="faq_video-duration">{video.duration}</span>
+        </span>
+      </button>
+
+      <dialog
+        ref={dialogRef}
+        className="faq_film"
+        aria-label={video.title}
+        onClose={onClose}
+        onClick={event => {
+          if (event.target === dialogRef.current) dialogRef.current.close();
+        }}
+      >
+        <button
+          type="button"
+          className="faq_film-close"
+          aria-label="Close the film"
+          onClick={() => dialogRef.current.close()}
+        />
+        {/* Mounted only while open, so closing stops the film */}
+        {open && video.embedUrl ? (
+          <iframe
+            src={video.embedUrl}
+            title={video.title}
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+          />
+        ) : null}
+        {open && !video.embedUrl ? (
+          <video
+            src={video.src}
+            poster={video.poster || undefined}
+            title={video.title}
+            controls
+            autoPlay
+            playsInline
+          />
+        ) : null}
+      </dialog>
+    </>
   );
 }
 
 export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faqData }) {
-  // Inlined useFAQAnimations hook
-  useEffect(() => {
-    const items = document.querySelectorAll('.faq_item');
-    if (!items.length) return;
+  const [topic, setTopic] = useState(ALL_TOPICS);
+  // Every question starts closed; the visitor opens the one they want
+  const [openId, setOpenId] = useState(null);
+  const { scrollToHash } = useContext(TransitionContext);
 
-    items.forEach(item => {
-      const button = item.querySelector('.faq_question');
-      const answer = item.querySelector('.faq_answer');
-      if (!button || !answer) return;
+  const selectTopic = name => {
+    setTopic(name);
+    setOpenId(null);
+  };
 
-      answer.style.overflow = 'hidden';
-      answer.style.maxHeight = '0';
-      answer.style.transition = 'max-height 0.55s var(--ease-out-expo)';
+  const toggle = item => {
+    if (openId === item.id) {
+      setOpenId(null);
+      return;
+    }
+    setOpenId(item.id);
+    trackFAQOpen(item.q);
+  };
 
-      const questionText = button.querySelector('.faq_question_text');
-      if (questionText) {
-        questionText.style.transition = 'color 0.4s ease';
-      }
-    });
-
-    const openItem = item => {
-      const button = item.querySelector('.faq_question');
-      const answer = item.querySelector('.faq_answer');
-      const questionText = button?.querySelector('.faq_question_text');
-
-      button.setAttribute('aria-expanded', 'true');
-      item.classList.add('is-open');
-
-      answer.style.maxHeight = answer.scrollHeight / 16 + 'rem';
-
-      if (questionText) {
-        questionText.style.background = 'var(--arg-gradient-primary)';
-        questionText.style.WebkitBackgroundClip = 'text';
-        questionText.style.backgroundClip = 'text';
-        questionText.style.WebkitTextFillColor = 'transparent';
-        questionText.style.color = 'transparent';
-      }
-
-      const onEnd = () => {
-        if (item.classList.contains('is-open')) {
-          answer.style.maxHeight = 'none';
-        }
-        answer.removeEventListener('transitionend', onEnd);
-      };
-      answer.addEventListener('transitionend', onEnd);
-    };
-
-    const closeItem = item => {
-      const button = item.querySelector('.faq_question');
-      const answer = item.querySelector('.faq_answer');
-      const questionText = button?.querySelector('.faq_question_text');
-
-      button.setAttribute('aria-expanded', 'false');
-      item.classList.remove('is-open');
-
-      answer.style.maxHeight = answer.scrollHeight / 16 + 'rem';
-      answer.offsetHeight;
-      answer.style.maxHeight = '0';
-
-      if (questionText) {
-        questionText.style.background = 'none';
-        questionText.style.WebkitBackgroundClip = 'unset';
-        questionText.style.backgroundClip = 'unset';
-        questionText.style.WebkitTextFillColor = 'unset';
-        questionText.style.color = '';
-      }
-    };
-
-    const handleClick = item => () => {
-      const isOpen = item.classList.contains('is-open');
-
-      items.forEach(other => {
-        if (other !== item && other.classList.contains('is-open')) {
-          closeItem(other);
-        }
-      });
-
-      if (isOpen) {
-        closeItem(item);
-      } else {
-        openItem(item);
-        const questionText = item.querySelector('.faq_question_text');
-        if (questionText) trackFAQOpen(questionText.textContent.trim());
-      }
-    };
-
-    items.forEach(item => {
-      const button = item.querySelector('.faq_question');
-      if (!button) return;
-      const handler = handleClick(item);
-      button.addEventListener('click', handler);
-      // Store handler for cleanup
-      item._faqHandler = handler;
-    });
-
-    return () => {
-      items.forEach(item => {
-        const button = item.querySelector('.faq_question');
-        if (button && item._faqHandler) {
-          button.removeEventListener('click', item._faqHandler);
-          delete item._faqHandler;
-        }
-      });
-    };
-  }, []);
+  const goToContact = event => {
+    event.preventDefault();
+    trackEvent('section_navigation', { section: 'contact', source: 'faq' });
+    scrollToHash('contact', { duration: 2.4 });
+  };
 
   return (
     <section
@@ -196,7 +140,7 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
       className={`section_faq padding-section-medium ${className} background-color-white border-radius-all`.trim()}
     >
       <div className="padding-global">
-        <div className="container-large">
+        <div className="container-large" data-animate-scope data-animate-default-preset="fade-up">
           <div className="faq_header home-section-header">
             <div className="heading_wrap">
               <h2 className="home-section-title">
@@ -209,21 +153,67 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
               <div>{content.eyebrow}</div>
             </div>
           </div>
-          <div className="faq_layout" data-animate-scope data-animate-default-preset="fade-up">
-            <FAQVideo video={content.video} />
-            <div className="faq_list">
-              {items.map((item, i) => (
-                <div key={i} className="faq_item" data-animate-order={i + 1}>
-                  <button className="faq_question" aria-expanded="false">
+
+          {/* The filters on the left and the film thumbnail on the right share one row */}
+          <div className="faq_toolbar">
+            <div
+              className="faq_topics"
+              role="group"
+              data-animate-order="1"
+              aria-label="Filter questions by topic"
+            >
+              {content.topics.map(name => (
+                <button
+                  key={name}
+                  type="button"
+                  className={`faq_topic${topic === name ? ' is-active' : ''}`}
+                  aria-pressed={topic === name}
+                  onClick={() => selectTopic(name)}
+                >
+                  {name}
+                </button>
+              ))}
+            </div>
+            <div className="faq_toolbar-video" data-animate-order="2">
+              <FAQVideo video={content.video} />
+            </div>
+          </div>
+
+          <div className="faq_list">
+            {items.map((item, i) => {
+              const isOpen = openId === item.id;
+              return (
+                <div
+                  key={item.id}
+                  className={`faq_item${isOpen ? ' is-open' : ''}`}
+                  hidden={topic !== ALL_TOPICS && item.topic !== topic}
+                  data-animate-order={i + 3}
+                >
+                  <button
+                    type="button"
+                    className="faq_question"
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-answer-${item.id}`}
+                    onClick={() => toggle(item)}
+                  >
+                    {/* Numbers stay global, so a filtered list keeps each question's number */}
+                    <span className="faq_number">{String(i + 1).padStart(2, '0')}</span>
                     <span className="faq_question_text">{item.q}</span>
                     <span className="faq_toggle" aria-hidden="true" />
                   </button>
-                  <div className="faq_answer">
+                  <div className="faq_answer" id={`faq-answer-${item.id}`}>
                     <div className="faq_answer_inner">{item.answer.map(renderAnswerBlock)}</div>
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
+          </div>
+
+          <div className="faq_closing" data-animate-order={items.length + 3}>
+            <p className="faq_closing-text">{content.closing.text}</p>
+            <AnimatedArrowButton href="#contact" variant="dark" onClick={goToContact}>
+              {content.closing.link}
+            </AnimatedArrowButton>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@
     {
       "id": "pricing",
       "q": "How much does custom software development cost?",
+      "topic": "Cost & timeline",
       "schemaAnswer": "Project budgets usually start around EUR 10,000. The final estimate depends on scope, architecture, integrations, technical risk, and delivery model. Before estimating, we define the core workflows, the technical risks, the architecture direction, and a realistic delivery range. For evolving work, hourly or monthly collaboration may be the right model. Defined scopes can use milestone-based delivery. Any change affecting scope, timeline or technical direction is reviewed before work continues.",
       "answer": [
         { "type": "paragraph", "text": "Project budgets usually start around EUR 10,000. The final estimate depends on scope, architecture, integrations, technical risk and delivery model." },
@@ -14,6 +15,7 @@
     {
       "id": "timeline",
       "q": "How long does it take to build an MVP?",
+      "topic": "Cost & timeline",
       "schemaAnswer": "Most focused MVPs take 8–14 weeks, depending on feature complexity, product clarity, integration depth, and security or compliance needs. We move quickly without building a throwaway foundation. The goal is a production-ready first release your team can learn from and evolve.",
       "answer": [
         { "type": "paragraph", "text": "Most focused MVPs take 8–14 weeks, depending on:" },
@@ -24,6 +26,7 @@
     {
       "id": "remote-work",
       "q": "Do you work with clients internationally?",
+      "topic": "Working together",
       "schemaAnswer": "Yes. ARG is based in Portugal and works remotely with teams across regions. We rely on clear written context, direct technical conversations, predictable async updates, and enough overlap for decisions. If the problem is clear and ownership is real, distance is not the blocker. Hybrid or on-site collaboration is assessed case by case.",
       "answer": [
         { "type": "paragraph", "text": "Yes. ARG is based in Portugal and works remotely with teams across regions. We rely on:" },
@@ -34,6 +37,7 @@
     {
       "id": "clients",
       "q": "Do you work with startups or established companies?",
+      "topic": "Working together",
       "schemaAnswer": "Both. We support startups building launch-ready products, companies modernizing fragile systems, teams scaling performance or reliability, and organizations building internal platforms. The common thread is technical ownership, not company size.",
       "answer": [
         { "type": "paragraph", "text": "Both. We support:" },
@@ -42,8 +46,42 @@
       ]
     },
     {
+      "id": "team-model",
+      "q": "Do you provide dedicated product teams?",
+      "topic": "Working together",
+      "schemaAnswer": "Yes. Depending on the need, we can provide a focused product team, senior engineers embedded with your team, or architecture and consulting support. We adapt the model to the work while keeping the team senior and accountable.",
+      "answer": [
+        { "type": "paragraph", "text": "Yes. Depending on the need, we can provide:" },
+        { "type": "list", "items": ["A focused product team", "Senior engineers embedded with your team", "Architecture or consulting support"] },
+        { "type": "paragraph", "text": "We adapt the model to the work, but keep the team senior and accountable." }
+      ]
+    },
+    {
+      "id": "process",
+      "q": "What is your development process?",
+      "topic": "Working together",
+      "schemaAnswer": "Our process is intentionally simple: understand the context, map the risks, design the architecture, build in short cycles, launch, and stay close. You get visibility without process theatre.",
+      "answer": [
+        { "type": "paragraph", "text": "Our process is intentionally simple:" },
+        { "type": "list", "items": ["Understand the context", "Map the risks", "Design the architecture", "Build in short cycles", "Launch and stay close"] },
+        { "type": "paragraph", "text": "You get visibility without process theatre." }
+      ]
+    },
+    {
+      "id": "getting-started",
+      "q": "How do we get started?",
+      "topic": "Working together",
+      "schemaAnswer": "Send us the context first. We look for the shape of the problem: your product goals, technical constraints, current risks, and timeline expectations. If there is a fit, the first conversation is technical. If there is not, we will say that clearly.",
+      "answer": [
+        { "type": "paragraph", "text": "Send us the context first. We look for the shape of the problem:" },
+        { "type": "list", "items": ["Your product goals", "Technical constraints", "Current risks", "Timeline expectations"] },
+        { "type": "paragraph", "text": "If there is a fit, the first conversation is technical. If there is not, we will say that clearly." }
+      ]
+    },
+    {
       "id": "technology",
       "q": "What technologies do you use?",
+      "topic": "Technical",
       "schemaAnswer": "We choose technology based on system requirements, team fit, and long-term operability. The stack is a tool, not the strategy. Common choices include React, Next.js, Angular, React Native, TypeScript, Node.js, NestJS, .NET, Java, PostgreSQL, MongoDB, Kafka, RabbitMQ, Docker, Kubernetes, AWS, Azure, GCP, Scaleway, and serverless platforms. The goal is a system your team can understand, operate and evolve after launch.",
       "answer": [
         { "type": "paragraph", "text": "We choose technology based on system requirements, team fit and long-term operability. The stack is a tool, not the strategy." },
@@ -54,6 +92,7 @@
     {
       "id": "quality",
       "q": "How do you ensure scalability and code quality?",
+      "topic": "Technical",
       "schemaAnswer": "Quality starts before implementation. We make architecture boundaries, testing strategy, code reviews, CI/CD and release flow, observability and recovery paths, and security and data constraints explicit. Testing tools vary by stack, but common choices include Jest, Cypress, Playwright, Testcontainers, xUnit, and NUnit across unit, integration, end-to-end, and backend test suites. We build software meant to evolve, not be rewritten after year one.",
       "answer": [
         { "type": "paragraph", "text": "Quality starts before implementation. We make the important decisions explicit:" },
@@ -65,41 +104,12 @@
     {
       "id": "post-launch",
       "q": "Can you scale our product after launch?",
+      "topic": "Technical",
       "schemaAnswer": "Yes. After launch we help with performance optimization, reliability improvements, cloud and platform work, feature evolution, and senior team extension. We prefer long-term ownership over one-off handoffs.",
       "answer": [
         { "type": "paragraph", "text": "Yes. Some of our most valuable work happens after launch:" },
         { "type": "list", "items": ["Performance optimization", "Reliability improvements", "Cloud and platform work", "Feature evolution", "Senior team extension"] },
         { "type": "paragraph", "text": "We prefer long-term ownership over one-off handoffs." }
-      ]
-    },
-    {
-      "id": "team-model",
-      "q": "Do you provide dedicated product teams?",
-      "schemaAnswer": "Yes. Depending on the need, we can provide a focused product team, senior engineers embedded with your team, or architecture and consulting support. We adapt the model to the work while keeping the team senior and accountable.",
-      "answer": [
-        { "type": "paragraph", "text": "Yes. Depending on the need, we can provide:" },
-        { "type": "list", "items": ["A focused product team", "Senior engineers embedded with your team", "Architecture or consulting support"] },
-        { "type": "paragraph", "text": "We adapt the model to the work, but keep the team senior and accountable." }
-      ]
-    },
-    {
-      "id": "process",
-      "q": "What is your development process?",
-      "schemaAnswer": "Our process is intentionally simple: understand the context, map the risks, design the architecture, build in short cycles, launch, and stay close. You get visibility without process theatre.",
-      "answer": [
-        { "type": "paragraph", "text": "Our process is intentionally simple:" },
-        { "type": "list", "items": ["Understand the context", "Map the risks", "Design the architecture", "Build in short cycles", "Launch and stay close"] },
-        { "type": "paragraph", "text": "You get visibility without process theatre." }
-      ]
-    },
-    {
-      "id": "getting-started",
-      "q": "How do we get started?",
-      "schemaAnswer": "Send us the context first. We look for the shape of the problem: your product goals, technical constraints, current risks, and timeline expectations. If there is a fit, the first conversation is technical. If there is not, we will say that clearly.",
-      "answer": [
-        { "type": "paragraph", "text": "Send us the context first. We look for the shape of the problem:" },
-        { "type": "list", "items": ["Your product goals", "Technical constraints", "Current risks", "Timeline expectations"] },
-        { "type": "paragraph", "text": "If there is a fit, the first conversation is technical. If there is not, we will say that clearly." }
       ]
     }
   ]
