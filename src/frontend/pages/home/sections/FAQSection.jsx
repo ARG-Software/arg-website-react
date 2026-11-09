@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from 'react';
-import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
 import { trackEvent, trackFAQOpen } from '@services/analytics';
 import { LenisContext } from '../../../providers/LenisProvider';
@@ -211,12 +211,14 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
 
           <div className="faq_closing" data-animate-order={items.length + 3}>
             <p className="faq_closing-text">{content.closing.text}</p>
-            <a href="#contact" className="text-button faq_closing-link" onClick={goToContact}>
-              <div className="text-button_list is-dark">
-                <div className="text-button_text text-no-wrap">{content.closing.link}</div>
-                <div className="arrow_icon-embed">{arrowSvg}</div>
-              </div>
-            </a>
+            <TextArrowButton
+              href="#contact"
+              label={content.closing.link}
+              dark
+              noWrap
+              roll={false}
+              onClick={goToContact}
+            />
           </div>
         </div>
       </div>

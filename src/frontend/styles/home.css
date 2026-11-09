@@ -482,10 +482,6 @@
   padding-top: 1rem !important;
 }
 
-.meet-text {
-  margin-left: 2rem;
-}
-
 @media screen and (max-width: 991px) {
   .partners_marquee-outer {
     padding-left: 3rem;
@@ -506,10 +502,6 @@
 @media screen and (max-width: 768px) {
   .meet-up-align {
     margin-right: 0;
-  }
-
-  .meet-text {
-    margin-left: 0;
   }
 
   .partners_contain.container.padding-global {
@@ -2039,11 +2031,6 @@
   color: var(--arg-color-muted);
   font-size: var(--type-body-large);
   margin: 0;
-}
-
-/* The text stays still on hover; only the button's underline draws in */
-.faq_closing .faq_closing-link:hover .text-button_list:not(.is-animated) {
-  transform: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

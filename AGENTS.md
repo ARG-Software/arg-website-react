@@ -457,6 +457,10 @@ export default function MyPage() {
 - Do not nest animated elements; content inside a marquee animates the whole marquee (`animate` prop), since off-screen copies would pop in late
 - Components like `FilterGrid`, `Timeline` accept optional `animate`/`preset` props
 
+### Text Buttons
+- The label-with-arrow button (`.text-button`) always comes from `TextArrowButton` in `src/packages/ui/src/buttons/TextArrowButton.jsx`; never hand-write its markup
+- Props: `label`, `hoverLabel` (rolls in on hover), `dark`, `align="end"`, `noWrap`, `roll={false}` (single still label), `underline={false}`, `as={AppLink}` or `as="button"`, `listProps` (e.g. animation attributes on the visible label)
+
 ### When to Use AppLink vs Plain `<a>`
 - **AppLink**: Internal SPA navigation (client-side routing, no full reload)
 - **Plain `<a>`**: External URLs, mailto links, page anchors (`#section`)

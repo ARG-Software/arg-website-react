@@ -1,5 +1,5 @@
 import AppLink from '../../../components/navigation/AppLink';
-import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
 import { Pill } from '@ui/pills/Pill.jsx';
 import { trackBlogPostClick } from '@services/analytics';
 import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
@@ -134,16 +134,14 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
             </div>
 
             <div className="blog-promo_footer" data-animate-order="10">
-              <AppLink to="/blog/" className="text-button text-button--align-end">
-                <div className="text-button_list">
-                  <div className="text-button_text text-no-wrap">{content.cta.label}</div>
-                  <div className="arrow_icon-embed">{arrowSvg}</div>
-                </div>
-                <div className="text-button_list is-animated">
-                  <div className="text-button_text text-no-wrap">{content.cta.hoverLabel}</div>
-                  <div className="arrow_icon-embed">{arrowSvg}</div>
-                </div>
-              </AppLink>
+              <TextArrowButton
+                as={AppLink}
+                to="/blog/"
+                label={content.cta.label}
+                hoverLabel={content.cta.hoverLabel}
+                align="end"
+                noWrap
+              />
             </div>
           </div>
         </div>

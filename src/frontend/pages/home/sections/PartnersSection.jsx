@@ -1,5 +1,5 @@
 import AppLink from '../../../components/navigation/AppLink';
-import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
 import { Marquee } from '@ui/layout/Marquee.jsx';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import HOMEPAGE from '../../../data/homePage.json';
@@ -52,16 +52,15 @@ export function PartnersSection({
           justifyContent: 'flex-end',
         }}
       >
-        <AppLink to="/partners/" className="text-button text-button--align-end meet-up-align">
-          <div className="text-button_list is-dark">
-            <div className="text-button_text">{content.cta.label}</div>
-            <div className="arrow_icon-embed">{arrowSvg}</div>
-          </div>
-          <div className="text-button_list is-animated is-dark">
-            <div className="text-button_text meet-text">{content.cta.hoverLabel}</div>
-            <div className="arrow_icon-embed">{arrowSvg}</div>
-          </div>
-        </AppLink>
+        <TextArrowButton
+          as={AppLink}
+          to="/partners/"
+          className="meet-up-align"
+          label={content.cta.label}
+          hoverLabel={content.cta.hoverLabel}
+          dark
+          align="end"
+        />
       </div>
 
       <SectionDivider variant="default" hideOnMobile={false} />

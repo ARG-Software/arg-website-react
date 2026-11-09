@@ -859,6 +859,15 @@ main:focus {
   transform-origin: left;
 }
 
+/* TextArrowButton options: a single label that stays still, and no hover underline */
+.text-button.text-button--static:hover .text-button_list:not(.is-animated) {
+  transform: none !important;
+}
+
+.text-button--no-underline::after {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .text-button::after {
     transition: none;

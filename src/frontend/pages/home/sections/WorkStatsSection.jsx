@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import AppLink from '../../../components/navigation/AppLink';
 import { CounterWidget } from '../../../components/widgets/CounterWidget';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
-import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
 import { isMobile } from '../../../utils/helpers';
 import HOMEPAGE from '../../../data/homePage.json';
 
@@ -199,16 +199,14 @@ export function WorkStatsSection({ className = '', content = HOMEPAGE.workStats 
                   {content.paragraphs[1]}
                 </p>
                 <div className="home-work__cta" data-animate="fade-up" data-animate-order="4">
-                  <AppLink to="/working-with-us/" className="text-button">
-                    <div className="text-button_list is-dark">
-                      <div className="text-button_text text-no-wrap">{content.cta.label}</div>
-                      <div className="arrow_icon-embed">{arrowSvg}</div>
-                    </div>
-                    <div className="text-button_list is-animated is-dark">
-                      <div className="text-button_text text-no-wrap">{content.cta.hoverLabel}</div>
-                      <div className="arrow_icon-embed">{arrowSvg}</div>
-                    </div>
-                  </AppLink>
+                  <TextArrowButton
+                    as={AppLink}
+                    to="/working-with-us/"
+                    label={content.cta.label}
+                    hoverLabel={content.cta.hoverLabel}
+                    dark
+                    noWrap
+                  />
                 </div>
               </div>
               <div className="padding-bottom padding-80-76"></div>
@@ -225,16 +223,15 @@ export function WorkStatsSection({ className = '', content = HOMEPAGE.workStats 
                 ))}
               </div>
               <div className="home-work__footer" data-animate="fade-up" data-animate-order="5">
-                <AppLink to="/working-with-us/" className="text-button text-button--align-end">
-                  <div className="text-button_list is-dark">
-                    <div className="text-button_text text-no-wrap">{content.cta.label}</div>
-                    <div className="arrow_icon-embed">{arrowSvg}</div>
-                  </div>
-                  <div className="text-button_list is-animated is-dark">
-                    <div className="text-button_text text-no-wrap">{content.cta.hoverLabel}</div>
-                    <div className="arrow_icon-embed">{arrowSvg}</div>
-                  </div>
-                </AppLink>
+                <TextArrowButton
+                  as={AppLink}
+                  to="/working-with-us/"
+                  label={content.cta.label}
+                  hoverLabel={content.cta.hoverLabel}
+                  dark
+                  align="end"
+                  noWrap
+                />
               </div>
             </div>
           </div>

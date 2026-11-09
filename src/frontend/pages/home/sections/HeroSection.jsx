@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef } from 'react';
-import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
 import { trackEvent, trackMailto } from '@services/analytics';
 import { TransitionContext } from '../../../providers/TransitionProvider';
 import { LoadingContext } from '../../../providers/LoadingProvider';
@@ -103,41 +103,23 @@ export function HeroSection({ content }) {
               </div>
             </div>
             <div className="hero_bottom_content">
-              <a
+              <TextArrowButton
                 href={getMailtoLink(EMAIL_KEYS.HELLO, content.mailCta.subject)}
-                className="text-button"
+                label={content.mailCta.label}
+                hoverLabel={content.mailCta.hoverLabel}
+                listProps={{ 'data-animate-order': '4', 'data-animate-duration': '1.8s' }}
                 onClick={() => trackMailto('share_ideas', 'hero')}
-              >
-                <div
-                  className="text-button_list"
-                  data-animate-order="4"
-                  data-animate-duration="1.8s"
-                >
-                  <div className="text-button_text">{content.mailCta.label}</div>
-                  <div className="arrow_icon-embed">{arrowSvg}</div>
-                </div>
-                <div className="text-button_list is-animated">
-                  <div className="text-button_text">{content.mailCta.hoverLabel}</div>
-                  <div className="arrow_icon-embed">{arrowSvg}</div>
-                </div>
-              </a>
+              />
             </div>
             <div className="bottom_buttons-wrapper">
               <div className="overflow-hidden">
-                <a href="#contact" className="text-button" onClick={handleContactClick}>
-                  <div
-                    className="text-button_list"
-                    data-animate-order="5"
-                    data-animate-duration="1.8s"
-                  >
-                    <div className="text-button_text">{content.contactCta.label}</div>
-                    <div className="arrow_icon-embed">{arrowSvg}</div>
-                  </div>
-                  <div className="text-button_list is-animated">
-                    <div className="text-button_text">{content.contactCta.hoverLabel}</div>
-                    <div className="arrow_icon-embed">{arrowSvg}</div>
-                  </div>
-                </a>
+                <TextArrowButton
+                  href="#contact"
+                  label={content.contactCta.label}
+                  hoverLabel={content.contactCta.hoverLabel}
+                  listProps={{ 'data-animate-order': '5', 'data-animate-duration': '1.8s' }}
+                  onClick={handleContactClick}
+                />
               </div>
             </div>
           </div>

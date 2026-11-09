@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
 import AppLink from '../navigation/AppLink';
 import { isMobile } from '../../utils/helpers';
 
@@ -103,22 +103,20 @@ export function ProjectItem({
         </div>
       </div>
       <div className="projects_item_description">
-        <AppLink
+        <TextArrowButton
+          as={AppLink}
           to={`/projects/${slug}/`}
           aria-label={title}
-          className="text-button project-title-link"
+          className="project-title-link"
+          label={title}
+          hoverLabel="View the case study"
+          dark
+          labelAs="h3"
+          labelClassName="heading-style-h3"
+          arrowClassName="large"
           onClick={() => onProjectClick?.(slug)}
           getTransitionOptions={getProjectImageTransition}
-        >
-          <div className="text-button_list is-dark">
-            <h3 className="heading-style-h3">{title}</h3>
-            <div className="arrow_icon-embed large">{arrowSvg}</div>
-          </div>
-          <div className="text-button_list is-animated is-dark">
-            <h3 className="heading-style-h3">View the case study</h3>
-            <div className="arrow_icon-embed large">{arrowSvg}</div>
-          </div>
-        </AppLink>
+        />
         <div className="subtitle-projects">{subtitle}</div>
       </div>
     </div>

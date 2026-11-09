@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import AppLink from '../../../components/navigation/AppLink';
-import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
+import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
 import { TransitionContext } from '../../../providers/TransitionProvider';
 import { trackEvent } from '@services/analytics';
 
@@ -45,22 +45,16 @@ export function StudioOverviewSection({ className = '', content = HOMEPAGE.overv
               {content.lead}
             </p>
 
-            <a
+            <TextArrowButton
               data-animate="fade-up"
               data-animate-order="3"
               href="#contact"
-              className="home-overview__cta text-button"
+              className="home-overview__cta"
+              label={content.cta.label}
+              hoverLabel={content.cta.hoverLabel}
+              dark
               onClick={handleContactClick}
-            >
-              <div className="text-button_list is-dark">
-                <div className="text-button_text">{content.cta.label}</div>
-                <div className="arrow_icon-embed">{arrowSvg}</div>
-              </div>
-              <div className="text-button_list is-animated is-dark">
-                <div className="text-button_text">{content.cta.hoverLabel}</div>
-                <div className="arrow_icon-embed">{arrowSvg}</div>
-              </div>
-            </a>
+            />
           </div>
 
           <div className="home-overview__values" aria-label="ARG engineering principles">
@@ -79,21 +73,15 @@ export function StudioOverviewSection({ className = '', content = HOMEPAGE.overv
             ))}
 
             <div className="home-overview__more" data-animate-order={content.values.length + 5}>
-              <AppLink
+              <TextArrowButton
+                as={AppLink}
                 to="/about-us/"
-                className="text-button"
                 trackEvent="home_overview_about_click"
                 trackData={{ source_path: '/' }}
-              >
-                <div className="text-button_list is-dark">
-                  <div className="text-button_text">{content.aboutCta.label}</div>
-                  <div className="arrow_icon-embed">{arrowSvg}</div>
-                </div>
-                <div className="text-button_list is-animated is-dark">
-                  <div className="text-button_text">{content.aboutCta.hoverLabel}</div>
-                  <div className="arrow_icon-embed">{arrowSvg}</div>
-                </div>
-              </AppLink>
+                label={content.aboutCta.label}
+                hoverLabel={content.aboutCta.hoverLabel}
+                dark
+              />
             </div>
           </div>
         </div>

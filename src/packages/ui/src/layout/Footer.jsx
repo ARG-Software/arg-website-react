@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { arrowSvg } from '../icons/SocialIcons.jsx';
+import { TextArrowButton } from '../buttons/TextArrowButton.jsx';
 import { DotWordmark } from './DotWordmark.jsx';
 
 export function Footer({
@@ -83,20 +83,15 @@ export function Footer({
                 renderFooterLink(link, renderLink, renderExternalLink, 'footer-bottom__link')
               )}
               {onBackToTop && (
-                <button
+                <TextArrowButton
+                  as="button"
                   type="button"
-                  className="text-button footer-bottom__top"
+                  className="footer-bottom__top"
+                  label="Back to top"
+                  noWrap
+                  arrowClassName="footer-bottom__top-arrow"
                   onClick={onBackToTop}
-                >
-                  <span className="text-button_list">
-                    <span className="text-button_text text-no-wrap">Back to top</span>
-                    <span className="arrow_icon-embed footer-bottom__top-arrow">{arrowSvg}</span>
-                  </span>
-                  <span className="text-button_list is-animated" aria-hidden="true">
-                    <span className="text-button_text text-no-wrap">Back to top</span>
-                    <span className="arrow_icon-embed footer-bottom__top-arrow">{arrowSvg}</span>
-                  </span>
-                </button>
+                />
               )}
             </div>
           </div>
