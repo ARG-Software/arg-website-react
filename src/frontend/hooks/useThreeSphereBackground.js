@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useRAF } from './useRAF';
+import { prefersReducedMotion } from '../utils/helpers';
 
 export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
   const renderRef = useRef(null);
@@ -173,6 +174,7 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
       sphere2.rotation.y = -0.7;
 
       const ORBIT_COUNT = 2;
+      const reducedMotion = prefersReducedMotion();
       const servicesSection = canvas.closest('.services_wrap') || canvas.closest('.services_grid');
 
       // Render function called by RAF coordinator
@@ -214,9 +216,12 @@ export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
         sphere1.position.set(x1, centerY, z1);
         sphere2.position.set(x2, centerY, z2);
 
-        const dtFactor = delta / 0.016;
-        sphere1.rotation.y += 0.0022 * dtFactor;
-        sphere2.rotation.y -= 0.0017 * dtFactor;
+        // The slow spin is the only motion at rest; it stops for visitors who asked for less
+        if (!reducedMotion) {
+          const dtFactor = delta / 0.016;
+          sphere1.rotation.y += 0.0022 * dtFactor;
+          sphere2.rotation.y -= 0.0017 * dtFactor;
+        }
 
         renderer.render(scene, camera);
       };

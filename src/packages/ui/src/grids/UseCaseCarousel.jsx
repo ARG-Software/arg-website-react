@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { arrowSvg } from '../icons/SocialIcons.jsx';
+import { prefersReducedMotion } from '../utils/motion.js';
 
 const WHEEL_THRESHOLD = 60;
 const WHEEL_COOLDOWN_MS = 420;
@@ -97,7 +98,7 @@ export function UseCaseCarousel({
     if (!strip || !layout.thumbWidth) return undefined;
 
     const x = `${-start * (layout.thumbWidth + layout.gap)}rem`;
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reducedMotion = prefersReducedMotion();
     if (!positionedRef.current || reducedMotion) {
       positionedRef.current = true;
       gsap.set(strip, { x });

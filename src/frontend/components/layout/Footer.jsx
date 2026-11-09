@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { Footer as UiFooter } from '@ui/layout/Footer.jsx';
 import { trackEvent, trackSocial } from '@services/analytics';
+import { prefersReducedMotion } from '@utils/helpers';
 import { MarkNameWhite } from '../icons/MarkNameWhite';
 import AppLink from '../navigation/AppLink';
 import { LenisContext } from '../../providers/LenisProvider';
@@ -50,7 +51,7 @@ export function Footer() {
       onBackToTop={() => {
         trackEvent('footer_back_to_top');
         if (lenis) lenis.scrollTo(0);
-        else window.scrollTo({ top: 0, behavior: 'smooth' });
+        else window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
       }}
       renderLink={renderFooterAppLink}
       renderExternalLink={renderFooterExternalLink}

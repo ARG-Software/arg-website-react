@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import assistantContent from '@data/assistant.json';
 import { getProjectBookingLink } from '@services/linksService';
+import { prefersReducedMotion } from '@utils/helpers';
 
 const TYPING_STEP_MS = 35;
-
-function prefersReducedMotion() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
 
 // Gaspar's speech bubble: types its offer next to the trigger instead of opening the whole chat
 export function AssistantNudge({ onChat, onMeeting, onClose }) {

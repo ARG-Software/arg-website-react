@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { prefersReducedMotion } from '../utils/motion.js';
 
 export function Marquee({
   items,
@@ -26,7 +27,8 @@ export function Marquee({
 
   const startAnimation = useCallback(() => {
     const track = trackRef.current;
-    if (!track) return undefined;
+    // Visitors who asked for less motion get the row standing still
+    if (!track || prefersReducedMotion()) return undefined;
     const halfWidth = track.scrollWidth / 2;
 
     const tick = timestamp => {

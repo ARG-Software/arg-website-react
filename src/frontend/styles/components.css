@@ -246,6 +246,15 @@
   transform: translate3d(0, 0, 0);
 }
 
+/* The scroll animations stay off with less motion, so nothing would fade these in */
+@media (prefers-reduced-motion: reduce) {
+  .nav_wrap .nav_logo-wrapper,
+  .nav_wrap .nav_buttons-wrapper {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .nav_wrap {
   z-index: 1050;
   background-color: #0000;

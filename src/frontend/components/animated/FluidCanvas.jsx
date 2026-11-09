@@ -4,6 +4,7 @@ import {
   FLUID_VERTEX_SHADER,
   MAX_BALLS,
 } from '../../animations/shaders/fluidBlob';
+import { prefersReducedMotion } from '@utils/helpers';
 
 const STILL_FRAME_SECONDS = 3;
 // The white-grey of the pieces on the navy headers
@@ -133,7 +134,7 @@ export function FluidCanvas({ balls, melt = 0.35, colour = DEFAULT_COLOUR, class
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reducedMotion = prefersReducedMotion();
     let frame = 0;
     let start = 0;
     let visible = false;

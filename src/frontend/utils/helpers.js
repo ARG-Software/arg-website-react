@@ -64,3 +64,12 @@ export function normalizePathname(pathname) {
 export function isMobile() {
   return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
 }
+
+/**
+ * Whether the visitor asked their system for less motion (Reduce motion / Remove animations).
+ * The UI package keeps its own copy in src/packages/ui/src/utils/motion.js.
+ * @returns {boolean}
+ */
+export function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}

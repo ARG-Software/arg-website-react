@@ -54,3 +54,17 @@
     box-shadow: 0 0 0 7px transparent;
   }
 }
+
+/* Visitors who asked their system for less motion: CSS animations and transitions settle at
+   once, so looping glows, sweeps and blinks stand still. JavaScript motion checks
+   prefersReducedMotion() (src/frontend/utils/helpers.js). The intro (.ls-overlay) is left as is. */
+@media (prefers-reduced-motion: reduce) {
+  *:not(.ls-overlay *),
+  *:not(.ls-overlay *)::before,
+  *:not(.ls-overlay *)::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

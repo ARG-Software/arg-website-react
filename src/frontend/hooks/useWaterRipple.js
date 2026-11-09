@@ -7,6 +7,7 @@ import {
   WATER_SIMULATION_SHADER,
   WATER_VERTEX_SHADER,
 } from '../animations/shaders/waterRipple.js';
+import { prefersReducedMotion } from '@utils/helpers';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -248,7 +249,7 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
     if (!canvas) return;
 
     // Skip for users who prefer reduced motion
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (prefersReducedMotion()) return;
 
     let mounted = true;
     let initialized = false;

@@ -5,7 +5,7 @@ import { useHashScroll } from '../hooks/useHashScroll';
 import { LenisContext } from './LenisProvider';
 import { PAGE_TRANSITION_DURATION_MS } from '@constants/config';
 import { PageTransitionOverlay } from '../components/layout/PageTransitionOverlay';
-import { normalizePathname } from '../utils/helpers';
+import { normalizePathname, prefersReducedMotion } from '../utils/helpers';
 
 // Module-level variables to track navigation history
 let previousPath = '';
@@ -127,6 +127,12 @@ export function TransitionProvider({ children }) {
   const scrollToHashWhenReadyRef = useRef(scrollToHashWhenReady);
 
   const getTransitionTimings = useCallback(variant => {
+    // With less motion the overlay does not animate (see effects.css): it only covers the page
+    // swap for a moment
+    if (prefersReducedMotion()) {
+      return { cover: 150, reveal: 0 };
+    }
+
     if (variant === 'project-image') {
       return { cover: 760, reveal: 300 };
     }

@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import HOMEPAGE from '../../../data/homePage.json';
+import { prefersReducedMotion } from '@utils/helpers';
 
 const testimonialsData = HOMEPAGE.testimonials;
 
@@ -15,8 +16,6 @@ const WORD_KEYFRAMES = [
   { opacity: 0, filter: 'blur(0.375rem)', transform: 'translateY(0.35em)' },
   { opacity: 1, filter: 'blur(0)', transform: 'translateY(0)' },
 ];
-
-const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /**
  * One quote at a time, with the people below as tabs. The quote advances every 10 seconds

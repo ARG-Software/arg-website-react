@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { prefersReducedMotion } from '../utils/motion.js';
 
 // A word set to the full width of its box, cropped by the bottom edge and printed as dots.
 // Each dot is sized by how much of the letter covers its cell, so the type keeps its edges.
@@ -23,7 +24,7 @@ export function DotWordmark({
     const ctx = canvas.getContext('2d');
     if (!ctx) return undefined;
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced = prefersReducedMotion();
     const inkRgb = hexToRgb(ink);
     const warmRgb = hexToRgb(warm);
     let width = 0;

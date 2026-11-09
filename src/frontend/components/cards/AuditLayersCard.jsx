@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { Pill } from '@ui/pills/Pill.jsx';
+import { prefersReducedMotion } from '@utils/helpers';
 
 // Ported from the ARG Architect audit overlay (buildCircuitBackground in browserrunneroverlay.ts).
 // The original draws on a 1280x800 viewBox; y is rescaled to the layer's shape so dots stay round.
@@ -73,9 +74,6 @@ const SCAN_MS = 1900;
 const RIPPLE_SPEED = 520;
 const RIPPLE_LIFE_MS = 4000;
 const RIPPLE_TOUCH_MS = 500;
-
-const prefersReducedMotion = () =>
-  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function CircuitTraces({ paused, reducedMotion, className }) {
   const id = useId().replace(/:/g, '');

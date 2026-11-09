@@ -1403,6 +1403,13 @@
   width: 100%;
 }
 
+/* The scroll animations stay off with less motion, so nothing would lift the cover off the photo */
+@media (prefers-reduced-motion: reduce) {
+  .team_image-overlay {
+    height: 0;
+  }
+}
+
 #team-subtitle-grid {
   place-self: start;
 }

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { prefersReducedMotion } from '@utils/helpers';
 
 const AUTOPLAY_MS = 5000;
 const PAUSE_LABEL = 'Pause the slideshow';
@@ -61,7 +62,7 @@ function ScoreCard({ active, bands }) {
     if (hoveredBand) {
       introDone.current = true;
       tween((hoveredBand.from + hoveredBand.to) / 2, 600, easeInOutCubic, () => {});
-    } else if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    } else if (prefersReducedMotion()) {
       tween(SCORE_LOOP[0], 1, easeOutQuart, () => {});
     } else if (!introDone.current) {
       scoreRef.current = 0;
@@ -210,9 +211,7 @@ export function ReportGuideDeck({ content }) {
   const stackRef = useRef(null);
   // The deck moves on by itself every few seconds while it is on screen, unless the visitor has
   // paused it, is pointing at it, or prefers reduced motion
-  const [playing, setPlaying] = useState(
-    () => !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
+  const [playing, setPlaying] = useState(() => !prefersReducedMotion());
   const [inView, setInView] = useState(false);
   const [hovering, setHovering] = useState(false);
 

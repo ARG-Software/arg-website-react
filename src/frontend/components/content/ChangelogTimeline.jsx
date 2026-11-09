@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { prefersReducedMotion } from '@utils/helpers';
 
 const SLOT_COUNT = 48;
 const LIFT_REM = 0.625;
@@ -18,7 +19,7 @@ export function ChangelogTimeline({
   const ticks = buildTicks(releases);
 
   function handleMove(event) {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (prefersReducedMotion()) return;
     const track = trackRef.current;
     if (!track) return;
     const rect = track.getBoundingClientRect();

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { prefersReducedMotion } from '../utils/motion.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -76,7 +77,7 @@ function DesktopVerticalTimeline({ items, activeIndex, onSelect }) {
     const rail = railRef.current;
     const cards = cardsRef.current;
     if (!rail || !cards) return;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduceMotion = prefersReducedMotion();
 
     const context = gsap.context(() => {
       // Pinned cards break per-card trigger positions, so the card on top is read from
@@ -143,7 +144,7 @@ function DesktopVerticalTimeline({ items, activeIndex, onSelect }) {
     for (let i = 0; i < index; i++) offset += cards.children[i].offsetHeight + gap;
     const pinnedTop = Number.parseFloat(getComputedStyle(cards.children[index]).top) || 0;
     const top = window.scrollY + cards.getBoundingClientRect().top + offset - pinnedTop;
-    window.scrollTo({ top, behavior: 'smooth' });
+    window.scrollTo({ top, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
   };
 
   const handleKeyDown = (event, index) => {

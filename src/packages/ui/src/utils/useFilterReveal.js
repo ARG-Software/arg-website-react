@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { prefersReducedMotion } from './motion.js';
 
 // Same motion as the site's fade-up preset: 2rem rise, 0.8s ease-out-cubic, 100ms apart, capped at 6 steps
 const FILTER_REVEAL = {
@@ -21,7 +22,7 @@ export function useFilterReveal(containerRef, selector, filter, enabled = true) 
     if (previousFilterRef.current === filter) return;
     previousFilterRef.current = filter;
     if (!enabled || !containerRef.current) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (prefersReducedMotion()) return;
 
     containerRef.current.querySelectorAll(selector).forEach((card, index) => {
       card.animate(FILTER_REVEAL.keyframes, {

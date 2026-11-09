@@ -2,6 +2,7 @@ import { createContext, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { prefersReducedMotion } from '@utils/helpers';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,6 +22,10 @@ export function LenisProvider({ children, lerp = 0.1, wheelMultiplier = 0.9, syn
   const location = useLocation();
 
   useEffect(() => {
+    // Visitors who asked for less motion keep the browser's native scroll; consumers already
+    // handle a null instance, as they do while Lenis loads
+    if (prefersReducedMotion()) return undefined;
+
     let cancelled = false;
 
     const initLenis = async () => {

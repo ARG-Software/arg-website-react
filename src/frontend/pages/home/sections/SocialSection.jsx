@@ -13,6 +13,7 @@ import { trackOutbound } from '@services/analytics';
 import { fetchSocialPosts } from '@services/socialPostsService';
 import HOMEPAGE from '../../../data/homePage.json';
 import '../../../styles/social.css';
+import { prefersReducedMotion } from '@utils/helpers';
 
 // Two rows of three on desktop, so the arrows stay in view
 const SOCIAL_POST_COUNT = 6;
@@ -81,7 +82,7 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
   useEffect(() => {
     const wall = wallRef.current;
     if (!wall || revealedRef.current) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (prefersReducedMotion()) return;
 
     const preset = ATTRIBUTE_PRESETS[ANIMATION_PRESETS.fadeUp];
     const cards = [...wall.children].sort((a, b) => {
@@ -143,7 +144,7 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
     };
 
     const cards = wallRef.current?.children;
-    if (!cards?.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (!cards?.length || prefersReducedMotion()) {
       showNextPage();
       return;
     }
@@ -166,7 +167,7 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
     dealInRef.current = false;
 
     const cards = wallRef.current?.children;
-    if (!cards?.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (!cards?.length || prefersReducedMotion()) {
       busyRef.current = false;
       return;
     }

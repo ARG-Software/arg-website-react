@@ -10,7 +10,7 @@ import {
   REVEAL_STEP_MS,
 } from '../animations/attribute-presets';
 import { DEFAULT_ROOT_MARGIN } from '../constants/ui.js';
-import { isMobile } from '../utils/helpers';
+import { isMobile, prefersReducedMotion } from '../utils/helpers';
 import { LoadingContext } from '../providers/LoadingProvider';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -280,6 +280,22 @@ export function useScrollAnimations(config = {}) {
     // Check mobile behavior
     const mobile = isMobile();
     if (mobileBehavior === 'disabled' && mobile) return;
+
+    // Visitors who asked for less motion get every element in its final state: nothing is hidden
+    // and nothing reveals. Stat lines and count-ups start empty in the markup, so fill them here
+    if (prefersReducedMotion()) {
+      document
+        .querySelectorAll(`[data-animate="${ANIMATION_PRESETS.widthCountup}"]`)
+        .forEach(element => {
+          const line = element.querySelector('.work-item_line, .prp-metric-line');
+          if (line) line.style.width = '100%';
+          const numEl = element.querySelector('[fs-numbercount-element="number"]');
+          const end = numEl ? getCountUpEnd(numEl) : null;
+          if (end !== null)
+            numEl.textContent = end % 1 !== 0 ? end.toFixed(1) : end.toLocaleString();
+        });
+      return;
+    }
 
     mountedRef.current = true;
 
