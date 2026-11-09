@@ -69,7 +69,7 @@
   color: rgba(12, 0, 46, 0.44);
   display: flex;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   height: 100%;
   justify-content: center;
   letter-spacing: var(--tracking-meta-wide);
@@ -123,7 +123,7 @@
 .cp-fit-step h4 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
@@ -135,7 +135,7 @@
 .cp-fit-step p {
   color: #716f82;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
   max-width: 30ch;

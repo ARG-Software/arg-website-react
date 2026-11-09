@@ -66,9 +66,9 @@
     align-self: auto;
   }
 
+  /* The gradient line keeps its heading's size */
   .text-color-gradiant {
     text-align: center;
-    font-size: 2rem;
   }
 
   .heading_line {
@@ -791,7 +791,7 @@ main:focus {
   color: #000;
   cursor: pointer;
   display: inline-grid !important;
-  font-size: var(--type-text-button);
+  font-size: var(--type-body);
   grid-template-areas: 'stack';
   line-height: var(--line-cta) !important;
   overflow: visible !important;
@@ -963,7 +963,7 @@ main:focus {
   }
 
   .text-button_text {
-    font-size: var(--type-text-button);
+    font-size: var(--type-body);
   }
 
   .button-base {
@@ -986,7 +986,7 @@ main:focus {
 .social-share-buttons__label {
   color: rgba(12, 0, 46, 0.56);
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-kicker-wide);
   margin-right: 0.25rem;
@@ -1048,7 +1048,7 @@ main:focus {
   color: #555;
   display: flex;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   gap: 0.75rem;
   letter-spacing: var(--tracking-kicker);
   margin-bottom: 1.125rem;
@@ -1089,7 +1089,7 @@ main:focus {
   column-gap: 0.75rem;
   display: grid;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   grid-template-columns: 1.75rem 1fr;
   line-height: 1.45;
   padding: 0.55rem 0 0.55rem 0.875rem;
@@ -1190,7 +1190,7 @@ main:focus {
 .simple-carousel__indicator {
   color: rgba(12, 0, 46, 0.6);
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-meta);
   margin: 0.75rem 0 0;
   text-align: center;
@@ -1229,7 +1229,7 @@ main:focus {
   color: rgba(255, 255, 255, 0.52);
   display: block;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-kicker-wide);
   margin-bottom: 0.75rem;
@@ -1239,7 +1239,7 @@ main:focus {
 .related-articles-carousel h2 {
   color: #fff;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   letter-spacing: -0.035em;
   line-height: 1.05;
@@ -1286,7 +1286,7 @@ main:focus {
   color: rgba(12, 0, 46, 0.6);
   display: inline-flex;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-kicker-wide);
   margin-bottom: 1rem;
@@ -1297,7 +1297,7 @@ main:focus {
   color: #0c002e;
   display: -webkit-box;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
@@ -1311,7 +1311,7 @@ main:focus {
   color: rgba(12, 0, 46, 0.66);
   display: -webkit-box;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   line-height: 1.55;
@@ -1322,7 +1322,7 @@ main:focus {
 .related-article-card__meta {
   color: rgba(12, 0, 46, 0.6);
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-meta);
   margin-top: auto;
   text-transform: uppercase;
@@ -1412,7 +1412,7 @@ main:focus {
   }
 
   .cta-wrapper .cta-subtitle {
-    font-size: 0.9375rem;
+    font-size: var(--type-lead);
     max-width: 28rem;
   }
 
@@ -1530,20 +1530,20 @@ main:focus {
 
 .cta-wrapper .heading-style-h1 {
   color: #fff;
-  font-size: var(--type-cta-title);
+  font-size: var(--type-display);
   line-height: var(--line-tight);
 }
 
 /* On tablets and phones the call to action title matches the section titles around it */
 @media screen and (max-width: 1024px) {
   .cta-wrapper .heading-style-h1 {
-    font-size: var(--type-section-title);
+    font-size: var(--type-section);
   }
 }
 
 .cta-wrapper .cta-subtitle {
   color: rgba(255, 255, 255, 0.72);
-  font-size: var(--type-cta-subtitle);
+  font-size: var(--type-lead);
   line-height: var(--line-body);
 }
 
@@ -1592,7 +1592,7 @@ main:focus {
   }
 
   .cta-wrapper .cta-subtitle {
-    font-size: 0.9375rem;
+    font-size: var(--type-lead);
     line-height: 1.45;
     max-width: 22rem;
     text-wrap: pretty;
@@ -1902,7 +1902,7 @@ main:focus {
 }
 
 .page-header--article h1 {
-  font-size: var(--type-page-title-article);
+  font-size: var(--type-article);
   line-height: 1.08;
 }
 
@@ -1912,7 +1912,7 @@ main:focus {
 
 .page-header__subtitle {
   color: rgba(255, 255, 255, 0.7);
-  font-size: var(--type-section-subtitle);
+  font-size: var(--type-lead);
   line-height: var(--line-compact);
   margin-bottom: 0;
   margin-top: 2.5rem;
@@ -2022,8 +2022,9 @@ main:focus {
   width: 0.875rem;
 }
 
+/* Page headers keep their own sizes, outside the type scale */
 .page-header__side-item-label {
-  font-size: var(--type-body);
+  font-size: 1rem;
   line-height: var(--line-compact);
   transition: transform 0.5s cubic-bezier(0.2, 0.7, 0, 1);
 }
@@ -2178,7 +2179,7 @@ main:focus {
   color: #bababa;
   letter-spacing: var(--tracking-kicker-wide);
   text-transform: uppercase;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
 }
 
 .projects_item_cover-img {
@@ -2209,7 +2210,7 @@ main:focus {
   color: #aaa;
   display: block;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-kicker-relaxed);
   margin-bottom: 0.75rem;
   text-transform: uppercase;
@@ -3071,7 +3072,7 @@ main:focus {
 }
 
 .aw-nudge__message {
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   font-weight: var(--weight-regular);
   line-height: 1.5;
   margin: 0;

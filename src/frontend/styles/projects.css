@@ -44,7 +44,7 @@
    ============================================ */
 /* Overview: the page's key section, so its text runs one size up */
 .prp-overview .prp-section-text {
-  font-size: var(--type-body-large);
+  font-size: var(--type-body);
 }
 
 .prp-overview-text {
@@ -58,7 +58,7 @@
 .prp-overview-lead {
   color: var(--prp-dark);
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  font-size: var(--type-body);
   letter-spacing: var(--tracking-heading);
   line-height: 1.35;
   margin: 0;
@@ -91,14 +91,14 @@
 
 .prp-meta-label {
   color: var(--prp-dark);
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-meta-wide);
   text-transform: uppercase;
 }
 
 .prp-meta-value {
   color: var(--prp-dark);
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   overflow-wrap: break-word;
 }
@@ -146,7 +146,7 @@
 .prp-section-heading {
   color: var(--prp-dark);
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -305,7 +305,7 @@
 /* Sized by the card, not the viewport, so values like "1,000-2,000" always fit on one line */
 .prp-metric-card-number {
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1rem, 17cqi, 2.5rem);
+  font-size: clamp(1rem, 17cqi, var(--type-section));
   font-weight: var(--weight-light);
   line-height: 1;
   display: flex;
@@ -319,7 +319,7 @@
 }
 
 .prp-metric-card-label {
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta-wide);
   line-height: var(--line-compact);

@@ -12,7 +12,7 @@
 .about-lead {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -232,7 +232,7 @@
 .vertical-timeline__period {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.25rem, 1.55vw, 1.625rem);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   text-transform: uppercase;
@@ -283,7 +283,7 @@
 .about-principle__num {
   color: #737373;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-meta-wide);
   text-transform: uppercase;
 }
@@ -305,7 +305,7 @@
 .vertical-timeline__card-headline {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.625rem, 2.2vw, 2.25rem);
+  font-size: var(--type-feature);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -434,7 +434,7 @@
 .vertical-timeline__strand-text {
   color: #555;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
 }
@@ -474,7 +474,7 @@
 .about-disc-title {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
@@ -489,7 +489,7 @@
 .about-principle p {
   color: #555;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
 }
@@ -509,7 +509,7 @@
 .about-founder-card__focus-value {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
 }
 
@@ -533,7 +533,7 @@
 .about-company-title {
   color: #fff;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-card-title);
   line-height: 1.16;
@@ -574,7 +574,7 @@
 .about-company-point h3 {
   color: #fff;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-large);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   line-height: var(--line-tight);
   margin: 0;
@@ -583,7 +583,7 @@
 .about-company-point p {
   color: rgba(255, 255, 255, 0.66);
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
 }
@@ -794,7 +794,7 @@
   }
 
   .vertical-timeline__card-headline {
-    font-size: var(--type-card-title);
+    font-size: var(--type-feature);
     max-width: none;
   }
 

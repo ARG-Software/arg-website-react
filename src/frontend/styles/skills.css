@@ -88,7 +88,7 @@
 
 .sk-agents-heading {
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-meta-wide);
   text-transform: uppercase;
@@ -138,7 +138,7 @@
 
 .sk-agent-name {
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   color: #0c002e;
   white-space: nowrap;
 }
@@ -166,7 +166,7 @@
   color: #888;
   display: block;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-meta-wide);
   margin-bottom: 0.75rem;
   text-transform: uppercase;
@@ -177,7 +177,7 @@
 .sk-card h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
@@ -187,7 +187,7 @@
 .sk-card p {
   color: #555;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0 0 1.25rem;
 }
@@ -204,7 +204,7 @@
 .sk-section-title {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -239,7 +239,7 @@
 
 .sk-detail-category {
   display: inline-block;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
@@ -276,7 +276,7 @@
 .sk-install code {
   display: block;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   white-space: pre-wrap;
   overflow-wrap: anywhere;

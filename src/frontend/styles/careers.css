@@ -5,7 +5,7 @@
 }
 .cp-section-title {
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   line-height: var(--line-tight);
   color: #0c002e;
@@ -65,13 +65,13 @@
   pointer-events: none;
 }
 .cp-value-number {
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-meta-wide);
   margin-bottom: 1.125rem;
 }
 .cp-value-title {
   color: #0c002e;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   font-family: Neuemontreal, sans-serif;
   letter-spacing: var(--tracking-card-title);
@@ -80,7 +80,7 @@
 }
 .cp-value-desc {
   color: #555;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
 }
@@ -113,7 +113,7 @@
 }
 .cp-whyus-title {
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   line-height: var(--line-tight);
   color: #0c002e;
@@ -198,7 +198,7 @@
   color: #737373;
   display: block;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-meta-wide);
   margin-bottom: 1.5rem;
   text-transform: uppercase;
@@ -211,7 +211,7 @@
 .cp-whyus-kpi span {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-size: var(--type-display);
   letter-spacing: var(--tracking-display-tight);
   line-height: 1;
 }
@@ -227,7 +227,7 @@
 .cp-whyus-pillar h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: 1.18;
@@ -236,7 +236,7 @@
 .cp-whyus-pillar p {
   color: #555;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
 }
@@ -253,7 +253,7 @@
 .cp-tech-intro h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: 1.18;
@@ -291,7 +291,7 @@
   color: #888;
   display: block;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-meta-wide);
   margin-bottom: 0.75rem;
   text-transform: uppercase;
@@ -299,7 +299,7 @@
 .cp-career-job-main h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
@@ -308,7 +308,7 @@
 .cp-career-job-main p {
   color: #555;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0 0 1.25rem;
   max-width: 68ch;
@@ -363,13 +363,13 @@
   background-clip: text;
   color: transparent;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   letter-spacing: var(--tracking-meta-wide);
 }
 .cp-careers-step h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-large);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   line-height: var(--line-tight);
   margin: 0 0 0.5rem;
@@ -377,7 +377,7 @@
 .cp-careers-step p {
   color: #555;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
 }
@@ -440,7 +440,7 @@
 .cp-careers-trait-number i {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   font-style: normal;
   letter-spacing: var(--tracking-ui);
   line-height: 1;
@@ -457,7 +457,7 @@
 .cp-careers-trait-content h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-large);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   line-height: var(--line-tight);
   margin: 0.1875rem 0 0.5rem;
@@ -465,7 +465,7 @@
 .cp-careers-trait-content p {
   color: #555;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
 }
@@ -481,7 +481,7 @@
 .cp-fit-header h2 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -540,7 +540,7 @@
 .cp-fit-step h4 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
@@ -550,7 +550,7 @@
 .cp-fit-step p {
   color: #555;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
 }

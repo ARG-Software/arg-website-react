@@ -273,7 +273,7 @@ body {
   min-height: 100%;
   margin: 0;
   font-family: Neuemontreal, sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 20px;
 }
 img {
@@ -291,32 +291,32 @@ h6 {
 }
 h1 {
   margin-top: 20px;
-  font-size: 38px;
+  font-size: 2.375rem;
   line-height: 44px;
 }
 h2 {
   margin-top: 20px;
-  font-size: 32px;
+  font-size: 2rem;
   line-height: 36px;
 }
 h3 {
   margin-top: 20px;
-  font-size: 24px;
+  font-size: 1.5rem;
   line-height: 30px;
 }
 h4 {
   margin-top: 10px;
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 24px;
 }
 h5 {
   margin-top: 10px;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 20px;
 }
 h6 {
   margin-top: 10px;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 18px;
 }
 p {
@@ -327,7 +327,7 @@ blockquote {
   border-left: 5px solid #e2e2e2;
   margin: 0 0 10px;
   padding: 10px 20px;
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 22px;
 }
 figure {
@@ -368,35 +368,31 @@ label {
   --accessible-components--dodger-blue: #1378d1;
   --padding-global: 2rem;
 
-  /* Typography roles */
-  --type-display: clamp(3.25rem, 7vw, 7.5rem);
-  --type-hero-title: clamp(3.25rem, 5.2vw, 4rem);
-  --type-marquee: clamp(1.5rem, 4vw, 3.4375rem);
-  /* Page titles stay a clear step above section titles at every width */
-  --type-page-title: clamp(2.25rem, 4.5vw, 3.75rem);
-  --type-page-title-article: clamp(2rem, 3.6vw, 3.25rem);
-  --type-section-title: clamp(1.5rem, 2.6vw, 2.375rem);
-  --type-section-subtitle: clamp(1rem, 1.2vw, 1.125rem);
-  --type-content-heading: clamp(1.375rem, 2.2vw, 1.875rem);
-  --type-card-title: clamp(1.25rem, 1.8vw, 1.5rem);
-  --type-card-title-small: 1.25rem;
-  --type-body-large: clamp(1.0625rem, 1.2vw, 1.125rem);
-  --type-body: 1rem;
-  --type-body-small: 0.9375rem;
-  --type-ui: 0.875rem;
+  /* Type scale: every title and text on the site takes one of these eight steps. Ratio 4:3 from
+     the body size; the fluid steps all grow on the same curve between 390px and 1440px wide, so
+     their proportions never change with the window. Never write a font size by hand */
   --type-meta: 0.75rem;
-  --type-meta-small: 0.75rem;
-  --type-kicker: 0.6875rem;
+  --type-body: 0.9375rem;
+  /* Half step, for page subtitles only */
+  --type-lead: clamp(1rem, 0.9694rem + 0.1257vw, 1.083rem);
+  --type-item: clamp(1.125rem, 1.079rem + 0.1905vw, 1.25rem);
+  --type-feature: clamp(1.375rem, 1.267rem + 0.4448vw, 1.667rem);
+  --type-section: clamp(1.625rem, 1.403rem + 0.9105vw, 2.223rem);
+  --type-article: clamp(2rem, 1.642rem + 1.468vw, 2.963rem);
+  --type-display: clamp(2.375rem, 1.79rem + 2.401vw, 3.951rem);
 
-  /* CTA and controls */
-  --type-cta-title: clamp(2.5rem, 5vw, 4rem);
-  --type-cta-subtitle: var(--type-section-subtitle);
-  --type-button: var(--type-body);
-  --type-text-button: clamp(0.9rem, 1vw, 1rem);
-  --type-pill-xs: var(--type-kicker);
-  --type-pill-sm: var(--type-meta-small);
+  /* Outside the scale on purpose: the hero, the page header titles and the marquee */
+  --type-hero-title: clamp(3.25rem, 5.2vw, 4rem);
+  --type-page-title: clamp(2.25rem, 4.5vw, 3.75rem);
+  --type-marquee: clamp(1.5rem, 4vw, 3.4375rem);
+
+  /* Controls: buttons, pills, filters */
+  --type-ui: 0.875rem;
+  --type-button: 0.875rem;
+  --type-pill-xs: var(--type-meta);
+  --type-pill-sm: var(--type-meta);
   --type-pill-md: var(--type-ui);
-  --type-pill-lg: var(--type-body-small);
+  --type-pill-lg: var(--type-body);
   --size-button-padding-y: 0.75rem;
   --size-button-padding-x: 2rem;
   --size-button-radius: 100px;
@@ -407,7 +403,7 @@ label {
   --type-footer-link: var(--type-ui);
   --type-footer-text: var(--type-ui);
   --type-footer-meta: var(--type-meta);
-  --type-footer-tagline: var(--type-body-small);
+  --type-footer-tagline: var(--type-body);
 
   /* Font weights. Only these three files exist; anything heavier is faux bold */
   --weight-light: 300;
@@ -480,7 +476,7 @@ h1 {
 h2 {
   margin-top: 0;
   margin-bottom: 0;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -488,7 +484,7 @@ h2 {
 h3 {
   margin-top: 0;
   margin-bottom: 0;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-title);
@@ -496,7 +492,7 @@ h3 {
 h4 {
   margin-top: 0;
   margin-bottom: 0;
-  font-size: var(--type-card-title-small);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-compact);
@@ -504,7 +500,7 @@ h4 {
 h5 {
   margin-top: 0;
   margin-bottom: 0;
-  font-size: var(--type-body-large);
+  font-size: var(--type-item);
   font-weight: var(--weight-medium);
   line-height: var(--line-compact);
 }
@@ -547,7 +543,7 @@ blockquote {
   border-left: 0.25rem solid #e2e2e2;
   margin-bottom: 0;
   padding: 0 1.25rem;
-  font-size: 1.25rem;
+  font-size: var(--type-item);
   line-height: 1.5;
 }
 figure {
@@ -694,7 +690,7 @@ figcaption {
   position: relative;
 }
 .hide-mobile-landscape {
-  font-size: 0.8rem;
+  font-size: var(--type-meta);
 }
 
 .max-width-full {
@@ -718,7 +714,7 @@ figcaption {
 }
 
 .heading-style-h3 {
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-title);
@@ -731,7 +727,7 @@ figcaption {
   margin-right: auto;
 }
 .heading-style-h1 {
-  font-size: var(--type-cta-title);
+  font-size: var(--type-display);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-display);
   line-height: var(--line-tight);
@@ -820,7 +816,7 @@ figcaption {
   font-size: var(--type-ui);
 }
 .heading-style-h4 {
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-compact);
@@ -839,7 +835,7 @@ figcaption {
   background-color: #0b002e;
 }
 .heading-style-h6 {
-  font-size: 1rem;
+  font-size: var(--type-body);
   font-weight: var(--weight-medium);
   line-height: 1.5;
 }
@@ -876,13 +872,13 @@ figcaption {
   text-decoration: underline;
 }
 .text-size-large {
-  font-size: var(--type-content-heading);
+  font-size: var(--type-feature);
   display: block;
 }
 
 .heading-style-h2 {
   max-width: 26ch;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -893,7 +889,7 @@ figcaption {
 }
 
 .heading-style-h5 {
-  font-size: var(--type-card-title-small);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-compact);
@@ -1199,16 +1195,16 @@ section > :last-child > .line-separate:last-child {
     font-size: var(--type-display);
   }
   h2 {
-    font-size: var(--type-section-title);
+    font-size: var(--type-section);
   }
   h3 {
-    font-size: var(--type-card-title);
+    font-size: var(--type-item);
   }
   h4 {
-    font-size: var(--type-card-title-small);
+    font-size: var(--type-item);
   }
   h5 {
-    font-size: var(--type-body-large);
+    font-size: var(--type-item);
   }
   h6 {
     font-size: var(--type-body);
@@ -1363,7 +1359,7 @@ section > :last-child > .line-separate:last-child {
 }
 @media screen and (max-width: 480px) {
   h2 {
-    font-size: 1.9rem;
+    font-size: var(--type-section);
   }
   .margin-horizontal {
     margin-top: 0;

@@ -18,7 +18,7 @@
   color: rgba(15, 10, 48, 0.58);
   display: inline-flex;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   letter-spacing: 0.18em;
   line-height: 1;
@@ -28,7 +28,7 @@
 .au-title {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -80,7 +80,7 @@
   color: rgba(15, 10, 48, 0.58);
   display: flex;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   gap: 0.75rem;
   letter-spacing: 0.18em;
@@ -149,7 +149,7 @@
 .au-panel h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
@@ -158,7 +158,7 @@
 
 .au-panel p {
   color: #555;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0.75rem 0 0;
   max-width: 42rem;
@@ -306,7 +306,7 @@
 .au-video-block h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-content-heading);
+  font-size: var(--type-feature);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -315,7 +315,7 @@
 
 .au-video-block p {
   color: #555;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
   max-width: 26rem;
@@ -458,7 +458,7 @@
 .au-layer h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-content-heading);
+  font-size: var(--type-feature);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -467,7 +467,7 @@
 
 .au-layer p {
   color: #555;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0.625rem 0 1.25rem;
 }
@@ -617,7 +617,7 @@
 .au-lens-hint {
   color: rgba(15, 10, 48, 0.5);
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   letter-spacing: 0.18em;
   line-height: 1;
   text-transform: uppercase;
@@ -707,7 +707,7 @@
   border-top: 1px solid rgba(12, 0, 46, 0.08);
   color: #0c002e;
   display: grid;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   gap: 0.75rem;
   grid-template-columns: 0.5rem minmax(0, 1fr);
   line-height: var(--line-small);
@@ -757,7 +757,7 @@
 .au-price-amount {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-size: var(--type-display);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-title);
   line-height: 1;
@@ -799,7 +799,7 @@
 .au-scope dt {
   color: #737373;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -807,7 +807,7 @@
 
 .au-scope dd {
   color: #0c002e;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   font-weight: var(--weight-regular);
   margin: 0.25rem 0 0;
 }
@@ -828,7 +828,7 @@
 .au-block-head h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-content-heading);
+  font-size: var(--type-feature);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -837,7 +837,7 @@
 
 .au-block-head p {
   color: #555;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
   max-width: 26rem;
@@ -862,7 +862,7 @@
 .au-card h4 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
@@ -871,7 +871,7 @@
 
 .au-card p {
   color: #555;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0;
 }
@@ -914,7 +914,7 @@
 .au-private h3 {
   color: #fff;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-content-heading);
+  font-size: var(--type-feature);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -941,7 +941,7 @@
 
 .au-private p {
   color: rgba(255, 255, 255, 0.72);
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
   margin: 0.75rem 0 0;
 }
@@ -1094,13 +1094,13 @@
   color: #fff;
   display: block;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-large);
+  font-size: var(--type-body);
   font-weight: var(--weight-medium);
 }
 
 .au-steps li div span {
   color: rgba(255, 255, 255, 0.72);
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   line-height: var(--line-small);
 }
 
@@ -1373,7 +1373,7 @@
 .au-deck-score-number {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(4rem, 17vmin, 150px);
+  font-size: clamp(4rem, 17vmin, 9.375rem);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.04em;
   line-height: 0.9;
@@ -1796,7 +1796,7 @@
 
 .au-not-tested li {
   color: #0c002e;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   position: relative;
 }
 
@@ -1896,7 +1896,7 @@
 .au-tier h3 {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-card-title);
+  font-size: var(--type-item);
   font-weight: var(--weight-regular);
   letter-spacing: var(--tracking-card-title);
   line-height: var(--line-tight);
@@ -1907,7 +1907,7 @@
 .au-tier-price {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-size: var(--type-section);
   letter-spacing: var(--tracking-title);
   line-height: 1.1;
   margin: 0;
@@ -1920,7 +1920,7 @@
 .au-tier-hint {
   color: rgba(15, 10, 48, 0.58);
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -2096,7 +2096,7 @@
   color: rgba(12, 0, 46, 0.32);
   cursor: pointer;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.8125rem;
+  font-size: var(--type-meta);
   letter-spacing: 0.02em;
   line-height: 1;
   padding: 0;
@@ -2171,7 +2171,7 @@
   color: rgba(12, 0, 46, 0.28);
   cursor: pointer;
   font-family: Neuemontreal, sans-serif;
-  font-size: 1.125rem;
+  font-size: var(--type-item);
   letter-spacing: -0.03em;
   line-height: 1;
   padding: 0;
@@ -2208,7 +2208,7 @@
 .au-cl-date {
   color: #8a8a96;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.9375rem;
+  font-size: var(--type-body);
   letter-spacing: -0.02em;
   line-height: 1.4;
   padding-top: 0.45rem;
@@ -2233,7 +2233,7 @@
 .au-cl-title {
   color: #0c002e;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-size: var(--type-feature);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: 1.1;

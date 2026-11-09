@@ -26,7 +26,7 @@
 .contact-direct__headline h2 {
   color: #0f0a30;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   letter-spacing: var(--tracking-title);
   line-height: var(--line-tight);
@@ -112,7 +112,7 @@
 .contact-direct__card span {
   color: rgba(15, 10, 48, 0.44);
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -157,7 +157,7 @@
   border-radius: 999px;
   color: #0f0a30;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-kicker);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   letter-spacing: 0.14em;
   padding: 0.5rem 0.75rem;

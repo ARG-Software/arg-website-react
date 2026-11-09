@@ -173,7 +173,7 @@
 
 .pc-drawer-industry {
   display: inline-block;
-  font-size: var(--type-meta-small);
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
@@ -185,7 +185,7 @@
 
 .pc-drawer-name {
   font-family: Neuemontreal, sans-serif;
-  font-size: 2rem;
+  font-size: var(--type-feature);
   font-weight: var(--weight-regular);
   line-height: var(--line-title);
   color: #0c002e;
@@ -205,7 +205,7 @@
   align-items: center;
   gap: 0.5rem;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-small);
+  font-size: var(--type-body);
   font-weight: var(--weight-medium);
   color: #0c002e;
   text-decoration: none;
@@ -238,7 +238,7 @@
 
 .pt-timeline-heading {
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-section-title);
+  font-size: var(--type-section);
   font-weight: var(--weight-light);
   line-height: var(--line-tight);
   color: #fff;
@@ -304,7 +304,7 @@
   border-radius: 999px;
   color: #fff;
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.6875rem;
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   left: 0;
   letter-spacing: var(--tracking-meta);
@@ -479,7 +479,7 @@
 .pt-future-kicker {
   color: var(--arg-color-magenta);
   font-family: Neuemontreal, sans-serif;
-  font-size: 0.6875rem;
+  font-size: var(--type-meta);
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-meta);
   line-height: 1;
@@ -490,7 +490,7 @@
   align-items: center;
   display: inline-flex;
   font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-body-large);
+  font-size: var(--type-item);
   gap: 0.5rem;
   letter-spacing: var(--tracking-card-title);
   line-height: 1.1;
@@ -646,19 +646,19 @@
   }
 
   .pc-drawer-name {
-    font-size: clamp(1.35rem, 6.5vw, 1.625rem);
+    font-size: var(--type-feature);
     line-height: 1.1;
     margin-bottom: 0.5rem;
     word-break: break-word;
   }
 
   .pc-drawer-industry {
-    font-size: 0.6875rem;
+    font-size: var(--type-meta);
     padding: 0.25rem 0.625rem;
   }
 
   .pc-drawer-desc {
-    font-size: 0.9375rem;
+    font-size: var(--type-body);
     line-height: 1.55;
     margin: 0 0 0.875rem;
     max-width: none;
@@ -688,11 +688,11 @@
   }
 
   .pc-drawer-name {
-    font-size: clamp(1.25rem, 6vw, 1.4rem);
+    font-size: var(--type-feature);
   }
 
   .pc-drawer-desc {
-    font-size: var(--type-body-small);
+    font-size: var(--type-body);
     line-height: 1.5;
   }
 
@@ -728,6 +728,6 @@
   }
 
   .pc-drawer-name {
-    font-size: 1.2rem;
+    font-size: var(--type-feature);
   }
 }
