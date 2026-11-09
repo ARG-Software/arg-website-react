@@ -2091,13 +2091,6 @@ main:focus {
    ProjectItem
    ========================================================================== */
 
-.project-item-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem 1.25rem;
-}
-
 .projects_item {
   aspect-ratio: 3/2;
   border-radius: 0.5rem;
@@ -2136,21 +2129,6 @@ main:focus {
   position: relative;
 }
 
-.projects_item_visual {
-  pointer-events: none;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-.projects_item_visual.is-showcase {
-  aspect-ratio: auto;
-  width: 100%;
-  max-width: 17.25rem;
-  height: auto;
-}
-
 .projects_visual_img {
   aspect-ratio: 3/2;
   position: absolute;
@@ -2159,32 +2137,6 @@ main:focus {
 
 .projects_visual_img.is-thumbnail {
   aspect-ratio: auto;
-}
-
-.projects_item_content {
-  flex-direction: column;
-  align-items: center;
-  padding-top: 4.75rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  display: flex;
-}
-
-.projects_item_content.background-color-white {
-  background-color: #fff;
-}
-
-.projects_item_content.is-padding-bottom {
-  padding-bottom: 4.75rem;
-}
-
-.projects_item_content.is-padding-bottom.is-white-bg {
-  background-color: #fff;
-}
-
-.test_content_visual {
-  aspect-ratio: 2/3;
-  width: 40%;
 }
 
 .projects_item_wrap {
@@ -2208,10 +2160,6 @@ main:focus {
 }
 
 @media screen and (max-width: 767px) {
-  .projects_item_content {
-    padding-top: 2.25rem;
-  }
-
   .projects_item_wrap.is-top-margin {
     margin-top: 0;
   }
@@ -2224,50 +2172,11 @@ main:focus {
   font-size: var(--type-kicker);
 }
 
-.test_item_link {
-  color: #000;
-}
-
-.projects_item_tag {
-  border: 1.5px solid #000;
-  border-radius: 1.5625rem;
-  padding: 0.5rem 1rem;
-}
-
-.projects_item_tag.is--white {
-  border-color: #fff;
-}
-
-.test_item_paragraph.text-align-center {
-  max-width: 60%;
-  margin-bottom: 1rem;
-}
-
-.test_item_paragraph.text-align-center.is-bold {
-  font-weight: var(--weight-medium);
-}
-
-@media screen and (max-width: 991px) {
-  .test_item_paragraph.text-align-center {
-    max-width: 100%;
-  }
-}
-
-.projects_item_stack {
-  grid-column-gap: 0.25rem;
-  grid-row-gap: 0.25rem;
-  display: flex;
-}
-
 .projects_item_cover-img {
   z-index: 2;
   pointer-events: none;
   position: absolute;
   inset: 0%;
-}
-
-.projects_stack_text.is-medium {
-  font-weight: var(--weight-medium);
 }
 
 .projects_item_cover-link {

@@ -1,6 +1,6 @@
 import { ProjectItem } from '../../../components/cards/ProjectItem';
 import { ANIMATION_PRESETS } from '../../../animations/attribute-presets';
-import { trackEvent, trackOutbound } from '@services/analytics';
+import { trackEvent } from '@services/analytics';
 import HOMEPAGE from '../../../data/homePage.json';
 
 const PROJECT_GRID_PATTERN_ROWS = [1, 2, 2, 3, 4, 4];
@@ -70,9 +70,6 @@ export function ProjectsSection({ projects, className = '', content = HOMEPAGE.p
                       project_slug: slug,
                       location: 'projects_section',
                     })
-                  }
-                  onProjectLinkClick={(link, title) =>
-                    trackOutbound(link.href, `${title} ${link.label}`, 'project_modal')
                   }
                 />
               );
