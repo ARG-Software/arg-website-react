@@ -9,7 +9,7 @@
 // Timing is shared too: see useScrollAnimations for how the steps below are applied.
 
 // Time between items revealing together
-export const REVEAL_STEP_MS = 150;
+export const REVEAL_STEP_MS = 200;
 // Page intros (load-triggered headers) take a slower step so they read as a sequence
 export const REVEAL_INTRO_STEP_MS = 250;
 // Longer scroll cascades stop adding delay after this many steps, so the last items never lag behind

@@ -80,7 +80,10 @@ export function NavMenu({
                     <span className="nav-menu__primary-index" aria-hidden="true">
                       {String(index + 1).padStart(2, '0')}
                     </span>
-                    <span className="nav-menu__primary-name">{renderLabel(item.label)}</span>
+                    <span className="nav-menu__primary-name">
+                      {renderLabel(item.label)}
+                      <ArrowIcon className="nav-menu__link-arrow" />
+                    </span>
                   </>
                 ),
               })
@@ -99,14 +102,24 @@ export function NavMenu({
                   key: project.slug,
                   to: project.to || project.path || `/${project.slug}/`,
                   className: 'nav-menu__utility-link',
-                  children: renderLabel(project.title),
+                  children: (
+                    <>
+                      {renderLabel(project.title)}
+                      <ArrowIcon className="nav-menu__link-arrow" />
+                    </>
+                  ),
                 })
               )}
               {selectedWork?.viewAllTo &&
                 renderLink({
                   to: selectedWork.viewAllTo,
                   className: 'nav-menu__utility-link',
-                  children: renderLabel(selectedWork.viewAllLabel || 'All work'),
+                  children: (
+                    <>
+                      {renderLabel(selectedWork.viewAllLabel || 'All work')}
+                      <ArrowIcon className="nav-menu__link-arrow" />
+                    </>
+                  ),
                 })}
             </div>
 
@@ -118,7 +131,12 @@ export function NavMenu({
                     key: item.label,
                     to: item.to,
                     className: 'nav-menu__utility-link',
-                    children: renderLabel(item.label),
+                    children: (
+                      <>
+                        {renderLabel(item.label)}
+                        <ArrowIcon className="nav-menu__link-arrow" />
+                      </>
+                    ),
                   })
                 )}
               </div>
