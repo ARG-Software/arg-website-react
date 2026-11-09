@@ -57,11 +57,27 @@ export function HeroSection({ content }) {
       <div className="hero_contain container padding-global">
         <div className="hero_list">
           <h1 className="hero_heading heading-style-h1">
-            <div className="heading_line" data-animate-order="0">
-              <div className="heading_text">{content.title[0]}</div>
+            <div className="heading_line">
+              <div
+                className="heading_text"
+                data-animate="slide-up-rotate"
+                data-animate-distance="150%"
+                data-animate-duration="2.2s"
+                data-animate-order="0"
+              >
+                {content.title[0]}
+              </div>
             </div>
-            <div className="heading_line" data-animate-order="1">
-              <div className="text-color-gradiant">{content.title[1]}</div>
+            <div className="heading_line">
+              <div
+                className="text-color-gradiant"
+                data-animate="slide-up-rotate"
+                data-animate-distance="150%"
+                data-animate-duration="2.2s"
+                data-animate-order="1"
+              >
+                {content.title[1]}
+              </div>
             </div>
           </h1>
         </div>
@@ -71,12 +87,17 @@ export function HeroSection({ content }) {
             id="hero-divider"
             data-animate="divider-expander-show"
             data-animate-order="2"
+            data-animate-duration="1.8s"
             style={{ opacity: 0 }}
           />
           <div className="hero_bottom_list">
             <div className="hero_bottom_info">
               <div className="hero_bottom_content">
-                <p className="hero_bottom_paragraph" data-animate-order="3">
+                <p
+                  className="hero_bottom_paragraph"
+                  data-animate-order="3"
+                  data-animate-duration="1.8s"
+                >
                   {content.subtitle}
                 </p>
               </div>
@@ -87,7 +108,11 @@ export function HeroSection({ content }) {
                 className="text-button"
                 onClick={() => trackMailto('share_ideas', 'hero')}
               >
-                <div className="text-button_list" data-animate-order="4">
+                <div
+                  className="text-button_list"
+                  data-animate-order="4"
+                  data-animate-duration="1.8s"
+                >
                   <div className="text-button_text">{content.mailCta.label}</div>
                   <div className="arrow_icon-embed">{arrowSvg}</div>
                 </div>
@@ -100,7 +125,11 @@ export function HeroSection({ content }) {
             <div className="bottom_buttons-wrapper">
               <div className="overflow-hidden">
                 <a href="#contact" className="text-button" onClick={handleContactClick}>
-                  <div className="text-button_list" data-animate-order="5">
+                  <div
+                    className="text-button_list"
+                    data-animate-order="5"
+                    data-animate-duration="1.8s"
+                  >
                     <div className="text-button_text">{content.contactCta.label}</div>
                     <div className="arrow_icon-embed">{arrowSvg}</div>
                   </div>

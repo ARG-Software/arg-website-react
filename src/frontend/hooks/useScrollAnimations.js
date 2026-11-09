@@ -156,6 +156,13 @@ const getFinalTransform = presetName => {
 
 // Animate element after the given delay
 const animateElement = (element, preset, presetName, delay) => {
+  // data-animate-duration (e.g. "1.6s") replaces the preset's durations for that element only; it is
+  // kept for the home hero title, every other element uses the shared preset timing
+  const duration = element.getAttribute('data-animate-duration');
+  const transition = duration
+    ? preset.transition?.replace(/\d+(\.\d+)?s/g, duration)
+    : preset.transition;
+
   setTimeout(() => {
     // Remove !important flags
     element.style.removeProperty('opacity');
@@ -164,8 +171,8 @@ const animateElement = (element, preset, presetName, delay) => {
     element.style.removeProperty('overflow');
 
     // Apply transition (override CSS !important)
-    if (preset.transition) {
-      element.style.setProperty('transition', preset.transition, 'important');
+    if (transition) {
+      element.style.setProperty('transition', transition, 'important');
     }
 
     // Animate to final state (override CSS !important during animation)
@@ -177,18 +184,18 @@ const animateElement = (element, preset, presetName, delay) => {
       const onTransitionEnd = () => {
         element.style.opacity = '1';
         element.style.removeProperty('transform');
-        element.style.transition = preset.transition || '';
+        element.style.transition = transition || '';
         element.removeEventListener('transitionend', onTransitionEnd);
       };
 
       element.addEventListener('transitionend', onTransitionEnd);
       // Fallback: also remove !important after max transition duration
-      const maxDuration = getMaxTransitionDuration(preset.transition);
+      const maxDuration = getMaxTransitionDuration(transition);
       if (maxDuration > 0) {
         setTimeout(() => {
           element.style.opacity = '1';
           element.style.removeProperty('transform');
-          element.style.transition = preset.transition || '';
+          element.style.transition = transition || '';
         }, maxDuration);
       }
     }
@@ -197,7 +204,7 @@ const animateElement = (element, preset, presetName, delay) => {
     if (presetName === ANIMATION_PRESETS.overlayReveal) {
       const overlay = element.querySelector('.team_image-overlay');
       if (overlay) {
-        overlay.style.transition = preset.transition;
+        overlay.style.transition = transition;
         overlay.style.setProperty('height', '0%', 'important');
       }
     }
