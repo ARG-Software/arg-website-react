@@ -170,11 +170,32 @@
 
 @media screen and (max-width: 39.9375rem) {
   .social-feed__wall {
-    columns: 1;
+    columns: unset;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .social-feed__wall::-webkit-scrollbar {
+    display: none;
+  }
+
+  .social-feed__item {
+    flex: 0 0 100%;
+    max-width: 100%;
+    min-width: 100%;
+    padding: 0.75rem 0;
+    scroll-snap-align: start;
   }
 
   .social-feed-card {
     padding: 1rem;
+    transform: none;
   }
 }
 

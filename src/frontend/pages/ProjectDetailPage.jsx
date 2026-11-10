@@ -321,7 +321,7 @@ export default function ProjectDetailPage() {
                       className="prp-approach-mockup"
                       src={project.mockupSrc}
                       srcSet={project.mockupSrcSet}
-                      sizes="(max-width: 47.9375rem) 50vw, 17rem"
+                      sizes="(max-width: 47.9375rem) 42vw, 17rem"
                       alt={`${project.title} mockup`}
                       width={project.mockupSize?.[0]}
                       height={project.mockupSize?.[1]}

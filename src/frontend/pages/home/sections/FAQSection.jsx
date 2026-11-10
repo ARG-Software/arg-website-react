@@ -174,6 +174,19 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
                 </button>
               ))}
             </div>
+            <select
+              className="faq_topic-select"
+              value={topic}
+              aria-label="Filter questions by topic"
+              data-animate-order="1"
+              onChange={event => selectTopic(event.target.value)}
+            >
+              {content.topics.map(name => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
             <div className="faq_toolbar-video" data-animate-order="2">
               <FAQVideo video={content.video} />
             </div>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { gsap } from 'gsap';
 import { arrowSvg } from '../icons/SocialIcons.jsx';
 import { prefersReducedMotion } from '../utils/motion.js';
+import { useSwipe } from '../utils/useSwipe.js';
 
 const WHEEL_THRESHOLD = 60;
 const WHEEL_COOLDOWN_MS = 420;
@@ -33,7 +34,6 @@ export function UseCaseCarousel({
   const viewportRef = useRef(null);
   const stripRef = useRef(null);
   const thumbRefs = useRef([]);
-  const swipeStartRef = useRef(null);
   const swipedRef = useRef(false);
   const positionedRef = useRef(false);
   const [index, setIndex] = useState(() => clampIndex(defaultIndex, items.length));
@@ -134,6 +134,21 @@ export function UseCaseCarousel({
     return () => root.removeEventListener('wheel', onWheel);
   }, [select]);
 
+  useSwipe(
+    viewportRef,
+    delta => {
+      swipedRef.current = true;
+      select(indexRef.current + delta, 'swipe');
+    },
+    {
+      threshold: SWIPE_THRESHOLD,
+      canMove: delta => {
+        const next = indexRef.current + delta;
+        return next >= 0 && next < items.length;
+      },
+    }
+  );
+
   const handleKeyDown = event => {
     const targets = {
       ArrowLeft: index - 1,
@@ -226,18 +241,8 @@ export function UseCaseCarousel({
         <div
           ref={viewportRef}
           className="ucc-strip-viewport"
-          onPointerDown={event => {
-            swipeStartRef.current = event.clientX;
+          onPointerDown={() => {
             swipedRef.current = false;
-          }}
-          onPointerUp={event => {
-            if (swipeStartRef.current === null) return;
-            const delta = event.clientX - swipeStartRef.current;
-            swipeStartRef.current = null;
-            if (Math.abs(delta) < SWIPE_THRESHOLD) return;
-
-            swipedRef.current = true;
-            select(indexRef.current + (delta < 0 ? 1 : -1), 'swipe');
           }}
         >
           <div

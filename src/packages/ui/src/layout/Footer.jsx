@@ -49,7 +49,9 @@ export function Footer({
           {columns.map(column => (
             <nav
               key={column.title}
-              className={`footer-nav-col${column.wide ? ' footer-nav-col--wide' : ''}`}
+              className={`footer-nav-col${column.wide ? ' footer-nav-col--wide' : ''}${
+                column.socials ? ' footer-nav-col--socials' : ''
+              }`}
               aria-label={column.title}
             >
               <div className="footer-col-title">{column.title}</div>

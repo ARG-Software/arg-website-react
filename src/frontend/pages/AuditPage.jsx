@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Footer } from '@components/layout/Footer';
 import { Navbar } from '@components/navigation/Navbar';
 import { PageHeader } from '@components/headers/PageHeader';
@@ -13,6 +13,7 @@ import { Pill, PillButton } from '@ui/pills/Pill.jsx';
 import { StepProgressTimeline } from '@ui/grids/StepProgressTimeline.jsx';
 import { AnimatedArrowButton } from '@ui/buttons/AnimatedArrowButton.jsx';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
+import { useSwipe } from '@ui/utils/useSwipe.js';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA, trackEvent, trackMailto, trackOutbound } from '@services/analytics';
 import { getBrowserStoreLink, getEmailAddress, getMailtoLink } from '../services/linksService';
@@ -53,6 +54,9 @@ export default function AuditPage() {
   const [flippedTier, setFlippedTier] = useState(null);
   const reportMailto = getMailtoLink('dev', PAGE.send.emailSubject);
   const [activeFeature, setActiveFeature] = useState(-1);
+  const architectRef = useRef(null);
+  const activeFeatureRef = useRef(activeFeature);
+  activeFeatureRef.current = activeFeature;
   const [videoTracked, setVideoTracked] = useState(false);
   const feature = PAGE.architect.features[activeFeature] ?? PAGE.architect.overview;
   // The screenshot flips to its other face for each new feature, like the price cards
@@ -73,7 +77,7 @@ export default function AuditPage() {
   };
 
   const selectFeature = index => {
-    if (index === activeFeature) return;
+    if (index === activeFeatureRef.current) return;
     setActiveFeature(index);
     const next = PAGE.architect.features[index];
     setShot(current =>
@@ -83,6 +87,30 @@ export default function AuditPage() {
     );
     trackEvent('audit_feature_click', { feature: PAGE.architect.features[index].id });
   };
+
+  const showOverview = () => {
+    if (activeFeatureRef.current < 0) return;
+    setActiveFeature(-1);
+    const overview = PAGE.architect.overview;
+    setShot({ front: overview, back: overview, flipped: false });
+  };
+
+  const stepArchitect = delta => {
+    const count = PAGE.architect.features.length;
+    const current = activeFeatureRef.current;
+    if (current < 0) {
+      selectFeature(delta > 0 ? 0 : count - 1);
+      return;
+    }
+    const next = current + delta;
+    if (next < 0 || next >= count) {
+      showOverview();
+      return;
+    }
+    selectFeature(next);
+  };
+
+  useSwipe(architectRef, stepArchitect);
 
   return (
     <>
@@ -117,7 +145,7 @@ export default function AuditPage() {
                   <span className="text-color-gradiant">{PAGE.architect.privacy}</span>
                 </h2>
 
-                <div className="au-arch">
+                <div className="au-arch" ref={architectRef}>
                   <div data-animate-order="0">
                     <p className="au-lede">{PAGE.architect.text}</p>
 
@@ -136,6 +164,25 @@ export default function AuditPage() {
                           {item.title}
                         </PillButton>
                       ))}
+                    </div>
+                    <div className="au-tabs-pager">
+                      <button
+                        type="button"
+                        className="simple-carousel__arrow"
+                        aria-label="Previous category"
+                        onClick={() => stepArchitect(-1)}
+                      >
+                        ←
+                      </button>
+                      <span className="au-tabs-pager-label">{feature.title}</span>
+                      <button
+                        type="button"
+                        className="simple-carousel__arrow"
+                        aria-label="Next category"
+                        onClick={() => stepArchitect(1)}
+                      >
+                        →
+                      </button>
                     </div>
                     <div className="au-panels">
                       {[PAGE.architect.overview, ...PAGE.architect.features].map(item => (

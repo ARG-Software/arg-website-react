@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import HOMEPAGE from '../../../data/homePage.json';
 import { prefersReducedMotion } from '@utils/helpers';
+import { useSwipe } from '@ui/utils/useSwipe.js';
 
 const testimonialsData = HOMEPAGE.testimonials;
 
@@ -20,8 +21,8 @@ const WORD_KEYFRAMES = [
 /**
  * One quote at a time, with the people below as tabs. The quote advances every 10 seconds
  * while the section is on screen, and the active person's top line fills as the timer runs.
- * Hovering with a mouse pauses both. Every quote is rendered in one grid cell, so on phones
- * the stage keeps the height of the longest and the names below never move.
+ * Hovering with a mouse pauses both. On phones only the active name is shown and a swipe
+ * changes the quote.
  */
 export function TestimonialsSection({ className = '', testimonials = testimonialsData }) {
   const [active, setActive] = useState(0);
@@ -32,6 +33,8 @@ export function TestimonialsSection({ className = '', testimonials = testimonial
   const timerRef = useRef(null);
   const pausedRef = useRef({ hover: false, offscreen: true });
   const shownRef = useRef(active);
+  const activeRef = useRef(active);
+  activeRef.current = active;
 
   const syncTimer = () => {
     const timer = timerRef.current;
@@ -129,6 +132,14 @@ export function TestimonialsSection({ className = '', testimonials = testimonial
       observer.disconnect();
     };
   }, []);
+
+  useSwipe(sectionRef, delta => {
+    const current = activeRef.current;
+    const next = (current + delta + testimonials.length) % testimonials.length;
+    if (next === current) return;
+    setLeaving(current);
+    setActive(next);
+  });
 
   return (
     <section

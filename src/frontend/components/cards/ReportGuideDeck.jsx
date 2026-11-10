@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { prefersReducedMotion } from '@utils/helpers';
+import { useSwipe } from '@ui/utils/useSwipe.js';
 
 const AUTOPLAY_MS = 5000;
 const PAUSE_LABEL = 'Pause the slideshow';
@@ -241,7 +242,6 @@ export function ReportGuideDeck({ content }) {
   useEffect(() => {
     const stack = stackRef.current;
     let lastStep = 0;
-    let touchStartY = null;
 
     const canMove = direction => {
       const next = currentRef.current + direction;
@@ -261,37 +261,22 @@ export function ReportGuideDeck({ content }) {
       setCurrent(currentRef.current + direction);
     };
 
-    const onTouchStart = event => {
-      touchStartY = event.touches[0].clientY;
-    };
-
-    const onTouchMove = event => {
-      if (touchStartY === null) return;
-      const direction = Math.sign(touchStartY - event.touches[0].clientY);
-      if (direction && canMove(direction)) event.preventDefault();
-    };
-
-    const onTouchEnd = event => {
-      if (touchStartY === null) return;
-      const distance = touchStartY - event.changedTouches[0].clientY;
-      touchStartY = null;
-      const direction = Math.sign(distance);
-      if (Math.abs(distance) > SWIPE_PX && canMove(direction)) {
-        setCurrent(currentRef.current + direction);
-      }
-    };
-
     stack.addEventListener('wheel', onWheel, { passive: false });
-    stack.addEventListener('touchstart', onTouchStart, { passive: true });
-    stack.addEventListener('touchmove', onTouchMove, { passive: false });
-    stack.addEventListener('touchend', onTouchEnd);
-    return () => {
-      stack.removeEventListener('wheel', onWheel);
-      stack.removeEventListener('touchstart', onTouchStart);
-      stack.removeEventListener('touchmove', onTouchMove);
-      stack.removeEventListener('touchend', onTouchEnd);
-    };
+    return () => stack.removeEventListener('wheel', onWheel);
   }, [count]);
+
+  useSwipe(
+    stackRef,
+    delta => setCurrent(currentRef.current + delta),
+    {
+      axis: 'y',
+      threshold: SWIPE_PX,
+      canMove: delta => {
+        const next = currentRef.current + delta;
+        return next >= 0 && next < count;
+      },
+    }
+  );
 
   const onKeyDown = event => {
     const isButton = event.target.closest('button');

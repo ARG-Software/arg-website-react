@@ -398,6 +398,12 @@
 }
 
 @media (max-width: 47.9375rem) {
+  .prp-approach-mockup {
+    margin-inline: auto;
+    max-width: 42vw;
+    width: 10.5rem;
+  }
+
   .prp-meta-list {
     gap: 2rem 1.5rem;
   }

@@ -2015,7 +2015,12 @@
   }
 
   .footer-nav-col--wide {
-    grid-column: 1 / -1;
+    grid-column: auto;
+    order: 2;
+  }
+
+  .footer-nav-col--socials {
+    order: 1;
   }
 
   /* Tap targets: every link row at least 2.75rem tall */
@@ -3522,7 +3527,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   color: #0f0a30;
   display: inline-block;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(2.375rem, 3.2vw, 3.75rem);
+  font-size: var(--type-nav-title);
   font-weight: var(--weight-regular);
   letter-spacing: -0.045em;
   line-height: 1.14;

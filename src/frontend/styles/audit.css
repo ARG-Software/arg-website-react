@@ -117,6 +117,10 @@
   margin-top: 2.5rem;
 }
 
+.au-tabs-pager {
+  display: none;
+}
+
 /* Every tab is dark; the selected one takes the brand gradient so it still stands out */
 .au-tabs .pill--active {
   background: var(--arg-gradient-primary);
@@ -1140,7 +1144,29 @@
   }
 
   .au-arch .au-tabs {
+    display: none;
+  }
+
+  .au-arch .au-panels {
     order: 1;
+  }
+
+  .au-arch .au-tabs-pager {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-top: 1.25rem;
+    order: 3;
+  }
+
+  .au-tabs-pager-label {
+    color: #0c002e;
+    flex: 1;
+    font-family: Neuemontreal, sans-serif;
+    font-size: var(--type-item);
+    font-weight: var(--weight-medium);
+    text-align: center;
   }
 
   .au-arch .au-shot {
@@ -1148,8 +1174,9 @@
     order: 2;
   }
 
-  .au-arch > div:first-child > :not(.au-lede, .au-tabs) {
-    order: 3;
+  .au-arch .au-stores,
+  .au-arch .au-browsers {
+    order: 4;
   }
 
   .au-price {

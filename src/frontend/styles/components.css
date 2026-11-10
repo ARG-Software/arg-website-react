@@ -1357,10 +1357,9 @@ main:focus {
 
 /* Closing call to action: a full-screen dark section the previous page scrolls off, then the
    footer waits underneath the same way, with the headline in the middle and two studio-lit
-   clusters of liquid behind it. Extra viewport of slot so the CTA can sit full-screen before
-   the footer starts peeling it away. */
+   clusters of liquid behind it. */
 .home-cta-reveal.is-revealing {
-  height: calc(var(--sticky-reveal-height) + 100vh);
+  height: var(--sticky-reveal-height);
 }
 
 .home-cta {
@@ -1437,8 +1436,24 @@ main:focus {
 }
 
 @media screen and (max-width: 767px) {
+  .home-cta-reveal.is-revealing {
+    height: var(--sticky-reveal-height);
+  }
+
+  .home-cta-reveal.is-revealing .sticky-reveal__track {
+    height: 100%;
+    top: 0;
+  }
+
+  .home-cta-reveal.is-revealing .sticky-reveal__track > * {
+    position: relative;
+    top: auto;
+  }
+
   .home-cta {
-    padding: 7rem 0;
+    height: auto;
+    min-height: 100svh;
+    padding: 5rem 0;
   }
 
   .home-cta_title {
@@ -2589,7 +2604,7 @@ main:focus {
 .nav-menu__primary-name {
   display: inline-block;
   font-family: Neuemontreal, sans-serif;
-  font-size: clamp(2.375rem, 3.2vw, 3.75rem);
+  font-size: var(--type-nav-title);
   font-weight: var(--weight-regular);
   letter-spacing: -0.045em;
   line-height: 1.14;
@@ -2876,6 +2891,10 @@ main:focus {
     arg-ring 2.4s infinite;
 }
 
+.nav-menu__cta--menu {
+  display: none !important;
+}
+
 .nav-menu__cta {
   display: inline-flex;
   align-items: center;
@@ -2932,9 +2951,11 @@ main:focus {
   }
 
   .nav-menu__body {
+    display: grid;
     flex: 0 0 auto;
-    align-items: stretch;
-    justify-content: flex-start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: last baseline;
+    column-gap: 1rem;
     min-height: auto;
     padding: 2rem var(--nav-menu-right) 0 var(--nav-menu-left);
     overflow: visible;
@@ -2943,6 +2964,7 @@ main:focus {
   .nav-menu__primary {
     align-items: stretch;
     gap: 0;
+    grid-column: 1;
   }
 
   .nav-menu__primary-link {
@@ -2952,16 +2974,7 @@ main:focus {
     padding: 0.5rem 0;
   }
 
-  .nav-menu__primary-index {
-    display: inline;
-    font-family: Neuemontreal, sans-serif;
-    font-size: 0.625rem;
-    letter-spacing: 0.14em;
-    color: rgba(15, 10, 48, 0.46);
-  }
-
   .nav-menu__primary-name {
-    font-size: 2.5rem;
     letter-spacing: -0.03em;
     line-height: 1.1;
   }
@@ -2997,6 +3010,10 @@ main:focus {
 
   .nav-menu__column:first-child .nav-menu__utility-label {
     grid-column: 1 / -1;
+  }
+
+  .nav-menu__column:first-child .nav-menu__utility-link {
+    justify-self: start;
   }
 
   .nav-menu__utility-label {
@@ -3037,23 +3054,18 @@ main:focus {
     -webkit-box-orient: vertical;
   }
 
-  .nav-menu__cta {
-    order: 0;
-    grid-column: 1 / -1;
-    width: 100%;
-    font-size: 0.9375rem;
+  .nav-menu__cta--menu {
+    display: inline-grid !important;
+    grid-column: 2;
+    justify-self: start;
   }
 
-  /* Audit and Gaspar share the row under the main button, half each */
+  .nav-menu__cta--ribbon {
+    display: none;
+  }
+
   .nav-menu__ai-chip {
-    order: 2;
-    justify-content: center;
-    width: 100%;
-    height: 2.75rem;
-    padding: 0 0.5rem;
-    font-size: 0.625rem;
-    letter-spacing: 0.08em;
-    white-space: nowrap;
+    display: none;
   }
 }
 
@@ -3072,7 +3084,7 @@ main:focus {
   }
 
   .nav-menu__primary-name {
-    font-size: clamp(2rem, 2.8vw, 3rem);
+    font-size: var(--type-nav-title);
   }
 
   .nav-menu__utilities {

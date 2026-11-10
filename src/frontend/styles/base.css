@@ -381,10 +381,11 @@ label {
   --type-article: clamp(2rem, 1.642rem + 1.468vw, 2.963rem);
   --type-display: clamp(2.375rem, 1.79rem + 2.401vw, 3.951rem);
 
-  /* Outside the scale on purpose: the hero, the page header titles and the marquee */
+  /* Outside the scale on purpose: the hero, the page header titles, the marquee and the nav menu */
   --type-hero-title: clamp(3.25rem, 5.2vw, 4rem);
   --type-page-title: clamp(2.25rem, 4.5vw, 3.75rem);
   --type-marquee: clamp(1.5rem, 4vw, 3.4375rem);
+  --type-nav-title: clamp(2.375rem, 3.2vw, 3.75rem);
 
   /* Controls: buttons, pills, filters */
   --type-ui: 0.875rem;
@@ -443,6 +444,12 @@ label {
 @media screen and (max-width: 61.9375rem) {
   :root {
     --type-hero-title: clamp(2.5rem, 6.4vw, 3.5rem);
+  }
+}
+
+@media screen and (max-width: 860px) {
+  :root {
+    --type-nav-title: var(--type-section);
   }
 }
 

@@ -57,7 +57,7 @@ export function TeamSection({ className = '', content = HOMEPAGE.team }) {
                       <img
                         src={m.imgSrc}
                         srcSet={m.imgSrcSet}
-                        sizes="(max-width: 767px) 92vw, 19rem"
+                        sizes="(max-width: 767px) 11.5rem, 19rem"
                         loading="lazy"
                         alt={m.imgAlt}
                         className="team_image"

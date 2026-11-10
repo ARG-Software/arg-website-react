@@ -64,12 +64,12 @@ function buildFooterColumns(socialLinks) {
     ...NAV_COLUMNS,
     {
       title: 'Services',
-      // Spans both columns on phones, where its long labels need the room
       wide: true,
       items: SITE.footer.services.map(item => ({ label: item })),
     },
     {
       title: 'Socials',
+      socials: true,
       items: socialLinks,
     },
   ];

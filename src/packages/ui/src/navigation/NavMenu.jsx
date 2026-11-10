@@ -1,4 +1,5 @@
 import { arrowSvg } from '../icons/SocialIcons.jsx';
+import { TextArrowButton } from '../buttons/TextArrowButton.jsx';
 
 function ArrowIcon({ className = '' }) {
   return <span className={`nav-menu__arrow ${className}`.trim()}>{arrowSvg}</span>;
@@ -91,6 +92,17 @@ export function NavMenu({
               })
             )}
           </nav>
+          <TextArrowButton
+            href={ctaHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-menu__cta--menu"
+            label={ctaLabel}
+            dark
+            noWrap
+            roll={false}
+            onClick={onCtaClick}
+          />
         </div>
 
         <div className="nav-menu__utilities">
@@ -217,7 +229,7 @@ export function NavMenu({
             href={ctaHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="nav-menu__cta"
+            className="nav-menu__cta nav-menu__cta--ribbon"
             onClick={onCtaClick}
           >
             {ctaLabel}
