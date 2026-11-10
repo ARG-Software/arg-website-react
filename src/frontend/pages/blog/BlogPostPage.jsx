@@ -1,5 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import NotFoundPage from '../NotFoundPage';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
 import { SEO } from '@components/seo/SEO';
@@ -100,26 +101,7 @@ export default function BlogPostPage() {
   useTimeOnPage(`/blog/${slug}/`);
 
   if (!BLOG_POST) {
-    return (
-      <div className="page-wrapper">
-        <Navbar position="absolute" isHomePage={true} />
-        <main
-          id="main"
-          className="main-wrapper"
-          style={{
-            minHeight: '60vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <p style={{ color: '#fff', fontFamily: 'Neuemontreal, sans-serif' }}>
-            Article not found.
-          </p>
-        </main>
-        <Footer />
-      </div>
-    );
+    return <NotFoundPage />;
   }
 
   const relatedPosts = getRelatedPosts(BLOG_POSTS, BLOG_POST, 9);
