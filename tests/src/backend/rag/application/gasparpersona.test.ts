@@ -37,6 +37,8 @@ test('answer prompt separates Gaspar output from evidence of ARG capability', ()
   assert.match(prompt, /evidence genuinely attributable to ARG/u);
   assert.match(prompt, /Do not request contact information/u);
   assert.match(prompt, /substantively supports the response/u);
+  assert.match(prompt, /Do not ghostwrite, draft, or offer to frame emails/u);
+  assert.match(prompt, /If there are no open roles or no internship programme, say that plainly and stop/u);
 });
 
 test('Gaspar prompts handle visitor names conversationally', () => {
@@ -80,6 +82,7 @@ test('insufficient-context prompt stays in Gaspar persona', () => {
   assert.match(prompt, /share those requirements here/u);
   assert.match(prompt, /optional next steps/u);
   assert.match(prompt, /do not request contact information/u);
+  assert.match(prompt, /Do not draft emails, applications, or outreach messages/u);
   assert.doesNotMatch(prompt, /You are the public website assistant/u);
   assert.doesNotMatch(prompt, /send a message through Gaspar/u);
 });

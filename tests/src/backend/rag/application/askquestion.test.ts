@@ -583,6 +583,16 @@ test('HR message request keeps careers action instead of Gaspar lead capture', (
   assert.deepEqual(createAssistantActions('Can I send a message to HR?'), [{ type: 'email_hr' }]);
 });
 
+test('employee hiring questions offer HR email instead of Gaspar lead capture', () => {
+  const expected = [{ type: 'email_hr' }];
+
+  assert.deepEqual(createAssistantActions('Are you hiring?'), expected);
+  assert.deepEqual(createAssistantActions('Are you guys hiring?'), expected);
+  assert.deepEqual(createAssistantActions('Do you have internships?'), expected);
+  assert.deepEqual(createAssistantActions('internship'), expected);
+  assert.deepEqual(createAssistantActions('Can I hire you?'), [{ type: 'gaspar_message' }]);
+});
+
 test('contact questions put Gaspar messaging before alternatives', async () => {
   const embeddingProvider = createEmbeddingProvider(() => [[0.1, 0.2]]);
 
@@ -1211,18 +1221,24 @@ test('hiring questions retrieve the careers sources instead of keyword matches e
     throw new Error('Embeddings must not be generated for hiring questions');
   });
 
-  const result = await askQuestion({
-    question: 'Are you hiring?',
-    config,
-    readRepository: supabase.repository,
-    answerProvider: createAnswerProvider('Are you hiring?', {
-      plan: { mode: 'direct_evidence', entity: 'ARG', subject: 'careers' },
-    }),
-    embeddingProvider,
-    fallbackEmbeddingProvider: embeddingProvider,
-  });
+  for (const question of ['Are you hiring?', 'internship', 'Do you have internships?']) {
+    const result = await askQuestion({
+      question,
+      config,
+      readRepository: supabase.repository,
+      answerProvider: createAnswerProvider(question, {
+        plan: { mode: 'direct_evidence', entity: 'ARG', subject: 'careers' },
+      }),
+      embeddingProvider,
+      fallbackEmbeddingProvider: embeddingProvider,
+    });
 
-  assert.deepEqual(result.contexts.map(context => context.sourceKey), ['careers-page', 'jobs']);
+    assert.deepEqual(
+      result.contexts.map(context => context.sourceKey),
+      ['careers-page', 'jobs'],
+      question
+    );
+  }
 });
 
 test('blog page context retrieves the current article source', async () => {

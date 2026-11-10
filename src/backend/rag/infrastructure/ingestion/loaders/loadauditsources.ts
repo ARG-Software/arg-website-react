@@ -28,7 +28,15 @@ export async function loadAuditSources(
   const reviewSizes = review.sizes.items
     .map(item => `${item.name} (${item.title}): ${item.text} ${item.price}.`)
     .join(' ');
-  const projectPricing = faq.items.find(item => item.id === 'pricing')?.answer[0]?.text ?? '';
+  const pricingTexts = (faq.items.find(item => item.id === 'pricing')?.answer ?? [])
+    .map(block => block.text)
+    .filter(Boolean);
+  const projectPricing = [
+    pricingTexts[0] ?? '',
+    pricingTexts.length > 1 ? pricingTexts[pricingTexts.length - 1] : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const architectContent = [
     [
@@ -108,11 +116,12 @@ export async function loadAuditSources(
   ].join('\n\n');
 
   const pricingContent = [
-    'ARG Software pricing overview. Each price belongs to one offering. "From" and "start around" figures are starting points, not totals or caps.',
+    'ARG Software pricing overview. Each price belongs to one offering. "From" and "start around" figures are starting points, not totals or caps. Unnamed working-with-ARG or project-cost questions lead with custom software, then a short named list of the other offerings.',
+    `Custom software and product delivery: ${projectPricing}`,
+    'Other offerings, only if that is what the visitor meant:',
     `ARG Architect browser extension: ${architect.privacy}.`,
     `Report review of an ARG Architect report: ${reportReview?.price} (${reportReview?.priceMeta}).`,
-    `Architecture review: ${reviewPrice}. One week covers one agreed part of a system, not the whole application. ${review.sizes.text} ${reviewSizes} ${review.price.scopeNote}`,
-    `Custom software and product delivery: ${projectPricing}`,
+    `Architecture review: ${reviewPrice}. One week covers one agreed part of a system, not the whole application. ${review.price.scopeNote}`,
   ].join('\n');
 
   const metadata = {

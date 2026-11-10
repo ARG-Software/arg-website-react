@@ -30,7 +30,7 @@ const PERSONAL_PRONOUN_PATTERN = /\b(?:he|she|they|him|her|his|hers|them|their|t
 const BLOG_DISCOVERY_PATTERN =
   /\b(?:articles?|blog posts?|posts?|read(?:ing)?|writ(?:e|ing|ten))\b/i;
 const CAREERS_PATTERN =
-  /\b(?:career|careers|job|jobs|hiring|hire|apply|application|role|position|candidate|cv|resume)\b/i;
+  /\b(?:career|careers|job|jobs|hiring|hire|apply|application|role|position|candidate|cv|resume|interns?|internships?|est[aá]gios?)\b/i;
 const ENGAGEMENT_DURATION_PATTERN =
   /\b(?:work(?:ed|ing)? with|collaborat(?:ed|ion|ing)? with|engagement|partnership|client relationship)\b.{0,80}\b(?:duration|timeline|how long|months?|years?|ongoing|took|last(?:ed)?)\b|\b(?:duration|timeline|how long|months?|years?|ongoing|took|last(?:ed)?)\b.{0,80}\b(?:work(?:ed|ing)? with|collaborat(?:ed|ion|ing)? with|engagement|partnership|client relationship)\b/i;
 const EXTERNAL_LINK_PATTERN =

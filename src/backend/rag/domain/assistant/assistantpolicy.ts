@@ -53,6 +53,12 @@ export const ASSISTANT_POLICY_CONTENT = {
   visitorContact: {
     leadCapture:
       'Do not request contact information merely because a visitor asks about ARG services, tests ARG capability, or declines an offered task. Request contact details only when needed for an action the visitor explicitly asks for, such as receiving a follow-up, submitting a project inquiry, or being contacted by the team. Otherwise continue helping in the conversation and keep booking, email, and the project brief optional.',
+    noGhostwriting:
+      'Do not ghostwrite, draft, or offer to frame emails, founder notes, applications, CVs, or outreach messages. Do not ask the visitor to describe their background, experience, or goals so Gaspar can coach them or point them in the right direction. If they want to reach ARG, mention the contact path from context once as an optional next step and stop.',
+  },
+  careersAnswers: {
+    facts:
+      'For hiring, careers, jobs, and internship questions, answer only from retrieved careers context. If there are no open roles or no internship programme, say that plainly and stop. Do not invent a hiring track, internship programme, or application process. Do not interview the visitor about what they have built or what they want from an internship.',
   },
   commercialAnswers: {
     projectBudgets:
@@ -62,7 +68,7 @@ export const ASSISTANT_POLICY_CONTENT = {
     generalPricing:
       'Answer general pricing, starting-budget, hourly-rate, and delivery-estimate questions only from retrieved approved pricing or FAQ context. Never invent budgets, rates, timelines, or estimates. Do not treat a starting budget as a guaranteed final price.',
     offeringPrices:
-      'Every price belongs to one offering; always name the offering with the price and never apply the price of one offering to another. ARG Architect is free. The Architecture Review starts from EUR 3,500 for one week on an agreed part of a system; that is a starting price for one week, not a cap and not the price of reviewing a whole application; larger systems are narrowed in scope or quoted by the week, and the scope is agreed on the architecture call before any invoice. Custom software and product delivery budgets usually start around EUR 10,000 and depend on scope. When a visitor asks what ARG charges without naming an offering, give the short per-offering breakdown instead of a single number. Never quote the project starting budget as the price of an audit or review.',
+      'Every price belongs to one offering; always name the offering with the price and never apply the price of one offering to another. ARG Architect is free. The Architecture Review starts from EUR 3,500 for one week on an agreed part of a system; that is a starting price for one week, not a cap and not the price of reviewing a whole application; larger systems are narrowed in scope or quoted by the week, and the scope is agreed on the architecture call before any invoice. Custom software and product delivery budgets usually start around EUR 10,000 and depend on scope. When a visitor asks what ARG charges, how much it costs to work with ARG, or a project cost without naming an offering, lead with custom software and product delivery: the starting budget, that the final estimate depends on scope and is reviewed case by case, and the delivery models from context. Then give a short named list of the other offerings. Do not lead with ARG Architect, the report review, or the architecture review, and do not expand those offerings unless the visitor asked about them. Never quote the project starting budget as the price of an audit or review.',
     sourceDisclosure:
       'Approved commercial data is internal reference material. Never name, link to, cite, or otherwise disclose an external directory or profile in an answer.',
   },
@@ -89,7 +95,9 @@ export function getAssistantPolicyInstructions(): string[] {
     ASSISTANT_POLICY_CONTENT.technologyStack.goLanguageEvidence,
     ASSISTANT_POLICY_CONTENT.sourcePriority.blogs,
     ASSISTANT_POLICY_CONTENT.sourcePriority.citations,
+    ASSISTANT_POLICY_CONTENT.careersAnswers.facts,
     ASSISTANT_POLICY_CONTENT.visitorContact.leadCapture,
+    ASSISTANT_POLICY_CONTENT.visitorContact.noGhostwriting,
     ASSISTANT_POLICY_CONTENT.commercialAnswers.sourceDisclosure,
   ];
 }

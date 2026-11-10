@@ -236,12 +236,20 @@ test('audit page loads as separate extension, report review, architecture review
   assert.doesNotMatch(review.content, /undefined/u);
 
   assert.equal(chunkText(pricing.content).length, 1);
-  assert.match(pricing.content, /ARG Architect browser extension: Free/u);
-  assert.match(pricing.content, /Report review of an ARG Architect report: €500/u);
-  assert.match(pricing.content, /Architecture review: from €3,500/u);
   assert.match(
     pricing.content,
     /Custom software and product delivery: Project budgets usually start around EUR 10,000/u
+  );
+  assert.match(pricing.content, /hourly or monthly collaboration/u);
+  assert.match(pricing.content, /milestone-based delivery/u);
+  assert.match(pricing.content, /lead with custom software/u);
+  assert.match(pricing.content, /ARG Architect browser extension: Free/u);
+  assert.match(pricing.content, /Report review of an ARG Architect report: €500/u);
+  assert.match(pricing.content, /Architecture review: from €3,500/u);
+  assert.doesNotMatch(pricing.content, /Slice \(One part/u);
+  assert.ok(
+    pricing.content.indexOf('Custom software and product delivery') <
+      pricing.content.indexOf('ARG Architect browser extension')
   );
 });
 
@@ -250,6 +258,8 @@ test('assistant policy separates audit offerings and their prices', () => {
 
   assert.match(instructions, /Senior Team Extension is a staffing service/u);
   assert.match(instructions, /never apply the price of one offering to another/u);
+  assert.match(instructions, /lead with custom software and product delivery/u);
+  assert.match(instructions, /Do not lead with ARG Architect/u);
   assert.match(
     instructions,
     /Never take ARG Architect features, Architecture Review scope, or prices from a blog article/u
