@@ -5,8 +5,7 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA } from '@services/analytics';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
-import { CTASection } from '@components/layout/CTASection';
-import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
+import { ContactSection } from '@components/layout/ContactSection';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { Pill } from '@ui/pills/Pill.jsx';
@@ -117,20 +116,15 @@ export default function PatternDetailPage() {
             </section>
           </div>
 
-          <section className="page-cta-wrapper" id="page-cta">
-            <SectionDivider variant="light" hideOnMobile={true} />
-            <CTASection
-              title={PATTERNS_PAGE.cta.title}
-              titleHighlight={PATTERNS_PAGE.cta.titleHighlight}
-              mobileTitleHighlight={PATTERNS_PAGE.cta.mobileTitleHighlight}
-              buttonTextNotHover={PATTERNS_PAGE.cta.buttonTextNotHover}
-              buttonTextHover={PATTERNS_PAGE.cta.buttonTextHover}
-              animationClass="pa-animate"
-              animate={true}
-              buttonLink={getProjectBookingLink()}
-              onPrimaryClick={() => trackCTA('book_meeting', 'patterns_detail_cta')}
-            />
-          </section>
+          <ContactSection
+            id="page-cta"
+            title={PATTERNS_PAGE.cta.title}
+            titleHighlight={PATTERNS_PAGE.cta.titleHighlight}
+            buttonTextNotHover={PATTERNS_PAGE.cta.buttonTextNotHover}
+            buttonTextHover={PATTERNS_PAGE.cta.buttonTextHover}
+            buttonLink={getProjectBookingLink()}
+            onPrimaryClick={() => trackCTA('book_meeting', 'patterns_detail_cta')}
+          />
         </main>
 
         <Footer />

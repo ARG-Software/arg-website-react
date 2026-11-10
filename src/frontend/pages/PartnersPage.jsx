@@ -4,8 +4,7 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA, trackEvent } from '@services/analytics';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
-import { CTASection } from '@components/layout/CTASection';
-import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
+import { ContactSection } from '@components/layout/ContactSection';
 import { SEO } from '@components/seo/SEO';
 import { Drawer } from '@ui/overlays/Drawer.jsx';
 import { FilterGrid } from '@ui/grids/FilterGrid.jsx';
@@ -130,20 +129,15 @@ export default function PartnersPage() {
             </section>
           </div>
 
-          <section className="page-cta-wrapper" id="page-cta">
-            <SectionDivider variant="light" hideOnMobile={true} />
-            <CTASection
-              title={PARTNERS_PAGE.cta.title}
-              titleHighlight={PARTNERS_PAGE.cta.titleHighlight}
-              mobileTitleHighlight={PARTNERS_PAGE.cta.mobileTitleHighlight}
-              buttonTextNotHover={PARTNERS_PAGE.cta.buttonTextNotHover}
-              buttonTextHover={PARTNERS_PAGE.cta.buttonTextHover}
-              animationClass="pp-animate"
-              animate={true}
-              buttonLink={getProjectBookingLink()}
-              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
-            />
-          </section>
+          <ContactSection
+            id="page-cta"
+            title={PARTNERS_PAGE.cta.title}
+            titleHighlight={PARTNERS_PAGE.cta.titleHighlight}
+            buttonTextNotHover={PARTNERS_PAGE.cta.buttonTextNotHover}
+            buttonTextHover={PARTNERS_PAGE.cta.buttonTextHover}
+            buttonLink={getProjectBookingLink()}
+            onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
+          />
         </main>
 
         <Footer />

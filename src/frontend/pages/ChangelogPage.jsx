@@ -3,9 +3,8 @@ import { Footer } from '@components/layout/Footer';
 import { Navbar } from '@components/navigation/Navbar';
 import { PageHeader } from '@components/headers/PageHeader';
 import { SEO } from '@components/seo/SEO';
-import { CTASection } from '@components/layout/CTASection';
+import { ContactSection } from '@components/layout/ContactSection';
 import { ChangelogTimeline } from '@components/content/ChangelogTimeline';
-import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { Pill } from '@ui/pills/Pill.jsx';
 import { renderArticleBlock } from '@components/content/ArticleBlock';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
@@ -185,25 +184,21 @@ export default function ChangelogPage() {
             </section>
           </div>
 
-          <section className="page-cta-wrapper background-color-dark" id="page-cta">
-            <SectionDivider variant="light" hideOnMobile={true} />
-            <CTASection
-              title={CHANGELOG_PAGE.cta.title}
-              titleHighlight={CHANGELOG_PAGE.cta.titleHighlight}
-              buttonTextNotHover={CHANGELOG_PAGE.cta.buttonTextNotHover}
-              buttonTextHover={CHANGELOG_PAGE.cta.buttonTextHover}
-              buttonLink={chromeStoreUrl}
-              onPrimaryClick={() =>
-                trackOutbound(chromeStoreUrl, 'chrome', 'architect_changelog_cta')
-              }
-              secondButtonTextNotHover={CHANGELOG_PAGE.cta.secondButtonTextNotHover}
-              secondButtonTextHover={CHANGELOG_PAGE.cta.secondButtonTextHover}
-              secondButtonLink="/audit/"
-              onSecondaryClick={() => trackCTA('audit_architect', 'architect_changelog_cta')}
-              animationClass="au-animate"
-              animate={true}
-            />
-          </section>
+          <ContactSection
+            id="page-cta"
+            title={CHANGELOG_PAGE.cta.title}
+            titleHighlight={CHANGELOG_PAGE.cta.titleHighlight}
+            buttonTextNotHover={CHANGELOG_PAGE.cta.buttonTextNotHover}
+            buttonTextHover={CHANGELOG_PAGE.cta.buttonTextHover}
+            buttonLink={chromeStoreUrl}
+            onPrimaryClick={() =>
+              trackOutbound(chromeStoreUrl, 'chrome', 'architect_changelog_cta')
+            }
+            secondButtonTextNotHover={CHANGELOG_PAGE.cta.secondButtonTextNotHover}
+            secondButtonTextHover={CHANGELOG_PAGE.cta.secondButtonTextHover}
+            secondButtonLink="/audit/"
+            onSecondaryClick={() => trackCTA('audit_architect', 'architect_changelog_cta')}
+          />
         </main>
 
         <Footer />

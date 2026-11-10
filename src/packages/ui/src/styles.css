@@ -834,7 +834,9 @@
 
 .ui-card--light .blp-pagination-num:hover:not(:disabled),
 .ui-card--light .blp-pagination-arrow:hover:not(:disabled) {
-  background: rgba(12, 0, 46, 0.06);
+  background: #0c002e;
+  border-color: #0c002e;
+  color: #fff;
 }
 
 .ui-card--light .blp-pagination-num.is-active {
@@ -1483,12 +1485,16 @@
   justify-content: space-between;
   padding: 0.4rem 0;
   text-align: left;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
   width: 100%;
 }
 
 .tag-filter__item:hover,
 .tag-filter__item:focus-visible {
   color: #0c002e;
+  transform: translateX(0.25rem);
 }
 
 .tag-filter__item.is-active {
@@ -1579,8 +1585,9 @@
 
 .blp-pagination-num:hover,
 .blp-pagination-arrow:hover:not(:disabled) {
-  background: #f5f5f5;
-  border-color: #999;
+  background: #0c002e;
+  border-color: #0c002e;
+  color: #fff;
 }
 
 .blp-pagination-num.is-active {
@@ -1698,29 +1705,29 @@
   background: #e0e0e5;
 }
 
-/* Footer reveal: the page scrolls off the footer, which waits underneath. The track starts a
-   screen above the footer's slot, so the sticky footer can hold still while its slot scrolls
-   in; the clip shows it only inside the slot. A footer that fits the screen holds against the
+/* Sticky reveal: the page scrolls off the child, which waits underneath. The track starts a
+   screen above the child's slot, so the sticky child can hold still while its slot scrolls
+   in; the clip shows it only inside the slot. A child that fits the screen holds against the
    bottom edge, a taller one against the top edge until its slot catches up, then scrolls on.
-   Footer.jsx measures --footer-height. */
-.footer-reveal {
+   StickyReveal.jsx measures --sticky-reveal-height. */
+.sticky-reveal {
   clip-path: inset(0);
   position: relative;
 }
 
-.footer-reveal.is-revealing {
-  height: var(--footer-height);
+.sticky-reveal.is-revealing {
+  height: var(--sticky-reveal-height);
 }
 
-.footer-reveal.is-revealing .footer-reveal__track {
+.sticky-reveal.is-revealing .sticky-reveal__track {
   height: calc(100% + 100vh);
   position: relative;
   top: -100vh;
 }
 
-.footer-reveal.is-revealing .footer-main {
+.sticky-reveal.is-revealing .sticky-reveal__track > * {
   position: sticky;
-  top: max(0rem, calc(100vh - var(--footer-height)));
+  top: max(0rem, calc(100vh - var(--sticky-reveal-height)));
 }
 
 /* Every row shares the footer's side padding, so all edges line up */
@@ -1850,7 +1857,7 @@
 }
 
 .footer-col-title {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
   font-size: var(--type-footer-title);
   font-weight: var(--weight-medium);
   letter-spacing: 0.18em;
@@ -1866,7 +1873,10 @@
 }
 
 .footer-col-link {
+  align-items: center;
   color: rgba(255, 255, 255, 0.8);
+  display: inline-flex;
+  min-height: 1.5rem;
   text-decoration: none;
 }
 
@@ -1934,7 +1944,10 @@
 }
 
 .footer-bottom__link {
+  align-items: center;
   color: rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  min-height: 1.5rem;
   text-decoration: none;
 }
 
@@ -2058,7 +2071,11 @@
 }
 
 .breadcrumb a {
+  align-items: center;
   color: rgba(255, 255, 255, 0.47);
+  display: inline-flex;
+  min-height: 1.5rem;
+  min-width: 1.5rem;
   text-decoration: none;
   transition: color 0.2s ease;
 }

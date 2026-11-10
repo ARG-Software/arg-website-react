@@ -22,44 +22,58 @@ export default function NotFoundPage() {
       data-animate-default-preset="fade-up"
     >
       <SEO
-        title="Page Not Found | ARG Software"
+        title="Page Not Found"
         description="The page you're looking for doesn't exist. Head back to ARG Software's homepage."
         path="/404/"
         noIndex
       />
 
+      <a href="#main" className="skip-link" onClick={skipToContent}>
+        Skip to content
+      </a>
+
       <div className="canvas-container">
         <canvas id="notfound-canvas" />
       </div>
 
-      <div className="top-ui" data-animate-order="0">
-        <AppLink to="/" aria-label="ARG Software" className="site-logo-wrapper">
-          <Logo className="site-logo" />
-        </AppLink>
-      </div>
-
-      <div className="bottom-ui">
-        <span className="error-num" data-animate-order="1">
-          System Fragment 404
-        </span>
-        <p className="message" data-animate-order="2">
-          The requested path got lost in town. But we are always here to help you.
-        </p>
-        <div className="cta-buttons" data-animate-order="3">
-          <AppLink to="/" className="button-base">
-            Return home
+      <main id="main">
+        <div className="top-ui" data-animate-order="0">
+          <AppLink to="/" aria-label="ARG Software" className="site-logo-wrapper">
+            <Logo className="site-logo" />
           </AppLink>
-          <a
-            href={getProjectBookingLink()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="button-base"
-            onClick={() => trackCTA('book_meeting', '404_page')}
-          >
-            Book a call
-          </a>
         </div>
-      </div>
+
+        <div className="bottom-ui">
+          <h1 className="error-num" data-animate-order="1">
+            System Fragment 404
+          </h1>
+          <p className="message" data-animate-order="2">
+            The requested path got lost in town. But we are always here to help you.
+          </p>
+          <div className="cta-buttons" data-animate-order="3">
+            <AppLink to="/" className="button-base">
+              Return home
+            </AppLink>
+            <a
+              href={getProjectBookingLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button-base"
+              onClick={() => trackCTA('book_meeting', '404_page')}
+            >
+              Book a call
+            </a>
+          </div>
+        </div>
+      </main>
     </div>
   );
+}
+
+function skipToContent(event) {
+  const main = document.getElementById('main');
+  if (!main) return;
+  event.preventDefault();
+  main.setAttribute('tabindex', '-1');
+  main.focus();
 }

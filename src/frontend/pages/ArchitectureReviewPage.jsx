@@ -5,7 +5,7 @@ import { Footer } from '@components/layout/Footer';
 import { Navbar } from '@components/navigation/Navbar';
 import { PageHeader } from '@components/headers/PageHeader';
 import { SEO } from '@components/seo/SEO';
-import { CTASection } from '@components/layout/CTASection';
+import { ContactSection } from '@components/layout/ContactSection';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { AnimatedArrowButton } from '@ui/buttons/AnimatedArrowButton.jsx';
@@ -249,23 +249,19 @@ export default function ArchitectureReviewPage() {
             </section>
           </div>
 
-          <section className="page-cta-wrapper background-color-dark" id="page-cta">
-            <SectionDivider variant="light" hideOnMobile={true} />
-            <CTASection
-              title={REVIEW_PAGE.cta.title}
-              titleHighlight={REVIEW_PAGE.cta.titleHighlight}
-              buttonTextNotHover={REVIEW_PAGE.cta.buttonTextNotHover}
-              buttonTextHover={REVIEW_PAGE.cta.buttonTextHover}
-              buttonLink={bookingUrl}
-              onPrimaryClick={() => trackCTA('book_meeting', 'audit_review_cta')}
-              secondButtonTextNotHover={REVIEW_PAGE.cta.secondButtonTextNotHover}
-              secondButtonTextHover={REVIEW_PAGE.cta.secondButtonTextHover}
-              secondButtonLink="/audit/"
-              onSecondaryClick={() => trackCTA('audit_architect', 'audit_review_cta')}
-              animationClass="au-animate"
-              animate={true}
-            />
-          </section>
+          <ContactSection
+            id="page-cta"
+            title={REVIEW_PAGE.cta.title}
+            titleHighlight={REVIEW_PAGE.cta.titleHighlight}
+            buttonTextNotHover={REVIEW_PAGE.cta.buttonTextNotHover}
+            buttonTextHover={REVIEW_PAGE.cta.buttonTextHover}
+            buttonLink={bookingUrl}
+            onPrimaryClick={() => trackCTA('book_meeting', 'audit_review_cta')}
+            secondButtonTextNotHover={REVIEW_PAGE.cta.secondButtonTextNotHover}
+            secondButtonTextHover={REVIEW_PAGE.cta.secondButtonTextHover}
+            secondButtonLink="/audit/"
+            onSecondaryClick={() => trackCTA('audit_architect', 'audit_review_cta')}
+          />
         </main>
 
         <Footer />

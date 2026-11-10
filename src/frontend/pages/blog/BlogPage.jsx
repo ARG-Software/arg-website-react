@@ -2,8 +2,7 @@ import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } fro
 import AppLink from '@components/navigation/AppLink';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
-import { CTASection } from '@components/layout/CTASection';
-import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
+import { ContactSection } from '@components/layout/ContactSection';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
@@ -319,18 +318,13 @@ export default function BlogPage() {
             </section>
           </div>
 
-          <div className="page-cta-wrapper">
-            <SectionDivider variant="light" hideOnMobile={true} />
-            <CTASection
-              title="Stop searching."
-              titleHighlight="Start building."
-              buttonTextNotHover="Book a Meeting"
-              buttonTextHover="Let's meet"
-              animationClass="blp-animate"
-              animate={true}
-              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
-            />
-          </div>
+          <ContactSection
+            title="Stop searching."
+            titleHighlight="Start building."
+            buttonTextNotHover="Book a Meeting"
+            buttonTextHover="Let's meet"
+            onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
+          />
         </main>
 
         <Footer />

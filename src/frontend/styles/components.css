@@ -1352,7 +1352,107 @@ main:focus {
 
 /* ==========================================================================
    components/layout
-   CTASection
+   ContactSection
+   ========================================================================== */
+
+/* Closing call to action: a full-screen dark section the previous page scrolls off, then the
+   footer waits underneath the same way, with the headline in the middle and two studio-lit
+   clusters of liquid behind it. Extra viewport of slot so the CTA can sit full-screen before
+   the footer starts peeling it away. */
+.home-cta-reveal.is-revealing {
+  height: calc(var(--sticky-reveal-height) + 100vh);
+}
+
+.home-cta {
+  align-items: center;
+  background: linear-gradient(#0c002e, #070019);
+  box-sizing: border-box;
+  display: flex;
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 7rem 0;
+  position: relative;
+}
+
+.home-cta_canvas {
+  height: 100%;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.home-cta > .padding-global {
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.home-cta_content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.home-cta_title {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-size: var(--type-display);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--tracking-display-tight);
+  line-height: var(--line-tight);
+  margin: 0;
+}
+
+.home-cta_title-line--accent {
+  background-image: var(--arg-gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  width: fit-content;
+}
+
+.home-cta_subtitle {
+  color: #fff;
+  font-size: var(--type-lead);
+  margin: 1.5rem 0 0;
+  max-width: 36rem;
+}
+
+.home-cta_buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2.5rem;
+}
+
+/* The CTA runs straight into the footer, so no line between them */
+.footer-main {
+  border-top: 0;
+}
+
+@media screen and (max-width: 767px) {
+  .home-cta {
+    padding: 7rem 0;
+  }
+
+  .home-cta_title {
+    font-size: var(--type-section);
+  }
+
+  .home-cta_buttons {
+    margin-top: 2rem;
+  }
+}
+
+/* ==========================================================================
+   components/layout
+   CTASection (legacy wrappers)
    ========================================================================== */
 
 .heading_wrap {
@@ -1635,9 +1735,9 @@ main:focus {
   align-items: center;
   animation: arg-slide-up 0.3s ease-out;
   background: #ffffff;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 0.0625rem solid rgba(0, 0, 0, 0.08);
   bottom: 0;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 -0.25rem 1.5rem rgba(0, 0, 0, 0.06);
   color: #111111;
   display: flex;
   flex-wrap: wrap;
@@ -1695,7 +1795,7 @@ main:focus {
 
 .arg-cookie-btn--secondary {
   background: transparent;
-  border: 1.5px solid rgba(0, 0, 0, 0.2);
+  border: 0.125rem solid rgba(0, 0, 0, 0.2);
   color: #111111;
 }
 
@@ -1703,17 +1803,26 @@ main:focus {
   border-color: rgba(0, 0, 0, 0.4);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   #arg-cookie-banner {
     align-items: stretch;
     flex-direction: column;
-    gap: 0.875rem;
-    padding: 1rem 1.25rem;
-    text-align: center;
+    font-size: 0.75rem;
+    gap: 0.5rem;
+    line-height: 1.35;
+    padding: 0.625rem 1rem;
+    text-align: left;
   }
 
   .arg-cookie-actions {
-    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .arg-cookie-btn {
+    flex: 1;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
   }
 }
 
@@ -2270,12 +2379,16 @@ main:focus {
   justify-content: space-between;
   padding: 0.4rem 0;
   text-align: left;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
   width: 100%;
 }
 
 .tag-filter__item:hover,
 .tag-filter__item:focus-visible {
   color: #0c002e;
+  transform: translateX(0.25rem);
 }
 
 .tag-filter__item.is-active {
@@ -2320,19 +2433,27 @@ main:focus {
    ========================================================================== */
 
 .nav-menu {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-  overflow: hidden;
   background: rgba(12, 0, 46, 0.86);
-  overscroll-behavior: contain;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
+  display: none;
   font-family: Neuemontreal, sans-serif;
+  inset: 0;
+  opacity: 0;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  pointer-events: none;
+  position: fixed;
+  visibility: hidden;
+  z-index: 1100;
 }
 
-.nav-menu.is-open {
+.nav-menu.is-open,
+.nav-menu.is-closing,
+.nav-menu.nav-menu--preview {
+  display: block;
+}
+
+.nav-menu.is-open,
+.nav-menu.nav-menu--preview {
   pointer-events: auto;
 }
 
@@ -3166,12 +3287,17 @@ main:focus {
 @media (max-width: 767px) {
   .aw-nudge {
     bottom: 5.5rem;
-    max-width: calc(100vw - 2.5rem);
+    max-width: 12rem;
+    padding: 0.75rem 2.25rem 0.75rem 0.875rem;
     right: 1.25rem;
   }
 
   .aw-nudge::after {
     right: 1.125rem;
+  }
+
+  .aw-nudge__message {
+    min-height: 0;
   }
 }
 

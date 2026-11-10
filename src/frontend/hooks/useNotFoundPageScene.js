@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { createArgMark } from '@components/animated/ArgMarkArt';
 import { useRAF } from './useRAF';
 
 export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
@@ -162,34 +163,15 @@ export function useNotFoundPageScene(canvasId = 'notfound-canvas') {
       carSystem2 = createLane(-1);
       scene.add(carSystem1.mesh, carSystem2.mesh);
 
-      logoGroup = new Group();
-      const c1 = new Color(CONFIG.logo.primary);
-      const c2 = new Color(CONFIG.logo.secondary);
-      const addPart = (w, h, d, x, y, z, col) => {
-        const m = new Mesh(
-          new BoxGeometry(w, h, d),
-          new MeshStandardMaterial({
-            color: col,
-            emissive: col,
-            emissiveIntensity: 0.4,
-            metalness: 0.9,
-            roughness: 0.1,
-            transparent: true,
-            opacity: 0.5,
-            polygonOffset: true,
-            polygonOffsetFactor: 1,
-            polygonOffsetUnits: 1,
-          })
-        );
-        m.position.set(x, y, z);
-        logoGroup.add(m);
-      };
-      addPart(4, 2, 1.2, 1.5, 3.1, 0.01, c1);
-      addPart(3, 2, 1.2, -1.0, 1.1, 0.02, c1.clone().lerp(c2, 0.25));
-      addPart(1.5, 2.5, 1.2, 0.75, 0.2, 0.03, c1.clone().lerp(c2, 0.5));
-      addPart(4.5, 2, 1.2, 2.25, -1.2, 0.04, c1.clone().lerp(c2, 0.75));
-      addPart(1.5, 2, 1.2, 3.75, -3.2, 0.05, c2);
-
+      logoGroup = createArgMark({
+        Group,
+        Mesh,
+        BoxGeometry,
+        MeshStandardMaterial,
+        Color,
+        primary: CONFIG.logo.primary,
+        secondary: CONFIG.logo.secondary,
+      });
       logoGroup.position.set(0, CONFIG.logo.floatHeight, 20);
       logoGroup.scale.set(CONFIG.logo.scale, CONFIG.logo.scale, CONFIG.logo.scale);
       logoGroup.rotation.x = -0.1;

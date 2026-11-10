@@ -265,7 +265,7 @@
   /* Shrink with the column so a growing year range never overflows */
   font-size: min(var(--type-body), calc(100cqi / var(--pt-year-count) / 3));
   font-weight: var(--weight-regular);
-  color: rgba(255, 255, 255, 0.47);
+  color: rgba(255, 255, 255, 0.7);
   text-align: left;
   padding: 0;
   overflow: hidden;
@@ -273,7 +273,7 @@
 }
 
 .pt-year-label.is-future {
-  color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .pt-divider {

@@ -4,6 +4,9 @@ import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { SEO } from '@components/seo/SEO';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
+import { ContactSection } from '@components/layout/ContactSection';
+import { trackCTA } from '@services/analytics';
+import { getPortfolioLink, getProjectBriefFormLink } from '../../services/linksService';
 import { HOMEPAGE_BLOG_POSTS_COUNT } from '@constants/config';
 import { buildFAQPageSchema } from '@utils/structuredData';
 import { HeroSection } from './sections/HeroSection';
@@ -18,7 +21,7 @@ import { WorkStatsSection } from './sections/WorkStatsSection';
 import { BlogPromoSection } from './sections/BlogPromoSection';
 import { SocialSection } from './sections/SocialSection';
 import { FAQSection } from './sections/FAQSection';
-import { ContactSection } from './sections/ContactSection';
+
 import PROJECTS from '../../data/projects.json';
 import HOMEPAGE from '../../data/homePage.json';
 import FAQ from '../../data/faq.json';
@@ -47,7 +50,18 @@ export default function HomePage() {
           <BlogPromoSection blogPosts={blogPosts} content={HOMEPAGE.blogPromo} />
           <SocialSection content={HOMEPAGE.social} />
           <FAQSection content={HOMEPAGE.faq} items={FAQ.items} />
-          <ContactSection content={HOMEPAGE.contact} />
+          <ContactSection
+            title={HOMEPAGE.contact.title}
+            titleHighlight={HOMEPAGE.contact.titleHighlight}
+            buttonTextNotHover={HOMEPAGE.contact.buttonTextNotHover}
+            buttonTextHover={HOMEPAGE.contact.buttonTextHover}
+            buttonLink={getPortfolioLink()}
+            onPrimaryClick={() => trackCTA('portfolio', 'homepage_cta')}
+            secondButtonTextNotHover={HOMEPAGE.contact.secondButtonTextNotHover}
+            secondButtonTextHover={HOMEPAGE.contact.secondButtonTextHover}
+            secondButtonLink={getProjectBriefFormLink()}
+            onSecondaryClick={() => trackCTA('contact_brief', 'homepage_contact')}
+          />
         </main>
         <Footer />
       </div>

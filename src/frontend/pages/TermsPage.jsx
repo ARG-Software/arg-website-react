@@ -1,6 +1,6 @@
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
-import { CTASection } from '@components/layout/CTASection';
+import { ContactSection } from '@components/layout/ContactSection';
 import { LegalArticle } from '@components/legal/LegalArticle';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
@@ -44,18 +44,14 @@ export default function TermsPage() {
               </div>
             </section>
           </div>
-          <div className="page-cta-wrapper">
-            <CTASection
-              title="Ready to build"
-              titleHighlight="with us?"
-              buttonTextNotHover="Book a Meeting"
-              buttonTextHover="Let's meet"
-              animationClass="legal-animate"
-              animate={true}
-              buttonLink={getMailtoLink(EMAIL_KEYS.INFO, PAGE.ctaSubject)}
-              onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
-            />
-          </div>
+          <ContactSection
+            title="Ready to build"
+            titleHighlight="with us?"
+            buttonTextNotHover="Book a Meeting"
+            buttonTextHover="Let's meet"
+            buttonLink={getMailtoLink(EMAIL_KEYS.INFO, PAGE.ctaSubject)}
+            onPrimaryClick={() => trackCTA('book_meeting', 'cta_section')}
+          />
         </main>
         <Footer />
       </div>

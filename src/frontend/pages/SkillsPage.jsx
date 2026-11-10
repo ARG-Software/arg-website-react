@@ -4,7 +4,7 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA, trackEvent, trackOutbound } from '@services/analytics';
 import { Navbar } from '@components/navigation/Navbar';
 import { Footer } from '@components/layout/Footer';
-import { CTASection } from '@components/layout/CTASection';
+import { ContactSection } from '@components/layout/ContactSection';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
@@ -156,20 +156,15 @@ export default function SkillsPage() {
             </section>
           </div>
 
-          <section className="page-cta-wrapper" id="page-cta">
-            <SectionDivider variant="light" hideOnMobile={true} />
-            <CTASection
-              title={SKILLS_PAGE.cta.title}
-              titleHighlight={SKILLS_PAGE.cta.titleHighlight}
-              mobileTitleHighlight={SKILLS_PAGE.cta.mobileTitleHighlight}
-              buttonTextNotHover={SKILLS_PAGE.cta.buttonTextNotHover}
-              buttonTextHover={SKILLS_PAGE.cta.buttonTextHover}
-              animationClass="sk-animate"
-              animate={true}
-              buttonLink={getProjectBookingLink()}
-              onPrimaryClick={() => trackCTA('book_meeting', 'skills_cta')}
-            />
-          </section>
+          <ContactSection
+            id="page-cta"
+            title={SKILLS_PAGE.cta.title}
+            titleHighlight={SKILLS_PAGE.cta.titleHighlight}
+            buttonTextNotHover={SKILLS_PAGE.cta.buttonTextNotHover}
+            buttonTextHover={SKILLS_PAGE.cta.buttonTextHover}
+            buttonLink={getProjectBookingLink()}
+            onPrimaryClick={() => trackCTA('book_meeting', 'skills_cta')}
+          />
         </main>
 
         <Footer />

@@ -5,7 +5,7 @@ import { Footer } from '@components/layout/Footer';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
-import { CTASection } from '@components/layout/CTASection';
+import { ContactSection } from '@components/layout/ContactSection';
 import { SocialShareButtons } from '@components/actions/SocialShareButtons';
 import { ArticleSidebar } from '@components/navigation/ArticleSidebar';
 import { SimpleCarousel } from '@components/navigation/SimpleCarousel';
@@ -418,21 +418,15 @@ export default function BlogPostPage() {
             </div>
           </section>
 
-          <section className="page-cta-wrapper">
-            <CTASection
-              title="Like what you read?"
-              titleHighlight="Subscribe to our newsletter"
-              mobileTitleHighlight="Join our newsletter"
-              subtitle="Get our latest engineering essays, field notes, and product thinking in your inbox."
-              mobileSubtitle="Engineering essays and field notes, straight to your inbox."
-              buttonTextNotHover="Subscribe"
-              buttonTextHover="Join the list"
-              buttonLink={getNewsletterSubscribeLink()}
-              animationClass="bp-animate"
-              animate={true}
-              onPrimaryClick={() => trackCTA('newsletter_subscribe', 'blog_post_cta')}
-            />
-          </section>
+          <ContactSection
+            title="Like what you read?"
+            titleHighlight="Subscribe to our newsletter"
+            subtitle="Get our latest engineering essays, field notes, and product thinking in your inbox."
+            buttonTextNotHover="Subscribe"
+            buttonTextHover="Join the list"
+            buttonLink={getNewsletterSubscribeLink()}
+            onPrimaryClick={() => trackCTA('newsletter_subscribe', 'blog_post_cta')}
+          />
         </main>
 
         <Footer />

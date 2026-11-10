@@ -8,6 +8,7 @@ export function NavMenu({
   wrapperRef,
   containerRef,
   isOpen = false,
+  isClosing = false,
   logo,
   primary = [],
   featuredProjects = [],
@@ -38,7 +39,8 @@ export function NavMenu({
   return (
     <div
       ref={wrapperRef}
-      className={`nav-menu${isOpen ? ' is-open' : ''}${preview ? ' nav-menu--preview' : ''}`}
+      className={`nav-menu${isOpen ? ' is-open' : ''}${isClosing ? ' is-closing' : ''}${preview ? ' nav-menu--preview' : ''}`}
+      aria-hidden={!isOpen && !isClosing}
       onClick={onClose}
     >
       <div

@@ -8,7 +8,7 @@ import { Navbar } from '@components/navigation/Navbar';
 import { PageHeader } from '@components/headers/PageHeader';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { Footer } from '@components/layout/Footer';
-import { CTASection } from '@components/layout/CTASection';
+import { ContactSection } from '@components/layout/ContactSection';
 import { Pill } from '@ui/pills/Pill.jsx';
 import { SEO } from '@components/seo/SEO';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
@@ -455,19 +455,14 @@ export default function ProjectDetailPage() {
             />
           </section>
 
-          <section className="page-cta-wrapper background-color-dark" id="contact">
-            <CTASection
-              title="Facing a similar"
-              titleHighlight="challenge?"
-              mobileTitleHighlight="challenge?"
-              buttonTextNotHover="Start a project"
-              buttonTextHover="Tell us about it"
-              animationClass="cp-animate"
-              animate={true}
-              buttonLink={getProjectBriefFormLink()}
-              onPrimaryClick={() => trackCTA('project_brief', `project_${slug}_cta`)}
-            />
-          </section>
+          <ContactSection
+            title="Facing a similar"
+            titleHighlight="challenge?"
+            buttonTextNotHover="Start a project"
+            buttonTextHover="Tell us about it"
+            buttonLink={getProjectBriefFormLink()}
+            onPrimaryClick={() => trackCTA('project_brief', `project_${slug}_cta`)}
+          />
         </main>
 
         <Footer />

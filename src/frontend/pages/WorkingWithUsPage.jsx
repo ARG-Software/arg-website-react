@@ -5,7 +5,7 @@ import { getProjectBriefFormLink } from '../services/linksService';
 import { Navbar } from '@components/navigation/Navbar';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { Footer } from '@components/layout/Footer';
-import { CTASection } from '@components/layout/CTASection';
+import { ContactSection } from '@components/layout/ContactSection';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { SectionTicker } from '@ui/layout/SectionTicker.jsx';
 import { SEO } from '@components/seo/SEO';
@@ -217,18 +217,14 @@ export default function WorkingWithUsPage() {
             </section>
           </div>
 
-          <section className="page-cta-wrapper background-color-dark" id="contact">
-            <CTASection
-              title={WORKING_WITH_US.cta.title}
-              titleHighlight={WORKING_WITH_US.cta.titleHighlight}
-              buttonTextNotHover={WORKING_WITH_US.cta.buttonTextNotHover}
-              buttonTextHover={WORKING_WITH_US.cta.buttonTextHover}
-              animationClass="cp-animate"
-              animate={true}
-              buttonLink={getProjectBriefFormLink()}
-              onPrimaryClick={() => trackCTA('working_with_us_brief', 'working_with_us_cta')}
-            />
-          </section>
+          <ContactSection
+            title={WORKING_WITH_US.cta.title}
+            titleHighlight={WORKING_WITH_US.cta.titleHighlight}
+            buttonTextNotHover={WORKING_WITH_US.cta.buttonTextNotHover}
+            buttonTextHover={WORKING_WITH_US.cta.buttonTextHover}
+            buttonLink={getProjectBriefFormLink()}
+            onPrimaryClick={() => trackCTA('working_with_us_brief', 'working_with_us_cta')}
+          />
         </main>
 
         <Footer />

@@ -33,53 +33,70 @@
 }
 
 .notfound-page .bottom-ui {
-  position: absolute;
-  bottom: 50px;
-  left: 50px;
-  z-index: 100;
+  align-items: flex-start;
+  bottom: 3.125rem;
+  display: flex;
+  flex-direction: column;
+  left: 3.125rem;
   pointer-events: none;
+  position: absolute;
+  z-index: 100;
 }
 
 .notfound-page .error-num {
+  color: var(--dark-blue);
   display: block;
   font-size: 1rem;
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-kicker-wide);
-  color: var(--dark-blue);
-  margin-bottom: 12px;
+  margin: 0 0 0.75rem;
+  padding: 0;
   text-transform: uppercase;
 }
 
 .notfound-page .message {
+  color: var(--black);
   font-size: 1.3rem;
   font-weight: var(--weight-light);
-  color: var(--black);
-  max-width: 380px;
   line-height: 1.5;
-  margin-bottom: 30px;
+  margin: 0 0 1.875rem;
+  max-width: 23.75rem;
+  padding: 0;
 }
 
 .notfound-page .cta-buttons {
-  display: flex;
   align-items: center;
-  gap: 14px;
+  display: flex;
   flex-wrap: wrap;
+  gap: 0.875rem;
+  margin: 0;
+  padding: 0;
   pointer-events: auto;
 }
 
 .notfound-page .button-base {
+  align-items: center;
   background: transparent;
-  border: 2px solid var(--dark-blue);
-  border-radius: 100px;
+  border: 0.125rem solid var(--dark-blue);
+  border-radius: 6.25rem;
   color: var(--dark-blue);
+  display: inline-flex;
   font-family: inherit;
   font-size: 0.875rem;
   font-weight: var(--weight-medium);
+  justify-content: center;
+  margin: 0;
   padding: 0.75rem 2rem;
   text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.notfound-page .button-base:hover,
+.notfound-page .button-base:focus-visible {
+  background: var(--dark-blue);
+  color: var(--white);
 }
 
 .notfound-page .canvas-container {

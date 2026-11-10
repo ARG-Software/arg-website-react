@@ -21,7 +21,7 @@ const ease = x => x * x * (3 - 2 * x);
 
 function balls(t) {
   const phase = (t % CYCLE_SECONDS) / CYCLE_SECONDS;
-  const sway = 0.06 * Math.sin(t * 0.5);
+  const sway = 0.06 * Math.sin(t * 0.28);
   let neck;
   let bounce = 0;
   let tipY;
@@ -57,5 +57,5 @@ function balls(t) {
 }
 
 export function DrippingDropArt({ className }) {
-  return <FluidCanvas balls={balls} melt={MELT} className={className} />;
+  return <FluidCanvas balls={balls} melt={MELT} cursor className={className} />;
 }

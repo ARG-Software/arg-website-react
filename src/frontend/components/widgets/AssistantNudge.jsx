@@ -7,7 +7,12 @@ const TYPING_STEP_MS = 35;
 
 // Gaspar's speech bubble: types its offer next to the trigger instead of opening the whole chat
 export function AssistantNudge({ onChat, onMeeting, onClose }) {
-  const { message, chatLabel, meetingLabel, closeLabel } = assistantContent.nudge;
+  const { message: desktopMessage, mobileMessage, chatLabel, meetingLabel, closeLabel } =
+    assistantContent.nudge;
+  const [isPhone] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+  );
+  const message = isPhone ? mobileMessage : desktopMessage;
   const [typedLength, setTypedLength] = useState(() =>
     prefersReducedMotion() ? message.length : 0
   );
@@ -47,20 +52,22 @@ export function AssistantNudge({ onChat, onMeeting, onClose }) {
         </span>
       </p>
 
-      <div className={`aw-nudge__actions${typingDone ? ' is-visible' : ''}`}>
-        <button className="aw-nudge__action" type="button" onClick={onChat}>
-          {chatLabel}
-        </button>
-        <a
-          className="aw-nudge__action aw-nudge__action--primary"
-          href={getProjectBookingLink()}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={onMeeting}
-        >
-          {meetingLabel}
-        </a>
-      </div>
+      {!isPhone && (
+        <div className={`aw-nudge__actions${typingDone ? ' is-visible' : ''}`}>
+          <button className="aw-nudge__action" type="button" onClick={onChat}>
+            {chatLabel}
+          </button>
+          <a
+            className="aw-nudge__action aw-nudge__action--primary"
+            href={getProjectBookingLink()}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onMeeting}
+          >
+            {meetingLabel}
+          </a>
+        </div>
+      )}
     </div>
   );
 }

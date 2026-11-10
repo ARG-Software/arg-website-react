@@ -212,6 +212,7 @@ export function NavMenu({ isOpen, isClosing, onClose }) {
       wrapperRef={wrapperRef}
       containerRef={containerRef}
       isOpen={isOpen}
+      isClosing={isClosing}
       logo={<Logo />}
       primary={primary}
       featuredProjects={featuredProjects}

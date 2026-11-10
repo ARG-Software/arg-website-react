@@ -7,7 +7,7 @@ import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { ContactForm } from '@components/forms/ContactForm';
 import { Pill, PillButton } from '@ui/pills/Pill.jsx';
 import { Footer } from '@components/layout/Footer';
-import { CTASection } from '@components/layout/CTASection';
+import { ContactSection } from '@components/layout/ContactSection';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
@@ -331,34 +331,20 @@ export default function CareersPage() {
             )}
           </div>
 
-          <section className="page-cta-wrapper background-color-dark" id="contact">
-            <CTASection
-              title={hasJobs ? CAREERS_PAGE.cta.openRolesTitle : CAREERS_PAGE.cta.noRolesTitle}
-              titleHighlight={
-                hasJobs
-                  ? CAREERS_PAGE.cta.openRolesTitleHighlight
-                  : CAREERS_PAGE.cta.noRolesTitleHighlight
-              }
-              mobileTitle={
-                hasJobs
-                  ? CAREERS_PAGE.cta.openRolesMobileTitle
-                  : CAREERS_PAGE.cta.noRolesMobileTitle
-              }
-              mobileTitleHighlight={
-                hasJobs
-                  ? CAREERS_PAGE.cta.openRolesMobileTitleHighlight
-                  : CAREERS_PAGE.cta.noRolesMobileTitleHighlight
-              }
-              buttonTextNotHover={
-                hasJobs ? CAREERS_PAGE.cta.openRolesButtonText : CAREERS_PAGE.cta.noRolesButtonText
-              }
-              buttonTextHover={CAREERS_PAGE.cta.buttonTextHover}
-              animationClass="cp-animate"
-              animate={true}
-              buttonLink={getMailtoLink(EMAIL_KEYS.HR, 'Career Inquiry')}
-              onPrimaryClick={() => trackCTA('career_inquiry', 'careers_cta')}
-            />
-          </section>
+          <ContactSection
+            title={hasJobs ? CAREERS_PAGE.cta.openRolesTitle : CAREERS_PAGE.cta.noRolesTitle}
+            titleHighlight={
+              hasJobs
+                ? CAREERS_PAGE.cta.openRolesTitleHighlight
+                : CAREERS_PAGE.cta.noRolesTitleHighlight
+            }
+            buttonTextNotHover={
+              hasJobs ? CAREERS_PAGE.cta.openRolesButtonText : CAREERS_PAGE.cta.noRolesButtonText
+            }
+            buttonTextHover={CAREERS_PAGE.cta.buttonTextHover}
+            buttonLink={getMailtoLink(EMAIL_KEYS.HR, 'Career Inquiry')}
+            onPrimaryClick={() => trackCTA('career_inquiry', 'careers_cta')}
+          />
         </main>
 
         <Footer />

@@ -6,7 +6,7 @@ import { getProjectBriefFormLink } from '../services/linksService';
 import { Navbar } from '@components/navigation/Navbar';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { Footer } from '@components/layout/Footer';
-import { CTASection } from '@components/layout/CTASection';
+import { ContactSection } from '@components/layout/ContactSection';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
@@ -267,19 +267,14 @@ export default function AboutUsPage() {
             </section>
           </div>
 
-          <section className="page-cta-wrapper background-color-dark" id="contact">
-            <CTASection
-              title="Quality over"
-              titleHighlight="headcount."
-              mobileTitleHighlight="headcount."
-              buttonTextNotHover="Start a project"
-              buttonTextHover="Tell us about it"
-              animationClass="cp-animate"
-              animate={true}
-              buttonLink={getProjectBriefFormLink()}
-              onPrimaryClick={() => trackCTA('about_us_brief', 'about_us_cta')}
-            />
-          </section>
+          <ContactSection
+            title="Quality over"
+            titleHighlight="headcount."
+            buttonTextNotHover="Start a project"
+            buttonTextHover="Tell us about it"
+            buttonLink={getProjectBriefFormLink()}
+            onPrimaryClick={() => trackCTA('about_us_brief', 'about_us_cta')}
+          />
         </main>
 
         <Footer />
