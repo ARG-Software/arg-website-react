@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Footer } from '@components/layout/Footer';
 import { Navbar } from '@components/navigation/Navbar';
 import { PageHeader } from '@components/headers/PageHeader';
@@ -56,7 +56,10 @@ export default function AuditPage() {
   const [activeFeature, setActiveFeature] = useState(-1);
   const architectRef = useRef(null);
   const activeFeatureRef = useRef(activeFeature);
-  activeFeatureRef.current = activeFeature;
+
+  useEffect(() => {
+    activeFeatureRef.current = activeFeature;
+  }, [activeFeature]);
   const [videoTracked, setVideoTracked] = useState(false);
   const feature = PAGE.architect.features[activeFeature] ?? PAGE.architect.overview;
   // The screenshot flips to its other face for each new feature, like the price cards

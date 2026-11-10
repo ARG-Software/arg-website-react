@@ -265,18 +265,14 @@ export function ReportGuideDeck({ content }) {
     return () => stack.removeEventListener('wheel', onWheel);
   }, [count]);
 
-  useSwipe(
-    stackRef,
-    delta => setCurrent(currentRef.current + delta),
-    {
-      axis: 'y',
-      threshold: SWIPE_PX,
-      canMove: delta => {
-        const next = currentRef.current + delta;
-        return next >= 0 && next < count;
-      },
-    }
-  );
+  useSwipe(stackRef, delta => setCurrent(currentRef.current + delta), {
+    axis: 'y',
+    threshold: SWIPE_PX,
+    canMove: delta => {
+      const next = currentRef.current + delta;
+      return next >= 0 && next < count;
+    },
+  });
 
   const onKeyDown = event => {
     const isButton = event.target.closest('button');

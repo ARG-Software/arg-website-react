@@ -8,8 +8,11 @@ import { useEffect, useRef } from 'react';
 export function useSwipe(ref, onSwipe, { axis = 'x', threshold = 40, canMove } = {}) {
   const onSwipeRef = useRef(onSwipe);
   const canMoveRef = useRef(canMove);
-  onSwipeRef.current = onSwipe;
-  canMoveRef.current = canMove;
+
+  useEffect(() => {
+    onSwipeRef.current = onSwipe;
+    canMoveRef.current = canMove;
+  });
 
   useEffect(() => {
     const element = ref.current;

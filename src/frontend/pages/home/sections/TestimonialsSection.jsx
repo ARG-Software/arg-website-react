@@ -34,7 +34,10 @@ export function TestimonialsSection({ className = '', testimonials = testimonial
   const pausedRef = useRef({ hover: false, offscreen: true });
   const shownRef = useRef(active);
   const activeRef = useRef(active);
-  activeRef.current = active;
+
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
 
   const syncTimer = () => {
     const timer = timerRef.current;
