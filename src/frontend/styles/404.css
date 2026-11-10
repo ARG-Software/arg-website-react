@@ -27,9 +27,9 @@
 }
 
 .notfound-page .site-logo {
+  color: var(--dark-blue);
   height: 2rem;
   width: auto;
-  filter: drop-shadow(0 0 2px var(--dark-blue));
 }
 
 .notfound-page .bottom-ui {
@@ -41,6 +41,20 @@
   pointer-events: none;
   position: absolute;
   z-index: 100;
+}
+
+.notfound-page .bottom-ui::before {
+  background: radial-gradient(
+    ellipse 120% 90% at 0% 100%,
+    rgb(248 249 250 / 0.92) 0%,
+    rgb(248 249 250 / 0.55) 42%,
+    rgb(248 249 250 / 0) 74%
+  );
+  content: '';
+  inset: -2.5rem -4rem -2rem -2.5rem;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
 }
 
 .notfound-page .error-num {
@@ -55,9 +69,9 @@
 }
 
 .notfound-page .message {
-  color: var(--black);
+  color: var(--dark-blue);
   font-size: 1.3rem;
-  font-weight: var(--weight-light);
+  font-weight: var(--weight-regular);
   line-height: 1.5;
   margin: 0 0 1.875rem;
   max-width: 23.75rem;
