@@ -36,7 +36,7 @@ const PAGE_TOPICS = [
 export default function ProjectDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { go } = useContext(TransitionContext);
+  const { go, variant } = useContext(TransitionContext);
   useScrollAnimations();
 
   const projectIndex = PROJECTS.findIndex(p => p.slug === slug);
@@ -173,6 +173,8 @@ export default function ProjectDetailPage() {
             ]}
             sideItems={PAGE_TOPICS}
             size="small"
+            // The image handoff lands on the hero, so it only fades in when the page opened another way
+            animateAside={variant !== 'project-image'}
             aside={
               <img
                 src={project.imgSrc}

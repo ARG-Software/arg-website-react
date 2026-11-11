@@ -464,6 +464,7 @@ export function TransitionProvider({ children }) {
     scrollToHash,
     scrollToPage: scrollToReturnTarget,
     transitioning: phase === 'preparing' || phase === 'covering' || phase === 'revealing',
+    variant: overlayVariant,
   };
 
   return (

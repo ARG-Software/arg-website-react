@@ -25,6 +25,7 @@ const VARIANT_CLASSES = {
  * @param {React.ReactNode} [props.children] - Optional content pinned to the bottom of the header when there are no links (e.g., blog post meta)
  * @param {string} [props.size] - Header size class hook: 'default', 'large', 'small'
  * @param {React.ReactNode} [props.aside] - Optional content shown on the right in place of the decorative art (e.g., a project image)
+ * @param {boolean} [props.animateAside] - Fades the aside in with the rest of the header
  * @param {string} [props.variant] - Optional visual variant
  */
 export function PageHeader({
@@ -37,6 +38,7 @@ export function PageHeader({
   size = 'default',
   variant,
   aside,
+  animateAside = false,
   animate = true,
   animationTrigger = 'load',
 }) {
@@ -162,7 +164,11 @@ export function PageHeader({
         )}
 
         {/* Beside the title on wide screens, under the subtitle on narrow ones */}
-        {aside && <div className="page-header__aside">{aside}</div>}
+        {aside && (
+          <div className="page-header__aside" {...(animateAside ? itemAnimationAttrs : {})}>
+            {aside}
+          </div>
+        )}
 
         {sideItems.length > 0 && (
           <div className="page-header__row page-header__row--links">
