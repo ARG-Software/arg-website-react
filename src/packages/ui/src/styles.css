@@ -4997,10 +4997,13 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   margin: 0;
 }
 
+/* Room below the tight line height for descenders (the g and p in People's Clearinghouse);
+   the negative margins keep the spacing it had before */
 .ucc-title-mask {
   display: block;
+  margin-bottom: -0.12em;
   overflow: hidden;
-  padding-bottom: 0.08em;
+  padding-bottom: 0.2em;
 }
 
 .ucc-title-line {
@@ -5011,6 +5014,9 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   background-image: var(--arg-gradient-primary);
   -webkit-background-clip: text;
   display: block;
+  margin-bottom: -0.2em;
+  /* The gradient only paints inside this box, so it has to reach below the baseline */
+  padding-bottom: 0.2em;
   -webkit-text-fill-color: transparent;
   width: fit-content;
 }
