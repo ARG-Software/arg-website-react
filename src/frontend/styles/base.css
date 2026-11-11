@@ -368,22 +368,31 @@ label {
   --accessible-components--dodger-blue: #1378d1;
   --padding-global: 2rem;
 
-  /* Type scale: every title and text on the site takes one of these eight steps. Ratio 4:3 from
-     the body size; the fluid steps all grow on the same curve between 390px and 1440px wide, so
-     their proportions never change with the window. Never write a font size by hand */
+  /* Type scale: every title and text on the site takes one of these eight steps, ratio 4:3 from
+     the body size. Never write a font size by hand.
+     The fluid steps (lead to display, plus the page header title) have a set size per screen,
+     as a share of the desktop size at 1440px, and grow in a straight line between the points:
+       phone 390px    the phone size
+       tablet 768px   85% of desktop (never below the phone size)
+       laptop 1024px  92% of desktop (never below the phone size)
+       desktop 1440px 100%
+       large 1920px+  110%, the cap
+     Each media query below holds one segment; the lines meet at the breakpoints, so nothing jumps.
+     Values come from those points: phone and desktop sizes per step are in AGENTS.md */
   --type-meta: 0.75rem;
   --type-body: 0.9375rem;
-  /* Half step, for page subtitles only */
-  --type-lead: clamp(1rem, 0.9694rem + 0.1257vw, 1.083rem);
-  --type-item: clamp(1.125rem, 1.079rem + 0.1905vw, 1.25rem);
-  --type-feature: clamp(1.375rem, 1.267rem + 0.4448vw, 1.667rem);
-  --type-section: clamp(1.625rem, 1.403rem + 0.9105vw, 2.223rem);
-  --type-article: clamp(2rem, 1.642rem + 1.468vw, 2.963rem);
-  --type-display: clamp(2.375rem, 1.79rem + 2.401vw, 3.951rem);
+  /* Phone to tablet. Lead is a half step, for page subtitles only */
+  --type-lead: 1rem;
+  --type-item: 1.125rem;
+  --type-feature: clamp(1.375rem, 1.3317rem + 0.1776vw, 1.4169rem);
+  --type-section: clamp(1.625rem, 1.3521rem + 1.1198vw, 1.8895rem);
+  --type-article: clamp(2rem, 1.465rem + 2.1949vw, 2.5185rem);
+  --type-display: clamp(2.375rem, 1.3604rem + 4.1623vw, 3.3584rem);
+  /* The page header title has its own sizes but follows the same points */
+  --type-page-title: clamp(2.25rem, 1.2827rem + 3.9683vw, 3.1875rem);
 
-  /* Outside the scale on purpose: the hero, the page header titles, the marquee and the nav menu */
+  /* Outside the scale on purpose: the hero, the marquee and the nav menu */
   --type-hero-title: clamp(3.25rem, 5.2vw, 4rem);
-  --type-page-title: clamp(2.25rem, 4.5vw, 3.75rem);
   --type-marquee: clamp(1.5rem, 4vw, 3.4375rem);
   --type-nav-title: clamp(2.375rem, 3.2vw, 3.75rem);
 
@@ -439,6 +448,45 @@ label {
   --tracking-kicker: 0.16em;
   --tracking-kicker-relaxed: 0.16em;
   --tracking-kicker-wide: 0.16em;
+}
+
+/* Type scale, tablet to laptop */
+@media screen and (min-width: 48rem) {
+  :root {
+    --type-lead: 1rem;
+    --type-item: calc(1.05rem + 0.1563vw);
+    --type-feature: calc(1.0669rem + 0.7293vw);
+    --type-section: calc(1.4227rem + 0.9726vw);
+    --type-article: calc(1.8963rem + 1.2963vw);
+    --type-display: calc(2.5286rem + 1.7286vw);
+    --type-page-title: calc(2.4rem + 1.6406vw);
+  }
+}
+
+/* Type scale, laptop to desktop */
+@media screen and (min-width: 64rem) {
+  :root {
+    --type-lead: calc(0.7957rem + 0.3192vw);
+    --type-item: calc(0.9038rem + 0.3846vw);
+    --type-feature: calc(1.2054rem + 0.5129vw);
+    --type-section: calc(1.6074rem + 0.684vw);
+    --type-article: calc(2.1425rem + 0.9117vw);
+    --type-display: calc(2.8569rem + 1.2157vw);
+    --type-page-title: calc(2.7115rem + 1.1538vw);
+  }
+}
+
+/* Type scale, desktop to large screens, capped at 110% */
+@media screen and (min-width: 90rem) {
+  :root {
+    --type-lead: min(0.7581rem + 0.361vw, 1.1913rem);
+    --type-item: min(0.875rem + 0.4167vw, 1.375rem);
+    --type-feature: min(1.1669rem + 0.5557vw, 1.8337rem);
+    --type-section: min(1.5561rem + 0.741vw, 2.4453rem);
+    --type-article: min(2.0741rem + 0.9877vw, 3.2593rem);
+    --type-display: min(2.7657rem + 1.317vw, 4.3461rem);
+    --type-page-title: min(2.625rem + 1.25vw, 4.125rem);
+  }
 }
 
 @media screen and (max-width: 61.9375rem) {

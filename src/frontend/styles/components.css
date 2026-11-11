@@ -1986,6 +1986,14 @@ main:focus {
   }
 }
 
+/* Laptops: the text runs wider than the left half here, so the image starts further right and
+   its solid part stays clear of the title and subtitle */
+@media screen and (min-width: 64rem) and (max-width: 74.9375rem) {
+  .page-header__aside {
+    width: 40%;
+  }
+}
+
 /* Article titles run to several lines, so keep them clear of the drawing */
 @media screen and (min-width: 1100px) {
   .page-header--article h1,

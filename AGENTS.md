@@ -342,6 +342,18 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
 ### 6.4 Typography
 Tokens live in `:root` in `src/frontend/styles/base.css`. One scale for the whole site. Do not write `font-size`, `font-weight`, `line-height`, or `letter-spacing` as raw rem/px in page or component CSS. If a size is missing, the scale is wrong — do not invent a step.
 
+**Sizes per screen:** the fluid steps (`lead` to `display`, plus `--type-page-title`) have a set size per screen, as a share of the desktop size, and grow in a straight line between the points. One media query per segment in `base.css`; never override them elsewhere.
+
+| Screen | Width | Size |
+|---|---|---|
+| Phone | 390px | phone size (below) |
+| Tablet | 768px | 85% of desktop, never below the phone size |
+| Laptop | 1024px | 92% of desktop, never below the phone size |
+| Desktop | 1440px | desktop size (below) |
+| Large | 1920px+ | 110% of desktop, the cap |
+
+Phone → desktop size (rem): `lead` 1 → 1.083, `item` 1.125 → 1.25, `feature` 1.375 → 1.667, `section` 1.625 → 2.223, `article` 2 → 2.963, `display` 2.375 → 3.951, `page-title` 2.25 → 3.75. To change a size, change these points and recompute the segment lines so they still meet at each breakpoint.
+
 | Token | Role |
 |---|---|
 | `--type-meta` | Kickers, labels, pills, captions, indexes |
