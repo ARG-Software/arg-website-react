@@ -55,7 +55,7 @@ const GASPAR_PROFILE_PATTERN =
 const GASPAR_HUMAN_LANGUAGE_PATTERN =
   /\b(?:human\s+languages?|languages?\s+(?:can\s+)?(?:you|gaspar)\s+(?:speak|understand|answer|reply|respond|use)|(?:can|could|do|will)\s+(?:you|gaspar)\s+(?:answer|reply|respond)\s+in\b|(?:can|could|do)\s+(?:you|gaspar)\s+speak\s+(?!to\b|with\b)|(?:que|quais)\s+(?:idiomas?|l[ií]nguas?)\s+(?:falas|fala|entendes|compreendes|usas)|(?:falas|fala)\s+(?!com\b|sobre\b|de\b|da\b|do\b|a\b|ao\b|para\b)|(?:respondes|responder|entendes|compreendes)\s+em\b|(?:parles|parlez)\s+(?!avec\b)|(?:hablas|habla)\s+(?!con\b))\b/i;
 const AGENT_SKILLS_PATTERN =
-  /\b(?:agent skills?|coding agents?|arg[-\s]?agent[-\s]?skills|npx skills|skill\.md|claude code|github copilot|copilot|cursor|codex|opencode|open code|arg-browser-extension|arg-angular|arg-nx-monorepo|arg-dotnet|arg-react-native|arg-web-audit|arg-code-review|arg-mcp-server)\b/i;
+  /\b(?:agent skills?|coding agents?|arg[-\s]?agent[-\s]?skills|npx skills|skill\.md|claude code|github copilot|copilot|cursor|codex|opencode|open code|arg-browser-extension|arg-angular|arg-nx-monorepo|arg-dotnet|arg-react-native|arg-web-audit|arg-code-review|arg-mcp-server|arg-security-audit|arg-devops-setup)\b/i;
 const SKILLS_WORD_PATTERN = /\bskills?\b/i;
 const SKILLS_QUESTION_NOISE_PATTERN =
   /\b(?:what|which|who|how|do|does|did|can|could|would|will|are|is|your|our|you|we|the|a|an|any|some|have|has|had|list|show|tell|me|about|please)\b/giu;

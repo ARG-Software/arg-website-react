@@ -133,6 +133,7 @@ export const ragEvalPromptBank: Record<string, string[]> = {
     'how much do you charge?',
     'tell me about the extension',
     'what is arg-web-audit?',
+    'what is arg-security-audit?',
     'do you have articles about website audits?',
   ],
   projects: [

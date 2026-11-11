@@ -92,6 +92,7 @@ test('audit and extension questions use the audit offerings route', () => {
 
 test('similarly named things do not use the audit offerings route', () => {
   assert.notEqual(route('What is arg-web-audit?').kind, 'audit_offerings');
+  assert.notEqual(route('What is arg-security-audit?').kind, 'audit_offerings');
   assert.notEqual(route('How do I install arg-browser-extension?').kind, 'audit_offerings');
   assert.notEqual(route('Tell me about senior team extension').kind, 'audit_offerings');
   assert.notEqual(route('Can you build a Chrome extension for us?').kind, 'audit_offerings');
