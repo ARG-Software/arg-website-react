@@ -61,7 +61,7 @@ const SKILLS_QUESTION_NOISE_PATTERN =
   /\b(?:what|which|who|how|do|does|did|can|could|would|will|are|is|your|our|you|we|the|a|an|any|some|have|has|had|list|show|tell|me|about|please)\b/giu;
 const AGENT_SKILLS_SOURCE_KEY = 'agent-skills';
 const AUDIT_OFFERING_PATTERN =
-  /\b(?:arg architect|architecture (?:review|call)|report review|(?:website|site|web|page|free) audits?)\b/i;
+  /\b(?:arg architect|architecture (?:review|call)|report review|(?:website|site|web|page|free) audits?|awards?|badges?|studio pulse|product hunt|smol launch|devhunt|product of the week|pr[eéê]mios?|distin[cç](?:ão|ões))\b/i;
 const AUDIT_WORD_PATTERN = /\b(?:audit(?:s|ing|ed)?|extensions?|add-?ons?)\b/i;
 const NOT_AUDIT_OFFERING_PATTERN =
   /\b(?:team|staff|contract|deadline)\s+extensions?\b|\b(?:extend(?:ing)?|build(?:ing)?|develop(?:ing)?|create|make)\b/i;

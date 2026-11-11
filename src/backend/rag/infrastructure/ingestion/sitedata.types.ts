@@ -117,6 +117,12 @@ export interface ISiteLinksJson {
     chrome?: string;
     firefox?: string;
   };
+  awards?: Array<{
+    name: string;
+    label: string;
+    about: string;
+    href: string;
+  }>;
   forms?: {
     projectBrief?: string;
   };

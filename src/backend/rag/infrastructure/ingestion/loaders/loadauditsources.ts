@@ -60,6 +60,12 @@ export async function loadAuditSources(
       ...architect.private.items.map(item => `${item.label}: ${item.text}`),
     ].join('\n'),
     [
+      `ARG Architect awards and launch badges: the badges in the Studio Pulse section of the homepage are awards and launch recognition that ARG Architect earned on product launch platforms. ARG Software shows them as team merits, because they are public recognition from independent maker and developer communities for a free tool the team built in-house.`,
+      ...(siteLinks.awards ?? []).map(
+        award => `${award.name} (${award.label}): ${award.about} Link: ${award.href}`
+      ),
+    ].join('\n'),
+    [
       `What ARG Architect can and cannot see: ${bridge.text}`,
       `${extensionLayer.name} (${extensionLayer.tag}) covers ${extensionLayer.who.toLowerCase()}: ${extensionLayer.items.join('; ')}.`,
       `${reviewLayer.name} (${reviewLayer.tag}) covers ${reviewLayer.who.toLowerCase()}: ${reviewLayer.items.join('; ')}.`,
