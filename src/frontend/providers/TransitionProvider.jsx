@@ -134,7 +134,7 @@ export function TransitionProvider({ children }) {
     }
 
     if (variant === 'project-image') {
-      return { cover: 760, reveal: 300 };
+      return { cover: 760, reveal: 640 };
     }
 
     if (variant === 'curtain') {

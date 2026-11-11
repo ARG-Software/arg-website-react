@@ -97,7 +97,7 @@
 }
 
 .pt-overlay--project-image {
-  transition: visibility 0ms linear 300ms;
+  transition: visibility 0ms linear 640ms;
 }
 
 /* Fills the viewport around the growing image so the old page never shows
@@ -138,12 +138,12 @@
 }
 
 .pt-overlay.revealing .pt-overlay__backdrop {
-  animation: pt-project-image-reveal 300ms var(--ease-out-expo) both;
+  animation: pt-project-image-reveal 640ms var(--ease-in-out-cubic) both;
 }
 
 /* Settles onto the destination hero image's measured box, then fades into it */
 .pt-overlay.revealing .pt-project-image {
-  animation: pt-project-image-land 300ms var(--ease-out-expo) both;
+  animation: pt-project-image-land 640ms var(--ease-in-out-cubic) both;
 }
 
 @keyframes pt-project-image-land {
