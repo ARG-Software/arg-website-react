@@ -7,8 +7,9 @@ import {
   REVEAL_STEP_MS,
 } from '../../../animations/attribute-presets';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
+import { AwardCard } from '@components/cards/AwardCard';
 import { LinkedInIcon } from '@ui/icons/LinkedInIcon.jsx';
-import { getCompanySocialLink } from '@services/linksService';
+import { getAwards, getCompanySocialLink } from '@services/linksService';
 import { trackOutbound } from '@services/analytics';
 import { fetchSocialPosts } from '@services/socialPostsService';
 import HOMEPAGE from '../../../data/homePage.json';
@@ -217,6 +218,13 @@ export function SocialSection({ className = '', content = HOMEPAGE.social }) {
                 <div>{content.eyebrow}</div>
               </div>
             </div>
+            <ul className="social-awards" aria-label="Launch awards" data-animate-order="2">
+              {getAwards().map(award => (
+                <li key={award.name}>
+                  <AwardCard award={award} location="homepage_social_awards" />
+                </li>
+              ))}
+            </ul>
             {items.length > 0 ? (
               <div className="social-feed">
                 {/* Masonry wall: the cards flow down three columns */}

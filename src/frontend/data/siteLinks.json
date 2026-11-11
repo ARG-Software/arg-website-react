@@ -59,5 +59,27 @@
   "stores": {
     "chrome": "https://chromewebstore.google.com/detail/arg-architect/bijelgdokpgmffnddemjblgdocnbogid",
     "firefox": "https://addons.mozilla.org/addon/arg-architect/"
-  }
-}
+  },
+  "awards": [
+    {
+      "name": "Smol Launch",
+      "icon": "rocket",
+      "label": "#1 Product of the Week",
+      "about": "Smol Launch is a weekly launch platform where the community votes for new products made by small teams and indie makers. ARG Architect finished the week as the #1 product.",
+      "href": "https://smollaunch.com/products/arg-architect?utm_source=badge&utm_medium=referral&utm_campaign=winner_1&utm_content=arg-architect"
+    },
+    {
+      "name": "Product Hunt",
+      "icon": "producthunt",
+      "label": "Launched on Product Hunt",
+      "about": "Product Hunt is the largest community for launching new tech products. ARG Architect has its own product page there, where people can follow and review it.",
+      "href": "https://www.producthunt.com/products/arg-architect?utm_source=badge-follow&utm_medium=badge&utm_campaign=badge-arg-architect"
+    },
+    {
+      "name": "DevHunt",
+      "icon": "rocket",
+      "label": "Featured on DevHunt",
+      "about": "DevHunt is a launch platform for developer tools, where the community votes on new tools. ARG Architect was featured there.",
+      "href": "https://devhunt.org/tool/arg-software"
+    }
+  ]}

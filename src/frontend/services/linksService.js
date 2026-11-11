@@ -61,6 +61,11 @@ export function getBrowserStoreLink(browser) {
   return typeof value === 'string' ? value : '';
 }
 
+// Launch awards: the platform, what it gave us and where it links
+export function getAwards() {
+  return siteLinks.awards ?? [];
+}
+
 export function getNewsletterSubscribeLink() {
   return getExternalLink(EXTERNAL_LINK_KEYS.NEWSLETTER_SUBSCRIBE);
 }

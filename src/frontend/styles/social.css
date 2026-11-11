@@ -1,3 +1,29 @@
+/* Launch awards in a row under the title */
+.social-awards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  list-style: none;
+  margin: 0 0 var(--space-home-heading-content);
+  padding: 0;
+}
+
+/* Phones: one pill per row, full width */
+@media screen and (max-width: 47.9375rem) {
+  .social-awards {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .social-awards .award-card {
+    display: flex;
+  }
+
+  .social-awards .award-card__arrow {
+    margin-left: auto;
+  }
+}
+
 /* Masonry wall: the cards flow down the columns. No fixed height on the wall, or the
    columns would overflow sideways */
 .social-feed__wall {

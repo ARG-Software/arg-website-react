@@ -2225,6 +2225,82 @@ main:focus {
 
 /* ==========================================================================
    components/cards
+   AwardCard
+   ========================================================================== */
+
+/* Pill on a dark section: icon in a circle, the name over the award, arrow out */
+.award-card {
+  align-items: center;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.3);
+  border-radius: 3rem;
+  color: #fff;
+  column-gap: 0.875rem;
+  display: inline-flex;
+  padding: 0.5rem 1.5rem 0.5rem 0.5rem;
+  text-decoration: none;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.award-card__icon {
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  flex-shrink: 0;
+  height: 2.75rem;
+  justify-content: center;
+  width: 2.75rem;
+}
+
+.award-card__icon svg {
+  height: 1.375rem;
+  width: 1.375rem;
+}
+
+.award-card__text {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.125rem;
+}
+
+/* Same type as the author line on the post cards: the name, then a quieter line under it */
+.award-card__name {
+  font-size: var(--type-body);
+  font-weight: var(--weight-medium);
+  line-height: var(--line-title);
+}
+
+.award-card__label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: var(--type-meta);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-title);
+}
+
+.award-card__arrow {
+  font-size: var(--type-body);
+  margin-left: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.award-card:focus-visible {
+  outline: 0.125rem solid #fff;
+  outline-offset: 0.25rem;
+}
+
+@media (hover: hover) {
+  .award-card:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: #fff;
+  }
+
+  .award-card:hover .award-card__arrow {
+    transform: translate(0.125rem, -0.125rem);
+  }
+}
+
+/* ==========================================================================
+   components/cards
    ProjectItem
    ========================================================================== */
 
