@@ -263,7 +263,7 @@ export default function BlogPage() {
                                     <Pill
                                       variant="custom"
                                       size="xs"
-                                      style={getBlogTagColor(tags[0])}
+                                      style={getBlogTagColor(tags[0], 'light')}
                                     >
                                       {tags[0]}
                                     </Pill>

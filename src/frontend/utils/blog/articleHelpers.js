@@ -15,7 +15,7 @@ export function getBlogTags(posts) {
   ).sort();
 }
 
-export function getBlogTagColor(tag) {
+export function getBlogTagColor(tag, surface = 'dark') {
   const value = String(tag || '');
   let hash = 0;
   for (let i = 0; i < value.length; i++) {
@@ -24,7 +24,8 @@ export function getBlogTagColor(tag) {
   const hue = Math.abs(hash) % 360;
   return {
     background: `hsla(${hue}, 50%, 55%, 0.12)`,
-    color: `hsl(${hue}, 55%, 72%)`,
+    // A light tint on dark sections, a deep shade of the same hue on white
+    color: surface === 'light' ? `hsl(${hue}, 60%, 28%)` : `hsl(${hue}, 55%, 72%)`,
     border: `1px solid hsla(${hue}, 50%, 55%, 0.25)`,
   };
 }

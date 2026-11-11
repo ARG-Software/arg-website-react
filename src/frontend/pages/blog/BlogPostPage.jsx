@@ -389,7 +389,7 @@ export default function BlogPostPage() {
                             className="related-article-card__tag"
                             variant="custom"
                             size="xs"
-                            style={getBlogTagColor(post.tag)}
+                            style={getBlogTagColor(post.tag, 'light')}
                           >
                             {post.tag}
                           </Pill>
