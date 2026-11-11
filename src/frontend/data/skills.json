@@ -1,9 +1,12 @@
 {
+  "repository": "https://github.com/ARG-Software/arg-agent-skills",
   "categories": ["All", "Browser", "Frontend", "Backend", "Mobile", "Quality"],
   "skills": [
     {
       "slug": "arg-browser-extension",
       "title": "ARG Browser Extension",
+      "seoTitle": "Browser Extension Skill for Claude Code, Cursor, OpenCode and Copilot",
+      "seoDescription": "Open-source SKILL.md for building Manifest V3 browser extensions for Chrome, Firefox and Safari with Claude Code, Cursor, OpenCode or GitHub Copilot.",
       "category": "Browser",
       "summary": "A complete engineering playbook for Manifest V3 browser extensions on Chrome, Firefox and Safari. Extensions built with it stay easy to change after hundreds of features, including extensions that run AI models entirely on the device.",
       "tags": ["Manifest V3", "Cross-browser", "On-device AI"],
@@ -20,6 +23,8 @@
     {
       "slug": "arg-angular",
       "title": "ARG Angular",
+      "seoTitle": "Angular NgRx Skill for Claude Code, Cursor, OpenCode and Copilot",
+      "seoDescription": "Open-source SKILL.md for Angular apps with NgRx, signals and standalone components, for Claude Code, Cursor, OpenCode, Codex and GitHub Copilot.",
       "category": "Frontend",
       "summary": "The ARG way of building Angular applications with NgRx on standalone components and signals. Apps built with it stay predictable and testable as features and team members are added.",
       "tags": ["Angular", "NgRx", "Signals"],
@@ -36,6 +41,8 @@
     {
       "slug": "arg-nx-monorepo",
       "title": "ARG Nx Monorepo",
+      "seoTitle": "Nx NestJS Monorepo Skill for Claude Code, Cursor, OpenCode and Copilot",
+      "seoDescription": "Open-source SKILL.md for Nx and pnpm monorepos with NestJS microservices, Kafka or RabbitMQ and Next.js, for Claude Code, Cursor, OpenCode and Copilot.",
       "category": "Backend",
       "summary": "The ARG way of running NestJS microservices and a Next.js front end in one Nx and pnpm workspace. The workspace stays organised and each service stays independent as the number of services grows.",
       "tags": ["Nx", "NestJS", "Microservices"],
@@ -52,6 +59,8 @@
     {
       "slug": "arg-dotnet",
       "title": "ARG .NET",
+      "seoTitle": ".NET DDD and CQRS Skill for Claude Code, Cursor, OpenCode and Copilot",
+      "seoDescription": "Open-source SKILL.md for ASP.NET Core back ends with DDD, vertical-slice CQRS, an outbox and Testcontainers, for Claude Code, Cursor, OpenCode and Copilot.",
       "category": "Backend",
       "summary": "The ARG way of building ASP.NET Core back ends on the current .NET LTS. Business rules live in a rich domain model, every feature is a small self-contained use case, and every write is tested against a real database.",
       "tags": [".NET", "DDD", "CQRS"],
@@ -68,6 +77,8 @@
     {
       "slug": "arg-react-native",
       "title": "ARG React Native",
+      "seoTitle": "React Native Performance Skill for Claude Code, Cursor, OpenCode and Copilot",
+      "seoDescription": "Open-source SKILL.md for React Native and Expo apps that stay fast on real devices, for Claude Code, Cursor, OpenCode, Codex and GitHub Copilot.",
       "category": "Mobile",
       "summary": "The ARG way of building React Native and Expo apps that stay fast on real devices and easy to change as they grow. Every performance change is backed by a measurement, not a guess.",
       "tags": ["React Native", "Expo", "Performance"],
@@ -84,6 +95,8 @@
     {
       "slug": "arg-web-audit",
       "title": "ARG Web Audit",
+      "seoTitle": "Website Audit Skill for Claude Code, Cursor, OpenCode and Copilot",
+      "seoDescription": "Open-source SKILL.md that audits a website's security headers, Core Web Vitals, accessibility and AI readiness, for Claude Code, Cursor, OpenCode and Copilot.",
       "category": "Quality",
       "summary": "A method for auditing any website for security, performance, accessibility and AI readiness. It produces a scored report that names every problem, shows the evidence and gives the fix.",
       "tags": ["Security", "Core Web Vitals", "AI readiness"],
@@ -100,6 +113,8 @@
     {
       "slug": "arg-code-review",
       "title": "ARG Code Review",
+      "seoTitle": "Code Review Skill for Claude Code, Cursor, OpenCode and Copilot",
+      "seoDescription": "Open-source SKILL.md for reviewing pull requests in any stack: boundaries, tests, secrets and release impact, for Claude Code, Cursor, OpenCode and Copilot.",
       "category": "Quality",
       "summary": "A structured code review for pull requests, branches and diffs in any stack. It catches the shortcuts that make a codebase hard to change later, and backs every finding with evidence from the code.",
       "tags": ["Pull requests", "Architecture", "Any stack"],
@@ -114,8 +129,46 @@
       "usedWhen": "The skill applies when reviewing a pull request, branch, diff or commit, checking whether a change is ready to merge, checking the release impact of a change, or preparing review comments."
     },
     {
+      "slug": "arg-security-audit",
+      "title": "ARG Security Audit",
+      "seoTitle": "Security Audit Skill for Claude Code, Cursor, OpenCode and Copilot",
+      "seoDescription": "Open-source SKILL.md for defensive source code security audits with verified findings and fixes, for Claude Code, Cursor, OpenCode, Codex and GitHub Copilot.",
+      "category": "Quality",
+      "summary": "A defensive method for finding security vulnerabilities in a codebase by reading its source. Every finding names who can exploit it, which control should have stopped them, how to reproduce it safely and the smallest fix.",
+      "tags": ["Security", "Source review", "Any stack"],
+      "installCommand": "npx skills add ARG-Software/arg-agent-skills --skill arg-security-audit",
+      "does": [
+        "It works in two modes. Focused questions, such as whether a route is exploitable or how to triage a reported vulnerability, are answered directly in the conversation. The full workflow runs only when a complete audit or report is asked for.",
+        "A full audit maps the product first: its users and their permissions, every entry point, the trust boundaries and the dangerous sinks. It then hunts by attack class in priority order and records what was checked in a coverage ledger, so gaps are visible instead of hidden.",
+        "Findings are verified independently before they are reported. Only confirmed findings get a severity; when exploitability depends on a deployment fact the code does not show, the finding is marked as needing validation. The output is a validated findings.json and a report.",
+        "It is safe by design: target code runs only in a local sandbox and deployed systems are never probed. When the audit leads to fixes, the ARG workflow applies, with fix branches, reviewed pull requests and CI before merge."
+      ],
+      "body": "This skill applies ARG's own rules to security work: a finding needs a real trust boundary and an observed result, and an unknown is never reported as a failure. The workflow, with its two modes, coverage ledger, attack-class hunting and independent verification, is inspired by Cloudflare's open-source security audit skill (MIT licence), reorganised and rewritten for the ARG base. It works on APIs, services, CLIs, libraries, browser extensions, mobile apps and MCP servers.",
+      "usedWhen": "The skill applies when asked for a security audit, security review, pen-test style review, vulnerability hunt, threat model or security report on a repository, or for focused questions such as whether a route is exploitable, whether user input reaches a dangerous sink, or how to triage a reported vulnerability."
+    },
+    {
+      "slug": "arg-devops-setup",
+      "title": "ARG DevOps Setup",
+      "seoTitle": "DevOps Setup Skill for Claude Code, Cursor, OpenCode and Copilot",
+      "seoDescription": "Open-source SKILL.md that adds CI, branch rulesets, release-please, Dependabot and AGENTS.md to any repo, for Claude Code, Cursor, OpenCode and Copilot.",
+      "category": "Quality",
+      "summary": "Gives any repository, new or years old, the delivery pipeline every ARG project runs on. It finds what is already in place, adds only what is missing, and delivers it all in one pull request for review.",
+      "tags": ["CI", "release-please", "Observability"],
+      "installCommand": "npx skills add ARG-Software/arg-agent-skills --skill arg-devops-setup",
+      "does": [
+        "It detects the stack (Node and TypeScript, Nx, .NET, Python, Go or Rust) and shows a table of what the repository already has, what is partly there and what is missing, before changing anything.",
+        "It adds the missing pieces: CI with a verify job and a pull request title check, a ruleset protecting the default branch, squash merges, a PR template and CODEOWNERS, release-please, Dependabot, AGENTS.md for every coding agent, .env handling, a lib folder and architecture tests.",
+        "Existing CI, agent rules and release tooling are extended, never overwritten. Everything goes on one setup branch, and rulesets, secrets, pushes and the pull request each wait for your approval. It never merges.",
+        "An optional local stack runs in Docker Compose: the database the app uses, Prometheus and Grafana watching the app's /metrics endpoint, and Portainer to see the running containers."
+      ],
+      "body": "The other ARG skills describe what a project needs: CI before merge, reviewed pull requests, automatic versioned releases, secrets out of git and tested architecture. This skill is the setup side of that base. It puts those pieces in place on an existing repository without breaking what the team already relies on, so the project is ready for production work and for coding agents from the next pull request.",
+      "usedWhen": "The skill applies when setting up or auditing a repository's DevOps, CI, GitHub Actions, rulesets, merge settings, PR templates, release-please, changelogs, Dependabot, AGENTS.md, .env handling or architecture tests, adding a local Docker Compose stack with Prometheus and Grafana, or making a project production-ready."
+    },
+    {
       "slug": "arg-mcp-server",
       "title": "ARG MCP Server",
+      "seoTitle": "MCP Server Skill for Claude Code, Cursor, OpenCode and Copilot",
+      "seoDescription": "Open-source SKILL.md for building MCP servers that expose your app's use cases to AI agents, for Claude Code, Cursor, OpenCode, Codex and GitHub Copilot.",
       "category": "Backend",
       "summary": "The ARG way of letting AI agents like Claude, Cursor and Copilot use your application through a Model Context Protocol (MCP) server. The server reuses the features your app already has, so no business logic is duplicated.",
       "tags": ["MCP", "AI agents", "OAuth"],

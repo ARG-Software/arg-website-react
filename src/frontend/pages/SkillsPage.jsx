@@ -43,6 +43,7 @@ export default function SkillsPage() {
     <>
       <SEO
         title={SKILLS_PAGE.seo.title}
+        noSuffix
         description={SKILLS_PAGE.seo.description}
         path="/skills/"
         pageType="CollectionPage"

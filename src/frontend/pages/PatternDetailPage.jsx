@@ -15,6 +15,7 @@ import { renderArticleBlock } from '@components/content/ArticleBlock';
 import { getHeadingId } from '@utils/blog/articleHelpers.js';
 import { loadBlogPostsMetadata } from '@utils/blog/articleLoader.js';
 import { loadPatterns } from '@utils/patternLoader';
+import { buildPatternSchema } from '@utils/structuredData';
 import PATTERNS_PAGE from '../data/patternsPage.json';
 import { getProjectBookingLink } from '../services/linksService';
 import '../styles/blog.css';
@@ -59,6 +60,7 @@ export default function PatternDetailPage() {
         path={`/patterns/${pattern.slug}/`}
         type="article"
         breadcrumbs={breadcrumbs}
+        jsonLd={buildPatternSchema(pattern)}
       />
       <div className="page-wrapper">
         <Navbar position="absolute" isHomePage={true} />

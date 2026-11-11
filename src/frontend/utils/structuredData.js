@@ -284,6 +284,44 @@ export function buildArticleSchema(post) {
   };
 }
 
+export function buildPatternSchema(pattern) {
+  const patternUrl = `${SITE_URL}/patterns/${pattern.slug}/`;
+  const datePublished = toContentDateIso(pattern.date) || undefined;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: pattern.seoTitle || pattern.title,
+    description: pattern.subtitle,
+    datePublished,
+    dateModified: toContentDateIso(pattern.dateModified) || datePublished,
+    about: pattern.category ? { '@type': 'Thing', name: pattern.category } : undefined,
+    keywords: pattern.tags,
+    author: buildAuthorSchema(),
+    publisher: { '@id': ORGANIZATION_ID },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': patternUrl },
+  };
+}
+
+export function buildSkillSchema(skill, repository) {
+  const skillUrl = `${SITE_URL}/skills/${skill.slug}/`;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareSourceCode',
+    '@id': `${skillUrl}#skill`,
+    name: skill.seoTitle,
+    description: skill.seoDescription,
+    url: skillUrl,
+    codeRepository: `${repository}/tree/main/skills/${skill.slug}`,
+    license: 'https://opensource.org/licenses/MIT',
+    keywords: skill.tags,
+    author: { '@id': ORGANIZATION_ID },
+    publisher: { '@id': ORGANIZATION_ID },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': skillUrl },
+  };
+}
+
 export function buildProjectSchema(project) {
   const projectUrl = `${SITE_URL}/projects/${project.slug}/`;
   const stackItems =

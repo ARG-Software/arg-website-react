@@ -71,8 +71,8 @@ export const STATIC_PAGES = [
   },
   {
     path: '/skills/',
-    title: 'AI Skills | ARG Software',
-    socialTitle: 'AI Skills',
+    title: 'Agent Skills for Claude Code, Cursor, OpenCode and Copilot',
+    socialTitle: 'Agent Skills for Claude Code, Cursor, OpenCode and Copilot',
     h1: 'The skills we use to ship production work.',
     pageType: 'CollectionPage',
     breadcrumbs: [
@@ -82,10 +82,10 @@ export const STATIC_PAGES = [
     priority: '0.8',
     changefreq: 'monthly',
     description:
-      'Playbooks ARG Software gives coding assistants so they work the way we do. For Claude Code, Cursor, Codex, OpenCode, and GitHub Copilot.',
+      'Open-source SKILL.md agent skills for Claude Code, Cursor, OpenCode and GitHub Copilot: Angular, .NET, Nx, React Native, MCP, code review, security and DevOps.',
     paragraphs: [
       "These are ARG's working habits, written down for AI coding tools — how we design, review, and ship — so the assistant follows the same standard we use on client work.",
-      'Skills cover browser extensions, Angular, Nx monorepos, .NET, React Native, MCP servers, web quality audits, and code review.',
+      'Skills cover browser extensions, Angular, Nx monorepos, .NET, React Native, MCP servers, web quality audits, code review, security audits, and DevOps setup.',
       'Install with npx skills add ARG-Software/arg-agent-skills. Available for Claude Code, Cursor, Codex, OpenCode, and GitHub Copilot.',
     ],
   },

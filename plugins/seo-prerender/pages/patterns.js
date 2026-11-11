@@ -6,6 +6,7 @@ import { loadBlogPosts, parseFrontmatter } from '../blog-loader.js';
 import { replaceMetaTags } from '../html-utils.js';
 import { buildPatternStaticContent, injectStaticContent } from '../static-content.js';
 import { parseBlocks } from '../../../src/frontend/utils/blog/articleContent.js';
+import { buildPatternSchema } from '../../../src/frontend/utils/structuredData.js';
 
 export function loadPatterns() {
   const patternsDir = path.resolve(contentPaths.patterns);
@@ -32,6 +33,7 @@ export function writePatternPages({ distDir, baseHtml, generated }) {
       description: pattern.subtitle || '',
       url: `${SITE_URL}${patternPath}`,
       type: 'article',
+      jsonLd: buildPatternSchema(pattern),
       breadcrumbs: [
         { name: 'Home', path: '/' },
         { name: 'Patterns', path: '/patterns/' },

@@ -3,12 +3,13 @@ import path from 'node:path';
 import { SITE_URL } from '../constants.js';
 import { replaceMetaTags } from '../html-utils.js';
 import { buildSkillStaticContent, injectStaticContent } from '../static-content.js';
+import { buildSkillSchema } from '../../../src/frontend/utils/structuredData.js';
 
 export function writeSkillPages({ distDir, baseHtml, generated }) {
   const skillsPath = path.resolve('src/frontend/data/skills.json');
   if (!fs.existsSync(skillsPath)) return generated;
 
-  const { skills = [] } = JSON.parse(fs.readFileSync(skillsPath, 'utf-8'));
+  const { skills = [], repository } = JSON.parse(fs.readFileSync(skillsPath, 'utf-8'));
   let count = generated;
 
   for (const skill of skills) {
@@ -16,12 +17,12 @@ export function writeSkillPages({ distDir, baseHtml, generated }) {
 
     const skillUrl = `${SITE_URL}/skills/${skill.slug}/`;
     let html = replaceMetaTags(baseHtml, {
-      title: `${skill.title} | ARG Software`,
-      socialTitle: skill.title,
-      // First sentence only: the full summary runs past 160 characters.
-      description: `${(skill.summary || '').split('. ')[0].replace(/\.$/, '')}.`,
+      title: skill.seoTitle,
+      socialTitle: skill.seoTitle,
+      description: skill.seoDescription,
       url: skillUrl,
       type: 'website',
+      jsonLd: buildSkillSchema(skill, repository),
       breadcrumbs: [
         { name: 'Home', path: '/' },
         { name: 'AI Skills', path: '/skills/' },

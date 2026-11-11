@@ -13,6 +13,7 @@ import { Pill, PillButton } from '@ui/pills/Pill.jsx';
 import data from '../data/skills.json';
 import SKILLS_PAGE from '../data/skillsPage.json';
 import { getProjectBookingLink } from '../services/linksService';
+import { buildSkillSchema } from '@utils/structuredData';
 import '../styles/skills.css';
 
 const { skills } = data;
@@ -39,12 +40,13 @@ export default function SkillDetailPage() {
 
   return (
     <>
-      {/* First sentence only: the full summary runs past 160 characters. */}
       <SEO
-        title={skill.title}
-        description={`${skill.summary.split('. ')[0].replace(/\.$/, '')}.`}
+        title={skill.seoTitle}
+        noSuffix
+        description={skill.seoDescription}
         path={`/skills/${skill.slug}/`}
         breadcrumbs={breadcrumbs}
+        jsonLd={buildSkillSchema(skill, data.repository)}
       />
       <div className="page-wrapper sk-page">
         <Navbar position="absolute" isHomePage={true} />
