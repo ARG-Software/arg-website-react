@@ -198,9 +198,9 @@
     "video": {
       "title": "ARG Software",
       "label": "How we work",
-      "duration": "1:06",
-      "src": "/videos/arg-film.mp4",
-      "poster": "/images/arg-film-poster.jpg",
+      "duration": "1:13",
+      "src": "/videos/arg-film-v3.mp4",
+      "poster": "/images/arg-film-v3-poster.jpg",
       "embedUrl": ""
     }
   },
