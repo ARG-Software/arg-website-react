@@ -7,6 +7,7 @@ import { Footer } from '@components/layout/Footer';
 import { ContactSection } from '@components/layout/ContactSection';
 import { SEO } from '@components/seo/SEO';
 import { Drawer } from '@ui/overlays/Drawer.jsx';
+import { ChoiceFilter } from '@ui/filters/ChoiceFilter.jsx';
 import { FilterGrid } from '@ui/grids/FilterGrid.jsx';
 import { Timeline } from '@ui/grids/Timeline.jsx';
 import { PageHeader } from '@components/headers/PageHeader';
@@ -72,21 +73,15 @@ export default function PartnersPage() {
             >
               <div className="container padding-global pc-clients-inner">
                 <div className="pc-header">
-                  <div className="pc-header-main">
-                    <div className="pc-filters">
-                      {categories.map((cat, index) => (
-                        <button
-                          key={cat}
-                          className={`pc-filter-btn${activeCategory === cat ? ' is-active' : ''}`}
-                          onClick={() => handleCategoryChange(cat)}
-                          data-animate-order={index}
-                        >
-                          {cat}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="pc-header-desc" data-animate-order={categories.length}>
+                  <ChoiceFilter
+                    className="pc-header-filters"
+                    options={categories}
+                    value={activeCategory}
+                    onChange={handleCategoryChange}
+                    label="Filter partners by category"
+                    data-animate-order="1"
+                  />
+                  <div className="pc-header-desc" data-animate-order="0">
                     <p>{PARTNERS_PAGE.clients.intro}</p>
                   </div>
                 </div>

@@ -16,10 +16,34 @@
   top: 6rem;
 }
 
+.pa-aside-all {
+  align-self: start;
+  font-size: var(--type-meta);
+}
+
 @media screen and (max-width: 991px) {
   .pa-aside {
     margin: 3rem auto 0;
     max-width: 58rem;
     position: static;
+  }
+
+  .pa-aside .article-sidebar__label::after {
+    display: none;
+  }
+
+  .pa-aside .article-sidebar__links {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .pa-aside .article-sidebar__link {
+    border-left: 0;
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: 0;
+  }
+
+  .pa-aside .article-sidebar__link-number {
+    display: none;
   }
 }

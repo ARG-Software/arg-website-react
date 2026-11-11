@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { prefersReducedMotion } from '../utils/motion.js';
+import { useSwipe } from '../utils/useSwipe.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -191,6 +192,7 @@ function MobileVerticalTimeline({ items, ariaLabel, scrollTargetId, onChange }) 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const transitionTimer = useRef(null);
+  const swipeRef = useRef(null);
 
   useEffect(
     () => () => {
@@ -202,13 +204,7 @@ function MobileVerticalTimeline({ items, ariaLabel, scrollTargetId, onChange }) 
     []
   );
 
-  if (items.length === 0) return null;
-
   const safeIndex = activeIndex >= items.length ? 0 : activeIndex;
-  const activeItem = items[safeIndex];
-  const canGoPrevious = safeIndex > 0;
-  const canGoNext = safeIndex < items.length - 1;
-  const showControls = items.length > 1;
 
   const navigate = direction => {
     if (isTransitioning) return;
@@ -226,10 +222,30 @@ function MobileVerticalTimeline({ items, ariaLabel, scrollTargetId, onChange }) 
     }, TRANSITION_DELAY_MS);
   };
 
+  useSwipe(swipeRef, navigate, {
+    canMove: delta => {
+      if (isTransitioning) return false;
+      const next = safeIndex + delta;
+      return next >= 0 && next < items.length;
+    },
+  });
+
+  if (items.length === 0) return null;
+
+  const activeItem = items[safeIndex];
+  const canGoPrevious = safeIndex > 0;
+  const canGoNext = safeIndex < items.length - 1;
+  const showControls = items.length > 1;
+
   const trackKey = activeItem.id ?? activeItem.period ?? safeIndex;
 
   return (
-    <div id={scrollTargetId} className="vertical-timeline__mobile" aria-label={ariaLabel}>
+    <div
+      ref={swipeRef}
+      id={scrollTargetId}
+      className="vertical-timeline__mobile"
+      aria-label={ariaLabel}
+    >
       <div
         className={`vertical-timeline__track${isTransitioning ? ' is-transitioning' : ''}`}
         aria-live="polite"

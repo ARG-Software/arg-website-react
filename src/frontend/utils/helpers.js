@@ -1,4 +1,4 @@
-import { MOBILE_BREAKPOINT } from '../constants/ui.js';
+import { MOBILE_BREAKPOINT, TABLET_BREAKPOINT } from '../constants/ui.js';
 
 /**
  * Convert a string to a URL-friendly slug.
@@ -63,6 +63,10 @@ export function normalizePathname(pathname) {
  */
 export function isMobile() {
   return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
+}
+
+export function isTablet() {
+  return window.matchMedia(`(max-width: ${TABLET_BREAKPOINT}px)`).matches;
 }
 
 /**

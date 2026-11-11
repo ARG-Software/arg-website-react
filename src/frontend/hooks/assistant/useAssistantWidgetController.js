@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MOBILE_BREAKPOINT } from '@constants/ui';
 import { trackAssistantEvent } from '@services/analytics';
 import { isMobile } from '@utils/helpers';
 import { useAssistantChat } from './useAssistantChat';
@@ -69,11 +68,9 @@ function useMobileViewport() {
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
-    const onChange = event => setMobileViewport(event.matches);
-    mql.addEventListener('change', onChange);
-    return () => mql.removeEventListener('change', onChange);
+    const onChange = () => setMobileViewport(isMobile());
+    window.addEventListener('resize', onChange);
+    return () => window.removeEventListener('resize', onChange);
   }, []);
 
   return mobileViewport;

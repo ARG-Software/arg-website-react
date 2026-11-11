@@ -1,5 +1,6 @@
 import { useContext, useRef, useState } from 'react';
 import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
+import { ChoiceFilter } from '@ui/filters/ChoiceFilter.jsx';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
 import { trackEvent, trackFAQOpen } from '@services/analytics';
 import { LenisContext } from '../../../providers/LenisProvider';
@@ -156,37 +157,13 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
 
           {/* The filters on the left and the film thumbnail on the right share one row */}
           <div className="faq_toolbar">
-            <div
-              className="faq_topics"
-              role="group"
-              data-animate-order="1"
-              aria-label="Filter questions by topic"
-            >
-              {content.topics.map(name => (
-                <button
-                  key={name}
-                  type="button"
-                  className={`faq_topic${topic === name ? ' is-active' : ''}`}
-                  aria-pressed={topic === name}
-                  onClick={() => selectTopic(name)}
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
-            <select
-              className="faq_topic-select"
+            <ChoiceFilter
+              options={content.topics}
               value={topic}
-              aria-label="Filter questions by topic"
+              onChange={selectTopic}
+              label="Filter questions by topic"
               data-animate-order="1"
-              onChange={event => selectTopic(event.target.value)}
-            >
-              {content.topics.map(name => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
+            />
             <div className="faq_toolbar-video" data-animate-order="2">
               <FAQVideo video={content.video} />
             </div>

@@ -10,6 +10,7 @@ import { PageHeader } from '@components/headers/PageHeader';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { useFilterReveal } from '@ui/utils/useFilterReveal.js';
 import { Pill } from '@ui/pills/Pill.jsx';
+import { ChoiceFilter } from '@ui/filters/ChoiceFilter.jsx';
 import AppLink from '@components/navigation/AppLink';
 import { loadPatterns } from '@utils/patternLoader';
 import PATTERNS_PAGE from '../data/patternsPage.json';
@@ -69,19 +70,13 @@ export default function PatternsPage() {
             >
               <div className="container padding-global sk-inner">
                 <div className="sk-header">
-                  <div className="sk-filters">
-                    {PATTERNS_PAGE.categories.map(category => (
-                      <button
-                        key={category}
-                        type="button"
-                        className={`sk-filter-btn${activeCategory === category ? ' is-active' : ''}`}
-                        onClick={() => handleCategoryChange(category)}
-                        data-animate="fade-up"
-                      >
-                        {category}
-                      </button>
-                    ))}
-                  </div>
+                  <ChoiceFilter
+                    options={PATTERNS_PAGE.categories}
+                    value={activeCategory}
+                    onChange={handleCategoryChange}
+                    label="Filter patterns by category"
+                    data-animate="fade-up"
+                  />
                 </div>
 
                 <div className="sk-grid" ref={gridRef}>

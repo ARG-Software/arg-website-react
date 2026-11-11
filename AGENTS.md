@@ -339,6 +339,30 @@ Custom Vite plugin that runs during `closeBundle`. Generates:
   - `section_*` = Layout sections
   - `aw-*` = Assistant widget
 
+### 6.4 Typography
+Tokens live in `:root` in `src/frontend/styles/base.css`. One scale for the whole site. Do not write `font-size`, `font-weight`, `line-height`, or `letter-spacing` as raw rem/px in page or component CSS. If a size is missing, the scale is wrong — do not invent a step.
+
+| Token | Role |
+|---|---|
+| `--type-meta` | Kickers, labels, pills, captions, indexes |
+| `--type-body` | Paragraphs, list copy, text buttons, form copy |
+| `--type-lead` | Page-header subtitles only |
+| `--type-item` | Card titles, `h3`–`h5`, compact headings inside a block |
+| `--type-feature` | Large in-section headlines (not a page title, not a card title) |
+| `--type-section` | Section titles (`h2`) |
+| `--type-article` | Article titles in the page header |
+| `--type-display` | Page `h1` when it uses the scale |
+
+HTML headings already map to this in `base.css`. Do not restyle an `h3` as `--type-feature` to make it bigger.
+
+**Outside the scale on purpose:** `--type-hero-title`, `--type-page-title`, `--type-marquee`, `--type-nav-title`. Footer uses `--type-footer-*`, which alias back onto `meta` / `ui` / `body`.
+
+**Controls:** `--type-ui` (filters, chrome), `--type-button` (solid buttons), `--type-pill-*` (aliases of `meta` / `ui` / `body`).
+
+**Weight:** only `--weight-light` (300), `--weight-regular` (400), `--weight-medium` (500). Anything heavier is faux bold.
+
+**Line and tracking:** use `--line-*` and `--tracking-*` for the same role (titles `--line-tight` / `--line-title`, body `--line-body`, kickers `--tracking-meta` / `--tracking-kicker`). Do not override a token at a breakpoint with a raw size; the fluid steps already scale.
+
 ---
 
 ## 7. External Dependencies & Config

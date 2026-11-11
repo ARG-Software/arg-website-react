@@ -1283,14 +1283,7 @@ main:focus {
 
 .related-article-card__tag {
   align-self: flex-start;
-  color: rgba(12, 0, 46, 0.6);
-  display: inline-flex;
-  font-family: Neuemontreal, sans-serif;
-  font-size: var(--type-meta);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-kicker-wide);
   margin-bottom: 1rem;
-  text-transform: uppercase;
 }
 
 .related-article-card h3 {

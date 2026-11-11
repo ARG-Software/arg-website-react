@@ -3,25 +3,13 @@ import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
 import { Pill } from '@ui/pills/Pill.jsx';
 import { trackBlogPostClick } from '@services/analytics';
 import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
+import { getBlogTagColor } from '@utils/blog/articleHelpers.js';
 import { SectionDivider } from '@ui/layout/SectionDivider.jsx';
 import HOMEPAGE from '../../../data/homePage.json';
 import IMAGE_SIZES from '@data/blogImageSizes.json';
 
 // One featured post plus four in the list beside it
 const BLOG_PROMO_LIST_COUNT = 4;
-
-function getTagColorStyle(tag) {
-  let hash = 0;
-  for (let i = 0; i < tag.length; i++) {
-    hash = tag.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const hue = Math.abs(hash) % 360;
-  return {
-    background: `hsla(${hue}, 50%, 55%, 0.12)`,
-    color: `hsl(${hue}, 55%, 72%)`,
-    border: `1px solid hsla(${hue}, 50%, 55%, 0.25)`,
-  };
-}
 
 /**
  * Title with the eyebrow pill on the right, the latest post as a large featured card and
@@ -83,7 +71,7 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
                 </div>
                 {/* Same tag and date line as the posts in the list */}
                 <div className="blog-promo_post-meta">
-                  <Pill variant="custom" size="xs" style={getTagColorStyle(featured.tag)}>
+                  <Pill variant="custom" size="xs" style={getBlogTagColor(featured.tag)}>
                     {featured.tag}
                   </Pill>
                   <span className="blog-promo_post-date">{featured.date}</span>
@@ -120,7 +108,7 @@ export function BlogPromoSection({ blogPosts, className = '', content = HOMEPAGE
                       </div>
                       <div className="blog-promo_post-body">
                         <div className="blog-promo_post-meta">
-                          <Pill variant="custom" size="xs" style={getTagColorStyle(post.tag)}>
+                          <Pill variant="custom" size="xs" style={getBlogTagColor(post.tag)}>
                             {post.tag}
                           </Pill>
                           <span className="blog-promo_post-date">{post.date}</span>

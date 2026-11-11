@@ -671,6 +671,19 @@
   display: none;
 }
 
+/* Touch: no mouse, so no lens to chase. Show the inside; tap still opens it. */
+@media (hover: none) {
+  .au-layers:not(.is-static) .au-layer--inside {
+    --r: 300rem;
+  }
+
+  .au-layers:not(.is-static) .au-lens,
+  .au-layers:not(.is-static) .au-lens-readout,
+  .au-layers:not(.is-static) .au-lens-hint {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .au-layer-grid {
     grid-template-columns: 1fr;

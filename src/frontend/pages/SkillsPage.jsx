@@ -11,6 +11,7 @@ import { PageHeader } from '@components/headers/PageHeader';
 import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { useFilterReveal } from '@ui/utils/useFilterReveal.js';
 import { Pill } from '@ui/pills/Pill.jsx';
+import { ChoiceFilter } from '@ui/filters/ChoiceFilter.jsx';
 import AppLink from '@components/navigation/AppLink';
 import data from '../data/skills.json';
 import SKILLS_PAGE from '../data/skillsPage.json';
@@ -110,19 +111,13 @@ export default function SkillsPage() {
             >
               <div className="container padding-global sk-inner">
                 <div className="sk-header">
-                  <div className="sk-filters">
-                    {categories.map(category => (
-                      <button
-                        key={category}
-                        type="button"
-                        className={`sk-filter-btn${activeCategory === category ? ' is-active' : ''}`}
-                        onClick={() => handleCategoryChange(category)}
-                        data-animate="fade-up"
-                      >
-                        {category}
-                      </button>
-                    ))}
-                  </div>
+                  <ChoiceFilter
+                    options={categories}
+                    value={activeCategory}
+                    onChange={handleCategoryChange}
+                    label="Filter skills by category"
+                    data-animate="fade-up"
+                  />
                 </div>
 
                 <div className="sk-grid" ref={gridRef}>

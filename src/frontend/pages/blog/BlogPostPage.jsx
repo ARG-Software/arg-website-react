@@ -18,6 +18,7 @@ import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { TransitionContext } from '../../providers/TransitionProvider';
 import { trackBlogPostShare, trackCTA, trackEvent, trackOutbound } from '@services/analytics';
 import {
+  getBlogTagColor,
   getHeadingId,
   getRelatedPosts,
   loadBlogPostsMetadata,
@@ -376,6 +377,7 @@ export default function BlogPostPage() {
                           padding="sm"
                           radius="lg"
                           hover="none"
+                          accentLine
                           trackEvent="blog_related_click"
                           trackData={{
                             blog_post_slug: post.slug,
@@ -383,7 +385,12 @@ export default function BlogPostPage() {
                             location: 'blog_related_carousel',
                           }}
                         >
-                          <Pill className="related-article-card__tag" variant="muted" size="xs">
+                          <Pill
+                            className="related-article-card__tag"
+                            variant="custom"
+                            size="xs"
+                            style={getBlogTagColor(post.tag)}
+                          >
                             {post.tag}
                           </Pill>
                           <h3>{post.title}</h3>

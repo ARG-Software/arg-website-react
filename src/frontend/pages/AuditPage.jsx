@@ -279,7 +279,7 @@ export default function AuditPage() {
                   </figure>
                 </div>
 
-                <SectionDivider className="au-divider" variant="light" />
+                <SectionDivider className="au-divider" variant="light" hideOnMobile={false} />
               </div>
             </section>
 
@@ -316,7 +316,7 @@ export default function AuditPage() {
                   />
                 </div>
 
-                <SectionDivider className="au-divider" variant="light" />
+                <SectionDivider className="au-divider" variant="light" hideOnMobile={false} />
               </div>
             </section>
 
@@ -412,7 +412,7 @@ export default function AuditPage() {
                   </ul>
                 </BaseCard>
 
-                <SectionDivider className="au-divider" variant="light" />
+                <SectionDivider className="au-divider" variant="light" hideOnMobile={false} />
               </div>
             </section>
 
@@ -567,7 +567,7 @@ export default function AuditPage() {
                   ))}
                 </ol>
 
-                <SectionDivider className="au-divider" variant="light" />
+                <SectionDivider className="au-divider" variant="light" hideOnMobile={false} />
               </div>
             </section>
 

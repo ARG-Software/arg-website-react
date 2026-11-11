@@ -150,7 +150,7 @@ export default function ArchitectureReviewPage() {
                   </BaseCard>
                 </div>
 
-                <SectionDivider className="au-divider" variant="light" />
+                <SectionDivider className="au-divider" variant="light" hideOnMobile={false} />
               </div>
             </section>
 

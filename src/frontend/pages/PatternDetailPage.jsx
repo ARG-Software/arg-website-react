@@ -9,8 +9,10 @@ import { ContactSection } from '@components/layout/ContactSection';
 import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { Pill } from '@ui/pills/Pill.jsx';
+import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
 import AppLink from '@components/navigation/AppLink';
 import { renderArticleBlock } from '@components/content/ArticleBlock';
+import { getHeadingId } from '@utils/blog/articleHelpers.js';
 import { loadBlogPostsMetadata } from '@utils/blog/articleLoader.js';
 import { loadPatterns } from '@utils/patternLoader';
 import PATTERNS_PAGE from '../data/patternsPage.json';
@@ -42,6 +44,12 @@ export default function PatternDetailPage() {
   ];
   const relatedPosts = BLOG_POSTS.filter(post => pattern.relatedPosts.includes(post.slug));
   const relatedPatterns = PATTERNS.filter(item => pattern.relatedPatterns.includes(item.slug));
+  const sideItems = pattern.content
+    .filter(block => block.type === 'heading')
+    .map(block => ({
+      label: block.text,
+      href: `#${getHeadingId(block.text)}`,
+    }));
 
   return (
     <>
@@ -60,6 +68,7 @@ export default function PatternDetailPage() {
             title={[pattern.title, pattern.category]}
             subtitle={pattern.subtitle}
             breadcrumbs={breadcrumbs}
+            sideItems={sideItems}
             size="small"
             variant="article bp-article-page-header"
           />
@@ -107,9 +116,13 @@ export default function PatternDetailPage() {
                       }))}
                     />
                   )}
-                  <RelatedLinks
-                    label={DETAIL.allPatternsLabel}
-                    items={[{ key: 'all', to: '/patterns/', title: DETAIL.allPatternsLink }]}
+                  <TextArrowButton
+                    as={AppLink}
+                    to="/patterns/"
+                    className="pa-aside-all"
+                    label={DETAIL.allPatternsLink}
+                    dark
+                    noWrap
                   />
                 </aside>
               </div>

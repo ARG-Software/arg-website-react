@@ -15,6 +15,20 @@ export function getBlogTags(posts) {
   ).sort();
 }
 
+export function getBlogTagColor(tag) {
+  const value = String(tag || '');
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = value.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash) % 360;
+  return {
+    background: `hsla(${hue}, 50%, 55%, 0.12)`,
+    color: `hsl(${hue}, 55%, 72%)`,
+    border: `1px solid hsla(${hue}, 50%, 55%, 0.25)`,
+  };
+}
+
 export function getBlogCollections(posts) {
   return Array.from(new Set(posts.map(article => article.collectionTitle).filter(Boolean))).sort();
 }

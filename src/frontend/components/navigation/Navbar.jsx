@@ -5,6 +5,7 @@ import { Logo } from '../icons/Logo';
 import { trackCTA } from '@services/analytics';
 import { LenisContext } from '../../providers/LenisProvider';
 import { NAV_SCROLL_THRESHOLD } from '@constants/config';
+import { isTablet } from '@utils/helpers';
 import { NavMenu } from './NavMenu';
 import { getProjectBookingLink } from '../../services/linksService';
 
@@ -83,7 +84,7 @@ export function Navbar({ variant = 'transparent', position = 'absolute' }) {
 
   // Mobile check
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 991);
+    const checkMobile = () => setIsMobile(isTablet());
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);

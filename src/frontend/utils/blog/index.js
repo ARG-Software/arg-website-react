@@ -10,6 +10,7 @@ export {
 export {
   getBlogCollections,
   getBlogTags,
+  getBlogTagColor,
   getHeadingId,
   getRelatedPosts,
   parseBlogDate,

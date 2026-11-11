@@ -1634,6 +1634,10 @@
   margin-bottom: 1.5rem;
 }
 
+.faq_toolbar .choice-filter {
+  min-width: 0;
+}
+
 .faq_toolbar-video {
   flex-shrink: 0;
 }
@@ -1773,52 +1777,6 @@
 .faq_film-close:hover,
 .faq_film-close:focus-visible {
   border-color: var(--arg-color-magenta);
-}
-
-/* Topic filter: the row wraps as a whole, a pill never breaks its label */
-.faq_topic-select {
-  display: none;
-}
-
-.faq_topics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.faq_topic {
-  align-items: center;
-  background: none;
-  border: 0.0625rem solid var(--arg-color-border);
-  border-radius: 100vw;
-  color: var(--arg-color-muted);
-  cursor: pointer;
-  display: inline-flex;
-  font-family: inherit;
-  font-size: var(--type-body);
-  height: 2.5rem;
-  padding: 0 1.125rem;
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    color 0.3s ease;
-  white-space: nowrap;
-}
-
-.faq_topic:hover {
-  border-color: var(--arg-color-ink);
-  color: var(--arg-color-ink);
-}
-
-.faq_topic.is-active {
-  background-color: var(--arg-color-ink);
-  border-color: var(--arg-color-ink);
-  color: #fff;
-}
-
-.faq_topic:focus-visible {
-  outline: 0.125rem solid var(--arg-color-magenta);
-  outline-offset: 0.125rem;
 }
 
 /* Question list: a hairline above each row, the last one closed by the list's own line. The
@@ -2041,26 +1999,6 @@
 
 /* Phones: the film sits under the title, above the filters, and the number column narrows */
 @media screen and (max-width: 43.75rem) {
-  .faq_topics {
-    display: none;
-  }
-
-  .faq_topic-select {
-    appearance: none;
-    background: #fff
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%230c002e' d='M1 1l5 5 5-5'/%3E%3C/svg%3E")
-      no-repeat right 1rem center;
-    border: 0.0625rem solid var(--arg-color-border);
-    border-radius: 100vw;
-    color: var(--arg-color-ink);
-    display: block;
-    font-family: inherit;
-    font-size: var(--type-ui);
-    height: 2.75rem;
-    padding: 0 2.5rem 0 1.125rem;
-    width: 100%;
-  }
-
   .faq_toolbar {
     align-items: flex-start;
     flex-direction: column;

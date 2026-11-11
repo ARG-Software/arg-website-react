@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
 import assistantContent from '@data/assistant.json';
 import { getProjectBookingLink } from '@services/linksService';
-import { prefersReducedMotion } from '@utils/helpers';
+import { isMobile, prefersReducedMotion } from '@utils/helpers';
 
 const TYPING_STEP_MS = 35;
 
 // Gaspar's speech bubble: types its offer next to the trigger instead of opening the whole chat
 export function AssistantNudge({ onChat, onMeeting, onClose }) {
-  const { message: desktopMessage, mobileMessage, chatLabel, meetingLabel, closeLabel } =
-    assistantContent.nudge;
-  const [isPhone] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
-  );
+  const {
+    message: desktopMessage,
+    mobileMessage,
+    chatLabel,
+    meetingLabel,
+    closeLabel,
+  } = assistantContent.nudge;
+  const [isPhone] = useState(() => typeof window !== 'undefined' && isMobile());
   const message = isPhone ? mobileMessage : desktopMessage;
   const [typedLength, setTypedLength] = useState(() =>
     prefersReducedMotion() ? message.length : 0

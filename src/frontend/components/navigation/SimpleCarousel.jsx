@@ -1,15 +1,15 @@
 import { startTransition, useEffect, useRef, useState } from 'react';
+import { useSwipe } from '@ui/utils/useSwipe.js';
+import { isMobile, isTablet } from '@utils/helpers';
 
 const DEFAULT_TRANSITION_DELAY_MS = 360;
 const DEFAULT_ARIA_LABEL = 'Carousel';
 const DEFAULT_PREV_ARIA_LABEL = 'Show previous items';
 const DEFAULT_NEXT_ARIA_LABEL = 'Show next items';
-const MOBILE_MEDIA_QUERY = '(max-width: 767px)';
-const TABLET_MEDIA_QUERY = '(max-width: 991px)';
 
-function getBreakpoint(isMobile, isTablet) {
-  if (isMobile) return 'mobile';
-  if (isTablet) return 'tablet';
+function getBreakpoint() {
+  if (isMobile()) return 'mobile';
+  if (isTablet()) return 'tablet';
   return 'desktop';
 }
 
@@ -46,30 +46,13 @@ export function SimpleCarousel({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [breakpoint, setBreakpoint] = useState('desktop');
   const transitionTimer = useRef(null);
+  const swipeRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return undefined;
-    const mobileMql = window.matchMedia(MOBILE_MEDIA_QUERY);
-    const tabletMql = window.matchMedia(TABLET_MEDIA_QUERY);
-    const update = () => {
-      setBreakpoint(getBreakpoint(mobileMql.matches, tabletMql.matches && !mobileMql.matches));
-    };
+    const update = () => setBreakpoint(getBreakpoint());
     update();
-    const handleChange = () => update();
-    if (typeof mobileMql.addEventListener === 'function') {
-      mobileMql.addEventListener('change', handleChange);
-      tabletMql.addEventListener('change', handleChange);
-      return () => {
-        mobileMql.removeEventListener('change', handleChange);
-        tabletMql.removeEventListener('change', handleChange);
-      };
-    }
-    mobileMql.addListener(handleChange);
-    tabletMql.addListener(handleChange);
-    return () => {
-      mobileMql.removeListener(handleChange);
-      tabletMql.removeListener(handleChange);
-    };
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
   }, []);
 
   useEffect(
@@ -82,21 +65,15 @@ export function SimpleCarousel({
     []
   );
 
-  if (!items.length || typeof renderItem !== 'function') return null;
-
   const perPage = getEffectivePageSize(
     itemsPerPage,
     tabletItemsPerPage,
     mobileItemsPerPage,
     breakpoint
   );
-  const safePerPage = Math.max(1, Math.min(items.length, perPage));
-  const pageCount = Math.max(1, Math.ceil(items.length / safePerPage));
+  const safePerPage = Math.max(1, Math.min(Math.max(items.length, 1), perPage));
+  const pageCount = Math.max(1, Math.ceil(Math.max(items.length, 1) / safePerPage));
   const safePageIndex = activeIndex >= pageCount ? 0 : activeIndex;
-  const pageStart = safePageIndex * safePerPage;
-  const pageItems = items.slice(pageStart, pageStart + safePerPage);
-  const canGoPrevious = safePageIndex > 0;
-  const canGoNext = safePageIndex < pageCount - 1 || hasMore;
 
   const navigate = direction => {
     if (isTransitioning) return;
@@ -134,6 +111,22 @@ export function SimpleCarousel({
     }, transitionDelayMs);
   };
 
+  useSwipe(swipeRef, navigate, {
+    canMove: delta => {
+      if (isTransitioning) return false;
+      const next = safePageIndex + delta;
+      if (next >= 0 && next < pageCount) return true;
+      return delta > 0 && hasMore;
+    },
+  });
+
+  if (!items.length || typeof renderItem !== 'function') return null;
+
+  const pageStart = safePageIndex * safePerPage;
+  const pageItems = items.slice(pageStart, pageStart + safePerPage);
+  const canGoPrevious = safePageIndex > 0;
+  const canGoNext = safePageIndex < pageCount - 1 || hasMore;
+
   const wrapperClassName = ['simple-carousel', className].filter(Boolean).join(' ');
   const showControls = pageCount > 1 || hasMore;
   const trackKey = pageItems.map((item, i) =>
@@ -142,6 +135,7 @@ export function SimpleCarousel({
 
   return (
     <div
+      ref={swipeRef}
       className={wrapperClassName}
       role="region"
       aria-roledescription="carousel"

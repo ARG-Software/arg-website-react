@@ -680,7 +680,13 @@
 
   .blp-grid {
     grid-template-columns: minmax(0, 1fr);
-    row-gap: 2.5rem;
+    row-gap: 0;
+  }
+
+  .blp-card:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2.5rem;
   }
 
   .blp-card-title,
@@ -989,7 +995,7 @@
 .bp-code-wrap pre {
   background: #1a1a2e !important;
   color: #d7deea;
-  font-size: 0.8125rem;
+  font-size: var(--type-meta);
   line-height: 1.75;
   margin: 0;
   padding: 1.5rem 1.25rem;
@@ -1007,7 +1013,7 @@
   color: rgba(215, 222, 234, 0.3);
   flex-shrink: 0;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 0.8125rem;
+  font-size: var(--type-meta);
   line-height: 1.75;
   margin: 0 !important;
   padding: 1.5rem 0.75rem 1.5rem 1.25rem !important;
@@ -1153,7 +1159,7 @@
   .bp-code-wrap pre,
   .bp-code-pre,
   .bp-code-code {
-    font-size: 0.75rem;
+    font-size: var(--type-meta);
   }
 
   .bp-code-wrap pre,

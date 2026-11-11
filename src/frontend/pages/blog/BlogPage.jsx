@@ -8,6 +8,7 @@ import { SEO } from '@components/seo/SEO';
 import { PageHeader } from '@components/headers/PageHeader';
 import { BlogSidebar } from '@components/navigation/BlogSidebar';
 import { Pagination } from '@ui/navigation/Pagination.jsx';
+import { Pill } from '@ui/pills/Pill.jsx';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useBlogSearch } from '@hooks/useBlogSearch';
@@ -17,6 +18,7 @@ import { trackBlogPostClick, trackCTA, trackEvent } from '@services/analytics';
 import {
   getBlogCollections,
   getBlogTags,
+  getBlogTagColor,
   loadBlogPostsMetadata,
   sortByCollectionPart,
 } from '@utils/blog';
@@ -257,7 +259,15 @@ export default function BlogPage() {
                                   {featured ? (
                                     <span className="blp-badge blp-badge--featured">Featured</span>
                                   ) : null}
-                                  {tags[0] ? <span className="blp-badge">{tags[0]}</span> : null}
+                                  {tags[0] ? (
+                                    <Pill
+                                      variant="custom"
+                                      size="xs"
+                                      style={getBlogTagColor(tags[0])}
+                                    >
+                                      {tags[0]}
+                                    </Pill>
+                                  ) : null}
                                   {article.collectionTitle ? (
                                     <span className="blp-badge blp-badge--collection">
                                       {article.collectionTitle}
