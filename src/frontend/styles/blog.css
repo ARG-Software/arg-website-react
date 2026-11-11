@@ -638,6 +638,20 @@
   }
 }
 
+/* Tablet: the column still runs the list's length so the panel stays pinned, but the soft frame moves onto the panel and travels with it */
+@media screen and (min-width: 769px) and (max-width: 1100px) {
+  .blp-sidebar {
+    background: transparent;
+  }
+
+  .blp-panel {
+    box-shadow:
+      0 0 0 var(--blp-sidebar-inset) var(--blp-soft),
+      0 0.0625rem 0 rgba(10, 5, 50, 0.04),
+      0 1.25rem 2.5rem -1.5rem rgba(10, 5, 50, 0.18);
+  }
+}
+
 @media screen and (max-width: 768px) {
   /* The sidebar frame collapses on phones, so the feed loses its inset too */
   .blp-inner {
