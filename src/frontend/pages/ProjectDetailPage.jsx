@@ -18,7 +18,7 @@ import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
 import { trackCTA, trackEvent } from '@services/analytics';
 import { TransitionContext } from '@providers/TransitionProvider';
-import { isMobile } from '@utils/helpers';
+
 import { buildProjectSchema } from '@utils/structuredData';
 import { getProjectGallery } from '@constants/projectGallery';
 import { getProjectBriefFormLink } from '@services/linksService';
@@ -113,8 +113,8 @@ export default function ProjectDetailPage() {
       trackEvent('project_carousel_open', { from_project: slug, to_project: target.slug });
 
       const rect = image?.getBoundingClientRect();
-      if (!rect || isMobile()) {
-        go(`/projects/${target.slug}`, { scrollMode: 'top' });
+      if (!rect) {
+        go(`/projects/${target.slug}`, { scrollMode: 'top', transition: 'page' });
         return;
       }
 

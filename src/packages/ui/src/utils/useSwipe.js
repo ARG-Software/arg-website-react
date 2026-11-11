@@ -36,8 +36,10 @@ export function useSwipe(ref, onSwipe, { axis = 'x', threshold = 40, canMove } =
       const dy = touch.clientY - startY;
       const primary = axis === 'x' ? dx : dy;
       const secondary = axis === 'x' ? dy : dx;
-      if (locked == null && (Math.abs(primary) > 8 || Math.abs(secondary) > 8)) {
-        locked = Math.abs(primary) > Math.abs(secondary) ? axis : 'other';
+      const along = Math.abs(primary);
+      const across = Math.abs(secondary);
+      if (locked == null && (along > 12 || across > 12)) {
+        locked = along > across * 1.5 ? axis : 'other';
       }
       if (locked !== axis) return;
       const delta = primary < 0 ? 1 : -1;
