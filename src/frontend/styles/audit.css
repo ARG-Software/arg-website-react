@@ -1161,7 +1161,17 @@
   }
 
   .au-arch .au-panels {
-    order: 1;
+    display: block;
+    order: 2;
+  }
+
+  .au-arch .au-panel {
+    display: none;
+    grid-area: auto;
+  }
+
+  .au-arch .au-panel.is-active {
+    display: block;
   }
 
   .au-arch .au-tabs-pager {
@@ -1184,7 +1194,7 @@
 
   .au-arch .au-shot {
     margin-top: 1.5rem;
-    order: 2;
+    order: 1;
   }
 
   .au-arch .au-stores,
