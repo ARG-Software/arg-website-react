@@ -6,7 +6,8 @@
   "hero": {
     "title": ["The skills we use", "to ship production work."],
     "subtitle": "Playbooks we give coding assistants so they work the way ARG does.",
-    "detailTitleLine": "for Claude Code, Cursor, OpenCode and Copilot.",
+    "detailTitleLine": "for coding agents.",
+    "detailSubtitle": "Works with Claude Code, Cursor, OpenCode, Codex and GitHub Copilot.",
     "breadcrumbs": [
       { "label": "Home", "path": "/" },
       { "label": "AI Skills", "path": "/skills/" }

@@ -82,6 +82,7 @@ export function buildSkillStaticContent(skill, relatedLinks = []) {
             <div class="heading_line"><span class="page-header__heading-line">${escapeHtml(skill.title)}</span></div>
             <div class="heading_line"><span class="page-header__heading-line text-color-gradiant">${escapeHtml(detailTitleLine)}</span></div>
           </h1>
+          <p class="page-header__subtitle">${escapeHtml(SKILLS_PAGE.hero.detailSubtitle)}</p>
         </div>
       </div>
     </header>
