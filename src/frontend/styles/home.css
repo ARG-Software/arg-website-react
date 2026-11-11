@@ -2076,11 +2076,13 @@
   text-decoration: none;
 }
 
-/* A low, wide image keeps the weight on the title and excerpt below it */
+/* A low, wide image keeps the weight on the title and excerpt below it. When the list is the
+   taller column, the image grows into the spare height so both columns end on the same line */
 .blog-promo_featured-media {
   aspect-ratio: 21 / 9;
   background: #160046;
   border-radius: 1.5rem;
+  flex-grow: 1;
   margin-bottom: 0.25rem;
   overflow: hidden;
 }
