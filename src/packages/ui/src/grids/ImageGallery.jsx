@@ -17,6 +17,15 @@ function getImageSrcSet(image) {
   return image?.thumbSrcSet ?? image?.srcSet;
 }
 
+// Same sizes and srcset as the lightbox <img>, so the browser picks the same file and the lightbox finds it cached
+function preloadImage(image) {
+  if (!image?.src) return;
+  const img = new Image();
+  img.sizes = '100vw';
+  if (image.srcSet) img.srcset = image.srcSet;
+  img.src = image.src;
+}
+
 function GalleryImage({ image, index, onOpen }) {
   const caption = getCaption(image);
   const src = getImageSource(image);
@@ -52,6 +61,7 @@ function GalleryImage({ image, index, onOpen }) {
 
 export function ImageGallery({ images = [], className = '' }) {
   const [open, setOpen] = useState(-1);
+  const rootRef = useRef(null);
   const closeButtonRef = useRef(null);
   const touchStartRef = useRef(null);
   const isOpen = open >= 0 && open < images.length;
@@ -63,8 +73,41 @@ export function ImageGallery({ images = [], className = '' }) {
 
   const close = () => setOpen(-1);
 
+  // Fetch the lightbox-size images once the gallery is near the screen and the browser is idle
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !images.length || navigator.connection?.saveData) return undefined;
+
+    let idleId = null;
+    let timeoutId = null;
+    const preloadAll = () => images.forEach(preloadImage);
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (!entries.some(entry => entry.isIntersecting)) return;
+        observer.disconnect();
+        if ('requestIdleCallback' in window) {
+          idleId = window.requestIdleCallback(preloadAll);
+        } else {
+          timeoutId = window.setTimeout(preloadAll, 200);
+        }
+      },
+      { rootMargin: '50% 0px' }
+    );
+    observer.observe(root);
+
+    return () => {
+      observer.disconnect();
+      if (idleId !== null) window.cancelIdleCallback(idleId);
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
+    };
+  }, [images]);
+
   useEffect(() => {
     if (!isOpen) return undefined;
+
+    preloadImage(images[getWrappedIndex(open + 1, images.length)]);
+    preloadImage(images[getWrappedIndex(open - 1, images.length)]);
 
     const handleKeyDown = event => {
       if (event.key === 'Escape') {
@@ -82,7 +125,7 @@ export function ImageGallery({ images = [], className = '' }) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [images.length, isOpen, open]);
+  }, [images, isOpen, open]);
 
   if (!images.length) return null;
 
@@ -91,7 +134,7 @@ export function ImageGallery({ images = [], className = '' }) {
   const openCaption = getCaption(openImage);
 
   return (
-    <div className={rootClassName}>
+    <div ref={rootRef} className={rootClassName}>
       <div className="prp-image-gallery__mosaic">
         {images.map((image, index) => (
           <GalleryImage
