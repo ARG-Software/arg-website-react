@@ -4913,7 +4913,8 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   z-index: 3;
 }
 
-/* The selected project's image, crossfading and slowly zooming behind the section */
+/* The selected project's image, crossfading and slowly zooming behind the section. The zoom
+   pauses when another project is picked, so the old image fades out at the size it had */
 .ucc-bg {
   inset: 0;
   opacity: 0;
@@ -4934,12 +4935,12 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .ucc-bg-img {
   height: 100%;
   object-fit: cover;
-  transform: scale(1.28);
+  animation: ucc-zoom 6s linear both paused;
   width: 100%;
 }
 
 .ucc-bg.is-active .ucc-bg-img {
-  animation: ucc-zoom 6s linear both;
+  animation-play-state: running;
 }
 
 /* White wash: the photo shows through in the middle and fades to solid white at the
@@ -5204,10 +5205,14 @@ body:has(.prp-image-gallery__lightbox.is-open) {
     transition: none;
   }
 
-  .ucc-bg.is-active .ucc-bg-img,
+  .ucc-bg-img,
   .ucc-title-line,
   .ucc-credit,
   .ucc-meta li {
     animation: none;
+  }
+
+  .ucc-bg-img {
+    transform: scale(1.28);
   }
 }
