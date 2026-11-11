@@ -341,6 +341,9 @@
 
 .admin-data-table__scroll {
   overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y;
 }
 
 .admin-data-table__loading {
@@ -3149,9 +3152,12 @@ body:has(.prp-image-gallery__lightbox.is-open) {
   .tag-filter__pills {
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
     padding-bottom: 0.25rem;
     scroll-snap-type: x proximity;
     scrollbar-width: none;
+    touch-action: pan-x pan-y;
   }
 
   .tag-filter__pills::-webkit-scrollbar {
