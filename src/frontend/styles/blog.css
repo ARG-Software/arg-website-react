@@ -570,9 +570,10 @@
   transform: rotate(-45deg) translateX(0.25rem);
 }
 
-/* Feature: image on the left, the article beside it, across both columns */
+/* Feature: image on the left, the article beside it, across both columns.
+   The photo fills the text height and grows with the copy instead of keeping its own ratio. */
 .blp-card--featured {
-  align-items: center;
+  align-items: stretch;
   column-gap: 2rem;
   display: grid;
   grid-column: 1 / -1;
@@ -580,11 +581,11 @@
 }
 
 .blp-card--featured .blp-card-image {
-  aspect-ratio: 16 / 10;
+  aspect-ratio: auto;
+  height: 100%;
+  min-height: 16rem;
 }
 
-/* No vertical padding, so the text stays shorter than the image and the image starts level
-   with the filter panel */
 .blp-card--featured .blp-card-body {
   padding: 0;
 }
@@ -628,9 +629,16 @@
     font-size: var(--type-feature);
   }
 
-  /* The feature stacks while the column is narrow beside the sidebar */
+  /* The feature stacks while the column is narrow beside the sidebar.
+     Same ratio as the other cards, so the photo does not jump to a full-width 16:10. */
   .blp-card--featured {
     display: flex;
+  }
+
+  .blp-card--featured .blp-card-image {
+    aspect-ratio: 1.9 / 1;
+    height: auto;
+    min-height: 0;
   }
 
   .blp-card--featured .blp-card-body {
