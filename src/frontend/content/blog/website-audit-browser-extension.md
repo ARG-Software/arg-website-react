@@ -72,7 +72,7 @@ Instead of throwing mysterious error codes at you, it tells you what's wrong, wh
 
 You can even copy a finding and send it straight to your developer as a task, or [send us the report to review](/audit/).
 
-![Arg Architect free website health check browser extension](/images/blog/website-audit-browser-extension/website-audit-browser-extension-header.webp)
+![Arg Architect report window with a score of 87 and a checkmark, a free extension for security and performance checks](/images/blog/website-audit-browser-extension/website-audit-browser-extension-header.webp)
 
 ![Arg Architect website health check report overview](/images/blog/website-audit-browser-extension/arg-architect-audit-overview.webp)
 

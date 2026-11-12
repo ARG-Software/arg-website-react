@@ -21,7 +21,7 @@ collectionPart: 4
 ---
 Part 4 of “Building Gaspar - Anatomy of a Business AI Assistant”
 
-![Part 4: Guardrails as Architecture: How We Stopped Our Chatbot from Lying About Us](/images/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us-header.webp)
+![Shield around a chat bubble for LLM guardrails: prompt filters, policies and evaluation that stop chatbot hallucinations](/images/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us-header.webp)
 
 Here’s the story of how one harmless little phrase in our website copy accidentally created a false claim about our technology stack.
 

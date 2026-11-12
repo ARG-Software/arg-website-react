@@ -17,7 +17,7 @@ readTime: 9 min read
 mediumUrl: https://arg-software.medium.com/testcontainers-best-practices-for-nestjs-integration-testing
 ---
 
-![Testcontainers Best Practices for NestJS Integration Testing](/images/blog/testcontainers-best-practices-nestjs/testcontainers-best-practices-nestjs-header.webp)
+![Testcontainers, NestJS and Docker logos for integration tests against real PostgreSQL and Redis containers, not mocks](/images/blog/testcontainers-best-practices-nestjs/testcontainers-best-practices-nestjs-header.webp)
 
 Integration tests with Testcontainers are powerful - but they can quickly become a maintenance nightmare if you don't follow the right patterns. We've seen teams struggle with flaky tests, slow test suites, and configuration headaches that could have been avoided with better practices from the start. Today, we'll show you the patterns that make Testcontainers tests in NestJS reliable, fast, and easy to maintain.
 

@@ -16,7 +16,7 @@ reviewedOn: September 20, 2026
 readTime: 7 min read
 mediumUrl: https://medium.com/@arg-software/the-stack-nobody-hypes-but-serious-ctos-keep-choosing-e56314281663
 ---
-![The Stack Nobody Hypes, but Serious CTOs Keep Choosing](/images/blog/the-stack-nobody-hypes-but-serious-ctos-keep-choosing/the-stack-nobody-hypes-but-serious-ctos-keep-choosing-header.webp)
+![.NET logo above the word CTO with React, Go, Python and Rust around it, comparing backend stacks for long-lived systems](/images/blog/the-stack-nobody-hypes-but-serious-ctos-keep-choosing/the-stack-nobody-hypes-but-serious-ctos-keep-choosing-header.webp)
 
 There is a question that comes up regularly during architecture discussions:
 

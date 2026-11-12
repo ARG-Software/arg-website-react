@@ -17,7 +17,7 @@ readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/typescript-7-rewritten-in-go
 ---
 
-![TypeScript 7.0 rewritten in Go](/images/blog/typescript-7-rewritten-in-go/typescript-7-rewritten-in-go-header.webp)
+![TypeScript 7 compiler arrow pointing to the Go logo, the native port that makes type checking and builds much faster](/images/blog/typescript-7-rewritten-in-go/typescript-7-rewritten-in-go-header.webp)
 
 If you're a TypeScript developer, the biggest compiler shift in the project's history has landed. [TypeScript 7.0 shipped on July 8, 2026](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) as the stable native port of the compiler and language service to Go. TypeScript 6.0 is the final release from the JavaScript codebase, while TypeScript 7 is now the current `typescript` package on npm.
 

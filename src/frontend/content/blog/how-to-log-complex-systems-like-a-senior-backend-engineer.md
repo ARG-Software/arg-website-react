@@ -18,7 +18,7 @@ mediumUrl: https://medium.com/p/69d43f3adc36
 ---
 Request IDs, trace context, AsyncLocalStorage, and honest error handling (Express.js + TypeScript)
 
-![How to Log Complex Systems Like a Senior Backend Engineer](/images/blog/how-to-log-complex-systems-like-a-senior-backend-engineer/how-to-log-complex-systems-like-a-senior-backend-engineer-header.webp)
+![Structured log lines from API, worker and scheduler services flowing through a log pipeline into search and alerts](/images/blog/how-to-log-complex-systems-like-a-senior-backend-engineer/how-to-log-complex-systems-like-a-senior-backend-engineer-header.webp)
 
 Production bugs never happen in a quiet room. Ten users click at once, a background job runs, one query is slow, an external API throws an error, and your logs look like this:
 

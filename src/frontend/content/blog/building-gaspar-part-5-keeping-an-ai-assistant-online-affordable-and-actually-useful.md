@@ -23,7 +23,7 @@ Part 5 of “Building Gaspar - Anatomy of a Business AI Assistant”
 
 Previous: [Part 4 - “Guardrails as Architecture: How We Stopped Our Chatbot from Lying About Us”](https://arg.software/blog/building-gaspar-part-4-guardrails-as-architecture-how-we-stopped-our-chatbot-from-lying-about-us/)
 
-![Part 5: Keeping an AI Assistant Online, Affordable, and Actually Useful](/images/blog/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful-header.webp)
+![Gaspar robot with a heartbeat line and a price tag, about AI chatbot uptime, rate limiting and LLM API cost control](/images/blog/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful/building-gaspar-part-5-keeping-an-ai-assistant-online-affordable-and-actually-useful-header.webp)
 
 Building an AI assistant is one challenge. Keeping it running smoothly, cheap to operate, and genuinely helpful once it is live? That is a different game.
 

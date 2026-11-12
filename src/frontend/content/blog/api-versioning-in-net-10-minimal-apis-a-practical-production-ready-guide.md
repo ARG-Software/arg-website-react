@@ -18,7 +18,7 @@ readTime: 13 min read
 
 Implement API versioning in .NET 10 Minimal APIs without hiding contract decisions behind framework defaults.
 
-![API Versioning in .NET 10 Minimal APIs: A Practical, Production-Ready Guide](/images/blog/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide-header.webp)
+![URL path versioning in ASP.NET Core: /api/v1, v2 and v3 product routes climbing a release and deprecation timeline](/images/blog/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide/api-versioning-in-net-10-minimal-apis-a-practical-production-ready-guide-header.webp)
 
 A field rename, changed status code, or stricter validation rule can break mobile apps, dashboards, and partner integrations even when the server deployment itself succeeds.
 

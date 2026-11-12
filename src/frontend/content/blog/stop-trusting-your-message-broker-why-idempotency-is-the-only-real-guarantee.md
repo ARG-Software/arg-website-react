@@ -17,7 +17,7 @@ readTime: 8 min read
 ---
 A practical look at what actually keeps event-driven systems correct.
 
-![Stop Trusting Your Message Broker: Why Idempotency Is a Core Safety Net](/images/blog/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee-header.webp)
+![Two duplicate MSG envelopes merging into a single result, idempotent message handling for at-least-once delivery](/images/blog/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee/stop-trusting-your-message-broker-why-idempotency-is-the-only-real-guarantee-header.webp)
 
 If you have ever debugged why a customer got charged twice, or why an order shipped before payment was captured, the lesson is familiar: a broker guarantee is narrower than an end-to-end business guarantee. Ordering is one property teams chase. Idempotency is a core safety net, but it is not a substitute for durability, atomic publication, concurrency control, or workflow invariants.
 

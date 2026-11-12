@@ -16,7 +16,7 @@ reviewedOn: September 20, 2026
 readTime: 7 min read
 mediumUrl: https://medium.com/p/87a8fa093119
 ---
-![DateTime Mistakes That Are Silently Breaking Your C# App](/images/blog/datetime-mistakes-that-are-silently-breaking-your-csharp-app/datetime-mistakes-that-are-silently-breaking-your-csharp-app-header.webp)
+![Clock shattering into a calendar over UTC and .NET labels, about time zone and DateTimeOffset bugs in C# applications](/images/blog/datetime-mistakes-that-are-silently-breaking-your-csharp-app/datetime-mistakes-that-are-silently-breaking-your-csharp-app-header.webp)
 
 There’s a special kind of bug report that says, “The timestamp is off by a few hours, but only for some users, and only sometimes.”
 

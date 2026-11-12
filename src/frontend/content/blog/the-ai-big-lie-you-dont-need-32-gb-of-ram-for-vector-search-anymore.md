@@ -15,7 +15,7 @@ dateModified: October 28, 2026
 reviewedOn: September 19, 2026
 readTime: 7 min read
 ---
-![TurboQuant and TurboVec reduce local vector search memory when the math and benchmarks match your workload](/images/blog/the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore/the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore-header.webp)
+![RAM with 32 GB crossed out next to vector search, quantized embeddings that shrink memory for local semantic search](/images/blog/the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore/the-ai-big-lie-you-dont-need-32-gb-of-ram-for-vector-search-anymore-header.webp)
 
 Local RAG and semantic search have a boring but expensive problem: embeddings are large.
 

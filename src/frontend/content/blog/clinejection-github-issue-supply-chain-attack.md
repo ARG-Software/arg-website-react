@@ -17,7 +17,7 @@ readTime: 6 min read
 mediumUrl: https://arg-software.medium.com/clinejection-how-a-simple-github-issue-could-have-hijacked-5-million-developer-machines-6dfafd6939b5
 ---
 
-![Clinejection exposed Cline's release pipeline through a GitHub issue](/images/blog/clinejection-how-a-simple-github-issue/clinejection-how-a-simple-github-issue-header.webp)
+![GitHub issue feeding packages down a conveyor belt broken by a corrupted block, a prompt injection supply chain attack](/images/blog/clinejection-how-a-simple-github-issue/clinejection-how-a-simple-github-issue-header.webp)
 
 In February 2026, security researcher Adnan Khan disclosed a path from a prompt-injected GitHub issue to Cline's release credentials. The attack joined two risks that are dangerous on their own: an AI agent processing untrusted text with command execution, and privileged publishing workflows consuming shared build caches.
 

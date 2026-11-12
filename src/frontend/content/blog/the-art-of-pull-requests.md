@@ -17,7 +17,7 @@ readTime: 6 min read
 mediumUrl: https://arg-software.medium.com/the-art-of-pull-requests-how-to-ship-faster-without-sacrificing-quality-55209d645bb1
 ---
 
-![The Art of Pull Requests](/images/blog/the-art-of-pull-requests/the-art-of-pull-requests-header.webp)
+![Feature branches merging into a stronger main branch, small and stacked pull requests that are faster to review](/images/blog/the-art-of-pull-requests/the-art-of-pull-requests-header.webp)
 
 In our review work, easy-to-review pull requests tend to move faster. The engineers who sustain that flow are not necessarily the cleverest coders; they have mastered the art of making their changes understandable.
 

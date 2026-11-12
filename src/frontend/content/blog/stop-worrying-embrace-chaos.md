@@ -17,7 +17,7 @@ readTime: 5 min read
 mediumUrl: https://arg-software.medium.com/how-i-learned-to-stop-worrying-and-embrace-the-chaos-spoiler-i-didnt-54533117938c
 ---
 
-![Chaos engineering: stop worrying and keep the system healthy](/images/blog/how-i-learned-to-stop-worrying/how-i-learned-to-stop-worrying-header.webp)
+![Chaos toggle switched on next to a Healthy badge, chaos engineering experiments that keep production systems resilient](/images/blog/how-i-learned-to-stop-worrying/how-i-learned-to-stop-worrying-header.webp)
 
 Fifteen years in this industry taught me one thing: we're exceptional at creating expensive problems disguised as innovative solutions.
 

@@ -17,7 +17,7 @@ readTime: 10 min read
 mediumUrl: https://medium.com/p/0a1f8425e64c
 ---
 
-![LLM conversation history reconstructed inside a context window](/images/blog/llms-dont-remember-anything/llms-dont-remember-anything-header.webp)
+![Chat history and retrieved documents packed into one context window sent to an LLM, why chatbots have no real memory](/images/blog/llms-dont-remember-anything/llms-dont-remember-anything-header.webp)
 
 Ask a large language model a follow-up question twenty messages into a conversation, and it may answer as if it has been tracking the whole exchange. Share a long document, refer to an early section later, and a capable product may pick the thread back up. It feels like memory.
 

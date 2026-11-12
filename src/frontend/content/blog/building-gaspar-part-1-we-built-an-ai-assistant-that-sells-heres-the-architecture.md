@@ -19,7 +19,7 @@ collection: building-gaspar
 collectionTitle: Building Gaspar - Anatomy of a Business AI Assistant
 collectionPart: 1
 ---
-![Part 1: We Built an AI Assistant That Sells. Here’s the Architecture.](/images/blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture-header.webp)
+![Gaspar AI sales assistant chat bubble wired to knowledge, tools, actions and results blocks in a RAG chatbot design](/images/blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture-header.webp)
 
 Part 1 of 5: “Building Gaspar - Anatomy of a Business AI Assistant”
 

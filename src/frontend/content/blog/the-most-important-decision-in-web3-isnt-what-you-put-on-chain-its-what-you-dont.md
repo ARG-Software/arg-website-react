@@ -7,7 +7,7 @@ authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Web3
 tags: Web3, Architecture, Security
-title: The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t
+title: The Most Important Decision in Web3 Isn’t What You Put On-Chain - It’s What You Don’t
 subtitle: On-chain vs off-chain: how to decide what belongs on the blockchain in Web3 architecture to balance trust, cost, latency, UX, and verifiability.
 intro: On-chain vs off-chain: how to decide what belongs on the blockchain in Web3 architecture to balance trust, cost, latency, UX, and verifiability.
 date: May 5, 2026
@@ -15,7 +15,7 @@ dateModified: October 28, 2026
 reviewedOn: September 20, 2026
 readTime: 9 min read
 ---
-![The Most Important Decision in Web3 Isn’t What You Put On-Chain — It’s What You Don’t](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont-header.webp)
+![Large off-chain circle beside a small on-chain marker, deciding which data a Web3 app stores on the blockchain](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont-header.webp)
 
 Web3 products live at the boundary between speed and trust. Draw it badly, and too much else becomes a workaround.
 
@@ -29,16 +29,16 @@ The likely result is low engagement, confusing UX, and eventually a painful arch
 
 ## The Decision That Shapes Everything Else
 
-Before any code ships, every Web3 project makes a foundational choice — often without realizing it:
+Before any code ships, every Web3 project makes a foundational choice - often without realizing it:
 
-What goes on-chain — and what stays off-chain.
+What goes on-chain - and what stays off-chain.
 
 It sounds like infrastructure. It isn’t. This decision determines:
 
 - Whether your product feels fast or frustrating
 - Whether your costs remain manageable or explode with scale
-- Whether your system is meaningfully trust-minimized — or just marketed that way
-- Whether users can verify outcomes — or are forced to trust you
+- Whether your system is meaningfully trust-minimized - or just marketed that way
+- Whether users can verify outcomes - or are forced to trust you
 - Whether your product has a reason to exist on a blockchain at all
 
 It’s not just architecture. It’s the core design of trust in your system.
@@ -56,7 +56,7 @@ Web3 has a set of governing slogans that builders encounter early:
 - “Minimize trust at all costs”
 - “Decentralization is the goal”
 
-These ideas spread because they’re simple, memorable, and directionally correct. The problem is that slogans collapse nuance. They remove tradeoffs. They imply there’s a single correct direction — always more on-chain, always less trust, always more decentralized.
+These ideas spread because they’re simple, memorable, and directionally correct. The problem is that slogans collapse nuance. They remove tradeoffs. They imply there’s a single correct direction - always more on-chain, always less trust, always more decentralized.
 
 But every architectural decision gives you something and takes something away:
 
@@ -64,7 +64,7 @@ But every architectural decision gives you something and takes something away:
 - Stronger trust minimization often → higher cost or more complex UX
 - More immutability → less operational flexibility
 
-When you ignore these tradeoffs, you don’t eliminate them. You push them somewhere else — usually into user experience, where they become someone else’s problem to diagnose six months later.
+When you ignore these tradeoffs, you don’t eliminate them. You push them somewhere else - usually into user experience, where they become someone else’s problem to diagnose six months later.
 
 The uncomfortable truth is that public blockchains are not designed to be the best tool for most application workloads.
 
@@ -74,7 +74,7 @@ Everything else is a compromise.
 
 Base-layer consensus is usually slower and more expensive than a conventional database, while finalized history and deployed contracts are deliberately hard to change. Layer 2 systems and state channels can improve cost and interaction speed, but each introduces its own assumptions and failure modes. Account abstraction can improve interaction design through mechanisms such as sponsorship, batching, and programmable accounts; it does not itself increase consensus throughput or finality speed. Ethereum’s [scaling documentation](https://ethereum.org/en/developers/docs/scaling/) is explicit that different off-chain systems derive security in different ways.
 
-Treat them like conventional general-purpose backends and you will usually pay for the mismatch — not because your idea is bad, but because you’re using the wrong tool for much of the job.
+Treat them like conventional general-purpose backends and you will usually pay for the mismatch - not because your idea is bad, but because you’re using the wrong tool for much of the job.
 
 ## Two Failure Modes, One Root Cause
 
@@ -90,7 +90,7 @@ Then reality sets in.
 
 Every state-changing interaction becomes a transaction. Someone pays for it, and the system must account for ordering and finality. Even when a sponsor hides the fee or an L2 confirms quickly, those costs and trust assumptions still exist.
 
-What starts as a small inconvenience becomes a structural problem — users hesitate before acting, product loops break, feedback is delayed.
+What starts as a small inconvenience becomes a structural problem - users hesitate before acting, product loops break, feedback is delayed.
 
 Consider something as simple as updating a setting.
 
@@ -99,7 +99,7 @@ Consider something as simple as updating a setting.
 
 That’s cognitive load, time delay, and financial cost stacked on top of each other. Each can reduce engagement. Together, they can break the product loop.
 
-The deeper issue isn’t UX — it’s that you’re forcing the blockchain to do work it wasn’t designed for.
+The deeper issue isn’t UX - it’s that you’re forcing the blockchain to do work it wasn’t designed for.
 
 Public blockchains can be excellent at:
 
@@ -117,7 +117,7 @@ They are usually a poor fit for:
 
 The second trap optimizes for usability.
 
-The team builds a fast backend, a responsive frontend, a smooth product — and tells themselves they’ll “add decentralization later.”
+The team builds a fast backend, a responsive frontend, a smooth product - and tells themselves they’ll “add decentralization later.”
 
 Early results look good. Users interact instantly, features ship quickly, bugs are easy to fix.
 
@@ -125,7 +125,7 @@ But over time, a question surfaces:
 
 What is the blockchain actually doing here?
 
-If the backend determines outcomes, the database holds the real state, and admins can override behavior — the blockchain is not the source of truth. It’s decoration.
+If the backend determines outcomes, the database holds the real state, and admins can override behavior - the blockchain is not the source of truth. It’s decoration.
 
 Users can’t verify anything independently. They have to trust your servers, your logic, your integrity.
 
@@ -141,7 +141,7 @@ That’s the wrong question.
 
 The correct question is:
 
-What must be guaranteed — and what can be flexible?
+What must be guaranteed - and what can be flexible?
 
 This reframes the entire design process.
 
@@ -158,7 +158,7 @@ On-chain = enforceable commitments under the chain’s trust model. Off-chain = 
 
 Guarantees are expensive but powerful. Convenience is cheap but requires trust.
 
-Your job isn’t to eliminate one — it’s to allocate each correctly.
+Your job isn’t to eliminate one - it’s to allocate each correctly.
 
 ## Two Worlds With Different Physics
 
@@ -188,7 +188,7 @@ You can improve both sides, but you cannot make the tradeoffs disappear.
 
 On-chain and off-chain systems optimize for fundamentally different properties. Every product decision lives somewhere along this spectrum.
 
-The art is deciding where each tradeoff is acceptable — and that depends largely on what the user needs to trust you for.
+The art is deciding where each tradeoff is acceptable - and that depends largely on what the user needs to trust you for.
 
 ## The Boundary Is Your Product
 
@@ -206,7 +206,7 @@ Your boundary defines:
 
 ![Web3 off-chain storage strategy for scalable product systems](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/image-3.webp)
 
-Your product is defined by the boundary between off-chain convenience and on-chain guarantees — and the verification mechanism that connects them.
+Your product is defined by the boundary between off-chain convenience and on-chain guarantees - and the verification mechanism that connects them.
 
 It’s not a technical detail. It’s the architecture of trust your product is built on.
 
@@ -214,7 +214,7 @@ It’s not a technical detail. It’s the architecture of trust your product is 
 
 ![Blockchain product architecture tradeoffs for Web3 applications](/images/blog/the-most-important-decision-in-web3-isnt-what-you-put-on-chain-its-what-you-dont/image-4.webp)
 
-Start with what must be guaranteed — not where code should live. This decision framework prevents the most common Web3 architecture mistakes.
+Start with what must be guaranteed - not where code should live. This decision framework prevents the most common Web3 architecture mistakes.
 
 Here’s how to approach the boundary deliberately.
 
@@ -222,7 +222,7 @@ Here’s how to approach the boundary deliberately.
 
 Ask:
 
-What absolutely must be correct — even if your company disappears tomorrow?
+What absolutely must be correct - even if your company disappears tomorrow?
 
 Possible non-negotiables include:
 
@@ -249,7 +249,7 @@ These usually belong off-chain or on a scaling layer designed for their latency 
 
 ### 3. Design the Verification Mechanism
 
-This is the most overlooked — and most important — part.
+This is the most overlooked - and most important - part.
 
 How do off-chain actions become inputs that on-chain logic can verify or accept?
 
@@ -267,7 +267,7 @@ With a sound mechanism, you can combine off-chain performance with specific on-c
 
 ## Three Examples That Build on Each Other
 
-To make this concrete, it helps to look at how the same mistake plays out across different categories. Marketplaces, games, and social apps all have different needs — but they tend to fail in similar ways when the boundary is misplaced. Each example isolates a specific pressure — volume, latency, or identity — and shows how it should shape what goes on-chain.
+To make this concrete, it helps to look at how the same mistake plays out across different categories. Marketplaces, games, and social apps all have different needs - but they tend to fail in similar ways when the boundary is misplaced. Each example isolates a specific pressure - volume, latency, or identity - and shows how it should shape what goes on-chain.
 
 ### Marketplaces: The Volume Problem
 
@@ -325,7 +325,7 @@ The right boundary:
 - Content → off-chain
 - Identity proofs or narrowly scoped reputation claims → on-chain only when public permanence is justified
 
-Principle: Optimize for where trust matters — not where data lives. Do not put raw personal data, social graphs, or permanent reputation scores on a public ledger by default. The European Data Protection Board’s final [blockchain guidelines](https://www.edpb.europa.eu/system/files/2026-07/edpb_guidelines_202502_blockchain_v2_en.pdf) emphasize choosing architectures that meet data-protection requirements rather than treating immutability as an excuse to ignore them.
+Principle: Optimize for where trust matters - not where data lives. Do not put raw personal data, social graphs, or permanent reputation scores on a public ledger by default. The European Data Protection Board’s final [blockchain guidelines](https://www.edpb.europa.eu/system/files/2026-07/edpb_guidelines_202502_blockchain_v2_en.pdf) emphasize choosing architectures that meet data-protection requirements rather than treating immutability as an excuse to ignore them.
 
 ## The Second-Order Effects
 

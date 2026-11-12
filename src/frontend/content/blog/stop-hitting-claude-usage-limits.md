@@ -17,7 +17,7 @@ readTime: 5 min read
 mediumUrl: https://arg-software.medium.com/stop-hitting-claudes-usage-limits-how-to-hack-your-tokens
 ---
 
-![Stop Hitting Claude's Usage Limits: Practical Ways to Stretch Your Plan](/images/blog/stop-hitting-claude-usage-limits/stop-hitting-claude-usage-limits-header.webp)
+![Usage gauge needle at max beside the Claude logo, about message limits on Pro, Max and Claude Code and saving tokens](/images/blog/stop-hitting-claude-usage-limits/stop-hitting-claude-usage-limits-header.webp)
 
 Claude does not enforce a fixed message count. Usage varies with the length and complexity of your conversations, file attachments, tools, model choice, effort level, artifacts, and multi-step work. Individual paid plans, such as Pro and Max, use five-hour session limits and weekly limits, and activity across Claude's web, desktop, mobile, and coding experiences draws from the same allowance.
 

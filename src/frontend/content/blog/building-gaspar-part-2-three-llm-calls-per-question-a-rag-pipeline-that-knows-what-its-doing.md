@@ -19,7 +19,7 @@ collection: building-gaspar
 collectionTitle: Building Gaspar - Anatomy of a Business AI Assistant
 collectionPart: 2
 ---
-![Part 2: Three LLM Calls per Question: A RAG Pipeline That Knows What It’s Doing](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-header.webp)
+![Three LLM calls feeding a retrieve, augment, generate step backed by a vector store of documents and embeddings](/images/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing-header.webp)
 
 Part 2 of “Building Gaspar - Anatomy of a Business AI Assistant.” If you didn’t read [part one](https://arg.software/blog/building-gaspar-part-1-we-built-an-ai-assistant-that-sells-heres-the-architecture/), start there.
 

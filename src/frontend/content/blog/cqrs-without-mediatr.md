@@ -7,7 +7,7 @@ authorType: Person
 authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
 tags: Architecture, Backend, Refactoring
-title: .NET CQRS Architecture Without MediatR — Your Exit Plan Is Simpler Than You Think
+title: .NET CQRS Architecture Without MediatR - Your Exit Plan Is Simpler Than You Think
 subtitle: MediatR 13 is no longer Apache-2.0. Build a lightweight MediatR alternative for .NET CQRS using plain interfaces, dispatchers, and decorators.
 intro: MediatR 13 is no longer Apache-2.0. Build a lightweight MediatR alternative for .NET CQRS using plain interfaces, dispatchers, and decorators.
 date: February 23, 2026
@@ -17,7 +17,7 @@ readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/net-cqrs-architecture-without-mediatr-your-exit-plan-is-simpler-than-you-think-3c8f99077a03
 ---
 
-![.NET CQRS Architecture without MediatR](/images/blog/net-cqrs-architecture-without-mediatr/net-cqrs-architecture-without-mediatr-header.webp)
+![One request path branching into a Command handler and a Query handler, CQRS in .NET with no mediator library between](/images/blog/net-cqrs-architecture-without-mediatr/net-cqrs-architecture-without-mediatr-header.webp)
 
 There's a moment in every .NET developer's journey when they install MediatR, wire up their first pipeline behavior, and think: "This is clean. This is elegant. This is the way."
 

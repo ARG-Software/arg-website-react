@@ -19,7 +19,7 @@ mediumUrl: https://medium.com/@arg-software/why-your-jwt-implementation-probably
 
 ## The Logout Problem: Why Your JWT Implementation Probably Breaks
 
-![Why Your JWT Implementation Probably Breaks](/images/blog/why-your-jwt-implementation-probably-breaks/why-your-jwt-implementation-probably-breaks-header.webp)
+![A JWT ticket torn in two, about refresh token revocation and why logout breaks with stateless JWT authentication](/images/blog/why-your-jwt-implementation-probably-breaks/why-your-jwt-implementation-probably-breaks-header.webp)
 
 The interview question sounds simple: "If JWTs are stateless, how do you log a user out?"
 

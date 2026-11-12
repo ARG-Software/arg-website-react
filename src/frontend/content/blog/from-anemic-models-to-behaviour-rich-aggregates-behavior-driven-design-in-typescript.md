@@ -16,7 +16,7 @@ reviewedOn: September 17, 2026
 readTime: 9 min read
 mediumUrl: https://medium.com/@arg-software/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript-2789fc16762d
 ---
-![From Anemic Models to Behaviour-rich Aggregates: Behavior-Driven Design in TypeScript](/images/blog/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript-header.webp)
+![An empty anemic model box becoming a full aggregate with its own behaviour, domain-driven design in TypeScript](/images/blog/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript/from-anemic-models-to-behaviour-rich-aggregates-behavior-driven-design-in-typescript-header.webp)
 
 There’s a class of bug that doesn’t really look like a bug. No stack trace. No obvious failure. Just an OrderService file with 300 lines of logic that was supposed to be somewhere else.
 
@@ -86,7 +86,7 @@ The database and external service calls belong in orchestration. The discount, l
 It’s not laziness; it’s gravity. Services are where things happen, so that’s where logic ends up. Domain objects, meanwhile, are often plain interfaces or simple classes with no behavior:
 
 ```typescript
-// Order is just a shape — it holds data but makes no decisions
+// Order is just a shape - it holds data but makes no decisions
 interface Order {
   customerId: string;
   items: OrderItem[];

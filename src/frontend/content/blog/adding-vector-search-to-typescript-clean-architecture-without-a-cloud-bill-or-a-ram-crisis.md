@@ -16,7 +16,7 @@ reviewedOn: September 19, 2026
 readTime: 13 min read
 mediumUrl: https://ai.plainenglish.io/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis-1e9104ab278b
 ---
-![Adding vector search to TypeScript Clean Architecture with a TurboVec sidecar](/images/blog/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis-header.webp)
+![TurboVec and TypeScript cover: local embeddings feeding a low-RAM semantic search index with no cloud vector database](/images/blog/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis/adding-vector-search-to-typescript-clean-architecture-without-a-cloud-bill-or-a-ram-crisis-header.webp)
 
 At some point, a product team asks for the deceptively simple feature:
 

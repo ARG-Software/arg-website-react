@@ -17,7 +17,7 @@ readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/%EF%B8%8F-stop-your-asp-net-core-app-from-crashing-the-circuit-breaker-pattern-explained-9b5a4ba9f0c7
 ---
 
-![Stop your ASP Net Core App from crashing](/images/blog/stop-your-asp-net-core-app-from-crashing/stop-your-asp-net-core-app-from-crashing-header.webp)
+![Circuit breaker switch tripping to cut failing calls to a cloud API and database, a resilience pattern built with Polly](/images/blog/stop-your-asp-net-core-app-from-crashing/stop-your-asp-net-core-app-from-crashing-header.webp)
 
 Ever watched your ASP.NET application grind to a halt because one tiny microservice decided to take a nap? Yeah, we too. Let's fix that.
 

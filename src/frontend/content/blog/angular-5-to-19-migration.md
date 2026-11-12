@@ -25,7 +25,7 @@ At ARG, we recently completed a frontend migration for a client project original
 
 Migrating this legacy codebase to Angular 19 was no small feat. Over the weeks, we navigated challenges ranging from outdated Webpack configurations to modernizing state management with the latest @ngrx/signals. In this article, we share key challenges and how we addressed them-offering practical examples and takeaways for anyone updating an older Angular app.
 
-> TL;DR — Migrated from Angular 5 → 19. Incremental migration using CLI. Fixed bootstrap, injection, and compatibility issues. Preserved NgModules + RxJS. DevTools and @ngrx/signals implementation.
+> TL;DR - Migrated from Angular 5 → 19. Incremental migration using CLI. Fixed bootstrap, injection, and compatibility issues. Preserved NgModules + RxJS. DevTools and @ngrx/signals implementation.
 
 ## Issues with the Project
 

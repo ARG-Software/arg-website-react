@@ -17,7 +17,7 @@ readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/functional-error-handling-in-typescript-with-the-result-pattern-5b96a5abb6d3
 ---
 
-![Functional Error Handling in Typescript](/images/blog/functional-error-handling-in-typescript/functional-error-handling-in-typescript-header.webp)
+![Result<T, E> type branching into Ok and Err values, explicit error handling in TypeScript without throwing exceptions](/images/blog/functional-error-handling-in-typescript/functional-error-handling-in-typescript-header.webp)
 
 Many developers default to throwing exceptions for every failure, but this approach has drawbacks that can make a codebase harder to maintain. Exceptions are useful. The problem is using them where a failure is expected and the caller needs to make a decision about it.
 

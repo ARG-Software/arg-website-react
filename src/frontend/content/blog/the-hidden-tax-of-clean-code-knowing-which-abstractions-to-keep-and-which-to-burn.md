@@ -15,7 +15,7 @@ dateModified: September 20, 2026
 reviewedOn: September 20, 2026
 readTime: 8 min read
 ---
-![The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (and Which to Burn)](/images/blog/the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn/the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn-header.webp)
+![Keep versus Burn lists of abstractions: clear names and modular design kept, extra layers and dead code discarded](/images/blog/the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn/the-hidden-tax-of-clean-code-knowing-which-abstractions-to-keep-and-which-to-burn-header.webp)
 
 There is a growing movement in the .NET community right now, and it is fueled by pure exhaustion. Developers are tired. They are tired of opening a pull request to add a single database column, only to realize they have to modify six different files, three interfaces, a mapping profile, and a MediatR pipeline.
 

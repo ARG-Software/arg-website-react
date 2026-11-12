@@ -17,7 +17,7 @@ readTime: 14 min read
 mediumUrl: https://arg-software.medium.com/how-we-debug-slow-microservices-in-18-minutes-not-4-hours-a-prometheus-opentelemetry-guide-0d7b551d1722
 ---
 
-![How we debug slow Microservices](/images/blog/how-we-debug-slow-microservices/how-we-debug-slow-microservices-header.webp)
+![Microservice traces converging into Prometheus metrics and OpenTelemetry tracing panels to find latency in Node.js](/images/blog/how-we-debug-slow-microservices/how-we-debug-slow-microservices-header.webp)
 
 It's 2:32 PM on a Tuesday. You're in the middle of a code review when Slack explodes.
 

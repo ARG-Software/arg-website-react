@@ -15,7 +15,7 @@ dateModified: October 28, 2026
 reviewedOn: September 17, 2026
 readTime: 7 min read
 ---
-![Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps](/images/blog/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps-header.webp)
+![TypeScript logo next to the word any crossed out, a step by step plan to replace any with real types in legacy code](/images/blog/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps/stop-using-any-a-practical-migration-plan-for-legacy-typescript-apps-header.webp)
 
 Legacy TypeScript codebases don't become unsafe suddenly. They start to become unsafe one any at a time.
 

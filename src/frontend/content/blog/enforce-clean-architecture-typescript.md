@@ -17,7 +17,7 @@ readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/the-rules-are-in-the-readme-the-readme-is-a-lie-ce6597218a29
 ---
 
-![TypeScript Clean Architecture rules documented in the README](/images/blog/the-rules-are-in-the-readme/the-rules-are-in-the-readme-header.webp)
+![Domain, Application and Infrastructure layers with blocked imports, architecture tests enforcing dependency rules](/images/blog/the-rules-are-in-the-readme/the-rules-are-in-the-readme-header.webp)
 
 You wrote the docs. You did the PR reviews. You explained it in the onboarding. And yet, six months later, a bunch of controllers are directly importing a repository, and nobody noticed.
 

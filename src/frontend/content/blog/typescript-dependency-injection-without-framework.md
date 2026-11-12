@@ -17,7 +17,7 @@ readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/typescript-dependency-injection-without-the-framework-and-why-you-might-prefer-it-8e78d77b6735
 ---
 
-![Typescript Dependency Injection without the Framework](/images/blog/typescript-dependency-injection-without-the-framework/typescript-dependency-injection-without-the-framework-header.webp)
+![TypeScript DI diagram binding interfaces to implementations, with the NestJS logo crossed out: no framework](/images/blog/typescript-dependency-injection-without-the-framework/typescript-dependency-injection-without-the-framework-header.webp)
 
 You've seen the decorators. You've wrestled with reflect-metadata. You've written @Injectable() on a hundred classes and trusted the framework to wire everything together. It works - until it doesn't.
 

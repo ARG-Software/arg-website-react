@@ -17,7 +17,7 @@ readTime: 9 min read
 ---
 How to decouple your Domain Model from the database layer to build scalable, testable, and future-proof enterprise systems.
 
-![Pure TypeScript DDD: Practical Persistence Ignorance with MikroORM](/images/blog/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm-header.webp)
+![Domain hexagon with entities, value objects and aggregates kept apart from the database, persistence ignorance](/images/blog/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm/pure-typescript-ddd-achieving-true-persistence-ignorance-with-mikroorm-header.webp)
 
 You’ve read the books. You’ve studied Domain-Driven Design (DDD). You’ve carefully crafted a src/domain folder in your TypeScript project, ready to isolate your core business logic from the messy outside world.
 

@@ -17,7 +17,7 @@ readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/dependency-injection-anti-patterns-killing-your-asp-net-core-apps-502f08d85d95
 ---
 
-![Dependency Injection Anti Patterns](/images/blog/dependency-injection-anti-patterns/dependency-injection-anti-patterns-header.webp)
+![Tangled service locator calls turned into clean dependency injection wiring, fixing a common ASP.NET Core DI mistake](/images/blog/dependency-injection-anti-patterns/dependency-injection-anti-patterns-header.webp)
 
 After optimizing several enterprise .NET applications, we've witnessed the same dependency injection mistakes repeatedly sabotage otherwise well-architected systems. These silent performance killers don't just slow down your application - they transform your codebase into a maintenance nightmare that can bring down production systems.
 

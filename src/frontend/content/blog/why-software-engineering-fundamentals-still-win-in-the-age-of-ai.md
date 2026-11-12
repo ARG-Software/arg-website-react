@@ -18,7 +18,7 @@ mediumUrl: https://medium.com/p/2ad62078fa52
 ---
 A 5-minute read for anyone who’s ever felt a little dizzy watching AI coding tools eat the headlines
 
-![Why Software Engineering Fundamentals Still Win in the Age of AI](/images/blog/why-software-engineering-fundamentals-still-win-in-the-age-of-ai/why-software-engineering-fundamentals-still-win-in-the-age-of-ai-header.webp)
+![Fundamentals label above outlined AI letters and a brain circuit, why solid engineering principles matter with AI tools](/images/blog/why-software-engineering-fundamentals-still-win-in-the-age-of-ai/why-software-engineering-fundamentals-still-win-in-the-age-of-ai-header.webp)
 
 Many people in tech are feeling a bit unbalanced these days. Every week, there’s another headline about AI agents “shipping production code,” “replacing junior devs,” or “ending software engineering as we know it.” If you’re an engineer reading these stories late at night, it’s natural to wonder if the skills you’ve worked so hard to build still matter.
 

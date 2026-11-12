@@ -21,7 +21,7 @@ collectionPart: 3
 ---
 Part 3 of “Building Gaspar - Anatomy of a Business AI Assistant.” Read [part two](https://arg.software/blog/building-gaspar-part-2-three-llm-calls-per-question-a-rag-pipeline-that-knows-what-its-doing/) for the request pipeline that consumes this corpus.
 
-![Part 3: The knowledge design behind a business AI assistant that doesn’t guess](/images/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess-header.webp)
+![PDF, DOC and XLS documents linked into a knowledge graph that grounds a business AI assistant's answers in facts](/images/blog/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess/building-gaspar-part-3-the-knowledge-design-behind-a-business-ai-assistant-that-doesnt-guess-header.webp)
 
 An AI assistant is only as useful as the information it can trust.
 

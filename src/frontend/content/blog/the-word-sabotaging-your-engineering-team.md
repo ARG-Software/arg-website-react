@@ -17,7 +17,7 @@ readTime: 7 min read
 mediumUrl: https://arg-software.medium.com/the-four-letter-word-thats-sabotaging-your-engineering-team-adc398aed5ef
 ---
 
-![The word just sabotaging your engineering team](/images/blog/the-four-letter-word/the-four-letter-word-header.webp)
+![The word just highlighted in a grid of tiles, about how calling work simple puts hidden pressure on engineering teams](/images/blog/the-four-letter-word/the-four-letter-word-header.webp)
 
 In today's world of rapid development and AI-powered tools, it's easy to believe that anything can be done quickly - sometimes with a single prompt. But there's one small word that's quietly sneaking into engineering conversations and distorting that perception: "just."
 
@@ -63,13 +63,13 @@ Software work is vulnerable to the planning fallacy. "Just" can compound it by p
 
 Instead of using "just," practice assumption interrogation: actively question the premises behind a proposed solution before estimating it.
 
-Instead of: "Can't we just add a feature flag for this?" — Try: "What's our strategy for managing feature flag lifecycle and preventing flag debt accumulation?"
+Instead of: "Can't we just add a feature flag for this?" - Try: "What's our strategy for managing feature flag lifecycle and preventing flag debt accumulation?"
 
-Instead of: "Is it just a frontend styling issue?" — Try: "Have we confirmed this behavior is consistent across browsers, devices, and accessibility tools?"
+Instead of: "Is it just a frontend styling issue?" - Try: "Have we confirmed this behavior is consistent across browsers, devices, and accessibility tools?"
 
-Instead of: "We could just refactor this to microservices" — Try: "What distributed-systems costs are we prepared to take on, and do we have the operational maturity for independent deployment, observability, data consistency, and failure handling?"
+Instead of: "We could just refactor this to microservices" - Try: "What distributed-systems costs are we prepared to take on, and do we have the operational maturity for independent deployment, observability, data consistency, and failure handling?"
 
-Instead of: "Can't we just add two-factor auth?" — Try: "Which threats and assurance level are we addressing, can we offer phishing-resistant authentication, and how will enrollment, recovery, and accessibility work?" NIST’s current [digital identity guidance](https://pages.nist.gov/800-63-4/sp800-63b.html) treats those as parts of one authentication lifecycle, not a checkbox.
+Instead of: "Can't we just add two-factor auth?" - Try: "Which threats and assurance level are we addressing, can we offer phishing-resistant authentication, and how will enrollment, recovery, and accessibility work?" NIST’s current [digital identity guidance](https://pages.nist.gov/800-63-4/sp800-63b.html) treats those as parts of one authentication lifecycle, not a checkbox.
 
 ## Why This Approach Works Better
 

@@ -16,7 +16,7 @@ reviewedOn: September 20, 2026
 readTime: 8 min read
 mediumUrl: https://medium.com/p/4a33d621523b
 ---
-![Engineering team adapting code review workflows to AI-generated code](/images/blog/the-code-review-collapse-surviving-the-ai-tsunami/the-code-review-collapse-surviving-the-ai-tsunami-header.webp)
+![Tower of AI PR blocks crushing a Review block, engineering teams struggling to review AI-generated code at scale](/images/blog/the-code-review-collapse-surviving-the-ai-tsunami/the-code-review-collapse-surviving-the-ai-tsunami-header.webp)
 
 There is a slow-motion traffic jam happening inside engineering organizations right now, and very few people are addressing it directly.
 

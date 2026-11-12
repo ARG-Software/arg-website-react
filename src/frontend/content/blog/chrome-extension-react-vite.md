@@ -17,7 +17,7 @@ readTime: 9 min read
 mediumUrl: https://arg-software.medium.com/building-a-chrome-extension-with-react-and-vite-a-modern-developers-guide-83f98ee937ed
 ---
 
-![Building a Chrome Extension](/images/blog/chrome-extension-react-vite/building-a-chrome-extension-header.webp)
+![Chrome logo linked to a puzzle piece, the React atom and the Vite bolt, for building a Manifest V3 browser extension](/images/blog/chrome-extension-react-vite/building-a-chrome-extension-header.webp)
 
 The landscape of web development has evolved, and modern frontend tools, such as Vite and React, have transformed how we build applications. What if we could use this power for Chrome extensions? Turns out, we can!
 
