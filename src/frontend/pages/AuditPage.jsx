@@ -577,31 +577,49 @@ export default function AuditPage() {
             >
               <div className="container padding-global au-inner">
                 <div className="au-send">
-                  <div data-animate-order="0">
-                    <h2 className="au-title au-send-title">
+                  <div>
+                    <h2 className="au-title au-send-title" data-animate-order="0">
                       {PAGE.send.title}
                       <br />
                       <span className="text-color-gradiant">{PAGE.send.titleHighlight}</span>
                     </h2>
-                    <StepProgressTimeline
-                      className="au-send-timeline"
-                      items={PAGE.send.steps.map(step => ({
-                        id: step.title,
-                        title: step.title,
-                        description: step.text,
-                      }))}
-                      ariaLabel={PAGE.send.title}
-                    />
-                    <p className="au-note au-send-email">
-                      {PAGE.send.emailText}{' '}
-                      <a
-                        href={reportMailto}
-                        onClick={() => trackMailto(PAGE.send.emailSubject, 'audit_send')}
-                      >
-                        {getEmailAddress('dev')}
-                      </a>
-                      .
-                    </p>
+                    {/* The timeline's line carries on down to the email option, as a last step */}
+                    <div className="au-send-flow">
+                      <div data-animate-order="1">
+                        <StepProgressTimeline
+                          className="au-send-timeline"
+                          items={PAGE.send.steps.map(step => ({
+                            id: step.title,
+                            title: step.title,
+                            description: step.text,
+                          }))}
+                          ariaLabel={PAGE.send.title}
+                        />
+                      </div>
+                      <p className="au-send-email">
+                        <span
+                          className="au-send-email__line"
+                          aria-hidden="true"
+                          data-animate="line-grow-down"
+                          data-animate-order="2"
+                        />
+                        <span
+                          className="au-send-email__dot"
+                          aria-hidden="true"
+                          data-animate-order="3"
+                        />
+                        <span className="au-send-email__text" data-animate-order="3">
+                          {PAGE.send.emailText}{' '}
+                          <a
+                            href={reportMailto}
+                            onClick={() => trackMailto(PAGE.send.emailSubject, 'audit_send')}
+                          >
+                            {getEmailAddress('dev')}
+                          </a>
+                          .
+                        </span>
+                      </p>
+                    </div>
                   </div>
 
                   <BaseCard

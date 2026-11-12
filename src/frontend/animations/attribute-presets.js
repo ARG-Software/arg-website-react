@@ -3,6 +3,7 @@
 // Reveals follow one pattern across the site, by role:
 // - fade-up: titles, text, cards, lists and buttons (the default for every scope)
 // - divider-expander-show: divider lines
+// - line-grow-down: vertical connector lines, growing from the top (the element sets transform-origin: top)
 // - slide-up-rotate: page header title lines
 // - slide-in-left / slide-in-right: home project cards, each from its own side (fade-up on phones)
 // - width-countup, overlay-reveal and gsap-scale: stats, team photos and scroll-scaled images
@@ -23,6 +24,7 @@ export const ANIMATION_PRESETS = {
   slideInLeft: 'slide-in-left',
   slideInRight: 'slide-in-right',
   dividerExpanderShow: 'divider-expander-show',
+  lineGrowDown: 'line-grow-down',
   gsapScale: 'gsap-scale',
   // Hover presets, styled in hover.css
   slotText: 'slot-text',
@@ -71,6 +73,12 @@ export const ATTRIBUTE_PRESETS = {
   // Horizontal scale animation (divider expand)
   [ANIMATION_PRESETS.dividerExpanderShow]: {
     initialTransform: 'scale3d(0.1, 1, 1)',
+    transition: 'transform 0.8s var(--ease-out-cubic)',
+  },
+
+  // Vertical line growing down from its top edge
+  [ANIMATION_PRESETS.lineGrowDown]: {
+    initialTransform: 'scale3d(1, 0, 1)',
     transition: 'transform 0.8s var(--ease-out-cubic)',
   },
 

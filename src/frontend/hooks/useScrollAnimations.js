@@ -148,7 +148,10 @@ const getFinalTransform = presetName => {
   if (presetName === ANIMATION_PRESETS.slideUpRotate) {
     return 'translate3d(0, 0, 0) rotateZ(0deg)';
   }
-  if (presetName === ANIMATION_PRESETS.dividerExpanderShow) {
+  if (
+    presetName === ANIMATION_PRESETS.dividerExpanderShow ||
+    presetName === ANIMATION_PRESETS.lineGrowDown
+  ) {
     return 'scale3d(1, 1, 1)';
   }
   return 'translate3d(0, 0, 0)';
