@@ -28,10 +28,9 @@
   ],
   "leadCaptureSkipWords": ["skip", "no", "no message"],
   "nudge": {
-    "message": "Hi, I'm Gaspar. Need a hand finding something, or want to book a call with the team?",
-    "mobileMessage": "Hi! I'm Gaspar.",
+    "message": "Hi, I'm Gaspar. I'm here to help, click me to start a chat.",
+    "mobileMessage": "Hi! I'm here to help, tap me.",
     "chatLabel": "Talk to Gaspar",
-    "meetingLabel": "Book a meeting",
     "closeLabel": "Close"
   },
   "messages": {

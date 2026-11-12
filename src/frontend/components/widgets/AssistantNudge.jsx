@@ -1,19 +1,12 @@
 import { useEffect, useState } from 'react';
 import assistantContent from '@data/assistant.json';
-import { getProjectBookingLink } from '@services/linksService';
 import { isMobile, prefersReducedMotion } from '@utils/helpers';
 
 const TYPING_STEP_MS = 35;
 
-// Gaspar's speech bubble: types its offer next to the trigger instead of opening the whole chat
-export function AssistantNudge({ onChat, onMeeting, onClose }) {
-  const {
-    message: desktopMessage,
-    mobileMessage,
-    chatLabel,
-    meetingLabel,
-    closeLabel,
-  } = assistantContent.nudge;
+// Gaspar's speech bubble: types its offer next to the trigger; tapping it opens the chat
+export function AssistantNudge({ onChat, onClose }) {
+  const { message: desktopMessage, mobileMessage, chatLabel, closeLabel } = assistantContent.nudge;
   const [isPhone] = useState(() => typeof window !== 'undefined' && isMobile());
   const message = isPhone ? mobileMessage : desktopMessage;
   const [typedLength, setTypedLength] = useState(() =>
@@ -39,38 +32,21 @@ export function AssistantNudge({ onChat, onMeeting, onClose }) {
 
   return (
     <div className="aw-nudge" role="dialog" aria-label={assistantContent.name}>
+      <button className="aw-nudge__bubble" type="button" aria-label={chatLabel} onClick={onChat}>
+        <span className="aw-nudge__sr" aria-live="polite">
+          {message}
+        </span>
+        <span className="aw-nudge__message" aria-hidden="true">
+          {message.slice(0, typedLength)}
+          {!typingDone && <span className="aw-nudge__caret" />}
+        </span>
+      </button>
+
       <button className="aw-nudge__close" type="button" aria-label={closeLabel} onClick={onClose}>
         <svg viewBox="0 0 12 12" aria-hidden="true">
           <path d="M2 2l8 8M10 2l-8 8" />
         </svg>
       </button>
-
-      <p className="aw-nudge__message">
-        <span className="aw-nudge__sr" aria-live="polite">
-          {message}
-        </span>
-        <span aria-hidden="true">
-          {message.slice(0, typedLength)}
-          {!typingDone && <span className="aw-nudge__caret" />}
-        </span>
-      </p>
-
-      {!isPhone && (
-        <div className={`aw-nudge__actions${typingDone ? ' is-visible' : ''}`}>
-          <button className="aw-nudge__action" type="button" onClick={onChat}>
-            {chatLabel}
-          </button>
-          <a
-            className="aw-nudge__action aw-nudge__action--primary"
-            href={getProjectBookingLink()}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={onMeeting}
-          >
-            {meetingLabel}
-          </a>
-        </div>
-      )}
     </div>
   );
 }

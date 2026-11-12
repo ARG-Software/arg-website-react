@@ -146,7 +146,7 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
     normalizedPath,
   ]);
 
-  // Talking or booking hides the bubble for this visit; the close button hides it for two days
+  // Opening the chat hides the bubble for this visit; the close button hides it for two days
   function hideNudge(storageName, key, value) {
     setStorageItem(getClientStorage(storageName), key, value);
     setVisiblePath(null);
@@ -154,13 +154,9 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
   }
 
   function handleNudgeChat() {
+    trackCTA('open_chat', NUDGE_SOURCE);
     hideNudge('sessionStorage', LEAD_CAPTURE_SESSION_DISMISSED_KEY, '1');
     handleTriggerOpen();
-  }
-
-  function handleNudgeMeeting() {
-    trackCTA('book_meeting', NUDGE_SOURCE);
-    hideNudge('sessionStorage', LEAD_CAPTURE_SESSION_DISMISSED_KEY, '1');
   }
 
   function handleNudgeClose() {
@@ -177,11 +173,7 @@ export function AssistantProvider({ idleDelayMs = DEFAULT_IDLE_DELAY_MS }) {
   }
 
   const nudge = nudgeVisible ? (
-    <AssistantNudge
-      onChat={handleNudgeChat}
-      onMeeting={handleNudgeMeeting}
-      onClose={handleNudgeClose}
-    />
+    <AssistantNudge onChat={handleNudgeChat} onClose={handleNudgeClose} />
   ) : null;
 
   if (!shouldLoadAssistant) {
