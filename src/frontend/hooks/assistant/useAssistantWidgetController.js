@@ -302,8 +302,12 @@ export function useAssistantWidgetController({
     return () => document.documentElement.classList.remove('aw-fullscreen-open');
   }, [panelState]);
 
+  // Opens once per request from the trigger or the bubble. Crossing the phone breakpoint must
+  // not count as a new request, or resizing the window would reopen a closed chat
+  const handledReopenRef = useRef(0);
   useEffect(() => {
-    if (!reopenRequest) return;
+    if (!reopenRequest || reopenRequest === handledReopenRef.current) return;
+    handledReopenRef.current = reopenRequest;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPanelState(getPanelStateForViewport(mobileViewport));
