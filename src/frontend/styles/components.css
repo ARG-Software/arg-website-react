@@ -3222,13 +3222,15 @@ main:focus {
   right: 3.5rem;
   transform-origin: bottom right;
   z-index: 1090;
+  /* Distance from the bubble's right edge to the middle of Gaspar's button below it */
+  --aw-nudge-tip: 1.75rem;
 }
 
 /* Message bubble, the whole of it opens the chat */
 .aw-nudge__bubble {
   background: #fff;
   border: 0;
-  border-radius: 1.375rem 1.375rem 0.5rem 1.375rem;
+  border-radius: 1.375rem;
   color: #0c002e;
   cursor: pointer;
   display: block;
@@ -3240,17 +3242,18 @@ main:focus {
   transform-origin: bottom right;
 }
 
-/* Curved tail at the bottom right, pointing at Gaspar, like a phone message */
+/* Tail under the bubble pointing down at Gaspar's button: a turned square whose bottom corner
+   sits right above the middle of the button */
 .aw-nudge__bubble::after {
   background: #fff;
-  bottom: 0;
+  border-radius: 0.1875rem;
+  bottom: -0.4375rem;
   content: '';
-  height: 1.25rem;
-  -webkit-mask: radial-gradient(0.875rem 1.25rem at 100% 0, transparent 98%, #000 100%);
-  mask: radial-gradient(0.875rem 1.25rem at 100% 0, transparent 98%, #000 100%);
+  height: 0.875rem;
   position: absolute;
-  right: -0.625rem;
-  width: 1.5rem;
+  right: calc(var(--aw-nudge-tip) - 0.4375rem);
+  transform: rotate(45deg);
+  width: 0.875rem;
 }
 
 .aw-nudge__bubble:focus-visible {
@@ -3344,6 +3347,7 @@ main:focus {
     bottom: 5.5rem;
     max-width: 16rem;
     right: 1.5rem;
+    --aw-nudge-tip: 1.3125rem;
   }
 }
 
