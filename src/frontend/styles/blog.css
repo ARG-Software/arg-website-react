@@ -1019,6 +1019,13 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Lenis contains overscroll on both axes for its prevent attributes, which traps a vertical swipe
+   that starts on the code and stops the page on phones. Only the sideways scroll stays inside */
+.lenis .bp-code-scroll[data-lenis-prevent-horizontal] {
+  overscroll-behavior: auto;
+  overscroll-behavior-x: contain;
+}
+
 .bp-code-wrap pre {
   background: #1a1a2e !important;
   color: #d7deea;
