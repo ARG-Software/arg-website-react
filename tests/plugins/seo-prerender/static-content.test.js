@@ -48,7 +48,8 @@ test('renders complete blog content inside the React root', () => {
     /<span class="bp-list-label">Use <code class="inline-markdown-code">Result<\/code>\.<\/span>/
   );
   assert.match(html, /<code class="inline-markdown-code">inline code<\/code>/);
-  assert.match(html, /Reviewed on September 17, 2026/);
+  assert.match(html, /<em>Reviewed on September 17, 2026\.<\/em><\/p>\s*<\/article>/);
+  assert.doesNotMatch(html, /bp-header-meta">[^<]*Reviewed on/);
   assert.match(
     html,
     /<a href="https:\/\/www\.linkedin\.com\/company\/arg-software" rel="author noopener noreferrer">ARG<\/a>/

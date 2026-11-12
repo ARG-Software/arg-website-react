@@ -33,7 +33,7 @@ mediumUrl: https://medium.com/...
 ```
 
 - `slug` never changes after publishing: it is the URL.
-- `dateModified` is for SEO. `reviewedOn` is the date shown in the article header. `reviewedOn` requires `dateModified`, and `dateModified` can't be earlier than `date` (`npm run check:content` enforces both).
+- `dateModified` is for SEO. `reviewedOn` is the date shown in italics at the end of the article. `reviewedOn` requires `dateModified`, and `dateModified` can't be earlier than `date` (`npm run check:content` enforces both).
 - Dates use the `Month D, YYYY` format.
 
 ## 2. Writing rules

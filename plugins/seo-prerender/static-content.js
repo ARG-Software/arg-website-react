@@ -23,14 +23,7 @@ export function buildBlogPostStaticContent(meta, blocks, relatedLinks = []) {
   const heroImageIndex = blocks.findIndex(block => block.type === 'image');
   const heroImage = heroImageIndex >= 0 ? blocks[heroImageIndex] : null;
   const articleBlocks = blocks.filter((_, index) => index !== heroImageIndex);
-  const headerMeta = [
-    meta.date,
-    meta.reviewedOn ? `Reviewed on ${meta.reviewedOn}` : '',
-    meta.readTime,
-  ]
-    .filter(Boolean)
-    .map(escapeHtml)
-    .join(' · ');
+  const headerMeta = [meta.date, meta.readTime].filter(Boolean).map(escapeHtml).join(' · ');
   const author = escapeHtml(meta.author || 'ARG Software');
   const authorLink = meta.authorUrl
     ? `<a href="${escapeHtml(meta.authorUrl)}" rel="author noopener noreferrer">${author}</a>`
@@ -58,6 +51,7 @@ export function buildBlogPostStaticContent(meta, blocks, relatedLinks = []) {
         <article class="bp-content">
           ${heroImage ? renderImage(heroImage, 'bp-hero-figure') : ''}
           ${articleBlocks.map(renderBlogBlock).join('\n          ')}
+          ${meta.reviewedOn ? `<p class="bp-p"><em>Reviewed on ${escapeHtml(meta.reviewedOn)}.</em></p>` : ''}
         </article>
       </div>
     </section>
