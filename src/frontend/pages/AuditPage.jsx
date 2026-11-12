@@ -12,6 +12,7 @@ import { BaseCard } from '@ui/cards/BaseCard.jsx';
 import { Pill, PillButton } from '@ui/pills/Pill.jsx';
 import { StepProgressTimeline } from '@ui/grids/StepProgressTimeline.jsx';
 import { AnimatedArrowButton } from '@ui/buttons/AnimatedArrowButton.jsx';
+import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useSwipe } from '@ui/utils/useSwipe.js';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
@@ -218,7 +219,7 @@ export default function AuditPage() {
                           key={store.id}
                           store={store}
                           href={getBrowserStoreLink(store.id)}
-                          variant={index === 0 ? 'dark' : 'outline'}
+                          variant={index === 0 ? 'light' : 'outline'}
                           location="audit_architect"
                         />
                       ))}
@@ -552,7 +553,15 @@ export default function AuditPage() {
                                 cta_location: 'audit_next_steps',
                               }}
                             >
-                              {tier.cta}
+                              <span className="button-base_text_wrap">
+                                <span className="button-base__button-text">{tier.cta}</span>
+                                <span className="button-base__button-text is-animated">
+                                  {tier.ctaHover}
+                                </span>
+                              </span>
+                              <span className="arrow_icon-embed" aria-hidden="true">
+                                {arrowSvg}
+                              </span>
                             </AppLink>
                           )}
                         </div>

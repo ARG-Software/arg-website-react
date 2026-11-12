@@ -186,6 +186,10 @@
 
 .au-store-btn {
   gap: 0.625rem;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
   width: max-content;
 }
 
@@ -195,9 +199,16 @@
   white-space: nowrap;
 }
 
-.au-store-btn.button-base--outline {
+/* Chrome is white and Firefox outlined, both edged in the site blue; hover fills them with it */
+.au-store-btn {
   border-color: #0c002e;
   color: #0c002e;
+}
+
+.au-store-btn:hover {
+  background: #0c002e;
+  border-color: #0c002e;
+  color: #fff;
 }
 
 .au-logo {
