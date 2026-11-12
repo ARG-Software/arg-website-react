@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { prefersReducedMotion } from '@utils/helpers';
+import { useStickyRevealSnap } from '@hooks/useStickyRevealSnap';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,6 +21,7 @@ export function LenisProvider({ children, lerp = 0.1, wheelMultiplier = 0.9, syn
   const [lenis, setLenis] = useState(null);
   const instanceRef = useRef(null);
   const location = useLocation();
+  useStickyRevealSnap(lenis);
 
   useEffect(() => {
     // Visitors who asked for less motion keep the browser's native scroll; consumers already

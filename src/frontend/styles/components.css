@@ -1348,22 +1348,20 @@ main:focus {
    ContactSection
    ========================================================================== */
 
-/* Closing call to action: a full-screen dark section the previous page scrolls off, then the
-   footer waits underneath the same way, with the headline in the middle and two studio-lit
-   clusters of liquid behind it. */
-.home-cta-reveal.is-revealing {
-  height: var(--sticky-reveal-height);
-}
-
+/* Closing call to action: a dark section in the page flow that fills the visible screen on every
+   device (svh: the height with the browser bars showing, so they move nothing), with the
+   headline in the middle and two studio-lit clusters of liquid behind it. Content taller than
+   the screen grows it instead of being cut. The footer waits underneath it. */
 .home-cta {
   align-items: center;
   background: linear-gradient(#0c002e, #070019);
   box-sizing: border-box;
   display: flex;
-  height: 100vh;
   min-height: 100vh;
+  min-height: 100svh;
   overflow: hidden;
   padding: 7rem 0;
+  padding: clamp(5rem, 12svh, 9rem) 0;
   position: relative;
 }
 
@@ -1429,26 +1427,6 @@ main:focus {
 }
 
 @media screen and (max-width: 767px) {
-  .home-cta-reveal.is-revealing {
-    height: var(--sticky-reveal-height);
-  }
-
-  .home-cta-reveal.is-revealing .sticky-reveal__track {
-    height: 100%;
-    top: 0;
-  }
-
-  .home-cta-reveal.is-revealing .sticky-reveal__track > * {
-    position: relative;
-    top: auto;
-  }
-
-  .home-cta {
-    height: auto;
-    min-height: 100svh;
-    padding: 5rem 0;
-  }
-
   .home-cta_title {
     font-size: var(--type-section);
   }

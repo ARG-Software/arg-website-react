@@ -1747,7 +1747,8 @@
    screen above the child's slot, so the sticky child can hold still while its slot scrolls
    in; the clip shows it only inside the slot. A child that fits the screen holds against the
    bottom edge, a taller one against the top edge until its slot catches up, then scrolls on.
-   StickyReveal.jsx measures --sticky-reveal-height. */
+   StickyReveal.jsx measures --sticky-reveal-height. Screen heights use svh, the height with the
+   browser bars showing, so the bars sliding in and out on tablets and phones move nothing. */
 .sticky-reveal {
   clip-path: inset(0);
   position: relative;
@@ -1759,13 +1760,16 @@
 
 .sticky-reveal.is-revealing .sticky-reveal__track {
   height: calc(100% + 100vh);
+  height: calc(100% + 100svh);
   position: relative;
   top: -100vh;
+  top: -100svh;
 }
 
 .sticky-reveal.is-revealing .sticky-reveal__track > * {
   position: sticky;
   top: max(0rem, calc(100vh - var(--sticky-reveal-height)));
+  top: max(0rem, calc(100svh - var(--sticky-reveal-height)));
 }
 
 /* Every row shares the footer's side padding, so all edges line up */
@@ -1778,6 +1782,7 @@
   font-family: Neuemontreal, sans-serif;
   box-sizing: border-box;
   min-height: 100vh;
+  min-height: 100svh;
   overflow: hidden;
   padding: clamp(3rem, 8vh, 6rem) clamp(1.5rem, 5vw, 6rem) 0;
   position: relative;
