@@ -965,10 +965,12 @@
 
 /* The lock starts open; hovering the card locks it and ticks every point in turn.
    Touch screens have no hover, so they get the locked state straight away. */
+/* Hover turns the lock's tile white with the lock in the card's blue, like the ticks */
 .au-private-icon {
   transition:
     background 0.35s ease,
-    border-color 0.35s ease;
+    border-color 0.35s ease,
+    color 0.35s ease;
 }
 
 .au-private-shackle {
@@ -993,8 +995,9 @@
   width: 1.25rem;
 }
 
+/* Hover fills each circle white and draws the tick in the card's blue */
 .au-private-check::before {
-  background: var(--arg-gradient-primary);
+  background: #fff;
   border-radius: inherit;
   content: '';
   inset: -1px;
@@ -1014,7 +1017,7 @@
 }
 
 .au-private-check path {
-  stroke: #fff;
+  stroke: #0c002e;
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
   stroke-linecap: round;
@@ -1025,8 +1028,9 @@
 }
 
 .au-private:hover .au-private-icon {
-  background: var(--arg-gradient-primary);
-  border-color: transparent;
+  background: #fff;
+  border-color: #fff;
+  color: #0c002e;
 }
 
 .au-private:hover .au-private-shackle {
@@ -1050,8 +1054,9 @@
 
 @media (hover: none) {
   .au-private .au-private-icon {
-    background: var(--arg-gradient-primary);
-    border-color: transparent;
+    background: #fff;
+    border-color: #fff;
+    color: #0c002e;
   }
 
   .au-private .au-private-shackle {
