@@ -91,10 +91,11 @@ export const ATTRIBUTE_PRESETS = {
 export const HOVER_PRESETS = {
   // Each letter rolls up like a slot machine reel, one after another, and the letters that
   // roll in carry the brand gradient across the word
+  // Slow and even so the letters glide over rather than snap
   [ANIMATION_PRESETS.slotText]: {
-    duration: '0.4s',
-    stagger: '0.015s',
-    ease: 'var(--ease-out-expo)',
+    duration: '0.55s',
+    stagger: '0.02s',
+    ease: 'var(--ease-in-out-cubic)',
     colors: ['var(--arg-color-red)', 'var(--arg-color-magenta)', 'var(--arg-color-violet)'],
   },
 };

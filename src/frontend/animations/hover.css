@@ -82,6 +82,13 @@
   clip-path: inset(0 -0.25em);
 }
 
+/* Leaving the link rolls the letters back down at the same pace instead of snapping them */
+.slot-text__reel > span {
+  transition:
+    transform var(--slot-duration) var(--slot-ease),
+    opacity var(--slot-duration) var(--slot-ease);
+}
+
 /* The incoming gradient letter fades in as it rolls up while the plain one fades out, which
    keeps the roll soft */
 .slot-text__reel > span:last-child {
@@ -109,6 +116,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .slot-text__reel > span,
   :is(a, button, .slot-text):hover .slot-text .slot-text__reel > span,
   :is(a, button):focus-visible .slot-text .slot-text__reel > span {
     transition: none;
