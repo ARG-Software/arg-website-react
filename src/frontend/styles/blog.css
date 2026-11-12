@@ -38,8 +38,10 @@
   margin-left: calc(var(--blp-sidebar-width) + var(--blp-column-gap));
 }
 
-/* Starts level with the inner panel inside the sidebar frame */
+/* Starts and ends level with the white panel, not the grey frame around it: the frame
+   stretches to the feed, so the bottom inset puts the panel's resting bottom on the last card */
 .blp-feed {
+  padding-bottom: var(--blp-sidebar-inset);
   padding-top: var(--blp-sidebar-inset);
 }
 
