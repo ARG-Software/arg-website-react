@@ -52,6 +52,19 @@ export default function seoPrerender() {
 
       generated = writePatternPages({ distDir, baseHtml, generated });
 
+      // Trailing-slash redirects only for slugs that were prerendered, so unknown slugs reach the 404 rule
+      const detailRedirects = [];
+      for (const section of ['blog', 'projects', 'skills', 'patterns']) {
+        for (const entry of fs.readdirSync(path.join(distDir, section), { withFileTypes: true })) {
+          if (!entry.isDirectory()) continue;
+          if (!fs.existsSync(path.join(distDir, section, entry.name, 'index.html'))) continue;
+          detailRedirects.push(`/${section}/${entry.name}  /${section}/${entry.name}/  301`);
+        }
+      }
+      const redirectsPath = path.join(distDir, '_redirects');
+      const redirects = fs.readFileSync(redirectsPath, 'utf-8');
+      fs.writeFileSync(redirectsPath, redirects.replace('# DETAIL_PAGE_REDIRECTS', detailRedirects.join('\n')));
+
       // 404 page
       generated = writeNotFoundPage({ distDir, baseHtml, generated });
 
