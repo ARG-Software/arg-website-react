@@ -383,6 +383,8 @@ If data is untrusted, validate it. Otherwise, you have only replaced one unsafe 
 
 The goal is not to shame people for old code. The goal is to make the codebase safer.
 
+On a large legacy app, knowing [where the unsafe types concentrate](/audit/architecture-review/) tells you which modules to migrate first.
+
 ## FAQ
 
 - **What is the difference between any and unknown in TypeScript?** `any` turns off type checking for a value. `unknown` accepts any value but forces you to narrow or validate it before use, which makes it the safer type for data from outside your system.

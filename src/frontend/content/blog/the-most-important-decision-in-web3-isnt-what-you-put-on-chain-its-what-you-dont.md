@@ -355,6 +355,8 @@ They understand:
 
 Decentralization is not about maximizing what’s on-chain. It’s about minimizing what needs to be trusted.
 
+Drawing that line for an existing product starts with [mapping its data flows](/audit/architecture-review/).
+
 ## FAQ
 
 - **What should go on-chain?** What must stay correct even if your company disappears, such as asset ownership, final balances, rule enforcement, and proof of outcomes.

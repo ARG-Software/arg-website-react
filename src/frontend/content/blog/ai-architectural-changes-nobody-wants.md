@@ -289,6 +289,8 @@ Teams can start with a feature. Systems last when teams also treat model behavio
 
 That is the difference between an experiment that teaches you something and a production system you can operate responsibly.
 
+Working out which of these concerns apply to a given system is where an [architecture review](/audit/architecture-review/) starts.
+
 What architectural challenges have you faced when integrating AI into production systems?
 
 ## Sources reviewed

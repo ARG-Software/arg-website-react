@@ -148,6 +148,8 @@ These are starting points, not universal rules.
 
 The team’s experience, existing systems, operational environment, and product requirements matter more than benchmark headlines.
 
+That is why we answer the stack question by [looking at the system first](/audit/architecture-review/), not the benchmark charts.
+
 ## FAQ
 
 - **.NET vs Node.js: which should I choose?** Node.js can help a small, web-focused team validate a product faster with one language across frontend and backend. .NET becomes compelling when the platform must stay maintainable for years.

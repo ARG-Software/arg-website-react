@@ -187,6 +187,8 @@ Architecture tests flip the model. You write the rule once, and it runs on every
 
 This also makes onboarding easier. Instead of explaining "we don't import repositories in controllers here", you just say "try it and see what breaks." The tests become living documentation that actually stays up to date.
 
+A handful of rules like these is often the cheapest outcome of an [architecture review of a TypeScript codebase](/audit/architecture-review/).
+
 ## FAQ
 
 - **What are architecture tests?** Automated tests that check your code structure instead of its logic, such as whether the domain layer imports from infrastructure or a controller talks directly to a repository. If a rule breaks, the build fails.

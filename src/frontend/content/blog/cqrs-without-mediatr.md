@@ -386,6 +386,8 @@ This is the real reason the dispatcher pattern earns its place: it gives you muc
 - **Testing is flexible.** Mock the dispatcher for controller unit tests, instantiate handlers directly for handler unit tests, and use the real container and decorator chain for integration tests.
 - **You own the infrastructure.** Adding new handler variants, changing the decorator chain, or evolving the Result type doesn't require reading library documentation or waiting for updates.
 
+Whether the mediator still earns its place is a call per codebase, the kind of trade-off we [weigh in an architecture review](/audit/architecture-review/).
+
 ## FAQ
 
 - **Is MediatR still free?** MediatR 12.5 and earlier remain under Apache-2.0. MediatR 13 and later are available under the Reciprocal Public License 1.5 or Lucky Penny's Community and commercial licenses.

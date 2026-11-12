@@ -235,4 +235,6 @@ Clean Architecture was never supposed to be a prison. Its dependency rule is mea
 
 Defend boundaries that protect real domain rules. Wrap third-party APIs where your application needs a stable contract. But be ruthless with everything else. Delete pass-through services. Drop redundant interfaces. Stop paying the abstraction tax on code that does not deserve it.
 
+Telling the two apart in a codebase you did not write is a large part of how we [review an architecture](/audit/architecture-review/).
+
 Architecture is not lost when noise is eliminated. You've finally found it.

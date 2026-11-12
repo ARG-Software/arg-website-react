@@ -481,6 +481,8 @@ It can add abstraction frames and makes the method less self-explanatory to whoe
 - Correlate logs with W3C/OpenTelemetry trace and span IDs where available.
 - Apply retention, access controls, size limits, and logging-failure tests.
 
+Most of these items are cheap to fix and easy to miss, which is why they belong in any [review of how a backend is operated](/audit/architecture-review/).
+
 ## FAQ
 
 - **How do I correlate logs for one request in Node.js?** Give every incoming request a unique ID and stamp it on every log line produced while handling it. Across services and queues, the W3C trace ID from OpenTelemetry is the interoperable correlation key.

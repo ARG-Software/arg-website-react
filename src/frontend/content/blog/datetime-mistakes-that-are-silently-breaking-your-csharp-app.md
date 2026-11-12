@@ -196,6 +196,8 @@ Put it together:
 - Never infer a user's zone from the server's local zone. An offset alone is not enough to recover it either.
 - Define precision, inclusive/exclusive boundaries, and ambiguous-time behavior in API and database contracts.
 
+Time bugs hide in the contracts between services, so they only show up when you [read the API and database contracts together](/audit/architecture-review/).
+
 ## FAQ
 
 - **DateTime vs DateTimeOffset: which should I use in C#?** For timestamps, prefer `DateTimeOffset`, usually normalized to UTC. Keep `DateTime` with `Kind.Utc` for legacy contracts that are UTC-only.

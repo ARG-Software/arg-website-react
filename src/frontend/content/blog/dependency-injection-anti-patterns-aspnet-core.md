@@ -265,6 +265,8 @@ builder.Host.UseDefaultServiceProvider(options =>
 
 `ValidateOnBuild` checks that registered services can be constructed. `ValidateScopes` rejects scoped services resolved from the root provider or injected into singletons. The Generic Host enables these checks by default in the Development environment; configuring them explicitly applies the policy in every environment. Open generic registrations are not checked by `ValidateOnBuild`, so startup validation cannot prove every runtime resolution path.
 
+Lifetime bugs rarely show up when you read one file at a time. They show up when you [trace registrations across the whole app](/audit/architecture-review/).
+
 ## FAQ
 
 - **What is the difference between scoped, transient, and singleton in ASP.NET Core?** Transient creates a new instance for each resolution, scoped creates one instance per request or explicit scope, and singleton creates one instance for the whole application.

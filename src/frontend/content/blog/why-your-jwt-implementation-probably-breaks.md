@@ -374,6 +374,8 @@ For a conventional same-origin web application, a mature server-side session coo
 
 JWTs are useful, but they do not remove state from authentication as a whole. They move decisions about state, consistency, and revocation to architecture boundaries. Make those decisions explicit before production makes them for you.
 
+They are also among the first things we check when we [review an existing system](/audit/architecture-review/).
+
 ## FAQ
 
 - **JWT vs session: which should I use?** For a conventional same-origin web application, a server-side session cookie is often simpler because logout and per-session revocation are direct. Self-contained JWT access tokens make sense when independent validation across several resource servers gives a concrete benefit.

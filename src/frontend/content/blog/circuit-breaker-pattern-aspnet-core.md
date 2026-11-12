@@ -170,6 +170,8 @@ The handled response or exception that reaches the threshold is still returned o
 
 **Combine with Other Patterns.** Circuit breakers work well alongside retries (for transient failures) and timeouts (to avoid hanging forever).
 
+Which dependencies need a breaker at all comes from [mapping the integrations a system relies on](/audit/architecture-review/), not from adding one to every HTTP client.
+
 ## FAQ
 
 - **What are the states of a circuit breaker?** Closed lets calls through, Open rejects them immediately, and Half-Open allows a single probe to test recovery. Polly also has an Isolated state for holding a circuit open manually.

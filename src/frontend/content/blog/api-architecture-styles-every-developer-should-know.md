@@ -273,6 +273,8 @@ Then test the choice against production constraints:
 - What happens during partial failure, retries, reconnects, and deployments?
 - Has performance been measured with representative payloads and concurrency?
 
+Answering those questions for a system that already exists is what we do when we [review its integrations and boundaries](/audit/architecture-review/).
+
 ## FAQ
 
 - **REST vs GraphQL: which should I choose?** REST suits a resource-oriented HTTP contract that needs broad compatibility. GraphQL suits a client-selected data graph shared by several product experiences.

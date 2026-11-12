@@ -573,6 +573,8 @@ PCA offers several advantages: less boilerplate and complexity, more straightfor
 
 There are also trade-offs to consider: slightly more overhead than minimal approaches, requires discipline to maintain boundaries, may need adaptation for very large or distributed systems, and there is an initial learning curve for teams new to DDD concepts.
 
+Whether those trade-offs pay off depends on the system, which is why we [read the codebase first](/audit/architecture-review/) before recommending a structure.
+
 ## FAQ
 
 - **What is clean architecture in ASP.NET Core?** A way to structure an application so that source code dependencies point inward: business rules sit at the core, and databases, frameworks, and external APIs are implementation details behind abstractions.

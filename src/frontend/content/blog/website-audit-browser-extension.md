@@ -70,7 +70,7 @@ And here's our favorite part: it explains problems in language people can unders
 
 Instead of throwing mysterious error codes at you, it tells you what's wrong, why you should care, and what can be done about it.
 
-You can even copy a finding and send it straight to your developer as a task.
+You can even copy a finding and send it straight to your developer as a task, or [send us the report to review](/audit/).
 
 ![Arg Architect free website health check browser extension](/images/blog/website-audit-browser-extension/website-audit-browser-extension-header.webp)
 

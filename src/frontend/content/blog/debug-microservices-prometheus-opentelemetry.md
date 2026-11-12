@@ -647,6 +647,8 @@ groups:
 
 For a 99.9% SLO, the allowed error ratio is `0.001`. A continuous 14.4x burn would exhaust a 30-day budget in about 2.1 days; over the one-hour alert window it consumes 2% of that budget. A continuous 6x burn would exhaust it in 5 days; over six hours it consumes 5%. Google SRE's recommended starting point pages on both conditions, paired with 5-minute and 30-minute windows so recovered incidents reset sooner. Tune notification policy to your service, and add explicit handling for low or absent traffic before using these rules in production.
 
+Whether a system can be debugged this way says a lot about [how it is deployed and monitored](/audit/architecture-review/).
+
 ![How we debug slow Microservices where to start](/images/blog/how-we-debug-slow-microservices/how-we-debug-slow-microservices-start.webp)
 
 ## FAQ

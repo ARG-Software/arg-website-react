@@ -376,6 +376,8 @@ Snapshot tests can help, but review snapshots as contracts rather than approving
 
 API versioning works as a lifecycle: release, deprecate, observe, and retire.
 
+Knowing which clients still call each version is part of [reviewing an API's integrations](/audit/architecture-review/).
+
 ## FAQ
 
 - **Which package do I need for API versioning in .NET 10 Minimal APIs?** `Asp.Versioning.Http`, plus `Asp.Versioning.Mvc.ApiExplorer` for per-version OpenAPI documents with Swashbuckle. `Asp.Versioning.OpenApi` integrates with the first-party `Microsoft.AspNetCore.OpenApi` stack.

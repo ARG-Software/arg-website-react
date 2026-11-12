@@ -172,6 +172,8 @@ We took the opportunity to explore the newly introduced @ngrx/signals package. S
 
 While this worked great for those localized modules, we kept RxJS and classic NgRx architecture for the rest of the app. In our case, RxJS still felt more natural and powerful - especially in modules where effects often relied on stream transformations like switchMap, concatMap, withLatestFrom, and catchError to coordinate actions and handle responses.
 
+Every legacy app breaks in its own places, so the first step on a migration like this is [mapping where yours will break](/audit/architecture-review/).
+
 ## FAQ
 
 - **How do you upgrade a legacy Angular app to a recent version?** We created a fresh Angular CLI project and moved the existing NgModules into it one at a time, fixing bootstrap, injection, and package compatibility issues module by module.

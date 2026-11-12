@@ -270,6 +270,8 @@ Idempotency is necessary in many systems, but “idempotent” is not the same a
 - It does not decide what to do with poison messages, permanent failures, or version gaps. Bound retries and provide dead-letter/parking and operator-visible reconciliation.
 - It is rarely infinite. Inbox records, broker deduplication windows, and API idempotency keys all have scopes and retention limits.
 
+Each of those gaps is a design decision, and it is what we look for when we [review how a system handles messages](/audit/architecture-review/).
+
 ## FAQ
 
 - **Does Kafka exactly-once mean my workflow runs exactly once?** No. Kafka transactions can atomically commit consumed offsets and produced Kafka records, but a database or payment API is outside that transaction unless it cooperates.

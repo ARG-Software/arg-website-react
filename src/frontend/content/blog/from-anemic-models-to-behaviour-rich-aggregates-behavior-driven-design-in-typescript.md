@@ -398,6 +398,8 @@ That leaves a deliberate choice for stock and credit. Separate aggregates should
 
 Start with the smallest boundary that protects the invariants you truly need. Reach for events and process managers when the consistency boundary genuinely crosses systems.
 
+Finding those boundaries in an existing codebase is where we start when we [review a domain model](/audit/architecture-review/).
+
 ## FAQ
 
 - **What is an anemic domain model?** A model where domain objects are just bags of data and all the real decisions happen in services, so the objects themselves have no behavior.

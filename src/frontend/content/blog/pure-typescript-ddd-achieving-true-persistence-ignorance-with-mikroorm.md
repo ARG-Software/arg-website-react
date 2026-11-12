@@ -319,6 +319,8 @@ You don’t decouple your core logic from your ORM just so you can swap database
 
 Decoupling your database isn’t about predicting the future. It is about protecting the present. It helps keep your most valuable asset, your core business rules, testable, readable, and under your control.
 
+How tightly the domain depends on the ORM is one of the clearest signals in a [review of a TypeScript backend](/audit/architecture-review/).
+
 ## FAQ
 
 - **What is persistence ignorance in DDD?** The domain model avoids depending on how and where it is stored. Persistence concerns still exist, but core business behavior is less likely to change with them.
