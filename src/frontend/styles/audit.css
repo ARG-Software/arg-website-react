@@ -2106,12 +2106,10 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
 }
 
-/* Shared step timeline (as on Working with us), three steps across */
-/* Timeline plus the email option under it. Desktop: the line drops from the right end of the
-   timeline to a dot beside the sentence. Phones: the vertical line carries on down to it */
+/* Shared step timeline (as on Working with us), three steps across, with the email option for a
+   PDF under it on the left */
 .au-send-flow {
   margin-top: clamp(2rem, 4vw, 3rem);
-  position: relative;
 }
 
 .au-send-timeline {
@@ -2124,52 +2122,12 @@
   font-weight: var(--weight-medium);
   line-height: var(--line-title);
   margin: 4rem 0 0;
-  padding-right: 1.75rem;
-  text-align: right;
 }
 
 .au-send-email a {
   color: #c022cd;
   text-decoration: underline;
   text-underline-offset: 0.2em;
-}
-
-/* Grey like the timeline rail; fills in the rail's blue once the timeline reaches step 3,
-   after the rail fill has had time to arrive */
-.au-send-email__line {
-  background: rgba(12, 0, 46, 0.12);
-  bottom: 0.5625rem;
-  position: absolute;
-  right: 0;
-  top: 1.75rem;
-  transform-origin: top;
-  width: 0.125rem;
-}
-
-.au-send-email__line::after {
-  background: #0c002e;
-  content: '';
-  inset: 0;
-  position: absolute;
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 0.6s var(--ease-out-quint);
-}
-
-.au-send-email.is-reached .au-send-email__line::after {
-  transform: scaleY(1);
-  transition-delay: 0.6s;
-}
-
-/* Blue dot where the line ends, on the sentence's last line */
-.au-send-email__dot {
-  background: #0c002e;
-  border-radius: 50%;
-  bottom: 0.1875rem;
-  height: 0.75rem;
-  position: absolute;
-  right: -0.3125rem;
-  width: 0.75rem;
 }
 
 .au-send-card .au-checks-title:first-child {
@@ -2196,24 +2154,9 @@
     grid-template-columns: 1fr;
   }
 
-  /* The sentence sits in the text column, the line drops from the end of the timeline rail */
+  /* Stacked, the sentence keeps clear of the last step above it */
   .au-send-email {
-    margin-top: 2.5rem;
-    padding: 0 0 0 4.875rem;
-    position: relative;
-    text-align: left;
-  }
-
-  .au-send-email__line {
-    bottom: 0.5625rem;
-    left: 1.75rem;
-    right: auto;
-    top: -2.75rem;
-  }
-
-  .au-send-email__dot {
-    left: 1.4375rem;
-    right: auto;
+    margin-top: 3rem;
   }
 
   .au-tier-flow {

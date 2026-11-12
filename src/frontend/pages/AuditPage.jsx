@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Footer } from '@components/layout/Footer';
 import { Navbar } from '@components/navigation/Navbar';
 import { PageHeader } from '@components/headers/PageHeader';
@@ -53,9 +53,6 @@ function StoreButton({ store, href, variant, location }) {
 export default function AuditPage() {
   const [flippedTier, setFlippedTier] = useState(null);
   const reportMailto = getMailtoLink('dev', PAGE.send.emailSubject);
-  // The line down to the email option fills once the timeline reaches its last step
-  const [sendStep, setSendStep] = useState(0);
-  const handleSendStep = useCallback((_step, index) => setSendStep(index), []);
   const [activeFeature, setActiveFeature] = useState(-1);
   const architectRef = useRef(null);
   const activeFeatureRef = useRef(activeFeature);
@@ -586,7 +583,7 @@ export default function AuditPage() {
                       <br />
                       <span className="text-color-gradiant">{PAGE.send.titleHighlight}</span>
                     </h2>
-                    {/* The timeline's line carries on down to the email option, as a last step */}
+                    {/* The email option for a PDF sits under the timeline, on the left */}
                     <div className="au-send-flow">
                       <div data-animate-order="1">
                         <StepProgressTimeline
@@ -597,35 +594,17 @@ export default function AuditPage() {
                             description: step.text,
                           }))}
                           ariaLabel={PAGE.send.title}
-                          onActiveChange={handleSendStep}
                         />
                       </div>
-                      <p
-                        className={`au-send-email${
-                          sendStep === PAGE.send.steps.length - 1 ? ' is-reached' : ''
-                        }`}
-                      >
-                        <span
-                          className="au-send-email__line"
-                          aria-hidden="true"
-                          data-animate="line-grow-down"
-                          data-animate-order="2"
-                        />
-                        <span
-                          className="au-send-email__dot"
-                          aria-hidden="true"
-                          data-animate-order="3"
-                        />
-                        <span className="au-send-email__text" data-animate-order="3">
-                          {PAGE.send.emailText}{' '}
-                          <a
-                            href={reportMailto}
-                            onClick={() => trackMailto(PAGE.send.emailSubject, 'audit_send')}
-                          >
-                            {getEmailAddress('dev')}
-                          </a>
-                          .
-                        </span>
+                      <p className="au-send-email" data-animate-order="2">
+                        {PAGE.send.emailText}{' '}
+                        <a
+                          href={reportMailto}
+                          onClick={() => trackMailto(PAGE.send.emailSubject, 'audit_send')}
+                        >
+                          {getEmailAddress('dev')}
+                        </a>
+                        .
                       </p>
                     </div>
                   </div>
