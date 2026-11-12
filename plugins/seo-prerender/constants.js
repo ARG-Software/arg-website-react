@@ -28,7 +28,7 @@ export const NAV_LINKS = [
 export const STATIC_PAGES = [
   {
     path: '/partners/',
-    title: 'Partners | ARG Software',
+    title: 'Partners and Teams We Build Software With | ARG Software',
     socialTitle: 'Partners',
     h1: 'Partners',
     pageType: 'WebPage',
@@ -105,12 +105,11 @@ export const STATIC_PAGES = [
       'Architecture and design patterns for distributed systems and domain-driven design, each with a short C# and TypeScript example, when to use it, and when to avoid it.',
     paragraphs: [
       'The patterns ARG Software uses on production systems, each explained with the problem it solves, a short C# example, a short TypeScript example, and when to avoid it.',
-      'Patterns cover distributed systems (transactional outbox, idempotent consumer, saga, event sourcing, database per service), resilience (circuit breaker), domain-driven design (aggregate, value object), and architecture (CQRS, API gateway and backend for frontend).',
     ],
   },
   {
     path: '/careers/',
-    title: 'Careers | ARG Software',
+    title: 'Remote Software Engineering Careers | ARG Software',
     socialTitle: 'Careers',
     h1: 'Careers at ARG Software',
     pageType: 'WebPage',
@@ -235,7 +234,7 @@ export const STATIC_PAGES = [
   },
   {
     path: '/contact/',
-    title: 'Contact | ARG Software',
+    title: 'Contact Us: Start a Software Project | ARG Software',
     socialTitle: 'Contact',
     h1: 'Contact ARG Software',
     pageType: 'ContactPage',

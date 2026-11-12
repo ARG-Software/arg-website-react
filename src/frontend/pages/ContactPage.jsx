@@ -96,7 +96,7 @@ export default function ContactPage() {
   return (
     <>
       <SEO
-        title="Contact"
+        title="Contact Us: Start a Software Project"
         description="Contact ARG Software with a clear project brief. Tell us what you are building, what feels risky, and where senior engineering help is needed."
         path="/contact/"
         pageType="ContactPage"
