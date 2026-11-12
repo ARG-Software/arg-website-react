@@ -99,9 +99,12 @@ export default function BlogPage() {
     if (!returnToListTop.current) return;
     returnToListTop.current = false;
     const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+    // Jumping up reveals the navbar, so the list has to land below it, not under it
+    const navHeight = document.querySelector('.nav_wrap')?.offsetHeight || 0;
     const top =
       window.scrollY +
       layoutRef.current.getBoundingClientRect().top -
+      navHeight -
       LIST_TOP_GAP_REM * rootFontSize;
     // Lenis caches the page height; re-measure so a longer list is not clamped to the old one
     if (lenis) {

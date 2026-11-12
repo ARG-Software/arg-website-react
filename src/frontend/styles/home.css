@@ -1997,15 +1997,20 @@
   }
 }
 
-/* Phones: the film sits under the title, above the filters, and the number column narrows */
+/* Phones: the film sits under the title, above the filters, both as wide as the list below,
+   and the number column narrows */
 @media screen and (max-width: 43.75rem) {
   .faq_toolbar {
-    align-items: flex-start;
+    align-items: stretch;
     flex-direction: column;
   }
 
   .faq_toolbar-video {
     order: -1;
+  }
+
+  .faq_video {
+    width: 100%;
   }
 
   .faq_question {
