@@ -1136,6 +1136,36 @@
     grid-template-columns: 1fr;
   }
 
+  /* Stacked, the lock sits beside the title and the points sit closer, so the card
+     is not much taller than the cards around it */
+  .au-private {
+    gap: 1.5rem;
+  }
+
+  .au-private > div:first-child {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+  }
+
+  .au-private-icon {
+    flex: none;
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+
+  .au-private h3 {
+    margin: 0;
+  }
+
+  .au-private li {
+    padding: 1rem 0 1.125rem;
+  }
+
+  .au-private p {
+    margin-top: 0.5rem;
+  }
+
   .au-shot {
     margin: 0 auto;
     max-width: 26rem;
@@ -2104,8 +2134,10 @@
   text-underline-offset: 0.2em;
 }
 
+/* Grey like the timeline rail; fills in the rail's blue once the timeline reaches step 3,
+   after the rail fill has had time to arrive */
 .au-send-email__line {
-  background: linear-gradient(to bottom, rgba(12, 0, 46, 0.12), #c022cd);
+  background: rgba(12, 0, 46, 0.12);
   bottom: 0.5625rem;
   position: absolute;
   right: 0;
@@ -2114,9 +2146,24 @@
   width: 0.125rem;
 }
 
-/* Gradient dot where the line ends, on the sentence's last line */
+.au-send-email__line::after {
+  background: #0c002e;
+  content: '';
+  inset: 0;
+  position: absolute;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.6s var(--ease-out-quint);
+}
+
+.au-send-email.is-reached .au-send-email__line::after {
+  transform: scaleY(1);
+  transition-delay: 0.6s;
+}
+
+/* Blue dot where the line ends, on the sentence's last line */
 .au-send-email__dot {
-  background: var(--arg-gradient-primary);
+  background: #0c002e;
   border-radius: 50%;
   bottom: 0.1875rem;
   height: 0.75rem;

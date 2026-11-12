@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Footer } from '@components/layout/Footer';
 import { Navbar } from '@components/navigation/Navbar';
 import { PageHeader } from '@components/headers/PageHeader';
@@ -53,6 +53,9 @@ function StoreButton({ store, href, variant, location }) {
 export default function AuditPage() {
   const [flippedTier, setFlippedTier] = useState(null);
   const reportMailto = getMailtoLink('dev', PAGE.send.emailSubject);
+  // The line down to the email option fills once the timeline reaches its last step
+  const [sendStep, setSendStep] = useState(0);
+  const handleSendStep = useCallback((_step, index) => setSendStep(index), []);
   const [activeFeature, setActiveFeature] = useState(-1);
   const architectRef = useRef(null);
   const activeFeatureRef = useRef(activeFeature);
@@ -594,9 +597,14 @@ export default function AuditPage() {
                             description: step.text,
                           }))}
                           ariaLabel={PAGE.send.title}
+                          onActiveChange={handleSendStep}
                         />
                       </div>
-                      <p className="au-send-email">
+                      <p
+                        className={`au-send-email${
+                          sendStep === PAGE.send.steps.length - 1 ? ' is-reached' : ''
+                        }`}
+                      >
                         <span
                           className="au-send-email__line"
                           aria-hidden="true"
