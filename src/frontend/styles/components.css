@@ -2090,12 +2090,22 @@ main:focus {
   width: 0.375rem;
 }
 
+/* One row while every link fits, with its natural spacing */
 .page-header__side-list {
   column-gap: 3.5rem;
   display: flex;
   flex: 1;
   flex-wrap: wrap;
   min-width: 0;
+}
+
+/* Set by PageHeader once the links no longer fit one row: equal columns, so the links that move
+   to the next line sit under the ones above. Each column fits the longest label ("Talk to the
+   Founders"); each link keeps its own width for the hover line */
+.page-header__side-list--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
+  justify-items: start;
 }
 
 .page-header__side-list a {
@@ -2197,6 +2207,7 @@ main:focus {
 
   /* One link per row, numbers and arrows lined up in their own columns */
   .page-header__side-list {
+    display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     margin-top: 0.75rem;

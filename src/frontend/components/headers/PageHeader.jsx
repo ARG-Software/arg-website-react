@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Breadcrumb } from '../navigation/Breadcrumb';
 import AppLink from '../navigation/AppLink';
 import { arrowSvg } from '@ui/icons/SocialIcons.jsx';
@@ -43,6 +44,27 @@ export function PageHeader({
   animationTrigger = 'load',
 }) {
   const titleLines = Array.isArray(title) ? title : [title];
+
+  // The links stay on one row while they fit and switch to columns only when one would wrap
+  const sideListRef = useRef(null);
+  const [sideGrid, setSideGrid] = useState(false);
+  useLayoutEffect(() => {
+    const list = sideListRef.current;
+    if (!list) return undefined;
+
+    const measure = () => {
+      const links = [...list.children];
+      const gap = parseFloat(getComputedStyle(list).columnGap) || 0;
+      const needed =
+        links.reduce((sum, link) => sum + link.scrollWidth, 0) + gap * (links.length - 1);
+      setSideGrid(needed > list.clientWidth);
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, [sideItems.length]);
   const headerClass = [
     'page-header',
     SIZE_CLASSES[size] ?? SIZE_CLASSES.default,
@@ -176,7 +198,11 @@ export function PageHeader({
               <span className="page-header__side-dot" aria-hidden="true" />
               {sideLabel}
             </div>
-            <nav className="page-header__side-list" aria-label={sideLabel}>
+            <nav
+              ref={sideListRef}
+              className={`page-header__side-list${sideGrid ? ' page-header__side-list--grid' : ''}`}
+              aria-label={sideLabel}
+            >
               {sideItems.map(renderSideItem)}
             </nav>
           </div>
