@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { trackConsent } from '@services/analytics';
-import { STORAGE_KEY } from '@constants/ui';
+import { SHOW_COOKIE_BANNER, STORAGE_KEY } from '@constants/ui';
 import { LoadingContext } from '../../providers/LoadingProvider';
 
 function updateConsent(granted) {
@@ -22,7 +22,8 @@ function getStoredConsent() {
 export function CookieConsent() {
   const [consent, setConsent] = useState(getStoredConsent);
   const loadingDone = useContext(LoadingContext);
-  const shouldShow = loadingDone && consent !== 'granted' && consent !== 'denied';
+  const shouldShow =
+    SHOW_COOKIE_BANNER && loadingDone && consent !== 'granted' && consent !== 'denied';
 
   function handleAccept(type) {
     localStorage.setItem(STORAGE_KEY, 'granted');

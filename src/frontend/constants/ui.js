@@ -4,6 +4,8 @@ export const LEAD_CAPTURE_DISMISS_EXPIRY_KEY = 'arg_lead_capture_dismissed';
 export const LEAD_CAPTURE_DISMISS_EXPIRY_MS = 2 * 24 * 60 * 60 * 1000; // 2 days
 export const LEAD_CAPTURE_SESSION_DISMISSED_KEY = 'arg_lead_capture_session_dismissed';
 export const STORAGE_KEY = 'arg_cookie_consent';
+// Hidden while the Awwwards submission is in review; set back to true once it is approved
+export const SHOW_COOKIE_BANNER = false;
 export const MOBILE_BREAKPOINT = 767; // px
 export const TABLET_BREAKPOINT = 991; // px
 export const DEFAULT_ROOT_MARGIN = '0px 0px -10% 0px';
