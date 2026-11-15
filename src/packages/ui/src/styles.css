@@ -2008,6 +2008,11 @@
   transform: rotate(-90deg);
 }
 
+/* Pointing up, the arrow's tip sits further in from its box than the usual -50deg turn */
+.text-button.footer-bottom__top .text-button_line::after {
+  right: calc(var(--size-text-button-icon) * 0.5);
+}
+
 /* 5. Wordmark: the full content width, on the bottom edge */
 .footer-wordmark {
   flex: none;
