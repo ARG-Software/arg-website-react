@@ -852,7 +852,8 @@ main:focus {
   left: 0;
   pointer-events: none;
   position: absolute;
-  right: 0;
+  /* The arrow is a square box turned -50deg, so its tip sits short of the box's right edge */
+  right: calc(var(--size-text-button-icon) * 0.3);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.65s var(--ease-in-out-quart);
