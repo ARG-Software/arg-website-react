@@ -232,3 +232,58 @@ html.ls-active {
     animation: none;
   }
 }
+
+/* Exit burst: a ring in the brand gradient that grows from the centre past the screen edges.
+   The size is animated (not the scale), so the stroke keeps its thickness as it grows. The
+   glow is a filter on this element, and the mask that cuts out the ring sits on the pseudo
+   element, so the glow is not masked away. */
+.ls-burst {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10000;
+  width: 8rem;
+  height: 8rem;
+  translate: -50% -50%;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 1rem rgba(201, 36, 215, 0.75))
+    drop-shadow(0 0 2.5rem rgba(240, 6, 13, 0.35));
+}
+
+.ls-burst::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--arg-gradient-primary);
+  mask-image: radial-gradient(
+    circle closest-side,
+    transparent calc(100% - 1.25rem),
+    #000 calc(100% - 1.125rem),
+    #000 calc(100% - 0.125rem),
+    transparent 100%
+  );
+}
+
+.ls-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 24rem;
+  height: 24rem;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle closest-side,
+    rgba(255, 228, 255, 0.95) 0%,
+    rgba(201, 36, 215, 0.85) 35%,
+    rgba(121, 4, 253, 0.45) 65%,
+    transparent 100%
+  );
+  filter: blur(1rem);
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+}

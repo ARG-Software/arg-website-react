@@ -16,7 +16,7 @@ const MOUSE_RADIUS = 0.06;
 const REFRACTION_SCALE = 0.07;
 // #0c002e → vec3(0.047, 0.0, 0.18)
 const BASE_COLOR = [0.047, 0.0, 0.18];
-const VIDEO_OPACITY = 0.09;
+const VIDEO_OPACITY = 0.11;
 // Normal map resolution for text displacement (kept small to minimise readPixels cost)
 const NM_W = 64;
 const NM_H = 36;
@@ -308,7 +308,6 @@ export function useWaterRipple(canvasId = 'water-ripple-canvas') {
         videoTexture.colorSpace = SRGBColorSpace;
         videoTexture.minFilter = LinearFilter;
         videoTexture.magFilter = LinearFilter;
-        videoTexture.flipY = false;
       }
 
       // ── Render targets ───────────────────────────────────────────────────

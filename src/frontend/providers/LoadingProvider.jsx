@@ -17,6 +17,8 @@ export function LoadingProvider({ children }) {
   const [done, setDone] = useState(!initialShouldShow);
   const [shouldShow] = useState(initialShouldShow);
   const [ready, setReady] = useState(false);
+  // The page starts at the intro's burst (done); the loader stays mounted until its ring is gone
+  const [loaderGone, setLoaderGone] = useState(!initialShouldShow);
 
   useEffect(() => {
     if (!shouldShow) {
@@ -36,7 +38,9 @@ export function LoadingProvider({ children }) {
 
   return (
     <LoadingContext.Provider value={done}>
-      {shouldShow && !done && <LoadingScreen onComplete={handleComplete} />}
+      {shouldShow && !loaderGone && (
+        <LoadingScreen onReveal={handleComplete} onComplete={() => setLoaderGone(true)} />
+      )}
       <div style={{ opacity: ready ? 1 : 0, transition: 'opacity 120ms ease' }}>{children}</div>
     </LoadingContext.Provider>
   );

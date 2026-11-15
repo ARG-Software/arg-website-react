@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { PillButton } from '@ui/pills/Pill.jsx';
+import { prefersReducedMotion } from '@utils/helpers';
 import '../../styles/loadingscreen.css';
 
 // Used only when the video cannot play: the timed sequence lasts as long as the video does.
@@ -31,32 +32,65 @@ const STEPS = [
   { verb: 'ship', target: 'v1.0.0', result: 'live' },
 ];
 
-export function LoadingScreen({ onComplete }) {
+export function LoadingScreen({ onReveal, onComplete }) {
   const overlayRef = useRef(null);
   const videoRef = useRef(null);
+  const burstRef = useRef(null);
+  const coreRef = useRef(null);
   const uiRefs = useRef([]);
   const exitTlRef = useRef(null);
   const frameRef = useRef(0);
   const finishedRef = useRef(false);
+  const onRevealRef = useRef(onReveal);
   const onCompleteRef = useRef(onComplete);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    onRevealRef.current = onReveal;
     onCompleteRef.current = onComplete;
-  }, [onComplete]);
+  }, [onReveal, onComplete]);
 
-  // The video ends on the hero's own background and blob: fade the UI, then the loader over
-  // the hero.
+  // The video ends on the hero's own background and blob. The blob lights up and collapses
+  // into a bright core, the core bursts into a ring in the brand gradient that races past the
+  // screen edges, and the loader drops away at the burst. The hero starts while the ring is
+  // still expanding (onReveal); the loader unmounts once the ring is gone (onComplete).
   const reveal = useCallback(() => {
     if (finishedRef.current) return;
     finishedRef.current = true;
     cancelAnimationFrame(frameRef.current);
     setProgress(100);
+    overlayRef.current.style.pointerEvents = 'none';
 
-    exitTlRef.current = gsap
+    const tl = gsap
       .timeline({ onComplete: () => onCompleteRef.current?.() })
-      .to(uiRefs.current, { opacity: 0, duration: 0.4, ease: 'power2.out' })
-      .to(overlayRef.current, { opacity: 0, duration: 1.2, ease: 'power2.inOut' }, 0.2);
+      .to(uiRefs.current, { opacity: 0, duration: 0.3, ease: 'power2.out' });
+
+    if (prefersReducedMotion()) {
+      tl.to(overlayRef.current, { opacity: 0, duration: 1.2, ease: 'power2.inOut' }, 0.2).call(() =>
+        onRevealRef.current?.()
+      );
+    } else {
+      // Wide enough that the ring clears the corners of the screen
+      const coverSize = Math.hypot(window.innerWidth, window.innerHeight) * 1.15;
+      tl.fromTo(
+        coreRef.current,
+        { opacity: 0, scale: 1 },
+        { opacity: 0.7, duration: 0.25, ease: 'power1.in' },
+        0
+      )
+        .to(coreRef.current, { opacity: 1, scale: 0.4, duration: 0.2, ease: 'power3.in' }, 0.25)
+        .set(burstRef.current, { opacity: 1 }, 0.45)
+        .to(coreRef.current, { opacity: 0, scale: 0.8, duration: 0.2, ease: 'power2.out' }, 0.45)
+        .to(
+          burstRef.current,
+          { width: coverSize, height: coverSize, duration: 1.15, ease: 'power2.out' },
+          0.45
+        )
+        .to(overlayRef.current, { opacity: 0, duration: 0.35, ease: 'power2.out' }, 0.45)
+        .call(() => onRevealRef.current?.(), null, 0.7)
+        .to(burstRef.current, { opacity: 0, duration: 0.3, ease: 'power1.in' }, 1.3);
+    }
+    exitTlRef.current = tl;
   }, []);
 
   useEffect(() => {
@@ -133,70 +167,77 @@ export function LoadingScreen({ onComplete }) {
   const shownSteps = STEPS.slice(0, stepIndex + 1);
 
   return (
-    <div className="ls-overlay" ref={overlayRef} aria-hidden="true">
-      <video
-        className="ls-video"
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
-        preload="auto"
-        poster="/videos/intro-poster.webp"
-      >
-        <source src="/videos/intro.mp4" type="video/mp4" />
-      </video>
-
-      <div className="ls-top" ref={el => (uiRefs.current[0] = el)}>
-        <PillButton
-          variant="glass"
-          active
-          size="sm"
-          className="ls-skip"
-          onClick={reveal}
-          iconAfter={<kbd className="ls-skip-key">Esc</kbd>}
+    <>
+      <div className="ls-overlay" ref={overlayRef} aria-hidden="true">
+        <video
+          className="ls-video"
+          ref={videoRef}
+          autoPlay
+          muted
+          playsInline
+          preload="auto"
+          poster="/videos/intro-poster.webp"
         >
-          Skip intro
-        </PillButton>
-      </div>
+          <source src="/videos/intro.mp4" type="video/mp4" />
+        </video>
 
-      <div className="ls-bottom" ref={el => (uiRefs.current[1] = el)}>
-        <div className="ls-status">
-          {/* A running pipeline: finished steps stay listed, the newest one runs at the bottom */}
-          <ol className="ls-log">
-            {shownSteps.map((item, i) => {
-              const running = i === stepIndex && progress < 100;
-              return (
-                <li key={item.verb} className={running ? 'is-running' : undefined}>
-                  <span className="ls-log-mark">{running ? '→' : '✓'}</span>
-                  <span className="ls-log-verb">{item.verb}</span>
-                  <span>{item.target}</span>
-                  <span className="ls-log-result">{running ? 'running' : item.result}</span>
-                </li>
-              );
-            })}
-          </ol>
-          <span className="ls-status-word">
-            scaling
-            <span className="ls-status-dots">
-              <span />
-              <span />
-              <span />
+        {/* Lights up over the blob at the end, then collapses into the core the ring bursts from */}
+        <div className="ls-core" ref={coreRef} />
+
+        <div className="ls-top" ref={el => (uiRefs.current[0] = el)}>
+          <PillButton
+            variant="glass"
+            active
+            size="sm"
+            className="ls-skip"
+            onClick={reveal}
+            iconAfter={<kbd className="ls-skip-key">Esc</kbd>}
+          >
+            Skip intro
+          </PillButton>
+        </div>
+
+        <div className="ls-bottom" ref={el => (uiRefs.current[1] = el)}>
+          <div className="ls-status">
+            {/* A running pipeline: finished steps stay listed, the newest one runs at the bottom */}
+            <ol className="ls-log">
+              {shownSteps.map((item, i) => {
+                const running = i === stepIndex && progress < 100;
+                return (
+                  <li key={item.verb} className={running ? 'is-running' : undefined}>
+                    <span className="ls-log-mark">{running ? '→' : '✓'}</span>
+                    <span className="ls-log-verb">{item.verb}</span>
+                    <span>{item.target}</span>
+                    <span className="ls-log-result">{running ? 'running' : item.result}</span>
+                  </li>
+                );
+              })}
+            </ol>
+            <span className="ls-status-word">
+              scaling
+              <span className="ls-status-dots">
+                <span />
+                <span />
+                <span />
+              </span>
             </span>
-          </span>
-        </div>
-        <div className="ls-percent">
-          {progress}
-          <span className="ls-percent-sign">%</span>
-        </div>
-        <div className="ls-segments">
-          {STEPS.map((item, i) => (
-            <span
-              key={item.verb}
-              className={`ls-segment${i < filledSegments ? ' is-filled' : ''}`}
-            />
-          ))}
+          </div>
+          <div className="ls-percent">
+            {progress}
+            <span className="ls-percent-sign">%</span>
+          </div>
+          <div className="ls-segments">
+            {STEPS.map((item, i) => (
+              <span
+                key={item.verb}
+                className={`ls-segment${i < filledSegments ? ' is-filled' : ''}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+      {/* Outside the overlay, so the overlay fading out does not fade the ring with it */}
+      <div className="ls-burst" ref={burstRef} aria-hidden="true" />
+    </>
   );
 }
