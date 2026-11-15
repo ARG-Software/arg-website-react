@@ -23,7 +23,7 @@ export async function loadHomepageSectionSources(
       url: `/#${sectionId}`,
       path: filePath,
       metadata: { source_file: filePath, section_id: sectionId },
-      content: flattenJsonToText(homepage[scope.dataKey], `homepage ${scope.title}`),
+      content: flattenJsonToText(homepage[scope.dataKey], `homepage ${scope.title}`, homepage.ragIgnore),
     })
   );
 }
@@ -32,10 +32,11 @@ export async function loadJsonSource(filePath: string, options: IJsonManifestEnt
   const sourceKey = options.sourceKey ?? path.basename(filePath, path.extname(filePath));
   const json = await readJsonFile(filePath);
   const sourceJson = options.dataKey ? (json as Record<string, unknown>)[options.dataKey] : json;
+  const rootIgnore = options.dataKey ? (json as Record<string, unknown>).ragIgnore : [];
   const content =
     sourceKey === 'site-links'
       ? formatSiteLinksSource(sourceJson as ISiteLinksJson, options.label)
-      : flattenJsonToText(sourceJson, options.label);
+      : flattenJsonToText(sourceJson, options.label, rootIgnore);
 
   return createSource({
     sourceType: options.sourceType,

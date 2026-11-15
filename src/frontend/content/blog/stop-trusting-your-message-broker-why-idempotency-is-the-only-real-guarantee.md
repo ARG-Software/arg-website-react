@@ -5,8 +5,8 @@ author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
-tag: Reliability
-tags: Reliability, Architecture, Backend
+tag: Operations
+tags: Operations, Architecture, Backend
 title: Stop Trusting Your Message Broker: Why Idempotency Is a Core Safety Net
 subtitle: Kafka exactly-once, ordering, and delivery semantics have limits. How idempotent consumers, the inbox and transactional outbox patterns, and idempotency keys keep event-driven systems correct.
 intro: Kafka exactly-once, ordering, and delivery semantics have limits. How idempotent consumers, the inbox and transactional outbox patterns, and idempotency keys keep event-driven systems correct.

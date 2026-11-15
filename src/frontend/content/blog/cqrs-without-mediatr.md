@@ -6,7 +6,7 @@ authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
-tags: Architecture, Backend, Refactoring
+tags: Architecture, Backend, Code Quality
 title: .NET CQRS Architecture Without MediatR - Your Exit Plan Is Simpler Than You Think
 subtitle: MediatR 13 is no longer Apache-2.0. Build a lightweight MediatR alternative for .NET CQRS using plain interfaces, dispatchers, and decorators.
 intro: MediatR 13 is no longer Apache-2.0. Build a lightweight MediatR alternative for .NET CQRS using plain interfaces, dispatchers, and decorators.

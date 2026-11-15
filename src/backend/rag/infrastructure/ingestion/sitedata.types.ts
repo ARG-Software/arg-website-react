@@ -19,6 +19,7 @@ export interface IPartnerJson extends RagSourceMetadata {
 
 export interface IPartnersJson {
   clients: IPartnerJson[];
+  ragIgnore?: string[];
 }
 
 export interface IFounderProfile {

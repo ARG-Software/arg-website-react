@@ -5,8 +5,8 @@ author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
-tag: DevOps
-tags: DevOps, Backend
+tag: Operations
+tags: Operations, Backend
 title: From Zero to Hero: Mastering Local Kubernetes with NestJS and PostgreSQL in Minutes!
 subtitle: Run NestJS and PostgreSQL on local Kubernetes with k3d: why we chose it over Minikube, Kind, and Docker Desktop, plus deployments, services, volumes, secrets, and migrations.
 intro: Run NestJS and PostgreSQL on local Kubernetes with k3d: why we chose it over Minikube, Kind, and Docker Desktop, plus deployments, services, volumes, secrets, and migrations.

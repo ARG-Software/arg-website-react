@@ -6,7 +6,7 @@ authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: AI
-tags: AI, DevOps
+tags: AI, Operations
 title: Break Free from ChatGPT: Your Complete Guide to Running AI on Your Own Computer
 subtitle: Run AI locally with Ollama or LM Studio. Compare the two, size models to your hardware, and understand the privacy, cost, and performance trade-offs.
 intro: Run AI locally with Ollama or LM Studio. Compare the two, size models to your hardware, and understand the privacy, cost, and performance trade-offs.

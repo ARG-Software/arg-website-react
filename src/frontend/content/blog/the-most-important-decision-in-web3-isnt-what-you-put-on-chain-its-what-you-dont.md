@@ -5,8 +5,8 @@ author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
-tag: Web3
-tags: Web3, Architecture, Security
+tag: Architecture
+tags: Architecture, Security
 title: The Most Important Decision in Web3 Isn’t What You Put On-Chain - It’s What You Don’t
 subtitle: On-chain vs off-chain: how to decide what belongs on the blockchain in Web3 architecture to balance trust, cost, latency, UX, and verifiability.
 intro: On-chain vs off-chain: how to decide what belongs on the blockchain in Web3 architecture to balance trust, cost, latency, UX, and verifiability.

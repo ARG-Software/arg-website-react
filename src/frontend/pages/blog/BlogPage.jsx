@@ -262,15 +262,33 @@ export default function BlogPage() {
                                   {featured ? (
                                     <span className="blp-badge blp-badge--featured">Featured</span>
                                   ) : null}
-                                  {tags[0] ? (
+                                  {tags.map(tag => (
+                                    // The card is a link, so the tag is a span acting as a button
+                                    // that filters the list instead of opening the post
                                     <Pill
+                                      key={tag}
                                       variant="custom"
                                       size="xs"
-                                      style={getBlogTagColor(tags[0], 'light')}
+                                      className="blp-card-tag"
+                                      role="button"
+                                      tabIndex={0}
+                                      aria-label={`Show ${tag} articles`}
+                                      style={getBlogTagColor(tag, 'light')}
+                                      onClick={event => {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        select({ type: 'topic', value: tag });
+                                      }}
+                                      onKeyDown={event => {
+                                        if (event.key !== 'Enter' && event.key !== ' ') return;
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        select({ type: 'topic', value: tag });
+                                      }}
                                     >
-                                      {tags[0]}
+                                      {tag}
                                     </Pill>
-                                  ) : null}
+                                  ))}
                                   {article.collectionTitle ? (
                                     <span className="blp-badge blp-badge--collection">
                                       {article.collectionTitle}

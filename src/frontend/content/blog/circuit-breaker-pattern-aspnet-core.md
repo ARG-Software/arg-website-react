@@ -5,8 +5,8 @@ author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
-tag: Reliability
-tags: Reliability, Backend, Architecture
+tag: Operations
+tags: Operations, Backend, Architecture
 title: Stop Your ASP.NET Core App from Crashing: The Circuit Breaker Pattern Explained
 subtitle: Implement the circuit breaker pattern in ASP.NET Core with Polly and Microsoft.Extensions.Http.Resilience. Stop failing services from crashing your app: fail fast, recover quickly.
 intro: Implement the circuit breaker pattern in ASP.NET Core with Polly and Microsoft.Extensions.Http.Resilience. Stop failing services from crashing your app: fail fast, recover quickly.

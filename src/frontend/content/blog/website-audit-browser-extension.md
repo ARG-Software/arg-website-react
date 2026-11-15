@@ -5,8 +5,8 @@ author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
-tag: Browser Extensions
-tags: Web Performance, Security
+tag: Frontend
+tags: Frontend, Security
 title: Your website looks fine. But what's really going on behind the scenes?
 subtitle: A free website audit browser extension: check security, performance, efficiency, accessibility, and AI readiness in about two minutes. No account, and your data never leaves your device.
 intro: A free website audit browser extension: check security, performance, efficiency, accessibility, and AI readiness in about two minutes. No account, and your data never leaves your device.

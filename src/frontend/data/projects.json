@@ -1,5 +1,6 @@
 [
   {
+    "ragIgnore": ["referenceRank", "imgSrc", "imgSrcSet", "thumbnailSrc", "thumbnailSrcSet", "thumbnailSize", "mockupSrc", "mockupSrcSet", "mockupSize", "liveLinkLabel", "trackType"],
     "slug": "mojaloop",
     "title": "Mojaloop",
     "referenceRank": 1,
@@ -38,6 +39,7 @@
     "stack": "Express, MongoDB, Kafka, Angular, Ionic, Docker, Jest, Node"
   },
   {
+    "ragIgnore": ["referenceRank", "imgSrc", "imgSrcSet", "thumbnailSrc", "thumbnailSrcSet", "thumbnailSize", "mockupSrc", "mockupSrcSet", "mockupSize", "liveLinkLabel", "trackType"],
     "slug": "peoples-clearinghouse",
     "title": "People's Clearinghouse",
     "referenceRank": 2,
@@ -100,6 +102,7 @@
     "stack": "Mojaloop vNext, Open Payments, Interledger Protocol, Event-Driven Architecture, Domain-Driven Design, Distributed Systems, Payment Switching, Ledger Orchestration, QR Payments, Merchant Payments, Mobile App, Core Banking"
   },
   {
+    "ragIgnore": ["referenceRank", "imgSrc", "imgSrcSet", "thumbnailSrc", "thumbnailSrcSet", "thumbnailSize", "mockupSrc", "mockupSrcSet", "mockupSize", "liveLinkLabel", "trackType"],
     "slug": "dokutar",
     "title": "Dokutar",
     "subtitle": "Compliance Tech",
@@ -135,6 +138,7 @@
     "stack": "TypeORM, Express, React, Docker, Jest, MySQL, Node"
   },
   {
+    "ragIgnore": ["referenceRank", "imgSrc", "imgSrcSet", "thumbnailSrc", "thumbnailSrcSet", "thumbnailSize", "mockupSrc", "mockupSrcSet", "mockupSize", "liveLinkLabel", "trackType"],
     "slug": "sky-tracks",
     "title": "SkyTracks",
     "referenceRank": 3,
@@ -171,6 +175,7 @@
     "stack": "Knex, Tone.js, Tailwind, Koa, Angular, Docker, Jest, Node"
   },
   {
+    "ragIgnore": ["referenceRank", "imgSrc", "imgSrcSet", "thumbnailSrc", "thumbnailSrcSet", "thumbnailSize", "mockupSrc", "mockupSrcSet", "mockupSize", "liveLinkLabel", "trackType"],
     "slug": "tv-cine",
     "title": "TV Cine",
     "subtitle": "Entertainment",
@@ -206,6 +211,7 @@
     "stack": "Vue.js, MongoDB, Entity Framework, .NET Core, Nuxt"
   },
   {
+    "ragIgnore": ["referenceRank", "imgSrc", "imgSrcSet", "thumbnailSrc", "thumbnailSrcSet", "thumbnailSize", "mockupSrc", "mockupSrcSet", "mockupSize", "liveLinkLabel", "trackType"],
     "slug": "royalty-flush",
     "title": "Royalty Flush",
     "subtitle": "Music Rights",
@@ -242,6 +248,7 @@
     "stack": ".NET Core, Entity Framework, Octopus Deploy, Docker, React, Hangfire, PostgreSQL, MediatR"
   },
   {
+    "ragIgnore": ["referenceRank", "imgSrc", "imgSrcSet", "thumbnailSrc", "thumbnailSrcSet", "thumbnailSize", "mockupSrc", "mockupSrcSet", "mockupSize", "liveLinkLabel", "trackType"],
     "slug": "vector",
     "title": "Vector",
     "subtitle": "Fintech",

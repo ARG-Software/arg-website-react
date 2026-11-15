@@ -6,7 +6,7 @@ authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Architecture
-tags: Architecture, Refactoring
+tags: Architecture, Code Quality
 title: The Hidden Tax of “Clean” Code: Knowing Which Abstractions to Keep (and Which to Burn)
 subtitle: Stop over-engineering your .NET apps. Learn which Clean Architecture abstractions protect your domain and which just slow you down.
 intro: Stop over-engineering your .NET apps. Learn which Clean Architecture abstractions protect your domain and which just slow you down.

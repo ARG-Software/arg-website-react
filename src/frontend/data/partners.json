@@ -1,4 +1,5 @@
 {
+  "ragIgnore": ["slug", "logo", "logoSmall", "logoSize"],
   "categories": ["All", "Fintech", "Web3", "Music", "Consultancy", "Industry"],
   "clients": [
     {

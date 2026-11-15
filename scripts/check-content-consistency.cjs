@@ -164,6 +164,8 @@ function parseBlogFrontmatter(lines) {
   return frontmatter;
 }
 
+const BLOG_TAGS = ['Architecture', 'Backend', 'AI', 'Operations', 'Engineering Culture', 'Code Quality', 'Security', 'Frontend'];
+
 function findBlogFrontmatterDateIssues() {
   const blogDir = path.join(ROOT_DIR, contentPaths.blog);
   const violations = [];
@@ -187,6 +189,13 @@ function findBlogFrontmatterDateIssues() {
     }
     if (publishedDate && modifiedDate && modifiedDate < publishedDate) {
       violations.push(`${contentPaths.blog}/${file} has dateModified before date`);
+    }
+
+    // Tags are the blog filters, so posts share a short fixed list and carry at most three
+    const tags = (frontmatter.tags || '').split(',').map(tag => tag.trim()).filter(Boolean);
+    if (tags.length > 3) violations.push(`${contentPaths.blog}/${file} has more than 3 tags`);
+    for (const tag of [frontmatter.tag, ...tags].filter(Boolean)) {
+      if (!BLOG_TAGS.includes(tag)) violations.push(`${contentPaths.blog}/${file} uses unknown tag "${tag}"`);
     }
   }
 
@@ -253,7 +262,24 @@ const projects = JSON.parse(
 );
 const faq = fs.readFileSync(path.join(ROOT_DIR, 'src/frontend/data/faq.json'), 'utf8');
 const llmsFull = fs.readFileSync(path.join(ROOT_DIR, 'public/llms-full.txt'), 'utf8');
+const homePage = JSON.parse(
+  fs.readFileSync(path.join(ROOT_DIR, 'src/frontend/data/homePage.json'), 'utf8')
+);
+const partnerSlugs = new Set(
+  JSON.parse(
+    fs.readFileSync(path.join(ROOT_DIR, 'src/frontend/data/partners.json'), 'utf8')
+  ).clients.map(client => client.slug)
+);
 const mojaloop = projects.find(project => project.slug === 'mojaloop');
+
+// A testimonial's partner must be a client listed on the Partners page
+for (const testimonial of homePage.testimonials) {
+  if (testimonial.partner && !partnerSlugs.has(testimonial.partner)) {
+    violations.push(
+      `src/frontend/data/homePage.json testimonial from ${testimonial.name} names unknown partner "${testimonial.partner}"`
+    );
+  }
+}
 const clearinghouse = projects.find(project => project.slug === 'peoples-clearinghouse');
 
 // The engagement ran from 2021 to 2023 (see the Partners timeline), so it must never read as ongoing

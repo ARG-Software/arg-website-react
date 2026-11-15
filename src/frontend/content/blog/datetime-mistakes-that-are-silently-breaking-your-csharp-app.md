@@ -6,7 +6,7 @@ authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
 tag: Backend
-tags: Backend, Reliability, Architecture
+tags: Backend, Operations, Architecture
 title: DateTime Mistakes That Are Silently Breaking Your C# App
 subtitle: DateTime vs DateTimeOffset, UTC, time zones, DateOnly, and TimeProvider: the small C# date and time habits that quietly cause the hardest production bugs.
 intro: DateTime vs DateTimeOffset, UTC, time zones, DateOnly, and TimeProvider: the small C# date and time habits that quietly cause the hardest production bugs.

@@ -445,6 +445,16 @@
   margin-bottom: 0.5rem;
 }
 
+.blp-card-tag {
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.blp-card-tag:hover,
+.blp-card-tag:focus-visible {
+  filter: brightness(0.85);
+}
+
 .blp-badge {
   background: #f3f0ff;
   border-radius: 100vw;

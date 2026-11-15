@@ -21,7 +21,7 @@ export async function loadPartnerSources(rootDir: string, relativeFilePath: stri
         industry: partner.industry,
         external_url: partner.link,
       },
-      content: flattenJsonToText(partner, `partner ${partner.name}`),
+      content: flattenJsonToText(partner, `partner ${partner.name}`, partners.ragIgnore),
     })
   );
 }

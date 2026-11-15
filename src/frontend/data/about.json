@@ -1,4 +1,5 @@
 {
+  "ragIgnore": ["id", "tone"],
   "seo": {
     "title": "About Our Architecture-First Studio",
     "description": "Meet ARG Software, an architecture-first engineering studio based in Portugal, Europe, built on senior ownership, technical trust and maintainable systems."

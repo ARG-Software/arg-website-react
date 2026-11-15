@@ -20,7 +20,7 @@ authorUrl: https://www.linkedin.com/in/...
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/...
 tag: Architecture
-tags: Architecture, Backend, Refactoring
+tags: Architecture, Backend, Code Quality
 title: Full article title
 subtitle: Meta description. Primary keyword plus one secondary keyword.
 intro: Usually the same text as subtitle
@@ -33,6 +33,7 @@ mediumUrl: https://medium.com/...
 ```
 
 - `slug` never changes after publishing: it is the URL.
+- `tags` are the blog filters: at most 3, picked from Architecture, Backend, AI, Operations, Engineering Culture, Code Quality, Security, Frontend. `tag` is the main one and comes from the same list. Operations covers DevOps, reliability and observability; Code Quality covers refactoring and testing (`check:content` enforces the list and the limit).
 - `dateModified` is for SEO. `reviewedOn` is the date shown in italics at the end of the article. `reviewedOn` requires `dateModified`, and `dateModified` can't be earlier than `date` (`npm run check:content` enforces both).
 - Dates use the `Month D, YYYY` format.
 

@@ -5,8 +5,8 @@ author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
-tag: Observability
-tags: Observability, Backend, Architecture
+tag: Operations
+tags: Operations, Backend, Architecture
 title: How to Log Complex Systems Like a Senior Backend Engineer
 subtitle: Structured logging for Node.js and Express in TypeScript: request IDs, trace-context correlation, AsyncLocalStorage, redaction, and logging business decisions without making your code a mess.
 intro: Structured logging for Node.js and Express in TypeScript: request IDs, trace-context correlation, AsyncLocalStorage, redaction, and logging business decisions without making your code a mess.

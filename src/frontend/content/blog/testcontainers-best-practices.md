@@ -5,8 +5,8 @@ author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
-tag: Testing
-tags: Testing, Backend
+tag: Code Quality
+tags: Code Quality, Backend
 title: Testcontainers Best Practices for NestJS Integration Testing
 subtitle: Testcontainers best practices for NestJS integration tests with real PostgreSQL and Redis containers: dynamic configuration, shared setup, auth helpers, and maintainable tests.
 intro: Testcontainers best practices for NestJS integration tests with real PostgreSQL and Redis containers: dynamic configuration, shared setup, auth helpers, and maintainable tests.
