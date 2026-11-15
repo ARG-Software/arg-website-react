@@ -10,6 +10,7 @@ import { BlogSidebar } from '@components/navigation/BlogSidebar';
 import { Pagination } from '@ui/navigation/Pagination.jsx';
 import { Pill } from '@ui/pills/Pill.jsx';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
+import { useFilterReveal } from '@ui/utils/useFilterReveal.js';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { useBlogSearch } from '@hooks/useBlogSearch';
 import { useTimeOnPage } from '@hooks/useTimeOnPage';
@@ -154,6 +155,12 @@ export default function BlogPage() {
 
   useTimeOnPage('/blog/');
   useScrollAnimations();
+  // A topic, collection, search or page change replays the fade-up on the cards it shows
+  useFilterReveal(
+    layoutRef,
+    '.blp-card',
+    `${active.type}:${active.value || ''}|${debouncedQuery}|${page}`
+  );
 
   return (
     <>
