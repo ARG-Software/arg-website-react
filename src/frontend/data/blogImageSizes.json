@@ -3,6 +3,42 @@
     2560,
     1440
   ],
+  "/images/blog/agent-skills-part-1-dotnet-nx-mcp-backend/agent-skills-part-1-dotnet-nx-mcp-backend-header.webp": [
+    2560,
+    1440
+  ],
+  "/images/blog/agent-skills-part-1-dotnet-nx-mcp-backend/agent-skills-how-an-agent-picks-up-a-skill-technical-illustration-2.webp": [
+    1920,
+    1080
+  ],
+  "/images/blog/agent-skills-part-1-dotnet-nx-mcp-backend/agent-skills-dotnet-layers-and-outbox-technical-illustration-3.webp": [
+    1920,
+    1080
+  ],
+  "/images/blog/agent-skills-part-2-angular-react-native-browser-extension/agent-skills-part-2-angular-react-native-browser-extension-header.webp": [
+    2560,
+    1440
+  ],
+  "/images/blog/agent-skills-part-2-angular-react-native-browser-extension/agent-skills-front-end-guardrails-technical-illustration-2.webp": [
+    1920,
+    1080
+  ],
+  "/images/blog/agent-skills-part-2-angular-react-native-browser-extension/agent-skills-browser-extension-adapters-technical-illustration-3.webp": [
+    1920,
+    1080
+  ],
+  "/images/blog/agent-skills-part-3-code-review-security-audit-devops/agent-skills-part-3-code-review-security-audit-devops-header.webp": [
+    2560,
+    1440
+  ],
+  "/images/blog/agent-skills-part-3-code-review-security-audit-devops/agent-skills-where-the-checks-sit-technical-illustration-2.webp": [
+    1920,
+    1080
+  ],
+  "/images/blog/agent-skills-part-3-code-review-security-audit-devops/agent-skills-anatomy-of-a-finding-technical-illustration-3.webp": [
+    1920,
+    1080
+  ],
   "/images/blog/everyone-wants-ai/everyone-wants-ai-header.webp": [
     2560,
     1440
@@ -238,6 +274,26 @@
   "/images/blog/from-zero-to-hero/k3d-alternatives.webp": [
     1020,
     984
+  ],
+  "/images/blog/microservices-vs-modular-monolith-prove-it-before-you-split/microservices-vs-modular-monolith-prove-it-before-you-split-header.webp": [
+    2560,
+    1440
+  ],
+  "/images/blog/microservices-vs-modular-monolith-prove-it-before-you-split/microservices-vs-modular-monolith-the-cost-nobody-puts-on-the-slide-technical-illustration-2.webp": [
+    1920,
+    1080
+  ],
+  "/images/blog/microservices-vs-modular-monolith-prove-it-before-you-split/microservices-vs-modular-monolith-evidence-vs-excuses-technical-illustration-3.webp": [
+    1920,
+    1080
+  ],
+  "/images/blog/microservices-vs-modular-monolith-prove-it-before-you-split/microservices-vs-modular-monolith-the-data-boundary-technical-illustration-4.webp": [
+    1920,
+    1080
+  ],
+  "/images/blog/microservices-vs-modular-monolith-prove-it-before-you-split/microservices-vs-modular-monolith-the-split-ladder-technical-illustration-5.webp": [
+    1920,
+    1080
   ],
   "/images/blog/nestjs-monorepo/nestjs-monorepo-header.webp": [
     2560,
