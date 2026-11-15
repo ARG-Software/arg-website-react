@@ -214,6 +214,13 @@ html.ls-active {
   background: var(--ls-accent);
 }
 
+/* Touch screens have no Esc key: the button alone says "Skip intro" */
+@media (hover: none) and (pointer: coarse) {
+  .ls-skip .pill__icon--after {
+    display: none;
+  }
+}
+
 @media (max-width: 767px) {
   .ls-overlay {
     --ls-edge-x: 1rem;
