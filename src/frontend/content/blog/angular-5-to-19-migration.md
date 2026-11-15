@@ -6,7 +6,7 @@ authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
 tag: Frontend
-tags: Frontend, Refactoring
+tags: Frontend, Code Quality
 title: Upgrading Angular Legacy Project Version 5 to 19
 subtitle: How we upgraded a legacy Angular 5 and NgRx app to Angular 19 one module at a time: Angular CLI, bootstrap and DI fixes, standalone: false, RxJS 7, and NgRx Signals.
 intro: How we upgraded a legacy Angular 5 and NgRx app to Angular 19 one module at a time: Angular CLI, bootstrap and DI fixes, standalone: false, RxJS 7, and NgRx Signals.

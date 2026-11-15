@@ -3837,7 +3837,7 @@ body:has(.prp-image-gallery__lightbox.is-open) {
 .aw-header__avatar img {
   display: block;
   height: auto;
-  left: 50%;
+  left: 45%;
   max-height: none;
   position: absolute;
   top: 50%;

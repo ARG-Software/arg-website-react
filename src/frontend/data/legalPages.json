@@ -1,4 +1,5 @@
 {
+  "ragIgnore": ["path", "breadcrumbLabel", "ctaSubject", "type"],
   "privacyPolicy": {
     "title": "Privacy Policy",
     "description": "ARG Software's privacy policy: what personal data we collect, how we use it, cookies and tracking, data sharing, retention, security, and your rights.",

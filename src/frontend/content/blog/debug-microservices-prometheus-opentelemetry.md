@@ -5,8 +5,8 @@ author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
-tag: Observability
-tags: Observability, DevOps, Backend
+tag: Operations
+tags: Operations, Backend
 title: How We Debug Slow Microservices in Minutes (Not Hours): A Prometheus + OpenTelemetry Guide
 subtitle: A Prometheus, OpenTelemetry, Jaeger, and Grafana guide for Node.js microservices: metrics that matter, traces across async boundaries, correlated logs, and burn-rate alerts.
 intro: A Prometheus, OpenTelemetry, Jaeger, and Grafana guide for Node.js microservices: metrics that matter, traces across async boundaries, correlated logs, and burn-rate alerts.

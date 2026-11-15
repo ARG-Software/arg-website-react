@@ -5,7 +5,7 @@ author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
-tag: Browser Extensions
+tag: Frontend
 tags: Frontend
 title: Building a Chrome Extension with React and Vite: A Modern Developer's Guide
 subtitle: Build a Manifest V3 Chrome extension with React, TypeScript, and Vite: popup, content scripts, and an extension service worker, step by step.

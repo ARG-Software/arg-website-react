@@ -1,4 +1,5 @@
 {
+  "ragIgnore": ["path", "href", "ariaLabel", "prompt", "inputPlaceholder", "processAriaLabel", "buttonTextNotHover", "buttonTextHover"],
   "seo": {
     "title": "Working with Us",
     "description": "Work with ARG Software when architecture, reliability, and senior execution matter from the first technical decision to production."

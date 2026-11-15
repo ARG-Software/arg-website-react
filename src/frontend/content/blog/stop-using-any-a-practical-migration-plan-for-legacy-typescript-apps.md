@@ -5,8 +5,8 @@ author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
-tag: Refactoring
-tags: Refactoring, Backend
+tag: Code Quality
+tags: Code Quality, Backend
 title: Stop Using “any”: A Practical Migration Plan for Legacy TypeScript Apps
 subtitle: Stop any spreading through your legacy TypeScript codebase: a risk-based migration plan with unknown, Zod validation, noImplicitAny, strict mode, and ESLint.
 intro: Stop any spreading through your legacy TypeScript codebase: a risk-based migration plan with unknown, Zod validation, noImplicitAny, strict mode, and ESLint.

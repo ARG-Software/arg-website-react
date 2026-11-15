@@ -5,8 +5,8 @@ author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
 authorSameAs: https://www.linkedin.com/in/ruirochawork/
-tag: DevOps
-tags: DevOps
+tag: Operations
+tags: Operations
 title: Goodbye Docker Desktop: Run Docker Engine in WSL 2 on Windows
 subtitle: A Docker Desktop alternative for Windows 10/11: run Docker Engine directly in WSL 2, manage containers with Portainer, and avoid Docker Desktop license costs where you do not need its extra features.
 intro: A Docker Desktop alternative for Windows 10/11: run Docker Engine directly in WSL 2, manage containers with Portainer, and avoid Docker Desktop license costs where you do not need its extra features.

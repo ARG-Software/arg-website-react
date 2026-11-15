@@ -1,4 +1,5 @@
 {
+  "ragIgnore": ["copyVersion", "imageSrc", "statusText", "quickPrompts", "leadCaptureQuickPrompts", "leadCaptureSkipWords", "nudge", "messages", "actions", "labels", "leadConfirm", "placeholders"],
   "copyVersion": "2026-10-25-1",
   "imageSrc": "/images/ai/gaspar.webp",
   "name": "Gaspar",
