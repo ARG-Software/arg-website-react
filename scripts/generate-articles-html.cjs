@@ -1298,9 +1298,7 @@ function getArticlePaths() {
     .map(
       entry =>
         path.join(
-          'src',
-          'frontend',
-          'blog',
+          contentPaths.blog,
           entry.name
         )
     )
@@ -1366,6 +1364,31 @@ function getImageFileName(
 async function downloadImage(
   url
 ) {
+  if (
+    url.startsWith(
+      `${SITE_URL}/`
+    )
+  ) {
+    const localPath =
+      path.join(
+        ROOT,
+        'public',
+        decodeURIComponent(
+          new URL(url).pathname
+        )
+      );
+
+    if (
+      fs.existsSync(
+        localPath
+      )
+    ) {
+      return fs.readFileSync(
+        localPath
+      );
+    }
+  }
+
   const response =
     await fetch(
       url,
