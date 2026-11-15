@@ -1,10 +1,11 @@
 import { useContext, useRef, useState } from 'react';
+import AppLink from '../../../components/navigation/AppLink';
 import { TextArrowButton } from '@ui/buttons/TextArrowButton.jsx';
 import { ChoiceFilter } from '@ui/filters/ChoiceFilter.jsx';
 import { ArgMarkIcon } from '@ui/icons/ArgMarkIcon.jsx';
+import { useFilterReveal } from '@ui/utils/useFilterReveal.js';
 import { trackEvent, trackFAQOpen } from '@services/analytics';
 import { LenisContext } from '../../../providers/LenisProvider';
-import { TransitionContext } from '../../../providers/TransitionProvider';
 import HOMEPAGE from '../../../data/homePage.json';
 import FAQ from '../../../data/faq.json';
 
@@ -113,7 +114,9 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
   const [topic, setTopic] = useState(ALL_TOPICS);
   // Every question starts closed; the visitor opens the one they want
   const [openId, setOpenId] = useState(null);
-  const { scrollToHash } = useContext(TransitionContext);
+  const listRef = useRef(null);
+  // A topic change replays the fade-up on the questions it shows
+  useFilterReveal(listRef, '.faq_item:not([hidden])', topic);
 
   const selectTopic = name => {
     setTopic(name);
@@ -127,12 +130,6 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
     }
     setOpenId(item.id);
     trackFAQOpen(item.q);
-  };
-
-  const goToContact = event => {
-    event.preventDefault();
-    trackEvent('section_navigation', { section: 'contact', source: 'faq' });
-    scrollToHash('contact', { duration: 2.4 });
   };
 
   return (
@@ -169,7 +166,7 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
             </div>
           </div>
 
-          <div className="faq_list">
+          <div className="faq_list" ref={listRef}>
             {items.map((item, i) => {
               const isOpen = openId === item.id;
               return (
@@ -202,12 +199,14 @@ export function FAQSection({ className = '', content = HOMEPAGE.faq, items = faq
           <div className="faq_closing" data-animate-order={items.length + 3}>
             <p className="faq_closing-text">{content.closing.text}</p>
             <TextArrowButton
-              href="#contact"
+              as={AppLink}
+              to="/contact/"
+              trackEvent="cta_click"
+              trackData={{ cta_type: 'contact_page', cta_location: 'faq' }}
               label={content.closing.link}
               dark
               noWrap
               roll={false}
-              onClick={goToContact}
             />
           </div>
         </div>
