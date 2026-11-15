@@ -75,6 +75,7 @@ export function Footer({
                 type="button"
                 className="footer-bottom__top"
                 label="Back to top"
+                roll={false}
                 noWrap
                 arrowClassName="footer-bottom__top-arrow"
                 onClick={onBackToTop}
