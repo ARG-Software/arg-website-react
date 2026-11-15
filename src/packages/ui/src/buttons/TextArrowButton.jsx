@@ -49,6 +49,14 @@ export function TextArrowButton({
           {arrow}
         </Part>
       )}
+      {/* The underline sits under an invisible copy of the label shown on hover, so it is as
+          wide as that label, not the longer of the two */}
+      {underline && (
+        <Part className={`${listClassName} text-button_line`} aria-hidden="true">
+          <Label className={textClassName}>{roll ? hoverLabel : label}</Label>
+          {arrow}
+        </Part>
+      )}
     </Element>
   );
 }

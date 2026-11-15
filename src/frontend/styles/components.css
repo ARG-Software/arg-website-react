@@ -826,7 +826,7 @@ main:focus {
   transform: translateY(125%) !important;
 }
 
-.text-button:hover .text-button_list:not(.is-animated) {
+.text-button:hover .text-button_list:not(.is-animated, .text-button_line) {
   transform: translateY(-125%) !important;
 }
 
@@ -834,9 +834,18 @@ main:focus {
   transform: translateY(0) !important;
 }
 
-/* Hairline underline that draws in from the left on hover and leaves to the right */
-.text-button::after {
+/* Hairline underline that draws in from the left on hover and leaves to the right. It hangs
+   off .text-button_line, a hidden copy of the hover label, so it matches that label's width */
+.text-button .text-button_line {
+  justify-self: var(--text-button-align);
+  position: relative;
+  visibility: hidden;
+  width: auto;
+}
+
+.text-button .text-button_line::after {
   background-color: #fff;
+  visibility: visible;
   bottom: 0;
   content: '';
   height: 0.0625rem;
@@ -849,12 +858,12 @@ main:focus {
   transition: transform 0.65s var(--ease-in-out-quart);
 }
 
-.text-button:has(.is-dark, .is--black, .text-color-black, .portfolio)::after {
+.text-button:has(.is-dark, .is--black, .text-color-black, .portfolio) .text-button_line::after {
   background-color: #000;
 }
 
-.text-button:hover::after,
-.text-button:focus-visible::after {
+.text-button:hover .text-button_line::after,
+.text-button:focus-visible .text-button_line::after {
   transform: scaleX(1);
   transform-origin: left;
 }
@@ -864,12 +873,8 @@ main:focus {
   transform: none !important;
 }
 
-.text-button--no-underline::after {
-  display: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .text-button::after {
+  .text-button .text-button_line::after {
     transition: none;
   }
 }
