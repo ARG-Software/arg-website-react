@@ -241,35 +241,54 @@ html.ls-active {
 }
 
 /* Exit burst: a ring in the brand gradient that grows from the centre past the screen edges.
-   The size is animated (not the scale), so the stroke keeps its thickness as it grows. The
-   glow is a filter on this element, and the mask that cuts out the ring sits on the pseudo
-   element, so the glow is not masked away. */
-.ls-burst {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  z-index: 10000;
-  width: 8rem;
-  height: 8rem;
-  translate: -50% -50%;
-  opacity: 0;
-  pointer-events: none;
-  filter: drop-shadow(0 0 1rem rgba(201, 36, 215, 0.75))
-    drop-shadow(0 0 2.5rem rgba(240, 6, 13, 0.35));
+   The element covers the screen and never changes size; the ring is cut out by masks whose
+   radius (--ls-ring-r) is animated, so the stroke keeps its thickness and nothing is laid out
+   again per frame. The glow is a soft masked band under the ring rather than a filter, which
+   would be re-blurred over the whole growing ring on every frame. */
+@property --ls-ring-r {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 4rem;
 }
 
-.ls-burst::before {
+.ls-burst {
+  --ls-ring-r: 4rem;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ls-burst::before,
+.ls-burst::after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 50%;
-  background: var(--arg-gradient-primary);
+}
+
+/* Glow: magenta close to the stroke, fading out on both sides */
+.ls-burst::before {
+  background-color: rgba(201, 36, 215, 0.6);
   mask-image: radial-gradient(
-    circle closest-side,
-    transparent calc(100% - 1.25rem),
-    #000 calc(100% - 1.125rem),
-    #000 calc(100% - 0.125rem),
-    transparent 100%
+    circle at center,
+    transparent calc(var(--ls-ring-r) - 3.5rem),
+    rgba(0, 0, 0, 0.8) calc(var(--ls-ring-r) - 0.75rem),
+    rgba(0, 0, 0, 0.8) calc(var(--ls-ring-r) - 0.5rem),
+    transparent calc(var(--ls-ring-r) + 2.5rem)
+  );
+}
+
+/* Stroke: the gradient spans the ring's diameter, as it did when the ring was its own box */
+.ls-burst::after {
+  background: var(--arg-gradient-primary) center / calc(var(--ls-ring-r) * 2)
+    calc(var(--ls-ring-r) * 2) no-repeat;
+  mask-image: radial-gradient(
+    circle at center,
+    transparent calc(var(--ls-ring-r) - 1.25rem),
+    #000 calc(var(--ls-ring-r) - 1.125rem),
+    #000 calc(var(--ls-ring-r) - 0.125rem),
+    transparent var(--ls-ring-r)
   );
 }
 
@@ -286,11 +305,12 @@ html.ls-active {
     circle closest-side,
     rgba(255, 228, 255, 0.95) 0%,
     rgba(201, 36, 215, 0.85) 35%,
-    rgba(121, 4, 253, 0.45) 65%,
+    rgba(121, 4, 253, 0.45) 62%,
+    rgba(121, 4, 253, 0.15) 82%,
     transparent 100%
   );
-  filter: blur(1rem);
   mix-blend-mode: screen;
+  will-change: transform, opacity;
   opacity: 0;
   pointer-events: none;
 }

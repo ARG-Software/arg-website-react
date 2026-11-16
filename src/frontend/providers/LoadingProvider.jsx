@@ -2,6 +2,9 @@ import { createContext, useEffect, useState } from 'react';
 import { LoadingScreen } from '@components/layout/LoadingScreen';
 
 export const LoadingContext = createContext(true);
+// True once the intro's exit ring has finished; heavy WebGL start-up waits for this so it does
+// not stall the burst
+export const LoaderGoneContext = createContext(true);
 
 const LOADING_SEEN_KEY = 'loadingScreenSeen';
 
@@ -38,10 +41,12 @@ export function LoadingProvider({ children }) {
 
   return (
     <LoadingContext.Provider value={done}>
-      {shouldShow && !loaderGone && (
-        <LoadingScreen onReveal={handleComplete} onComplete={() => setLoaderGone(true)} />
-      )}
-      <div style={{ opacity: ready ? 1 : 0, transition: 'opacity 120ms ease' }}>{children}</div>
+      <LoaderGoneContext.Provider value={loaderGone}>
+        {shouldShow && !loaderGone && (
+          <LoadingScreen onReveal={handleComplete} onComplete={() => setLoaderGone(true)} />
+        )}
+        <div style={{ opacity: ready ? 1 : 0, transition: 'opacity 120ms ease' }}>{children}</div>
+      </LoaderGoneContext.Provider>
     </LoadingContext.Provider>
   );
 }

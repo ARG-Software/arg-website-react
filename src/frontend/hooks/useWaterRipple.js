@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef } from 'react';
 import { useRAF } from './useRAF';
-import { LoadingContext } from '../providers/LoadingProvider';
+import { LoaderGoneContext } from '../providers/LoadingProvider';
 import {
   WATER_DISPLAY_SHADER,
   WATER_NORMAL_SHADER,
@@ -239,7 +239,7 @@ function compilePasses(renderer, camera, passes) {
 export function useWaterRipple(canvasId = 'water-ripple-canvas') {
   const cleanupRef = useRef(null);
   const renderRef = useRef(null);
-  const loadingDone = useContext(LoadingContext);
+  const loadingDone = useContext(LoaderGoneContext);
 
   useEffect(() => {
     // The intro covers the hero on a first visit; start once it has finished

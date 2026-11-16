@@ -71,7 +71,9 @@ export function LoadingScreen({ onReveal, onComplete }) {
       );
     } else {
       // Wide enough that the ring clears the corners of the screen
-      const coverSize = Math.hypot(window.innerWidth, window.innerHeight) * 1.15;
+      const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      const coverRadius =
+        (Math.hypot(window.innerWidth, window.innerHeight) * 0.575) / rootFontSize;
       tl.fromTo(
         coreRef.current,
         { opacity: 0, scale: 1 },
@@ -81,9 +83,11 @@ export function LoadingScreen({ onReveal, onComplete }) {
         .to(coreRef.current, { opacity: 1, scale: 0.4, duration: 0.2, ease: 'power3.in' }, 0.25)
         .set(burstRef.current, { opacity: 1 }, 0.45)
         .to(coreRef.current, { opacity: 0, scale: 0.8, duration: 0.2, ease: 'power2.out' }, 0.45)
-        .to(
+        // Both ends in rem: GSAP interpolates the numbers of a custom property, not its units
+        .fromTo(
           burstRef.current,
-          { width: coverSize, height: coverSize, duration: 1.15, ease: 'power2.out' },
+          { '--ls-ring-r': '4rem' },
+          { '--ls-ring-r': `${coverRadius}rem`, duration: 1.15, ease: 'power2.out' },
           0.45
         )
         .to(overlayRef.current, { opacity: 0, duration: 0.35, ease: 'power2.out' }, 0.45)
