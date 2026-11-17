@@ -21,6 +21,7 @@ import {
   getBlogTags,
   getBlogTagColor,
   loadBlogPostsMetadata,
+  putFeaturedFirst,
   sortByCollectionPart,
 } from '@utils/blog';
 import { getCoverSrcSet } from '@utils/blog/coverSrcSet';
@@ -56,12 +57,14 @@ export default function BlogPage() {
   const layoutRef = useRef(null);
   const returnToListTop = useRef(false);
 
+  const showFeatured = active.type === 'all' && !debouncedQuery;
   // A collection reads in its own order, part 1 first
-  const listedPosts =
-    active.type === 'collection' ? [...filteredPosts].sort(sortByCollectionPart) : filteredPosts;
-  // The latest article is featured above the grid while nothing is filtered, and the grid
-  // pages through the rest. A filtered list is all grid
-  const featuredPost = active.type === 'all' && !debouncedQuery ? listedPosts[0] : null;
+  let listedPosts = filteredPosts;
+  if (active.type === 'collection') listedPosts = [...filteredPosts].sort(sortByCollectionPart);
+  if (showFeatured) listedPosts = putFeaturedFirst(filteredPosts);
+  // The pinned (or else latest) article is featured above the grid while nothing is filtered,
+  // and the grid pages through the rest. A filtered list is all grid
+  const featuredPost = showFeatured ? listedPosts[0] : null;
   const gridPosts = featuredPost ? listedPosts.slice(1) : listedPosts;
   const totalPages = Math.ceil(gridPosts.length / BLOG_POSTS_PER_PAGE);
   const startIdx = (page - 1) * BLOG_POSTS_PER_PAGE;

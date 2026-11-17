@@ -36,6 +36,7 @@ mediumUrl: https://medium.com/...
 - `tags` are the blog filters: at most 3, picked from Architecture, Backend, AI, Operations, Engineering Culture, Code Quality, Security, Frontend. `tag` is the main one and comes from the same list. Operations covers DevOps, reliability and observability; Code Quality covers refactoring and testing (`check:content` enforces the list and the limit).
 - `dateModified` is for SEO. `reviewedOn` is the date shown in italics at the end of the article. `reviewedOn` requires `dateModified`, and `dateModified` can't be earlier than `date` (`npm run check:content` enforces both).
 - Dates use the `Month D, YYYY` format.
+- The newest post is featured on the blog page and the homepage. Add `featured: true` to one post to keep it featured instead, whatever the dates. Only one post should have it.
 
 ## 2. Writing rules
 

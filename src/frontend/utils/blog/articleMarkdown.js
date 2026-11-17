@@ -60,6 +60,7 @@ export function extractMetadata(meta, body) {
     authorSameAs: meta.authorSameAs || '',
     dateModified: meta.dateModified || meta.updated || '',
     reviewedOn: meta.reviewedOn || '',
+    featured: meta.featured === 'true',
     image,
   };
 }
