@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { loadBlogPostsMetadata } from '@utils/blog';
+import { loadBlogPostsMetadata, putFeaturedFirst } from '@utils/blog';
 import { useScrollAnimations } from '@hooks/useScrollAnimations';
 import { SEO } from '@components/seo/SEO';
 import { Navbar } from '@components/navigation/Navbar';
@@ -27,7 +27,9 @@ import HOMEPAGE from '../../data/homePage.json';
 import FAQ from '../../data/faq.json';
 
 export default function HomePage() {
-  const [blogPosts] = useState(() => loadBlogPostsMetadata().slice(0, HOMEPAGE_BLOG_POSTS_COUNT));
+  const [blogPosts] = useState(() =>
+    putFeaturedFirst(loadBlogPostsMetadata()).slice(0, HOMEPAGE_BLOG_POSTS_COUNT)
+  );
 
   useScrollAnimations();
 

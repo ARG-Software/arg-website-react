@@ -15,6 +15,7 @@ export {
   getRelatedPosts,
   parseBlogDate,
   parseDateToIso,
+  putFeaturedFirst,
   splitArticleTitle,
   sortBlogPostsNewestFirst,
   sortByCollectionPart,

@@ -67,6 +67,13 @@ export function sortByCollectionPart(postA, postB) {
   return sortBlogPostsNewestFirst(postA, postB);
 }
 
+// The post with `featured: true` leads the list; otherwise the newest one does
+export function putFeaturedFirst(posts) {
+  const featured = posts.find(post => post.featured);
+  if (!featured) return posts;
+  return [featured, ...posts.filter(post => post !== featured)];
+}
+
 export function getHeadingId(text) {
   return text
     .toLowerCase()

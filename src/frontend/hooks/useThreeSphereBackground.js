@@ -1,12 +1,12 @@
 import { useContext, useEffect, useRef } from 'react';
 import { useRAF } from './useRAF';
-import { LoadingContext } from '../providers/LoadingProvider';
+import { LoaderGoneContext } from '../providers/LoadingProvider';
 import { prefersReducedMotion } from '../utils/helpers';
 
 export function useThreeSphereBackground(canvasId = 'spheres-canvas') {
   const renderRef = useRef(null);
   const cleanupRef = useRef(null);
-  const loadingDone = useContext(LoadingContext);
+  const loadingDone = useContext(LoaderGoneContext);
 
   useEffect(() => {
     // Wait for the intro to finish on a first visit, like the hero ripple

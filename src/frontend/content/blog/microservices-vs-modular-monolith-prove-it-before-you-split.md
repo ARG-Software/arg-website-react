@@ -10,9 +10,9 @@ tags: Architecture, Backend
 title: The Monolith Isn't Your Problem: What to Prove Before You Reach for Microservices
 subtitle: Microservices vs. modular monolith is an evidence question. Learn when to use microservices, what proof to bring, and the cheaper fix to try first.
 intro: Microservices vs. modular monolith is an evidence question. Learn when to use microservices, what proof to bring, and the cheaper fix to try first.
-date: November 15, 2026
-dateModified: November 15, 2026
-reviewedOn: November 15, 2026
+date: November 2, 2026
+dateModified: November 2, 2026
+reviewedOn: November 2, 2026
 readTime: 9 min read
 ---
 

@@ -214,6 +214,13 @@ html.ls-active {
   background: var(--ls-accent);
 }
 
+/* Touch screens have no Esc key: the button alone says "Skip intro" */
+@media (hover: none) and (pointer: coarse) {
+  .ls-skip .pill__icon--after {
+    display: none;
+  }
+}
+
 @media (max-width: 767px) {
   .ls-overlay {
     --ls-edge-x: 1rem;
@@ -231,4 +238,79 @@ html.ls-active {
   .ls-status-dots span {
     animation: none;
   }
+}
+
+/* Exit burst: a ring in the brand gradient that grows from the centre past the screen edges.
+   The element covers the screen and never changes size; the ring is cut out by masks whose
+   radius (--ls-ring-r) is animated, so the stroke keeps its thickness and nothing is laid out
+   again per frame. The glow is a soft masked band under the ring rather than a filter, which
+   would be re-blurred over the whole growing ring on every frame. */
+@property --ls-ring-r {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 4rem;
+}
+
+.ls-burst {
+  --ls-ring-r: 4rem;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ls-burst::before,
+.ls-burst::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+/* Glow: magenta close to the stroke, fading out on both sides */
+.ls-burst::before {
+  background-color: rgba(201, 36, 215, 0.6);
+  mask-image: radial-gradient(
+    circle at center,
+    transparent calc(var(--ls-ring-r) - 3.5rem),
+    rgba(0, 0, 0, 0.8) calc(var(--ls-ring-r) - 0.75rem),
+    rgba(0, 0, 0, 0.8) calc(var(--ls-ring-r) - 0.5rem),
+    transparent calc(var(--ls-ring-r) + 2.5rem)
+  );
+}
+
+/* Stroke: the gradient spans the ring's diameter, as it did when the ring was its own box */
+.ls-burst::after {
+  background: var(--arg-gradient-primary) center / calc(var(--ls-ring-r) * 2)
+    calc(var(--ls-ring-r) * 2) no-repeat;
+  mask-image: radial-gradient(
+    circle at center,
+    transparent calc(var(--ls-ring-r) - 1.25rem),
+    #000 calc(var(--ls-ring-r) - 1.125rem),
+    #000 calc(var(--ls-ring-r) - 0.125rem),
+    transparent var(--ls-ring-r)
+  );
+}
+
+.ls-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 24rem;
+  height: 24rem;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle closest-side,
+    rgba(255, 228, 255, 0.95) 0%,
+    rgba(201, 36, 215, 0.85) 35%,
+    rgba(121, 4, 253, 0.45) 62%,
+    rgba(121, 4, 253, 0.15) 82%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+  opacity: 0;
+  pointer-events: none;
 }

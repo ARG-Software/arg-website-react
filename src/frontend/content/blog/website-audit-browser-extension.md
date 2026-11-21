@@ -13,6 +13,7 @@ intro: A free website audit browser extension: check security, performance, effi
 date: October 19, 2026
 dateModified: October 28, 2026
 readTime: 4 min read
+featured: true
 image: /images/blog/website-audit-browser-extension/website-audit-browser-extension-header.webp
 ---
 
