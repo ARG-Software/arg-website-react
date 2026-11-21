@@ -14,6 +14,9 @@ date: November 15, 2026
 dateModified: November 15, 2026
 reviewedOn: November 15, 2026
 readTime: 9 min read
+collection: agent-skills
+collectionTitle: Skills We Give Our Coding Agents
+collectionPart: 2
 ---
 
 ![Agent skills Part 2 cover with the Angular and React Native logos and a browser extension puzzle icon](/images/blog/agent-skills-part-2-angular-react-native-browser-extension/agent-skills-part-2-angular-react-native-browser-extension-header.webp)

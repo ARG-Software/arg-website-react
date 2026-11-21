@@ -10,10 +10,13 @@ tags: AI, Architecture, Backend
 title: Teaching Coding Agents Our Back End: .NET, Nx, and MCP Skills
 subtitle: Part 1 - Open-source Claude Code skills for .NET, Nx monorepos, and MCP servers. What a SKILL.md is, how agents load it, and the rules each skill enforces.
 intro: Part 1 - Open-source Claude Code skills for .NET, Nx monorepos, and MCP servers. What a SKILL.md is, how agents load it, and the rules each skill enforces.
-date: November 15, 2026
-dateModified: November 15, 2026
-reviewedOn: November 15, 2026
+date: November 8, 2026
+dateModified: November 8, 2026
+reviewedOn: November 8, 2026
 readTime: 10 min read
+collection: agent-skills
+collectionTitle: Skills We Give Our Coding Agents
+collectionPart: 1
 ---
 
 ![Agent skills Part 1 cover with the .NET, Nx and MCP logos next to a back-end API server icon](/images/blog/agent-skills-part-1-dotnet-nx-mcp-backend/agent-skills-part-1-dotnet-nx-mcp-backend-header.webp)
