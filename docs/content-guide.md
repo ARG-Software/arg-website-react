@@ -67,7 +67,7 @@ mediumUrl: https://medium.com/...
 
 ## 4. Cover image
 
-Website covers are **2560×1440 WebP**, at `/images/blog/.../{name}-header.webp`. Medium featured images are **PNG**, in `external/html/medium-updates/batch-3-vector-search/covers/{slug}.png`.
+Website covers are **2560×1440 WebP**, at `/images/blog/.../{name}-header.webp`. Medium featured images are **PNG**, in `external/html/medium-updates/covers/{slug}.png`.
 
 1. **Generate** `{slug}.png` at 16:9 with the prompt below.
 2. **Convert** it to a 2560×1440 WebP (Squoosh, or `npx sharp-cli`). Save it under `public/images/blog/...`, and reference it as the first image of the post: `![descriptive alt](/images/blog/.../header.webp)`.
