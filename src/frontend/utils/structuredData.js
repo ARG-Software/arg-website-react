@@ -235,6 +235,25 @@ export function buildGlobalSchemas() {
   return [buildOrganizationSchema(), buildWebsiteSchema()];
 }
 
+// `video` is a page video from the JSON data: `src`, `duration` as "m:ss", `uploadDate`, optional `youtubeUrl`.
+export function buildVideoSchema(video, { name, description, thumbnail, path }) {
+  const [minutes, seconds] = video.duration.split(':').map(Number);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    '@id': `${SITE_URL}${path}#video`,
+    name,
+    description,
+    thumbnailUrl: absoluteUrl(thumbnail),
+    uploadDate: video.uploadDate,
+    duration: `PT${minutes}M${seconds}S`,
+    contentUrl: absoluteUrl(video.src),
+    sameAs: video.youtubeUrl,
+    publisher: { '@id': ORGANIZATION_ID },
+  };
+}
+
 export function buildFAQPageSchema(faqItems) {
   const mainEntity = faqItems
     .filter(item => item.q && item.schemaAnswer)
@@ -387,6 +406,12 @@ export function buildAuditSchemas(page, stores) {
         priceCurrency: 'EUR',
       },
     },
+    buildVideoSchema(page.architect.video, {
+      name: `ARG Architect: ${page.architect.video.title}`,
+      description: page.architect.video.text,
+      thumbnail: page.architect.video.cover,
+      path: '/audit/',
+    }),
   ];
 }
 

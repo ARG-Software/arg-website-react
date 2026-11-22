@@ -4,11 +4,18 @@ import { buildCrawlableBlock, injectCrawlableBlock } from '../crawlable-block.js
 import { injectStructuredData } from '../html-utils.js';
 import { getHomepageExtraLinks } from '../links.js';
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from '../../../src/frontend/constants/seo.js';
-import { buildFAQPageSchema, buildWebPageSchema } from '../../../src/frontend/utils/structuredData.js';
+import {
+  buildFAQPageSchema,
+  buildVideoSchema,
+  buildWebPageSchema,
+} from '../../../src/frontend/utils/structuredData.js';
 
 const FAQ = JSON.parse(
   fs.readFileSync(new URL('../../../src/frontend/data/faq.json', import.meta.url), 'utf8')
 );
+const HOME_VIDEO = JSON.parse(
+  fs.readFileSync(new URL('../../../src/frontend/data/homePage.json', import.meta.url), 'utf8')
+).faq.video;
 
 export function writeHomepage({ distDir, baseHtml }) {
   const block = buildCrawlableBlock('Building systems that endure as you scale', {
@@ -31,6 +38,12 @@ export function writeHomepage({ distDir, baseHtml }) {
       path: '/',
     }),
     buildFAQPageSchema(FAQ.items),
+    buildVideoSchema(HOME_VIDEO, {
+      name: `${HOME_VIDEO.title}: ${HOME_VIDEO.label}`,
+      description: HOME_VIDEO.description,
+      thumbnail: HOME_VIDEO.poster,
+      path: '/',
+    }),
   ]);
   fs.writeFileSync(indexPath, injectCrawlableBlock(html, block));
 }

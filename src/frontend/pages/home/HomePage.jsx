@@ -8,7 +8,7 @@ import { ContactSection } from '@components/layout/ContactSection';
 import { trackCTA } from '@services/analytics';
 import { getPortfolioLink, getProjectBriefFormLink } from '../../services/linksService';
 import { HOMEPAGE_BLOG_POSTS_COUNT } from '@constants/config';
-import { buildFAQPageSchema } from '@utils/structuredData';
+import { buildFAQPageSchema, buildVideoSchema } from '@utils/structuredData';
 import { HeroSection } from './sections/HeroSection';
 import { PartnersSection } from './sections/PartnersSection';
 import { StudioOverviewSection } from './sections/StudioOverviewSection';
@@ -35,7 +35,18 @@ export default function HomePage() {
 
   return (
     <>
-      <SEO path="/" jsonLd={buildFAQPageSchema(FAQ.items)} />
+      <SEO
+        path="/"
+        jsonLd={[
+          buildFAQPageSchema(FAQ.items),
+          buildVideoSchema(HOMEPAGE.faq.video, {
+            name: `${HOMEPAGE.faq.video.title}: ${HOMEPAGE.faq.video.label}`,
+            description: HOMEPAGE.faq.video.description,
+            thumbnail: HOMEPAGE.faq.video.poster,
+            path: '/',
+          }),
+        ]}
+      />
       <div className="page-wrapper home-page">
         <Navbar position="absolute" isHomePage={true} />
         <main id="main" className="main-wrapper">

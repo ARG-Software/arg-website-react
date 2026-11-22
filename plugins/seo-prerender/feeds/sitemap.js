@@ -5,15 +5,62 @@ import { escapeHtml } from '../html-utils.js';
 import { toContentDateOnly } from '../../../src/frontend/utils/contentDate.js';
 import { loadPatterns } from '../pages/patterns.js';
 
+// Page videos, listed with the video sitemap extension so Google can discover them.
+function readPageVideos() {
+  const readData = name =>
+    JSON.parse(fs.readFileSync(path.resolve('src/frontend/data', name), 'utf-8'));
+  const home = readData('homePage.json').faq.video;
+  const audit = readData('auditPage.json').architect.video;
+
+  return {
+    '/': {
+      title: `${home.title}: ${home.label}`,
+      description: home.description,
+      thumbnail: home.poster,
+      src: home.src,
+      duration: home.duration,
+      uploadDate: home.uploadDate,
+    },
+    '/audit/': {
+      title: `ARG Architect: ${audit.title}`,
+      description: audit.text,
+      thumbnail: audit.cover,
+      src: audit.src,
+      duration: audit.duration,
+      uploadDate: audit.uploadDate,
+    },
+  };
+}
+
+function renderVideo(video) {
+  const [minutes, seconds] = video.duration.split(':').map(Number);
+  return `
+    <video:video>
+      <video:thumbnail_loc>${escapeHtml(SITE_URL + video.thumbnail)}</video:thumbnail_loc>
+      <video:title>${escapeHtml(video.title)}</video:title>
+      <video:description>${escapeHtml(video.description)}</video:description>
+      <video:content_loc>${escapeHtml(SITE_URL + video.src)}</video:content_loc>
+      <video:duration>${minutes * 60 + seconds}</video:duration>
+      <video:publication_date>${video.uploadDate}</video:publication_date>
+    </video:video>`;
+}
+
 export function generateSitemap({ distDir, blogPostMetas }) {
   const sitemapUrls = [];
+  const pageVideos = readPageVideos();
 
-  sitemapUrls.push({ loc: `${SITE_URL}/`, priority: '1.0', changefreq: 'weekly' });
+  sitemapUrls.push({
+    loc: `${SITE_URL}/`,
+    priority: '1.0',
+    changefreq: 'weekly',
+    video: pageVideos['/'],
+  });
   for (const page of STATIC_PAGES) {
     sitemapUrls.push({
       loc: `${SITE_URL}${page.path}`,
       priority: page.priority,
       changefreq: page.changefreq,
+      video: pageVideos[page.path],
     });
   }
 
@@ -66,14 +113,14 @@ export function generateSitemap({ distDir, blogPostMetas }) {
   }
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${sitemapUrls
   .map(
     u =>
       `  <url>
     <loc>${escapeHtml(u.loc)}</loc>${u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : ''}
     <changefreq>${u.changefreq}</changefreq>
-    <priority>${u.priority}</priority>
+    <priority>${u.priority}</priority>${u.video ? renderVideo(u.video) : ''}
   </url>`
   )
   .join('\n')}

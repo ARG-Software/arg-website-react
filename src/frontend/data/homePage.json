@@ -209,7 +209,9 @@
     "video": {
       "title": "ARG Software",
       "label": "How we work",
+      "description": "How ARG Software works: a senior-led team that designs the architecture, builds production-ready systems and stays accountable through delivery and production.",
       "duration": "1:13",
+      "uploadDate": "2026-11-11",
       "src": "/videos/arg-film-v3.mp4",
       "poster": "/images/arg-film-v3-poster.jpg",
       "embedUrl": ""
