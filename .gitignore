@@ -163,3 +163,6 @@ src/backend/rag/.rag_private/
 .opencode
 .storybook
 
+
+# Local assets and exports (videos, Medium HTML, audit CSVs)
+external/

@@ -42,6 +42,7 @@
     "blog:check-images": "node scripts/check-blog-image-alt.cjs",
     "blog:covers": "node scripts/generate-blog-cover-sizes.cjs",
     "blog:check-images:strict": "node scripts/check-blog-image-alt.cjs --strict",
+    "seo:gsc": "node scripts/search-console-report.js",
     "blog:import:medium": "node scripts/import-medium-articles.cjs --published",
     "blog:import:medium:overwrite": "node scripts/import-medium-articles.cjs --published --overwrite",
     "blog:import:medium:drafts": "node scripts/import-medium-articles.cjs --drafts",
