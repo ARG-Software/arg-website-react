@@ -10,9 +10,9 @@ tags: AI, Security, Operations
 title: Skills That Check the Work: Code Review, Security Audit, Web Audit, and DevOps
 subtitle: Part 3 - Open-source agent skills for AI code review, source-code security audits, website audits, and DevOps setup, with evidence behind every finding.
 intro: Part 3 - Open-source agent skills for AI code review, source-code security audits, website audits, and DevOps setup, with evidence behind every finding.
-date: November 21, 2026
-dateModified: November 21, 2026
-reviewedOn: November 21, 2026
+date: November 15, 2026
+dateModified: November 15, 2026
+reviewedOn: November 15, 2026
 readTime: 10 min read
 collection: agent-skills
 collectionTitle: Skills We Give Our Coding Agents

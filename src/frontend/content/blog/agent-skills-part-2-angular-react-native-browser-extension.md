@@ -10,9 +10,9 @@ tags: AI, Architecture, Frontend
 title: Frontend Skills That Keep Agents on Our Patterns: Angular, React Native, and Browser Extensions
 subtitle: Part 2 - Open-source agent skills for Angular with NgRx, React Native with Expo, and Manifest V3 browser extensions for Claude Code, Cursor, Codex, and Copilot.
 intro: Part 2 - Open-source agent skills for Angular with NgRx, React Native with Expo, and Manifest V3 browser extensions for Claude Code, Cursor, Codex, and Copilot.
-date: November 15, 2026
-dateModified: November 15, 2026
-reviewedOn: November 15, 2026
+date: November 12, 2026
+dateModified: November 12, 2026
+reviewedOn: November 12, 2026
 readTime: 9 min read
 collection: agent-skills
 collectionTitle: Skills We Give Our Coding Agents
