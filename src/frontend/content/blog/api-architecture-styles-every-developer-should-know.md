@@ -1,5 +1,5 @@
 ---
-seoTitle: REST vs GraphQL vs gRPC: API Architecture Styles
+seoTitle: API Architecture Styles: REST, GraphQL, gRPC and More
 slug: api-architecture-styles-every-developer-should-know
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -11,7 +11,7 @@ title: API Architecture Styles Every Developer Should Know
 subtitle: REST vs GraphQL vs gRPC, plus WebSocket, SOAP, and MQTT: compare API architecture styles by contract, transport, operational cost, and use case.
 intro: REST vs GraphQL vs gRPC, plus WebSocket, SOAP, and MQTT: compare API architecture styles by contract, transport, operational cost, and use case.
 date: November 6, 2025
-dateModified: October 28, 2026
+dateModified: November 22, 2026
 reviewedOn: September 20, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/api-architecture-styles-every-developer-should-know-74bd544820fb

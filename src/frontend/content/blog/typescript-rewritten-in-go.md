@@ -1,5 +1,5 @@
 ---
-seoTitle: TypeScript 7 Native Go Port: What to Do
+seoTitle: TypeScript Go (tsgo): How to Move to TypeScript 7
 slug: typescript-7-rewritten-in-go
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -11,7 +11,7 @@ title: TypeScript 7.0 Was Ported to Go. Here's Why You Should Care (and What to 
 subtitle: TypeScript 7 is now the stable native compiler, with much faster builds and a few important compatibility boundaries. Here is how to adopt it.
 intro: TypeScript 7 is now the stable native compiler, with much faster builds and a few important compatibility boundaries. Here is how to adopt it.
 date: March 24, 2026
-dateModified: September 17, 2026
+dateModified: November 22, 2026
 reviewedOn: September 17, 2026
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/typescript-7-rewritten-in-go

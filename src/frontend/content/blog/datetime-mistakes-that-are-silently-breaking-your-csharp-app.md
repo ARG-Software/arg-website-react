@@ -11,7 +11,7 @@ title: DateTime Mistakes That Are Silently Breaking Your C# App
 subtitle: DateTime vs DateTimeOffset, UTC, time zones, DateOnly, and TimeProvider: the small C# date and time habits that quietly cause the hardest production bugs.
 intro: DateTime vs DateTimeOffset, UTC, time zones, DateOnly, and TimeProvider: the small C# date and time habits that quietly cause the hardest production bugs.
 date: August 27, 2026
-dateModified: October 28, 2026
+dateModified: November 22, 2026
 reviewedOn: September 20, 2026
 readTime: 7 min read
 mediumUrl: https://medium.com/p/87a8fa093119
@@ -40,7 +40,7 @@ But “store everything in UTC” is too broad. A birthday is a `DateOnly`. A st
 
 Rule of thumb: use UTC instants for events, and preserve civil-time intent when the business rule is expressed in local time.
 
-## 2. Prefer DateTimeOffset for timestamps
+## 2. DateTime vs DateTimeOffset: prefer DateTimeOffset for timestamps
 
 A `DateTimeOffset` combines a date and time with its offset from UTC:
 

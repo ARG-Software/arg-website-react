@@ -1,5 +1,5 @@
 ---
-seoTitle: Nx NestJS Monorepo Boilerplate: Nx vs Turborepo
+seoTitle: NestJS Monorepo with Nx: A Practical Boilerplate
 slug: nx-nestjs-monorepo-boilerplate
 author: José Antunes
 authorUrl: https://www.linkedin.com/in/jos%C3%A9-francisco-antunes-b8068bb5/
@@ -11,7 +11,7 @@ title: Scaling with Confidence: A Practical Nx + NestJS Monorepo Boilerplate
 subtitle: A scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems, and how Nx compares with Turborepo.
 intro: A scalable Nx + NestJS monorepo boilerplate for microservices, DDD, and event-driven systems, and how Nx compares with Turborepo.
 date: April 27, 2025
-dateModified: October 28, 2026
+dateModified: November 22, 2026
 reviewedOn: September 17, 2026
 readTime: 10 min read
 mediumUrl: https://arg-software.medium.com/scaling-with-confidence-a-practical-nx-nestjs-monorepo-boilerplate-b30b9266f6ba

@@ -1,5 +1,5 @@
 ---
-seoTitle: Ollama vs LM Studio: Run AI Locally (Complete Guide)
+seoTitle: How to Run AI Locally: Ollama and LM Studio Guide
 slug: running-ai-locally-complete-guide
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -11,7 +11,7 @@ title: Break Free from ChatGPT: Your Complete Guide to Running AI on Your Own Co
 subtitle: Run AI locally with Ollama or LM Studio. Compare the two, size models to your hardware, and understand the privacy, cost, and performance trade-offs.
 intro: Run AI locally with Ollama or LM Studio. Compare the two, size models to your hardware, and understand the privacy, cost, and performance trade-offs.
 date: December 2, 2025
-dateModified: October 28, 2026
+dateModified: November 22, 2026
 reviewedOn: September 19, 2026
 readTime: 12 min read
 mediumUrl: https://arg-software.medium.com/break-free-from-chatgpt-your-complete-guide-to-running-ai-on-your-own-computer-b7f1b20da0bf

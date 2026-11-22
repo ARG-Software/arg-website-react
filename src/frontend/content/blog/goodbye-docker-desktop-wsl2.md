@@ -1,5 +1,5 @@
 ---
-seoTitle: Docker Desktop Alternative: Docker Engine in WSL 2
+seoTitle: Docker Without Docker Desktop: Docker Engine on WSL2
 slug: goodbye-docker-desktop-wsl2
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
@@ -11,7 +11,7 @@ title: Goodbye Docker Desktop: Run Docker Engine in WSL 2 on Windows
 subtitle: A Docker Desktop alternative for Windows 10/11: run Docker Engine directly in WSL 2, manage containers with Portainer, and avoid Docker Desktop license costs where you do not need its extra features.
 intro: A Docker Desktop alternative for Windows 10/11: run Docker Engine directly in WSL 2, manage containers with Portainer, and avoid Docker Desktop license costs where you do not need its extra features.
 date: May 5, 2025
-dateModified: October 28, 2026
+dateModified: November 22, 2026
 reviewedOn: September 19, 2026
 readTime: 8 min read
 mediumUrl: https://arg-software.medium.com/goodbye-docker-desktop-run-linux-docker-natively-on-windows-with-wsl2-178ebb1deb51

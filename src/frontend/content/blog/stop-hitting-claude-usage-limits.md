@@ -1,6 +1,6 @@
 ---
 slug: stop-hitting-claude-usage-limits
-seoTitle: Claude Usage Limits: How to Stretch Your Plan
+seoTitle: How to Stop Hitting Claude Usage Limits
 author: Rui Rocha
 authorUrl: https://www.linkedin.com/in/ruirochawork/
 authorType: Person
@@ -11,7 +11,7 @@ title: Stop Hitting Claude's Usage Limits: Practical Ways to Stretch Your Plan
 subtitle: Hitting Claude usage limits on Pro, Max, or Claude Code? Use focused chats, projects, model and effort settings, and usage controls to make your plan last longer.
 intro: Hitting Claude usage limits on Pro, Max, or Claude Code? Use focused chats, projects, model and effort settings, and usage controls to make your plan last longer.
 date: March 15, 2026
-dateModified: October 28, 2026
+dateModified: November 22, 2026
 reviewedOn: September 19, 2026
 readTime: 5 min read
 mediumUrl: https://arg-software.medium.com/stop-hitting-claudes-usage-limits-how-to-hack-your-tokens
