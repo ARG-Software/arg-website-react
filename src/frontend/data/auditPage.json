@@ -234,7 +234,7 @@
       "text": "A short walkthrough: start an audit, read the score, and open a finding.",
       "cover": "/images/audit/architect-video-cover.webp",
       "duration": "1:20",
-      "uploadDate": "2026-10-13",
+      "uploadDate": "2026-10-13T00:00:00+00:00",
       "label": "ARG Architect video",
       "watchLabel": "Watch on YouTube"
     },
