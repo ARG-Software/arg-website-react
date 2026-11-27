@@ -18,6 +18,9 @@
 [[plugins]]
   package = "@netlify/plugin-lighthouse"
 
+[[plugins]]
+  package = "./plugins/netlify-indexnow"
+
 [dev]
   command = "npm run dev"
   port = 3000
