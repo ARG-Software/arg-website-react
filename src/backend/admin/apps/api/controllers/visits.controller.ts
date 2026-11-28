@@ -8,6 +8,7 @@ import { adminContainer, type AdminContainer } from '../../di/admin.container.js
 import { getHeaderGeolocation } from '../../http/requestinfo.js';
 import {
   classifyVisitTraffic,
+  isAshburnCrawlerVisit,
   isKnownVisitBotUserAgent,
   isLocalVisit,
 } from '../../http/visittrafficfilter.js';
@@ -39,10 +40,16 @@ export class VisitsController extends ControllerBase {
       return this.json(204, '');
     }
 
+    const geo = getHeaderGeolocation(request);
+    if (isAshburnCrawlerVisit(geo.city, payload)) {
+      this.logger?.info('Visit session skipped', { reason: 'ashburn_crawler' });
+      return this.json(204, '');
+    }
+
     const traffic = classifyVisitTraffic(userAgent, payload);
 
     await this.visits.recordVisitSessionUseCase.execute({
-      geo: getHeaderGeolocation(request),
+      geo,
       sessionId: payload.sessionId,
       events: payload.events,
       pageViews: payload.pageViews,

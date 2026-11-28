@@ -4,6 +4,8 @@ import type {
 } from '../../domain/types/visitsession.types.js';
 
 const LOW_ENGAGEMENT_DURATION_MS = 10_000;
+const ASHBURN_MAX_EVENTS = 2;
+const ASHBURN_MAX_DURATION_MS = 5_000;
 
 const BOT_USER_AGENT_PARTS = [
   'bot',
@@ -43,6 +45,17 @@ export function isKnownVisitBotUserAgent(userAgent: string | null): boolean {
 
 export function isLocalVisit(request: Request, payload: unknown): boolean {
   return isLocalHost(new URL(request.url).hostname) || hasLocalReferrer(payload);
+}
+
+// Ashburn, Virginia is a data-centre hub; short visits from there are crawlers, not people.
+export function isAshburnCrawlerVisit(city: string | null, payload: unknown): boolean {
+  if (city?.toLowerCase() !== 'ashburn') return false;
+
+  const visit = readVisitPayload(payload);
+  const eventCount = Array.isArray(visit.events) ? visit.events.length : 0;
+  const pageViews = Array.isArray(visit.pageViews) ? visit.pageViews : [];
+
+  return eventCount <= ASHBURN_MAX_EVENTS && getDurationMs(pageViews) < ASHBURN_MAX_DURATION_MS;
 }
 
 export function classifyVisitTraffic(

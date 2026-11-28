@@ -121,6 +121,62 @@ test('skips visit logs posted to a local API host', async () => {
   assert.equal(recordCalled, false);
 });
 
+test('skips short Ashburn visit logs with two events or fewer', async () => {
+  let recordCalled = false;
+  const controller = createVisitLogController(() => {
+    recordCalled = true;
+  });
+  const response = await controller.log(
+    createVisitLogRequest(
+      {
+        events: [{ name: 'page_view', timestamp: '2026-08-28T10:00:00.000Z' }],
+        pageViews: [createVisitPageView(4000)],
+      },
+      DESKTOP_CHROME_USER_AGENT,
+      undefined,
+      { 'x-city': 'Ashburn' }
+    )
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(recordCalled, false);
+});
+
+test('records Ashburn visit logs that last five seconds or more', async () => {
+  let recordCalled = false;
+  const controller = createVisitLogController(() => {
+    recordCalled = true;
+  });
+  await controller.log(
+    createVisitLogRequest(
+      { pageViews: [createVisitPageView(5000)] },
+      DESKTOP_CHROME_USER_AGENT,
+      undefined,
+      { 'x-city': 'Ashburn' }
+    )
+  );
+
+  assert.equal(recordCalled, true);
+});
+
+test('records Ashburn visit logs with more than two events', async () => {
+  let recordCalled = false;
+  const controller = createVisitLogController(() => {
+    recordCalled = true;
+  });
+  const event = { name: 'cta_click', timestamp: '2026-08-28T10:00:00.000Z' };
+  await controller.log(
+    createVisitLogRequest(
+      { events: [event, event, event], pageViews: [createVisitPageView(1000)] },
+      DESKTOP_CHROME_USER_AGENT,
+      undefined,
+      { 'x-city': 'Ashburn' }
+    )
+  );
+
+  assert.equal(recordCalled, true);
+});
+
 test('records visit logs with a production referrer', async () => {
   let recordedReferrer = '';
   const controller = createVisitLogController(input => {
@@ -735,7 +791,8 @@ function createVisitLogController(onRecord: (input?: any) => void) {
 function createVisitLogRequest(
   payload = {},
   userAgent = DESKTOP_CHROME_USER_AGENT,
-  url = 'https://arg.software/api/visit-log'
+  url = 'https://arg.software/api/visit-log',
+  headers = {}
 ) {
   return new Request(url, {
     method: 'POST',
@@ -743,6 +800,7 @@ function createVisitLogRequest(
       'Content-Type': 'application/json',
       'user-agent': userAgent,
       'x-nf-client-connection-ip': '203.0.113.10',
+      ...headers,
     },
     body: JSON.stringify({
       sessionId: 'visitor-session',
