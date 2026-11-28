@@ -5,7 +5,7 @@ import { AdminTableFilters } from '../../components/outreach/AdminTableFilters.j
 import { getOutreachRecordColumns } from '../../components/outreach/outreachRecordColumns.jsx';
 import { useDebouncedValue } from '../../hooks/shared/useDebouncedValue.js';
 import {
-  useDeleteOutreachRecord,
+  useDeleteOutreachRecords,
   useOutreachRecords,
 } from '../../queries/outreach/useOutreachQueries.js';
 import {
@@ -24,12 +24,14 @@ export default function OutreachRecordsPage({
   onRecordDeleted,
 }) {
   const [page, setPage] = useState(1);
-  const [deleteTarget, setDeleteTarget] = useState(null);
+  // Records to delete: one from a row's Delete button, or the selected rows.
+  const [deleteTargets, setDeleteTargets] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
   const [filters, setFilters] = useState(EMPTY_TABLE_FILTERS);
   const debouncedCompanyName = useDebouncedValue(filters.companyName, SEARCH_DEBOUNCE_MS);
   const queryFilters = createTableQueryFilters(filters, debouncedCompanyName);
   const sort = { sortBy: 'companyName', sortDirection: 'asc' };
-  const deleteMutation = useDeleteOutreachRecord();
+  const deleteMutation = useDeleteOutreachRecords();
 
   const recordsQuery = useOutreachRecords(
     {
@@ -41,19 +43,31 @@ export default function OutreachRecordsPage({
     },
     { keepPrevious: true }
   );
+  const records = recordsQuery.data?.records || [];
+
+  function changePage(nextPage) {
+    setSelectedIds([]);
+    setPage(nextPage);
+  }
 
   function handleFilterChange(field, value) {
+    setSelectedIds([]);
     setPage(1);
     setFilters(current => ({ ...current, [field]: value }));
   }
 
-  async function deleteRecord() {
-    if (!deleteTarget) return;
+  async function deleteRecords() {
+    const ids = deleteTargets.map(record => record.id);
 
-    await deleteMutation.mutateAsync(deleteTarget.id);
-    setDeleteTarget(null);
-    onRecordDeleted?.(deleteTarget);
+    await deleteMutation.mutateAsync(ids);
+    setSelectedIds(current => current.filter(id => !ids.includes(id)));
+    setDeleteTargets([]);
+    deleteTargets.forEach(record => onRecordDeleted?.(record));
   }
+
+  const many = deleteTargets.length > 1;
+  let deleteLabel = many ? `Delete ${deleteTargets.length} records` : 'Delete record';
+  if (deleteMutation.isPending) deleteLabel = 'Deleting...';
 
   return (
     <div className="admin-content-grid">
@@ -62,13 +76,30 @@ export default function OutreachRecordsPage({
       ) : (
         <AdminDataTable
           title={title}
-          filters={<AdminTableFilters filters={filters} onFilterChange={handleFilterChange} />}
+          filters={
+            <>
+              <AdminTableFilters filters={filters} onFilterChange={handleFilterChange} />
+              {selectedIds.length > 0 && (
+                <button
+                  type="button"
+                  className="admin-table-action admin-table-action--danger"
+                  disabled={deleteMutation.isPending}
+                  onClick={() =>
+                    setDeleteTargets(records.filter(record => selectedIds.includes(record.id)))
+                  }
+                >
+                  Delete selected ({selectedIds.length})
+                </button>
+              )}
+            </>
+          }
           columns={getOutreachRecordColumns()}
-          rows={recordsQuery.data?.records || []}
+          rows={records}
+          selection={{ selectedKeys: selectedIds, onChange: setSelectedIds }}
           sort={sort}
           pagination={{
             ...(recordsQuery.data?.pagination ?? createEmptyTableData().pagination),
-            onPageChange: setPage,
+            onPageChange: changePage,
           }}
           emptyMessage={emptyMessage}
           onRowClick={onSelectRecord}
@@ -77,7 +108,7 @@ export default function OutreachRecordsPage({
               type="button"
               className="admin-table-action admin-table-action--danger"
               disabled={deleteMutation.isPending}
-              onClick={() => setDeleteTarget(record)}
+              onClick={() => setDeleteTargets([record])}
             >
               Delete
             </button>
@@ -86,15 +117,20 @@ export default function OutreachRecordsPage({
         />
       )}
       <ConfirmDialog
-        isOpen={Boolean(deleteTarget)}
-        title="Delete this outreach record?"
-        cancelLabel="Keep record"
-        confirmLabel={deleteMutation.isPending ? 'Deleting...' : 'Delete record'}
+        isOpen={deleteTargets.length > 0}
+        title={
+          many ? `Delete ${deleteTargets.length} outreach records?` : 'Delete this outreach record?'
+        }
+        cancelLabel={many ? 'Keep records' : 'Keep record'}
+        confirmLabel={deleteLabel}
         confirmDisabled={deleteMutation.isPending}
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={deleteRecord}
+        onCancel={() => setDeleteTargets([])}
+        onConfirm={deleteRecords}
       >
-        <p>This permanently removes the outreach entry from the admin database.</p>
+        <p>
+          This permanently removes {many ? 'these outreach entries' : 'the outreach entry'} from the
+          admin database.
+        </p>
         {deleteMutation.isError && <p className="admin-error">{deleteMutation.error.message}</p>}
       </ConfirmDialog>
     </div>

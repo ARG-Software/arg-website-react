@@ -152,16 +152,16 @@ export class SupabaseVisitSessionRepository
     );
   }
 
-  async deleteById(sessionHash: string): Promise<void> {
+  async deleteByIds(sessionHashes: string[]): Promise<void> {
     await logOperation(
       this.logger,
       'Supabase visit session delete',
-      { table: 'visit_sessions', sessionHash },
+      { table: 'visit_sessions', sessionCount: sessionHashes.length },
       async () => {
         const { error } = await this.client
           .from('visit_sessions')
           .delete()
-          .eq('session_hash', sessionHash);
+          .in('session_hash', sessionHashes);
 
         if (error) throw error;
       }

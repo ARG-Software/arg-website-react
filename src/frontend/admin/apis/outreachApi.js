@@ -43,10 +43,13 @@ export async function updateOutreachRecord(id, record) {
   return readAdminResponse(response);
 }
 
-export async function deleteOutreachRecord(id) {
-  const response = await fetch(createOutreachUrl(ADMIN_OUTREACH_RECORD_ENDPOINT, { id }), {
-    method: 'DELETE',
-  });
+export async function deleteOutreachRecords(ids) {
+  const response = await fetch(
+    createOutreachUrl(ADMIN_OUTREACH_RECORD_ENDPOINT, { id: ids.join(',') }),
+    {
+      method: 'DELETE',
+    }
+  );
 
   if (response.status === 204) return { deleted: true };
 

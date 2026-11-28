@@ -3,6 +3,7 @@ import { Pagination } from '../navigation/Pagination.jsx';
 import { UiCard } from '../primitives/UiCard.jsx';
 import { UiSpinner } from '../primitives/UiSpinner.jsx';
 
+// `selection` adds a checkbox column: { selectedKeys: string[], onChange(keys) }. The header box selects the rows on this page.
 export function AdminDataTable({
   title,
   description,
@@ -16,6 +17,7 @@ export function AdminDataTable({
   sort,
   onSortChange,
   rowActions,
+  selection,
   loading = false,
   emptyMessage = 'No records found.',
   tone = 'default',
@@ -51,6 +53,18 @@ export function AdminDataTable({
           <table>
             <thead>
               <tr>
+                {selection && (
+                  <th scope="col" className="admin-data-table__select-cell">
+                    <input
+                      type="checkbox"
+                      aria-label="Select all rows on this page"
+                      checked={rows.every(row => selection.selectedKeys.includes(getRowKey(row)))}
+                      onChange={event =>
+                        selection.onChange(event.target.checked ? rows.map(getRowKey) : [])
+                      }
+                    />
+                  </th>
+                )}
                 {columns.map(column => {
                   const isSorted = sort?.sortBy === column.key;
                   const sortDirection = isSorted ? sort.sortDirection : undefined;
@@ -88,6 +102,26 @@ export function AdminDataTable({
                   }}
                   tabIndex={0}
                 >
+                  {selection && (
+                    <td
+                      className="admin-data-table__select-cell"
+                      onClick={event => event.stopPropagation()}
+                      onKeyDown={event => event.stopPropagation()}
+                    >
+                      <input
+                        type="checkbox"
+                        aria-label="Select row"
+                        checked={selection.selectedKeys.includes(getRowKey(row))}
+                        onChange={event =>
+                          selection.onChange(
+                            event.target.checked
+                              ? [...selection.selectedKeys, getRowKey(row)]
+                              : selection.selectedKeys.filter(key => key !== getRowKey(row))
+                          )
+                        }
+                      />
+                    </td>
+                  )}
                   {columns.map(column => {
                     const content = column.render ? column.render(row) : row[column.key];
 

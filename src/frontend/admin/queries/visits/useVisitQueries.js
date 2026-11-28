@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  deleteVisitSession,
+  deleteVisitSessions,
   fetchAllVisitSessions,
   fetchVisitBreakdown,
   fetchVisitChart,
@@ -66,12 +66,12 @@ export function useVisitJourney(sessionHash) {
   });
 }
 
-export function useDeleteVisitSession() {
+export function useDeleteVisitSessions() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: visitQueryKey,
-    mutationFn: deleteVisitSession,
+    mutationFn: deleteVisitSessions,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: visitQueryKey });
     },

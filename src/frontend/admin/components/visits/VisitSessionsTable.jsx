@@ -12,13 +12,29 @@ export function VisitSessionsTable({
   onSelectVisitSession,
   onDelete,
   deleteMutation,
+  selection,
+  onDeleteSelected,
 }) {
   return (
     <AdminDataTable
       title={title}
       description={description}
+      filters={
+        selection?.selectedKeys.length > 0 && (
+          <button
+            type="button"
+            className="admin-table-action admin-table-action--danger"
+            disabled={deleteMutation.isPending}
+            onClick={onDeleteSelected}
+          >
+            Delete selected ({selection.selectedKeys.length})
+          </button>
+        )
+      }
       columns={getVisitSessionColumns()}
       rows={query.data?.records || []}
+      getRowKey={record => record.sessionHash}
+      selection={selection}
       sort={sort}
       onSortChange={onSortChange}
       loading={query.isLoading}

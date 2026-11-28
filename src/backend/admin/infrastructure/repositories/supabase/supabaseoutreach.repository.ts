@@ -248,13 +248,13 @@ export class SupabaseOutreachRepository extends SupabaseRepositoryBase implement
     );
   }
 
-  async deleteById(id: string): Promise<void> {
+  async deleteByIds(ids: string[]): Promise<void> {
     await logOperation(
       this.logger,
       'Supabase outreach record delete',
-      { table: 'outreach_records', outreachId: id },
+      { table: 'outreach_records', recordCount: ids.length },
       async () => {
-        const { error } = await this.client.from('outreach_records').delete().eq('id', id);
+        const { error } = await this.client.from('outreach_records').delete().in('id', ids);
 
         if (error) throw error;
       }

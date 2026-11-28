@@ -3,7 +3,7 @@ import { VisitDeleteDialog } from '../../components/visits/VisitDeleteDialog.jsx
 import { VisitSessionsTable } from '../../components/visits/VisitSessionsTable.jsx';
 import {
   useAllVisitSessions,
-  useDeleteVisitSession,
+  useDeleteVisitSessions,
 } from '../../queries/visits/useVisitQueries.js';
 import { PAGE_SIZE } from '../../shared/constants.js';
 import { ErrorCard } from '../../shared/ErrorCard.jsx';
@@ -11,23 +11,30 @@ import { ErrorCard } from '../../shared/ErrorCard.jsx';
 export default function VisitsListPage({ onSelectVisitSession }) {
   const [sessionPage, setSessionPage] = useState(1);
   const [sessionSort, setSessionSort] = useState({ sortBy: 'startedAt', sortDirection: 'desc' });
-  const [deleteTarget, setDeleteTarget] = useState(null);
+  // Session hashes to delete: one from a row's Delete button, or the selected rows.
+  const [deleteTargets, setDeleteTargets] = useState([]);
+  const [selectedHashes, setSelectedHashes] = useState([]);
   const sessionsQuery = useAllVisitSessions(
     { ...sessionSort, page: sessionPage, pageSize: PAGE_SIZE },
     { keepPrevious: true }
   );
-  const deleteMutation = useDeleteVisitSession();
+  const deleteMutation = useDeleteVisitSessions();
+
+  function changeSessionPage(page) {
+    setSelectedHashes([]);
+    setSessionPage(page);
+  }
 
   function updateSessionSort(sortBy) {
+    setSelectedHashes([]);
     setSessionPage(1);
     setSessionSort(current => createNextTableSort(current, sortBy));
   }
 
-  async function deleteVisit() {
-    if (!deleteTarget) return;
-
-    await deleteMutation.mutateAsync(deleteTarget.sessionHash);
-    setDeleteTarget(null);
+  async function deleteVisits() {
+    await deleteMutation.mutateAsync(deleteTargets);
+    setSelectedHashes(current => current.filter(hash => !deleteTargets.includes(hash)));
+    setDeleteTargets([]);
     onSelectVisitSession(null);
   }
 
@@ -40,19 +47,21 @@ export default function VisitsListPage({ onSelectVisitSession }) {
           title="All visits"
           description="Every recorded visit, ordered by start time. Open a row to view the ordered page journey."
           query={sessionsQuery}
-          onPageChange={setSessionPage}
+          onPageChange={changeSessionPage}
           sort={sessionSort}
           onSortChange={updateSessionSort}
           onSelectVisitSession={onSelectVisitSession}
-          onDelete={setDeleteTarget}
+          onDelete={record => setDeleteTargets([record.sessionHash])}
           deleteMutation={deleteMutation}
+          selection={{ selectedKeys: selectedHashes, onChange: setSelectedHashes }}
+          onDeleteSelected={() => setDeleteTargets(selectedHashes)}
         />
       )}
       <VisitDeleteDialog
-        deleteTarget={deleteTarget}
+        count={deleteTargets.length}
         deleteMutation={deleteMutation}
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={deleteVisit}
+        onCancel={() => setDeleteTargets([])}
+        onConfirm={deleteVisits}
       />
     </div>
   );

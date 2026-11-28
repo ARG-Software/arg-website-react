@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  deleteOutreachRecord,
+  deleteOutreachRecords,
   exportOutreachCsv,
   fetchOutreachChart,
   fetchOutreachRecord,
@@ -54,12 +54,12 @@ export function useUpdateOutreachRecord() {
   });
 }
 
-export function useDeleteOutreachRecord() {
+export function useDeleteOutreachRecords() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: outreachQueryKey,
-    mutationFn: deleteOutreachRecord,
+    mutationFn: deleteOutreachRecords,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: outreachQueryKey });
     },

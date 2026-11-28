@@ -36,7 +36,7 @@ export interface IOutreachRepository {
   findById(id: string): Promise<Outreach | null>;
   save(outreach: Outreach): Promise<Outreach>;
   createMany(outreaches: Outreach[]): Promise<Outreach[]>;
-  deleteById(id: string): Promise<void>;
+  deleteByIds(ids: string[]): Promise<void>;
 }
 
 export interface IOutreachAuditRepository {

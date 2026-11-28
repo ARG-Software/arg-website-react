@@ -33,6 +33,6 @@ export interface IVisitSessionRepository {
   findMany(query?: VisitSessionFindManyQuery): Promise<VisitSessionFindManyResult>;
   findMetricsByHashes(sessionHashes: string[]): Promise<VisitMetricSessionRecord[]>;
   findJourneyByHash(sessionHash: string): Promise<VisitJourneySessionRecord>;
-  deleteById(sessionHash: string): Promise<void>;
+  deleteByIds(sessionHashes: string[]): Promise<void>;
   deleteOlderThan(cutoffIso: string): Promise<{ events: number; sessions: number }>;
 }

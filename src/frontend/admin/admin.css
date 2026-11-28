@@ -690,6 +690,17 @@
   width: 1%;
 }
 
+.admin-data-table__select-cell {
+  width: 1%;
+}
+
+.admin-data-table__select-cell input {
+  accent-color: #0c002e;
+  cursor: pointer;
+  height: 1rem;
+  width: 1rem;
+}
+
 .admin-visit-traffic {
   display: grid;
   gap: 0.18rem;

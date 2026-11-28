@@ -186,16 +186,29 @@ test('returns one full outreach record from the detail endpoint', async () => {
 });
 
 test('deletes outreach records through the authenticated admin endpoint', async () => {
-  let deletedId = '';
+  let deletedIds = [];
   const api = createTestApi(createRecords(1), {
-    deleteById: async id => {
-      deletedId = id;
+    deleteByIds: async ids => {
+      deletedIds = ids;
     },
   });
   const response = await api(createDeleteRequest('/api/admin/outreach-record?id=record-1'));
 
   assert.equal(response.status, 204);
-  assert.equal(deletedId, 'record-1');
+  assert.deepEqual(deletedIds, ['record-1']);
+});
+
+test('deletes several outreach records in one request', async () => {
+  let deletedIds = [];
+  const api = createTestApi(createRecords(3), {
+    deleteByIds: async ids => {
+      deletedIds = ids;
+    },
+  });
+  const response = await api(createDeleteRequest('/api/admin/outreach-record?id=record-1,record-3'));
+
+  assert.equal(response.status, 204);
+  assert.deepEqual(deletedIds, ['record-1', 'record-3']);
 });
 
 test('records endpoint uses the paginated repository method for database-sortable fields', async () => {
@@ -354,7 +367,7 @@ function createTestApi(records, repositoryOverrides = {}) {
     findById: async id => storedRecords.find(record => record.id === id) || null,
     save: async record => record,
     createMany: async records => records.map((record, index) => new Outreach({ ...record, id: `record-${index + 1}` })),
-    deleteById: async () => {},
+    deleteByIds: async () => {},
     ...repositoryOverrides,
   };
   const controller = new TestOutreachController({

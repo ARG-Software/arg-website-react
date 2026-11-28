@@ -7,7 +7,7 @@ import { UiSelect } from '@ui/primitives/UiField.jsx';
 import { VisitDeleteDialog } from '../../components/visits/VisitDeleteDialog.jsx';
 import { VisitSessionsTable } from '../../components/visits/VisitSessionsTable.jsx';
 import {
-  useDeleteVisitSession,
+  useDeleteVisitSessions,
   useVisitBreakdown,
   useVisitChart,
   useVisitCountryBreakdown,
@@ -86,7 +86,7 @@ export default function VisitsDashboardPage({ onSelectVisitSession }) {
     { ...sessionSort, page: sessionPage, pageSize: PAGE_SIZE },
     { keepPrevious: true }
   );
-  const deleteMutation = useDeleteVisitSession();
+  const deleteMutation = useDeleteVisitSessions();
   const statQueries = {
     page_views: pageViewsStatQuery,
     visits: visitsStatQuery,
@@ -113,7 +113,7 @@ export default function VisitsDashboardPage({ onSelectVisitSession }) {
   async function deleteVisit() {
     if (!deleteTarget) return;
 
-    await deleteMutation.mutateAsync(deleteTarget.sessionHash);
+    await deleteMutation.mutateAsync([deleteTarget.sessionHash]);
     setDeleteTarget(null);
     onSelectVisitSession(null);
   }
@@ -279,7 +279,7 @@ export default function VisitsDashboardPage({ onSelectVisitSession }) {
         />
       )}
       <VisitDeleteDialog
-        deleteTarget={deleteTarget}
+        count={deleteTarget ? 1 : 0}
         deleteMutation={deleteMutation}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={deleteVisit}

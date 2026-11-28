@@ -367,22 +367,22 @@ test('records mobile browsers with their origin', async () => {
 });
 
 test('deletes visit sessions through the authenticated admin endpoint', async () => {
-  let deletedSessionHash = '';
+  let deletedSessionHashes = [];
   const controller = new TestVisitsController({
     deleteVisitSessionUseCase: new DeleteVisitSessionUseCase({
-      async deleteById(sessionHash) {
-        deletedSessionHash = sessionHash;
+      async deleteByIds(sessionHashes) {
+        deletedSessionHashes = sessionHashes;
       },
     } as any),
   } as any);
   const response = await controller.delete(
-    new Request('https://arg.software/api/admin/visit-session?sessionHash=session-hash', {
+    new Request('https://arg.software/api/admin/visit-session?sessionHash=hash-1,hash-2', {
       method: 'DELETE',
     })
   );
 
   assert.equal(response.status, 204);
-  assert.equal(deletedSessionHash, 'session-hash');
+  assert.deepEqual(deletedSessionHashes, ['hash-1', 'hash-2']);
 });
 
 test('routes visit stat metric requests to the narrow stat query', async () => {

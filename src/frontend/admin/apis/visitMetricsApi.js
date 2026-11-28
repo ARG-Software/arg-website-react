@@ -44,10 +44,11 @@ export async function fetchVisitJourney(sessionHash) {
   return readAdminResponse(response);
 }
 
-export async function deleteVisitSession(sessionHash) {
-  const response = await fetch(buildVisitApiUrl(VISIT_SESSION_ENDPOINT, { sessionHash }), {
-    method: 'DELETE',
-  });
+export async function deleteVisitSessions(sessionHashes) {
+  const response = await fetch(
+    buildVisitApiUrl(VISIT_SESSION_ENDPOINT, { sessionHash: sessionHashes.join(',') }),
+    { method: 'DELETE' }
+  );
 
   if (response.status === 204) return { deleted: true };
 
